@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    // 基本設定
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "types": ["node"],
+    "baseUrl": ".",  // プロジェクトルートを基準にする
+    "paths": {
+      "src/*": ["src/*"]
+    },
+    
+    // 出力設定
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    
+    // 厳格な型チェック（これ重要！）
+    "strict": true,                          // 全ての厳格チェックを有効化
+    "noImplicitAny": true,                   // 暗黙のany禁止
+    "strictNullChecks": true,                // null/undefinedの厳格チェック
+    "strictFunctionTypes": true,             // 関数型の厳格チェック
+    "strictBindCallApply": true,             // bind/call/applyの厳格チェック
+    "strictPropertyInitialization": true,    // プロパティ初期化の厳格チェック
+    "noImplicitThis": true,                  // 暗黙のthis禁止
+    "alwaysStrict": true,                    // strictモードを常に有効
+    
+    // 追加の安全性チェック（現在のPRで無効化されているもの）
+    "noUncheckedIndexedAccess": true,       // インデックスアクセスの安全性チェック
+    "exactOptionalPropertyTypes": true,      // オプショナルプロパティの厳密な型チェック
+    "noPropertyAccessFromIndexSignature": true, // インデックスシグネチャからのプロパティアクセス禁止
+    
+    // エラー検出
+    "noFallthroughCasesInSwitch": true,     // switch文のフォールスルー禁止
+    "noImplicitReturns": true,              // 暗黙のreturn禁止
+    "noImplicitOverride": true,             // overrideキーワードの必須化
+    "noUnusedLocals": true,                 // 未使用のローカル変数検出
+    "noUnusedParameters": true,             // 未使用のパラメータ検出
+    
+    // モジュール解決
+    "esModuleInterop": true,
+    "skipLibCheck": true,                    // 型定義ファイルのチェックをスキップ（ビルド高速化）
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"]
+}

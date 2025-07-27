@@ -1,0 +1,293 @@
+# AI Coding Project Boilerplate 🤖
+
+TypeScript project boilerplate optimized for AI-assisted development with layered architecture, comprehensive development rules, and best practices.
+Claude Code専用に最適化され、LLMによる開発で最高品質のコードを生み出すための包括的なルールとガイドラインを提供します。
+
+## 🎯 特徴
+
+- **Claude Code特化**: Claude CodeとSub-agentで最高品質を実現するルール群
+- **品質保証**: 段階的品質チェックと自動修正システム
+- **TypeScript最適化**: 型安全性とパフォーマンスを両立した設定
+- **包括的ルール**: ルールファイルによる開発標準化
+- **ボイラープレート設計**: プロジェクト固有部分はプレースホルダー化
+
+## 📂 プロジェクト構成
+
+```
+ai-coding-project-boilerplate/
+├── docs/
+│   ├── rules/              # Claude Code向け開発ルール
+│   │   ├── technical-spec.md          # 技術仕様・アーキテクチャ
+│   │   ├── typescript.md              # TypeScript開発ルール
+│   │   ├── typescript-testing.md      # テストルール
+│   │   ├── project-context.md         # プロジェクトコンテキスト（テンプレート）
+│   │   ├── ai-development-guide.md    # AI開発者ガイド
+│   │   └── architecture-decision-process.md # ADRプロセス
+│   ├── adr/               # アーキテクチャ決定記録
+│   ├── design/            # 設計ドキュメント
+│   ├── plans/             # 作業計画書（git管理外）
+│   └── prd/               # 製品要件定義書
+├── src/                   # ソースコードディレクトリ
+│   └── index.ts           # エントリーポイントサンプル
+├── scripts/               # 開発支援スクリプト
+├── CLAUDE.md              # Claude Code専用設定
+├── tsconfig.json          # TypeScript厳格設定
+├── biome.json            # Linter・Formatter設定
+└── vitest.config.mjs     # テスト設定
+```
+
+## 🚀 使い方
+
+### 1. ボイラープレートの導入
+
+```bash
+# ボイラープレートをクローンして新しいプロジェクトを作成
+git clone https://github.com/shinpr/ai-coding-project-boilerplate.git my-project
+cd my-project
+
+# 依存関係のインストール
+npm install
+
+# Git履歴をリセットして新しいプロジェクトとして開始
+rm -rf .git
+git init
+git add .
+git commit -m "feat: initial commit from AI Coding Project Boilerplate"
+```
+
+### 2. プロジェクト固有の設定
+
+1. **基本情報の更新**
+   ```json
+   // package.json
+   {
+     "name": "your-project-name",
+     "description": "プロジェクトの説明",
+     "author": "あなたの名前"
+   }
+   ```
+
+2. **プロジェクトコンテキストの設定**
+   ```bash
+   # docs/rules/project-context.md のプレースホルダーを置き換え
+   # [プロジェクト名] → 実際のプロジェクト名
+   # [プロダクト名をここに記載] → 実際のプロダクト名
+   # [ターゲットユーザーの職種をここに記載] → 実際のターゲット
+   ```
+
+3. **環境変数の設定**
+   ```bash
+   cp .env.example .env
+   # プロジェクトに必要な環境変数を追加・設定
+   ```
+
+4. **環境変数と型定義の設定**
+   ```typescript
+   // プロジェクトで環境変数の型定義を作成
+   // 例: src/config/environment.ts
+   export interface EnvironmentVariables {
+     NODE_ENV: 'development' | 'production' | 'test'
+     // プロジェクト固有の環境変数を追加
+     DATABASE_URL?: string
+     API_KEY?: string
+   }
+   ```
+
+### 3. GitHubリポジトリの設定
+
+1. **GitHubで新しいリポジトリを作成**
+   ```bash
+   # 推奨リポジトリ名
+   - claude-code-typescript-boilerplate
+   - claude-typescript-template
+   - ai-coding-boilerplate
+   ```
+
+2. **リモートリポジトリの追加**
+   ```bash
+   git remote add origin https://github.com/your-username/your-repo-name.git
+   git branch -M main
+   git push -u origin main
+   ```
+
+3. **リポジトリ設定（GitHub UI）**
+   - **説明文**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and sub-agent architecture for generating highest quality code efficiently."
+   - **トピックス**: `claude-code`, `typescript`, `boilerplate`, `ai-development`, `subagents`, `code-quality`
+
+## 💻 開発コマンド
+
+### 基本コマンド
+```bash
+npm run dev        # 開発サーバー起動
+npm run build      # プロダクションビルド
+npm run test       # テスト実行
+npm run test:watch # テスト監視モード
+```
+
+### 品質チェック
+```bash
+npm run check:all   # 全体品質チェック
+npm run lint        # Lintチェック
+npm run format      # コードフォーマット
+npm run check:deps  # 循環依存チェック
+```
+
+### その他のコマンド
+```bash
+npm run test:coverage       # カバレッジレポート生成
+npm run check:unused        # 未使用エクスポート検出
+npm run cleanup:processes   # テストプロセスクリーンアップ
+```
+
+## 🤖 Claude Code専用ワークフロー
+
+### ボイラープレートの核心：Claude Codeで最高品質を実現
+
+このボイラープレートは、Claude CodeとSub-agentが最高品質のTypeScriptコードを生成するために特別に設計されています。
+
+### 必須ワークフロー
+
+1. **初回ルール読み込み**: タスク開始時に必ず6つのルールファイル（`docs/rules/`）を読み込む
+2. **実装前承認**: Edit/Write/MultiEdit操作前にユーザー承認を得る
+3. **段階的品質チェック**: Phase 1-6の段階的品質チェックを実施
+4. **Sub-agent活用**: 専門的なタスクは適切なSub-agentに委譲
+
+### Claude Code開発プロセス
+
+```mermaid
+graph TD
+    A[ルール読み込み] --> B[計画立案]
+    B --> C[ユーザー承認]
+    C --> D[実装]
+    D --> E[品質チェック]
+    E --> F[コミット]
+    F --> G{次のタスク?}
+    G -->|Yes| D
+    G -->|No| H[完了]
+```
+
+### 利用可能なSub-agent
+
+- **quality-fixer**: 品質チェック・自動修正
+- **task-executor**: 個別タスク実行
+- **technical-designer**: ADR・Design Doc作成
+- **work-planner**: 作業計画書作成
+
+詳細は`CLAUDE.md`を参照してください。
+
+## 📋 開発ルール概要
+
+このボイラープレートは、LLM研究に基づく科学的根拠のあるルールセットを提供します：
+
+### 核心原則
+- **推奨形式**: 禁止事項をメリット・デメリット付きで説明（LLM理解促進）
+- **柔軟な実装選択**: プロジェクトの要件に応じて、後方互換性の考慮レベルを調整可能
+- **段階的品質保証**: 6段階の体系的品質チェックプロセス
+- **Sub-agent連携**: 専門タスクは適切なSub-agentに委譲
+
+### 主要ルール
+- ✅ **推奨**: unknown型+型ガード（型安全性確保）
+- ❌ **避けるべき**: any型使用（型チェック無効化のため）
+- ✅ **推奨**: テストファースト開発（Red-Green-Refactor）
+- ❌ **避けるべき**: コメントアウト（バージョン管理で履歴管理）
+- ✅ **推奨**: YAGNI原則（現在必要な機能のみ実装）
+
+### 6つのルールファイル
+1. **technical-spec.md**: 技術仕様・アーキテクチャ設計
+2. **typescript.md**: TypeScript開発ルール（パフォーマンス最適化を含む）
+3. **typescript-testing.md**: テストルール・test-utils活用
+4. **project-context.md**: プロジェクトコンテキスト（テンプレート）
+5. **ai-development-guide.md**: AI開発者向け実装ガイド
+6. **architecture-decision-process.md**: ADR作成・運用プロセス
+
+## 🧪 テスト
+
+### Claude Code向けテスト戦略
+
+このボイラープレートは、LLMが効率的にテストを実装できるよう設計されています：
+
+### テストの実行
+```bash
+npm test                       # 単体テスト実行
+npm run test:coverage:fresh    # 正確なカバレッジ計測
+npm run test:ui               # Vitest UI起動
+npm run cleanup:processes     # テスト後のプロセスクリーンアップ
+```
+
+### test-utils活用システム
+- **TestBuilder**: 複雑なオブジェクト構築をパターン化
+- **assertHelpers**: 繰り返し使用する検証ロジックを共通化
+- **モック判断フロー**: 単純→test-utils、複雑→個別実装
+- **重複防止**: 3回目の重複でtest-utils移動を検討
+
+### Vitest最適化
+- プロセス管理: 自動クリーンアップでゾンビプロセス防止
+- 型安全モック: any型を避けた型安全なモック実装
+- Red-Green-Refactor: テストファースト開発をサポート
+
+## 🏗️ アーキテクチャ
+
+### Claude Code最適化アーキテクチャ
+
+このボイラープレートは、LLMが理解・実装しやすいアーキテクチャパターンを提供します：
+
+### アーキテクチャパターンの選択
+
+`docs/rules/architecture/`にLLM開発に最適化されたアーキテクチャパターンを用意：
+
+#### 1. **Layered Architecture** 
+- **特徴**: 明確な責務分離、企業開発に最適
+- **LLMメリット**: 各層の役割が明確で理解しやすい
+- **適用場面**: 大規模・複雑なビジネスロジック
+
+#### 2. **Vertical Slice Architecture** 
+- **特徴**: 1機能1ファイル、LLM開発に最適化
+- **LLMメリット**: コンテキストウィンドウ効率利用
+- **適用場面**: Claude Code開発、機能の独立性重視
+
+#### 3. **Hybrid Progressive Architecture** 
+- **特徴**: 小規模→大規模への段階的進化
+- **LLMメリット**: プロジェクト成長に応じて柔軟に対応
+- **適用場面**: スタートアップ、段階的成長
+
+### 設計原則（LLM最適化）
+- **明確な責務分離**: 1ファイル1責務でコンテキスト効率化
+- **依存性注入**: テスタビリティとモック化容易性
+- **型安全性優先**: unknown型+型ガードでランタイムエラー防止
+- **YAGNI徹底**: 過度な抽象化を避け、必要最小限の実装
+
+## 📚 ドキュメント体系
+
+このボイラープレートは、Claude Codeが効率的に開発できるよう体系的なドキュメントを提供：
+
+- **`docs/rules/`**: 6つの包括的な開発ルール（Claude Code必読）
+- **`docs/adr/`**: アーキテクチャ決定記録（重要な技術決定の記録）
+- **`docs/design/`**: 設計ドキュメント（複雑な機能の詳細設計）
+- **`docs/plans/`**: 作業計画書（中規模以上の変更時に作成）
+- **`docs/prd/`**: 製品要件定義書（新機能開発時）
+
+## 🤔 よくある質問
+
+### Q: Claude Codeでの開発手順は？
+A: 1) 6つのルールファイルを読み込み → 2) 計画立案・承認 → 3) 実装 → 4) 段階的品質チェック → 5) コミット
+
+### Q: Sub-agentはどう使う？
+A: quality-fixer（品質チェック）、task-executor（タスク実行）等を適切に活用。詳細は`CLAUDE.md`参照。
+
+### Q: エラーが発生したら？
+A: Phase 1-6の段階的品質チェックを実行。各Phaseでエラーを完全解消してから次へ。
+
+### Q: ボイラープレートのカスタマイズ方法は？
+A: `docs/rules/project-context.md`のプレースホルダーを置き換え、環境変数と型定義をプロジェクト向けに調整。
+
+## 📄 ライセンス
+
+MIT License - 自由に使用・改変・配布可能
+
+## 🎯 このボイラープレートについて
+
+Claude Code TypeScript Boilerplateは、LLM研究に基づく科学的根拠を持つ開発ルールセットを提供し、Claude CodeとSub-agentが最高品質のTypeScriptコードを生成できるよう特別に設計されたボイラープレートです。
+
+---
+
+Happy Coding with Claude Code! 🤖✨
