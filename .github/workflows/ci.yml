@@ -41,5 +41,6 @@ jobs:
     - name: Type check
       run: npm run build
 
-    - name: Run tests
-      run: npm test
+    # TODO: Enable tests when test files are added
+    # - name: Run tests
+    #   run: npm test
