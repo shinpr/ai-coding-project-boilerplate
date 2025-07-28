@@ -1,11 +1,11 @@
 # AI Coding Project Boilerplate 🤖
 
 TypeScript project boilerplate optimized for AI-assisted development with layered architecture, comprehensive development rules, and best practices.
-Claude Code専用に最適化され、LLMによる開発で最高品質のコードを生み出すための包括的なルールとガイドラインを提供します。
+Claude Code専用に最適化され、LLMによる開発で高品質のコードを生み出すための包括的なルールとガイドラインを提供します。
 
 ## 🎯 特徴
 
-- **Claude Code特化**: Claude CodeとSub-agentで最高品質を実現するルール群
+- **Claude Code特化**: Claude CodeとSub-agentで高品質を実現するルール群
 - **品質保証**: 段階的品質チェックと自動修正システム
 - **TypeScript最適化**: 型安全性とパフォーマンスを両立した設定
 - **包括的ルール**: ルールファイルによる開発標準化
@@ -15,6 +15,16 @@ Claude Code専用に最適化され、LLMによる開発で最高品質のコー
 
 ```
 ai-coding-project-boilerplate/
+├── .claude/
+│   └── agents/            # Sub-agent定義
+│       ├── document-reviewer.md      # ドキュメントレビュー
+│       ├── prd-creator.md            # PRD作成
+│       ├── quality-fixer.md          # 品質チェック・修正
+│       ├── requirement-analyzer.md    # 要件分析
+│       ├── task-decomposer.md        # タスク分解
+│       ├── task-executor.md          # タスク実行
+│       ├── technical-designer.md     # 技術設計
+│       └── work-planner.md           # 作業計画
 ├── docs/
 │   ├── rules/              # Claude Code向け開発ルール
 │   │   ├── technical-spec.md          # 技術仕様・アーキテクチャ
@@ -111,7 +121,7 @@ git commit -m "feat: initial commit from AI Coding Project Boilerplate"
    ```
 
 3. **リポジトリ設定（GitHub UI）**
-   - **説明文**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and sub-agent architecture for generating highest quality code efficiently."
+   - **説明文**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and sub-agent architecture for generating high quality code efficiently."
    - **トピックス**: `claude-code`, `typescript`, `boilerplate`, `ai-development`, `subagents`, `code-quality`
 
 ## 💻 開発コマンド
@@ -141,9 +151,9 @@ npm run cleanup:processes   # テストプロセスクリーンアップ
 
 ## 🤖 Claude Code専用ワークフロー
 
-### ボイラープレートの核心：Claude Codeで最高品質を実現
+### ボイラープレートの核心：Claude Codeで高品質を実現
 
-このボイラープレートは、Claude CodeとSub-agentが最高品質のTypeScriptコードを生成するために特別に設計されています。
+このボイラープレートは、Claude CodeとSub-agentが高品質のTypeScriptコードを生成するために特別に設計されています。
 
 ### 必須ワークフロー
 
@@ -172,12 +182,16 @@ graph TD
 - **task-executor**: 個別タスク実行
 - **technical-designer**: ADR・Design Doc作成
 - **work-planner**: 作業計画書作成
+- **document-reviewer**: ドキュメントの整合性と完成度をレビュー
+- **prd-creator**: Product Requirements Document（PRD）作成
+- **requirement-analyzer**: 要件分析と作業規模判定
+- **task-decomposer**: 作業計画書から1コミット粒度のタスクに分解
 
-詳細は`CLAUDE.md`を参照してください。
+詳細は`CLAUDE.md`および`.claude/agents/`内の各定義ファイルを参照してください。
 
 ## 📋 開発ルール概要
 
-このボイラープレートは、LLM研究に基づく科学的根拠のあるルールセットを提供します：
+このボイラープレートは、包括的なルールセットを提供します：
 
 ### 核心原則
 - **推奨形式**: 禁止事項をメリット・デメリット付きで説明（LLM理解促進）
@@ -286,7 +300,7 @@ MIT License - 自由に使用・改変・配布可能
 
 ## 🎯 このボイラープレートについて
 
-Claude Code TypeScript Boilerplateは、LLM研究に基づく科学的根拠を持つ開発ルールセットを提供し、Claude CodeとSub-agentが最高品質のTypeScriptコードを生成できるよう特別に設計されたボイラープレートです。
+Claude Code TypeScript Boilerplateは、Claude CodeとSub-agentが高品質のTypeScriptコードを生成できるよう特別に設計されたボイラープレートです。
 
 ---
 
