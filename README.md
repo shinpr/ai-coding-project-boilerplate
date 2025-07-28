@@ -85,23 +85,6 @@ git commit -m "feat: initial commit from AI Coding Project Boilerplate"
    # [ターゲットユーザーの職種をここに記載] → 実際のターゲット
    ```
 
-3. **環境変数の設定**
-   ```bash
-   cp .env.example .env
-   # プロジェクトに必要な環境変数を追加・設定
-   ```
-
-4. **環境変数と型定義の設定**
-   ```typescript
-   // プロジェクトで環境変数の型定義を作成
-   // 例: src/config/environment.ts
-   export interface EnvironmentVariables {
-     NODE_ENV: 'development' | 'production' | 'test'
-     // プロジェクト固有の環境変数を追加
-     DATABASE_URL?: string
-     API_KEY?: string
-   }
-   ```
 
 ### 3. GitHubリポジトリの設定
 
