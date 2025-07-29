@@ -104,15 +104,6 @@
 
 ## 品質チェック（実装完了時必須）
 
-### 段階的品質チェック（Phase 1から順番に）
-
-### Claude Code: quality-fixerサブエージェント活用
-
-品質チェックはquality-fixerに委譲推奨：
-```
-Task(subagent_type="quality-fixer", description="品質チェック実行", prompt="品質チェックを実行してください")
-```
-
 ### 品質チェックフェーズ
 
 **Phase 1-3: 基本チェック**
