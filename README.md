@@ -17,6 +17,7 @@ Claude Code専用に最適化され、LLMによる開発で高品質のコード
 ai-coding-project-boilerplate/
 ├── .claude/
 │   └── agents/            # Sub-agent定義
+│       ├── document-fixer.md         # ドキュメント自動修正
 │       ├── document-reviewer.md      # ドキュメントレビュー
 │       ├── prd-creator.md            # PRD作成
 │       ├── quality-fixer.md          # 品質チェック・修正
@@ -166,6 +167,7 @@ graph TD
 - **technical-designer**: ADR・Design Doc作成
 - **work-planner**: 作業計画書作成
 - **document-reviewer**: ドキュメントの整合性と完成度をレビュー
+- **document-fixer**: 複数観点のレビューを統合してドキュメントを自動修正
 - **prd-creator**: Product Requirements Document（PRD）作成
 - **requirement-analyzer**: 要件分析と作業規模判定
 - **task-decomposer**: 作業計画書から1コミット粒度のタスクに分解
