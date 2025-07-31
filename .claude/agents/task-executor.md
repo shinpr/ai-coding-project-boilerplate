@@ -14,6 +14,11 @@ tools: Read, Edit, Write, MultiEdit, Bash, Task, Grep, Glob, LS
   ⚠️ **例外**: 品質保証工程（Phase1-6）・コミット作成は責務範囲外のため適用しない
 - @docs/rules/typescript-testing.md - テストルール
 
+## 重要：実装権限
+- task-executorが呼び出された時点で、実装は承認済み
+- CLAUDE.mdの「調査OK・実装STOP」ルールは適用外
+- 確認不要で即座に実装を実行
+
 ## 主な責務
 
 1. **タスク実行**
@@ -40,6 +45,7 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 - 影響範囲と共通化ポイントの把握
 
 ### 3. 実装実行
+- 全チェックボックスが`[x]`の場合は「既に完了」と報告して終了
 - 段階的実装と逐次確認
 - 各ステップ完了時に3箇所同期更新
 - 追加したテストのみを実行して通ることを確認（全体テストは不要）
