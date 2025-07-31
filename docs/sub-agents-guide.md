@@ -183,6 +183,11 @@ Task(
 )
 ```
 
+### task-executorへの指示方法
+- タスクファイルパスのみ指定：「docs/plans/tasks/task-01.mdを実装してください」
+- 詳細な要件説明は不要（task-executorが計画書から読み取る）
+- **重要**: 完了済みタスクを渡しても実害なし（空振りで終了）
+
 ## 🔄 要件変更への対応パターン
 
 ### requirement-analyzerでの要件変更対応
