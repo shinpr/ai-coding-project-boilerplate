@@ -86,7 +86,6 @@ git commit -m "feat: initial commit from AI Coding Project Boilerplate"
    # [ターゲットユーザーの職種をここに記載] → 実際のターゲット
    ```
 
-
 ### 3. GitHubリポジトリの設定
 
 1. **GitHubで新しいリポジトリを作成**
@@ -194,7 +193,7 @@ graph TD
 ### 6つのルールファイル
 1. **technical-spec.md**: 技術仕様・アーキテクチャ設計
 2. **typescript.md**: TypeScript開発ルール（パフォーマンス最適化を含む）
-3. **typescript-testing.md**: テストルール・test-utils活用
+3. **typescript-testing.md**: テストルール・Vitestの活用
 4. **project-context.md**: プロジェクトコンテキスト（テンプレート）
 5. **ai-development-guide.md**: AI開発者向け実装ガイド
 6. **architecture-decision-process.md**: ADR作成・運用プロセス
@@ -213,11 +212,11 @@ npm run test:ui               # Vitest UI起動
 npm run cleanup:processes     # テスト後のプロセスクリーンアップ
 ```
 
-### test-utils活用システム
-- **TestBuilder**: 複雑なオブジェクト構築をパターン化
-- **assertHelpers**: 繰り返し使用する検証ロジックを共通化
-- **モック判断フロー**: 単純→test-utils、複雑→個別実装
-- **重複防止**: 3回目の重複でtest-utils移動を検討
+### テストヘルパーの活用方針
+- **ビルダーパターン**: 複雑なテストデータの構築を簡素化
+- **カスタムアサーション**: 繰り返し使用する検証ロジックを共通化
+- **モックの判断基準**: シンプルで安定的なものは共通化、複雑・変更頻度の高いものは個別実装
+- **重複防止**: 3回目の重複で共通化を検討（Rule of Three）
 
 ### Vitest最適化
 - プロセス管理: 自動クリーンアップでゾンビプロセス防止
