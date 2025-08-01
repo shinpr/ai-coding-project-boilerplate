@@ -4,7 +4,7 @@ description: 分解済みタスクを自律実行モードで実装
 
 **コマンドコンテキスト**: このコマンドは実装フェーズ専用です。
 
-@docs/sub-agents-guide.md の自律実行モードに従い、**task-decomposer から実装完了まで**を実行します。
+@docs/guides/sub-agents.md の自律実行モードに従い、**task-decomposer から実装完了まで**を実行します。
 
 ! ls -la docs/plans/*.md | head -10
 

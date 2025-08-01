@@ -37,7 +37,7 @@
 
 2. **アーキテクチャの選択**
    - `docs/rules/architecture/` から適切なパターンを選択
-   - `docs/architecture/` にプロジェクト固有の設計を配置
+   - `docs/rules/architecture/` にプロジェクト固有の設計を配置
 
 3. **環境設定**
    - プロジェクトに適した環境変数管理方法の実装

@@ -42,6 +42,10 @@
     "check:all": "npm run check && npm run lint && npm run format:check && npm run check:unused && npm run check:deps && npm run build && npm run test",
     "cleanup:processes": "bash ./scripts/cleanup-test-processes.sh",
     "test:safe": "npm test && npm run cleanup:processes",
+    "lang:ja": "node scripts/set-language.js ja",
+    "lang:en": "node scripts/set-language.js en",
+    "lang:status": "node scripts/set-language.js --status",
+    "postinstall": "node scripts/set-language.js ja",
     "prepare": "husky"
   },
   "dependencies": {},

@@ -2,7 +2,7 @@
 description: オーケストレーターとして要件分析から実装まで完全サイクルを管理
 ---
 
-@docs/sub-agents-guide.md に基づき、オーケストレーターとして振る舞います。
+@docs/guides/sub-agents.md に基づき、オーケストレーターとして振る舞います。
 
 要件: $ARGUMENTS
 

@@ -14,7 +14,7 @@
 graph TD
     Start[タスクを受領] --> Check1{「オーケストレーター」という<br/>指示がある？}
     Check1 -->|Yes| UseSubAgent[サブエージェント活用]
-    Check1 -->|No| Check2{sub-agents-guide.mdが<br/>開かれている？}
+    Check1 -->|No| Check2{sub-agents.mdが<br/>開かれている？}
     Check2 -->|Yes| UseSubAgent
     Check2 -->|No| Check3{新機能追加・開発依頼？}
     Check3 -->|Yes| RequirementAnalyzer[requirement-analyzerから開始]
@@ -93,7 +93,7 @@ graph TD
 **判断**: 明示的な指示 → 必ずサブエージェントを活用
 
 ### パターン3: サブエージェント活用の文脈
-**トリガー**: sub-agents-guide.mdが開かれている
+**トリガー**: sub-agents.mdが開かれている
 **判断**: ユーザーはサブエージェント活用を期待 → このガイドに従って行動
 
 ### パターン4: 品質保証フェーズ
