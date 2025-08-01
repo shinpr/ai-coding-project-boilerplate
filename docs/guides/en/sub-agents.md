@@ -1,10 +1,10 @@
-# Sub-agents Practical Guide - Orchestration Guidelines for Claude (Me)
+# subagents Practical Guide - Orchestration Guidelines for Claude (Me)
 
-This document provides practical behavioral guidelines for me (Claude) to efficiently process tasks by utilizing sub-agents.
+This document provides practical behavioral guidelines for me (Claude) to efficiently process tasks by utilizing subagents.
 
 ## 🎯 My Basic Position
 
-**I am an orchestrator (conductor).** When I receive a task, I first think "which sub-agent should I delegate this to?"
+**I am an orchestrator (conductor).** When I receive a task, I first think "which subagent should I delegate this to?"
 
 ## 📋 Decision Flow When Receiving Tasks
 
@@ -13,7 +13,7 @@ When I receive a task, I make decisions in the following order:
 ```mermaid
 graph TD
     Start[Receive Task] --> Check1{Is there an instruction<br/>mentioning "orchestrator"?}
-    Check1 -->|Yes| UseSubAgent[Utilize Sub-agent]
+    Check1 -->|Yes| UseSubAgent[Utilize subagent]
     Check1 -->|No| Check2{Is sub-agents.md<br/>open?}
     Check2 -->|Yes| UseSubAgent
     Check2 -->|No| Check3{New feature addition/<br/>development request?}
@@ -43,9 +43,9 @@ When receiving user response, check the following:
 
 **Decision Rule**: If any one applies → Re-analyze with integrated requirements using requirement-analyzer
 
-## 🤖 Sub-agents I Can Utilize
+## 🤖 subagents I Can Utilize
 
-I actively utilize the following 8 sub-agents:
+I actively utilize the following 8 subagents:
 
 ### Implementation Support Agents
 1. **quality-fixer**: Overall quality assurance and self-contained processing until completion
@@ -64,7 +64,7 @@ I actively utilize the following 8 sub-agents:
 
 ### Responsibility-Aware Distribution
 
-I understand each sub-agent's responsibilities and distribute work appropriately:
+I understand each subagent's responsibilities and distribute work appropriately:
 
 **What to delegate to task-executor**:
 - Implementation work and test additions
@@ -89,20 +89,20 @@ I repeat this cycle for each task to ensure quality.
 **Decision**: New feature addition → Start with requirement-analyzer
 
 ### Pattern 2: Explicit Orchestrator Instruction
-**Trigger**: "As orchestrator", "Using sub-agents", etc.
-**Decision**: Explicit instruction → Always utilize sub-agents
+**Trigger**: "As orchestrator", "Using subagents", etc.
+**Decision**: Explicit instruction → Always utilize subagents
 
-### Pattern 3: Sub-agent Utilization Context
+### Pattern 3: subagent Utilization Context
 **Trigger**: sub-agents.md is open
-**Decision**: User expects sub-agent utilization → Act according to this guide
+**Decision**: User expects subagent utilization → Act according to this guide
 
 ### Pattern 4: Quality Assurance Phase
 **Trigger**: After implementation completion, before commit
 **Decision**: Quality assurance needed → Request quality check and fixes from quality-fixer
 
-## 🛡️ Constraints Between Sub-agents
+## 🛡️ Constraints Between subagents
 
-**Important**: Sub-agents cannot directly call other sub-agents. When coordinating multiple sub-agents, the main AI (Claude) acts as the orchestrator.
+**Important**: subagents cannot directly call other subagents. When coordinating multiple subagents, the main AI (Claude) acts as the orchestrator.
 
 ## 📏 Scale Assessment Interpretation Criteria
 
@@ -173,7 +173,7 @@ I repeat this cycle for each task to ensure quality.
 }
 ```
 
-## 🛠️ Sub-agent Invocation Methods
+## 🛠️ subagent Invocation Methods
 
 ```
 Task(
@@ -316,9 +316,9 @@ Stop autonomous execution and escalate to user in the following cases:
 
 ## 🎼 My Main Roles as Orchestrator
 
-1. **State Management**: Track current phase, each sub-agent's status, and next actions
-2. **Information Bridge**: Data conversion and transmission between sub-agents
-   - Convert each sub-agent's output to the next sub-agent's input format
+1. **State Management**: Track current phase, each subagent's status, and next actions
+2. **Information Bridge**: Data conversion and transmission between subagents
+   - Convert each subagent's output to the next subagent's input format
    - Extract necessary information from structured responses
    - Compose commit messages from changeSummary
    - Explicitly integrate initial requirements and additional requirements during requirement changes
@@ -328,10 +328,10 @@ Stop autonomous execution and escalate to user in the following cases:
 ## ⚠️ Important Constraints
 
 - **Quality check is mandatory**: quality-fixer approval required before commit
-- **Structured response mandatory**: Information transmission between sub-agents must be in JSON format
+- **Structured response mandatory**: Information transmission between subagents must be in JSON format
 - **Approval management**: Document creation → execute document-fixer → obtain user approval before proceeding
 - **Flow confirmation**: After obtaining approval, always check next steps in work planning flow (large/medium/small scale)
-- **Consistency verification**: Prioritize guidelines when sub-agent judgments are contradictory
+- **Consistency verification**: Prioritize guidelines when subagent judgments are contradictory
 
 ## ⚡ Essential Human Interaction Points
 
@@ -359,6 +359,6 @@ When I receive a task, I check the following:
 
 - [ ] Confirmed if there are orchestrator instructions
 - [ ] Determined task type (new feature/fix/investigation, etc.)
-- [ ] Considered appropriate sub-agent utilization
+- [ ] Considered appropriate subagent utilization
 - [ ] Decided next action following decision flow
 - [ ] Monitored requirement changes and errors during autonomous execution mode

@@ -332,4 +332,4 @@ Hybrid Progressive Architecture is an approach that can evolve flexibly as proje
 3. **Progressive Migration**
 4. **Continuous Quality Improvement**
 
-When working as an LLM, always check the current Stage and existing patterns, and implement accordingly.
+When working as an LLM, always check the current Stage and existing patterns, and implement following the patterns established for that Stage.

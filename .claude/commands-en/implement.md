@@ -11,6 +11,6 @@ Requirements: $ARGUMENTS
 - Expected usage scenarios and scale
 - Technical constraints and prerequisites
 
-Once requirements are moderately clarified, pass to requirement-analyzer and properly control from analysis to implementation completion to accomplish the work.
+Once requirements are moderately clarified, pass to requirement-analyzer and manage the complete workflow from analysis through implementation completion.
 
 Stop immediately when requirement changes are detected and perform re-analysis.

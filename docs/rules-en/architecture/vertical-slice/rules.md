@@ -85,7 +85,7 @@ export async function createTodo(input: unknown): Promise<Todo> {
     
     return result
   } catch (error) {
-    // Handle appropriately within this file
+    // Handle by throwing a specific error or returning an error result
     if (error instanceof z.ZodError) {
       throw new ValidationError('Invalid input', error.errors)
     }

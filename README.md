@@ -6,7 +6,7 @@ TypeScript project boilerplate optimized for AI-assisted development with layere
 
 ## 🎯 Features
 
-- **Claude Code Specialized**: Rule set optimized for high-quality development with Claude Code and Sub-agents
+- **Claude Code Specialized**: Rule set optimized for high-quality development with Claude Code and subagents
 - **Quality Assurance**: Progressive quality checks and automatic correction system
 - **TypeScript Optimized**: Configuration that balances type safety and performance
 - **Comprehensive Rules**: Development standardization through rule files
@@ -18,8 +18,8 @@ TypeScript project boilerplate optimized for AI-assisted development with layere
 ```
 ai-coding-project-boilerplate/
 ├── .claude/
-│   ├── agents-ja/          # Sub-agent definitions (Japanese)
-│   ├── agents-en/          # Sub-agent definitions (English)
+│   ├── agents-ja/          # subagent definitions (Japanese)
+│   ├── agents-en/          # subagent definitions (English)
 │   ├── commands-ja/        # Custom slash commands (Japanese)
 │   └── commands-en/        # Custom slash commands (English)
 ├── docs/
@@ -27,9 +27,9 @@ ai-coding-project-boilerplate/
 │   ├── rules-en/           # Development rules for Claude Code (English)
 │   ├── guides/
 │   │   ├── ja/
-│   │   │   └── sub-agents.md  # Sub-agents practical guide (Japanese)
+│   │   │   └── sub-agents.md  # subagents practical guide (Japanese)
 │   │   └── en/
-│   │       └── sub-agents.md  # Sub-agents practical guide (English)
+│   │       └── sub-agents.md  # subagents practical guide (English)
 │   ├── adr/               # Architecture Decision Records
 │   ├── design/            # Design documents
 │   ├── plans/             # Work plans (excluded from git)
@@ -67,9 +67,9 @@ npm run lang:status
 When you switch languages, the following files are automatically updated:
 - `CLAUDE.md` - Claude Code configuration file
 - `docs/rules/` - Development rules directory
-- `docs/guides/sub-agents.md` - Sub-agents guide
+- `docs/guides/sub-agents.md` - subagents guide
 - `.claude/commands/` - Slash commands
-- `.claude/agents/` - Sub-agent definitions
+- `.claude/agents/` - subagent definitions
 
 ## 🚀 Getting Started
 
@@ -132,7 +132,7 @@ git commit -m "feat: initial commit from AI Coding Project Boilerplate"
    ```
 
 3. **Repository Settings (GitHub UI)**
-   - **Description**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and sub-agent architecture for generating high quality code efficiently."
+   - **Description**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and subagent architecture for generating high quality code efficiently."
    - **Topics**: `claude-code`, `typescript`, `boilerplate`, `ai-development`, `subagents`, `code-quality`, `multilingual`
 
 ## 💻 Development Commands
@@ -211,14 +211,14 @@ These commands are located in `.claude/commands/` and are only available within 
 
 ### Boilerplate Core: Achieving High Quality with Claude Code
 
-This boilerplate is specifically designed for Claude Code and Sub-agents to generate high-quality TypeScript code.
+This boilerplate is specifically designed for Claude Code and subagents to generate high-quality TypeScript code.
 
 ### Essential Workflow
 
-1. **Initial Rule Loading**: Always load 6 rule files (`docs/rules/`) at task start
+1. **Initial Rule Loading**: Always load 7 rule files (`docs/rules/`) at task start
 2. **Pre-Implementation Approval**: Obtain user approval before Edit/Write/MultiEdit operations
 3. **Progressive Quality Checks**: Implement Phase 1-6 progressive quality checks
-4. **Sub-agent Utilization**: Delegate specialized tasks to appropriate Sub-agents
+4. **subagent Utilization**: Delegate specialized tasks to appropriate subagents
 
 ### Claude Code Development Process
 
@@ -234,7 +234,7 @@ graph TD
     G -->|No| H[Complete]
 ```
 
-### Available Sub-agents
+### Available subagents
 
 - **quality-fixer**: Quality check & automatic correction
 - **task-executor**: Individual task execution
@@ -256,7 +256,7 @@ This boilerplate provides a comprehensive rule set:
 - **Recommended Format**: Explain prohibitions with benefits/drawbacks (promotes LLM understanding)
 - **Flexible Implementation Choice**: Adjustable backward compatibility consideration levels based on project requirements
 - **Progressive Quality Assurance**: 6-phase systematic quality check process
-- **Sub-agent Integration**: Delegate specialized tasks to appropriate Sub-agents
+- **subagent Integration**: Delegate specialized tasks to appropriate subagents
 
 ### Key Rules
 - ✅ **Recommended**: unknown type + type guards (ensure type safety)
@@ -265,13 +265,14 @@ This boilerplate provides a comprehensive rule set:
 - ❌ **Avoid**: Commented-out code (use version control for history)
 - ✅ **Recommended**: YAGNI principle (implement only currently needed features)
 
-### 6 Rule Files
+### 7 Rule Files
 1. **technical-spec.md**: Technical specifications & architecture design
 2. **typescript.md**: TypeScript development rules (including performance optimization)
 3. **typescript-testing.md**: Testing rules & Vitest utilization
 4. **project-context.md**: Project context (template)
 5. **ai-development-guide.md**: Implementation guide for AI developers
 6. **architecture-decision-process.md**: ADR creation & operation process
+7. **canonical-phrases.md**: Standardized terminology and decision criteria for clarity
 
 ## 🧪 Testing
 
@@ -342,9 +343,9 @@ This boilerplate provides systematic documentation for efficient Claude Code dev
 ## 🤔 Frequently Asked Questions
 
 ### Q: What's the development procedure with Claude Code?
-A: 1) Load 6 rule files → 2) Plan & get approval → 3) Implement → 4) Progressive quality checks → 5) Commit
+A: 1) Load 7 rule files → 2) Plan & get approval → 3) Implement → 4) Progressive quality checks → 5) Commit
 
-### Q: How to use Sub-agents?
+### Q: How to use subagents?
 A: Properly utilize quality-fixer (quality checks), task-executor (task execution), etc. See `CLAUDE.md` for details.
 
 ### Q: What to do when errors occur?
@@ -362,7 +363,7 @@ MIT License - Free to use, modify, and distribute
 
 ## 🎯 About This Boilerplate
 
-AI Coding Project Boilerplate is specifically designed to enable Claude Code and Sub-agents to generate high-quality TypeScript code. With multilingual support, it provides an optimal development experience in both Japanese and English environments.
+AI Coding Project Boilerplate is specifically designed to enable Claude Code and subagents to generate high-quality TypeScript code. With multilingual support, it provides an optimal development experience in both Japanese and English environments.
 
 ---
 

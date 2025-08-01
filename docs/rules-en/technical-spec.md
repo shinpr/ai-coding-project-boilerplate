@@ -50,15 +50,15 @@ Select appropriate DI patterns or DI libraries according to project scale and re
 
 ## Design Documents and Processes
 
-### PRD/ADR/Design Doc/Work Plan Creation Process
+### PRD/ADR/Design Doc/work plan Creation Process
 
 #### Cases Requiring Creation
-1. **New Feature Addition**: PRD → ADR (if architectural changes) → Design Doc → Work Plan → Implementation
-2. **Large-scale Changes (6+ files)**: ADR → Design Doc → Work Plan (mandatory) → Implementation
-3. **Medium-scale Changes (3-5 files)**: Consider Design Doc creation → Work Plan (recommended) → Implementation
+1. **New Feature Addition**: PRD → ADR (if architectural changes) → Design Doc → work plan → Implementation
+2. **Large-scale Changes (6+ files)**: ADR → Design Doc → work plan (mandatory) → Implementation
+3. **Medium-scale Changes (3-5 files)**: Consider Design Doc creation → work plan (recommended) → Implementation
 4. **Small-scale Modifications (1-2 files)**: Direct implementation
 
-#### About Work Plans
+#### About work plans
 - **Storage Location**: `docs/plans/` (excluded by .gitignore)
 - **Naming Convention**: `YYYYMMDD-{feature|fix|refactor}-{brief-description}.md`
 - **Template**: `docs/plans/template-en.md`

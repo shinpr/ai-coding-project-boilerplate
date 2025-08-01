@@ -181,5 +181,5 @@ Templates to use:
 **Required Elements**:
 - `[METADATA]`, `[VERDICT]`/`[ANALYSIS]`, `[ISSUES]` sections
 - ID, severity, category for each ISSUE
-- Section markers in uppercase, properly closed
+- Section markers in uppercase, closed with matching [/SECTION] tags
 - SUGGESTION should be specific and actionable

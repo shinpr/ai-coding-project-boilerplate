@@ -119,7 +119,7 @@ Dependent Tasks: [Dependent task numbers, or "None"]
 ### 1. **Red Phase - Write Failing Tests**
    - [ ] [Define expected behavior of feature in tests (e.g., `expect(result).toBe(expected)`)]
    - [ ] [Run tests and confirm failure (e.g., `npm test -- path/to/test.ts`)]
-   - [ ] [Create additional test cases as needed (edge cases, etc.)]
+   - [ ] [Create additional test cases when edge cases or error conditions exist]
 
 ### 2. **Green Phase - Minimal Implementation**
    - [ ] [Add minimal implementation to pass tests]

@@ -38,7 +38,7 @@ Only when the user explicitly instructs immediate implementation such as "fix it
 ## Development Workflow and Procedures
 
 ### Basic Workflow
-1. **Load Rule Files**: Always read all 6 rule files
+1. **Load Rule Files**: Always read all 7 rule files
 2. **Document Review**: Check related ADR/Design Doc/work plans
 3. **Plan Development**: Present implementation plan and obtain user approval
 4. **Execute Implementation**: Implement with progressive quality assurance
@@ -90,6 +90,9 @@ Development guidelines for this project are managed in rule files within the `do
 @docs/rules/project-context.md
 @docs/rules/ai-development-guide.md
 @docs/rules/architecture-decision-process.md
+@docs/rules/canonical-phrases.md
+
+**Note**: The canonical-phrases.md file defines standardized terminology, specific criteria for ambiguous terms, and clear decision trees to maximize AI execution accuracy.
 
 ## 【Absolute Compliance】Initial Mandatory Tasks
 
@@ -98,7 +101,7 @@ Development guidelines for this project are managed in rule files within the `do
 ### Procedures When Receiving Tasks
 
 1. **Stop Implementation**: Always stop before code modification
-2. **Load Rule Files**: Read all 6 rule files
+2. **Load Rule Files**: Read all 7 rule files
 3. **Check Related Documents**: Review ADR/Design Doc/work plans
 4. **Plan Development**: Present implementation plan
 5. **User Approval**: Start implementation after approval
@@ -142,7 +145,7 @@ For details, refer to the "Escalation Criteria" section in @docs/rules/ai-develo
 ## Basic Principles of Development Process
 
 ### Pre-Implementation Planning and Agreement
-For planning based on change scale, refer to "PRD/ADR/Design Doc/Work Plan Creation Process" in @docs/rules/technical-spec.md.
+For planning based on change scale, refer to "PRD/ADR/Design Doc/work plan Creation Process" in @docs/rules/technical-spec.md.
 
 **Basic Flow**: Present plan → User approval → Start implementation
 
@@ -154,9 +157,9 @@ For details, refer to "Red-Green-Refactor Process" in @docs/rules/typescript-tes
 ### Root Cause Analysis
 For details, refer to @docs/rules/ai-development-guide.md.
 
-## Work Plan Operations
+## work plan Operations
 
-For detailed work plan creation criteria, naming conventions, operational flows, refer to "About Work Plans" in @docs/rules/technical-spec.md.
+For detailed work plan creation criteria, naming conventions, operational flows, refer to "About work plans" in @docs/rules/technical-spec.md.
 
 ## Code Quality Checks (Mandatory)
 

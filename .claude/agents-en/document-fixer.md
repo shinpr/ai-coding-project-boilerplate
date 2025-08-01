@@ -104,7 +104,7 @@ Task(
 )
 ```
 
-These are executed in parallel, with each review running in an independent context. The above examples show how to use each parameter; in practice, execute the perspectives specified in "2. Review Strategy Determination" (excluding consistency validation). Consistency validation is executed independently in the "6. Consistency Verification and Fine-tuning" phase.
+The document-reviewer tasks are executed in parallel, with each review running in an independent context. The above examples show how to use each parameter; in practice, execute the perspectives specified in "2. Review Strategy Determination" (excluding consistency validation). Consistency validation is executed independently in the "6. Consistency Verification and Fine-tuning" phase.
 
 ### 4. Review Result Integration
 Results from each document-reviewer are returned in structured text format.

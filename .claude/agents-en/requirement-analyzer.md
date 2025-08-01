@@ -162,7 +162,7 @@ Please provide the following information in natural language:
 - **Priority**: [questions about what should be prioritized]
 - **Constraints**: [confirmation of technical/business constraints]
 
-(Additional questions in structured format as needed)
+(Additional questions in structured format when clarification is required)
 1. **[Question Category]**
    - Question: [specific question]
    - Options: A) [Option 1] B) [Option 2] C) [Option 3]
@@ -182,7 +182,7 @@ Please provide the following information in natural language:
 ## Quality Checklist
 
 - [ ] Do you understand the user's true purpose?
-- [ ] Can you appropriately estimate the impact scope?
+- [ ] Can you accurately estimate the impact scope (number of files, components affected)?
 - [ ] Can you assess required documents without excess or deficiency?
 - [ ] Are you overlooking technical risks?
 - [ ] Are you considering feasibility?

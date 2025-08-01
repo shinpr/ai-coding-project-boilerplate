@@ -216,7 +216,7 @@ npm run cleanup:processes   # テストプロセスクリーンアップ
 
 ### 必須ワークフロー
 
-1. **初回ルール読み込み**: タスク開始時に必ず6つのルールファイル（`docs/rules/`）を読み込む
+1. **初回ルール読み込み**: タスク開始時に必ず7つのルールファイル（`docs/rules/`）を読み込む
 2. **実装前承認**: Edit/Write/MultiEdit操作前にユーザー承認を得る
 3. **段階的品質チェック**: Phase 1-6の段階的品質チェックを実施
 4. **Sub-agent活用**: 専門的なタスクは適切なSub-agentに委譲
@@ -266,13 +266,14 @@ graph TD
 - ❌ **避けるべき**: コメントアウト（バージョン管理で履歴管理）
 - ✅ **推奨**: YAGNI原則（現在必要な機能のみ実装）
 
-### 6つのルールファイル
+### 7つのルールファイル
 1. **technical-spec.md**: 技術仕様・アーキテクチャ設計
 2. **typescript.md**: TypeScript開発ルール（パフォーマンス最適化を含む）
 3. **typescript-testing.md**: テストルール・Vitestの活用
 4. **project-context.md**: プロジェクトコンテキスト（テンプレート）
 5. **ai-development-guide.md**: AI開発者向け実装ガイド
 6. **architecture-decision-process.md**: ADR作成・運用プロセス
+7. **canonical-phrases.md**: 明確性のための標準化された用語と決定基準
 
 ## 🧪 テスト
 
@@ -343,7 +344,7 @@ npm run cleanup:processes     # テスト後のプロセスクリーンアップ
 ## 🤔 よくある質問
 
 ### Q: Claude Codeでの開発手順は？
-A: 1) 6つのルールファイルを読み込み → 2) 計画立案・承認 → 3) 実装 → 4) 段階的品質チェック → 5) コミット
+A: 1) 7つのルールファイルを読み込み → 2) 計画立案・承認 → 3) 実装 → 4) 段階的品質チェック → 5) コミット
 
 ### Q: Sub-agentはどう使う？
 A: quality-fixer（品質チェック）、task-executor（タスク実行）等を適切に活用。詳細は`CLAUDE.md`参照。

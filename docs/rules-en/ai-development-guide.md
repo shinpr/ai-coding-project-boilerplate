@@ -4,7 +4,7 @@ This document provides a comprehensive checklist, self-diagnosis methods, prohib
 
 ## Pre-Implementation Mandatory Checklist
 
-1. **Rule File Loading**: Always read all 6 rule files completely
+1. **Rule File Loading**: Always read all 7 rule files completely (including canonical-phrases.md for standardized terminology)
 2. **Staged Document Review**
    - During design: Review only relevant ADRs
    - During implementation: Review only relevant Design Docs
@@ -81,7 +81,7 @@ This document provides a comprehensive checklist, self-diagnosis methods, prohib
 
 ## Workflow Considerations
 
-### Work Plan Utilization
+### work plan Utilization
 - **Medium scale (3-5 files)**: Recommended
 - **Large scale (6+ files)**: Mandatory
 - **Keywords**: Mandatory for instructions containing "refactoring," "consolidation," "optimization"

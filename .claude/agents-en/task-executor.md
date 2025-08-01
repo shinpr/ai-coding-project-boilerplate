@@ -69,7 +69,7 @@ For investigation tasks (containing "investigation" or "analysis"):
 
 1. **Investigation Results Report**: `docs/plans/tasks/YYYYMMDD-{task-name}-findings.md`
 2. **Addition to Overall Design Document**: Document investigation results and impacts
-3. **Update Subsequent Tasks**: As needed
+3. **Update Subsequent Tasks**: When investigation reveals changes to planned approach or dependencies
 
 ## Structured Response Specification
 
