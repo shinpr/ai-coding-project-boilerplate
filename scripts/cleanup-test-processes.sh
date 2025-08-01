@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Vitest プロセスクリーンアップスクリプト
-# テスト実行後にゾンビプロセスを確認・削除する
+# Vitest process cleanup script
+# Check and remove zombie processes after test execution
 
 echo "🔍 Checking for remaining test processes..."
 
-# Vitestプロセスチェック
+# Vitest process check
 VITEST_PROCESSES=$(ps aux | grep vitest | grep -v grep || true)
 if [ -n "$VITEST_PROCESSES" ]; then
     echo "⚠️  Found vitest processes:"
@@ -17,7 +17,7 @@ else
     echo "✅ No vitest processes found"
 fi
 
-# Node test プロセスチェック
+# Node test process check
 NODE_TEST_PROCESSES=$(ps aux | grep "node.*test" | grep -v grep || true)
 if [ -n "$NODE_TEST_PROCESSES" ]; then
     echo "⚠️  Found node test processes:"

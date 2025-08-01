@@ -1,47 +1,47 @@
 {
   "compilerOptions": {
-    // 基本設定
+    // Basic configuration
     "target": "ES2020",
     "module": "commonjs",
     "lib": ["ES2020"],
     "types": ["node"],
-    "baseUrl": ".",  // プロジェクトルートを基準にする
+    "baseUrl": ".",  // Use project root as reference
     "paths": {
       "src/*": ["src/*"]
     },
     
-    // 出力設定
+    // Output configuration
     "outDir": "./dist",
     "rootDir": "./src",
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
     
-    // 厳格な型チェック（これ重要！）
-    "strict": true,                          // 全ての厳格チェックを有効化
-    "noImplicitAny": true,                   // 暗黙のany禁止
-    "strictNullChecks": true,                // null/undefinedの厳格チェック
-    "strictFunctionTypes": true,             // 関数型の厳格チェック
-    "strictBindCallApply": true,             // bind/call/applyの厳格チェック
-    "strictPropertyInitialization": true,    // プロパティ初期化の厳格チェック
-    "noImplicitThis": true,                  // 暗黙のthis禁止
-    "alwaysStrict": true,                    // strictモードを常に有効
+    // Strict type checking (this is important!)
+    "strict": true,                          // Enable all strict checks
+    "noImplicitAny": true,                   // Prohibit implicit any
+    "strictNullChecks": true,                // Strict null/undefined checks
+    "strictFunctionTypes": true,             // Strict function type checks
+    "strictBindCallApply": true,             // Strict bind/call/apply checks
+    "strictPropertyInitialization": true,    // Strict property initialization checks
+    "noImplicitThis": true,                  // Prohibit implicit this
+    "alwaysStrict": true,                    // Always enable strict mode
     
-    // 追加の安全性チェック（現在のPRで無効化されているもの）
-    "noUncheckedIndexedAccess": true,       // インデックスアクセスの安全性チェック
-    "exactOptionalPropertyTypes": true,      // オプショナルプロパティの厳密な型チェック
-    "noPropertyAccessFromIndexSignature": true, // インデックスシグネチャからのプロパティアクセス禁止
+    // Additional safety checks (currently disabled in this PR)
+    "noUncheckedIndexedAccess": true,       // Safety checks for index access
+    "exactOptionalPropertyTypes": true,      // Strict type checking for optional properties
+    "noPropertyAccessFromIndexSignature": true, // Prohibit property access from index signature
     
-    // エラー検出
-    "noFallthroughCasesInSwitch": true,     // switch文のフォールスルー禁止
-    "noImplicitReturns": true,              // 暗黙のreturn禁止
-    "noImplicitOverride": true,             // overrideキーワードの必須化
-    "noUnusedLocals": true,                 // 未使用のローカル変数検出
-    "noUnusedParameters": true,             // 未使用のパラメータ検出
+    // Error detection
+    "noFallthroughCasesInSwitch": true,     // Prohibit fallthrough in switch statements
+    "noImplicitReturns": true,              // Prohibit implicit returns
+    "noImplicitOverride": true,             // Require override keyword
+    "noUnusedLocals": true,                 // Detect unused local variables
+    "noUnusedParameters": true,             // Detect unused parameters
     
-    // モジュール解決
+    // Module resolution
     "esModuleInterop": true,
-    "skipLibCheck": true,                    // 型定義ファイルのチェックをスキップ（ビルド高速化）
+    "skipLibCheck": true,                    // Skip type checking of declaration files (build optimization)
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },

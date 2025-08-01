@@ -1,11 +1,11 @@
 /**
  * Application entry point
  *
- * このファイルはボイラープレートの使用例です。
- * 実際のプロジェクトでは、ここにアプリケーション固有のロジックを実装してください。
+ * This file serves as a usage example for the boilerplate.
+ * In actual projects, implement your application-specific logic here.
  */
 
 console.log('Hello from TypeScript boilerplate!')
 
-// プロジェクト固有の実装をここに追加してください
+// Add your project-specific implementation here
 export {}
