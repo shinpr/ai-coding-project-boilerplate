@@ -60,9 +60,9 @@ cd my-project
 # 依存関係のインストール
 npm install
 
-# 英語を希望する場合のみ切り替え（デフォルトは日本語）
-npm run lang:en    # 英語に切り替える場合
-# npm run lang:ja  # すでに日本語に設定済み
+# 使用する言語を設定（日本語版のプロジェクトとして設定）
+npm run lang:ja    # 日本語版として設定
+# npm run lang:en  # 英語版として設定する場合
 
 # Git履歴をリセットして新しいプロジェクトとして開始
 rm -rf .git
