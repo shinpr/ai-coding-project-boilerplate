@@ -43,7 +43,7 @@ tmp/
 
 # Work plans (excluded from commits)
 docs/plans/*
-!docs/plans/template.md
+!docs/plans/template-*.md
 
 # Work plan tasks (auto-generated)
 docs/plans/tasks/
