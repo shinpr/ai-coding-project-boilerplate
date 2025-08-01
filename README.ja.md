@@ -48,6 +48,29 @@ ai-coding-project-boilerplate/
 └── vitest.config.mjs     # テスト設定
 ```
 
+## 🚀 使い方
+
+### 1. ボイラープレートの導入
+
+```bash
+# ボイラープレートをクローンして新しいプロジェクトを作成
+git clone https://github.com/shinpr/ai-coding-project-boilerplate.git my-project
+cd my-project
+
+# 依存関係のインストール
+npm install
+
+# 英語を希望する場合のみ切り替え（デフォルトは日本語）
+npm run lang:en    # 英語に切り替える場合
+# npm run lang:ja  # すでに日本語に設定済み
+
+# Git履歴をリセットして新しいプロジェクトとして開始
+rm -rf .git
+git init
+git add .
+git commit -m "feat: initial commit from AI Coding Project Boilerplate"
+```
+
 ## 🌐 多言語化機能
 
 このボイラープレートは日本語と英語の両方をサポートしています。
@@ -71,25 +94,6 @@ npm run lang:status
 - `docs/guides/sub-agents.md` - Sub-agentsガイド
 - `.claude/commands/` - スラッシュコマンド
 - `.claude/agents/` - Sub-agent定義
-
-## 🚀 使い方
-
-### 1. ボイラープレートの導入
-
-```bash
-# ボイラープレートをクローンして新しいプロジェクトを作成
-git clone https://github.com/shinpr/ai-coding-project-boilerplate.git my-project
-cd my-project
-
-# 依存関係のインストール（自動で日本語に設定されます）
-npm install
-
-# Git履歴をリセットして新しいプロジェクトとして開始
-rm -rf .git
-git init
-git add .
-git commit -m "feat: initial commit from AI Coding Project Boilerplate"
-```
 
 ### 2. プロジェクト固有の設定
 
