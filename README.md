@@ -16,16 +16,22 @@ Claude Code専用に最適化され、LLMによる開発で高品質のコード
 ```
 ai-coding-project-boilerplate/
 ├── .claude/
-│   └── agents/            # Sub-agent定義
-│       ├── document-fixer.md         # ドキュメント自動修正
-│       ├── document-reviewer.md      # ドキュメントレビュー
-│       ├── prd-creator.md            # PRD作成
-│       ├── quality-fixer.md          # 品質チェック・修正
-│       ├── requirement-analyzer.md    # 要件分析
-│       ├── task-decomposer.md        # タスク分解
-│       ├── task-executor.md          # タスク実行
-│       ├── technical-designer.md     # 技術設計
-│       └── work-planner.md           # 作業計画
+│   ├── agents/            # Sub-agent定義
+│   │   ├── document-fixer.md         # ドキュメント自動修正
+│   │   ├── document-reviewer.md      # ドキュメントレビュー
+│   │   ├── prd-creator.md            # PRD作成
+│   │   ├── quality-fixer.md          # 品質チェック・修正
+│   │   ├── requirement-analyzer.md    # 要件分析
+│   │   ├── task-decomposer.md        # タスク分解
+│   │   ├── task-executor.md          # タスク実行
+│   │   ├── technical-designer.md     # 技術設計
+│   │   └── work-planner.md           # 作業計画
+│   └── commands/          # カスタムスラッシュコマンド
+│       ├── onboard.md                # ルール読み込み
+│       ├── implement.md              # フルサイクル管理
+│       ├── design.md                 # 設計書作成
+│       ├── plan.md                   # 作業計画
+│       └── build.md                  # 自律実行
 ├── docs/
 │   ├── rules/              # Claude Code向け開発ルール
 │   │   ├── technical-spec.md          # 技術仕様・アーキテクチャ
@@ -131,6 +137,46 @@ npm run test:coverage       # カバレッジレポート生成
 npm run check:unused        # 未使用エクスポート検出
 npm run cleanup:processes   # テストプロセスクリーンアップ
 ```
+
+## 🎯 Claude Code カスタムスラッシュコマンド
+
+このボイラープレートには、Claude Codeでの開発を効率化する5つのカスタムスラッシュコマンドが含まれています：
+
+### `/onboard`
+プロジェクトのルールファイルを読み込み、開発規約を徹底します。
+- 全ルールファイルの読み込み
+- 最重要ルール（特に「調査OK・実装STOP」）の理解
+- アーキテクチャパターンの確認
+
+### `/implement`
+オーケストレーターとして要件分析から実装まで完全サイクルを管理します。
+- 要件の具体化のための対話
+- requirement-analyzerによる規模判定
+- 設計→計画→実装の自動進行
+- 要件変更の自動検知と再分析
+
+### `/design`
+要件分析から設計書作成まで実行します。
+- 要件の背景と目的の深掘り
+- 規模に応じた設計書作成（PRD/ADR/Design Doc）
+- document-fixerによる品質保証
+- 設計の代替案とトレードオフの提示
+
+### `/plan`
+設計書から作業計画とタスク分解を作成します。
+- 既存設計書の確認と選択
+- work-plannerによる作業計画書作成
+- task-decomposerによる1コミット粒度のタスク分解
+- 実装フェーズ全体の一括承認取得
+
+### `/build`
+分解済みタスクを自律実行モードで実装します。
+- タスクファイルの確認
+- task-executor → quality-fixer → commitの自動サイクル
+- 要件変更や重大エラーの検知と適切な対応
+- 実装完了後のサマリーとカバレッジ報告
+
+これらのコマンドは `.claude/commands/` に配置されており、プロジェクト内でのみ使用可能です。
 
 ## 🤖 Claude Code専用ワークフロー
 
