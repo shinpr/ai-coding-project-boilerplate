@@ -48,11 +48,12 @@ docs/plans/*
 # 作業計画書タスク（自動生成）
 docs/plans/tasks/
 
-# 多言語化関連
+# 多言語化関連（npm scriptsで動的生成）
 .claudelang
 CLAUDE.md
 docs/rules/
 docs/guides/sub-agents.md
 .claude/commands/
 .claude/agents/
+
 
