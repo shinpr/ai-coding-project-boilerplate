@@ -28,7 +28,10 @@ Once the user approves implementation, the following activities can be performed
 
 ### 📋 Mandatory Pre-Implementation Flow
 1. **Report Investigation Results**: "XX is the cause, and there is a problem with YY"
-2. **Present Implementation Plan**: "I will now fix XX. Specifically..."
+2. **Present Implementation Plan**: When formulating a plan, ask yourself the following questions and reflect them in the plan before presenting:
+   - What is the essence of this task, and which rules should guide the approach?
+   - According to the rules, what should be tackled first?
+   - Based on past experience, what failures commonly occur with this type of task?
 3. **Wait for Explicit User Approval**: Approval such as "OK", "proceed", "go ahead"
 4. **Start Implementation After Approval**: Use Edit/Write and other tools
 
