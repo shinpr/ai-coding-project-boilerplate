@@ -168,10 +168,10 @@ tools: Read, Grep, Glob, LS
 ## テンプレート参照
 
 使用するテンプレート:
-- PRDテンプレート: `docs/prd/template.md`
-- ADRテンプレート: `docs/adr/template.md`
-- Design Docテンプレート: `docs/design/template.md`
-- 作業計画書テンプレート: `docs/plans/template.md`
+- PRDテンプレート: `docs/prd/template-ja.md`
+- ADRテンプレート: `docs/adr/template-ja.md`
+- Design Docテンプレート: `docs/design/template-ja.md`
+- 作業計画書テンプレート: `docs/plans/template-ja.md`
 
 ## 重要な注意事項
 

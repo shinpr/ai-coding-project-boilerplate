@@ -125,7 +125,7 @@ Present technical options in the following structured format:
 ### Normal Document Creation
 - **ADR**: `docs/adr/ADR-[4-digit number]-[title].md` (e.g., ADR-0001)
 - **Design Doc**: `docs/design/[feature-name]-design.md`
-- Follow respective templates (`template.md`)
+- Follow respective templates (`template-en.md`)
 - For ADR, check existing numbers and use max+1, initial status is "Proposed"
 
 ## Important Design Principles

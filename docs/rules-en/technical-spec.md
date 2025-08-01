@@ -61,7 +61,7 @@ Select appropriate DI patterns or DI libraries according to project scale and re
 #### About Work Plans
 - **Storage Location**: `docs/plans/` (excluded by .gitignore)
 - **Naming Convention**: `YYYYMMDD-{feature|fix|refactor}-{brief-description}.md`
-- **Template**: `docs/plans/template.md`
+- **Template**: `docs/plans/template-en.md`
 - **Operational Flow**: 
   1. Create when starting medium-scale or larger changes
   2. Update progress when each phase completes (checkboxes)

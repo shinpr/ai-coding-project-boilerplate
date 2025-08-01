@@ -80,10 +80,10 @@ Output in the following structured format:
 
 ### For Final Version
 PRD is created at `docs/prd/[feature-name]-prd.md`.
-Use template: `docs/prd/template.md`
+Use template: `docs/prd/template-en.md`
 
 ### PRD Creation Notes
-- Follow template (`docs/prd/template.md`)
+- Follow template (`docs/prd/template-en.md`)
 - Understand and document the intent of each section
 - Limit questions to 3-5 in interactive mode
 

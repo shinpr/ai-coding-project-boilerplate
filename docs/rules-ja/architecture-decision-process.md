@@ -67,7 +67,7 @@
 ### 3. ADR作成
 
 **実施内容**：
-- `docs/adr/template.md`を使用してADRを作成
+- `docs/adr/template-ja.md`を使用してADRを作成
 - 決定事項と根拠を明確に記述
 - 実装ガイドラインを含める
 

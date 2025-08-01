@@ -67,7 +67,7 @@ ADR creation is also recommended for:
 ### 3. ADR Creation
 
 **Implementation**:
-- Create ADR using `docs/adr/template.md`
+- Create ADR using `docs/adr/template-en.md`
 - Clearly describe decisions and rationale
 - Include implementation guidelines
 

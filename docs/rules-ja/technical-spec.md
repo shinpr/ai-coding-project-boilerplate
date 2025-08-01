@@ -61,7 +61,7 @@ TypeScriptをベースとしたアプリケーション開発。アーキテク�
 #### 作業計画書について
 - **保存場所**: `docs/plans/`（.gitignoreで除外）
 - **命名規則**: `YYYYMMDD-{feature|fix|refactor}-{brief-description}.md`
-- **テンプレート**: `docs/plans/template.md`
+- **テンプレート**: `docs/plans/template-ja.md`
 - **運用フロー**: 
   1. 中規模以上の変更開始時に作成
   2. 各フェーズ完了時に進捗更新（チェックボックス）

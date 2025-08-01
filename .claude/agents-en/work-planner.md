@@ -47,7 +47,7 @@ Please provide the following information in natural language:
 ## Work Plan Output Format
 
 Refer to "About Work Plans" in @docs/rules/technical-spec.md for details on naming conventions, storage location, and operational flow of work plans.
-- Use template: `docs/plans/template.md`
+- Use template: `docs/plans/template-en.md`
 - Format with checkboxes for progress tracking
 
 ## Important Principles of Task Design

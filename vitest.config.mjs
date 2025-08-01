@@ -9,23 +9,23 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    // プロセス管理の改善
-    testTimeout: 10000,        // 10秒でタイムアウト
-    hookTimeout: 10000,        // フック処理も10秒
-    teardownTimeout: 5000,     // 終了処理5秒
-    pool: 'threads',           // プロセスプールの明示
+    // Process management improvements
+    testTimeout: 10000,        // 10 second timeout
+    hookTimeout: 10000,        // Hook processing timeout 10 seconds
+    teardownTimeout: 5000,     // Teardown timeout 5 seconds
+    pool: 'threads',           // Explicit process pool specification
     poolOptions: {
       threads: {
-        singleThread: false,   // 並列実行許可
-        isolate: true,         // テスト間分離
+        singleThread: false,   // Allow parallel execution
+        isolate: true,         // Isolate between tests
       }
     },
     coverage: {
-      enabled: false,  // デフォルトではカバレッジを無効化
+      enabled: false,  // Disable coverage by default
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage',
-      clean: true,             // カバレッジファイルをクリアしてプロセス残留を防ぐ
+      clean: true,             // Clear coverage files to prevent process residue
       include: ['src/**/*.{js,ts,jsx,tsx}'],
       exclude: [
         'node_modules/**',
@@ -35,8 +35,8 @@ export default defineConfig({
         '**/mockData/**',
         '**/__mocks__/**',
       ],
-      // ボイラープレートとしてはカバレッジ閾値を設定しない
-      // 各プロジェクトで適切な値を設定してください
+      // No coverage thresholds set for boilerplate
+      // Set appropriate values for each project
     },
   },
   resolve: {

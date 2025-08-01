@@ -6,7 +6,7 @@ const path = require('path');
 const SUPPORTED_LANGUAGES = ['ja', 'en'];
 const CONFIG_FILE = '.claudelang';
 
-// 言語設定ファイルのパス定義
+// Language configuration file path definitions
 const LANGUAGE_PATHS = {
   claude: {
     source: (lang) => `CLAUDE.${lang}.md`,
@@ -32,14 +32,14 @@ const LANGUAGE_PATHS = {
 };
 
 /**
- * 設定ファイルを読み込む
+ * Load configuration file
  */
 function loadConfig() {
   try {
     const content = fs.readFileSync(CONFIG_FILE, 'utf8');
     return JSON.parse(content);
   } catch (error) {
-    // 設定ファイルが存在しない場合はデフォルト設定
+    // Default configuration if config file doesn't exist
     return {
       current: 'ja',
       method: 'copy',
@@ -49,21 +49,21 @@ function loadConfig() {
 }
 
 /**
- * 設定ファイルを保存する
+ * Save configuration file
  */
 function saveConfig(config) {
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
 }
 
 /**
- * ディレクトリを再帰的にコピーする
+ * Recursively copy directory
  */
 function copyDirectory(source, target) {
   if (!fs.existsSync(source)) {
     return false;
   }
 
-  // ターゲットディレクトリを作成
+  // Create target directory
   if (!fs.existsSync(target)) {
     fs.mkdirSync(target, { recursive: true });
   }
@@ -85,7 +85,7 @@ function copyDirectory(source, target) {
 }
 
 /**
- * ディレクトリを削除する
+ * Remove directory
  */
 function removeDirectory(dirPath) {
   if (fs.existsSync(dirPath)) {
@@ -94,14 +94,14 @@ function removeDirectory(dirPath) {
 }
 
 /**
- * ファイルをコピーする
+ * Copy file
  */
 function copyFile(source, target) {
   if (!fs.existsSync(source)) {
     return false;
   }
 
-  // ターゲットディレクトリを作成
+  // Create target directory
   const targetDir = path.dirname(target);
   if (!fs.existsSync(targetDir)) {
     fs.mkdirSync(targetDir, { recursive: true });
@@ -112,7 +112,7 @@ function copyFile(source, target) {
 }
 
 /**
- * 現在の言語を検出する
+ * Detect current language
  */
 function detectCurrentLanguage() {
   const config = loadConfig();
@@ -120,20 +120,20 @@ function detectCurrentLanguage() {
 }
 
 /**
- * 言語を切り替える
+ * Switch language
  */
 function switchLanguage(targetLang) {
   if (!SUPPORTED_LANGUAGES.includes(targetLang)) {
-    console.error(`❌ サポートされていない言語です: ${targetLang}`);
-    console.error(`   サポート言語: ${SUPPORTED_LANGUAGES.join(', ')}`);
+    console.error(`❌ Unsupported language: ${targetLang}`);
+    console.error(`   Supported languages: ${SUPPORTED_LANGUAGES.join(', ')}`);
     process.exit(1);
   }
 
-  console.log(`🌐 言語を ${targetLang} に切り替えています...`);
+  console.log(`🌐 Switching language to ${targetLang}...`);
 
   let hasErrors = false;
 
-  // 1. CLAUDE.md の切り替え
+  // 1. Switch CLAUDE.md
   const claudeSource = LANGUAGE_PATHS.claude.source(targetLang);
   const claudeTarget = LANGUAGE_PATHS.claude.target;
   
@@ -142,27 +142,27 @@ function switchLanguage(targetLang) {
       fs.unlinkSync(claudeTarget);
     }
     copyFile(claudeSource, claudeTarget);
-    console.log(`✅ ${claudeTarget} を更新しました`);
+    console.log(`✅ Updated ${claudeTarget}`);
   } else {
-    console.warn(`⚠️  ${claudeSource} が存在しません`);
+    console.warn(`⚠️  ${claudeSource} does not exist`);
     hasErrors = true;
   }
 
-  // 2. docs/rules の切り替え
+  // 2. Switch docs/rules
   const rulesSource = LANGUAGE_PATHS.rules.source(targetLang);
   const rulesTarget = LANGUAGE_PATHS.rules.target;
   
   if (fs.existsSync(rulesSource)) {
     removeDirectory(rulesTarget);
     copyDirectory(rulesSource, rulesTarget);
-    console.log(`✅ ${rulesTarget} を更新しました`);
+    console.log(`✅ Updated ${rulesTarget}`);
   } else {
-    console.warn(`⚠️  ${rulesSource} が存在しません`);
+    console.warn(`⚠️  ${rulesSource} does not exist`);
     hasErrors = true;
   }
 
 
-  // 3. docs/guides/sub-agents.md の切り替え
+  // 3. Switch docs/guides/sub-agents.md
   const guideSource = LANGUAGE_PATHS.guides.sourceFile(targetLang);
   const guideTarget = LANGUAGE_PATHS.guides.target;
   
@@ -171,32 +171,32 @@ function switchLanguage(targetLang) {
       fs.unlinkSync(guideTarget);
     }
     copyFile(guideSource, guideTarget);
-    console.log(`✅ ${guideTarget} を更新しました`);
+    console.log(`✅ Updated ${guideTarget}`);
   } else {
-    console.warn(`⚠️  ${guideSource} が存在しません`);
+    console.warn(`⚠️  ${guideSource} does not exist`);
   }
 
-  // 4. .claude/commands の切り替え（存在する場合のみ）
+  // 4. Switch .claude/commands (only if exists)
   const commandsSource = LANGUAGE_PATHS.commands.source(targetLang);
   const commandsTarget = LANGUAGE_PATHS.commands.target;
   
   if (fs.existsSync(commandsSource)) {
     removeDirectory(commandsTarget);
     copyDirectory(commandsSource, commandsTarget);
-    console.log(`✅ ${commandsTarget} を更新しました`);
+    console.log(`✅ Updated ${commandsTarget}`);
   }
 
-  // 5. .claude/agents の切り替え（存在する場合のみ）
+  // 5. Switch .claude/agents (only if exists)
   const agentsSource = LANGUAGE_PATHS.agents.source(targetLang);
   const agentsTarget = LANGUAGE_PATHS.agents.target;
   
   if (fs.existsSync(agentsSource)) {
     removeDirectory(agentsTarget);
     copyDirectory(agentsSource, agentsTarget);
-    console.log(`✅ ${agentsTarget} を更新しました`);
+    console.log(`✅ Updated ${agentsTarget}`);
   }
 
-  // 設定を保存
+  // Save configuration
   const config = {
     current: targetLang,
     method: 'copy',
@@ -205,27 +205,27 @@ function switchLanguage(targetLang) {
   saveConfig(config);
 
   if (hasErrors) {
-    console.log(`⚠️  言語を ${targetLang} に切り替えましたが、一部ファイルが不足しています`);
+    console.log(`⚠️  Language switched to ${targetLang}, but some files are missing`);
   } else {
-    console.log(`🎉 言語を ${targetLang} に切り替えました`);
+    console.log(`🎉 Successfully switched language to ${targetLang}`);
   }
 }
 
 /**
- * 現在の状態を表示する
+ * Show current status
  */
 function showStatus() {
   const config = loadConfig();
   
-  console.log('📊 多言語化設定の状態:');
-  console.log(`   現在の言語: ${config.current}`);
-  console.log(`   切り替え方式: ${config.method}`);
-  console.log(`   最終更新: ${config.lastUpdated || '未設定'}`);
+  console.log('📊 Multi-language configuration status:');
+  console.log(`   Current language: ${config.current}`);
+  console.log(`   Switch method: ${config.method}`);
+  console.log(`   Last updated: ${config.lastUpdated || 'Not set'}`);
   console.log();
   
-  console.log('📁 ファイル存在確認:');
+  console.log('📁 File existence check:');
   for (const lang of SUPPORTED_LANGUAGES) {
-    console.log(`\n  ${lang.toUpperCase()} 言語ファイル:`);
+    console.log(`\n  ${lang.toUpperCase()} language files:`);
     
     // CLAUDE.md
     const claudeFile = LANGUAGE_PATHS.claude.source(lang);
@@ -241,33 +241,33 @@ function showStatus() {
     
   }
   
-  console.log('\n📝 現在有効なファイル:');
+  console.log('\n📝 Currently active files:');
   console.log(`   CLAUDE.md: ${fs.existsSync('CLAUDE.md') ? '✅' : '❌'}`);
   console.log(`   docs/rules: ${fs.existsSync('docs/rules') ? '✅' : '❌'}`);
   console.log(`   docs/guides/sub-agents.md: ${fs.existsSync('docs/guides/sub-agents.md') ? '✅' : '❌'}`);
 }
 
 /**
- * ヘルプを表示する
+ * Show help
  */
 function showHelp() {
-  console.log('🌐 多言語化スクリプト');
+  console.log('🌐 Multi-language script');
   console.log();
-  console.log('使用方法:');
-  console.log('  node scripts/set-language.js <言語>');
+  console.log('Usage:');
+  console.log('  node scripts/set-language.js <language>');
   console.log('  node scripts/set-language.js --status');
   console.log('  node scripts/set-language.js --help');
   console.log();
-  console.log('利用可能言語:');
+  console.log('Available languages:');
   console.log(`  ${SUPPORTED_LANGUAGES.join(', ')}`);
   console.log();
-  console.log('例:');
-  console.log('  node scripts/set-language.js ja    # 日本語に切り替え');
-  console.log('  node scripts/set-language.js en    # 英語に切り替え');
-  console.log('  node scripts/set-language.js --status  # 現在の状態を確認');
+  console.log('Examples:');
+  console.log('  node scripts/set-language.js ja    # Switch to Japanese');
+  console.log('  node scripts/set-language.js en    # Switch to English');
+  console.log('  node scripts/set-language.js --status  # Check current status');
 }
 
-// メイン処理
+// Main processing
 function main() {
   const args = process.argv.slice(2);
 
@@ -290,7 +290,7 @@ function main() {
       if (SUPPORTED_LANGUAGES.includes(command)) {
         switchLanguage(command);
       } else {
-        console.error(`❌ 不明なコマンドまたは言語です: ${command}`);
+        console.error(`❌ Unknown command or language: ${command}`);
         showHelp();
         process.exit(1);
       }

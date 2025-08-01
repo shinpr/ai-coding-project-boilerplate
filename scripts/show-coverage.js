@@ -6,8 +6,8 @@ const path = require('path')
 const coverageFile = path.join(__dirname, '..', 'coverage', 'coverage-final.json')
 
 if (!fs.existsSync(coverageFile)) {
-  console.error('❌ カバレッジレポートが見つかりません。')
-  console.error('   先に npm run test:coverage を実行してください。')
+  console.error('❌ Coverage report not found.')
+  console.error('   Please run npm run test:coverage first.')
   process.exit(1)
 }
 
@@ -42,7 +42,7 @@ try {
   const functionsCoverage = totalFunctions > 0 ? ((coveredFunctions / totalFunctions) * 100).toFixed(2) : '0.00'
   const linesCoverage = totalLines > 0 ? ((coveredLines / totalLines) * 100).toFixed(2) : '0.00'
 
-  console.log('\n📊 テストカバレッジサマリー')
+  console.log('\n📊 Test Coverage Summary')
   console.log('═══════════════════════════════════════')
   console.log(`  Statements : ${statementsCoverage.padStart(6)}% (${coveredStatements}/${totalStatements})`)
   console.log(`  Branches   : ${branchesCoverage.padStart(6)}% (${coveredBranches}/${totalBranches})`)
@@ -50,7 +50,7 @@ try {
   console.log(`  Lines      : ${linesCoverage.padStart(6)}% (${coveredLines}/${totalLines})`)
   console.log('═══════════════════════════════════════')
 
-  // 80%の目標に対する判定
+  // Assessment against 80% target
   const allMetrics = [
     parseFloat(statementsCoverage),
     parseFloat(branchesCoverage),
@@ -61,14 +61,14 @@ try {
   const failedMetrics = allMetrics.filter(metric => metric < 80).length
 
   if (failedMetrics === 0) {
-    console.log('\n✅ すべての指標が目標の80%を達成しています！')
+    console.log('\n✅ All metrics achieved the 80% target!')
   } else {
-    console.log('\n⚠️  目標の80%に達していない指標があります。')
-    console.log('   詳細は coverage/index.html を確認してください。')
+    console.log('\n⚠️  Some metrics have not reached the 80% target.')
+    console.log('   Please check coverage/index.html for details.')
   }
   console.log()
 
 } catch (error) {
-  console.error('❌ カバレッジレポートの読み込みに失敗しました:', error.message)
+  console.error('❌ Failed to read coverage report:', error.message)
   process.exit(1)
 }

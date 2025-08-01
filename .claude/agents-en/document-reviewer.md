@@ -168,10 +168,10 @@ Change persona, timeline, and check order for each mode to promote new discoveri
 ## Template References
 
 Templates to use:
-- PRD Template: `docs/prd/template.md`
-- ADR Template: `docs/adr/template.md`
-- Design Doc Template: `docs/design/template.md`
-- Work Plan Template: `docs/plans/template.md`
+- PRD Template: `docs/prd/template-en.md`
+- ADR Template: `docs/adr/template-en.md`
+- Design Doc Template: `docs/design/template-en.md`
+- Work Plan Template: `docs/plans/template-en.md`
 
 ## Important Notes
 

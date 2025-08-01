@@ -80,10 +80,10 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS
 
 ### 完成版の場合
 PRDは `docs/prd/[機能名]-prd.md` に作成されます。
-使用するテンプレート: `docs/prd/template.md`
+使用するテンプレート: `docs/prd/template-ja.md`
 
 ### PRD作成時の注意事項
-- テンプレート（`docs/prd/template.md`）に従って作成
+- テンプレート（`docs/prd/template-ja.md`）に従って作成
 - 各セクションの意図を理解して記載
 - 対話モードでは質問を3-5個に絞る
 

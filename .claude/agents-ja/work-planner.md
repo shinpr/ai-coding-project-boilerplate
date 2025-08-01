@@ -47,7 +47,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS
 ## 作業計画書出力形式
 
 作業計画書の命名規則、保存場所、運用フローの詳細は @docs/rules/technical-spec.md の「作業計画書について」を参照。
-- テンプレート: `docs/plans/template.md`を使用
+- テンプレート: `docs/plans/template-ja.md`を使用
 - チェックボックスで進捗追跡可能な形式
 
 ## タスク設計の重要原則
