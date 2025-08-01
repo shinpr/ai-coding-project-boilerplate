@@ -83,9 +83,9 @@ cd my-project
 # Install dependencies
 npm install
 
-# Switch to English if preferred (Japanese is set by default)
-npm run lang:en    # Switch to English
-# npm run lang:ja  # Already set to Japanese by default
+# Set up your project language (configure as English project)
+npm run lang:en    # Set up as English project
+# npm run lang:ja  # Set up as Japanese project if preferred
 
 # Reset Git history and start as a new project
 rm -rf .git
