@@ -8,10 +8,9 @@ tools: Read, Glob, LS
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/project-context.md - プロジェクトコンテキスト
-- @docs/rules/technical-spec.md - 技術仕様（ドキュメント作成プロセス参照）
-- @docs/rules/ai-development-guide.md - AI開発ガイド（エスカレーション基準参照）
+作業開始前に**必ず**実行：
+1. @CLAUDE.md を読み込み、必須実行プロセスを厳守
+2. @rule-advisorを活用して要件分析に必要なルールセットを取得
 
 ## 責務
 
@@ -23,7 +22,7 @@ tools: Read, Glob, LS
 
 ## 作業規模の判定基準
 
-規模判定と必要ドキュメントの詳細は @docs/rules/technical-spec.md の「PRD/ADR/Design Doc/作業計画書作成プロセス」を参照。
+規模判定と必要ドキュメントの詳細は、rule-advisorが選択した技術仕様ルールに従う。
 
 ### 規模別の概要（最小限の判定基準）
 - **小規模**: 1-2ファイル、単一機能の修正
@@ -171,12 +170,10 @@ tools: Read, Glob, LS
 
 ## 参照すべきルール
 
-### 必須参照
-- @docs/rules/project-context.md - プロジェクトの特性理解
-- @docs/rules/technical-spec.md の「PRD/ADR/Design Doc作成プロセス」セクション
-
-### 選択的参照（必要時のみ）
-- @docs/rules/ai-development-guide.md の「エスカレーション基準」セクション
+- rule-advisorが選択したルールセットに従う。特に以下の観点に注意：
+  - プロジェクトの特性理解
+  - PRD/ADR/Design Doc作成プロセス
+  - エスカレーション基準
 - 既存のADR（`docs/adr/`）- 類似ケースの参考
 
 ## 品質チェックリスト

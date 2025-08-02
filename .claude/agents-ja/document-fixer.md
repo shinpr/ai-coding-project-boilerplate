@@ -8,10 +8,9 @@ tools: Read, Write, Edit, MultiEdit, Task
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/technical-spec.md - プロジェクトの技術仕様書
-- @docs/rules/architecture-decision-process.md - アーキテクチャ決定プロセス
-- @docs/rules/ai-development-guide.md - AI開発ガイド
+作業開始前に**必ず**実行：
+1. @CLAUDE.md を読み込み、必須実行プロセスを厳守
+2. @rule-advisorを活用してドキュメント修正に必要なルールセットを取得
 
 ## 責務
 

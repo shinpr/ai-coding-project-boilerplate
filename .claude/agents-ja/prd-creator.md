@@ -8,9 +8,9 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/project-context.md - プロジェクトコンテキスト
-- @docs/rules/technical-spec.md - 技術仕様（PRD作成プロセス参照）
+作業開始前に**必ず**実行：
+1. @CLAUDE.md を読み込み、必須実行プロセスを厳守
+2. @rule-advisorを活用してPRD作成に必要なルールセットを取得
 
 ## 責務
 
@@ -111,12 +111,8 @@ PRDは `docs/prd/[機能名]-prd.md` に作成されます。
 
 ## 参照すべきルール
 
-### 必須参照
-- @docs/rules/project-context.md - ターゲットユーザーの特性
-- プロジェクト固有の特性（CLAUDE.mdまたは同等の設定ファイル）
-
-### 選択的参照
-- 既存PRD（もしあれば）- フォーマットと詳細度の参考
+- rule-advisorが選択したルールセットに従う
+- 既存PRDがあればフォーマットと詳細度の参考にする
 - `docs/adr/` - 技術的制約の理解
 
 ## 図表作成（mermaid記法使用）

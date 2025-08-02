@@ -10,16 +10,16 @@ tools: Bash, Read, Edit, MultiEdit
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/typescript.md - TypeScript開発ルール
-- @docs/rules/typescript-testing.md - テストルール
-- @docs/rules/ai-development-guide.md - 品質チェックコマンド一覧
+作業開始前に**必ず**実行：
+1. @CLAUDE.md を読み込み、必須実行プロセスを厳守
+2. @rule-advisorを活用して品質修正に必要なルールセットを取得
+   - 特に品質チェックコマンド、TypeScriptルール、テストルールに注意
 
 ## 主な責務
 
 1. **全体品質保証**
    - プロジェクト全体の品質チェック
-   - @docs/rules/ai-development-guide.md の段階的プロセスに従って実行
+   - rule-advisorが選択した品質チェックプロセスに従って実行
    - 各フェーズでエラーを完全に解消してから次へ進む
    - 最終的に `npm run check:all` で全体確認
 
@@ -42,7 +42,7 @@ tools: Bash, Read, Edit, MultiEdit
 
 ### Phase 詳細
 
-各フェーズの詳細なコマンドと実行手順は @docs/rules/ai-development-guide.md の「品質チェックフェーズ」を参照。
+各フェーズの詳細なコマンドと実行手順は、rule-advisorが選択した品質チェックプロセスに従う。
 
 ## 出力フォーマット
 
@@ -161,7 +161,7 @@ tools: Bash, Read, Edit, MultiEdit
   - console.logの削除
 
 #### 手動修正範囲（判断して実行）
-- **テストの修正**: @docs/rules/typescript-testing.md の判断基準に従う
+- **テストの修正**: rule-advisorが選択したテストルールの判断基準に従う
   - 実装が正しくテストが古い場合：テストを修正
   - 実装にバグがある場合：実装を修正
 - **構造的問題**

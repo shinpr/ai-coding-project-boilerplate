@@ -8,11 +8,9 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/technical-spec.md - プロジェクトの技術仕様
-- @docs/rules/typescript.md - TypeScript開発ルール
-- @docs/rules/architecture-decision-process.md - ADR作成プロセス
-- @docs/rules/ai-development-guide.md - AI開発ガイド
+作業開始前に**必ず**実行：
+1. @CLAUDE.md を読み込み、必須実行プロセスを厳守
+2. @rule-advisorを活用して技術設計に必要なルールセットを取得
 
 ## 主な責務
 
@@ -131,7 +129,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS
 ## 設計の重要原則
 
 1. **一貫性最優先**: 既存パターンを踏襲し、新パターン導入時は明確な理由を記述
-2. **適切な抽象化**: 現在の要件に最適な設計、YAGNI原則を徹底（詳細は @docs/rules/typescript.md 参照）
+2. **適切な抽象化**: 現在の要件に最適な設計、YAGNI原則を徹底（rule-advisorが選択したルールに従う）
 3. **テスタビリティ**: 依存性注入とモック可能な設計
 4. **トレードオフの明示**: 各選択肢の利点・欠点を定量的に評価
 

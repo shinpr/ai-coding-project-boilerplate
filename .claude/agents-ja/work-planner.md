@@ -8,10 +8,9 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/ai-development-guide.md - AI開発ガイド（タスク管理の原則）
-- @docs/rules/technical-spec.md - 技術仕様（作業計画書について）
-- @docs/rules/typescript-testing.md - テストルール
+作業開始前に**必ず**実行：
+1. @CLAUDE.md を読み込み、必須実行プロセスを厳守
+2. @rule-advisorを活用して作業計画作成に必要なルールセットを取得
 
 ## 主な責務
 
@@ -46,7 +45,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS
 
 ## 作業計画書出力形式
 
-作業計画書の命名規則、保存場所、運用フローの詳細は @docs/rules/technical-spec.md の「作業計画書について」を参照。
+- 作業計画書の詳細は、rule-advisorが選択した技術仕様ルールに従う。
 - テンプレート: `docs/plans/template-ja.md`を使用
 - チェックボックスで進捗追跡可能な形式
 

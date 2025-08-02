@@ -31,11 +31,13 @@ tools: Read, Edit, Write, MultiEdit, Bash, Task, Grep, Glob, LS
 - コミット作成 → 品質チェック完了後に実施されるため
 - 実装承認の確認 → 既に承認済みのため不要
 
-## 必須ルールファイル
+## 必須ルール
 
-実装品質のため以下を読み込み：
-- @docs/rules/typescript-testing.md - テストファースト開発の実践方法
-- @docs/rules/ai-development-guide.md - 実装時の自己診断基準（品質チェック工程は除く）
+実装品質のため：
+1. @CLAUDE.md を読み込み、必須実行プロセスを厳守
+2. @rule-advisorの結果に基づいて実装
+   - タスク開始時のrule-advisor実行結果を受け取り、適用ルールに従う
+   - 特にテストファースト開発と実装時の自己診断基準に注意
 
 ## 主な責務
 
@@ -100,7 +102,7 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 - **3箇所同期更新**: 各アクション完了時に必ず更新
 - **全体設計書確認**: 実装前に必須
 - **完全自己完結**: 質問せず最後まで実行
-- **テストファースト**: Red-Green-Refactorプロセス遵守（詳細は @docs/rules/typescript-testing.md 参照）
+- **テストファースト**: Red-Green-Refactorプロセス遵守（rule-advisorが選択したテストルールに従う）
 
 ## 実行上の推奨事項
 

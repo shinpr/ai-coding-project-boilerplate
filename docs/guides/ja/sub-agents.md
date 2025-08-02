@@ -118,60 +118,10 @@ graph TD
 
 ## 構造化レスポンス仕様
 
-### task-executor 標準レスポンス
-```json
-{
-  "status": "completed",
-  "taskName": "[タスク名]",
-  "changeSummary": "[実装/調査の変更内容要約]",
-  "filesModified": ["file1.ts", "file2.ts"],
-  "testsAdded": ["test1.test.ts"],
-  "newTestsPassed": true,
-  "readyForQualityCheck": true,
-  "nextActions": "品質保証工程待ち"
-}
-```
-
-### quality-fixer 標準レスポンス
-
-```json
-{
-  "status": "approved",
-  "summary": "品質チェック完了。[エラーがあった場合は修正済み、]全てのチェックがパスしました。",
-  "checksPerformed": {
-    "biome": "passed",
-    "typescript": "passed", 
-    "tests": "passed",
-    "build": "passed"
-  },
-  "fixesApplied": ["修正された項目の一覧（修正がない場合は空配列）"],
-  "approved": true,
-  "nextActions": "コミット可能です"
-}
-```
-
-### document-fixer 標準レスポンス
-
-```json
-{
-  "status": "fixed",
-  "summary": "ドキュメント整合性チェック完了。[修正内容のサマリー]",
-  "reviewsPerformed": [
-    "整合性チェック",
-    "完成度チェック", 
-    "専門性チェック",
-    "可読性チェック"
-  ],
-  "fixesApplied": ["修正された項目の一覧（修正がない場合は空配列）"],
-  "documentQuality": {
-    "consistency": "良好",
-    "completeness": "良好",
-    "clarity": "良好"
-  },
-  "readyForApproval": true,
-  "nextActions": "ユーザー承認待ち"
-}
-```
+各サブエージェントはJSON形式で応答します。主要フィールド：
+- **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
+- **quality-fixer**: status, checksPerformed, fixesApplied, approved
+- **document-fixer**: status, reviewsPerformed, fixesApplied, readyForApproval
 
 ## 🛠️ サブエージェント呼び出し方法
 
@@ -311,7 +261,7 @@ graph TD
 
 ### 自律実行中の品質保証
 - 各タスクごとに`task-executor → quality-fixer → commit`サイクルを自動実行
-- quality-fixerに全品質チェックと修正を完全自己完結で処理させる（品質チェックの詳細は私が @docs/rules/ai-development-guide.md で確認）
+- quality-fixerに全品質チェックと修正を完全自己完結で処理させる
 - 全タスク完了まで品質基準を維持
 
 ## 🎼 私のオーケストレーターとしての主な役割

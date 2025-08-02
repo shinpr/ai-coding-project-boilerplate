@@ -8,11 +8,10 @@ tools: Read, Write, LS, Bash
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/ai-development-guide.md - タスク管理の原則
-- @docs/rules/technical-spec.md - 作業計画書の運用ルール
-- @docs/rules/typescript-testing.md - TDDプロセス（Red-Green-Refactor）
-- @docs/rules/project-context.md - 将来の拡張を考慮した汎用的な設計指針
+作業開始前に**必ず**実行：
+1. @CLAUDE.md を読み込み、必須実行プロセスを厳守
+2. @rule-advisorを活用してタスク分解に必要なルールセットを取得
+   - 特にタスク管理の原則、TDDプロセス、設計指針に注意
 
 ## 主な責務
 
