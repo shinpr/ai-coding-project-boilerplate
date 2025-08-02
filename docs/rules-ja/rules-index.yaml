@@ -1,0 +1,103 @@
+# 各ルールファイルのメタデータ
+# 各ルールの概要、タグ、典型的な使用場面、サイズを管理
+
+rules:
+  typescript:
+    file: "typescript.md"
+    tags: [implementation, type-safety, async, refactoring, coding-style]
+    typical-use: "TypeScriptコードの作成・修正・リファクタリング"
+    size: medium
+    sections:
+      - "基本原則"
+      - "型システムの活用"
+      - "コーディング規約"
+      - "エラーハンドリング"
+      - "リファクタリング手法"
+      - "パフォーマンス最適化"
+
+  typescript-testing:
+    file: "typescript-testing.md"
+    tags: [quality, testing, tdd, coverage, vitest]
+    typical-use: "テスト作成、TDD実践、品質保証"
+    size: medium
+    sections:
+      - "テストの基本方針"
+      - "テストの設計原則"
+      - "Red-Green-Refactorプロセス"
+      - "テストヘルパーの活用ルール"
+      - "テストの実装規約"
+
+  ai-development-guide:
+    file: "ai-development-guide.md"
+    tags: [process, workflow, quality-check, debugging, best-practices]
+    typical-use: "開発プロセス全般、品質チェック手順、デバッグ"
+    size: large
+    sections:
+      - "実装前必須チェックリスト"
+      - "実装中の自己診断トリガー"
+      - "赤信号パターン"
+      - "エスカレーション基準"
+      - "品質チェック（実装完了時必須）"
+      - "デバッグフロー"
+
+  technical-spec:
+    file: "technical-spec.md"
+    tags: [architecture, design, documentation, environment, data-flow]
+    typical-use: "技術設計、環境設定、ドキュメント作成プロセス"
+    size: medium
+    sections:
+      - "環境変数管理とセキュリティ"
+      - "アーキテクチャ設計"
+      - "設計ドキュメントとプロセス"
+      - "データフロー統一原則"
+      - "ビルドとテスト"
+
+  project-context:
+    file: "project-context.md"
+    tags: [context, project-specific]
+    typical-use: "プロジェクト固有情報"
+    size: small
+    sections:
+      - "基本設定"
+      - "開発原則"
+
+  architecture-decision-process:
+    file: "architecture-decision-process.md"
+    tags: [architecture, decision-making, adr, process, large-scale]
+    typical-use: "大規模変更、アーキテクチャ決定、ADR作成"
+    size: medium
+    sections:
+      - "アーキテクチャ決定が必要なケース"
+      - "プロセスの流れ"
+      - "ADRのステータス管理"
+      - "Design Documentとの使い分け"
+
+  canonical-phrases:
+    file: "canonical-phrases.md"
+    tags: [consistency, terminology, decision-trees, clarity]
+    typical-use: "用語統一、曖昧性排除、決定基準の明確化"
+    size: small
+    sections:
+      - "標準化された用語"
+      - "曖昧な用語の置き換え"
+      - "条件ロジックの標準化"
+
+  vertical-slice-architecture:
+    file: "architecture/vertical-slice/rules.md"
+    tags: [architecture, vertical-slice, llm-optimized, single-file]
+    typical-use: "Vertical Slice Architecture採用時"
+    size: medium
+    sections:
+      - "基本原則"
+      - "実装ガイドライン"
+      - "ディレクトリ構造"
+
+  hybrid-progressive-architecture:
+    file: "architecture/hybrid-progressive/rules.md"
+    tags: [architecture, scalable, progressive, layered]
+    typical-use: "段階的に成長するプロジェクト"
+    size: medium
+    sections:
+      - "基本原則"
+      - "進化の段階"
+      - "移行ガイドライン"
