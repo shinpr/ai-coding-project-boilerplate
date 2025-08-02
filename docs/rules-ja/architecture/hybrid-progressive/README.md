@@ -238,7 +238,7 @@ export async function createTodo(title: string, userId: string) {
 
 ### エスカレーション基準
 以下の場合はユーザーに確認：
-- Stageの移行を検訍する時
-- 5ファイル以上に影響するリファクタリング
+- Stageの移行を検討する時
+- 当初想定範囲の明らかな超過
 - アーキテクチャレベルの変更
 - 新しい依存関係の追加

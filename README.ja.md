@@ -273,14 +273,13 @@ graph TD
 - ❌ **避けるべき**: コメントアウト（バージョン管理で履歴管理）
 - ✅ **推奨**: YAGNI原則（現在必要な機能のみ実装）
 
-### 7つのルールファイル
+### 6つのルールファイル
 1. **technical-spec.md**: 技術仕様・アーキテクチャ設計
 2. **typescript.md**: TypeScript開発ルール（パフォーマンス最適化を含む）
 3. **typescript-testing.md**: テストルール・Vitestの活用
 4. **project-context.md**: プロジェクトコンテキスト（テンプレート）
 5. **ai-development-guide.md**: AI開発者向け実装ガイド
 6. **architecture-decision-process.md**: ADR作成・運用プロセス
-7. **canonical-phrases.md**: 明確性のための標準化された用語と決定基準
 
 ## 🧪 テスト
 

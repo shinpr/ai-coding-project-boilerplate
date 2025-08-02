@@ -43,3 +43,8 @@
 - 5ファイル以上の変更時はADR作成を提案
 - 既存ADRを必ず確認してから実装
 - 緊急時（本番障害、セキュリティ脆弱性）は事後ADR作成可
+
+## 参照した手法・原則
+- **ADR手法**: Michael Nygard「Documenting Architecture Decisions」（2011）
+- **Design Doc文化**: Google Engineering Practices Documentation
+- **トレードオフ分析**: Software Architecture in Practice（Bass, Clements, Kazman）
