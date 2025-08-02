@@ -25,6 +25,10 @@ AI実行精度最大化のための中核ルール。全ての指示はこのフ
 ### TodoWriteとメタ認知の統合
 **実行ルール**：
 - `pending → in_progress`時: rule-advisorの出力が必須
+- **rule-advisor実行後**: 必ずTodoWriteを更新（タスク内容・優先度・分解粒度の見直し）
+  - taskEssenceに基づいてタスク説明を具体化
+  - firstActionGuidanceを最初のタスクに反映
+  - warningPatternsを考慮してタスクを再構成
 - TodoWriteなしでEditツール使用: ルール違反として停止
 - 各タスクのステータス更新時: 実施内容の記録を必須化（空白不可）
 
@@ -63,24 +67,6 @@ AI実行精度最大化のための中核ルール。全ての指示はこのフ
    - 推奨されたツールから開始
    - 計画的に進める
 
-### rule-advisor出力例
-
-**タスク：「型エラーを修正して」**
-```json
-{
-  "taskEssence": "型安全性の確保（エラー消しではない）",
-  "applicableRules": [
-    "@docs/rules-ja/typescript.md#型システムの活用",
-    "@docs/rules-ja/typescript.md#any型使用ガイドライン"
-  ],
-  "pastFailurePatterns": [
-    "any型での握りつぶし → 実行時エラー",
-    "型アサーション多用 → 型安全性の破壊"
-  ],
-  "firstAction": "Read tool: エラー発生箇所の型定義確認"
-}
-```
-
 ## Claude行動制御（失敗防止）
 
 ### 自動停止トリガー（必ず停止）
@@ -115,20 +101,37 @@ AI実行精度最大化のための中核ルール。全ての指示はこのフ
 ### 一時ファイル作成ルール
 作業中ファイルは`tmp/`ディレクトリ使用。完了時削除。
 
+### 専門エージェント積極活用（PROACTIVELY）
+- **品質関連キーワード検出時**: quality-fixer必須実行
+  - 型エラー、ビルドエラー、lintエラー、フォーマット警告
+  - テスト失敗、品質チェック、検証タスク
+- **タスク開始時**: rule-advisor必須実行
+  - TodoWrite作成前に実行し、結果を反映
+
 ## rule-advisor使用法
 
 ### 実行方法
 ```
-Task tool使用:
-subagent_type: rule-advisor
-prompt: "タスク: [具体的内容]
-コンテキスト: [状況]
-適切なルールセットを選択してください。"
+Task(
+  subagent_type="rule-advisor",
+  description="品質チェック用ルール選択",
+  prompt="@rule-advisor タスク: 品質チェック・エラー修正 コンテキスト: [プロジェクト詳細とエラー内容] 適切なルールセットを選択してください。"
+)
 ```
 
 ### 出力の活用
-1. **taskType**: タスク複雑度確認
-2. **applicableRules**: 指定ルールのみ読み込み
-3. **criticalPoints**: 絶対守るべき事項
-4. **metaCognitiveQuestions**: 追加質問
-5. **pastFailurePatterns**: 注意事項
+出力にはセクション内容が含まれるため、具体的なルールを直接参照可能：
+```json
+{
+  "selectedRules": [{
+    "sections": [{
+      "title": "型システムの活用",
+      "content": "実際のルール内容が含まれる"
+    }]
+  }],
+  "mandatoryChecks": {
+    "taskEssence": "型安全性の確保（エラー消しではない）",
+    "firstStep": "具体的な初動アクション"
+  }
+}
+```

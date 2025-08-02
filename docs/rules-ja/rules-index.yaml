@@ -21,8 +21,8 @@ rules:
 
   typescript-testing:
     file: "typescript-testing.md"
-    tags: [quality, testing, tdd, coverage, vitest]
-    typical-use: "テスト作成、TDD実践、品質チェック"
+    tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring]
+    typical-use: "テスト作成、TDD実践、品質チェック、実装・修正時のテストファースト"
     size: medium
     key-references:
       - "Test-Driven Development - Kent Beck"
@@ -37,8 +37,8 @@ rules:
 
   ai-development-guide:
     file: "ai-development-guide.md"
-    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three]
-    typical-use: "技術的判断基準、アンチパターン検出、デバッグ手法、品質チェックコマンド"
+    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring]
+    typical-use: "技術的判断基準、アンチパターン検出、デバッグ手法、品質チェックコマンド、実装時の失敗回避"
     size: medium
     key-references:
       - "Rule of Three - Martin Fowler"
@@ -55,8 +55,8 @@ rules:
 
   technical-spec:
     file: "technical-spec.md"
-    tags: [architecture, design, documentation, environment, data-flow]
-    typical-use: "技術設計、環境設定、ドキュメント作成プロセス"
+    tags: [architecture, design, documentation, environment, data-flow, implementation]
+    typical-use: "技術設計、環境設定、ドキュメント作成プロセス、実装方針決定"
     size: medium
     key-references:
       - "ADRフォーマット - Michael Nygard"
@@ -70,8 +70,8 @@ rules:
 
   project-context:
     file: "project-context.md"
-    tags: [context, project-specific]
-    typical-use: "プロジェクト固有情報"
+    tags: [context, project-specific, implementation]
+    typical-use: "プロジェクト固有情報、実装原則の理解"
     size: small
     key-references:
       - "プロジェクト固有（経験則）"
@@ -98,8 +98,8 @@ rules:
 
   vertical-slice-architecture:
     file: "architecture/vertical-slice/rules.md"
-    tags: [architecture, vertical-slice, llm-optimized, single-file]
-    typical-use: "Vertical Slice Architecture採用時"
+    tags: [architecture, vertical-slice, llm-optimized, single-file, implementation]
+    typical-use: "Vertical Slice Architecture採用時、機能実装"
     size: medium
     key-references:
       - "Vertical Slice Architecture - Jimmy Bogard"
@@ -116,8 +116,8 @@ rules:
 
   hybrid-progressive-architecture:
     file: "architecture/hybrid-progressive/rules.md"
-    tags: [architecture, scalable, progressive, layered]
-    typical-use: "段階的に成長するプロジェクト"
+    tags: [architecture, scalable, progressive, layered, implementation]
+    typical-use: "段階的に成長するプロジェクト、実装ルール適用"
     size: medium
     key-references:
       - "Evolutionary Architecture - Neal Ford"
