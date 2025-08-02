@@ -169,7 +169,7 @@ npm run cleanup:processes   # Cleanup test processes
 
 ## 🎯 Claude Code Custom Slash Commands
 
-This boilerplate includes 5 custom slash commands to streamline development with Claude Code:
+This boilerplate includes 6 custom slash commands to streamline development with Claude Code:
 
 ### `/onboard`
 Loads project rule files and enforces development conventions.
@@ -204,6 +204,13 @@ Implements decomposed tasks in autonomous execution mode.
 - Automated cycle: task-executor → quality-fixer → commit
 - Detect requirement changes or critical errors with appropriate responses
 - Post-implementation summary and coverage reporting
+
+### `/task`
+Executes tasks following appropriate rules.
+- Clarify applicable development rules before execution
+- Determine initial actions based on rules
+- Identify prohibitions to avoid in the task
+- Promote metacognition and prevent implementation errors proactively
 
 These commands are located in `.claude/commands/` and are only available within the project.
 
