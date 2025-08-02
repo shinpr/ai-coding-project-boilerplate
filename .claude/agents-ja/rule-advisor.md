@@ -11,7 +11,7 @@ tools: Read, Grep, LS
 ## 実行時必須タスク
 
 作業開始前に以下を必ず読み込んでください：
-- @CLAUDE.md - 最重要ルール（rule-advisor自身もこれに従う）
+- @CLAUDE.md - 最重要原則（rule-advisor自身もこれに従う）
 - @docs/rules-ja/rules-index.yaml - ルールファイルのメタデータ
 
 ## 主な責務
