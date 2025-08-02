@@ -9,7 +9,8 @@ rules:
     size: medium
     sections:
       - "基本原則"
-      - "型システムの活用"
+      - "コメント記述ルール"
+      - "型安全性"
       - "コーディング規約"
       - "エラーハンドリング"
       - "リファクタリング手法"
@@ -21,11 +22,12 @@ rules:
     typical-use: "テスト作成、TDD実践、品質チェック"
     size: medium
     sections:
+      - "テストフレームワーク"
       - "テストの基本方針"
       - "テストの設計原則"
-      - "Red-Green-Refactorプロセス"
       - "テストヘルパーの活用ルール"
       - "テストの実装規約"
+      - "Vitestの基本例"
 
   ai-development-guide:
     file: "ai-development-guide.md"
@@ -35,10 +37,15 @@ rules:
     sections:
       - "実装前必須チェックリスト"
       - "実装中の自己診断トリガー"
-      - "赤信号パターン"
-      - "エスカレーション基準"
-      - "品質チェック（実装完了時必須）"
+      - "赤信号パターン（即座に停止すべき状況）"
+      - "Rule of Three（重複の闾値）"
+      - "よくある失敗パターンと回避方法"
+      - "エスカレーション基準（必ずユーザーに確認）"
+      - "指示の優先順位"
+      - "ワークフロー注意点"
       - "デバッグフロー"
+      - "品質チェック（実装完了時必須）"
+      - "チートシート"
 
   technical-spec:
     file: "technical-spec.md"
@@ -46,10 +53,11 @@ rules:
     typical-use: "技術設計、環境設定、ドキュメント作成プロセス"
     size: medium
     sections:
+      - "技術スタックの基本方針"
       - "環境変数管理とセキュリティ"
       - "アーキテクチャ設計"
+      - "依存性注入（DI）パターン"
       - "設計ドキュメントとプロセス"
-      - "データフロー統一原則"
       - "ビルドとテスト"
 
   project-context:
@@ -60,6 +68,7 @@ rules:
     sections:
       - "基本設定"
       - "実装原則"
+      - "カスタマイズガイド"
 
   architecture-decision-process:
     file: "architecture-decision-process.md"
@@ -67,10 +76,12 @@ rules:
     typical-use: "大規模変更、アーキテクチャ決定、ADR作成"
     size: medium
     sections:
-      - "アーキテクチャ決定が必要なケース"
-      - "プロセスの流れ"
-      - "ADRのステータス管理"
-      - "Design Documentとの使い分け"
+      - "目的"
+      - "ADR作成が必要なケース"
+      - "ADR作成プロセス"
+      - "ADRステータス"
+      - "ADRとDesign Docの使い分け"
+      - "AI利用時のルール"
 
   vertical-slice-architecture:
     file: "architecture/vertical-slice/rules.md"
@@ -78,9 +89,14 @@ rules:
     typical-use: "Vertical Slice Architecture採用時"
     size: medium
     sections:
-      - "基本原則"
+      - "コア実装ルール"
       - "実装ガイドライン"
-      - "ディレクトリ構造"
+      - "共通化の判断基準"
+      - "LLM向け実装チェックリスト"
+      - "アンチパターン"
+      - "ベストプラクティス"
+      - "LLM向け実装指針"
+      - "まとめ"
 
   hybrid-progressive-architecture:
     file: "architecture/hybrid-progressive/rules.md"
@@ -89,5 +105,10 @@ rules:
     size: medium
     sections:
       - "基本原則"
-      - "進化の段階"
-      - "移行ガイドライン"
+      - "Stage別実装ルール"
+      - "移行ルール"
+      - "判断フローチャート"
+      - "コーディング規約"
+      - "品質管理"
+      - "LLM向け実装指針"
+      - "まとめ"
