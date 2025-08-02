@@ -18,7 +18,7 @@ rules:
   typescript-testing:
     file: "typescript-testing.md"
     tags: [quality, testing, tdd, coverage, vitest]
-    typical-use: "テスト作成、TDD実践、品質保証"
+    typical-use: "テスト作成、TDD実践、品質チェック"
     size: medium
     sections:
       - "テストの基本方針"
@@ -30,7 +30,7 @@ rules:
   ai-development-guide:
     file: "ai-development-guide.md"
     tags: [process, workflow, quality-check, debugging, best-practices]
-    typical-use: "開発プロセス全般、品質チェック手順、デバッグ"
+    typical-use: "実装プロセス全般、品質チェック手順、デバッグ"
     size: large
     sections:
       - "実装前必須チェックリスト"
@@ -59,7 +59,7 @@ rules:
     size: small
     sections:
       - "基本設定"
-      - "開発原則"
+      - "実装原則"
 
   architecture-decision-process:
     file: "architecture-decision-process.md"
@@ -71,16 +71,6 @@ rules:
       - "プロセスの流れ"
       - "ADRのステータス管理"
       - "Design Documentとの使い分け"
-
-  canonical-phrases:
-    file: "canonical-phrases.md"
-    tags: [consistency, terminology, decision-trees, clarity]
-    typical-use: "用語統一、曖昧性排除、決定基準の明確化"
-    size: small
-    sections:
-      - "標準化された用語"
-      - "曖昧な用語の置き換え"
-      - "条件ロジックの標準化"
 
   vertical-slice-architecture:
     file: "architecture/vertical-slice/rules.md"
