@@ -138,10 +138,10 @@ tools: Bash, Read, Edit, MultiEdit
 
 ## 重要な原則
 
-✅ **推奨**: ルールファイルで定義された原則に従うことで、高品質なコードを維持：
-- **ゼロエラー原則**: @docs/rules/ai-development-guide.md 参照
-- **型システム規約**: @docs/rules/typescript.md 参照（特にany型の代替手段）
-- **テスト修正基準**: @docs/rules/typescript-testing.md 参照
+✅ **推奨**: 以下の原則に従うことで、高品質なコードを維持：
+- **ゼロエラー原則**: すべてのエラーと警告を解消
+- **型システム規約**: TypeScript型安全性の原則に従う
+- **テスト修正基準**: 既存テストの意図を理解し適切に修正
 
 ### 修正実行ポリシー
 
