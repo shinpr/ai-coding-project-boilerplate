@@ -7,24 +7,20 @@ This document defines the project characteristics, background, development struc
 ### Project Nature
 - **Project Type**: Claude Code-specific TypeScript project template
 - **Usage Scope**: Configurable according to project requirements
-- **Development Approach**: LLM-driven development, quality-focused, strict YAGNI principle adherence
+- **Implementation Policy**: LLM-driven implementation, quality-focused, strict YAGNI principle adherence
 
 ### Technology Stack
 - **Foundation Technologies**: TypeScript, Node.js
 - **Test Framework**: Vitest
 - **Quality Management**: Biome, TypeScript strict mode
 
-## Development Principles
+## Implementation Principles
 
-### Code Quality
-- Type safety as top priority
-- Prohibition of any type usage (utilize unknown type and type guards)
-- Test-first development (Red-Green-Refactor)
-- Aggressive refactoring
-
-### Project Management
-- Systematic design through ADR/Design Doc/work plans
-- Complete quality check passing as completion condition
+### Implementation Policy Characteristics
+- **LLM-Driven Implementation**: Claude Code functions as the primary implementer
+- **Quality-First Culture**: Prioritize quality over speed
+- **YAGNI Principle**: Don't implement until necessary
+- **Systematic Design**: Design process through ADR/Design Doc/work plans
 
 ## Customization Guide
 
@@ -40,5 +36,5 @@ When using this template for new projects:
    - Place project-specific designs in `docs/rules/architecture/`
 
 3. **Environment Configuration**
-   - Implement environment variable management suitable for the project
+   - Implement environment variable management methods suitable for the project
    - Add project-specific configuration files

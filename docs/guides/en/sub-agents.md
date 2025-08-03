@@ -1,4 +1,4 @@
-# subagents Practical Guide - Orchestration Guidelines for Claude (Me)
+# Subagents Practical Guide - Orchestration Guidelines for Claude (Me)
 
 This document provides practical behavioral guidelines for me (Claude) to efficiently process tasks by utilizing subagents.
 
@@ -43,56 +43,56 @@ When receiving user response, check the following:
 
 **Decision Rule**: If any one applies → Re-analyze with integrated requirements using requirement-analyzer
 
-## 🤖 subagents I Can Utilize
+## 🤖 Subagents I Can Utilize
 
-I actively utilize the following 8 subagents:
+I actively utilize the following 9 subagents:
 
 ### Implementation Support Agents
-1. **quality-fixer**: Overall quality assurance and self-contained processing until completion
+1. **quality-fixer**: Self-contained processing for overall quality assurance and fixes until completion
 2. **task-decomposer**: Appropriate task decomposition of work plans
-3. **task-executor**: Individual task execution and structured responses
+3. **task-executor**: Individual task execution and structured response
 
 ### Document Creation Agents
-4. **requirement-analyzer**: Requirement analysis and work scale assessment
+4. **requirement-analyzer**: Requirement analysis and work scale determination
 5. **prd-creator**: Product Requirements Document creation
 6. **technical-designer**: ADR/Design Doc creation
 7. **work-planner**: Work plan creation
-8. **document-reviewer**: Document consistency checking
-9. **document-fixer**: Integration of multi-perspective reviews and automatic correction execution
+8. **document-reviewer**: Document consistency check
+9. **document-fixer**: Integration of multi-perspective reviews and automatic fix execution
 
 ## 🎭 My Orchestration Principles
 
-### Responsibility-Aware Distribution
+### Task Assignment with Responsibility Separation in Mind
 
-I understand each subagent's responsibilities and distribute work appropriately:
+I understand each subagent's responsibilities and assign work appropriately:
 
 **What to delegate to task-executor**:
-- Implementation work and test additions
-- Confirmation that added tests pass (existing tests are out of scope)
+- Implementation work and test addition
+- Confirmation of added tests passing (existing tests are not covered)
 - Do not delegate quality assurance
 
 **What to delegate to quality-fixer**:
-- Overall quality assurance (type checking, lint, all test execution, etc.)
-- Complete fixing of quality errors
-- Self-contained processing until completion
-- Final approved judgment (only after completion of fixes)
+- Overall quality assurance (type check, lint, all test execution, etc.)
+- Complete execution of quality error fixes
+- Self-contained processing until fix completion
+- Final approved judgment (only after fixes are complete)
 
 ### Standard Flow I Manage
 
-**Basic Cycle**: I manage the cycle of `task → quality-check(including fixes) → commit`.
+**Basic Cycle**: I manage the `task → quality-check (including fixes) → commit` cycle.
 I repeat this cycle for each task to ensure quality.
 
 ## 💡 Decision Patterns
 
 ### Pattern 1: New Feature Development Request
-**Trigger**: "Want to create XX feature", "Implement XX", etc.
+**Trigger**: "I want to create XX feature", "Please implement XX", etc.
 **Decision**: New feature addition → Start with requirement-analyzer
 
 ### Pattern 2: Explicit Orchestrator Instruction
-**Trigger**: "As orchestrator", "Using subagents", etc.
+**Trigger**: "As an orchestrator", "Using subagents", etc.
 **Decision**: Explicit instruction → Always utilize subagents
 
-### Pattern 3: subagent Utilization Context
+### Pattern 3: Subagent Utilization Context
 **Trigger**: sub-agents.md is open
 **Decision**: User expects subagent utilization → Act according to this guide
 
@@ -100,90 +100,40 @@ I repeat this cycle for each task to ensure quality.
 **Trigger**: After implementation completion, before commit
 **Decision**: Quality assurance needed → Request quality check and fixes from quality-fixer
 
-## 🛡️ Constraints Between subagents
+## 🛡️ Constraints Between Subagents
 
-**Important**: subagents cannot directly call other subagents. When coordinating multiple subagents, the main AI (Claude) acts as the orchestrator.
+**Important**: Subagents cannot directly call other subagents. When coordinating multiple subagents, the main AI (Claude) operates as the orchestrator.
 
-## 📏 Scale Assessment Interpretation Criteria
+## 📏 Interpretation Standards for Scale Determination
 
-### Scale Assessment and Document Requirements (For interpreting requirement-analyzer results)
+### Scale Determination and Document Requirements (for interpreting requirement-analyzer results)
 | Scale | File Count | PRD | ADR | Design Doc | Work Plan |
 |-------|------------|-----|-----|------------|-----------|
-| Small | 1-2 | Not Required | Not Required | Not Required | Simplified |
-| Medium | 3-5 | Not Required | Conditional※1 | **Required** | **Required** |
+| Small | 1-2 | Not needed | Not needed | Not needed | Simplified |
+| Medium | 3-5 | Not needed | Conditional※1 | **Required** | **Required** |
 | Large | 6+ | Conditional※2 | Conditional※1 | **Required** | **Required** |
 
-※1: When there are architecture changes, new technology introduction, data flow changes
+※1: When there are architecture changes, new technology introduction, or data flow changes
 ※2: When adding new features
 
-## Structured Response Specifications
+## Structured Response Specification
 
-### task-executor Standard Response
-```json
-{
-  "status": "completed",
-  "taskName": "[Task Name]",
-  "changeSummary": "[Implementation/investigation change summary]",
-  "filesModified": ["file1.ts", "file2.ts"],
-  "testsAdded": ["test1.test.ts"],
-  "newTestsPassed": true,
-  "readyForQualityCheck": true,
-  "nextActions": "Awaiting quality assurance process"
-}
-```
+Each subagent responds in JSON format. Major fields:
+- **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
+- **quality-fixer**: status, checksPerformed, fixesApplied, approved
+- **document-fixer**: status, reviewsPerformed, fixesApplied, readyForApproval
 
-### quality-fixer Standard Response
-
-```json
-{
-  "status": "approved",
-  "summary": "Quality check completed. [If there were errors, they have been fixed,] all checks passed.",
-  "checksPerformed": {
-    "biome": "passed",
-    "typescript": "passed", 
-    "tests": "passed",
-    "build": "passed"
-  },
-  "fixesApplied": ["List of fixed items (empty array if no fixes)"],
-  "approved": true,
-  "nextActions": "Ready for commit"
-}
-```
-
-### document-fixer Standard Response
-
-```json
-{
-  "status": "fixed",
-  "summary": "Document consistency check completed. [Summary of fixes]",
-  "reviewsPerformed": [
-    "Consistency check",
-    "Completeness check", 
-    "Expertise check",
-    "Readability check"
-  ],
-  "fixesApplied": ["List of fixed items (empty array if no fixes)"],
-  "documentQuality": {
-    "consistency": "Good",
-    "completeness": "Good",
-    "clarity": "Good"
-  },
-  "readyForApproval": true,
-  "nextActions": "Awaiting user approval"
-}
-```
-
-## 🛠️ subagent Invocation Methods
+## 🛠️ How to Call Subagents
 
 ```
 Task(
   subagent_type="prd-creator", 
   description="PRD creation and question extraction", 
-  prompt="Please create a PRD interactively. List questions that should be confirmed with the user, particularly clarifying feature priorities, scope boundaries, non-functional requirements, and expected usage scenarios"
+  prompt="Please create PRD interactively. List questions to confirm with the user, particularly clarifying feature priorities, scope boundaries, non-functional requirements, and expected usage scenarios"
 )
 ```
 
-### Instructions to task-executor
+### How to Instruct task-executor
 
 ```
 Task(
@@ -193,172 +143,172 @@ Task(
 Task file: docs/plans/tasks/[filename].md
 
 Execution instructions:
-- Complete implementation according to checklist
-- Update [ ] → [x] upon completion of each item
+- Complete implementation following the checklist
+- Update [ ] → [x] as each item is completed
 - Report completion with structured response (JSON)
 
-Premise: Implementation feasibility has been determined, now in execution phase
+Premise: Implementation decision has been made, we are in execution phase
 """
 )
 ```
 
-## 🔄 Response Patterns to Requirement Changes
+## 🔄 Handling Requirement Changes
 
-### Requirement Change Response with requirement-analyzer
-requirement-analyzer follows the "complete self-containment" principle and processes requirement changes as new input.
+### Handling Requirement Changes in requirement-analyzer
+requirement-analyzer follows the "completely self-contained" principle and processes requirement changes as new input.
 
-#### Requirement Integration Method
+#### How to Integrate Requirements
 
-**Important**: To maximize accuracy, integrate requirements as complete sentences, including all contextual information conveyed by the user.
+**Important**: To maximize accuracy, integrate requirements as complete sentences, including all contextual information communicated by the user.
 
 ```yaml
 Integration example:
-  Initial: "Want to create user management feature"
+  Initial: "I want to create user management functionality"
   Addition: "Permission management is also needed"
-  Result: "Want to create user management feature. Permission management is also needed.
-         
-         Initial requirement: Want to create user management feature
-         Additional requirement: Permission management is also needed"
+  Result: "I want to create user management functionality. Permission management is also needed.
+          
+          Initial requirement: I want to create user management functionality
+          Additional requirement: Permission management is also needed"
 ```
 
 ### Update Mode for Document Generation Agents
 Document generation agents (work-planner, technical-designer, prd-creator) can update existing documents in `update` mode.
 
-- **Initial creation**: Create new documents in create (default) mode
-- **Requirement changes**: Edit existing documents and add history in update mode
+- **Initial creation**: Create new document in create (default) mode
+- **On requirement change**: Edit existing document and add history in update mode
 
-My judgment criteria for when to call each agent:
+My criteria for timing when to call each agent:
 - **work-planner**: Request updates only before execution
 - **technical-designer**: Request updates according to design changes → Ensure consistency with document-fixer
 - **prd-creator**: Request updates according to requirement changes → Ensure consistency with document-fixer
 - **document-fixer**: Always execute after PRD/ADR/Design Doc creation/update, before user approval
 
-## 📄 My Basic Flow During Work Planning
+## 📄 My Basic Flow for Work Planning
 
-When I receive new feature or change requests, I first request requirement analysis from requirement-analyzer.
-According to scale assessment:
+When receiving new features or change requests, I first request requirement analysis from requirement-analyzer.
+According to scale determination:
 
-### Large Scale (New features, 6+ files)
-1. requirement-analyzer → requirement analysis **[STOP: requirement confirmation, address questions]**
-2. prd-creator → PRD creation → execute document-fixer **[STOP: requirement confirmation]**
-3. technical-designer → ADR creation → execute document-fixer **[STOP: technical policy decision]**
-4. work-planner → work plan creation **[STOP: bulk approval for entire implementation phase]**
-5. **Start autonomous execution mode**: task-decomposer → execute all tasks → completion report
+### Large Scale (New Features, 6+ Files)
+1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
+2. prd-creator → PRD creation → Execute document-fixer **[Stop: Requirement confirmation]**
+3. technical-designer → ADR creation → Execute document-fixer **[Stop: Technical direction decision]**
+4. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
+5. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
-### Medium Scale (3-5 files)
-1. requirement-analyzer → requirement analysis **[STOP: requirement confirmation, address questions]**
-2. technical-designer → Design Doc creation → execute document-fixer **[STOP: technical policy decision]**
-3. work-planner → work plan creation **[STOP: bulk approval for entire implementation phase]**
-4. **Start autonomous execution mode**: task-decomposer → execute all tasks → completion report
+### Medium Scale (3-5 Files)
+1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
+2. technical-designer → Design Doc creation → Execute document-fixer **[Stop: Technical direction decision]**
+3. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
+4. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
-### Small Scale (1-2 files)
-1. Create simplified plan **[STOP: bulk approval for entire implementation phase]**
-2. **Start autonomous execution mode**: direct implementation → completion report
+### Small Scale (1-2 Files)
+1. Create simplified plan **[Stop: Batch approval for entire implementation phase]**
+2. **Start autonomous execution mode**: Direct implementation → Completion report
 
 ## 🤖 Autonomous Execution Mode
 
 ### 🔑 Authority Delegation
 
-**After autonomous execution mode starts**:
-- Authority delegation through bulk approval for entire implementation phase
+**After starting autonomous execution mode**:
+- Batch approval for entire implementation phase delegates authority to subagents
 - task-executor: Implementation authority (can use Edit/Write)
-- quality-fixer: Fix authority (automatic quality error correction)
+- quality-fixer: Fix authority (automatic quality error fixes)
 
 ### Definition of Autonomous Execution Mode
-After "bulk approval for entire implementation phase" in work-planner, autonomously execute the following processes without human approval:
+After "batch approval for entire implementation phase" with work-planner, autonomously execute the following processes without human approval:
 
 ```mermaid
 graph TD
-    START[Bulk approval for entire implementation phase] --> AUTO[Start autonomous execution mode]
+    START[Batch approval for entire implementation phase] --> AUTO[Start autonomous execution mode]
     AUTO --> TD[task-decomposer: Task decomposition]
     TD --> LOOP[Task execution loop]
     LOOP --> TE[task-executor: Implementation]
-    TE --> QF[quality-fixer: Quality check & fix]
+    TE --> QF[quality-fixer: Quality check and fixes]
     QF --> COMMIT[Create commit]
-    COMMIT --> CHECK{Remaining tasks?}
+    COMMIT --> CHECK{Any remaining tasks?}
     CHECK -->|Yes| LOOP
     CHECK -->|No| REPORT[Completion report]
     
     LOOP --> INTERRUPT{User input?}
     INTERRUPT -->|None| TE
-    INTERRUPT -->|Present| REQCHECK{Requirement change check}
+    INTERRUPT -->|Yes| REQCHECK{Requirement change check}
     REQCHECK -->|No change| TE
-    REQCHECK -->|Change detected| STOP[Stop autonomous execution]
+    REQCHECK -->|Change| STOP[Stop autonomous execution]
     STOP --> RA[Re-analyze with requirement-analyzer]
     
     TE --> ERROR{Critical error?}
     ERROR -->|None| QF
-    ERROR -->|Present| ESC[Escalation]
+    ERROR -->|Yes| ESC[Escalation]
 ```
 
-### Conditions to Stop Autonomous Execution
+### Conditions for Stopping Autonomous Execution
 Stop autonomous execution and escalate to user in the following cases:
 
-1. **When requirement change is detected**
-   - Any item matches the requirement change detection checklist
-   - Stop autonomous execution and re-analyze with integrated requirements using requirement-analyzer
+1. **When requirement change detected**
+   - Any match in requirement change detection checklist
+   - Stop autonomous execution and re-analyze with integrated requirements in requirement-analyzer
 
 2. **When critical error occurs**
-   - Implementation errors, quality check failures, build errors, etc.
+   - Implementation error, quality check failure, build error, etc.
    - Report error details to user and wait for response instructions
 
-3. **When work-planner update restrictions are violated**
-   - Requirement changes after task-decomposer start require complete redesign
+3. **When work-planner update restriction is violated**
+   - Requirement changes after task-decomposer starts require overall redesign
    - Restart entire flow from requirement-analyzer
 
 4. **When user explicitly stops**
-   - Direct stop instructions or interruptions
+   - Direct stop instruction or interruption
 
 ### Quality Assurance During Autonomous Execution
 - Automatically execute `task-executor → quality-fixer → commit` cycle for each task
-- Have quality-fixer handle all quality checks and fixes in complete self-containment (I check quality check details in @docs/rules/ai-development-guide.md)
-- Maintain quality standards until all tasks are completed
+- Have quality-fixer handle all quality checks and fixes in completely self-contained manner
+- Maintain quality standards until all tasks are complete
 
 ## 🎼 My Main Roles as Orchestrator
 
-1. **State Management**: Track current phase, each subagent's status, and next actions
-2. **Information Bridge**: Data conversion and transmission between subagents
-   - Convert each subagent's output to the next subagent's input format
+1. **State Management**: Grasp current phase, each subagent's state, and next action
+2. **Information Bridging**: Data conversion and transmission between subagents
+   - Convert each subagent's output to next subagent's input format
    - Extract necessary information from structured responses
    - Compose commit messages from changeSummary
-   - Explicitly integrate initial requirements and additional requirements during requirement changes
+   - Explicitly integrate initial and additional requirements when requirements change
 3. **Quality Assurance**: Manage task → quality-check → commit cycle
-4. **Autonomous Execution Mode Management**: Start/stop/escalation decisions for autonomous execution after approval
+4. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval, escalation decisions
 
 ## ⚠️ Important Constraints
 
-- **Quality check is mandatory**: quality-fixer approval required before commit
-- **Structured response mandatory**: Information transmission between subagents must be in JSON format
-- **Approval management**: Document creation → execute document-fixer → obtain user approval before proceeding
-- **Flow confirmation**: After obtaining approval, always check next steps in work planning flow (large/medium/small scale)
-- **Consistency verification**: Prioritize guidelines when subagent judgments are contradictory
+- **Quality check is mandatory**: quality-fixer approval needed before commit
+- **Structured response mandatory**: Information transmission between subagents in JSON format
+- **Approval management**: Document creation → Execute document-fixer → Get user approval before proceeding
+- **Flow confirmation**: After getting approval, always check next step with work planning flow (large/medium/small scale)
+- **Consistency verification**: If subagent determinations contradict, prioritize guidelines
 
-## ⚡ Essential Human Interaction Points
+## ⚡ Required Dialogue Points with Humans
 
 ### Basic Principles
 - **Stopping is mandatory**: Always wait for human response at the following timings
-- **Confirmation → Agreement cycle**: After document generation, obtain agreement or modification instructions in update mode before proceeding
-- **Specific questions**: Make decisions easier using options (A/B/C) or comparison tables
-- **Dialogue over efficiency**: Take confirmation early to prevent rework
+- **Confirmation → Agreement cycle**: After document generation, proceed to next step after agreement or fix instructions in update mode
+- **Specific questions**: Make decisions easy with options (A/B/C) or comparison tables
+- **Dialogue over efficiency**: Get confirmation early to prevent rework
 
 ### Major Stop Points
-- **After requirement-analyzer completion**: Confirm requirement analysis results and questions
-- **After PRD creation → document-fixer execution**: Confirm requirement understanding and consistency (confirm with question list)
-- **After ADR creation → document-fixer execution**: Confirm technical policy and consistency (present multiple options with comparison table)
-- **After Design Doc creation → document-fixer execution**: Confirm design content and consistency
-- **After plan creation**: Bulk approval for entire implementation phase (confirm with plan summary)
+- **After requirement-analyzer completion**: Confirmation of requirement analysis results and questions
+- **After PRD creation → document-fixer execution**: Confirmation of requirement understanding and consistency (confirm with question list)
+- **After ADR creation → document-fixer execution**: Confirmation of technical direction and consistency (present multiple options with comparison table)
+- **After Design Doc creation → document-fixer execution**: Confirmation of design content and consistency
+- **After plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
 
 ### Stop Points During Autonomous Execution
-- **When requirement change is detected**: Match requirement change checklist → return to requirement-analyzer
-- **When critical error occurs**: Report error details → wait for response instructions
-- **When user interrupts**: Explicit stop instruction → situation confirmation
+- **When requirement change detected**: Match in requirement change checklist → Return to requirement-analyzer
+- **When critical error occurs**: Error report → Wait for response instructions
+- **When user interrupts**: Explicit stop instruction → Situation confirmation
 
 ## 🎯 My Action Checklist
 
-When I receive a task, I check the following:
+When receiving a task, I check the following:
 
-- [ ] Confirmed if there are orchestrator instructions
-- [ ] Determined task type (new feature/fix/investigation, etc.)
+- [ ] Confirmed if there is an orchestrator instruction
+- [ ] Determined task type (new feature/fix/research, etc.)
 - [ ] Considered appropriate subagent utilization
-- [ ] Decided next action following decision flow
+- [ ] Decided next action according to decision flow
 - [ ] Monitored requirement changes and errors during autonomous execution mode

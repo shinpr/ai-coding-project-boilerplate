@@ -1,18 +1,18 @@
 # Hybrid Progressive Architecture - Implementation Rules
 
-This document defines specific implementation rules when adopting Hybrid Progressive Architecture.
+This document defines implementation rules and stage-specific checklists for LLMs when adopting Hybrid Progressive Architecture.
 
 ## Basic Principles
 
-### 1. Progressive Evolution Principle
-- **Clearly Define Current Stage**: Always be aware of which stage the project is in
-- **Allow Coexistence**: Accept coexistence of different structures
-- **Structural Change Flexibility**: Allow bold structural changes according to project requirements
+### 1. Principle of Progressive Evolution
+- **Be clear about current Stage**: Always be aware of which stage the project is in
+- **Allow coexistence**: Accept coexistence of different structures
+- **Flexibility in structural changes**: Bold structural changes are possible according to project requirements
 
-### 2. Decision Consistency
-- **New Features**: Implement with current Stage's recommended pattern
-- **Existing Feature Modifications**: Respect existing structure
-- **Refactoring**: Execute based on clear criteria
+### 2. Consistency in Decision Making
+- **New features**: Implement with current Stage's recommended pattern
+- **Modifying existing features**: Respect existing structure
+- **Refactoring**: Implement based on clear criteria
 
 ## Stage-Specific Implementation Rules
 
@@ -22,29 +22,29 @@ This document defines specific implementation rules when adopting Hybrid Progres
 ```
 src/
 ├── features/
-│   └── [action-name].ts    # Example: create-todo.ts
+│   └── [action-name].ts    # e.g., create-todo.ts
 └── lib/
-    └── [utility].ts        # Example: database.ts
+    └── [utility].ts        # e.g., database.ts
 ```
 
 #### Implementation Rules
-- **Single File Completion**: Write all processing in one file
-- **Allow Duplication**: OK to have same code in multiple files
-- **Minimal Consolidation**: Only DB connections etc. go to lib/
+- **Single file completion**: Write all processing in one file
+- **Duplication allowed**: OK to have same code in multiple files
+- **Minimal consolidation**: Only DB connection level goes to lib/
 
 #### Code Example
 ```typescript
 // features/create-todo.ts
 import { db } from '../lib/database'
 
-// Type definitions also within this file
+// Type definitions also in this file
 interface Todo {
   id: string
   title: string
   completed: boolean
 }
 
-// Include validation too
+// Validation included
 function validateTitle(title: string): void {
   if (!title || title.length > 100) {
     throw new Error('Invalid title')
@@ -73,7 +73,7 @@ export async function createTodo(title: string, userId: string): Promise<Todo> {
 src/
 ├── features/
 │   └── [feature]/
-│       ├── [action].ts     # Example: create.ts
+│       ├── [action].ts     # e.g., create.ts
 │       └── shared/
 │           ├── types.ts
 │           └── utils.ts
@@ -81,9 +81,9 @@ src/
 ```
 
 #### Implementation Rules
-- **Intra-Feature Consolidation**: Move duplicates within same feature to `shared/`
-- **Inter-Feature Independence**: Don't reference other feature folders
-- **Interface Definition**: Consolidate type definitions in `shared/types.ts`
+- **Consolidation within feature**: Duplication within same feature goes to `shared/`
+- **Feature independence**: Don't reference other feature folders
+- **Interface definition**: Consolidate type definitions in `shared/types.ts`
 
 #### Code Example
 ```typescript
@@ -129,7 +129,7 @@ export async function createTodo(input: CreateTodoInput): Promise<Todo> {
 #### Directory Structure
 ```
 src/
-├── features/           # Feature-based (maintain vertical slicing)
+├── features/           # By feature (maintain vertical slicing)
 ├── shared/
 │   ├── domain/        # Common domain
 │   │   ├── entities/
@@ -140,9 +140,9 @@ src/
 ```
 
 #### Implementation Rules
-- **Common Domain Models**: Move entities used by multiple features to `shared/domain`
-- **Repository Pattern**: Move DB operations to `shared/infrastructure`
-- **Maintain Feature-Specific Logic**: Keep business logic in each feature
+- **Common domain models**: Entities used by multiple features go to `shared/domain`
+- **Repository pattern**: DB operations go to `shared/infrastructure`
+- **Maintain feature-specific logic**: Business logic stays in each feature
 
 #### Code Example
 ```typescript
@@ -194,7 +194,7 @@ import { TodoRepository } from '../../shared/infrastructure/repositories/TodoRep
 const todoRepository = new TodoRepository()
 
 export async function createTodo(title: string, userId: string): Promise<Todo> {
-  // Business rules remain in features
+  // Business rules remain within feature
   if (title.includes('forbidden')) {
     throw new Error('Forbidden word in title')
   }
@@ -215,17 +215,17 @@ src/
 │       ├── application/
 │       ├── domain/
 │       └── infrastructure/
-└── shared/           # Overall common
+└── shared/           # Project-wide common
 ```
 
 #### Implementation Rules
-- **New Features**: Implement vertical slicing in `features/`
-- **Stable Features**: Implement layering in `modules/`
-- **Migration Criteria**: Stable for 3+ months or touched by 5+ people
+- **New features**: Vertical slicing implementation in `features/`
+- **Stable features**: Layered implementation in `modules/`
+- **Migration criteria**: Stable for 3+ months or touched by 5+ people
 
 ## Migration Rules
 
-### Migration Procedures Between Stages
+### Migration Steps Between Stages
 
 #### Stage 1 → Stage 2
 1. Identify related features (e.g., todo-related)
@@ -248,41 +248,41 @@ src/
 
 ### Migration Considerations
 
-#### ✅ Should Do
-- **Migrate One Feature at a Time**: Don't change everything at once
-- **Write Tests First**: Guarantee behavior before migration
-- **Commit Units**: 1 migration = 1 commit
+#### ✅ What to Do
+- **Migrate one feature at a time**: Don't change everything at once
+- **Write tests first**: Ensure behavior before migration
+- **Commit units**: 1 migration = 1 commit
 
-#### ❌ Should Not Do
-- **Incomplete Migration**: Partially adopt new structure
-- **Excessive Abstraction**: Don't add functionality during migration
-- **Structural Consistency**: Minimize old/new structure coexistence during migration
+#### ❌ What Not to Do
+- **Partial migration**: Making only part of the new structure
+- **Excessive abstraction**: Don't add features during migration
+- **Structural consistency**: Minimize mixing old and new structures during migration
 
 ## Decision Flowchart
 
 ```
 Decision when writing new code:
 
-1. Are there related existing features?
+1. Are there existing related features?
    ├─ Yes → Match that feature's structure
    └─ No  → Go to 2
 
-2. What is current project Stage?
+2. What is the current project Stage?
    ├─ Stage 1 → Single file directly under features/
    ├─ Stage 2 → Under features/[feature-name]/
    ├─ Stage 3 → Use shared/ for common parts
-   └─ Stage 4 → Experimental in features/, stable in modules/
+   └─ Stage 4 → features/ if experimental, modules/ if stable
 
 3. After implementation, check migration criteria
-   └─ If criteria met → Plan migration to next Stage
+   └─ Criteria met → Plan migration to next Stage
 ```
 
-## Coding Conventions
+## Coding Standards
 
-### Naming Rules
-- **Stage 1-2**: Kebab-case (`create-todo.ts`)
-- **Stage 3-4**: CamelCase (`createTodo.ts`)
-- **During Migration**: Unify to new naming convention
+### Naming Conventions
+- **Stage 1-2**: Kebab case (`create-todo.ts`)
+- **Stage 3-4**: Camel case (`createTodo.ts`)
+- **During migration**: Unify to new naming convention
 
 ### Import Order
 ```typescript
@@ -301,35 +301,55 @@ import { logger } from '../../lib/logger'
 
 ## Quality Management
 
-### Quality Standards by Stage
+### Quality Criteria for Each Stage
 
 #### Stage 1
-- [ ] Each file operates independently
+- [ ] Each file works independently
 - [ ] Basic error handling exists
 - [ ] Minimal validation exists
 
 #### Stage 2
-- [ ] Type definitions are clear
-- [ ] Consistency within features
+- [ ] Clear type definitions
+- [ ] Consistency within feature
 - [ ] Basic tests exist
 
 #### Stage 3
-- [ ] Domain models are appropriate
+- [ ] Appropriate domain models
 - [ ] Repository pattern correctly implemented
 - [ ] Integration tests exist
 
 #### Stage 4
-- [ ] Each layer's responsibilities are clear
-- [ ] Dependency injection is utilized
-- [ ] Coverage 80%+
+- [ ] Clear responsibilities for each layer
+- [ ] Dependency injection utilized
+- [ ] Coverage 70% or higher
+
+## LLM Implementation Guidelines
+
+### Basic Flow for Implementation
+1. **Stage identification**: Confirm current Stage
+2. **Pattern confirmation**: Match existing structure
+3. **Progressive implementation**: Follow current Stage's rules
+4. **Quality check**: Confirm by Stage-specific criteria
+
+### Decision Criteria (Priority when in doubt)
+1. **Respect existing patterns** - Maintain project consistency
+2. **Match current Stage** - Don't prematurely advance
+3. **Progressive improvement** - Don't make large changes at once
+
+### Escalation Criteria
+Confirm with user in the following cases:
+- When considering Stage migration
+- Clear exceeding of initially assumed scope
+- Architecture-level changes
+- Adding new dependencies
 
 ## Summary
 
-Hybrid Progressive Architecture is an approach that can evolve flexibly as projects grow. The important points are:
+Hybrid Progressive Architecture is an approach that can flexibly evolve with project growth. Important points for LLMs:
 
-1. **Clearly Recognize Current Stage**
-2. **Consistent Decisions**
-3. **Progressive Migration**
-4. **Continuous Quality Improvement**
+1. **Clearly recognize current Stage** - Always confirm before implementation
+2. **Consistent decision making** - Respect existing patterns
+3. **Progressive migration** - Avoid drastic changes
+4. **Continue quality checks** - Meet criteria at each Stage
 
-When working as an LLM, always check the current Stage and existing patterns, and implement following the patterns established for that Stage.
+**One phrase to remember: "When in doubt, follow the current Stage's rules"**

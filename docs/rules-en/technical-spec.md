@@ -1,9 +1,9 @@
 # Technical Design Rules
 
-This rule file defines rules and guidelines for technical architecture design, data flow design, and environment configuration of the project.
+This rule file defines rules and guidelines for the project's technical architecture design, data flow design, and environment configuration.
 
 ## Basic Technology Stack Policy
-TypeScript-based application development. Architecture patterns should be selected according to project requirements and scale.
+TypeScript-based application implementation. Architecture patterns should be selected according to project requirements and scale.
 
 ## Environment Variable Management and Security
 
@@ -20,22 +20,11 @@ TypeScript-based application development. Architecture patterns should be select
 
 ## Architecture Design
 
-### Architecture Definition and Adherence
-Architecture is defined in `docs/rules/architecture/`.
-- Always check `docs/rules/architecture/` and strictly follow defined rules and patterns
-- Prioritize architectural consistency
-- Independent interpretation or changes are prohibited
-
-### Architecture Pattern Examples
+### Architecture Patterns
+Select appropriate architecture patterns according to project requirements and scale:
 - **Vertical Slice Architecture**: LLM-optimized, one-feature-one-file principle
 - **Hybrid Progressive Architecture**: Progressive evolution from small to large scale
-
-See `docs/rules/architecture/` for details.
-
-<!-- Reference examples:
-@docs/rules/architecture/vertical-slice/rules.md - LLM-optimized, one-feature-one-file principle
-@docs/rules/architecture/hybrid-progressive/rules.md - Progressive evolution from small to large scale
--->
+- **Architecture Consistency**: Strictly follow the selected pattern
 
 ## Dependency Injection (DI) Pattern
 
@@ -68,7 +57,7 @@ Select appropriate DI patterns or DI libraries according to project scale and re
   3. Delete after all tasks complete with user approval
 
 #### ADR (Architecture Decision Record)
-See @docs/rules/architecture-decision-process.md for ADR creation process and operational methods.
+Record important technical decisions to enable future implementers to understand the background of decision-making.
 
 ### Data Flow Unification Principles
 
@@ -76,15 +65,18 @@ See @docs/rules/architecture-decision-process.md for ADR creation process and op
 1. **Single Data Source**: Store same information in only one place
 2. **Structured Data Priority**: Use parsed objects instead of JSON strings
 3. **Clear Responsibility Separation**: Clearly define responsibilities of each layer
-4. **Type Safety Assurance**: Limit `unknown` type usage to initial reception of external input only, always convert to specific types after type guard validation
 
 #### Data Flow Best Practices
-- **Input Point Validation**: Validate data at input layer and pass to internal in type-safe form
+- **Input Point Validation**: Validate data at input layer and pass internally in type-safe form
 - **Centralized Transformation**: Consolidate data transformation logic in dedicated utilities
-- **Consistent Error Handling**: Handle errors generated in each layer within that layer, return abstracted errors to upper layers
 - **Structured Logging**: Output structured logs at each stage of data flow
 
 ## Build and Testing
 
-See @docs/rules/typescript-testing.md for build commands and test execution.
-See @docs/rules/ai-development-guide.md "Quality Checks (Mandatory on Implementation Completion)" for quality check details.
+Define build commands and test execution methods for each project.
+
+## Referenced Methodologies and Principles
+- **ADR (Architecture Decision Record)**: Michael Nygard "Documenting Architecture Decisions"
+- **Single Data Source Principle**: Single Source of Truth (data management best practice)
+- **Dependency Injection (DI)**: Martin Fowler "Inversion of Control Containers and the Dependency Injection pattern"
+Quality checks are mandatory upon implementation completion.
