@@ -1,0 +1,133 @@
+# Metadata for each rule file
+# Manages overview, tags, typical usage scenarios, and size for each rule
+
+rules:
+  typescript:
+    file: "typescript.md"
+    tags: [implementation, type-safety, async, refactoring, coding-style]
+    typical-use: "TypeScript code creation, modification, and refactoring"
+    size: medium
+    key-references:
+      - "YAGNI Principle - Kent Beck"
+      - "Clean Code - Robert C. Martin"
+    sections:
+      - "Basic Principles"
+      - "Comment Writing Rules"
+      - "Type Safety"
+      - "Coding Conventions"
+      - "Error Handling"
+      - "Refactoring Techniques"
+      - "Performance Optimization"
+
+  typescript-testing:
+    file: "typescript-testing.md"
+    tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring]
+    typical-use: "Test creation, TDD practice, quality checks, test-first for implementation/modification"
+    size: medium
+    key-references:
+      - "Test-Driven Development - Kent Beck"
+      - "Rule of Three - Martin Fowler"
+    sections:
+      - "Test Framework"
+      - "Basic Testing Policy"
+      - "Test Design Principles"
+      - "Test Helper Utilization Rules"
+      - "Test Implementation Conventions"
+      - "Basic Vitest Example"
+
+  ai-development-guide:
+    file: "ai-development-guide.md"
+    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring]
+    typical-use: "Technical decision criteria, anti-pattern detection, debugging techniques, quality check commands, implementation failure avoidance"
+    size: medium
+    key-references:
+      - "Rule of Three - Martin Fowler"
+      - "5 Whys - Toyota Production System"
+      - "DRY Principle - The Pragmatic Programmer"
+    sections:
+      - "Technical Anti-patterns (Red Flag Patterns)"
+      - "Rule of Three - Criteria for Code Duplication"
+      - "Common Failure Patterns and Avoidance Methods"
+      - "Debugging Techniques"
+      - "Quality Check Command Reference"
+      - "Situations Requiring Technical Decisions"
+      - "Continuous Improvement Mindset"
+
+  technical-spec:
+    file: "technical-spec.md"
+    tags: [architecture, design, documentation, environment, data-flow, implementation]
+    typical-use: "Technical design, environment configuration, documentation creation process, implementation policy decisions"
+    size: medium
+    key-references:
+      - "ADR Format - Michael Nygard"
+    sections:
+      - "Basic Technology Stack Policy"
+      - "Environment Variable Management and Security"
+      - "Architecture Design"
+      - "Dependency Injection (DI) Pattern"
+      - "Design Documents and Processes"
+      - "Build and Testing"
+
+  project-context:
+    file: "project-context.md"
+    tags: [context, project-specific, implementation]
+    typical-use: "Project-specific information, understanding implementation principles"
+    size: small
+    key-references:
+      - "Project-specific (empirical)"
+    sections:
+      - "Basic Configuration"
+      - "Implementation Principles"
+      - "Customization Guide"
+
+  architecture-decision-process:
+    file: "architecture-decision-process.md"
+    tags: [architecture, decision-making, adr, process, large-scale]
+    typical-use: "Large-scale changes, architecture decisions, ADR creation"
+    size: medium
+    key-references:
+      - "ADR Methodology - Michael Nygard"
+      - "Documenting Architecture Decisions"
+    sections:
+      - "Purpose"
+      - "Cases Requiring ADR Creation"
+      - "ADR Creation Process"
+      - "ADR Status"
+      - "Distinction Between ADR and Design Doc"
+      - "Rules for AI Usage"
+
+  vertical-slice-architecture:
+    file: "architecture/vertical-slice/rules.md"
+    tags: [architecture, vertical-slice, llm-optimized, single-file, implementation]
+    typical-use: "When adopting Vertical Slice Architecture, feature implementation"
+    size: medium
+    key-references:
+      - "Vertical Slice Architecture - Jimmy Bogard"
+      - "Anthropic LLM Research"
+    sections:
+      - "Core Implementation Rules"
+      - "Implementation Guidelines"
+      - "Consolidation Decision Criteria"
+      - "LLM Implementation Checklist"
+      - "Anti-patterns"
+      - "Best Practices"
+      - "LLM Implementation Guidelines"
+      - "Summary"
+
+  hybrid-progressive-architecture:
+    file: "architecture/hybrid-progressive/rules.md"
+    tags: [architecture, scalable, progressive, layered, implementation]
+    typical-use: "Progressively growing projects, implementation rule application"
+    size: medium
+    key-references:
+      - "Evolutionary Architecture - Neal Ford"
+      - "Building Microservices - Sam Newman"
+    sections:
+      - "Basic Principles"
+      - "Stage-specific Implementation Rules"
+      - "Migration Rules"
+      - "Decision Flowchart"
+      - "Coding Conventions"
+      - "Quality Management"
+      - "LLM Implementation Guidelines"
+      - "Summary"

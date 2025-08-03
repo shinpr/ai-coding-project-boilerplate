@@ -1,4 +1,4 @@
-# Hybrid Progressive Architecture (Progressive Evolution Architecture)
+# Hybrid Progressive Architecture
 
 ## Overview
 
@@ -8,10 +8,10 @@ Hybrid Progressive Architecture is an approach that progressively evolves from v
 
 ### Start with Vertical Slicing
 - Initially implement with independent files for each feature
-- Focus on early development speed
-- Structure easily understood by LLMs
+- Prioritize early implementation speed
+- Structure that is easy for LLMs to understand
 
-### Progressive Structuring as Growth Occurs
+### Progressive Structuring According to Growth
 - Consolidate when code duplication becomes noticeable
 - Consider layer division when team grows
 - Introduce layered architecture partially as needed
@@ -36,9 +36,9 @@ src/
 **Characteristics**
 - One feature per file
 - Duplicate code is acceptable
-- Fastest possible development
+- Fastest possible implementation
 
-### Stage 2: Feature Grouping (10~30 features)
+### Stage 2: Feature Grouping (10-30 features)
 
 ```
 src/
@@ -62,11 +62,11 @@ src/
 ```
 
 **Characteristics**
-- Group related features by directory
+- Group related features in directories
 - Begin consolidation within features
 - Maintain independence between features
 
-### Stage 3: Partial Layer Introduction (30~50 features)
+### Stage 3: Partial Layer Introduction (30-50 features)
 
 ```
 src/
@@ -85,8 +85,8 @@ src/
 
 **Characteristics**
 - Features maintain vertical slicing
-- Only common parts use layer structure
-- Progressive migration possible
+- Layer structure only for common parts
+- Gradual migration possible
 
 ### Stage 4: Hybrid Structure (50+ features)
 
@@ -94,7 +94,7 @@ src/
 src/
 ├── features/              # New/independent features use vertical slicing
 │   └── experimental/
-├── modules/               # Mature features use layering
+├── modules/               # Mature features are layered
 │   ├── todo/
 │   │   ├── application/
 │   │   ├── domain/
@@ -103,30 +103,30 @@ src/
 │       ├── application/
 │       ├── domain/
 │       └── infrastructure/
-└── shared/               # Overall common
+└── shared/               # Project-wide common
 ```
 
 **Characteristics**
-- Choose structure based on feature maturity
-- New features implemented quickly with vertical slicing
-- Stable features layered for quality improvement
+- Choose structure according to feature maturity
+- Implement new features quickly with vertical slicing
+- Layer stable features for improved quality
 
 ## Migration Timing Criteria
 
 ### Stage 1 → Stage 2
-- [ ] 10+ feature files exist
-- [ ] Related feature groups are clear
-- [ ] File names alone don't show feature relationships
+- [ ] 10 or more feature files exist
+- [ ] Groups of related features are clear
+- [ ] Feature relationships are difficult to understand from filenames alone
 
 ### Stage 2 → Stage 3
-- [ ] Same code duplicated across 3+ feature groups
-- [ ] Domain models shared across multiple features
+- [ ] Same code is duplicated in 3 or more feature groups
+- [ ] Domain models are shared across multiple features
 - [ ] External service integration needed in multiple places
 
 ### Stage 3 → Stage 4
-- [ ] Team members are 5+
+- [ ] Team members are 5 or more
 - [ ] Some features are sufficiently stable
-- [ ] More rigorous quality management required
+- [ ] Stricter quality management is required
 
 ## Implementation Examples
 
@@ -186,29 +186,29 @@ export async function createTodo(title: string, userId: string) {
 ## Benefits
 
 1. **Flexibility**: Choose optimal structure according to project scale
-2. **Easy Migration**: Low risk due to progressive migration
+2. **Easy Migration**: Low risk due to gradual migration
 3. **Learning Curve**: Adjust complexity according to team maturity
-4. **Practicality**: Balance idealism and reality
+4. **Practicality**: Balance between ideal and reality
 
 ## Drawbacks
 
 1. **Lack of Consistency**: Different structures may coexist
-2. **Decision Overhead**: Need to decide when to migrate
+2. **Decision Burden**: Need to decide when to migrate
 3. **Documentation**: Need to understand multiple structures
 
-## Applicable Cases
+## When to Apply
 
 - **Startups**: Start quickly and evolve with growth
 - **High Uncertainty Projects**: Requirements not yet fixed
-- **Projects Starting Small**: Future expansion possibilities
-- **LLM Collaborative Development**: LLM initially, human team later
+- **Projects Starting Small**: Future expansion possibility
+- **LLM Collaborative Implementation**: LLM initially, human team later
 
-## Guidelines
+## LLM Implementation Guidelines
 
-### Decision Flow for New Feature Addition
+### Decision Flow for New Feature Implementation
 
 ```
-1. Check current Stage
+1. Confirm current Stage
    ↓
 2. Are there related existing features?
    Yes → Match existing structure
@@ -218,9 +218,27 @@ export async function createTodo(title: string, userId: string) {
    If criteria met → Consider migration to next Stage
 ```
 
+### Stage Determination Criteria
+- **Stage 1**: Less than 10 features, duplicate code acceptable
+- **Stage 2**: 10-30 features, clear feature groups
+- **Stage 3**: 30-50 features, duplication in 3+ groups
+- **Stage 4**: 50+ features, 5+ team members
+
+### Quality Check Criteria
+- **Coverage**: Unit test coverage must be 70% or higher
+- **Independence**: Each test can run independently without depending on other tests
+- **Reproducibility**: Tests return same results consistently, regardless of environment
+
 ### Refactoring Priority
 
 1. **Business Value**: Structure frequently used features first
 2. **Change Frequency**: Organize frequently changed parts
-3. **Complexity**: Progressively divide complex features
+3. **Complexity**: Gradually divide complex features
 4. **Team**: Prioritize structuring parts touched by multiple people
+
+### Escalation Criteria
+Confirm with user in the following cases:
+- When considering Stage migration
+- Clear exceeding of initially assumed scope
+- Architecture-level changes
+- Adding new dependencies

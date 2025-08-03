@@ -1,153 +1,190 @@
-# AI Developer Guide - Practical Implementation Guidelines
+# AI Developer Guide - Technical Decision Criteria and Anti-pattern Collection
 
-This document provides a comprehensive checklist, self-diagnosis methods, prohibited practices, and workflow considerations that LLMs (you) should reference during implementation.
+This document compiles technical decision criteria, anti-patterns, debugging techniques, and quality check commands that LLMs (you) should reference during implementation. This document focuses purely on technical guidance.
 
-## Pre-Implementation Mandatory Checklist
+## Technical Anti-patterns (Red Flag Patterns)
 
-1. **Rule File Loading**: Always read all 7 rule files completely (including canonical-phrases.md for standardized terminology)
-2. **Staged Document Review**
-   - During design: Review only relevant ADRs
-   - During implementation: Review only relevant Design Docs
-   - When starting work: Check in-progress work plans
-   - Implementation without review is prohibited
-3. **Task Analysis**: Consider essential purpose, impact scope, and generic solutions
-4. **Plan Formulation**: Present implementation plan to user
-5. **Test Implementation**: Utilize test helpers (builders, assertions, basic mocks)
+Immediately stop and reconsider design when detecting the following patterns:
 
-## Self-Diagnosis Triggers During Implementation
+### Code Quality Anti-patterns
+1. **Writing similar code 3 or more times** - Violates Rule of Three
+2. **Multiple responsibilities mixed in a single file** - Violates Single Responsibility Principle (SRP)
+3. **Defining same content in multiple files** - Violates DRY principle
+4. **Making changes without checking dependencies** - Potential for unexpected impacts
+5. **Disabling code with comments** - Should use version control
+6. **Error suppression** - Hiding problems creates technical debt
+7. **Excessive use of type assertions (as)** - Abandoning type safety
 
-### Must Stop and Check Timing
+### Design Anti-patterns
+- **"Make it work for now" thinking** - Accumulation of technical debt
+- **Patchwork implementation** - Unplanned additions to existing code
+- **Symptomatic fixes** - Surface-level fixes that don't solve root causes
+- **Unplanned large-scale changes** - Lack of incremental approach
 
-**Before Tool Usage**
-- Edit/Write/MultiEdit: Confirm user approval
-- Read: Check impact scope
-- Bash: Understand command impact
+## Rule of Three - Criteria for Code Duplication
 
-**During Work Progress**
-- When opening 5+ files: Reconfirm necessity
-- After 2+ errors: Perform root cause analysis
-- Investigation→Implementation transition: Present plan and confirm approval
-- Before commit: Execute quality checks
+How to handle duplicate code based on Martin Fowler's "Refactoring":
 
-### Self-Diagnosis Questions
+| Duplication Count | Action | Reason |
+|-------------------|--------|--------|
+| 1st time | Inline implementation | Cannot predict future changes |
+| 2nd time | Consider future consolidation | Pattern beginning to emerge |
+| 3rd time | Implement commonalization | Pattern established |
 
-**Implementation Direction**
-- Am I deviating from the plan?
-- Is the design generic?
-- Is the code understandable?
+### Criteria for Commonalization
 
-**Quality and Consistency**
-- Have I practiced Test-First (Red-Green-Refactor)?
-- Am I following existing ADR/Design Docs?
-- Have I checked impacts on related files?
+**Cases for Commonalization**
+- Business logic duplication
+- Complex processing algorithms
+- Areas likely requiring bulk changes
+- Validation rules
 
-## Red Flag Patterns (Situations Requiring Immediate Stop)
+**Cases to Avoid Commonalization**
+- Accidental matches (coincidentally same code)
+- Possibility of evolving in different directions
+- Significant readability decrease from commonalization
+- Simple helpers in test code
 
-✅ **Recommended**: Complete functionality at each step, unknown type + type guards
-❌ **Avoid**: "Make it work for now", any type usage
+### Implementation Example
+```typescript
+// ❌ Bad example: Immediate commonalization on 1st duplication
+function validateUserEmail(email: string) { /* ... */ }
+function validateContactEmail(email: string) { /* ... */ }
+// → Premature abstraction
 
-**Stop Patterns**
-1. Writing similar code 3+ times (Rule of Three)
-2. File exceeding 300 lines
-3. Defining same content in multiple files
-4. Changing without checking dependencies
-5. Disabling code with comments
-6. Error suppression
-7. Excessive type assertions (as)
-
-## Common Failure Patterns and Avoidance
-
-### Recommended and Avoidable Patterns
-
-✅ **Recommended**: Generic design, root cause resolution (5 Whys), YAGNI principle, document verification
-
-❌ **Avoid**: Patchwork coding, symptomatic treatment, unplanned changes to 6+ files
-
-## Escalation Criteria (Must Confirm with User)
-
-1. **Architecture Changes**: New layers, responsibility changes, data flow changes
-2. **External Dependency Addition**: npm packages, external APIs, environment variables
-3. **Breaking Changes**: API changes, data structure changes, major naming changes
-4. **Difficult Decisions**: Multiple implementation methods, unclear trade-offs, unpredictable risks
-
-**Confirmation Template**: Situation explanation → Options (merits/demerits) → Recommended approach
-
-## Instruction Priority
-
-1. **Highest Priority**: User approval (mandatory before Edit/Write/MultiEdit)
-2. **High Priority**: Quality check passing, document consistency
-3. **Medium Priority**: Generic design, root cause resolution
-4. **Low Priority**: Performance optimization
-
-## Workflow Considerations
-
-### work plan Utilization
-- **Medium scale (3-5 files)**: Recommended
-- **Large scale (6+ files)**: Mandatory
-- **Keywords**: Mandatory for instructions containing "refactoring," "consolidation," "optimization"
-
-**Commits**: Logical units, after quality checks, explain "why"
-
-**Testing**: Red-Green-Refactor (exception: configuration files)
-
-### Refactoring Timing
-- Immediately after task start (highest priority)
-- When discovering same pattern 3 times
-- When file exceeds 300 lines
-
-## Debug Flow
-
-1. **Error Analysis**: Check stack trace
-2. **5 Whys**: Pursue root cause
-3. **Minimal Reproduction**: Isolate problem
-4. **Test Verification**: Check related test failures
-
-## Quality Checks (Mandatory on Implementation Completion)
-
-### Quality Check Phases
-
-**Phase 1-3: Basic Checks**
-```bash
-npm run check          # Biome comprehensive
-npm run check:unused   # Unused exports
-npm run build          # TypeScript
+// ✅ Good example: Commonalize on 3rd occurrence
+// 1st time: inline implementation
+// 2nd time: Copy but consider future
+// 3rd time: Extract to common validator
+function validateEmail(email: string, context: 'user' | 'contact' | 'admin') { /* ... */ }
 ```
 
-**Phase 4-6: Testing and Final Verification**
+## Common Failure Patterns and Avoidance Methods
+
+### Pattern 1: Error Fix Chain
+**Symptom**: Fixing one error causes new errors
+**Cause**: Surface-level fixes without understanding root cause
+**Avoidance**: Identify root cause with 5 Whys before fixing
+
+### Pattern 2: Abandoning Type Safety
+**Symptom**: Excessive use of any type or as
+**Cause**: Impulse to avoid type errors
+**Avoidance**: Handle safely with unknown type and type guards
+
+### Pattern 3: Implementation Without Sufficient Testing
+**Symptom**: Many bugs after implementation
+**Cause**: Ignoring Red-Green-Refactor process
+**Avoidance**: Always start with failing tests
+
+## Debugging Techniques
+
+### 1. Error Analysis Procedure
 ```bash
-npm test               # Test execution
-npm run test:coverage:fresh  # Coverage (optional)
-npm run check:all      # Integrated check
+# How to read stack traces
+1. Read error message (first line) accurately
+2. Focus on first and last of stack trace
+3. Identify first line where your code appears
 ```
 
-**After Tests**: `npm run cleanup:processes`
+### 2. 5 Whys - Root Cause Analysis
+```
+Symptom: TypeScript build error
+Why1: Type definitions don't match → Why2: Interface was updated
+Why3: Dependency change → Why4: Package update impact
+Why5: Major version upgrade with breaking changes
+Root cause: Inappropriate version specification in package.json
+```
 
-**On Failure**: Resolve errors → Automatic fixes → Re-run
+### 3. Minimal Reproduction Code
+To isolate problems, attempt reproduction with minimal code:
+- Remove unrelated parts
+- Replace external dependencies with mocks
+- Create minimal configuration that reproduces problem
 
-### Consistency Checks
-- No duplicate definitions (constants, types, functions)
-- Correct inter-file references
-- No unintended changes
-- Test helper utilization (consider consolidation on 3rd duplication - Rule of Three)
+### 4. Debug Log Output
+```typescript
+// Track problems with structured logs
+console.log('DEBUG:', {
+  context: 'user-creation',
+  input: { email, name },
+  state: currentState,
+  timestamp: new Date().toISOString()
+})
+```
+
+## Quality Check Command Reference
+
+### Phase 1-3: Basic Checks
+```bash
+# Biome comprehensive check (lint + format)
+npm run check
+
+# Detect unused exports
+npm run check:unused
+
+# TypeScript build
+npm run build
+```
+
+### Phase 4-6: Tests and Final Confirmation
+```bash
+# Test execution
+npm test
+
+# Coverage measurement (clear cache)
+npm run test:coverage:fresh
+
+# Overall integrated check
+npm run check:all
+```
+
+### Auxiliary Commands
+```bash
+# Check coverage report
+open coverage/index.html
+
+# Vitest process cleanup (mandatory after tests)
+npm run cleanup:processes
+
+# Safe test execution (with auto cleanup)
+npm run test:safe
+
+# Auto fixes
+npm run format        # Format fixes
+npm run lint:fix      # Lint fixes
+```
+
+### Troubleshooting
+- **Port in use error**: `npm run cleanup:processes`
+- **Cache issues**: `npm run test:coverage:fresh`
+- **Dependency errors**: Reinstall with `npm ci`
+
+## Situations Requiring Technical Decisions
+
+### Timing of Abstraction
+- Extract patterns after writing concrete implementation 3 times
+- Be conscious of YAGNI, implement only currently needed features
+- Prioritize current simplicity over future extensibility
+
+### Performance vs Readability
+- Prioritize readability unless clear bottleneck exists
+- Measure before optimizing (don't guess, measure)
+- Document reason with comments when optimizing
+
+### Granularity of Type Definitions
+- Overly detailed types reduce maintainability
+- Design types that appropriately express domain
+- Use utility types to reduce duplication
 
 ## Continuous Improvement Mindset
 
-**Humility**: No perfect code exists, welcome feedback
-**Courage**: Bold refactoring, delete unnecessary code
-**Transparency**: Clarify reasoning, disclose limitations
+- **Humility**: Perfect code doesn't exist, welcome feedback
+- **Courage**: Execute necessary refactoring boldly
+- **Transparency**: Clearly document technical decision reasoning
 
-## Cheat Sheet
-
-**Start**: Read rules → Verify documents → Plan → Approval
-**Implementation**: Pre-tool check → Watch red flags → Document consistency
-**Completion**: Phase1-6 quality checks → Fix errors → Commit
-
-## Conclusion
-
-Follow this guide and continue writing code with a user-first, long-term perspective.
-
-### Referenced Methodologies in This Guide
+## Referenced Methodologies and Principles
 - **Rule of Three**: Martin Fowler "Refactoring"
+- **Single Responsibility Principle (SRP)**: Robert C. Martin "Clean Code"
 - **5 Whys**: Toyota Production System
-- **YAGNI Principle**: Kent Beck "Extreme Programming Explained"  
-- **Red-Green-Refactor**: Kent Beck "Test-Driven Development"
+- **YAGNI Principle**: Kent Beck "Extreme Programming Explained"
+- **DRY Principle**: Andy Hunt & Dave Thomas "The Pragmatic Programmer"

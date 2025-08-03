@@ -13,17 +13,9 @@
 - **Reproducibility**: Tests are environment-independent and always return the same results
 - **Readability**: Test code maintains the same quality as production code
 
-### Coverage Verification Methods
-
-```bash
-# Accurate coverage measurement (recommended)
-npm run test:coverage:fresh
-
-# Check detailed HTML report
-open coverage/index.html
-```
-
-**Coverage Metrics**: Statements, Branches, Functions, Lines
+### Coverage Requirements
+**Mandatory**: Unit test coverage must be 70% or higher
+**Metrics**: Statements, Branches, Functions, Lines
 
 ### Test Types and Scope
 1. **Unit Tests**
@@ -38,37 +30,15 @@ open coverage/index.html
 
 ## Test Design Principles
 
-### Red-Green-Refactor Process (TDD - Method by Kent Beck)
+### Red-Green-Refactor Process (TDD)
 
-#### Basic Principle
-**Start all new features and bug fixes with tests**. Always write failing tests before writing implementation code.
+**Principle**: Start all new features and bug fixes with tests
 
-#### Detailed Process Steps
+1. **Red**: Write failing tests
+2. **Green**: Pass tests with minimal implementation
+3. **Refactor**: Improve code while tests pass
 
-1. **Red (Write failing tests)**
-   - Define expected behavior with tests before implementation
-   - Tests must fail at this point
-
-2. **Green (Pass tests with minimal implementation)**
-   - Implement minimal code to pass tests
-   - Hard-coding is acceptable
-
-3. **Refactor (Improve code)**
-   - Improve code while maintaining passing test state
-   - Run tests at each stage to verify behavior
-
-#### Test-First Application Exceptions
-
-1. **Pure configuration changes**: Environment variables, build settings, dependency package updates
-2. **Documentation updates**: README, comments, type definition-only changes
-3. **Refactoring**: Already covered by existing tests, external interface unchanged
-4. **Emergency response**: Production failure fixes (must add tests after fixes)
-
-#### Test Addition Strategy for Existing Code
-
-1. **New feature addition**: Always implement test-first
-2. **Bug fixes**: Write tests that reproduce bugs first
-3. **Refactoring**: Create tests that protect current behavior first
+**Exceptions**: Configuration changes, documentation updates, refactoring covered by existing tests, emergency response (tests required after)
 
 ### Test Case Structure
 - Tests consist of three stages: "Arrange," "Act," "Assert"
@@ -90,34 +60,16 @@ open coverage/index.html
 ❌ **Avoid: Actual external connections in unit tests**
 - Reason: Slows test speed and causes environment-dependent problems
 
-✅ **Recommended: Ensure mock type safety**
-- Merit: Can detect type errors in test code too
-- Practice: Use appropriate type definitions for mocks and stubs
+### Test Failure Response Decision Criteria
 
-❌ **Avoid: Using any type in test code**
-- Reason: Reduces test reliability and may miss bugs
-
-### Test Failure Response Criteria
-
-#### Cases to Fix Tests
-1. **Obviously wrong expected values**: When technically incorrect
-2. **References to non-existent features**: Functions changed by refactoring
-3. **Excessive dependence on implementation details**: Too dependent on internal implementation
-4. **Implementation only for tests**: Unnecessary code just to pass tests
-
-#### Cases to Fix Implementation
-1. **Tests representing valid specifications**: Behavior represents valid specifications
-2. **Business logic tests**: Verification of important business logic
-3. **Edge case handling**: Verification of important edge cases
-
-#### When in Doubt
-Always confirm with user
+**Fix tests**: Wrong expected values, references to non-existent features, dependence on implementation details, implementation only for tests
+**Fix implementation**: Valid specifications, business logic, important edge cases
+**When in doubt**: Confirm with user
 
 ## Test Helper Utilization Rules
 
 ### Basic Principles
-- **Test helper consolidation**: Consider consolidation for patterns duplicated in 3+ places (Rule of Three - Martin Fowler "Refactoring")
-- **Decision criteria**: Consolidate simple and stable ones, implement individually for complex or frequently changing ones
+Test helpers are utilized to reduce duplication in test code and improve maintainability.
 
 ### Decision Criteria
 | Mock Characteristics | Response Policy |
@@ -162,10 +114,6 @@ src/
 - Test suites: Names describing target features or situations
 - Test cases: Names describing expected behavior
 
-### Error Case Testing
-- Test both normal and abnormal cases
-- Clearly verify behavior when errors occur
-- Also verify error message content
 
 ### Test Code Quality Rules
 
@@ -174,18 +122,9 @@ src/
 - Practice: Fix problematic tests and activate them
 
 ❌ **Avoid: test.skip() or commenting out**
-- Reason: Creates test gaps and incomplete quality assurance
+- Reason: Creates test gaps and incomplete quality checks
 - Solution: Completely delete unnecessary tests
 
-### Vitest Process Management Rules
-
-```bash
-# Post-test cleanup (mandatory)
-npm run cleanup:processes
-
-# Or safe execution
-npm run test:safe
-```
 
 ## Basic Vitest Example
 
@@ -212,5 +151,8 @@ describe('ComponentName', () => {
 })
 ```
 
-## Referenced Methodologies
-- **Red-Green-Refactor**: Kent Beck "Test-Driven Development"
+## Referenced Methodologies and Principles
+- **Test-Driven Development**: Kent Beck "Test-Driven Development: By Example"
+- **Red-Green-Refactor**: Basic TDD cycle by Kent Beck
+- **Rule of Three**: Martin Fowler "Refactoring" (criteria for test helper consolidation)
+- **AAA Pattern**: Arrange-Act-Assert (standard pattern for test structure)

@@ -11,6 +11,11 @@ Requirements: $ARGUMENTS
 - Expected usage scenarios and scale
 - Technical constraints and prerequisites
 
-Once requirements are moderately clarified, pass to requirement-analyzer and manage the complete workflow from analysis through implementation completion.
+Once requirements are moderately clarified, proceed with the following workflow:
+1. Requirement analysis with requirement-analyzer
+2. Task decomposition with TodoWrite (**start of mandatory execution process**)
+3. Mandatory consultation with rule-advisor at each task start
+4. Metacognition → Implementation → Quality check
+5. Appropriately control and complete work from analysis through implementation completion
 
 Stop immediately when requirement changes are detected and perform re-analysis.

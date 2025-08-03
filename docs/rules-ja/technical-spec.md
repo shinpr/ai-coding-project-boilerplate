@@ -3,7 +3,7 @@
 このルールファイルは、プロジェクトの技術的なアーキテクチャ設計、データフロー設計、環境設定に関するルールとガイドラインを定義します。
 
 ## 技術スタックの基本方針
-TypeScriptをベースとしたアプリケーション開発。アーキテクチャパターンはプロジェクトの要件と規模に応じて選択すること。
+TypeScriptをベースとしたアプリケーション実装。アーキテクチャパターンはプロジェクトの要件と規模に応じて選択すること。
 
 ## 環境変数管理とセキュリティ
 
@@ -20,22 +20,11 @@ TypeScriptをベースとしたアプリケーション開発。アーキテク�
 
 ## アーキテクチャ設計
 
-### アーキテクチャの定義と遵守
-アーキテクチャは `docs/rules/architecture/` に定義されています。
-- 必ず `docs/rules/architecture/` を確認し、定義されたルールとパターンに厳密に従うこと
-- アーキテクチャの一貫性を最優先とする
-- 独自の解釈や変更は禁止
-
-### アーキテクチャパターンの例
+### アーキテクチャパターン
+プロジェクトの要件と規模に応じて、適切なアーキテクチャパターンを選択：
 - **Vertical Slice Architecture**: LLM最適化、1機能1ファイル原則
 - **Hybrid Progressive Architecture**: 小規模から大規模への段階的進化
-
-詳細は `docs/rules/architecture/` を参照。
-
-<!-- 参照例:
-@docs/rules/architecture/vertical-slice/rules.md - LLM最適化、1機能1ファイル原則
-@docs/rules/architecture/hybrid-progressive/rules.md - 小規模から大規模への段階的進化
--->
+- **アーキテクチャの一貫性**: 選択したパターンに厳密に従うこと
 
 ## 依存性注入（DI）パターン
 
@@ -68,7 +57,7 @@ TypeScriptをベースとしたアプリケーション開発。アーキテク�
   3. 全タスク完了後、ユーザー承認を得て削除
 
 #### ADR（Architecture Decision Record）
-ADR作成プロセスと運用方法については @docs/rules/architecture-decision-process.md を参照。
+重要な技術的決定を記録し、将来の実装者が意思決定の背景を理解できるようにする。
 
 ### データフロー統一原則
 
@@ -76,15 +65,18 @@ ADR作成プロセスと運用方法については @docs/rules/architecture-dec
 1. **単一データソース**: 同じ情報は1箇所にのみ保存する
 2. **構造化データ優先**: JSON文字列ではなくパース済みオブジェクトを使用
 3. **明確な責務分離**: 各層の責務を明確に定義
-4. **型安全性の確保**: `unknown`型の使用は外部入力の初期受け取り時のみに限定し、必ず型ガードで検証後に具体的な型に変換
 
 #### データフローのベストプラクティス
 - **入力時点での検証**: データは入力層で検証し、型安全な形で内部に渡す
 - **変換の一元化**: データ変換ロジックは専用のユーティリティに集約
-- **エラーハンドリングの一貫性**: 各層で発生したエラーはその層で処理し、上位層には抽象化されたエラーを返す
 - **ログの構造化**: データフローの各段階で構造化ログを出力
 
 ## ビルドとテスト
 
-ビルドコマンドとテスト実行については @docs/rules/typescript-testing.md を参照。
-品質チェックの詳細については @docs/rules/ai-development-guide.md の「品質チェック（実装完了時必須）」を参照。
+プロジェクトごとにビルドコマンドとテスト実行方法を定義。
+
+## 参照した手法・原則
+- **ADR（Architecture Decision Record）**: Michael Nygard「Documenting Architecture Decisions」
+- **単一データソース原則**: Single Source of Truth（データ管理のベストプラクティス）
+- **依存性注入（DI）**: Martin Fowler「Inversion of Control Containers and the Dependency Injection pattern」
+品質チェックは実装完了時に必須。

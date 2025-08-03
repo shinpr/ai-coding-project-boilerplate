@@ -2,10 +2,8 @@
 
 ## Basic Principles
 
-### Code Evolution and Maintainability
-
-- ✅ **Aggressive Refactoring** - Prevent technical debt and maintain health
-- ❌ **Unused "Just in Case" Code** - Violates YAGNI principle (Kent Beck)
+✅ **Aggressive Refactoring** - Prevent technical debt and maintain health
+❌ **Unused "Just in Case" Code** - Violates YAGNI principle (Kent Beck)
 
 ## Comment Writing Rules
 - **Function Description Focus**: Describe what the code "does"
@@ -13,55 +11,37 @@
 - **Timeless**: Write only content that remains valid whenever read
 - **Conciseness**: Keep explanations to necessary minimum
 
-## Type System Utilization
+## Type Safety
 
-### Type Safety Principles
+**Absolute Rule**: any type is completely prohibited. It disables type checking and becomes a source of runtime errors.
 
-- ✅ **unknown Type and Type Guards** - Maintain type safety while responding flexibly
-- ❌ **any Type Usage** - Causes runtime errors by disabling type checking
-- ✅ **Type Inference Utilization** - Improve readability by omitting redundant type annotations
+**any Type Alternatives (Priority Order)**
+1. **unknown Type + Type Guards**: Use for validating external input
+2. **Generics**: When type flexibility is needed
+3. **Union Types・Intersection Types**: Combinations of multiple types
+4. **Type Assertions (Last Resort)**: Only when type is certain
 
-### Type Safety Assurance
-```typescript
-// Safe type narrowing with type guards
-function isUser(value: unknown): value is User {
-  return typeof value === "object" && value !== null && "id" in value
-}
+**Type Safety in Implementation**
+- API Communication: Always receive responses as `unknown`, validate with type guards
+- Form Input: External input as `unknown`, type determined after validation
+- Legacy Integration: Stepwise assertion like `window as unknown as LegacyWindow`
+- Test Code: Always define types for mocks, utilize `Partial<T>` and `vi.fn<[Args], Return>()`
 
-// State management with Discriminated Unions
-type RequestState<T> =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: Error }
-```
+**Type Safety in Data Flow**
+Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → Output Layer (Serialization)
 
-### any Type Usage Guidelines
-
-❌ **any Type is Completely Prohibited** - Disables type checking and becomes a source of runtime errors
-
-#### Alternative Methods (Priority Order)
-1. **unknown Type + Type Guards** - Safe handling of values with unknown types
-2. **Generics** - When type flexibility is needed
-3. **Union Types・Intersection Types** - Combinations of multiple types
-4. **Type Assertions (as)** - Only when type guarantee is certain
-
-```typescript
-// ❌ Prohibited: any type
-const result = (window as any).legacyLibFunction()
-
-// ✅ Recommended: unknown type and type assertion
-const result = (window as unknown as { legacyLibFunction: () => string }).legacyLibFunction()
-```
+**Type Complexity Management**
+- Field Count: Up to 20 (split by responsibility if exceeded)
+- Optional Ratio: Up to 30% (separate required/optional if exceeded)
+- Nesting Depth: Up to 3 levels (flatten if exceeded)
+- Type Assertions: Review design if used 3+ times
 
 ## Coding Conventions
 
-### Asynchronous Processing
-- **Promise Handling**: Always use `async/await`
-- **Error Handling**: Always handle with `try-catch`
-- **Type Definition**: Explicitly define return value types (e.g., `Promise<Result>`)
-
-### Code Style
+**Asynchronous Processing**
+- Promise Handling: Always use `async/await`
+- Error Handling: Always handle with `try-catch`
+- Type Definition: Explicitly define return value types (e.g., `Promise<Result>`)
 
 **Format Rules**
 - Semicolon omission (follow Biome settings)
@@ -74,91 +54,57 @@ const result = (window as unknown as { legacyLibFunction: () => string }).legacy
 - ❌ Commented-out code (manage history with version control)
 - ✅ Comments explain "why" (not "what")
 
-### Date/Time Processing
-
-```typescript
-// ✅ Recommended: Explicit timezone specification
-const dateStr = new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })
-
-// ❌ Avoid: No timezone (environment dependent)
-const dateStr = new Date().toLocaleString('ja-JP')
-
-// ✅ Recommended: Store data in UTC
-const timestamp = new Date().toISOString()
-```
+**Date/Time Processing**
+- Explicit timezone: `new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })`
+- Store data in UTC: `new Date().toISOString()`
 
 ## Error Handling
 
-### Basic Policy
-- Use custom error classes
-- Handle errors in the layer where they occur (domain layer errors in domain layer, infrastructure layer errors in infrastructure layer)
-- Output logs in structured format (include context information in JSON format)
+**Absolute Rule**: Error suppression prohibited. All errors must have log output and appropriate handling.
 
+**Custom Error Classes**
 ```typescript
-// ✅ Recommended: Custom errors
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public readonly code: string,
-    public readonly statusCode: number,
-  ) {
+export class AppError extends Error {
+  constructor(message: string, public readonly code: string, public readonly statusCode = 500) {
     super(message)
-    this.name = 'ApiError'
+    this.name = this.constructor.name
   }
 }
-
-// ✅ Recommended: Structured logging
-logger.error('API Error:', {
-  code: error.code,
-  statusCode: error.statusCode,
-  message: error.message,
-})
+// Purpose-specific: ValidationError(400), BusinessRuleError(400), DatabaseError(500), ExternalServiceError(502)
 ```
+
+**Layer-Specific Error Handling**
+- API Layer: Convert to HTTP response, log output excluding sensitive information
+- Service Layer: Detect business rule violations, propagate AppError as-is
+- Repository Layer: Convert technical errors to domain errors
+
+**Structured Logging and Sensitive Information Protection**
+Never include sensitive information (password, token, apiKey, secret, creditCard) in logs
+
+**Asynchronous Error Handling**
+- Global handler setup mandatory: `unhandledRejection`, `uncaughtException`
+- Use try-catch with all async/await
+- Always log and re-throw errors
 
 ## Refactoring Techniques
 
-### Basic Policy
-- **Test First**: Create tests to protect existing behavior first
-- **Small Steps**: Maintain always-working state through gradual improvements
-- **Safe Changes**: Minimize the scope of changes at once
+**Basic Policy**
+- Test First: Create tests to protect existing behavior first
+- Small Steps: Maintain always-working state through gradual improvements
+- Safe Changes: Minimize the scope of changes at once
 
-### Implementation Procedure
-1. **Understand Current State**: Understand behavior of change targets and check existing tests
-2. **Create Protective Tests**: Add tests that protect current behavior of refactoring targets
-3. **Gradual Changes**: Improve structure in small units
-4. **Verification**: Run tests at each stage to verify no behavior changes
-5. **Final Confirmation**: Run comprehensive tests to verify no unintended impacts
+**Implementation Procedure**: Understand Current State → Create Protective Tests → Gradual Changes → Verification → Final Confirmation
 
-### Priority Refactoring
-- **Duplicate Code Removal**: Consolidation based on DRY principle (Don't Repeat Yourself - Andy Hunt & Dave Thomas)
-- **Large Function Division**: Function division based on Single Responsibility Principle (Robert C. Martin)
-- **Complex Conditional Branch Simplification**: Utilize early returns and guard clauses
-- **Type Safety Improvement**: Eliminate any types, utilize unknown types and type guards
-
-## Type Complexity Check Rules (YAGNI Principle - Kent Beck Specification)
-
-### Type Complexity Limitations
-
-| Item | Recommended | Warning | Prohibited |
-|------|-------------|---------|-----------|
-| Field Count | 20 or less | Over 30 | Over 50 |
-| Optional Field Ratio | 30% or less | Over 50% | - |
-| Type Hierarchy Depth | Up to 3 levels | - | Over 5 levels |
-
-*Exception: When extending external library types
-
-### Type Design Best Practices
-
-Divide types by responsibility and utilize inheritance and composition to manage complexity. When exceeding the above numerical standards (20 or fewer fields, 30% or less optional ratio, up to 3 levels), implement refactoring immediately.
+**Priority**: Duplicate Code Removal > Large Function Division > Complex Conditional Branch Simplification > Type Safety Improvement
 
 ## Performance Optimization
 
-### Basic Principles
-- **Streaming Processing** - Process large datasets with streams
-- **Memory Leak Prevention** - Explicitly release unnecessary objects
-- **Simplicity Priority** - Prioritize maintainability over excessive optimization
+- Streaming Processing: Process large datasets with streams
+- Memory Leak Prevention: Explicitly release unnecessary objects
 
-## Referenced Principles
+## Referenced Methodologies and Principles
 - **YAGNI Principle**: Kent Beck "Extreme Programming Explained"
 - **DRY Principle**: Andy Hunt & Dave Thomas "The Pragmatic Programmer"
 - **Single Responsibility Principle**: Robert C. Martin "Clean Code"
+- **Refactoring**: Martin Fowler "Refactoring"
+- Simplicity Priority: Prioritize maintainability over excessive optimization

@@ -24,7 +24,9 @@ ai-coding-project-boilerplate/
 │   └── commands-en/        # Custom slash commands (English)
 ├── docs/
 │   ├── rules-ja/           # Development rules for Claude Code (Japanese)
+│   │   └── rules-index.yaml  # Rule file index with metadata
 │   ├── rules-en/           # Development rules for Claude Code (English)
+│   │   └── rules-index.yaml  # Rule file index with metadata
 │   ├── guides/
 │   │   ├── ja/
 │   │   │   └── sub-agents.md  # subagents practical guide (Japanese)
@@ -243,15 +245,16 @@ graph TD
 
 ### Available subagents
 
-- **quality-fixer**: Quality check & automatic correction
-- **task-executor**: Individual task execution
-- **technical-designer**: ADR & Design Doc creation
-- **work-planner**: Work plan creation
-- **document-reviewer**: Review document consistency and completeness
+- **quality-fixer**: Quality check & automatic correction - Automatically fixes TypeScript project quality issues
+- **task-executor**: Individual task execution - Executes tasks according to task file instructions
+- **technical-designer**: ADR & Design Doc creation - Creates technical design documents
+- **work-planner**: Work plan creation - Creates structured implementation plans from design documents
+- **document-reviewer**: Review document consistency and completeness - Validates documents from multiple perspectives
 - **document-fixer**: Integrate multi-perspective reviews and automatically correct documents
-- **prd-creator**: Product Requirements Document (PRD) creation
-- **requirement-analyzer**: Requirement analysis and work scale assessment
-- **task-decomposer**: Decompose work plans into commit-level tasks
+- **prd-creator**: Product Requirements Document (PRD) creation - Creates structured business requirements
+- **requirement-analyzer**: Requirement analysis and work scale assessment - Analyzes user requirements and determines appropriate development approach
+- **task-decomposer**: Decompose work plans into commit-level tasks - Breaks down plans into 1-commit granular tasks
+- **rule-advisor**: Selects minimal effective ruleset for maximum AI execution accuracy
 
 For details, refer to `CLAUDE.md` and individual definition files in `.claude/agents/`.
 
@@ -272,14 +275,20 @@ This boilerplate provides a comprehensive rule set:
 - ❌ **Avoid**: Commented-out code (use version control for history)
 - ✅ **Recommended**: YAGNI principle (implement only currently needed features)
 
-### 7 Rule Files
+### Rule Index System
+
+The `rules-index.yaml` file in each language directory provides:
+- **Metadata**: Description, priority, and keywords for each rule file
+- **Dynamic Rule Selection**: AI agents can select appropriate rules based on task context
+- **Efficiency**: Load only necessary rules to optimize context usage
+
+### 6 Core Rule Files
 1. **technical-spec.md**: Technical specifications & architecture design
 2. **typescript.md**: TypeScript development rules (including performance optimization)
 3. **typescript-testing.md**: Testing rules & Vitest utilization
 4. **project-context.md**: Project context (template)
 5. **ai-development-guide.md**: Implementation guide for AI developers
 6. **architecture-decision-process.md**: ADR creation & operation process
-7. **canonical-phrases.md**: Standardized terminology and decision criteria for clarity
 
 ## 🧪 Testing
 
