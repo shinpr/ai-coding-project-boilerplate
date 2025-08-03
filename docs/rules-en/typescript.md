@@ -101,10 +101,3 @@ Never include sensitive information (password, token, apiKey, secret, creditCard
 
 - Streaming Processing: Process large datasets with streams
 - Memory Leak Prevention: Explicitly release unnecessary objects
-
-## Referenced Methodologies and Principles
-- **YAGNI Principle**: Kent Beck "Extreme Programming Explained"
-- **DRY Principle**: Andy Hunt & Dave Thomas "The Pragmatic Programmer"
-- **Single Responsibility Principle**: Robert C. Martin "Clean Code"
-- **Refactoring**: Martin Fowler "Refactoring"
-- Simplicity Priority: Prioritize maintainability over excessive optimization

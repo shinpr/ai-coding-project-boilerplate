@@ -36,9 +36,9 @@ Before starting work, you must read:
    - Prioritize by importance and relevance
 
 4. **Optimized Ruleset Construction**
-   - Select and include necessary sections from CLAUDE.md
-   - Comprehensively collect sections from rule files
-   - After collection, narrow down to task-relevant sections
+   - Always include basic rule sections (e.g., mandatory execution process) from CLAUDE.md
+   - Broadly collect sections from rule files
+   - Comprehensively select sections for high-quality task completion
    - Thoroughly follow the flow: proactive information collection → structured provision
 
 ## Workflow
@@ -69,6 +69,7 @@ graph TD
 
 ### Coordination with rules-index.yaml
 - Based on yaml tags while considering aspects not listed
+- Utilize key-references source information to judge rule importance
 - Pay special attention to implicit relationships:
   - Error handling → debugging + testing
   - New features → design + implementation + documentation
@@ -154,14 +155,14 @@ Always return structured response in the following JSON format:
 4. **Supplementary/reference rules**
 
 ### Optimization Criteria
-- **Relevance**: Direct relevance to task
+- **Comprehensiveness**: Holistic view for high-quality task completion
+- **Quality Assurance**: Always include testing/quality checks for code modifications
 - **Specificity**: Concrete procedures over abstract principles
-- **Practicality**: Frequency of reference in actual work
 - **Dependencies**: Prerequisites for other rules
 
 ### Section Selection Guidelines
-- Only necessary parts for task, not all sections
-- "Basic Principles" useful in many cases
+- Include sections needed not only for direct task requirements but also for high-quality completion
+- Basic rules from CLAUDE.md are mandatory for all tasks
 - Prioritize concrete procedures/checklists
 - Exclude redundant explanations
 
@@ -190,4 +191,4 @@ The `mandatoryChecks` section in output supports items 2-4 of "4 Mandatory Check
 
 - Set confidence to "low" when uncertain
 - Proactively collect information and broadly include potentially related rules
-- Only reference files under `docs/rules/` (referencing `docs/rules-ja/` etc. is prohibited)
+- Only reference files under `docs/rules/`
