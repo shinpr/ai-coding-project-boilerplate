@@ -52,50 +52,42 @@ ai-coding-project-boilerplate/
 
 ## 🚀 使い方
 
-### 1. ボイラープレートの導入
+### 1. 新しいプロジェクトの作成（推奨）
 
 ```bash
-# ボイラープレートをクローンして新しいプロジェクトを作成
-git clone https://github.com/shinpr/ai-coding-project-boilerplate.git my-project
+# npxを使用して新しいプロジェクトを作成
+npx github:shinpr/ai-coding-project-boilerplate my-project --lang=ja
+
+# プロジェクトに移動
 cd my-project
 
-# 依存関係のインストール
+# 依存関係をインストール
 npm install
 
-# 使用する言語を設定（日本語版のプロジェクトとして設定）
-npm run lang:ja    # 日本語版として設定
-# npm run lang:en  # 英語版として設定する場合
-
-# Git履歴をリセットして新しいプロジェクトとして開始
-rm -rf .git
-git init
-git add .
-git commit -m "feat: initial commit from AI Coding Project Boilerplate"
+# 開発を開始！
+npm run dev
 ```
 
-## 🌐 多言語化機能
+オプション:
+- `--lang=ja` - 日本語プロジェクトとして設定
+- `--lang=en` - 英語プロジェクトとして設定（デフォルト）
 
-このボイラープレートは日本語と英語の両方をサポートしています。
+### 別の方法: このリポジトリをカスタマイズする場合
 
-### 言語切り替えコマンド
+ボイラープレート自体をカスタマイズしたい場合：
 
 ```bash
-# 日本語に切り替え
-npm run lang:ja
+# リポジトリをクローン
+git clone https://github.com/shinpr/ai-coding-project-boilerplate.git
+cd ai-coding-project-boilerplate
 
-# 英語に切り替え
-npm run lang:en
+# 依存関係をインストール
+npm install
 
-# 現在の言語設定を確認
-npm run lang:status
+# 使用する言語を設定
+npm run lang:ja    # 日本語版として設定
+# npm run lang:en  # 英語版として設定する場合
 ```
-
-言語を切り替えると、以下のファイルが自動的に更新されます：
-- `CLAUDE.md` - Claude Code設定ファイル
-- `docs/rules/` - 開発ルールディレクトリ
-- `docs/guides/sub-agents.md` - Sub-agentsガイド
-- `.claude/commands/` - スラッシュコマンド
-- `.claude/agents/` - Sub-agent定義
 
 ### 2. プロジェクト固有の設定
 
@@ -138,6 +130,30 @@ npm run lang:status
    - **説明文**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and sub-agent architecture for generating high quality code efficiently."
    - **トピックス**: `claude-code`, `typescript`, `boilerplate`, `ai-development`, `subagents`, `code-quality`, `multilingual`
 
+## 🌐 多言語化機能
+
+このボイラープレートは日本語と英語の両方をサポートしています。
+
+### 言語切り替えコマンド
+
+```bash
+# 日本語に切り替え
+npm run lang:ja
+
+# 英語に切り替え
+npm run lang:en
+
+# 現在の言語設定を確認
+npm run lang:status
+```
+
+言語を切り替えると、以下のファイルが自動的に更新されます：
+- `CLAUDE.md` - Claude Code設定ファイル
+- `docs/rules/` - 開発ルールディレクトリ
+- `docs/guides/sub-agents.md` - Sub-agentsガイド
+- `.claude/commands/` - スラッシュコマンド
+- `.claude/agents/` - Sub-agent定義
+
 ## 💻 開発コマンド
 
 ### 基本コマンド
@@ -154,13 +170,6 @@ npm run check:all   # 全体品質チェック
 npm run lint        # Lintチェック
 npm run format      # コードフォーマット
 npm run check:deps  # 循環依存チェック
-```
-
-### 多言語化
-```bash
-npm run lang:ja     # 日本語に切り替え
-npm run lang:en     # 英語に切り替え
-npm run lang:status # 現在の言語設定確認
 ```
 
 ### その他のコマンド
