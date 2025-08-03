@@ -75,25 +75,41 @@ When you switch languages, the following files are automatically updated:
 
 ## 🚀 Getting Started
 
-### 1. Setting Up the Boilerplate
+### 1. Setting Up a New Project (Recommended)
 
 ```bash
-# Clone the boilerplate to create a new project
-git clone https://github.com/shinpr/ai-coding-project-boilerplate.git my-project
+# Create a new project using npx
+npx github:shinpr/ai-coding-project-boilerplate my-project
+
+# Navigate to your project
 cd my-project
 
 # Install dependencies
 npm install
 
-# Set up your project language (configure as English project)
+# Start developing!
+npm run dev
+```
+
+Options:
+- `--lang=en` - Set up as English project (default)
+- `--lang=ja` - Set up as Japanese project
+
+### Alternative: Customizing This Repository
+
+If you want to customize the boilerplate itself:
+
+```bash
+# Clone the repository
+git clone https://github.com/shinpr/ai-coding-project-boilerplate.git
+cd ai-coding-project-boilerplate
+
+# Install dependencies
+npm install
+
+# Set your preferred language
 npm run lang:en    # Set up as English project
 # npm run lang:ja  # Set up as Japanese project if preferred
-
-# Reset Git history and start as a new project
-rm -rf .git
-git init
-git add .
-git commit -m "feat: initial commit from AI Coding Project Boilerplate"
 ```
 
 ### 2. Project-Specific Configuration
@@ -153,13 +169,6 @@ npm run check:all   # Overall quality check
 npm run lint        # Lint check
 npm run format      # Code formatting
 npm run check:deps  # Circular dependency check
-```
-
-### Language Switching
-```bash
-npm run lang:ja     # Switch to Japanese
-npm run lang:en     # Switch to English
-npm run lang:status # Check current language setting
 ```
 
 ### Additional Commands
