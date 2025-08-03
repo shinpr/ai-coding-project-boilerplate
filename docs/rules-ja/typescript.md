@@ -101,10 +101,3 @@ export class AppError extends Error {
 
 - ストリーミング処理: 大きなデータセットはストリームで処理
 - メモリリーク防止: 不要なオブジェクトは明示的に解放
-
-## 参照した手法・原則
-- **YAGNI原則**: Kent Beck「Extreme Programming Explained」
-- **DRY原則**: Andy Hunt & Dave Thomas「The Pragmatic Programmer」
-- **単一責任原則**: Robert C. Martin「Clean Code」
-- **リファクタリング**: Martin Fowler「Refactoring」
-- シンプル性優先: 過度な最適化より保守性を重視

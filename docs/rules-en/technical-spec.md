@@ -75,8 +75,4 @@ Record important technical decisions to enable future implementers to understand
 
 Define build commands and test execution methods for each project.
 
-## Referenced Methodologies and Principles
-- **ADR (Architecture Decision Record)**: Michael Nygard "Documenting Architecture Decisions"
-- **Single Data Source Principle**: Single Source of Truth (data management best practice)
-- **Dependency Injection (DI)**: Martin Fowler "Inversion of Control Containers and the Dependency Injection pattern"
 Quality checks are mandatory upon implementation completion.

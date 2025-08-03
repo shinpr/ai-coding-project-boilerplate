@@ -75,8 +75,4 @@ TypeScriptをベースとしたアプリケーション実装。アーキテク�
 
 プロジェクトごとにビルドコマンドとテスト実行方法を定義。
 
-## 参照した手法・原則
-- **ADR（Architecture Decision Record）**: Michael Nygard「Documenting Architecture Decisions」
-- **単一データソース原則**: Single Source of Truth（データ管理のベストプラクティス）
-- **依存性注入（DI）**: Martin Fowler「Inversion of Control Containers and the Dependency Injection pattern」
 品質チェックは実装完了時に必須。

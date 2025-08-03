@@ -150,9 +150,3 @@ describe('ComponentName', () => {
   })
 })
 ```
-
-## Referenced Methodologies and Principles
-- **Test-Driven Development**: Kent Beck "Test-Driven Development: By Example"
-- **Red-Green-Refactor**: Basic TDD cycle by Kent Beck
-- **Rule of Three**: Martin Fowler "Refactoring" (criteria for test helper consolidation)
-- **AAA Pattern**: Arrange-Act-Assert (standard pattern for test structure)

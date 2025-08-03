@@ -43,8 +43,3 @@ This document defines the architecture decision process for this project and pro
 - Propose ADR creation for changes to 5+ files
 - Always check existing ADRs before implementation
 - Post-creation of ADR allowed in emergencies (production failures, security vulnerabilities)
-
-## Referenced Methodologies and Principles
-- **ADR Methodology**: Michael Nygard "Documenting Architecture Decisions" (2011)
-- **Design Doc Culture**: Google Engineering Practices Documentation
-- **Trade-off Analysis**: Software Architecture in Practice (Bass, Clements, Kazman)

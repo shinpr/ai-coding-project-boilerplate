@@ -10,6 +10,8 @@ rules:
     key-references:
       - "YAGNI Principle - Kent Beck"
       - "Clean Code - Robert C. Martin"
+      - "DRY Principle - The Pragmatic Programmer"
+      - "Refactoring - Martin Fowler"
     sections:
       - "Basic Principles"
       - "Comment Writing Rules"
@@ -27,6 +29,8 @@ rules:
     key-references:
       - "Test-Driven Development - Kent Beck"
       - "Rule of Three - Martin Fowler"
+      - "Red-Green-Refactor - Kent Beck"
+      - "AAA Pattern - Arrange-Act-Assert"
     sections:
       - "Test Framework"
       - "Basic Testing Policy"
@@ -44,6 +48,8 @@ rules:
       - "Rule of Three - Martin Fowler"
       - "5 Whys - Toyota Production System"
       - "DRY Principle - The Pragmatic Programmer"
+      - "Single Responsibility Principle (SRP) - Clean Code"
+      - "YAGNI Principle - Extreme Programming"
     sections:
       - "Technical Anti-patterns (Red Flag Patterns)"
       - "Rule of Three - Criteria for Code Duplication"
@@ -60,6 +66,8 @@ rules:
     size: medium
     key-references:
       - "ADR Format - Michael Nygard"
+      - "Single Data Source Principle - Single Source of Truth"
+      - "Dependency Injection (DI) - Martin Fowler"
     sections:
       - "Basic Technology Stack Policy"
       - "Environment Variable Management and Security"
@@ -88,6 +96,8 @@ rules:
     key-references:
       - "ADR Methodology - Michael Nygard"
       - "Documenting Architecture Decisions"
+      - "Design Doc Culture - Google Engineering Practices"
+      - "Trade-off Analysis - Software Architecture in Practice"
     sections:
       - "Purpose"
       - "Cases Requiring ADR Creation"

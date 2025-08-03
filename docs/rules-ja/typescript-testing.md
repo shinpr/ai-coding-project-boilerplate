@@ -150,9 +150,3 @@ describe('ComponentName', () => {
   })
 })
 ```
-
-## 参照した手法・原則
-- **Test-Driven Development**: Kent Beck「Test-Driven Development: By Example」
-- **Red-Green-Refactor**: Kent Beck による TDD の基本サイクル
-- **Rule of Three**: Martin Fowler「Refactoring」（テストヘルパーの共通化基準）
-- **AAA パターン**: Arrange-Act-Assert（テスト構造の標準パターン）
