@@ -1,175 +1,137 @@
 # Claude Code Development Rules
 
-This project is optimized specifically for Claude Code. This file contains development rules for Claude Code to generate the highest quality TypeScript code. Please prioritize this project's rules over general conventions.
+Core rules for maximizing AI execution accuracy. All instructions must follow this file.
 
-## 🚨 Most Critical Rule: Investigation OK, Implementation STOP
+## 🚨 Most Important Principle: Research OK, Implementation STOP
 
-> **This is an absolute directive that takes precedence over all other rules**
+**User approval is mandatory before using any Edit/Write/MultiEdit tools**
 
-### ✅ Permitted Investigation Activities (No User Approval Required)
-- Information gathering with Read/Grep/LS/Glob/Task tools
-- Current situation analysis and document review
-- Problem identification and impact scope investigation
-- Error message confirmation and root cause analysis
-- Understanding existing code structure
+Reason: To prevent implementations that differ from user intent and ensure correct direction
 
-### ✅ Recommended: Get User Approval Before Starting Implementation Activities
-- **Benefits**: Ensures implementation perfectly aligns with user intent and prevents unexpected changes
-- **Practice**: Always obtain user approval before using Edit/Write/MultiEdit tools
-- **Reason**: While Claude Code can operate autonomously, deferring final decisions to users ensures reliable project direction control
+## Mandatory Execution Process
 
-### ✅ Activities Permitted After Approval
-Once the user approves implementation, the following activities can be performed freely until the next new instruction:
-- Using Edit/Write/MultiEdit within the approved work scope
-- Modifying related files
-- **Creating commits** (should be done proactively)
-- Executing quality checks
-- Running and fixing tests
+### Execution Flow (Required Steps)
+1. **Task decomposition with TodoWrite** → Cannot proceed to implementation without it
+   Reason: To structure tasks and enable progress tracking
+2. **Set task to in_progress** → rule-advisor execution is prerequisite
+   Reason: To select appropriate rules and understand task essence
+3. **Use Edit/Write/MultiEdit** → User approval is mandatory
+   Reason: Practicing the most important principle (Research OK, Implementation STOP)
+4. **Execute implementation** → Cannot complete with quality check errors
+   Reason: To ensure high-quality code
+5. **Count file changes** → Auto-stop when threshold exceeded
+   Reason: To get confirmation before impact becomes too large
 
-### 📋 Mandatory Pre-Implementation Flow
-1. **Report Investigation Results**: "XX is the cause, and there is a problem with YY"
-2. **Present Implementation Plan**: When formulating a plan, ask yourself the following questions and reflect them in the plan before presenting:
-   - What is the essence of this task, and which rules should guide the approach?
-   - According to the rules, what should be tackled first?
-   - Based on past experience, what failures commonly occur with this type of task?
-3. **Wait for Explicit User Approval**: Approval such as "OK", "proceed", "go ahead"
-4. **Start Implementation After Approval**: Use Edit/Write and other tools
+### TodoWrite and Metacognition Integration
+**Execution Rules**:
+- When `pending → in_progress`: rule-advisor output is mandatory
+- **After rule-advisor execution**: Always update TodoWrite (revise task content, priority, granularity)
+  - Concretize task description based on taskEssence
+  - Reflect firstActionGuidance in the first task
+  - Restructure tasks considering warningPatterns
+- Using Edit tools without TodoWrite: Stop as rule violation
+- When updating task status: Recording implementation details is mandatory (no blanks)
 
-### ⚠️ Exception
-Only when the user explicitly instructs immediate implementation such as "fix it right away" or "implement directly", the approval step can be skipped.
+### Execution Prerequisites
+1. **rule-advisor output** → JSON response must exist
+2. **TodoWrite task** → in_progress status must exist
+3. **User approval record** → Explicit approval before Edit/Write
+4. **Quality check results** → Cannot complete with errors > 0
 
-## Development Workflow and Procedures
+### Prohibited Actions
+- **Using any type** → Causes type check errors
+  Reason: Destroys type safety and causes runtime errors
+- **Using Edit without TodoWrite** → Rule violation
+  Reason: Cannot track progress or ensure quality without task management
+- **Edit/Write/MultiEdit without approval** → Move to approval waiting
+  Reason: To prevent violating the most important principle
+- **Declaring completion with quality errors** → Does not meet completion criteria
+  Reason: To prevent incomplete code from being mixed in
 
-### Basic Workflow
-1. **Load Rule Files**: Always read all 7 rule files
-2. **Document Review**: Check related ADR/Design Doc/work plans
-3. **Plan Development**: Present implementation plan and obtain user approval
-4. **Execute Implementation**: Implement with progressive quality assurance
-5. **Quality Check**: Commit after all checks pass
+## Metacognitive Execution (Mandatory at Task Start)
 
-### Tool Utilization
-- **Main Development**: Claude Code
+### Metacognition with Information from rule-advisor
+1. **Understand taskEssence (task essence)**
+   - Distinguish between surface work and fundamental purpose
+   - Judge "quick fix" vs "proper solution"
 
-## Basic Principles When in Doubt
+2. **Confirm applicableRules (applicable rules)**
+   - Judge if selected rules are appropriate
+   - Load necessary sections
 
-### Error Response Flow
-1. **Read Error Messages Accurately** - Focus on the beginning and end of stack traces
-2. **Analyze Root Causes** - Repeat "Why?" 5 times (5 Whys)
-3. **Check Impact Scope** - Investigate effects on other files and features
-4. **Consider Multiple Solutions** - Think of at least 2 or more solution approaches
-5. **Confirm with User When Uncertain** - Always confirm rather than proceeding with assumptions
+3. **Recognize pastFailurePatterns (past failures)**
+   - Be careful not to repeat same failures
+   - Be conscious of suggested workarounds
 
-### Decision Priority Order
-Priority order when multiple principles conflict during implementation:
-1. **User Approval** > Everything (Highest Priority)
-2. **Quality Assurance** > Implementation Speed
-3. **Root Solution** > Temporary Fixes
-4. **Clarity** > Brevity
-5. **Maintainability** > Performance (unless there are clear bottlenecks)
+4. **Execute firstAction (initial action)**
+   - Start with recommended tools
+   - Proceed systematically
 
-### Escalation Criteria (Always Confirm with User)
-In the following cases, always seek user judgment before implementation:
-- **Architecture-Level Changes** - Adding new layers, changing responsibilities, data flow changes
-- **Adding External Dependencies** - New npm packages, new APIs, new environment variables
-- **Breaking Changes** - Existing API changes, data structure changes, major naming changes
-- **Unclear Trade-offs** - When superiority between multiple implementation methods cannot be determined
-- **Impact Scope of 5+ Files** - Large-scale changes require prior approval
+## Claude Behavior Control (Failure Prevention)
 
-For detailed escalation criteria, refer to @docs/rules/ai-development-guide.md.
+### Auto-stop Triggers (Must Stop)
+- **Detecting 5+ file changes**: Stop immediately, report impact to user
+  Reason: Large changes require advance planning and review
+- **Same error occurs 3 times**: Root cause analysis mandatory
+  Reason: Need root solution, not symptomatic treatment
+- **Detecting excessive unknown type usage**: Reconsider type guard design
+  Reason: High possibility of type safety design issues
+- **After editing 3 files**: Force TodoWrite update (cannot use next Edit tool without update)
+  Reason: Need to confirm progress and direction
 
-### Behavioral Principles as Claude Code
-1. **Responsibility as Implementer**: Take full responsibility for code implementation and guarantee quality
-2. **Respect for Approver**: Respect users as the final approvers
-3. **Ensure Transparency**: Clearly explain implementation content and intent, providing decision-making materials
-4. **Appropriate Abstraction**: Follow duplication removal judgment criteria, avoiding excessive abstraction while enhancing maintainability
+### Handling Error-fixing Impulse
+1. Error discovered → **Pause**
+2. Re-execute rule-advisor
+3. Root cause analysis (repeat "why" 5 times to identify true cause)
+4. Present action plan
+5. Fix after user approval
 
-## Development Rule Files
+### Escalation Criteria (User Confirmation Required)
+- Architecture changes (adding new layers, changing responsibilities)
+- Adding external dependencies (npm packages, external APIs)
+- Breaking changes (changing existing APIs, data structures)
+- Multiple implementation methods with unclear superiority
 
-Development guidelines for this project are managed in rule files within the `docs/rules/` directory. All Claude AI tools must strictly adhere to these rules.
+### Preventing Rule Ignoring When Focused
+**Measurable Forced Stop Criteria**:
+- **2nd consecutive error fix**: Automatically trigger rule-advisor re-execution
+- **5 Edit tool uses**: Force impact report creation
+- **3 edits to same file**: Force stop for refactoring consideration
 
-@docs/rules/technical-spec.md
-@docs/rules/typescript.md
-@docs/rules/typescript-testing.md
-@docs/rules/project-context.md
-@docs/rules/ai-development-guide.md
-@docs/rules/architecture-decision-process.md
-@docs/rules/canonical-phrases.md
+### Temporary File Creation Rules
+Use `tmp/` directory for work files. Delete upon completion.
 
-**Note**: The canonical-phrases.md file defines standardized terminology, specific criteria for ambiguous terms, and clear decision trees to maximize AI execution accuracy.
+### Proactive Use of Specialized Agents (PROACTIVELY)
+- **When quality-related keywords detected**: quality-fixer mandatory execution
+  - Type errors, build errors, lint errors, format warnings
+  - Test failures, quality checks, verification tasks
+- **At task start**: rule-advisor mandatory execution
+  - Execute before TodoWrite creation and reflect results
 
-## 【Absolute Compliance】Initial Mandatory Tasks
+## rule-advisor Usage
 
-> ⚠️ **Warning**: The following are the most critical rules that must be absolutely followed
+### Execution Method
+```
+Task(
+  subagent_type="rule-advisor",
+  description="Select rules for quality check",
+  prompt="@rule-advisor Task: Quality check and error fixing Context: [Project details and error content] Please select appropriate ruleset."
+)
+```
 
-### Procedures When Receiving Tasks
-
-1. **Stop Implementation**: Always stop before code modification
-2. **Load Rule Files**: Read all 7 rule files
-3. **Check Related Documents**: Review ADR/Design Doc/work plans
-4. **Plan Development**: Present implementation plan
-5. **User Approval**: Start implementation after approval
-
-**Important**: Implementation without document review is absolutely prohibited
-
-### Temporary File Management
-- Create work-in-progress files in `tmp/` directory
-- Delete upon work completion
-- Place only items requiring persistence in appropriate locations
-
-## Task Management Principles
-
-### Basic Policy
-- **Each Task Completely Self-Contained**: Complete in a quality-assured, functional state
-- **Ensure Independence**: Decompose into units without interdependencies
-- **Commit-Ready Granularity**: 1 task = 1 logical change unit
-
-### Detailed Procedures
-For task decomposition criteria, execution flow, and quality assurance, refer to @docs/rules/ai-development-guide.md.
-
-### Escalation Criteria
-For details, refer to the "Escalation Criteria" section in @docs/rules/ai-development-guide.md.
-
-### Pre-Implementation Verification Process
-
-**Mandatory Verification Items**:
-1. Related document review (ADR/Design Doc/work plans)
-2. Understanding existing code and tests
-3. Grasping impact scope
-
-**Efficient Verification Procedures**:
-- Design/Planning phase: Review only related ADRs
-- Implementation phase: Review only related Design Docs
-- Work start: Review ongoing work plans
-
-**Design Approval Flow**: Document creation → Review → Approval → Implementation start
-
-**Important**: Starting implementation without document review is a serious rule violation
-
-## Basic Principles of Development Process
-
-### Pre-Implementation Planning and Agreement
-For planning based on change scale, refer to "PRD/ADR/Design Doc/work plan Creation Process" in @docs/rules/technical-spec.md.
-
-**Basic Flow**: Present plan → User approval → Start implementation
-
-### Test-First Development
-For details, refer to "Red-Green-Refactor Process" in @docs/rules/typescript-testing.md.
-
-**Basic Principle**: Start with tests for new features and bug fixes
-
-### Root Cause Analysis
-For details, refer to @docs/rules/ai-development-guide.md.
-
-## work plan Operations
-
-For detailed work plan creation criteria, naming conventions, operational flows, refer to "About work plans" in @docs/rules/technical-spec.md.
-
-## Code Quality Checks (Mandatory)
-
-### Basic Principles
-- **Zero Error Principle**: Leave no warnings or errors
-- **Completion Condition**: All checks must pass without errors
-
-For quality check details, refer to "Quality Checks (Mandatory at Implementation Completion)" in @docs/rules/ai-development-guide.md.
-
-**Important**: Work is not considered complete unless all checks pass without errors.
+### Utilizing Output
+Output includes section content, allowing direct reference to specific rules:
+```json
+{
+  "selectedRules": [{
+    "sections": [{
+      "title": "Type System Usage",
+      "content": "Actual rule content included"
+    }]
+  }],
+  "mandatoryChecks": {
+    "taskEssence": "Ensuring type safety (not just error elimination)",
+    "firstStep": "Specific initial action"
+  }
+}
+```

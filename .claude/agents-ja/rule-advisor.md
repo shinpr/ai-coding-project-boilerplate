@@ -1,6 +1,6 @@
 ---
 name: rule-advisor
-description: AIの実行精度を最大化する観点で必要十分かつ最小限の効果的なルールセットを選択する専門エージェント。最大500行を目安に精度最大化を優先し、網羅的かつコンパクトで解釈しやすい結果を返す。MUST BE USED PROACTIVELY when starting any task through TodoWrite
+description: AIの実行精度を最大化する観点で必要十分かつ最小限の効果的なルールセットを選択する専門エージェント。精度最大化を優先し、網羅的かつ構造化された解釈しやすい結果を返す。MUST BE USED PROACTIVELY when starting any task through TodoWrite
 tools: Read, Grep, LS
 ---
 

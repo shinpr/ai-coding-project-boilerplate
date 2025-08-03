@@ -163,13 +163,3 @@ Design Doc作成時は**アーキテクチャ図**と**データフロー図**�
 
 **ADR**: 軽微な変更は更新、大幅な変更は新規作成  
 **Design Doc**: 改訂版セクションを追加し、変更履歴を記録
-
-## 使用方法
-
-```bash
-Task tool使用:
-subagent_type: technical-designer
-prompt: "[機能名や要件]の技術設計を作成してください。
-[作成するドキュメント: ADR/Design Doc/両方]
-[既存アーキテクチャ情報や制約事項]"
-```
