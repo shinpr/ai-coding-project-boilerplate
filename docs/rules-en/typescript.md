@@ -54,10 +54,6 @@ Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → 
 - ❌ Commented-out code (manage history with version control)
 - ✅ Comments explain "why" (not "what")
 
-**Date/Time Processing**
-- Explicit timezone: `new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })`
-- Store data in UTC: `new Date().toISOString()`
-
 ## Error Handling
 
 **Absolute Rule**: Error suppression prohibited. All errors must have log output and appropriate handling.
