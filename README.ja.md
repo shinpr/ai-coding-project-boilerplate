@@ -25,7 +25,9 @@ ai-coding-project-boilerplate/
 │   └── commands-en/        # カスタムスラッシュコマンド（英語）
 ├── docs/
 │   ├── rules-ja/           # Claude Code向け開発ルール（日本語）
+│   │   └── rules-index.yaml  # ルールファイルのインデックスとメタデータ
 │   ├── rules-en/           # Claude Code向け開発ルール（英語）
+│   │   └── rules-index.yaml  # ルールファイルのインデックスとメタデータ
 │   ├── guides/
 │   │   ├── ja/
 │   │   │   └── sub-agents.md  # Sub-agents実践ガイド（日本語）
@@ -244,15 +246,16 @@ graph TD
 
 ### 利用可能なSub-agent
 
-- **quality-fixer**: 品質チェック・自動修正
-- **task-executor**: 個別タスク実行
-- **technical-designer**: ADR・Design Doc作成
-- **work-planner**: 作業計画書作成
-- **document-reviewer**: ドキュメントの整合性と完成度をレビュー
+- **quality-fixer**: 品質チェック・自動修正 - TypeScriptプロジェクトの品質問題を自動修正
+- **task-executor**: 個別タスク実行 - タスクファイルの手順に従って実装を実行
+- **technical-designer**: ADR・Design Doc作成 - 技術設計ドキュメントを作成
+- **work-planner**: 作業計画書作成 - 設計ドキュメントから構造化された実装計画を作成
+- **document-reviewer**: ドキュメントの整合性と完成度をレビュー - 複数の観点からドキュメントを検証
 - **document-fixer**: 複数観点のレビューを統合してドキュメントを自動修正
-- **prd-creator**: Product Requirements Document（PRD）作成
-- **requirement-analyzer**: 要件分析と作業規模判定
-- **task-decomposer**: 作業計画書から1コミット粒度のタスクに分解
+- **prd-creator**: Product Requirements Document（PRD）作成 - 構造化されたビジネス要件を作成
+- **requirement-analyzer**: 要件分析と作業規模判定 - ユーザー要件を分析し適切な開発アプローチを提案
+- **task-decomposer**: 作業計画書から1コミット粒度のタスクに分解 - 計画書を細かいタスクに分割
+- **rule-advisor**: AI実行精度最大化のための最小限で効果的なルールセットを選択
 
 詳細は`CLAUDE.md`および`.claude/agents/`内の各定義ファイルを参照してください。
 
@@ -273,7 +276,14 @@ graph TD
 - ❌ **避けるべき**: コメントアウト（バージョン管理で履歴管理）
 - ✅ **推奨**: YAGNI原則（現在必要な機能のみ実装）
 
-### 6つのルールファイル
+### ルールインデックスシステム
+
+各言語ディレクトリの`rules-index.yaml`ファイルは以下を提供：
+- **メタデータ**: 各ルールファイルの説明、優先度、キーワード
+- **動的ルール選択**: AIエージェントがタスクコンテキストに基づいて適切なルールを選択
+- **効率性**: 必要なルールのみ読み込むことでコンテキスト使用を最適化
+
+### 6つのコアルールファイル
 1. **technical-spec.md**: 技術仕様・アーキテクチャ設計
 2. **typescript.md**: TypeScript開発ルール（パフォーマンス最適化を含む）
 3. **typescript-testing.md**: テストルール・Vitestの活用
