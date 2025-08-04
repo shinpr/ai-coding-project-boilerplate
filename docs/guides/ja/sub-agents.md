@@ -58,7 +58,7 @@ graph TD
 6. **technical-designer**: ADR/Design Doc作成
 7. **work-planner**: 作業計画書作成
 8. **document-reviewer**: ドキュメント整合性チェック
-9. **document-fixer**: 複数観点レビューの統合と自動修正実行
+8. **document-reviewer**: ドキュメント整合性チェック
 
 ## 🎭 私のオーケストレーション原則
 
@@ -121,7 +121,7 @@ graph TD
 各サブエージェントはJSON形式で応答します。主要フィールド：
 - **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
 - **quality-fixer**: status, checksPerformed, fixesApplied, approved
-- **document-fixer**: status, reviewsPerformed, fixesApplied, readyForApproval
+- **document-reviewer**: status, issues, recommendations, approvalStatus
 
 ## 🛠️ サブエージェント呼び出し方法
 
@@ -179,9 +179,9 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 
 私が各エージェントを呼ぶタイミングの判断基準:
 - **work-planner**: 実行前のみ更新を依頼
-- **technical-designer**: 設計変更に応じて更新を依頼 → document-fixerで整合性保証
-- **prd-creator**: 要件変更に応じて更新を依頼 → document-fixerで整合性保証
-- **document-fixer**: PRD/ADR/Design Doc作成・更新後、ユーザー承認前に必ず実行
+- **technical-designer**: 設計変更に応じて更新を依頼 → document-reviewerでレビュー実行
+- **prd-creator**: 要件変更に応じて更新を依頼 → document-reviewerでレビュー実行
+- **document-reviewer**: PRD/ADR/Design Doc作成・更新後、レビュー実行してポイントを要約
 
 ## 📄 作業計画時の私の基本フロー
 
@@ -190,14 +190,14 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 
 ### 大規模（新機能・6ファイル以上）
 1. requirement-analyzer → 要件分析 **[停止: 要件確認・質問事項対応]**
-2. prd-creator → PRD作成 → document-fixer実行 **[停止: 要件確認]**
-3. technical-designer → ADR作成 → document-fixer実行 **[停止: 技術方針決定]**
+2. prd-creator → PRD作成 → document-reviewer実行 → レビューポイント要約 **[停止: 要件確認]**
+3. technical-designer → ADR作成 → document-reviewer実行 → レビューポイント要約 **[停止: 技術方針決定]**
 4. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
 5. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
 
 ### 中規模（3-5ファイル）
 1. requirement-analyzer → 要件分析 **[停止: 要件確認・質問事項対応]**
-2. technical-designer → Design Doc作成 → document-fixer実行 **[停止: 技術方針決定]**
+2. technical-designer → Design Doc作成 → document-reviewer実行 → レビューポイント要約 **[停止: 技術方針決定]**
 3. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
 4. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
 
@@ -279,7 +279,7 @@ graph TD
 
 - **品質チェックは必須**: コミット前にquality-fixerの承認が必要
 - **構造化レスポンス必須**: サブエージェント間の情報伝達はJSON形式
-- **承認管理**: ドキュメント作成→document-fixer実行→ユーザー承認を得てから次へ進む
+- **承認管理**: ドキュメント作成→レビュー実行→ポイント要約→ユーザー承認を得てから次へ進む
 - **フロー確認**: 承認取得後は必ず作業計画フロー（大規模/中規模/小規模）で次のステップを確認
 - **整合性検証**: サブエージェント判定に矛盾がある場合はガイドラインを優先
 
@@ -293,9 +293,9 @@ graph TD
 
 ### 主要な停止ポイント
 - **requirement-analyzer完了後**: 要件分析結果と質問事項の確認
-- **PRD作成→document-fixer実行後**: 要件理解と整合性の確認（質問リストで確認）
-- **ADR作成→document-fixer実行後**: 技術方針と整合性の確認（比較表で複数案提示）
-- **Design Doc作成→document-fixer実行後**: 設計内容と整合性の確認
+- **PRD作成→レビュー要約後**: レビューポイントと要件理解の確認
+- **ADR作成→レビュー要約後**: レビューポイントと技術方針の確認
+- **Design Doc作成→レビュー要約後**: レビューポイントと設計内容の確認
 - **計画書作成後**: 実装フェーズ全体の一括承認（計画サマリーで確認）
 
 ### 自律実行中の停止ポイント
