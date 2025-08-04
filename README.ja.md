@@ -200,7 +200,6 @@ npm run cleanup:processes   # テストプロセスクリーンアップ
 要件分析から設計書作成まで実行します。
 - 要件の背景と目的の深掘り
 - 規模に応じた設計書作成（PRD/ADR/Design Doc）
-- document-fixerによる品質保証
 - 設計の代替案とトレードオフの提示
 
 ### `/plan`
@@ -260,7 +259,7 @@ graph TD
 - **technical-designer**: ADR・Design Doc作成 - 技術設計ドキュメントを作成
 - **work-planner**: 作業計画書作成 - 設計ドキュメントから構造化された実装計画を作成
 - **document-reviewer**: ドキュメントの整合性と完成度をレビュー - 複数の観点からドキュメントを検証
-- **document-fixer**: 複数観点のレビューを統合してドキュメントを自動修正
+- **document-fixer**: （停止中）複数観点のレビューを統合してドキュメントを自動修正
 - **prd-creator**: Product Requirements Document（PRD）作成 - 構造化されたビジネス要件を作成
 - **requirement-analyzer**: 要件分析と作業規模判定 - ユーザー要件を分析し適切な開発アプローチを提案
 - **task-decomposer**: 作業計画書から1コミット粒度のタスクに分解 - 計画書を細かいタスクに分割
