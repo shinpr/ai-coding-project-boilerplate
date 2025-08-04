@@ -200,7 +200,6 @@ npm run cleanup:processes   # テストプロセスクリーンアップ
 要件分析から設計書作成まで実行します。
 - 要件の背景と目的の深掘り
 - 規模に応じた設計書作成（PRD/ADR/Design Doc）
-- document-fixerによる品質保証
 - 設計の代替案とトレードオフの提示
 
 ### `/plan`

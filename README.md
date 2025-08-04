@@ -199,7 +199,6 @@ Acts as orchestrator managing the complete cycle from requirement analysis to im
 Executes from requirement analysis to design document creation.
 - Deep dive into requirement background and objectives
 - Scale-appropriate design document creation (PRD/ADR/Design Doc)
-- Quality assurance via document-fixer
 - Present design alternatives and trade-offs
 
 ### `/plan`
