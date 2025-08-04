@@ -259,7 +259,7 @@ graph TD
 - **technical-designer**: ADR & Design Doc creation - Creates technical design documents
 - **work-planner**: Work plan creation - Creates structured implementation plans from design documents
 - **document-reviewer**: Review document consistency and completeness - Validates documents from multiple perspectives
-- **document-fixer**: Integrate multi-perspective reviews and automatically correct documents
+- **document-fixer**: (Suspended) Integrate multi-perspective reviews and automatically correct documents
 - **prd-creator**: Product Requirements Document (PRD) creation - Creates structured business requirements
 - **requirement-analyzer**: Requirement analysis and work scale assessment - Analyzes user requirements and determines appropriate development approach
 - **task-decomposer**: Decompose work plans into commit-level tasks - Breaks down plans into 1-commit granular tasks

@@ -58,7 +58,6 @@ I actively utilize the following 9 subagents:
 6. **technical-designer**: ADR/Design Doc creation
 7. **work-planner**: Work plan creation
 8. **document-reviewer**: Document consistency check
-9. **document-fixer**: Integration of multi-perspective reviews and automatic fix execution
 
 ## 🎭 My Orchestration Principles
 
@@ -121,7 +120,7 @@ I repeat this cycle for each task to ensure quality.
 Each subagent responds in JSON format. Major fields:
 - **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
 - **quality-fixer**: status, checksPerformed, fixesApplied, approved
-- **document-fixer**: status, reviewsPerformed, fixesApplied, readyForApproval
+- **document-reviewer**: status, issues, recommendations, approvalStatus
 
 ## 🛠️ How to Call Subagents
 
@@ -179,9 +178,9 @@ Document generation agents (work-planner, technical-designer, prd-creator) can u
 
 My criteria for timing when to call each agent:
 - **work-planner**: Request updates only before execution
-- **technical-designer**: Request updates according to design changes → Ensure consistency with document-fixer
-- **prd-creator**: Request updates according to requirement changes → Ensure consistency with document-fixer
-- **document-fixer**: Always execute after PRD/ADR/Design Doc creation/update, before user approval
+- **technical-designer**: Request updates according to design changes → Execute document-reviewer for review
+- **prd-creator**: Request updates according to requirement changes → Execute document-reviewer for review
+- **document-reviewer**: Execute review after PRD/ADR/Design Doc creation/update and summarize key points
 
 ## 📄 My Basic Flow for Work Planning
 
@@ -190,14 +189,14 @@ According to scale determination:
 
 ### Large Scale (New Features, 6+ Files)
 1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
-2. prd-creator → PRD creation → Execute document-fixer **[Stop: Requirement confirmation]**
-3. technical-designer → ADR creation → Execute document-fixer **[Stop: Technical direction decision]**
+2. prd-creator → PRD creation → Execute document-reviewer → Summarize review points **[Stop: Requirement confirmation]**
+3. technical-designer → ADR creation → Execute document-reviewer → Summarize review points **[Stop: Technical direction decision]**
 4. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
 5. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
 ### Medium Scale (3-5 Files)
 1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
-2. technical-designer → Design Doc creation → Execute document-fixer **[Stop: Technical direction decision]**
+2. technical-designer → Design Doc creation → Execute document-reviewer → Summarize review points **[Stop: Technical direction decision]**
 3. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
 4. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
@@ -279,7 +278,7 @@ Stop autonomous execution and escalate to user in the following cases:
 
 - **Quality check is mandatory**: quality-fixer approval needed before commit
 - **Structured response mandatory**: Information transmission between subagents in JSON format
-- **Approval management**: Document creation → Execute document-fixer → Get user approval before proceeding
+- **Approval management**: Document creation → Execute review → Summarize points → Get user approval before proceeding
 - **Flow confirmation**: After getting approval, always check next step with work planning flow (large/medium/small scale)
 - **Consistency verification**: If subagent determinations contradict, prioritize guidelines
 
@@ -293,9 +292,9 @@ Stop autonomous execution and escalate to user in the following cases:
 
 ### Major Stop Points
 - **After requirement-analyzer completion**: Confirmation of requirement analysis results and questions
-- **After PRD creation → document-fixer execution**: Confirmation of requirement understanding and consistency (confirm with question list)
-- **After ADR creation → document-fixer execution**: Confirmation of technical direction and consistency (present multiple options with comparison table)
-- **After Design Doc creation → document-fixer execution**: Confirmation of design content and consistency
+- **After PRD creation → review summary**: Confirmation of review points and requirement understanding
+- **After ADR creation → review summary**: Confirmation of review points and technical direction
+- **After Design Doc creation → review summary**: Confirmation of review points and design content
 - **After plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
 
 ### Stop Points During Autonomous Execution

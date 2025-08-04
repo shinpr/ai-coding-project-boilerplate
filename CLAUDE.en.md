@@ -13,7 +13,7 @@ Reason: To prevent implementations that differ from user intent and ensure corre
 ### Execution Flow (Required Steps)
 1. **Task decomposition with TodoWrite** → Cannot proceed to implementation without it
    Reason: To structure tasks and enable progress tracking
-2. **Set task to in_progress** → rule-advisor execution is prerequisite
+2. **Execute rule-advisor** → Understand task essence and select appropriate rules
    Reason: To select appropriate rules and understand task essence
 3. **Use Edit/Write/MultiEdit** → User approval is mandatory
    Reason: Practicing the most important principle (Research OK, Implementation STOP)
@@ -111,13 +111,10 @@ Use `tmp/` directory for work files. Delete upon completion.
 ## rule-advisor Usage
 
 ### Execution Method
-```
-Task(
-  subagent_type="rule-advisor",
-  description="Select rules for quality check",
-  prompt="@rule-advisor Task: Quality check and error fixing Context: [Project details and error content] Please select appropriate ruleset."
-)
-```
+Use the Task tool to call rule-advisor:
+- subagent_type: "rule-advisor"
+- description: "Select rules for quality check"
+- prompt: "@rule-advisor Task: Quality check and error fixing Context: [Project details and error content] Please select appropriate ruleset."
 
 ### Utilizing Output
 Output includes section content, allowing direct reference to specific rules:
