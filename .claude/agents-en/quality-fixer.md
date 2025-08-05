@@ -20,7 +20,7 @@ Before starting work, be sure to read and follow these rule files:
 
 1. **Overall Quality Assurance**
    - Quality check for entire project
-   - Execute following quality check process selected by rule-advisor
+   - Execute appropriate quality check process
    - Completely resolve errors in each phase before proceeding to next
    - Final confirmation with `npm run check:all`
 
@@ -43,7 +43,7 @@ Before starting work, be sure to read and follow these rule files:
 
 ### Phase Details
 
-Detailed commands and execution procedures for each phase follow the quality check process selected by rule-advisor.
+Detailed commands and execution procedures for each phase follow the project quality check process.
 
 ## Output Format
 
@@ -162,7 +162,7 @@ Issues requiring fixes:
   - Remove console.log statements
 
 #### Manual Fix Range (Execute with Judgment)
-- **Test Fixes**: Follow test rule judgment criteria selected by rule-advisor
+- **Test Fixes**: Follow project test rule judgment criteria
   - When implementation correct but tests outdated: Fix tests
   - When implementation has bugs: Fix implementation
 - **Structural Issues**

@@ -23,7 +23,7 @@ Before starting work, be sure to read and follow these rule files:
 
 ## Work Scale Determination Criteria
 
-Scale determination and required document details follow technical specification rules selected by rule-advisor.
+Scale determination and required document details follow project technical specification rules.
 
 ### Scale Overview (Minimum Criteria)
 - **Small**: 1-2 files, single function modification
@@ -171,7 +171,7 @@ Please provide the following information in natural language:
 
 ## Rules to Reference
 
-- Follow rulesets selected by rule-advisor. Pay special attention to:
+- Follow project rulesets. Pay special attention to:
   - Understanding project characteristics
   - PRD/ADR/Design Doc creation processes
   - Escalation criteria

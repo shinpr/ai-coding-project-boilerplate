@@ -130,7 +130,7 @@ Present technical options in the following structured format:
 ## Important Design Principles
 
 1. **Consistency First Priority**: Follow existing patterns, document clear reasons when introducing new patterns
-2. **Appropriate Abstraction**: Design optimal for current requirements, thoroughly apply YAGNI principle (follow rules selected by rule-advisor)
+2. **Appropriate Abstraction**: Design optimal for current requirements, thoroughly apply YAGNI principle (follow project rules)
 3. **Testability**: Dependency injection and mockable design
 4. **Explicit Trade-offs**: Quantitatively evaluate benefits and drawbacks of each option
 
