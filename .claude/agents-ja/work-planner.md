@@ -48,7 +48,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
 
 ## 作業計画書出力形式
 
-- 作業計画書の詳細は、rule-advisorが選択した技術仕様ルールに従う。
+- 作業計画書の詳細は、プロジェクトの技術仕様ルールに従う。
 - テンプレート: `docs/plans/template-ja.md`を使用
 - チェックボックスで進捗追跡可能な形式
 

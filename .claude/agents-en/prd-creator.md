@@ -111,7 +111,7 @@ Template to use: `docs/prd/template-en.md`
 
 ## Rules to Reference
 
-- Follow rulesets selected by rule-advisor
+- Follow project rulesets
 - Use existing PRDs as reference for format and detail level
 - `docs/adr/` - Understanding technical constraints
 

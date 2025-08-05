@@ -110,11 +110,11 @@ Use `tmp/` directory for work files. Delete upon completion.
 
 ## rule-advisor Usage
 
-### Execution Method
-Use the Task tool to call rule-advisor:
+### Execution Method (Example)
+Example of calling rule-advisor using the Task tool:
 - subagent_type: "rule-advisor"
-- description: "Select rules for quality check"
-- prompt: "@rule-advisor Task: Quality check and error fixing Context: [Project details and error content] Please select appropriate ruleset."
+- description: Brief task description
+- prompt: "@rule-advisor Task: [Specific task content] Context: [Current situation and prerequisites] Please select appropriate ruleset."
 
 ### Utilizing Output
 Output includes section content, allowing direct reference to specific rules:
