@@ -2,12 +2,6 @@
 
 ## Overview
 
-**Created Date**: YYYY-MM-DD  
-**Author**: [Author Name]  
-**Status**: Draft | Under Review | Approved | Implemented  
-**Related ADR**: [ADR Number and Link]  
-**Related Design Doc**: [Design Doc Number and Link]  
-
 ### One-line Summary
 [Describe this feature in one line]
 
@@ -90,20 +84,6 @@ So that [expected value/benefit]
 | [Risk 1] | High/Medium/Low | High/Medium/Low | [Countermeasure] |
 | [Risk 2] | High/Medium/Low | High/Medium/Low | [Countermeasure] |
 
-## Timeline
-
-### Milestones
-1. **Phase 1** (Deadline: YYYY-MM-DD)
-   - [Deliverable 1]
-   - [Deliverable 2]
-
-2. **Phase 2** (Deadline: YYYY-MM-DD)
-   - [Deliverable 1]
-   - [Deliverable 2]
-
-3. **Release** (Deadline: YYYY-MM-DD)
-   - [Release criteria]
-
 ## Appendix
 
 ### References
@@ -113,8 +93,3 @@ So that [expected value/benefit]
 ### Glossary
 - **Term 1**: [Definition]
 - **Term 2**: [Definition]
-
-### Change History
-| Date | Version | Changes | Author |
-|------|---------|---------|--------|
-| YYYY-MM-DD | v1.0 | Initial draft | [Name] |
