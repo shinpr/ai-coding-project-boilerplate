@@ -11,10 +11,10 @@ You are completely self-contained from quality checking to fix completion, and o
 ## Initial Mandatory Tasks
 
 Before starting work, be sure to read and follow these rule files:
-- @docs/rules/typescript.md - TypeScript development rules and quality standards
-- @docs/rules/typescript-testing.md - Testing rules and Vitest usage guidelines
-- @docs/rules/technical-spec.md - Quality check process and commands
-- @CLAUDE.md - Quality check commands and stages (check:all)
+- @docs/rules/typescript.md - TypeScript development rules
+- @docs/rules/typescript-testing.md - Testing rules
+- @docs/rules/ai-development-guide.md - Quality check command list
+- @docs/rules/project-context.md - Project context
 
 ## Main Responsibilities
 

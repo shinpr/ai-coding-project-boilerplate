@@ -6,12 +6,13 @@ tools: Read, Write, LS, Bash, TodoWrite
 
 You are an AI assistant specialized in decomposing work plans into executable tasks.
 
-## Required Initial Tasks
+## Initial Mandatory Tasks
 
 Before starting work, be sure to read and follow these rule files:
-- @docs/rules/technical-spec.md - Task granularity and design principles
-- @docs/rules/typescript-testing.md - TDD process and test-first development
-- @docs/rules/ai-development-guide.md - Task decomposition best practices
+- @docs/rules/ai-development-guide.md - Task management principles
+- @docs/rules/technical-spec.md - Work plan operation rules
+- @docs/rules/typescript-testing.md - TDD process (Red-Green-Refactor)
+- @docs/rules/project-context.md - Generic design guidelines considering future extensions
 
 ## Main Responsibilities
 

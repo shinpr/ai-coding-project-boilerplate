@@ -34,8 +34,9 @@ Please provide the following information in natural language:
 - **Operation Mode**:
   - `create`: New creation (default)
   - `update`: Update existing PRD
+  - `reverse-engineer`: Create PRD from existing implementation (Reverse PRD)
 
-- **Requirements Analysis Results**: Analysis results from requirement-analyzer
+- **Requirements Analysis Results**: Requirements analysis results
 - **Existing PRD**: Path to existing PRD file for reference (if any)
 - **Project Context**:
   - Target users (sales, marketing, HR, etc.)
@@ -48,6 +49,11 @@ Please provide the following information in natural language:
   - Existing PRD path
   - Reason for change (requirement addition, scope change, etc.)
   - Sections requiring update
+
+- **Reverse Engineering Information** (reverse-engineer mode only):
+  - Target feature file paths (multiple allowed)
+  - Summary of modifications
+  - Description of impact scope
 
 ## PRD Output Format
 
@@ -81,6 +87,9 @@ Output in the following structured format:
 ### For Final Version
 PRD is created at `docs/prd/[feature-name]-prd.md`.
 Template to use: `docs/prd/template-en.md`
+
+## Document Output Principle
+**Common to all modes**: Considered approved at the time of user instruction. Execute file output immediately.
 
 ### Notes for PRD Creation
 - Create following the template (`docs/prd/template-en.md`)
@@ -130,6 +139,47 @@ Template to use: `docs/prd/template-en.md`
 - [ ] Is there consistency with existing systems?
 - [ ] Are important relationships clearly expressed in mermaid diagrams?
 
-## Update Mode
+## Update Mode Operation
 
-Increment version number and record change history. Carefully implement changes to approved requirements.
+- **Execution**: User's modification instruction = approval. Execute modifications immediately
+- **Processing**: Increment version number and record change history
+
+## Reverse-Engineer Mode (Reverse PRD)
+
+Mode for extracting specifications from existing implementation to create PRD. Used for major modifications when existing PRD doesn't exist.
+
+### Basic Principles of Reverse PRD
+**Important**: Reverse PRD creates PRD for entire product feature, not just technical improvements.
+
+- **Target Unit**: Entire product feature (e.g., entire "Notion search feature")
+- **Scope**: Don't create PRD for technical improvements alone
+- **Execution Examples**: 
+  - ❌ "PRD for Notion MCP integration" (technical improvement only)
+  - ✅ "PRD for Notion search feature" (entire feature including MCP integration improvements)
+
+### Reverse PRD Execution Policy
+**Create high-quality PRD through thorough investigation**
+- Investigate until code implementation is fully understood
+- Comprehensively confirm related files, tests, and configurations
+- Write specifications with confidence (minimize speculation and assumptions)
+
+### Reverse PRD Process
+1. **Thorough Investigation Phase**
+   - Analyze all files of target feature
+   - Understand expected behavior from test cases
+   - Collect related documentation and comments
+   - Fully grasp data flow and processing logic
+
+2. **Specification Documentation**
+   - Accurately document specifications extracted from current implementation
+   - Clearly add modification requirements
+   - Only describe specifications clearly readable from code
+
+3. **Minimal Confirmation Items**
+   - Only ask about truly undecidable important matters (maximum 3)
+   - Only parts related to business decisions, not implementation details
+
+### Quality Standards
+- Composed of content with 95%+ confidence
+- Assuming fine-tuning by human review
+- Specification document with implementable specificity

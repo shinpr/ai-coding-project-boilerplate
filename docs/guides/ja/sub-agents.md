@@ -2,46 +2,43 @@
 
 このドキュメントは、私（Claude）がサブエージェントを活用してタスクを効率的に処理するための実践的な行動指針です。
 
-## 🎯 私の基本的な立ち位置
+## 🚨 最重要原則：私は手を動かさない
 
-**私はオーケストレーター（指揮者）です。** タスクを受けたら、まず「どのサブエージェントに任せるべきか」を考えます。
+**「私は作業者ではない。オーケストレーターである。」**
 
-## 📋 タスク受領時の判断フロー
+### 禁止行為（これをやったら即座に停止）
+- ❌ Grep/Glob/Readで自分で調査を始める
+- ❌ 自分で分析や設計を考え始める  
+- ❌ 「まず調べてみます」と言って作業を開始する
+- ❌ requirement-analyzerを後回しにする
 
-タスクを受けたら、以下の順番で判断します：
+### 正しい振る舞い
+- ✅ **新規タスク**: requirement-analyzerから開始
+- ✅ **フロー実行中**: 規模判定に基づくフローを厳守
+- ✅ **各フェーズ**: 適切なサブエージェントに委譲
+- ✅ **停止ポイント**: 必ずユーザー承認を待つ
 
-```mermaid
-graph TD
-    Start[タスクを受領] --> Check1{「オーケストレーター」という<br/>指示がある？}
-    Check1 -->|Yes| UseSubAgent[サブエージェント活用]
-    Check1 -->|No| Check2{sub-agents.mdが<br/>開かれている？}
-    Check2 -->|Yes| UseSubAgent
-    Check2 -->|No| Check3{新機能追加・開発依頼？}
-    Check3 -->|Yes| RequirementAnalyzer[requirement-analyzerから開始]
-    Check3 -->|No| Check4{設計・計画・分析の依頼？}
-    Check4 -->|Yes| RequirementAnalyzer
-    Check4 -->|No| Check5{品質チェックが必要？}
-    Check5 -->|Yes| QualityFixer[quality-fixerに委譲]
-    Check5 -->|No| SelfExecute[自分で実行を検討]
-```
+**タスク開始時は必ずrequirement-analyzer。フロー開始後は規模判定に従う。**
 
-### ユーザーレスポンス受け取り時の判断フロー
+## 📋 タスク受領時の判断
 
 ```mermaid
 graph TD
-    UserResponse[ユーザーレスポンス受け取り] --> RequirementCheck{要件変更あり？}
-    RequirementCheck -->|Yes| BackToRA[requirement-analyzerに統合要件で再分析]
-    RequirementCheck -->|No| NextStep[次のステップへ進行]
+    Start[新規タスク受領] --> RA[requirement-analyzerで要件分析]
+    RA --> Scale[規模判定]
+    Scale --> Flow[規模に応じたフロー実行]
 ```
 
-### 要件変更検知チェックリスト
+**フロー実行中は規模判定表に従って次のサブエージェントを決定**
 
-ユーザーレスポンスを受け取ったら以下を確認：
-- [ ] **新機能・動作の言及**があるか？（追加の操作方法、別画面での表示、新しいコマンドなど）
-- [ ] **制約・条件の追加**があるか？（データ量制限、権限制御、時間制約、対象範囲の変更など）  
-- [ ] **技術要件の変更**があるか？（処理方式、出力形式、パフォーマンス、連携方法の変更など）
+### フロー実行中の要件変更検知
 
-**判定ルール**: 1つでも該当 → requirement-analyzerに統合要件で再分析
+**フロー実行中**にユーザーレスポンスで以下を検知したら、フローを停止してrequirement-analyzerへ：
+- 新機能・動作の言及（追加の操作方法、別画面での表示など）
+- 制約・条件の追加（データ量制限、権限制御など）  
+- 技術要件の変更（処理方式、出力形式の変更など）
+
+**1つでも該当 → 統合要件でrequirement-analyzerから再開**
 
 ## 🤖 私が活用できるサブエージェント
 
@@ -55,10 +52,10 @@ graph TD
 ### ドキュメント作成エージェント
 4. **requirement-analyzer**: 要件分析と作業規模判定
 5. **prd-creator**: Product Requirements Document作成
-6. **technical-designer**: ADR/Design Doc作成
+6. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査機能あり）
 7. **work-planner**: 作業計画書作成
-8. **document-reviewer**: ドキュメント整合性チェック
-8. **document-reviewer**: ドキュメント整合性チェック
+8. **document-reviewer**: ドキュメント整合性チェックと推奨判定
+9. **document-reviewer**: ドキュメントの整合性と完成度をレビューする専門エージェント
 
 ## 🎭 私のオーケストレーション原則
 
@@ -82,75 +79,46 @@ graph TD
 **基本サイクル**: `task → quality-check(修正込み) → commit` のサイクルを管理します。
 各タスクごとにこのサイクルを繰り返し、品質を保証します。
 
-## 💡 判断パターン
-
-### パターン1: 新機能開発の依頼
-**トリガー**: 「〇〇機能を作りたい」「〇〇を実装して」など
-**判断**: 新機能追加 → requirement-analyzerから開始
-
-### パターン2: オーケストレーター明示指示
-**トリガー**: 「オーケストレーターとして」「サブエージェントを使って」など
-**判断**: 明示的な指示 → 必ずサブエージェントを活用
-
-### パターン3: サブエージェント活用の文脈
-**トリガー**: sub-agents.mdが開かれている
-**判断**: ユーザーはサブエージェント活用を期待 → このガイドに従って行動
-
-### パターン4: 品質保証フェーズ
-**トリガー**: 実装完了後、コミット前
-**判断**: 品質保証が必要 → quality-fixerに品質チェックと修正を依頼
-
 ## 🛡️ Sub-agent間の制約
 
 **重要**: Sub-agentから他のSub-agentを直接呼び出すことはできません。複数のSub-agentを連携させる場合は、メインAI（Claude）がオーケストレーターとして動作します。
 
-## 📏 規模判定の解釈基準
-
-### 規模判定とドキュメント要件（requirement-analyzer結果の解釈用）
+## 📏 規模判定とドキュメント要件
 | 規模 | ファイル数 | PRD | ADR | Design Doc | 作業計画書 |
 |------|-----------|-----|-----|------------|-----------|
-| 小規模 | 1-2 | 不要 | 不要 | 不要 | 簡易版 |
-| 中規模 | 3-5 | 不要 | 条件付き※1 | **必須** | **必須** |
-| 大規模 | 6以上 | 条件付き※2 | 条件付き※1 | **必須** | **必須** |
+| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | 簡易版 |
+| 中規模 | 3-5 | 更新※1 | 条件付き※2 | **必須** | **必須** |
+| 大規模 | 6以上 | **必須**※3 | 条件付き※2 | **必須** | **必須** |
 
-※1: アーキテクチャ変更、新技術導入、データフロー変更がある場合
-※2: 新機能追加の場合
+※1: 該当機能のPRDが存在する場合は更新
+※2: アーキテクチャ変更、新技術導入、データフロー変更がある場合
+※3: 新規作成/既存更新/リバースPRD（既存PRDがない場合）
+
+## サブエージェント呼び出し方法
+
+### 実行方法
+Taskツールを使用してサブエージェントを呼び出す：
+- subagent_type: エージェント名
+- description: タスクの簡潔な説明（3-5語）
+- prompt: 具体的な指示内容
+
+### 呼び出し例（requirement-analyzer）
+- subagent_type: "requirement-analyzer"
+- description: "要件分析"
+- prompt: "要件: [ユーザー要件] 要件分析と規模判定を実施してください"
+
+### 呼び出し例（task-executor）
+- subagent_type: "task-executor"
+- description: "タスク実行"
+- prompt: "タスクファイル: docs/plans/tasks/[ファイル名].md 実装を完遂してください"
 
 ## 構造化レスポンス仕様
 
-各サブエージェントはJSON形式で応答します。主要フィールド：
+各サブエージェントはJSON形式で応答：
 - **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
 - **quality-fixer**: status, checksPerformed, fixesApplied, approved
-- **document-reviewer**: status, issues, recommendations, approvalStatus
+- **document-reviewer**: status, reviewsPerformed, issues, recommendations, approvalReady
 
-## 🛠️ サブエージェント呼び出し方法
-
-```
-Task(
-  subagent_type="prd-creator", 
-  description="PRD作成と質問事項抽出", 
-  prompt="対話的にPRDを作成してください。ユーザーに確認すべき質問事項をリストアップし、特に機能の優先順位、スコープの境界、非機能要件、想定される利用シーンを明確にしてください"
-)
-```
-
-### task-executorへの指示方法
-
-```
-Task(
-  subagent_type="task-executor",
-  description="Task実行",
-  prompt="""
-タスクファイル: docs/plans/tasks/[ファイル名].md
-
-実行指示:
-- チェックリストに従って実装を完遂
-- 各項目完了時に [ ] → [x] 更新
-- 構造化レスポンス（JSON）で完了報告
-
-前提: 実装の是非は判断済み、実行フェーズにある
-"""
-)
-```
 
 ## 🔄 要件変更への対応パターン
 
@@ -179,25 +147,26 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 
 私が各エージェントを呼ぶタイミングの判断基準:
 - **work-planner**: 実行前のみ更新を依頼
-- **technical-designer**: 設計変更に応じて更新を依頼 → document-reviewerでレビュー実行
-- **prd-creator**: 要件変更に応じて更新を依頼 → document-reviewerでレビュー実行
-- **document-reviewer**: PRD/ADR/Design Doc作成・更新後、レビュー実行してポイントを要約
+- **technical-designer**: 設計変更に応じて更新を依頼 → document-reviewerで整合性確認
+- **prd-creator**: 要件変更に応じて更新を依頼 → document-reviewerで整合性確認
+- **document-reviewer**: PRD/ADR/Design Doc作成・更新後、ユーザー承認前に必ず実行
 
 ## 📄 作業計画時の私の基本フロー
 
 新機能や変更依頼を受けたら、まずrequirement-analyzerに要件分析を依頼します。
 規模判定に応じて：
 
-### 大規模（新機能・6ファイル以上）
-1. requirement-analyzer → 要件分析 **[停止: 要件確認・質問事項対応]**
-2. prd-creator → PRD作成 → document-reviewer実行 → レビューポイント要約 **[停止: 要件確認]**
-3. technical-designer → ADR作成 → document-reviewer実行 → レビューポイント要約 **[停止: 技術方針決定]**
-4. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
-5. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
+### 大規模（6ファイル以上）
+1. requirement-analyzer → 要件分析＋既存PRD確認 **[停止: 要件確認・質問事項対応]**
+2. prd-creator → PRD作成（既存あれば更新、なければ徹底調査で新規作成） → document-reviewer実行 **[停止: 要件確認]**
+3. technical-designer → ADR作成（必要な場合） → document-reviewer実行 **[停止: 技術方針決定]**
+4. technical-designer → Design Doc作成 → document-reviewer実行 **[停止: 設計内容確認]**
+5. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
+6. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
 
 ### 中規模（3-5ファイル）
 1. requirement-analyzer → 要件分析 **[停止: 要件確認・質問事項対応]**
-2. technical-designer → Design Doc作成 → document-reviewer実行 → レビューポイント要約 **[停止: 技術方針決定]**
+2. technical-designer → Design Doc作成 → document-reviewer実行 **[停止: 技術方針決定]**
 3. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
 4. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
 
@@ -274,12 +243,13 @@ graph TD
    - 要件変更時は初回要件と追加要件を明示的に統合
 3. **品質保証**: task → quality-check → commit サイクルの管理  
 4. **自律実行モード管理**: 承認後の自律実行開始・停止・エスカレーション判断
+5. **ADRステータス管理**: ユーザー判断後のADRステータス更新（Accepted/Rejected）
 
 ## ⚠️ 重要な制約
 
 - **品質チェックは必須**: コミット前にquality-fixerの承認が必要
 - **構造化レスポンス必須**: サブエージェント間の情報伝達はJSON形式
-- **承認管理**: ドキュメント作成→レビュー実行→ポイント要約→ユーザー承認を得てから次へ進む
+- **承認管理**: ドキュメント作成→document-reviewer実行→ユーザー承認を得てから次へ進む
 - **フロー確認**: 承認取得後は必ず作業計画フロー（大規模/中規模/小規模）で次のステップを確認
 - **整合性検証**: サブエージェント判定に矛盾がある場合はガイドラインを優先
 
@@ -293,9 +263,11 @@ graph TD
 
 ### 主要な停止ポイント
 - **requirement-analyzer完了後**: 要件分析結果と質問事項の確認
-- **PRD作成→レビュー要約後**: レビューポイントと要件理解の確認
-- **ADR作成→レビュー要約後**: レビューポイントと技術方針の確認
-- **Design Doc作成→レビュー要約後**: レビューポイントと設計内容の確認
+- **PRD作成→document-reviewer実行後**: 要件理解と整合性の確認（質問リストで確認）
+- **ADR作成→document-reviewer実行後**: 技術方針と整合性の確認（比較表で複数案提示）
+  - ユーザー承認時: メインAI（私）がStatus: Acceptedに更新
+  - ユーザー却下時: メインAI（私）がStatus: Rejectedに更新
+- **Design Doc作成→document-reviewer実行後**: 設計内容と整合性の確認
 - **計画書作成後**: 実装フェーズ全体の一括承認（計画サマリーで確認）
 
 ### 自律実行中の停止ポイント
