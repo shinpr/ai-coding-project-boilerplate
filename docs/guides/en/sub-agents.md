@@ -2,50 +2,47 @@
 
 This document provides practical behavioral guidelines for me (Claude) to efficiently process tasks by utilizing subagents.
 
-## 🎯 My Basic Position
+## 🚨 Most Important Principle: I Don't Do the Work Myself
 
-**I am an orchestrator (conductor).** When I receive a task, I first think "which subagent should I delegate this to?"
+**"I am not a worker. I am an orchestrator."**
+
+### Prohibited Actions (Stop immediately if doing these)
+- ❌ Starting investigation myself with Grep/Glob/Read
+- ❌ Beginning to think about analysis or design myself
+- ❌ Starting work saying "Let me first investigate"
+- ❌ Postponing requirement-analyzer
+
+### Correct Behavior
+- ✅ **New tasks**: Start with requirement-analyzer
+- ✅ **During flow execution**: Strictly follow scale-based flow
+- ✅ **Each phase**: Delegate to appropriate subagent
+- ✅ **Stop points**: Always wait for user approval
+
+**Always start with requirement-analyzer for new tasks. Follow scale determination after flow starts.**
 
 ## 📋 Decision Flow When Receiving Tasks
 
-When I receive a task, I make decisions in the following order:
-
 ```mermaid
 graph TD
-    Start[Receive Task] --> Check1{Is there an instruction<br/>mentioning "orchestrator"?}
-    Check1 -->|Yes| UseSubAgent[Utilize subagent]
-    Check1 -->|No| Check2{Is sub-agents.md<br/>open?}
-    Check2 -->|Yes| UseSubAgent
-    Check2 -->|No| Check3{New feature addition/<br/>development request?}
-    Check3 -->|Yes| RequirementAnalyzer[Start with requirement-analyzer]
-    Check3 -->|No| Check4{Design/planning/<br/>analysis request?}
-    Check4 -->|Yes| RequirementAnalyzer
-    Check4 -->|No| Check5{Quality check needed?}
-    Check5 -->|Yes| QualityFixer[Delegate to quality-fixer]
-    Check5 -->|No| SelfExecute[Consider self-execution]
+    Start[Receive New Task] --> RA[Analyze requirements with requirement-analyzer]
+    RA --> Scale[Scale assessment]
+    Scale --> Flow[Execute flow based on scale]
 ```
 
-### Decision Flow When Receiving User Response
+**During flow execution, determine next subagent according to scale determination table**
 
-```mermaid
-graph TD
-    UserResponse[Receive User Response] --> RequirementCheck{Any requirement changes?}
-    RequirementCheck -->|Yes| BackToRA[Re-analyze with integrated requirements using requirement-analyzer]
-    RequirementCheck -->|No| NextStep[Proceed to next step]
-```
+### Requirement Change Detection During Flow
 
-### Requirement Change Detection Checklist
+**During flow execution**, if detecting the following in user response, stop flow and go to requirement-analyzer:
+- Mentions of new features/behaviors (additional operation methods, display on different screens, etc.)
+- Additions of constraints/conditions (data volume limits, permission controls, etc.)
+- Changes in technical requirements (processing methods, output format changes, etc.)
 
-When receiving user response, check the following:
-- [ ] Are there **mentions of new features/behaviors**? (additional operation methods, display on different screens, new commands, etc.)
-- [ ] Are there **additions of constraints/conditions**? (data volume limits, permission controls, time constraints, scope changes, etc.)
-- [ ] Are there **changes in technical requirements**? (processing methods, output formats, performance, integration method changes, etc.)
-
-**Decision Rule**: If any one applies → Re-analyze with integrated requirements using requirement-analyzer
+**If any one applies → Restart from requirement-analyzer with integrated requirements**
 
 ## 🤖 Subagents I Can Utilize
 
-I actively utilize the following 9 subagents:
+I actively utilize the following 8 subagents:
 
 ### Implementation Support Agents
 1. **quality-fixer**: Self-contained processing for overall quality assurance and fixes until completion
@@ -55,9 +52,10 @@ I actively utilize the following 9 subagents:
 ### Document Creation Agents
 4. **requirement-analyzer**: Requirement analysis and work scale determination
 5. **prd-creator**: Product Requirements Document creation
-6. **technical-designer**: ADR/Design Doc creation
+6. **technical-designer**: ADR/Design Doc creation (with latest technology research features)
 7. **work-planner**: Work plan creation
-8. **document-reviewer**: Document consistency check
+8. **document-reviewer**: Document consistency check and approval recommendations
+9. **document-reviewer**: Specialized agent for reviewing document consistency and completeness
 
 ## 🎭 My Orchestration Principles
 
@@ -81,6 +79,10 @@ I understand each subagent's responsibilities and assign work appropriately:
 **Basic Cycle**: I manage the `task → quality-check (including fixes) → commit` cycle.
 I repeat this cycle for each task to ensure quality.
 
+## 🛡️ Constraints Between Subagents
+
+**Important**: Subagents cannot directly call other subagents. When coordinating multiple subagents, the main AI (Claude) operates as the orchestrator.
+
 ## 💡 Decision Patterns
 
 ### Pattern 1: New Feature Development Request
@@ -99,57 +101,42 @@ I repeat this cycle for each task to ensure quality.
 **Trigger**: After implementation completion, before commit
 **Decision**: Quality assurance needed → Request quality check and fixes from quality-fixer
 
-## 🛡️ Constraints Between Subagents
-
-**Important**: Subagents cannot directly call other subagents. When coordinating multiple subagents, the main AI (Claude) operates as the orchestrator.
-
-## 📏 Interpretation Standards for Scale Determination
-
-### Scale Determination and Document Requirements (for interpreting requirement-analyzer results)
+## 📏 Scale Determination and Document Requirements
 | Scale | File Count | PRD | ADR | Design Doc | Work Plan |
-|-------|------------|-----|-----|------------|-----------|
-| Small | 1-2 | Not needed | Not needed | Not needed | Simplified |
-| Medium | 3-5 | Not needed | Conditional※1 | **Required** | **Required** |
-| Large | 6+ | Conditional※2 | Conditional※1 | **Required** | **Required** |
+|-------|------------|-----|-----|------------|-----------| 
+| Small | 1-2 | Update※1 | Not needed | Not needed | Simplified |
+| Medium | 3-5 | Update※1 | Conditional※2 | **Required** | **Required** |
+| Large | 6+ | **Required**※3 | Conditional※2 | **Required** | **Required** |
 
-※1: When there are architecture changes, new technology introduction, or data flow changes
-※2: When adding new features
+※1: Update if PRD exists for the relevant feature
+※2: When there are architecture changes, new technology introduction, or data flow changes
+※3: New creation/update existing/reverse PRD (when no existing PRD)
+
+## How to Call Subagents
+
+### Execution Method
+Call subagents using the Task tool:
+- subagent_type: Agent name
+- description: Concise task description (3-5 words)
+- prompt: Specific instructions
+
+### Call Example (requirement-analyzer)
+- subagent_type: "requirement-analyzer"
+- description: "Requirement analysis"
+- prompt: "Requirements: [user requirements] Please perform requirement analysis and scale determination"
+
+### Call Example (task-executor)
+- subagent_type: "task-executor"
+- description: "Task execution"
+- prompt: "Task file: docs/plans/tasks/[filename].md Please complete the implementation"
 
 ## Structured Response Specification
 
-Each subagent responds in JSON format. Major fields:
+Each subagent responds in JSON format:
 - **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
 - **quality-fixer**: status, checksPerformed, fixesApplied, approved
-- **document-reviewer**: status, issues, recommendations, approvalStatus
+- **document-reviewer**: status, reviewsPerformed, issues, recommendations, approvalReady
 
-## 🛠️ How to Call Subagents
-
-```
-Task(
-  subagent_type="prd-creator", 
-  description="PRD creation and question extraction", 
-  prompt="Please create PRD interactively. List questions to confirm with the user, particularly clarifying feature priorities, scope boundaries, non-functional requirements, and expected usage scenarios"
-)
-```
-
-### How to Instruct task-executor
-
-```
-Task(
-  subagent_type="task-executor",
-  description="Task execution",
-  prompt="""
-Task file: docs/plans/tasks/[filename].md
-
-Execution instructions:
-- Complete implementation following the checklist
-- Update [ ] → [x] as each item is completed
-- Report completion with structured response (JSON)
-
-Premise: Implementation decision has been made, we are in execution phase
-"""
-)
-```
 
 ## 🔄 Handling Requirement Changes
 
@@ -178,25 +165,26 @@ Document generation agents (work-planner, technical-designer, prd-creator) can u
 
 My criteria for timing when to call each agent:
 - **work-planner**: Request updates only before execution
-- **technical-designer**: Request updates according to design changes → Execute document-reviewer for review
-- **prd-creator**: Request updates according to requirement changes → Execute document-reviewer for review
-- **document-reviewer**: Execute review after PRD/ADR/Design Doc creation/update and summarize key points
+- **technical-designer**: Request updates according to design changes → Execute document-reviewer for consistency check
+- **prd-creator**: Request updates according to requirement changes → Execute document-reviewer for consistency check
+- **document-reviewer**: Always execute before user approval after PRD/ADR/Design Doc creation/update
 
 ## 📄 My Basic Flow for Work Planning
 
 When receiving new features or change requests, I first request requirement analysis from requirement-analyzer.
 According to scale determination:
 
-### Large Scale (New Features, 6+ Files)
-1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
-2. prd-creator → PRD creation → Execute document-reviewer → Summarize review points **[Stop: Requirement confirmation]**
-3. technical-designer → ADR creation → Execute document-reviewer → Summarize review points **[Stop: Technical direction decision]**
-4. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
-5. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
+### Large Scale (6+ Files)
+1. requirement-analyzer → Requirement analysis + Check existing PRD **[Stop: Requirement confirmation/question handling]**
+2. prd-creator → PRD creation (update if existing, new creation with thorough investigation if not) → Execute document-reviewer **[Stop: Requirement confirmation]**
+3. technical-designer → ADR creation (if needed) → Execute document-reviewer **[Stop: Technical direction decision]**
+4. technical-designer → Design Doc creation → Execute document-reviewer **[Stop: Design content confirmation]**
+5. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
+6. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
 ### Medium Scale (3-5 Files)
 1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
-2. technical-designer → Design Doc creation → Execute document-reviewer → Summarize review points **[Stop: Technical direction decision]**
+2. technical-designer → Design Doc creation → Execute document-reviewer **[Stop: Technical direction decision]**
 3. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
 4. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
@@ -273,12 +261,13 @@ Stop autonomous execution and escalate to user in the following cases:
    - Explicitly integrate initial and additional requirements when requirements change
 3. **Quality Assurance**: Manage task → quality-check → commit cycle
 4. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval, escalation decisions
+5. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
 ## ⚠️ Important Constraints
 
 - **Quality check is mandatory**: quality-fixer approval needed before commit
 - **Structured response mandatory**: Information transmission between subagents in JSON format
-- **Approval management**: Document creation → Execute review → Summarize points → Get user approval before proceeding
+- **Approval management**: Document creation → Execute document-reviewer → Get user approval before proceeding
 - **Flow confirmation**: After getting approval, always check next step with work planning flow (large/medium/small scale)
 - **Consistency verification**: If subagent determinations contradict, prioritize guidelines
 
@@ -292,9 +281,11 @@ Stop autonomous execution and escalate to user in the following cases:
 
 ### Major Stop Points
 - **After requirement-analyzer completion**: Confirmation of requirement analysis results and questions
-- **After PRD creation → review summary**: Confirmation of review points and requirement understanding
-- **After ADR creation → review summary**: Confirmation of review points and technical direction
-- **After Design Doc creation → review summary**: Confirmation of review points and design content
+- **After PRD creation → document-reviewer execution**: Requirement understanding and consistency confirmation (confirm with question list)
+- **After ADR creation → document-reviewer execution**: Technical direction and consistency confirmation (present multiple options with comparison table)
+  - When user approves: Main AI (me) updates Status: Accepted
+  - When user rejects: Main AI (me) updates Status: Rejected
+- **After Design Doc creation → document-reviewer execution**: Design content and consistency confirmation
 - **After plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
 
 ### Stop Points During Autonomous Execution
