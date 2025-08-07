@@ -197,8 +197,8 @@ Add at the end of ADR/Design Doc in the following format:
 ## References
 
 - [Title](URL) - Brief description of referenced content
-- [React 18 Official Documentation](https://react.dev/) - Design principles for Concurrent Features
-- [Google Engineering Blog](URL) - Best practices for microservice communication
+- [Framework Official Documentation](URL) - Design principles and feature documentation
+- [Technical Blog Article](URL) - Implementation patterns and best practices
 ```
 
 ## Update Mode
