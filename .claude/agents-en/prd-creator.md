@@ -151,11 +151,11 @@ Mode for extracting specifications from existing implementation to create PRD. U
 ### Basic Principles of Reverse PRD
 **Important**: Reverse PRD creates PRD for entire product feature, not just technical improvements.
 
-- **Target Unit**: Entire product feature (e.g., entire "Notion search feature")
+- **Target Unit**: Entire product feature (e.g., entire "search feature")
 - **Scope**: Don't create PRD for technical improvements alone
 - **Execution Examples**: 
-  - ❌ "PRD for Notion MCP integration" (technical improvement only)
-  - ✅ "PRD for Notion search feature" (entire feature including MCP integration improvements)
+  - ❌ "PRD for external API integration improvements" (technical improvement only)
+  - ✅ "PRD for data integration feature" (entire feature including API integration improvements)
 
 ### Reverse PRD Execution Policy
 **Create high-quality PRD through thorough investigation**

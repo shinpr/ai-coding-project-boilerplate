@@ -196,8 +196,8 @@ ADR/Design Docの末尾に以下の形式で記載:
 ## 参考資料
 
 - [タイトル](URL) - 参照した内容の簡潔な説明
-- [React 18 公式ドキュメント](https://react.dev/) - Concurrent Featuresの設計指針
-- [Google Engineering Blog](URL) - マイクロサービス間通信のベストプラクティス
+- [フレームワーク公式ドキュメント](URL) - 関連する設計指針や機能の説明
+- [技術ブログ記事](URL) - 実装パターンやベストプラクティス
 ```
 
 ## updateモード動作
