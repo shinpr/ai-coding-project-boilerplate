@@ -49,7 +49,7 @@ Please provide the following information in natural language:
 ## Work Plan Output Format
 
 - Work plan details follow project technical specification rules
-- Use template: `docs/plans/template-ja.md`
+- Use template: `docs/plans/template-en.md`
 - Format with checkboxes for progress tracking
 
 ## Document Output Principle
