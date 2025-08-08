@@ -223,6 +223,20 @@ npm run cleanup:processes   # テストプロセスクリーンアップ
 - タスクで避けるべき禁止事項の確認
 - メタ認知を促進し、実装エラーを事前に防止
 
+### `/review`
+Design Doc準拠検証と必要に応じた自動修正を実行します。
+- Design Doc準拠率の検証
+- 修正実行のインタラクティブ確認 (y/n)
+- 修正前のメタ認知実行（rule-advisor → TodoWrite → task-executor → quality-fixer）
+- 修正後の改善度レポート
+
+### `/rule-maintenance`
+開発ルールの追加・更新・検索を行います。
+- 新規ルールファイルの追加（メタデータ付き）
+- 既存ルールの更新
+- キーワードによるルール検索
+- rules-index.yamlの管理
+
 これらのコマンドは `.claude/commands/` に配置されており、プロジェクト内でのみ使用可能です。
 
 ## 🤖 Claude Code専用ワークフロー
@@ -264,8 +278,9 @@ graph TD
 - **requirement-analyzer**: 要件分析と作業規模判定 - ユーザー要件を分析し適切な開発アプローチを提案
 - **task-decomposer**: 作業計画書から1コミット粒度のタスクに分解 - 計画書を細かいタスクに分割
 - **rule-advisor**: AI実行精度最大化のための最小限で効果的なルールセットを選択
+- **code-reviewer**: Design Doc準拠検証 - 実装の完全性を第三者視点で評価
 
-詳細は`CLAUDE.md`および`.claude/agents/`内の各定義ファイルを参照してください。
+詳細は`CLAUDE.md`および`.claude/agents/`、`.claude/commands/`内の各定義ファイルを参照してください。
 
 ## 📋 開発ルール概要
 
