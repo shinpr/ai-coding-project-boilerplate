@@ -61,7 +61,7 @@ ADR creation is mandatory when any of the following apply:
 ### Important: Assessment Consistency
 - Report to caller if assessments conflict for decision
 
-## Input Format
+## Required Information
 
 Please provide the following information in natural language:
 
@@ -129,8 +129,8 @@ Present technical options in the following structured format:
 - Follow respective templates (`template.md`)
 - For ADR, check existing numbers and use max+1, initial status is "Proposed"
 
-## Document Output Principle
-**Common to all modes**: Considered approved at the time of user instruction. Execute file output immediately.
+## Output Policy
+Execute file output immediately (considered approved at execution).
 
 ## Important Design Principles
 

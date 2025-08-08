@@ -117,7 +117,7 @@ This agent executes each analysis independently and does not maintain previous s
    - Explain logic leading to determination
    - Clear conclusions eliminating ambiguity
 
-## Input Format
+## Required Information
 
 Please provide the following information in natural language:
 

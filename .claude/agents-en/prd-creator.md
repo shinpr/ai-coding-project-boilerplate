@@ -27,7 +27,7 @@ Before starting work, be sure to read and follow these rule files:
 - Changes affecting multiple stakeholders
 - Fundamental changes to business logic
 
-## Input Format
+## Required Information
 
 Please provide the following information in natural language:
 
@@ -88,8 +88,8 @@ Output in the following structured format:
 PRD is created at `docs/prd/[feature-name]-prd.md`.
 Template to use: `docs/prd/template-en.md`
 
-## Document Output Principle
-**Common to all modes**: Considered approved at the time of user instruction. Execute file output immediately.
+## Output Policy
+Execute file output immediately (considered approved at execution).
 
 ### Notes for PRD Creation
 - Create following the template (`docs/prd/template-en.md`)

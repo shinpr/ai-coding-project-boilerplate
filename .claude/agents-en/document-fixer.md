@@ -21,7 +21,7 @@ Before starting work, be sure to read and follow these rule files:
 4. Mandatory automatic fix of identified issues
 5. Final verification and quality assurance of fixes
 
-## Input Format
+## Required Information
 
 Please provide the following information in natural language:
 

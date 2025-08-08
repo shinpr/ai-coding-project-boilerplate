@@ -27,6 +27,18 @@
 - **Reliability**: [Requirements for error rate, availability, etc.]
 - **Maintainability**: [Code understandability, ease of modification]
 
+## Acceptance Criteria
+
+Define specific and verifiable conditions to determine successful implementation for each functional requirement.
+These conditions serve as the basis for test cases and are used to objectively determine implementation completion.
+
+- [ ] [Specific acceptance criteria for functional requirement 1]
+  - Example: "When a user clicks the login button, authentication succeeds with valid credentials"
+  - Example: "When invalid credentials are provided, an appropriate error message is displayed"
+- [ ] [Specific acceptance criteria for functional requirement 2]
+  - Example: "The data list screen displays items paginated by 10 entries"
+  - Example: "When text is entered in the search field, results are filtered in real-time"
+
 ## Design
 
 ### Architecture Overview
@@ -81,17 +93,32 @@
 
 ## Testing Strategy
 
+### Test Design Principles
+
+Automatically derive test cases from acceptance criteria:
+- Create at least one test case for each acceptance criterion
+- Implement measurable criteria from acceptance criteria as assertions
+
 ### Unit Tests
 
 [Unit testing approach and coverage goals]
+- Verify individual elements of functional acceptance criteria
 
 ### Integration Tests
 
 [Integration testing approach and important test cases]
+- Verify combined behavior of functional acceptance criteria
+
+### End-to-End Tests
+
+[E2E testing approach]
+- Verify complete scenarios from acceptance criteria
+- Confirm functional behavior from user perspective
 
 ### Performance Tests
 
 [Performance testing methods and criteria]
+- Verify performance benchmarks from non-functional acceptance criteria
 
 ## Security Considerations
 

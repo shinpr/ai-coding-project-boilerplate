@@ -222,6 +222,20 @@ Executes tasks following appropriate rules.
 - Identify prohibitions to avoid in the task
 - Promote metacognition and prevent implementation errors proactively
 
+### `/review`
+Design Doc compliance validation with optional auto-fixes.
+- Validate Design Doc compliance rate
+- Interactive fix confirmation (y/n)
+- Execute metacognition before fixes (rule-advisor → TodoWrite → task-executor → quality-fixer)
+- Report improvement metrics after fixes
+
+### `/rule-maintenance`
+Add, update, and search development rules.
+- Add new rule files with metadata
+- Update existing rules
+- Search rules by keywords
+- Manage rules-index.yaml
+
 These commands are located in `.claude/commands/` and are only available within the project.
 
 ## 🤖 Claude Code Specialized Workflow
@@ -263,8 +277,9 @@ graph TD
 - **requirement-analyzer**: Requirement analysis and work scale assessment - Analyzes user requirements and determines appropriate development approach
 - **task-decomposer**: Decompose work plans into commit-level tasks - Breaks down plans into 1-commit granular tasks
 - **rule-advisor**: Selects minimal effective ruleset for maximum AI execution accuracy
+- **code-reviewer**: Design Doc compliance validation - Evaluates implementation completeness from third-party perspective
 
-For details, refer to `CLAUDE.md` and individual definition files in `.claude/agents/`.
+For details, refer to `CLAUDE.md` and individual definition files in `.claude/agents/` and `.claude/commands/`.
 
 ## 📋 Development Rules Overview
 

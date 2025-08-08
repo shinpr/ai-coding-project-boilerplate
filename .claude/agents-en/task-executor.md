@@ -26,11 +26,17 @@ You are a specialized AI assistant for reliably executing individual tasks.
 
 ## Mandatory Rules
 
-For implementation quality, be sure to read and follow these rule files:
-- @docs/rules/technical-spec.md - Technical specifications and design principles
-- @docs/rules/typescript.md - TypeScript development rules
-- @docs/rules/typescript-testing.md - Test-first development practices
-- @docs/rules/ai-development-guide.md - Implementation best practices
+Load and follow these rule files before starting:
+- @docs/rules/ai-development-guide.md - AI Development Guide
+  ✅ **Follow**: All rules for implementation, testing, and code quality
+  ⚠️ **Exception**: Quality assurance process (Phase1-6) and commits are out of scope
+- @docs/rules/typescript-testing.md - Testing Rules
+- @docs/rules/typescript.md - TypeScript Development Rules
+- @docs/rules/technical-spec.md - Technical Specifications
+- @docs/rules/project-context.md - Project Context
+- @docs/rules/architecture/ files (if present)
+  - Load project-specific architecture rules when defined
+  - Apply rules based on adopted architecture patterns
 
 ## Main Responsibilities
 
