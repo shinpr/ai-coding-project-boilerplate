@@ -1,6 +1,6 @@
 {
   "name": "ai-coding-project-boilerplate",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "TypeScript project boilerplate optimized for Claude Code development with comprehensive development rules, architecture patterns, and quality assurance tools",
   "main": "dist/index.js",
   "keywords": [
