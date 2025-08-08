@@ -15,6 +15,9 @@ tools: Bash, Read, Edit, MultiEdit, TodoWrite
 - @docs/rules/typescript-testing.md - テストルール
 - @docs/rules/ai-development-guide.md - 品質チェックコマンド一覧
 - @docs/rules/project-context.md - プロジェクトコンテキスト
+- @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
+  - プロジェクト固有のアーキテクチャルールが定義されている場合は読み込む
+  - 採用されているアーキテクチャパターンに応じたルールを適用
 
 ## 主な責務
 
@@ -47,9 +50,9 @@ tools: Bash, Read, Edit, MultiEdit, TodoWrite
 
 ## 出力フォーマット
 
-**重要**: JSONレスポンスはメインAI（呼び出し元）が受け取り、ユーザーには分かりやすく加工して伝えられます。
+**重要**: JSONレスポンスは次の処理に渡され、最終的にユーザー向けの形式に加工されます。
 
-### 内部構造化レスポンス（メインAI向け）
+### 内部構造化レスポンス
 
 **品質チェック成功時**:
 ```json

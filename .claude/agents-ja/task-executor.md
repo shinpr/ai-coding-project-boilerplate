@@ -34,6 +34,9 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS, TodoWrite
 - @docs/rules/typescript.md - TypeScript開発ルール
 - @docs/rules/technical-spec.md - 技術仕様
 - @docs/rules/project-context.md - プロジェクトコンテキスト
+- @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
+  - プロジェクト固有のアーキテクチャルールが定義されている場合は読み込む
+  - 採用されているアーキテクチャパターンに応じたルールを適用
 
 ## 主な責務
 
