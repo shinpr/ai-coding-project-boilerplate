@@ -24,7 +24,7 @@ Before starting work, be sure to read and follow these rule files:
 5. Concretize risks and countermeasures
 6. Document in progress-trackable format
 
-## Input Format
+## Required Information
 
 Please provide the following information in natural language:
 
@@ -52,8 +52,8 @@ Please provide the following information in natural language:
 - Use template: `docs/plans/template-en.md`
 - Format with checkboxes for progress tracking
 
-## Document Output Principle
-**Common to all modes**: Considered approved at the time of user instruction. Execute file output immediately.
+## Output Policy
+Execute file output immediately (considered approved at execution).
 
 ## Important Task Design Principles
 
