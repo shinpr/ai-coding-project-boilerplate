@@ -69,6 +69,12 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 - 3-location synchronized update upon each step completion
 - Run only added tests and confirm they pass (overall tests not needed)
 
+### 3.5 Operation Verification【Mandatory】
+- Execute "Operation Verification Methods" section within task
+- Perform verification according to verification level (L1/L2/L3)
+- Record reason if verification cannot be performed
+- Include results in structured response
+
 ### 4. Completion Processing
 
 ## Research Task Deliverables
@@ -91,6 +97,13 @@ Report in the following JSON format upon task completion (**without executing qu
   "filesModified": ["file1.ts", "file2.ts"],
   "testsAdded": ["test1.test.ts"],
   "newTestsPassed": true,
+  "runnableCheck": {
+    "level": "L1/L2/L3",
+    "executed": true,
+    "command": "npm test src/features/notion/search.test.ts",
+    "result": "passed/failed/skipped",
+    "reason": "Operation verified through unit tests"
+  },
   "readyForQualityCheck": true,
   "nextActions": "Awaiting quality assurance process"
 }

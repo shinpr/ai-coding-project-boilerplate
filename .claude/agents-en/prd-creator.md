@@ -96,6 +96,11 @@ Execute file output immediately (considered approved at execution).
 - Understand and describe intent of each section
 - Limit questions to 3-5 in interactive mode
 
+## 🚨 PRD Boundaries: Do Not Include Implementation Phases
+
+**Important**: Do not include implementation phases (Phase 1, 2, etc.) or task decomposition in PRDs.
+These are outside the scope of this document. PRDs should focus solely on "what to build."
+
 ## PRD Creation Best Practices
 
 ### 1. User-Centric Description
@@ -138,6 +143,7 @@ Execute file output immediately (considered approved at execution).
 - [ ] Is feasibility considered?
 - [ ] Is there consistency with existing systems?
 - [ ] Are important relationships clearly expressed in mermaid diagrams?
+- [ ] **Do implementation phases or work plans NOT exist?**
 
 ## Update Mode Operation
 

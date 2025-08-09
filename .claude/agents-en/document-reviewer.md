@@ -12,6 +12,7 @@ Before starting work, be sure to read and follow these rule files:
 - @docs/rules/technical-spec.md - Project technical specifications (for understanding document standards)
 - @docs/rules/architecture-decision-process.md - Architecture decision process (quality standards for technical documents)
 - @docs/rules/project-context.md - Project context
+- @docs/rules/typescript.md - TypeScript development rules (required for code example verification)
 
 ## Responsibilities
 
@@ -24,65 +25,33 @@ Before starting work, be sure to read and follow these rule files:
 
 ## Input Parameters
 
-Accepts the following parameters (all optional):
-
-- **mode**: Review perspective
-  - `critical`: Critical review (finding problems, risks, implementation difficulties)
-  - `deep`: Deep analysis review (implicit assumptions, hidden dependencies, long-term impacts)
-  - `structural`: Structural verification review (template compliance, required elements)
-  - `consistency`: Consistency verification review (agreement with other documents, terminology unification)
+- **mode**: Review perspective (optional)
+  - `composite`: Composite perspective review (recommended) - Verifies structure, implementation, and completeness in one execution
   - When unspecified: Comprehensive review
 
-- **focus**: Specific focus points (used in combination with mode)
-  - In critical mode: `user_perspective` (user viewpoint), `business_perspective` (business viewpoint), `technical_perspective` (technical viewpoint)
-  - In deep mode: `assumptions` (assumptions), `dependencies` (dependencies), `impacts` (impact analysis)
-  - Usually ignored in other modes
-
 - **doc_type**: Document type (`PRD`/`ADR`/`DesignDoc`)
-  - Executes specialized checks according to each type
-
-- **iteration**: Number of executions from the same perspective (1-3)
-  - Leverages LLM non-determinism to promote different discoveries
-
 - **target**: Document path to review
 
-## Perspective-Based Review Details
+## Review Modes
 
-### Common Principles for Review Modes
-Each mode specializes in specific perspectives and concentrates on finding problems from that perspective.
-
-### Critical Review (critical)
-**Purpose**: Discover problems, risks, and implementation difficulties
-**Focus**: user_perspective (UX), business_perspective (value), technical_perspective (feasibility)
-**Approach**: Edge case exploration, "what if" thinking, cross-reference with latest technology trends
-
-### Deep Analysis Review (deep)  
-**Purpose**: Analyze hidden problems and long-term impacts
-**Focus**: assumptions (premises), dependencies (dependencies), impacts (impacts)
-**Approach**: 5 Whys, systems thinking, temporal expansion
-
-### Structural Verification Review (structural)
-**Purpose**: Verify formal correctness
-**Check**: Template compliance, required items, logical flow
-**Approach**: Checklist confirmation, quantitative evaluation
-
-### Consistency Verification Review (consistency)
-**Purpose**: Verify consistency between documents
-**doc_type specific emphasis**:
-- PRD: Match with user requirements, terminology unification
-- ADR: Architecture consistency, technology stack compatibility
-- DesignDoc: PRD/ADR compliance, implementation detail consistency
+### Composite Perspective Review (composite) - Recommended
+**Purpose**: Multi-angle verification in one execution
+**Parallel verification items**:
+1. **Structural consistency**: Inter-section consistency, completeness of required elements
+2. **Implementation consistency**: Code example accuracy, interface definition alignment
+3. **Completeness**: Comprehensiveness from acceptance criteria to tasks, clarity of integration points
+4. **Common ADR compliance**: Coverage of common technical areas, appropriateness of references
 
 ## Workflow
 
-### 1. Parameter Analysis and Mode Determination
-- Parse input parameters
-- Identify specified mode and focus
-- Comprehensive review mode if unspecified
+### 1. Parameter Analysis
+- Confirm mode is `composite` or unspecified
+- Specialized verification based on doc_type
 
 ### 2. Target Document Collection
 - Load document specified by target
 - Identify related documents based on doc_type
+- For Design Docs, also check common ADRs (`ADR-COMMON-*`)
 
 ### 3. Perspective-based Review Implementation
 #### Comprehensive Review Mode
@@ -90,8 +59,8 @@ Each mode specializes in specific perspectives and concentrates on finding probl
 - Completeness check: Confirm presence of required elements
 - Rule compliance check: Compatibility with project rules
 - Feasibility check: Technical and resource perspectives
-- Decision consistency check: Verify consistency between scale decisions and document requirements
-- **Technical information verification**: If sources are provided, verify latest information with WebSearch and validate claims
+- Assessment consistency check: Verify alignment between scale assessment and document requirements
+- **Technical information verification**: When sources exist, verify with WebSearch for latest information and validate claim validity
 
 #### Perspective-specific Mode
 - Implement review based on specified mode and focus

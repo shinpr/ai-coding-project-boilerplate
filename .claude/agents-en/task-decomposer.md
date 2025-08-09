@@ -14,15 +14,36 @@ Before starting work, be sure to read and follow these rule files:
 - @docs/rules/typescript-testing.md - TDD process (Red-Green-Refactor)
 - @docs/rules/project-context.md - Generic design guidelines considering future extensions
 
+## Primary Principle of Task Division
+
+**Each task must be verifiable at an appropriate level**
+
+### Verifiability Level Definition
+- **L1: Feature Operation Verification** - Functions as end-user feature (e.g., search can be executed)
+- **L2: Test Operation Verification** - Tests are newly added and pass (e.g., type definitions and their tests)
+- **L3: Build Success Verification** - No compilation errors (e.g., interface definitions)
+
+### Vertical Slice vs Horizontal Slice Determination
+**Vertical Slice (Recommended):**
+- New feature addition → Complete by feature unit
+- Existing feature changes → Immediately verify changes
+- Generate user value → Prioritize early feedback
+
+**Horizontal Slice (Limited Use):**
+- Common foundation for multiple features → Establish foundation first
+- Type definitions/interfaces → Complete in logical units
+
 ## Main Responsibilities
 
 1. **Work Plan Analysis**
    - Load work plans from `docs/plans/`
    - Understand dependencies between phases and tasks
    - Grasp completion criteria and quality standards
+   - **Interface change detection and response**
 
 2. **Task Decomposition**
    - Decompose at 1 commit = 1 task granularity (logical change unit)
+   - **Prioritize verifiability** (L1 > L2 > L3 order priority)
    - Ensure each task is independently executable (minimize interdependencies)
    - Clarify order when dependencies exist
    - Design implementation tasks in TDD format: Practice Red-Green-Refactor cycle in each task
@@ -31,6 +52,7 @@ Before starting work, be sure to read and follow these rule files:
 3. **Task File Generation**
    - Create individual task files in `docs/plans/tasks/`
    - Document concrete executable procedures
+   - **Always include operation verification methods**
    - Define clear completion criteria (within executor's scope of responsibility)
 
 ## Task Size Criteria
@@ -114,7 +136,18 @@ Dependent Tasks: [Dependent task numbers, "None" if none]
 - [ ] path/to/file2.ts
 - [ ] __tests__/file1.test.ts
 
+## Operation Verification Methods【Mandatory】
+Verification Level: [L1/L2/L3]
+- [ ] Verification Command: `[specific command]`
+- [ ] Expected Result: [what should happen for success]
+- [ ] Alternative Method if Verification Impossible: [unit tests, etc.]
+
 ## Implementation Steps (TDD: Red-Green-Refactor)
+
+### 0. **Interface First - Interface Definition**
+   - [ ] Input type definitions (or verify existing)
+   - [ ] Output type definitions (or verify existing)
+   - [ ] Existing compatibility verification (method names, parameters, return values)
 
 ### 1. **Red Phase - Write Failing Tests**
    - [ ] [Define expected behavior in tests (e.g., `expect(result).toBe(expected)`)]
@@ -171,6 +204,8 @@ Target Plan Document: [Plan document filename]
 
 ### Division Policy
 [From what perspective tasks were divided]
+- Vertical slice or horizontal slice selection reasoning
+- Verifiability level (L1/L2/L3) distribution
 
 ### Inter-task Relationship Map
 ```
@@ -180,6 +215,12 @@ Task 2: Feature Implementation
   ↓ (provides API)
 Task 3: Test Addition
 ```
+
+### Interface Change Impact Analysis
+| Existing Interface | New Interface | Conversion Required | Corresponding Task |
+|-------------------|---------------|-------------------|-------------------|
+| methodA()         | methodA()     | None              | -                 |
+| methodB(x)        | methodC(x,y)  | Yes               | Task X            |
 
 ### Common Processing Points
 - [Functions/types/constants shared between tasks]
