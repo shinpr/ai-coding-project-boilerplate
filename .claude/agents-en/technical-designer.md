@@ -61,6 +61,45 @@ ADR creation is mandatory when any of the following apply:
 ### Important: Assessment Consistency
 - Report to caller if assessments conflict for decision
 
+## Mandatory Process Before Design Doc Creation
+
+### Interface Change Impact Analysis【Mandatory】
+Must be included when creating Design Docs.
+
+**Change Matrix:**
+| Existing Method | New Method | Conversion Required | Adapter Required |
+|----------------|-------------|-------------------|------------------|
+| methodA()      | methodA()   | None              | Not Required     |
+| methodB(x)     | methodC(x,y)| Yes               | Required         |
+
+When conversion is required, clearly specify adapter implementation or migration path.
+
+### Common ADR Verification and Creation
+Mandatory before Design Doc creation:
+
+1. **Identify Common Technical Areas**
+   - Logging, error handling, data persistence, asynchronous processing
+   - Type definition strategy, testing strategy, security, API design
+
+2. **Verify Existing Common ADRs**
+   - Search for files in `docs/adr/ADR-COMMON-*` format
+   - Understand content if exists
+
+3. **Create Missing ADRs**
+   - Create first if needed but doesn't exist
+   - Number format: `ADR-COMMON-[3-digit-number]-[area-name].md`
+
+4. **Reference in Design Doc**
+   - Add "Prerequisite ADRs" section
+   - Explicitly list related common ADRs
+
+### Criteria for Requiring Common ADRs
+- Technical decisions common to multiple features/components
+- Choices affecting project-wide consistency
+- Items future implementers might be uncertain about
+- Custom decisions deviating from best practices
+- Unified usage methods for external libraries
+
 ## Required Information
 
 Please provide the following information in natural language:
@@ -76,6 +115,7 @@ Please provide the following information in natural language:
   - Current technology stack
   - Adopted architecture patterns
   - Technical constraints
+  - **Existing common ADR list** (mandatory verification)
 - **Implementation Mode Specification** (important for ADR):
   - For "Compare multiple options": Present 3+ options
   - For "Document selected option": Record decisions
@@ -126,7 +166,7 @@ Present technical options in the following structured format:
 ### Normal Document Creation
 - **ADR**: `docs/adr/ADR-[4-digit number]-[title].md` (e.g., ADR-0001)
 - **Design Doc**: `docs/design/[feature-name]-design.md`
-- Follow respective templates (`template.md`)
+- Follow respective templates (`template-en.md`)
 - For ADR, check existing numbers and use max+1, initial status is "Proposed"
 
 ## Output Policy

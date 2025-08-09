@@ -61,19 +61,48 @@ Execute file output immediately (considered approved at execution).
 2. **Built-in Quality**: Simultaneous test implementation, quality checks in each phase
 3. **Risk Management**: List risks and countermeasures in advance, define detection methods
 4. **Ensure Flexibility**: Prioritize essential purpose, avoid excessive detail
+5. **Design Doc Compliance**: All task completion criteria derived from Design Doc specifications
+
+### Task Completion Definition: 3 Elements
+1. **Implementation Complete**: Code functions
+2. **Quality Complete**: Tests, type checking, linting pass
+3. **Integration Complete**: Coordination with other components verified
+
+Include completion conditions in task names (e.g., "Service implementation and unit test creation")
 
 ## Task Decomposition Principles
 
+### Task Sequence Decision Criteria
+
+**Vertical/Horizontal Slice Determination Flow:**
+1. New feature addition? → Yes: Vertical slice (complete by feature unit, operable verification per task)
+2. Existing feature changes? → Yes: Vertical slice (immediate change verification, early feedback)
+3. Foundation/common processing? → Yes: Horizontal slice (multiple feature dependencies, complete in logical units)
+
+**Task Dependency Minimization Rules:**
+- Dependencies up to 2 levels maximum (A→B→C acceptable, A→B→C→D requires redesign)
+- Reconsider division for 3+ chain dependencies
+- Each task provides value independently as much as possible
+
 ### Phase Division Criteria
-1. **Phase 1: Foundation Implementation** - Type definitions, interfaces, test preparation
+1. **Phase 1: Foundation Implementation** - Type definitions, interfaces, test foundation construction
 2. **Phase 2: Core Feature Implementation** - Business logic, unit tests
-3. **Phase 3: Integration Implementation** - External integration, presentation layer
-4. **Phase 4: Quality Assurance** - Quality checks, optimization, documentation
+3. **Phase 3: Integration Implementation** - External coordination, integration tests, presentation layer
+4. **Phase 4: Comprehensive Quality Assurance**
+   - Technical quality verification (type checking, lint, test execution)
+   - Design Doc compliance verification (acceptance criteria fulfillment confirmation)
+   - E2E test execution and overall operation verification
+
+**Completion Criteria for Each Phase**:
+- Phase 1: Interface definitions, test environment construction
+- Phase 2: Core feature operation, coverage 80%+
+- Phase 3: Component integration, E2E tests pass
+- Phase 4: All quality checks pass
 
 ### Task Dependencies
 - Clearly define dependencies
 - Explicitly identify tasks that can run in parallel
-- Identify blocking tasks
+- Include integration points in task names
 
 ## Diagram Creation (using mermaid notation)
 

@@ -69,6 +69,12 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 - 各ステップ完了時に3箇所同期更新
 - 追加したテストのみを実行して通ることを確認（全体テストは不要）
 
+### 3.5 動作確認【必須】
+- タスク内の「動作確認方法」セクションを実行
+- 確認レベル（L1/L2/L3）に応じた確認を実施
+- 確認できない場合は理由を記録
+- 結果を構造化レスポンスに含める
+
 ### 4. 完了処理
 
 ## 調査タスクの成果物
@@ -91,6 +97,13 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
   "filesModified": ["file1.ts", "file2.ts"],
   "testsAdded": ["test1.test.ts"],
   "newTestsPassed": true,
+  "runnableCheck": {
+    "level": "L1/L2/L3",
+    "executed": true,
+    "command": "npm test src/features/notion/search.test.ts",
+    "result": "passed/failed/skipped",
+    "reason": "単体テストで動作確認"
+  },
   "readyForQualityCheck": true,
   "nextActions": "品質チェック工程待ち"
 }
