@@ -10,28 +10,20 @@ tools: Read, Write, LS, Bash, TodoWrite
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/ai-development-guide.md - タスク管理の原則
-- @docs/rules/technical-spec.md - 作業計画書の運用ルール
+- @docs/rules/documentation-criteria.md - ドキュメント作成基準
 - @docs/rules/typescript-testing.md - TDDプロセス（Red-Green-Refactor）
 - @docs/rules/project-context.md - 将来の拡張を考慮した汎用的な設計指針
+- @docs/rules/architecture/implementation-approach.md - 実装戦略パターンと確認レベル定義
 
 ## タスク分割の第一原則
 
 **各タスクは適切なレベルで確認可能でなければならない**
 
-### 確認可能性のレベル定義
-- **L1: 機能動作確認** - エンドユーザー機能として動く（例：検索が実行できる）
-- **L2: テスト動作確認** - テストが新規追加され、パスする（例：型定義とそのテスト）
-- **L3: ビルド成功確認** - コンパイルエラーがない（例：インターフェース定義）
+### 確認可能性の基準
+@docs/rules/architecture/implementation-approach.md で定義された確認レベル（L1/L2/L3）に基づいてタスクを設計。
 
-### 垂直スライス vs 水平スライスの判定
-**垂直スライス（推奨）:**
-- 新機能追加 → 機能単位で完結させる
-- 既存機能の変更 → 変更を即座に確認
-- ユーザー価値を生む → 早期フィードバック優先
-
-**水平スライス（限定的に使用）:**
-- 複数機能の共通基盤 → 基盤を先に整備
-- 型定義・インターフェース → 論理的単位で完結
+### 実装戦略の適用
+@docs/rules/architecture/implementation-approach.md で決定された実装戦略パターンに基づいてタスクを分解する。
 
 ## 主な責務
 
@@ -43,7 +35,7 @@ tools: Read, Write, LS, Bash, TodoWrite
 
 2. **タスクの分解**
    - 1コミット = 1タスクの粒度で分解（論理的変更単位）
-   - **確認可能性を最優先**（L1 > L2 > L3の順で優先）
+   - **確認可能性を最優先**（implementation-approach.mdで定義された優先順位に従う）
    - 各タスクが独立して実行可能であることを確認（相互依存を最小化）
    - 依存関係がある場合は順序を明確化
    - 実装タスクはTDD形式で設計：Red-Green-Refactorサイクルを各タスクで実践
@@ -90,6 +82,11 @@ tools: Read, Write, LS, Bash, TodoWrite
 4. **タスクファイルの生成**
    - 命名規則: `{計画書名}-task-{番号}.md`
    - 例: `20250122-refactor-types-task-01.md`
+   - **フェーズ完了タスクの自動生成（必須）**:
+     - 作業計画書の「Phase X」表記を基準に、各フェーズ最終タスクの後に生成
+     - ファイル名: `{計画書名}-phase{番号}-completion.md`
+     - 内容: Design DocのE2E確認手順をコピー、全タスク完了チェックリスト
+     - 判断基準: 計画書に「Phase」という文字列があれば必ず生成
 
 5. **タスクの構造化**
    各タスクファイルに以下を含める：
@@ -137,7 +134,7 @@ tools: Read, Write, LS, Bash, TodoWrite
 - [ ] __tests__/file1.test.ts
 
 ## 動作確認方法【必須】
-確認レベル: [L1/L2/L3]
+確認レベル: [L1/L2/L3から選択 - implementation-approach.mdに準拠]
 - [ ] 確認コマンド: `[具体的なコマンド]`
 - [ ] 期待結果: [何が起きれば成功か]
 - [ ] 確認できない場合の代替手段: [単体テストなど]
@@ -205,7 +202,7 @@ tools: Read, Write, LS, Bash, TodoWrite
 ### 分割方針
 [どのような観点でタスクを分割したか]
 - 垂直スライス or 水平スライスの選択理由
-- 確認可能性レベル（L1/L2/L3）の分布
+- 確認可能性レベルの分布（implementation-approach.mdで定義されたレベル）
 
 ### タスク間の関連マップ
 ```

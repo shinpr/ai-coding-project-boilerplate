@@ -88,24 +88,6 @@ rules:
       - "実装原則"
       - "カスタマイズガイド"
 
-  architecture-decision-process:
-    file: "architecture-decision-process.md"
-    tags: [architecture, decision-making, adr, process, large-scale]
-    typical-use: "大規模変更、アーキテクチャ決定、ADR作成"
-    size: medium
-    key-references:
-      - "ADR手法 - Michael Nygard"
-      - "Documenting Architecture Decisions"
-      - "Design Doc文化 - Google Engineering Practices"
-      - "トレードオフ分析 - Software Architecture in Practice"
-    sections:
-      - "目的"
-      - "ADR作成が必要なケース"
-      - "ADR作成プロセス"
-      - "ADRステータス"
-      - "ADRとDesign Docの使い分け"
-      - "AI利用時のルール"
-
   vertical-slice-architecture:
     file: "architecture/vertical-slice/rules.md"
     tags: [architecture, vertical-slice, llm-optimized, single-file, implementation]
@@ -141,3 +123,20 @@ rules:
       - "品質管理"
       - "LLM向け実装指針"
       - "まとめ"
+
+  implementation-approach:
+    file: "architecture/implementation-approach.md"
+    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
+    typical-use: "実装戦略パターンの選択、ストラングラー・ファサードパターンの適用判断、確認レベル(L1/L2/L3)定義、Design Doc作成時の戦略選択"
+    size: medium
+    key-references:
+      - "Strangler Fig Pattern - Martin Fowler"
+      - "Feature Slicing - Martin Fowler"
+      - "Walking Skeleton - Alistair Cockburn"
+      - "Facade Pattern - Gang of Four"
+    sections:
+      - "メタ認知的戦略選択プロセス"
+      - "確認レベル定義"
+      - "統合ポイントの定義"
+      - "アンチパターン"
+      - "メタ認知的実行のための指針"
