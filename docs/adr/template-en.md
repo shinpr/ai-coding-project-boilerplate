@@ -44,9 +44,10 @@
 
 - [List changes that are neither good nor bad]
 
-## Implementation Guidelines
+## Implementation Guidance
 
-[Specific guidelines and best practices for implementing this decision]
+[Principled direction only. Implementation procedures go to Design Doc]
+Example: "Use dependency injection" ✓, "Implement in Phase 1" ✗
 
 ## Related Information
 

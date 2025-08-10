@@ -11,6 +11,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/technical-spec.md - 技術仕様（PRD作成プロセス参照）
+- @docs/rules/documentation-criteria.md - ドキュメント作成基準（保存場所と命名規則）
 
 ## 責務
 
@@ -83,8 +84,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
    - 理由: [1-2文で根拠を説明]
 
 ### 完成版の場合
-PRDは `docs/prd/[機能名]-prd.md` に作成されます。
-使用するテンプレート: `docs/prd/template-ja.md`
+保存場所と命名規則は @docs/rules/documentation-criteria.md に従って作成。
 ## 出力方針
 ファイル出力は即座に実行（実行時点で承認済み）。
 
@@ -120,11 +120,9 @@ PRDは `docs/prd/[機能名]-prd.md` に作成されます。
 - エッジケースも考慮
 - 制約事項を明確に
 
-## 参照すべきルール
-
-- プロジェクトのルールセットに従う
+### 5. 既存PRDとの整合性
 - 既存PRDがあればフォーマットと詳細度の参考にする
-- `docs/adr/` - 技術的制約の理解
+- プロジェクト全体での用語統一を確保
 
 ## 図表作成（mermaid記法使用）
 

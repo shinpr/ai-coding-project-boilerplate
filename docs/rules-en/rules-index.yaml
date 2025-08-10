@@ -88,23 +88,41 @@ rules:
       - "Implementation Principles"
       - "Customization Guide"
 
-  architecture-decision-process:
-    file: "architecture-decision-process.md"
-    tags: [architecture, decision-making, adr, process, large-scale]
-    typical-use: "Large-scale changes, architecture decisions, ADR creation"
+  documentation-criteria:
+    file: "documentation-criteria.md"
+    tags: [documentation, adr, prd, design-doc, work-plan, decision-matrix]
+    typical-use: "Document creation decisions, ADR/PRD/Design Doc requirements, scale determination"
     size: medium
     key-references:
       - "ADR Methodology - Michael Nygard"
-      - "Documenting Architecture Decisions"
       - "Design Doc Culture - Google Engineering Practices"
-      - "Trade-off Analysis - Software Architecture in Practice"
+      - "Product Requirements - Marty Cagan"
+      - "MoSCoW Method - DSDM Consortium"
     sections:
-      - "Purpose"
-      - "Cases Requiring ADR Creation"
-      - "ADR Creation Process"
-      - "ADR Status"
-      - "Distinction Between ADR and Design Doc"
-      - "Rules for AI Usage"
+      - "Creation Decision Matrix"
+      - "ADR Creation Conditions"
+      - "Detailed Document Definitions"
+      - "Creation Process"
+      - "Storage Locations"
+      - "Diagram Requirements"
+      - "Common ADR Relationships"
+
+  implementation-approach:
+    file: "architecture/implementation-approach.md"
+    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
+    typical-use: "Implementation strategy pattern selection, Strangler/Facade pattern application decisions, Verification level (L1/L2/L3) definitions, Design Doc strategy selection"
+    size: medium
+    key-references:
+      - "Strangler Fig Pattern - Martin Fowler"
+      - "Feature Slicing - Martin Fowler"
+      - "Walking Skeleton - Alistair Cockburn"
+      - "Facade Pattern - Gang of Four"
+    sections:
+      - "Meta-cognitive Strategy Selection Process"
+      - "Verification Level Definitions"
+      - "Integration Point Definitions"
+      - "Anti-patterns"
+      - "Guidelines for Meta-cognitive Execution"
 
   vertical-slice-architecture:
     file: "architecture/vertical-slice/rules.md"

@@ -71,7 +71,7 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 
 ### 3.5 Operation Verification【Mandatory】
 - Execute "Operation Verification Methods" section within task
-- Perform verification according to verification level (L1/L2/L3)
+- Perform verification according to verification level defined in @docs/rules/architecture/implementation-approach.md
 - Record reason if verification cannot be performed
 - Include results in structured response
 

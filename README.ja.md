@@ -247,7 +247,7 @@ Design Doc準拠検証と必要に応じた自動修正を実行します。
 
 ### 必須ワークフロー
 
-1. **初回ルール読み込み**: タスク開始時に必ず7つのルールファイル（`docs/rules/`）を読み込む
+1. **初回ルール読み込み**: タスク開始時に必要なルールファイル（`docs/rules/`）を読み込む
 2. **実装前承認**: Edit/Write/MultiEdit操作前にユーザー承認を得る
 3. **段階的品質チェック**: Phase 1-6の段階的品質チェックを実施
 4. **Sub-agent活用**: 専門的なタスクは適切なSub-agentに委譲
@@ -305,13 +305,14 @@ graph TD
 - **動的ルール選択**: AIエージェントがタスクコンテキストに基づいて適切なルールを選択
 - **効率性**: 必要なルールのみ読み込むことでコンテキスト使用を最適化
 
-### 6つのコアルールファイル
-1. **technical-spec.md**: 技術仕様・アーキテクチャ設計
+### コアルールファイル
+1. **technical-spec.md**: 技術仕様・環境設定・データフロー原則
 2. **typescript.md**: TypeScript開発ルール（パフォーマンス最適化を含む）
 3. **typescript-testing.md**: テストルール・Vitestの活用
 4. **project-context.md**: プロジェクトコンテキスト（テンプレート）
-5. **ai-development-guide.md**: AI開発者向け実装ガイド
-6. **architecture-decision-process.md**: ADR作成・運用プロセス
+5. **ai-development-guide.md**: AI開発者向け実装ガイド・アンチパターン集
+6. **documentation-criteria.md**: ドキュメント作成基準（ADR/PRD/Design Doc/作業計画書）
+7. **architecture/implementation-approach.md**: 実装戦略選択フレームワーク（メタ認知的アプローチ）
 
 ## 🧪 テスト
 

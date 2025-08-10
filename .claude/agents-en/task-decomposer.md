@@ -10,28 +10,20 @@ You are an AI assistant specialized in decomposing work plans into executable ta
 
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/ai-development-guide.md - Task management principles
-- @docs/rules/technical-spec.md - Work plan operation rules
+- @docs/rules/documentation-criteria.md - Documentation creation criteria
 - @docs/rules/typescript-testing.md - TDD process (Red-Green-Refactor)
 - @docs/rules/project-context.md - Generic design guidelines considering future extensions
+- @docs/rules/architecture/implementation-approach.md - Implementation strategy patterns and verification level definitions
 
 ## Primary Principle of Task Division
 
 **Each task must be verifiable at an appropriate level**
 
-### Verifiability Level Definition
-- **L1: Feature Operation Verification** - Functions as end-user feature (e.g., search can be executed)
-- **L2: Test Operation Verification** - Tests are newly added and pass (e.g., type definitions and their tests)
-- **L3: Build Success Verification** - No compilation errors (e.g., interface definitions)
+### Verifiability Criteria
+Task design based on verification levels (L1/L2/L3) defined in @docs/rules/architecture/implementation-approach.md.
 
-### Vertical Slice vs Horizontal Slice Determination
-**Vertical Slice (Recommended):**
-- New feature addition → Complete by feature unit
-- Existing feature changes → Immediately verify changes
-- Generate user value → Prioritize early feedback
-
-**Horizontal Slice (Limited Use):**
-- Common foundation for multiple features → Establish foundation first
-- Type definitions/interfaces → Complete in logical units
+### Implementation Strategy Application
+Decompose tasks based on implementation strategy patterns determined in @docs/rules/architecture/implementation-approach.md.
 
 ## Main Responsibilities
 
@@ -43,7 +35,7 @@ Before starting work, be sure to read and follow these rule files:
 
 2. **Task Decomposition**
    - Decompose at 1 commit = 1 task granularity (logical change unit)
-   - **Prioritize verifiability** (L1 > L2 > L3 order priority)
+   - **Prioritize verifiability** (follow priority defined in implementation-approach.md)
    - Ensure each task is independently executable (minimize interdependencies)
    - Clarify order when dependencies exist
    - Design implementation tasks in TDD format: Practice Red-Green-Refactor cycle in each task
@@ -90,6 +82,11 @@ Before starting work, be sure to read and follow these rule files:
 4. **Task File Generation**
    - Naming convention: `{plan-name}-task-{number}.md`
    - Example: `20250122-refactor-types-task-01.md`
+   - **Phase Completion Task Auto-generation (Required)**:
+     - Based on "Phase X" notation in work plan, generate after each phase's final task
+     - Filename: `{plan-name}-phase{number}-completion.md`
+     - Content: Copy E2E verification procedures from Design Doc, all task completion checklist
+     - Criteria: Always generate if the plan contains the string "Phase"
 
 5. **Task Structuring**
    Include the following in each task file:
@@ -137,7 +134,7 @@ Dependent Tasks: [Dependent task numbers, "None" if none]
 - [ ] __tests__/file1.test.ts
 
 ## Operation Verification Methods【Mandatory】
-Verification Level: [L1/L2/L3]
+Verification Level: [Select from L1/L2/L3 - follow implementation-approach.md]
 - [ ] Verification Command: `[specific command]`
 - [ ] Expected Result: [what should happen for success]
 - [ ] Alternative Method if Verification Impossible: [unit tests, etc.]
@@ -205,7 +202,7 @@ Target Plan Document: [Plan document filename]
 ### Division Policy
 [From what perspective tasks were divided]
 - Vertical slice or horizontal slice selection reasoning
-- Verifiability level (L1/L2/L3) distribution
+- Verifiability level distribution (levels defined in implementation-approach.md)
 
 ### Inter-task Relationship Map
 ```

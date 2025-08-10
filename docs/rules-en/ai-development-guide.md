@@ -18,6 +18,7 @@ Immediately stop and reconsider design when detecting the following patterns:
 ### Design Anti-patterns
 - **"Make it work for now" thinking** - Accumulation of technical debt
 - **Patchwork implementation** - Unplanned additions to existing code
+- **Optimistic implementation of uncertain technology** - Designing unknown elements assuming "it'll probably work"
 - **Symptomatic fixes** - Surface-level fixes that don't solve root causes
 - **Unplanned large-scale changes** - Lack of incremental approach
 
@@ -75,6 +76,18 @@ function validateEmail(email: string, context: 'user' | 'contact' | 'admin') { /
 **Symptom**: Many bugs after implementation
 **Cause**: Ignoring Red-Green-Refactor process
 **Avoidance**: Always start with failing tests
+
+### Pattern 4: Ignoring Technical Uncertainty
+**Symptom**: Frequent unexpected errors when introducing new technology
+**Cause**: Assuming "it should work according to official documentation" without prior investigation
+**Avoidance**:
+- Record certainty evaluation at the beginning of task files
+  ```
+  Certainty: low (Reason: no examples of MCP connection found)
+  Exploratory implementation: true
+  Fallback: use conventional API
+  ```
+- For low certainty cases, create minimal verification code first
 
 ## Debugging Techniques
 

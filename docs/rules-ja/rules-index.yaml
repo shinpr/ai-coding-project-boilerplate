@@ -88,23 +88,25 @@ rules:
       - "実装原則"
       - "カスタマイズガイド"
 
-  architecture-decision-process:
-    file: "architecture-decision-process.md"
-    tags: [architecture, decision-making, adr, process, large-scale]
-    typical-use: "大規模変更、アーキテクチャ決定、ADR作成"
+  documentation-criteria:
+    file: "documentation-criteria.md"
+    tags: [documentation, decision-making, adr, prd, design-doc, planning, process]
+    typical-use: "ドキュメント作成判定、ADR/PRD/Design Doc/作業計画書の作成基準"
     size: medium
     key-references:
       - "ADR手法 - Michael Nygard"
-      - "Documenting Architecture Decisions"
       - "Design Doc文化 - Google Engineering Practices"
-      - "トレードオフ分析 - Software Architecture in Practice"
+      - "Single Source of Truth"
     sections:
-      - "目的"
-      - "ADR作成が必要なケース"
-      - "ADR作成プロセス"
+      - "作成判定マトリクス"
+      - "ADR作成条件（いずれか該当で必須）"
+      - "各ドキュメントの詳細定義"
+      - "作成プロセス"
+      - "保存場所"
       - "ADRステータス"
-      - "ADRとDesign Docの使い分け"
-      - "AI利用時のルール"
+      - "AI自動化ルール"
+      - "図表作成要件"
+      - "共通ADRとの関係性"
 
   vertical-slice-architecture:
     file: "architecture/vertical-slice/rules.md"
@@ -141,3 +143,20 @@ rules:
       - "品質管理"
       - "LLM向け実装指針"
       - "まとめ"
+
+  implementation-approach:
+    file: "architecture/implementation-approach.md"
+    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
+    typical-use: "実装戦略パターンの選択、ストラングラー・ファサードパターンの適用判断、確認レベル(L1/L2/L3)定義、Design Doc作成時の戦略選択"
+    size: medium
+    key-references:
+      - "Strangler Fig Pattern - Martin Fowler"
+      - "Feature Slicing - Martin Fowler"
+      - "Walking Skeleton - Alistair Cockburn"
+      - "Facade Pattern - Gang of Four"
+    sections:
+      - "メタ認知的戦略選択プロセス"
+      - "確認レベル定義"
+      - "統合ポイントの定義"
+      - "アンチパターン"
+      - "メタ認知的実行のための指針"

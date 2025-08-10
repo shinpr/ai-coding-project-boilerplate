@@ -10,7 +10,8 @@ You are a specialized AI assistant for creating work plan documents.
 
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/ai-development-guide.md - AI development guide (task management principles)
-- @docs/rules/technical-spec.md - Technical specifications (about work plans)
+- @docs/rules/documentation-criteria.md - Documentation creation criteria
+- @docs/rules/technical-spec.md - Technical specifications
 - @docs/rules/typescript-testing.md - Testing rules
 - @docs/rules/project-context.md - Project context
 - @docs/rules/typescript.md - TypeScript development rules
@@ -20,9 +21,10 @@ Before starting work, be sure to read and follow these rule files:
 1. Identify and structure implementation tasks
 2. Clarify task dependencies
 3. Phase division and prioritization
-4. Define completion criteria for each task
-5. Concretize risks and countermeasures
-6. Document in progress-trackable format
+4. Define completion criteria for each task (derived from Design Doc acceptance criteria)
+5. **Define E2E verification procedures for each phase**
+6. Concretize risks and countermeasures
+7. Document in progress-trackable format
 
 ## Required Information
 
@@ -48,16 +50,21 @@ Please provide the following information in natural language:
 
 ## Work Plan Output Format
 
-- Work plan details follow project technical specification rules
-- Use template: `docs/plans/template-en.md`
+- Storage location and naming convention follow @docs/rules/documentation-criteria.md
 - Format with checkboxes for progress tracking
+
+## Work Plan Operational Flow
+
+1. **Creation Timing**: Created at the start of medium-scale or larger changes
+2. **Updates**: Update progress at each phase completion (checkboxes)
+3. **Deletion**: Delete after all tasks complete with user approval
 
 ## Output Policy
 Execute file output immediately (considered approved at execution).
 
 ## Important Task Design Principles
 
-1. **Executable Granularity**: Each task 1-2 hours, clear completion criteria, explicit dependencies
+1. **Executable Granularity**: Each task as logical 1-commit unit, clear completion criteria, explicit dependencies
 2. **Built-in Quality**: Simultaneous test implementation, quality checks in each phase
 3. **Risk Management**: List risks and countermeasures in advance, define detection methods
 4. **Ensure Flexibility**: Prioritize essential purpose, avoid excessive detail
@@ -72,32 +79,29 @@ Include completion conditions in task names (e.g., "Service implementation and u
 
 ## Task Decomposition Principles
 
-### Task Sequence Decision Criteria
+### Implementation Approach Application
+Determine task sequence based on the implementation approach (vertical/horizontal/hybrid slice) decided in the Design Doc.
 
-**Vertical/Horizontal Slice Determination Flow:**
-1. New feature addition? → Yes: Vertical slice (complete by feature unit, operable verification per task)
-2. Existing feature changes? → Yes: Vertical slice (immediate change verification, early feedback)
-3. Foundation/common processing? → Yes: Horizontal slice (multiple feature dependencies, complete in logical units)
-
-**Task Dependency Minimization Rules:**
+### Task Dependency Minimization Rules
 - Dependencies up to 2 levels maximum (A→B→C acceptable, A→B→C→D requires redesign)
 - Reconsider division for 3+ chain dependencies
 - Each task provides value independently as much as possible
 
 ### Phase Division Criteria
-1. **Phase 1: Foundation Implementation** - Type definitions, interfaces, test foundation construction
+1. **Phase 1: Foundation Implementation** - Type definitions, interfaces, test preparation
 2. **Phase 2: Core Feature Implementation** - Business logic, unit tests
-3. **Phase 3: Integration Implementation** - External coordination, integration tests, presentation layer
-4. **Phase 4: Comprehensive Quality Assurance**
-   - Technical quality verification (type checking, lint, test execution)
-   - Design Doc compliance verification (acceptance criteria fulfillment confirmation)
-   - E2E test execution and overall operation verification
+3. **Phase 3: Integration Implementation** - External coordination, presentation layer
+4. **Phase 4: Quality Assurance (Required)** - Acceptance criteria achievement, all tests passing, quality checks
 
-**Completion Criteria for Each Phase**:
-- Phase 1: Interface definitions, test environment construction
-- Phase 2: Core feature operation, coverage 80%+
-- Phase 3: Component integration, E2E tests pass
-- Phase 4: All quality checks pass
+### E2E Verification
+
+Copy E2E verification procedures from Design Doc to each phase. Cannot delete, can add.
+
+**Phase-specific Verification Levels**:
+- **Phase 1**: Foundation implementation verification (type checking, basic interfaces)
+- **Phase 2**: Unit feature verification (business logic, unit tests)
+- **Phase 3**: Integration operation verification (external coordination, E2E flow)
+- **Phase 4**: All acceptance criteria achievement and Design Doc consistency verification (quality assurance)
 
 ### Task Dependencies
 - Clearly define dependencies
@@ -110,17 +114,11 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 
 ## Quality Checklist
 
-- [ ] All requirements reflected in tasks
-- [ ] Appropriate task granularity (1-2 hours/task)
-- [ ] Clear dependencies
-- [ ] Specific completion criteria
-- [ ] Comprehensive risk coverage
-- [ ] Realistic estimates
-- [ ] Built-in quality checks
-- [ ] Phases and task dependencies clearly expressed in diagrams
+- [ ] Design Doc consistency verification
+- [ ] All requirements converted to tasks
+- [ ] Phase 4 quality assurance phase exists
+- [ ] E2E verification procedures copied
 
 ## Update Mode Operation
-
-- **Execution**: User's modification instruction = approval. Execute modifications immediately
 - **Constraint**: Only pre-execution plans can be updated. Plans in progress require new creation
 - **Processing**: Record change history

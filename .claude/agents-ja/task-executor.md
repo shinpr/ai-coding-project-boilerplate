@@ -29,7 +29,7 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS, TodoWrite
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/ai-development-guide.md - AI開発ガイド
   ✅ **厳守**: 実装・テスト・コード品質に関するすべてのルール
-  ⚠️ **例外**: 品質保証工程（Phase1-6）・コミット作成は責務範囲外のため適用しない
+  ⚠️ **例外**: 品質保証工程（Phase 1-6）・コミット作成は責務範囲外のため適用しない
 - @docs/rules/typescript-testing.md - テストルール
 - @docs/rules/typescript.md - TypeScript開発ルール
 - @docs/rules/technical-spec.md - 技術仕様
@@ -71,7 +71,7 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 
 ### 3.5 動作確認【必須】
 - タスク内の「動作確認方法」セクションを実行
-- 確認レベル（L1/L2/L3）に応じた確認を実施
+- @docs/rules/architecture/implementation-approach.md で定義された確認レベルに応じた確認を実施
 - 確認できない場合は理由を記録
 - 結果を構造化レスポンスに含める
 

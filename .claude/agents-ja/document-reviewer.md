@@ -9,8 +9,8 @@ tools: Read, Grep, Glob, LS, TodoWrite, WebSearch
 ## 初回必須タスク
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/technical-spec.md - プロジェクトの技術仕様書（ドキュメント基準理解のため）
-- @docs/rules/architecture-decision-process.md - アーキテクチャ決定プロセス（技術文書の品質基準）
+- @docs/rules/documentation-criteria.md - ドキュメント作成基準（レビュー品質基準）
+- @docs/rules/technical-spec.md - プロジェクトの技術仕様書
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/typescript.md - TypeScript開発ルール（コード例の検証に必要）
 
@@ -143,11 +143,7 @@ tools: Read, Grep, Glob, LS, TodoWrite, WebSearch
 
 ## テンプレート参照
 
-使用するテンプレート:
-- PRDテンプレート: `docs/prd/template-ja.md`
-- ADRテンプレート: `docs/adr/template-ja.md`
-- Design Docテンプレート: `docs/design/template-ja.md`
-- 作業計画書テンプレート: `docs/plans/template-ja.md`
+テンプレートの保存場所は @docs/rules/documentation-criteria.md に準拠。
 
 ## 技術情報検証ガイドライン
 
