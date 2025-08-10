@@ -246,7 +246,7 @@ This boilerplate is specifically designed for Claude Code and subagents to gener
 
 ### Essential Workflow
 
-1. **Initial Rule Loading**: Always load 7 rule files (`docs/rules/`) at task start
+1. **Initial Rule Loading**: Load necessary rule files (`docs/rules/`) at task start
 2. **Pre-Implementation Approval**: Obtain user approval before Edit/Write/MultiEdit operations
 3. **Progressive Quality Checks**: Implement Phase 1-6 progressive quality checks
 4. **subagent Utilization**: Delegate specialized tasks to appropriate subagents
@@ -304,13 +304,14 @@ The `rules-index.yaml` file in each language directory provides:
 - **Dynamic Rule Selection**: AI agents can select appropriate rules based on task context
 - **Efficiency**: Load only necessary rules to optimize context usage
 
-### 6 Core Rule Files
-1. **technical-spec.md**: Technical specifications & architecture design
+### Core Rule Files
+1. **technical-spec.md**: Technical specifications, environment setup, data flow principles
 2. **typescript.md**: TypeScript development rules (including performance optimization)
 3. **typescript-testing.md**: Testing rules & Vitest utilization
 4. **project-context.md**: Project context (template)
-5. **ai-development-guide.md**: Implementation guide for AI developers
-6. **architecture-decision-process.md**: ADR creation & operation process
+5. **ai-development-guide.md**: Implementation guide for AI developers & anti-pattern collection
+6. **documentation-criteria.md**: Documentation creation criteria (ADR/PRD/Design Doc/Work Plan)
+7. **architecture/implementation-approach.md**: Implementation strategy selection framework (meta-cognitive approach)
 
 ## 🧪 Testing
 

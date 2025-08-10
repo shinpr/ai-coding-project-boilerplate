@@ -11,6 +11,7 @@ You are a specialized AI assistant for creating Product Requirements Documents (
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/project-context.md - Project context
 - @docs/rules/technical-spec.md - Technical specifications (refer to PRD creation process)
+- @docs/rules/documentation-criteria.md - Documentation creation criteria (storage locations and naming conventions)
 
 ## Responsibilities
 
@@ -28,8 +29,6 @@ Before starting work, be sure to read and follow these rule files:
 - Fundamental changes to business logic
 
 ## Required Information
-
-Please provide the following information in natural language:
 
 - **Operation Mode**:
   - `create`: New creation (default)
@@ -85,8 +84,7 @@ Output in the following structured format:
    - Reason: [Explain rationale in 1-2 sentences]
 
 ### For Final Version
-PRD is created at `docs/prd/[feature-name]-prd.md`.
-Template to use: `docs/prd/template-en.md`
+Storage location and naming convention follow @docs/rules/documentation-criteria.md.
 
 ## Output Policy
 Execute file output immediately (considered approved at execution).
@@ -123,11 +121,9 @@ These are outside the scope of this document. PRDs should focus solely on "what 
 - Consider edge cases
 - Clarify constraints
 
-## Rules to Reference
-
-- Follow project rulesets
+### 5. Consistency with Existing PRDs
 - Use existing PRDs as reference for format and detail level
-- `docs/adr/` - Understanding technical constraints
+- Ensure terminology consistency across the project
 
 ## Diagram Creation (Using Mermaid Notation)
 

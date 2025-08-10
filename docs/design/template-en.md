@@ -6,6 +6,26 @@
 
 ## Background and Context
 
+### Prerequisite ADRs
+
+- [ADR File Name]: [Related decision items]
+- Reference common technical ADRs when applicable
+
+### Agreement Checklist
+
+#### Scope
+- [ ] [Functions/components to change]
+- [ ] [Functions to add]
+
+#### Non-Scope (Explicitly not changing)
+- [ ] [Functions/components not to change]
+- [ ] [Existing logic to preserve]
+
+#### Constraints
+- [ ] Parallel operation: [Yes/No]
+- [ ] Backward compatibility: [Required/Not required]
+- [ ] Performance measurement: [Required/Not required]
+
 ### Problem to Solve
 
 [Specific problems or challenges this feature aims to solve]
@@ -29,126 +49,187 @@
 
 ## Acceptance Criteria
 
-Define specific and verifiable conditions to determine successful implementation for each functional requirement.
-These conditions serve as the basis for test cases and are used to objectively determine implementation completion.
+Define specific and verifiable conditions for determining successful implementation of each functional requirement.
+These conditions serve as the basis for test cases and are used to objectively judge implementation completion.
+(Note: Checkboxes remain empty at design time since implementation is not yet complete)
 
 - [ ] [Specific acceptance criteria for functional requirement 1]
-  - Example: "When a user clicks the login button, authentication succeeds with valid credentials"
-  - Example: "When invalid credentials are provided, an appropriate error message is displayed"
+  - Example: "When user clicks login button, authentication succeeds with correct credentials"
+  - Example: "When invalid credentials are entered, appropriate error message displays"
 - [ ] [Specific acceptance criteria for functional requirement 2]
-  - Example: "The data list screen displays items paginated by 10 entries"
-  - Example: "When text is entered in the search field, results are filtered in real-time"
+  - Example: "In data list screen, pagination displays 10 items per page"
+  - Example: "When typing in search field, real-time filtering occurs"
 
-## Design
+## Existing Codebase Analysis
 
-### Architecture Overview
+### Implementation Path Mapping
+| Type | Path | Description |
+|------|------|-------------|
+| Existing | src/[actual path] | [Current implementation] |
+| New | src/[planned path] | [Planned new creation] |
 
-[How this feature is positioned within the overall system]
+### Integration Points
+| Integration Point | Location | Old Implementation | New Implementation | Switch Method |
+|------------------|----------|-------------------|-------------------|---------------|
+| Point 1 | [Class/Function] | [Existing process] | [New process] | [DI/Factory etc.] |
+| Point 2 | [Another location] | [Existing] | [New] | [Method] |
 
-### Data Flow
-
-```
-[Express data flow using diagrams or pseudocode]
-```
-
-### Major Components
+### Main Components
 
 #### Component 1
 
-- **Responsibilities**: [Scope of responsibility for this component]
-- **Interface**: [APIs or type definitions provided]
-- **Dependencies**: [Relationships with other components]
+**Responsibility**: [What this component is responsible for]
+
+**Input/Output**:
+- Input: [What it receives]
+- Output: [What it returns]
+
+**Dependencies**: [What other components it depends on]
 
 #### Component 2
 
-- **Responsibilities**: [Scope of responsibility for this component]
-- **Interface**: [APIs or type definitions provided]
-- **Dependencies**: [Relationships with other components]
+[Same format]
 
-### Type Definitions
+## Type Definitions
 
 ```typescript
-// Key type definitions here
+// Include main type definitions here
+```
+
+### Data Contract
+
+#### Component 1
+
+```yaml
+Input:
+  Type: [TypeScript type definition]
+  Preconditions: [Required items, format constraints]
+  Validation: [Validation method]
+
+Output:
+  Type: [TypeScript type definition]
+  Guarantees: [Conditions always satisfied]
+  On Error: [Exception/null/default value]
+
+Invariants:
+  - [Conditions that remain unchanged before/after processing]
+```
+
+### State Transitions and Invariants (When Applicable)
+
+```yaml
+State Definitions:
+  - Initial State: [Initial values and conditions]
+  - Possible States: [List of states]
+
+State Transitions:
+  Current State → Event → Next State
+
+System Invariants:
+  - [Conditions that hold in any state]
 ```
 
 ### Error Handling
 
-[Types of errors and how to handle them]
+[Types of errors and handling methods]
 
-### Logging and Monitoring
+### Security Considerations
 
-[What to log and how to monitor]
+[Security measures, authentication, authorization, data protection]
 
 ## Implementation Plan
 
-### Phased Approach
+### Phase Division
 
-1. **Phase 1**: [What to implement first]
-2. **Phase 2**: [What to implement next]
-3. **Phase 3**: [What to implement last]
+#### Phase 1: [Phase Name]
+**Purpose**: [What this phase aims to achieve]
+
+**Implementation Content**:
+- [Implementation item 1]
+- [Implementation item 2]
+
+(Duration goes to work plan)
+
+**Phase Completion Criteria**:
+- [ ] [Functional completion criteria]
+- [ ] [Quality completion criteria]
+
+**E2E Verification Procedures**:
+1. [Operation verification steps]
+2. [Expected result verification]
+3. [Performance verification (when applicable)]
+
+#### Phase 2: [Phase Name]
+**Purpose**: [What this phase aims to achieve]
+
+**Implementation Content**:
+- [Implementation item 1]
+- [Implementation item 2]
+
+**Phase Completion Criteria**:
+- [ ] [Functional completion criteria]
+- [ ] [Quality completion criteria]
+
+**E2E Verification Procedures**:
+1. [Operation verification steps]
+2. [Expected result verification]
 
 ### Migration Strategy
 
-[Migration approach from existing system, backward compatibility considerations, etc.]
+[Technical migration approach, backward compatibility assurance methods]
 
-## Testing Strategy
+## Test Strategy
 
-### Test Design Principles
+### Test Categories
 
-Automatically derive test cases from acceptance criteria:
-- Create at least one test case for each acceptance criterion
-- Implement measurable criteria from acceptance criteria as assertions
+#### Unit Tests
+- [Testing scope and methods]
+- Target coverage: [percentage]
 
-### Unit Tests
+#### Integration Tests
+- [What integration points to test]
 
-[Unit testing approach and coverage goals]
-- Verify individual elements of functional acceptance criteria
+#### E2E Tests
+- [Main scenarios to test]
 
-### Integration Tests
+### Test Data
 
-[Integration testing approach and important test cases]
-- Verify combined behavior of functional acceptance criteria
+[Test data requirements and preparation methods]
 
-### End-to-End Tests
+## Performance and Monitoring
 
-[E2E testing approach]
-- Verify complete scenarios from acceptance criteria
-- Confirm functional behavior from user perspective
+### Performance Targets
 
-### Performance Tests
+- Response time: [target value]
+- Throughput: [target value]
+- Resource usage: [memory, CPU, etc.]
 
-[Performance testing methods and criteria]
-- Verify performance benchmarks from non-functional acceptance criteria
+### Monitoring
 
-## Security Considerations
+[Metrics to monitor, logging strategy]
 
-[Security concerns and countermeasures]
+## Deployment and Operations
 
-## Future Extensibility
+### Deployment Strategy
 
-[Considerations for future feature additions or changes]
+[Deployment method, rollback plan]
 
-## Alternative Approaches
+### Feature Flags
 
-### Alternative 1
-
-- **Overview**: [Description of the alternative]
-- **Pros**: [Advantages]
-- **Cons**: [Disadvantages]
-- **Reason for Rejection**: [Why it wasn't adopted]
+[If feature flags are used, describe control method]
 
 ## Risks and Mitigation
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
-| [Risk 1] | High/Medium/Low | High/Medium/Low | [Countermeasure] |
+| [Risk 1] | [High/Medium/Low] | [High/Medium/Low] | [Countermeasure] |
+| [Risk 2] | [High/Medium/Low] | [High/Medium/Low] | [Countermeasure] |
+
+## Open Questions
+
+- [ ] [Question 1]
+- [ ] [Question 2]
 
 ## References
 
-- [Related documents and links]
-
-## Revision History
-
-| Date | Version | Changes | Author |
-|------|---------|---------|--------|
-| YYYY-MM-DD | 1.0 | Initial draft | [Name] |
+- [Related documentation, technical articles, etc.]

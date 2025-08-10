@@ -1,81 +1,118 @@
-# Work Plan: [Title]
+# Work Plan: [Feature Name] Implementation
 
 Created Date: YYYY-MM-DD
 Type: feature|fix|refactor
+Estimated Duration: X days
 Estimated Impact: X files
-Related Issue/PR: #XXX (if applicable)
+Related Issue/PR: #XXX (if any)
 
-## Purpose
-[Why this change is needed, what problem does it solve]
+## Related Documents
+- Design Doc: [docs/design/XXX.md]
+- ADR: [docs/adr/ADR-XXXX.md] (if any)
+- PRD: [docs/prd/XXX.md] (if any)
 
-## Impact Scope
-### Target Files
-- [ ] src/domain/xxx
-- [ ] src/application/xxx
-- [ ] src/infrastructure/xxx
-- [ ] src/presentation/xxx
+## Objective
+[Why this change is necessary, what problem it solves]
 
-### Test Files
-- [ ] __tests__/xxx.test.ts
-- [ ] __tests__/xxx.test.ts
+## Background
+[Current state and why changes are needed]
 
-### Documentation
-- [ ] ADR creation required (for architecture changes)
-- [ ] Design Doc update required
-- [ ] README update required
+## Risks and Countermeasures
 
-## Implementation Plan
+### Technical Risks
+- **Risk**: [Risk description]
+  - **Impact**: [Impact assessment]
+  - **Countermeasure**: [How to address it]
 
-### Phase 1: [Phase Name] (Estimated Commits: X)
-**Purpose**: [What to achieve in this phase]
+### Schedule Risks
+- **Risk**: [Risk description]
+  - **Impact**: [Impact assessment]
+  - **Countermeasure**: [How to address it]
 
-- [ ] Task 1: Specific work details
-- [ ] Task 2: Specific work details
-- [ ] Quality Check: Perform staged quality checks (see @docs/rules/ai-development-guide.md)
-- [ ] Unit Tests: All related tests pass
+## Implementation Phases
 
-**Completion Criteria**: [State when this phase is considered complete]
+### Phase 1: [Phase Name] (Estimated commits: X)
+**Purpose**: [What this phase aims to achieve]
 
-### Phase 2: [Phase Name] (Estimated Commits: X)
-**Purpose**: [What to achieve in this phase]
+#### Tasks
+- [ ] Task 1: Specific work content
+- [ ] Task 2: Specific work content
+- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/ai-development-guide.md)
+- [ ] Unit tests: All related tests pass
 
-- [ ] Task 1: Specific work details
-- [ ] Task 2: Specific work details
-- [ ] Quality Check: Perform staged quality checks (see @docs/rules/ai-development-guide.md)
-- [ ] Integration Tests: Verify overall functionality
+#### Phase Completion Criteria
+- [ ] [Functional completion criteria]
+- [ ] [Quality completion criteria]
 
-**Completion Criteria**: [State when this phase is considered complete]
+#### E2E Verification Procedures
+1. [Operation verification steps]
+2. [Expected result verification]
+3. [Performance verification (when applicable)]
 
-### Phase 3: Documentation & Final Verification (Estimated Commits: 1)
-- [ ] Update necessary documentation
-- [ ] Overall quality check
-- [ ] Final functionality verification
+### Phase 2: [Phase Name] (Estimated commits: X)
+**Purpose**: [What this phase aims to achieve]
+
+#### Tasks
+- [ ] Task 1: Specific work content
+- [ ] Task 2: Specific work content
+- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/ai-development-guide.md)
+- [ ] Integration tests: Verify overall feature functionality
+
+#### Phase Completion Criteria
+- [ ] [Functional completion criteria]
+- [ ] [Quality completion criteria]
+
+#### E2E Verification Procedures
+1. [Operation verification steps]
+2. [Expected result verification]
+3. [Performance verification (when applicable)]
+
+### Phase 3: Integration Implementation (Estimated commits: X)
+**Purpose**: [What this phase aims to achieve]
+
+#### Tasks
+- [ ] Task 1: Specific work content
+- [ ] Task 2: Specific work content
+- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/ai-development-guide.md)
+- [ ] Integration tests: Verify component coordination
+
+#### Phase Completion Criteria
+- [ ] [Functional completion criteria]
+- [ ] [Quality completion criteria]
+
+#### E2E Verification Procedures
+[Copy Phase 3 E2E verification from Design Doc]
+
+### Phase 4: Quality Assurance (Required) (Estimated commits: 1)
+**Purpose**: Overall quality assurance and Design Doc consistency verification
+
+#### Tasks
+- [ ] Verify all Design Doc acceptance criteria achieved
+- [ ] Quality checks (types, lint, format)
+- [ ] Execute all tests
+- [ ] Coverage 70%+
+- [ ] Document updates
+
+#### E2E Verification Procedures
+[Copy E2E verification procedures from Design Doc]
 
 ### Quality Assurance
-- [ ] Perform staged quality checks (Details: @docs/rules/ai-development-guide.md)
+- [ ] Implement staged quality checks (details: refer to @docs/rules/ai-development-guide.md)
+- [ ] All tests pass
+- [ ] Type check pass
+- [ ] Lint check pass
+- [ ] Build success
 
-## Risks and Mitigation
-| Risk | Mitigation |
-|------|------------|
-| [Expected risk] | [Mitigation approach] |
+## Progress Tracking
+[Track work progress and record any issues encountered]
 
 ## Completion Criteria
-- [ ] All phases complete
-- [ ] Staged quality checks complete (zero errors)
+- [ ] All phases completed
+- [ ] Each phase's E2E verification procedures executed
+- [ ] Design Doc acceptance criteria satisfied
+- [ ] Staged quality checks completed (zero errors)
 - [ ] All tests pass
 - [ ] Necessary documentation updated
-- [ ] User review approved
-
-## Progress Log
-### Phase 1
-- Start: YYYY-MM-DD HH:MM
-- Complete: YYYY-MM-DD HH:MM
-- Notes: [Any special notes]
-
-### Phase 2
-- Start: YYYY-MM-DD HH:MM
-- Complete: YYYY-MM-DD HH:MM
-- Notes: [Any special notes]
 
 ## Notes
-[Special notes, reference information, cautions, etc.]
+[Record important decisions, changes, or considerations during implementation]

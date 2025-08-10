@@ -1,7 +1,5 @@
 # PRD: [Feature Name]
 
-<!-- Note: Do not include implementation phases (Phase 1, 2, etc.). PRD is for requirements definition only -->
-
 ## Overview
 
 ### One-line Summary

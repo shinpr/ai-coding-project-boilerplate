@@ -88,6 +88,26 @@ rules:
       - "実装原則"
       - "カスタマイズガイド"
 
+  documentation-criteria:
+    file: "documentation-criteria.md"
+    tags: [documentation, decision-making, adr, prd, design-doc, planning, process]
+    typical-use: "ドキュメント作成判定、ADR/PRD/Design Doc/作業計画書の作成基準"
+    size: medium
+    key-references:
+      - "ADR手法 - Michael Nygard"
+      - "Design Doc文化 - Google Engineering Practices"
+      - "Single Source of Truth"
+    sections:
+      - "作成判定マトリクス"
+      - "ADR作成条件（いずれか該当で必須）"
+      - "各ドキュメントの詳細定義"
+      - "作成プロセス"
+      - "保存場所"
+      - "ADRステータス"
+      - "AI自動化ルール"
+      - "図表作成要件"
+      - "共通ADRとの関係性"
+
   vertical-slice-architecture:
     file: "architecture/vertical-slice/rules.md"
     tags: [architecture, vertical-slice, llm-optimized, single-file, implementation]

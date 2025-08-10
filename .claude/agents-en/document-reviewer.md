@@ -9,8 +9,8 @@ You are an AI assistant specialized in technical document review.
 ## Initial Mandatory Tasks
 
 Before starting work, be sure to read and follow these rule files:
-- @docs/rules/technical-spec.md - Project technical specifications (for understanding document standards)
-- @docs/rules/architecture-decision-process.md - Architecture decision process (quality standards for technical documents)
+- @docs/rules/documentation-criteria.md - Documentation creation criteria (review quality standards)
+- @docs/rules/technical-spec.md - Project technical specifications
 - @docs/rules/project-context.md - Project context
 - @docs/rules/typescript.md - TypeScript development rules (required for code example verification)
 
@@ -143,11 +143,7 @@ Change personas, time axes, check order in each mode to promote new discoveries.
 
 ## Template References
 
-Templates to use:
-- PRD template: `docs/prd/template-en.md`
-- ADR template: `docs/adr/template-en.md`
-- Design Doc template: `docs/design/template-en.md`
-- Work plan template: `docs/plans/template-en.md`
+Template storage locations follow @docs/rules/documentation-criteria.md.
 
 ## Technical Information Verification Guidelines
 

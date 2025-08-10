@@ -12,6 +12,7 @@ Before starting work, be sure to read and follow these rule files:
 - @docs/rules/project-context.md - Project context
 - @docs/rules/technical-spec.md - Technical specifications (refer to documentation process)
 - @docs/rules/ai-development-guide.md - AI development guide (refer to escalation criteria)
+- @docs/rules/documentation-criteria.md - Documentation creation criteria (scale determination and ADR conditions)
 
 ## Responsibilities
 
@@ -25,7 +26,7 @@ Before starting work, be sure to read and follow these rule files:
 
 ## Work Scale Determination Criteria
 
-Scale determination and required document details follow project technical specification rules.
+Scale determination and required document details follow @docs/rules/documentation-criteria.md.
 
 ### Scale Overview (Minimum Criteria)
 - **Small**: 1-2 files, single function modification
@@ -44,36 +45,30 @@ Scale determination and required document details follow project technical speci
 
 ## Conditions Requiring ADR
 
+Detailed ADR creation conditions are defined in @docs/rules/documentation-criteria.md.
+
+### Overview
 ADR creation is **conditionally mandatory** regardless of scale when any of the following apply:
 
-1. **Major Type System Changes**
-   - Introduction of new type hierarchy
-     - Criteria: Type definitions with 3+ levels of nesting
-     - Example: `type A = { b: { c: { d: string } } }` has 3 levels, so ADR required
-   - Deletion/consolidation of existing major type definitions
-     - Criteria: Changes to types used in 3+ places
-   - Fundamental changes to type responsibilities or roles
-     - Criteria: Changes that alter type purpose or usage
-     - Example: Changing "UserDTO" to "UserEntity" (from data transfer to business entity)
+1. **Type System Changes**
+   - Nested types with 3+ levels (e.g., `type A = { b: { c: { d: T } } }`)
+   - Changing/deleting types used in 3+ locations
+   - Type responsibility changes (e.g., DTO→Entity)
 
 2. **Data Flow Changes**
-   - Changes to data storage location
-     - Example: DB to file, memory to cache
-   - Major changes to processing flow
-     - Criteria: Changes to processing order of 3+ steps
-     - Example: From "input→validate→save" to "input→save→async validate"
-   - Changes to data passing methods between components
-     - Example: Props to Context API, direct reference to event-based
+   - Storage location changes (DB→File, Memory→Cache)
+   - Processing order changes with 3+ steps
+   - Data passing method changes (props→Context, direct reference→events)
 
 3. **Architecture Changes**
-   - Adding new layers
-   - Changing existing layer responsibilities
-   - Relocating major components
+   - Layer addition, responsibility changes, component relocation
 
 4. **External Dependency Changes**
-   - Introducing new libraries/frameworks
-   - Removing or replacing existing external dependencies
-   - Changing external API integration methods
+   - Library/framework/external API introduction or replacement
+
+5. **Complex Implementation Logic (Regardless of Scale)**
+   - Managing 3+ states
+   - Coordinating 5+ asynchronous processes
 
 ### ADR Determination Flow
 1. Does it match any of the above conditions? → Yes: ADR mandatory / No: Next
@@ -175,14 +170,6 @@ Please provide the following information in natural language:
    - Options: A) [Option 1] B) [Option 2] C) [Option 3]
    - Reason: [Why this needs to be confirmed]
 ```
-
-## Rules to Reference
-
-- Follow project rulesets. Pay special attention to:
-  - Understanding project characteristics
-  - PRD/ADR/Design Doc creation processes
-  - Escalation criteria
-- Existing ADRs (`docs/adr/`) - Reference for similar cases
 
 ## Quality Checklist
 
