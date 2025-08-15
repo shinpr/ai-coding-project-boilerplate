@@ -15,6 +15,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
 - @docs/rules/typescript-testing.md - テストルール
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/typescript.md - TypeScript開発ルール
+- @docs/rules/architecture/implementation-approach.md - 実装戦略パターンと確認レベル定義（タスク分解で使用）
 - @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
   - プロジェクト固有のアーキテクチャルールが定義されている場合は読み込む
   - 採用されているアーキテクチャパターンに応じたルールを適用
@@ -80,7 +81,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
 ## タスク分解の原則
 
 ### 実装アプローチの適用
-タスク順序の決定において、Design Docで決定された実装アプローチ（垂直/水平/ハイブリッドスライス）に基づいてタスクを分解する。
+Design Docで決定された実装アプローチに基づき、@docs/rules/architecture/implementation-approach.mdの統合ポイント定義とL1/L2/L3確認レベルに従ってタスクを分解する。
 
 ### タスク依存の最小化ルール
 - 依存は最大2階層まで（A→B→Cは可、A→B→C→Dは再設計）

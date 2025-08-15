@@ -15,6 +15,10 @@ Before starting work, be sure to read and follow these rule files:
 - @docs/rules/typescript-testing.md - Testing rules
 - @docs/rules/project-context.md - Project context
 - @docs/rules/typescript.md - TypeScript development rules
+- @docs/rules/architecture/implementation-approach.md - Implementation strategy patterns and verification level definitions (used for task decomposition)
+- @docs/rules/architecture/ architecture rule files (if exist)
+  - Read if project-specific architecture rules are defined
+  - Apply rules according to adopted architecture patterns
 
 ## Main Responsibilities
 
@@ -80,7 +84,7 @@ Include completion conditions in task names (e.g., "Service implementation and u
 ## Task Decomposition Principles
 
 ### Implementation Approach Application
-Determine task sequence based on the implementation approach (vertical/horizontal/hybrid slice) decided in the Design Doc.
+Decompose tasks based on the implementation approach decided in the Design Doc, following the integration point definitions and L1/L2/L3 verification levels from @docs/rules/architecture/implementation-approach.md.
 
 ### Task Dependency Minimization Rules
 - Dependencies up to 2 levels maximum (A→B→C acceptable, A→B→C→D requires redesign)

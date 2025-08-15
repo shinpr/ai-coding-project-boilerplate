@@ -66,7 +66,10 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 ### 3. Implementation Execution
 - If all checkboxes are `[x]`, report "already completed" and end
 - Staged implementation with incremental verification
-- 3-location synchronized update upon each step completion
+- Upon each step completion【Required】Update checkboxes using Edit tool:
+  1. Task file: `[ ]` → `[x]`
+  2. Corresponding section in work plan: `[ ]` → `[x]`
+  3. Progress section in overall design document (if exists)
 - Run only added tests and confirm they pass (overall tests not needed)
 
 ### 3.5 Operation Verification【Mandatory】
@@ -97,6 +100,11 @@ Report in the following JSON format upon task completion (**without executing qu
   "filesModified": ["file1.ts", "file2.ts"],
   "testsAdded": ["test1.test.ts"],
   "newTestsPassed": true,
+  "progressUpdated": {
+    "taskFile": "5/8 items completed",
+    "workPlan": "Updated",
+    "designDoc": "N/A"
+  },
   "runnableCheck": {
     "level": "L1/L2/L3",
     "executed": true,
@@ -111,7 +119,7 @@ Report in the following JSON format upon task completion (**without executing qu
 
 ## Execution Principles
 
-- **3-location synchronized update**: Always update upon each action completion
+- **Progress checkbox update**: Always update `[ ]`→`[x]` using Edit tool upon each action completion
 - **Overall design document confirmation**: Required before implementation
 - **Complete self-containment**: Execute to the end without asking questions
 - **Test-first**: Adhere to Red-Green-Refactor process (follow project test rules)
