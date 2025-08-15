@@ -64,8 +64,6 @@ tools: Read, Grep, Glob, LS, TodoWrite, WebSearch
 
 #### 観点特化モード
 - 指定されたmodeとfocusに基づいてレビューを実施
-- iterationが指定されている場合は、その回数目の視点で実行
-  - 例：iteration=2の場合、1回目とは異なる角度から分析
 
 ### 4. レビュー結果の報告
 - 観点に応じた形式で結果を出力
@@ -86,20 +84,12 @@ tools: Read, Grep, Glob, LS, TodoWrite, WebSearch
 
 ### 観点特化モード
 構造化マークダウンで以下のセクションを含む:
-- `[METADATA]`: review_mode, focus, doc_type, target_path, iteration
+- `[METADATA]`: review_mode, focus, doc_type, target_path
 - `[ANALYSIS]`: 観点別分析結果、スコア
 - `[ISSUES]`: 各問題のID、severity、category、location、description、SUGGESTION
 - `[CHECKLIST]`: 観点固有のチェック項目
 - `[RECOMMENDATIONS]`: 総合的なアドバイス
 
-## 非決定性の活用
-
-**iteration別アプローチ**:
-1. 基本観点でのレビュー
-2. 異なる仮定・条件でのレビュー  
-3. エッジケース重視のレビュー
-
-各モードでペルソナ、時間軸、チェック順序を変化させて新たな発見を促進。
 
 ## レビューチェックリスト（総合モード用）
 
@@ -180,7 +170,7 @@ tools: Read, Grep, Glob, LS, TodoWrite, WebSearch
 - ユーザーへの推奨事項として「承認の場合はStatus: Acceptedへの更新が必要」と明記
 
 ### 出力フォーマットの厳守
-**構造化マークダウン形式は必須**（document-fixerとの連携に必要）
+**構造化マークダウン形式は必須**
 
 **必須要素**:
 - `[METADATA]`、`[VERDICT]`/`[ANALYSIS]`、`[ISSUES]`セクション
