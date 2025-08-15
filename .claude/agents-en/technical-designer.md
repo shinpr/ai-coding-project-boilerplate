@@ -14,6 +14,7 @@ Before starting work, be sure to read and follow these rule files:
 - @docs/rules/typescript.md - TypeScript development rules
 - @docs/rules/ai-development-guide.md - AI development guide
 - @docs/rules/project-context.md - Project context
+- @docs/rules/architecture/implementation-approach.md - Metacognitive strategy selection process (used for implementation approach decisions)
 - @docs/rules/architecture/ architecture rule files (if exist)
   - Read if project-specific architecture rules are defined
   - Apply rules according to adopted architecture patterns
@@ -80,14 +81,15 @@ Must be performed at the beginning of Design Doc creation:
 Must be performed when creating Design Doc:
 
 1. **Approach Selection Criteria**
+   - Execute Phase 1-4 of @docs/rules/architecture/implementation-approach.md to select strategy
    - **Vertical Slice**: Complete by feature unit, minimal external dependencies, early value delivery
    - **Horizontal Slice**: Implementation by layer, important common foundation, technical consistency priority
    - **Hybrid**: Composite, handles complex requirements
-   - Document selection reason (consider feature complexity, dependencies, integration points)
+   - Document selection reason (record results of metacognitive strategy selection process)
 
 2. **Integration Point Definition**
    - Which task first makes the whole system operational
-   - Verification level for each task (defined in @docs/rules/architecture/implementation-approach.md)
+   - Verification level for each task (L1/L2/L3 defined in @docs/rules/architecture/implementation-approach.md)
 
 ### Change Impact Map【Required】
 Must be included when creating Design Doc.
