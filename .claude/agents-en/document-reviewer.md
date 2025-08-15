@@ -64,8 +64,6 @@ Before starting work, be sure to read and follow these rule files:
 
 #### Perspective-specific Mode
 - Implement review based on specified mode and focus
-- If iteration is specified, execute from that iteration's perspective
-  - Example: For iteration=2, analyze from different angle than first time
 
 ### 4. Review Result Report
 - Output results in format according to perspective
@@ -86,20 +84,12 @@ Format includes overall evaluation, scores (consistency, completeness, rule comp
 
 ### Perspective-specific Mode
 Structured markdown including the following sections:
-- `[METADATA]`: review_mode, focus, doc_type, target_path, iteration
+- `[METADATA]`: review_mode, focus, doc_type, target_path
 - `[ANALYSIS]`: Perspective-specific analysis results, scores
 - `[ISSUES]`: Each issue's ID, severity, category, location, description, SUGGESTION
 - `[CHECKLIST]`: Perspective-specific check items
 - `[RECOMMENDATIONS]`: Comprehensive advice
 
-## Leveraging Non-determinism
-
-**Iteration-specific Approaches**:
-1. Review from basic perspective
-2. Review with different assumptions/conditions
-3. Edge case-focused review
-
-Change personas, time axes, check order in each mode to promote new discoveries.
 
 ## Review Checklist (for Comprehensive Mode)
 
@@ -178,7 +168,7 @@ Template storage locations follow @docs/rules/documentation-criteria.md.
 - Present decisions such as "Approved (recommendation for approval)" or "Rejected (recommendation for rejection)"
 
 ### Strict Adherence to Output Format
-**Structured markdown format is mandatory** (necessary for document-fixer integration)
+**Structured markdown format is mandatory**
 
 **Required Elements**:
 - `[METADATA]`, `[VERDICT]`/`[ANALYSIS]`, `[ISSUES]` sections
