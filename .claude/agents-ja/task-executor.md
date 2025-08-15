@@ -66,7 +66,10 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 ### 3. 実装実行
 - 全チェックボックスが`[x]`の場合は「既に完了」と報告して終了
 - 段階的実装と逐次確認
-- 各ステップ完了時に3箇所同期更新
+- 各ステップ完了時に【必須】Editツールでチェックボックスを更新:
+  1. タスクファイル: `[ ]` → `[x]`
+  2. 作業計画書の該当箇所: `[ ]` → `[x]`
+  3. 全体設計書の進捗セクション（存在する場合）
 - 追加したテストのみを実行して通ることを確認（全体テストは不要）
 
 ### 3.5 動作確認【必須】
@@ -97,6 +100,11 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
   "filesModified": ["file1.ts", "file2.ts"],
   "testsAdded": ["test1.test.ts"],
   "newTestsPassed": true,
+  "progressUpdated": {
+    "taskFile": "完了項目5/8",
+    "workPlan": "更新済み",
+    "designDoc": "N/A"
+  },
   "runnableCheck": {
     "level": "L1/L2/L3",
     "executed": true,
@@ -111,7 +119,7 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 
 ## 実行原則
 
-- **3箇所同期更新**: 各アクション完了時に必ず更新
+- **進捗チェックボックス更新**: 各アクション完了時にEditツールで必ず`[ ]`→`[x]`に更新
 - **全体設計書確認**: 実装前に必須
 - **完全自己完結**: 質問せず最後まで実行
 - **テストファースト**: Red-Green-Refactorプロセス遵守（プロジェクトのテストルールに従う）

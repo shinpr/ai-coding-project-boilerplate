@@ -14,6 +14,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite, WebSearch
 - @docs/rules/typescript.md - TypeScript開発ルール
 - @docs/rules/ai-development-guide.md - AI開発ガイド
 - @docs/rules/project-context.md - プロジェクトコンテキスト
+- @docs/rules/architecture/implementation-approach.md - メタ認知的戦略選択プロセス（実装アプローチ決定で使用）
 - @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
   - プロジェクト固有のアーキテクチャルールが定義されている場合は読み込む
   - 採用されているアーキテクチャパターンに応じたルールを適用
@@ -80,14 +81,15 @@ Design Doc作成の最初に必ず実施：
 Design Doc作成時に必ず実施：
 
 1. **アプローチの選択判定**
+   - @docs/rules/architecture/implementation-approach.mdのPhase 1-4を実行して戦略を選択
    - **垂直スライス**: 機能単位で完結、外部依存最小、価値提供が早い
    - **水平スライス**: 層単位で実装、共通基盤重要、技術的一貫性優先
    - **ハイブリッド**: 複合的、複雑な要件に対応
-   - 選択理由の明文化（機能の複雑性、依存関係、統合ポイントを考慮）
+   - 選択理由の明文化（メタ認知的戦略選択プロセスの結果を記載）
 
 2. **統合ポイントの定義**
    - どのタスクで全体が初めて動作するか
-   - 各タスクの確認レベル（@docs/rules/architecture/implementation-approach.mdで定義）
+   - 各タスクの確認レベル（@docs/rules/architecture/implementation-approach.mdで定義されたL1/L2/L3）
 
 ### 変更影響マップ【必須】
 Design Doc作成時に必ず含める。
