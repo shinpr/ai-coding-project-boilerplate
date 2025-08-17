@@ -26,16 +26,13 @@ Select appropriate architecture patterns according to project requirements and s
 - **Hybrid Progressive Architecture**: Progressive evolution from small to large scale
 - **Architecture Consistency**: Strictly follow the selected pattern
 
-## Dependency Injection (DI) Pattern
+## Unified Data Flow Principles
 
-### Overview
-Utilizing Dependency Injection patterns enables:
-- Improved testability
-- Loose coupling between modules
-- Easy implementation replacement
-
-### Implementation Method
-Select appropriate DI patterns or DI libraries according to project scale and requirements.
+### Data Flow Consistency
+Maintain consistent data flow throughout the application:
+- **Single Source of Truth**: Each piece of data has one authoritative source
+- **Unidirectional Flow**: Data flows in a predictable direction
+- **Immutable Updates**: Prefer immutable data transformations
 
 ## Design Documents and Processes
 
