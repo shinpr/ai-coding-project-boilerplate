@@ -21,6 +21,16 @@
 3. **ユニオン型・インターセクション型**: 複数の型の組み合わせ
 4. **型アサーション（最終手段）**: 型が確実な場合のみ
 
+**型ガードの実装パターン**
+```typescript
+// 外部入力を安全に検証
+function isUser(value: unknown): value is User {
+  return typeof value === 'object' && value !== null && 
+    'id' in value && 'name' in value
+}
+// 使用例: if (isUser(data)) { /* dataはUser型 */ }
+```
+
 **モダンな型機能の活用**
 - **satisfies演算子**: 型推論を維持しつつ型チェック
   ```typescript
@@ -54,18 +64,22 @@
 入力層（`unknown`） → 型ガード → ビジネス層（型保証） → 出力層（シリアライズ）
 
 **型の複雑性管理**
-- フィールド数: 20個まで（超えたら責務で分割）
+- フィールド数: 20個まで（超えたら責務で分割、外部API型は例外）
 - オプショナル率: 30%まで（超えたら必須/任意で分離）
 - ネスト深さ: 3階層まで（超えたらフラット化）
 - 型アサーション: 3回以上使用したら設計見直し
+- **外部API型の扱い**: 制約を緩和し、実態に合わせて定義（内部では適切に変換）
 
 ## コーディング規約
 
 **クラス使用の判断基準**
+- **推奨：関数とinterfaceでの実装**
+  - 背景: テスタビリティと関数合成の柔軟性が向上
 - **クラス使用を許可**: 
   - フレームワーク要求時（NestJSのController/Service、TypeORMのEntity等）
   - カスタムエラークラス定義時
-- **クラス使用を禁止**: 上記以外は関数とinterfaceで実装
+  - 状態とビジネスロジックが密結合している場合（例: ShoppingCart、Session、StateMachine）
+- **判断基準**: 「このデータは振る舞いを持つか？」がYesならクラス検討
   ```typescript
   // ✅ 関数とinterface
   interface UserService { create(data: UserData): User }
