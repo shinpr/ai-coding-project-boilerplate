@@ -4,14 +4,18 @@
 rules:
   typescript:
     file: "typescript.md"
-    tags: [implementation, type-safety, async, refactoring, coding-style]
-    typical-use: "TypeScriptコードの作成・修正・リファクタリング"
+    tags: [implementation, type-safety, async, refactoring, coding-style, functional-programming, dependency-injection, branded-types]
+    typical-use: "TypeScriptコードの作成・修正・リファクタリング、モダンな型機能活用"
     size: medium
     key-references:
       - "YAGNI原則 - Kent Beck"
       - "Clean Code - Robert C. Martin"
       - "DRY原則 - The Pragmatic Programmer"
       - "Refactoring - Martin Fowler"
+      - "TypeScript 4.9 satisfies演算子 - Microsoft"
+      - "Branded Types - TypeScript Community"
+      - "Effect-TS / fp-ts - 関数型プログラミング"
+      - "Dependency Injection - Martin Fowler"
     sections:
       - "基本原則"
       - "コメント記述ルール"

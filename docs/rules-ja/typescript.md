@@ -21,6 +21,29 @@
 3. **ユニオン型・インターセクション型**: 複数の型の組み合わせ
 4. **型アサーション（最終手段）**: 型が確実な場合のみ
 
+**モダンな型機能の活用**
+- **satisfies演算子**: 型推論を維持しつつ型チェック
+  ```typescript
+  const config = { port: 3000 } satisfies Config  // ✅ 型推論維持
+  const config: Config = { port: 3000 }           // ❌ 型推論失われる
+  ```
+- **const assertion**: リテラル型で不変性を保証
+  ```typescript
+  const ROUTES = { HOME: '/' } as const satisfies Routes  // ✅ 不変かつ型安全
+  ```
+- **ブランド型**: 同じプリミティブ型でも意味を区別
+  ```typescript
+  type UserId = string & { __brand: 'UserId' }
+  type OrderId = string & { __brand: 'OrderId' }
+  // UserIdとOrderIdは互換性なし - 混同を防止
+  ```
+- **テンプレートリテラル型**: 文字列パターンを型で表現
+  ```typescript
+  type Route = `/${string}`
+  type HttpMethod = 'GET' | 'POST'
+  type Endpoint = `${HttpMethod} ${Route}`
+  ```
+
 **実装での型安全性**
 - API通信: レスポンスは必ず`unknown`で受け、型ガードで検証
 - フォーム入力: 外部入力は`unknown`、バリデーション後に型確定
@@ -37,6 +60,37 @@
 - 型アサーション: 3回以上使用したら設計見直し
 
 ## コーディング規約
+
+**クラス使用の判断基準**
+- **クラス使用を許可**: 
+  - フレームワーク要求時（NestJSのController/Service、TypeORMのEntity等）
+  - カスタムエラークラス定義時
+- **クラス使用を禁止**: 上記以外は関数とinterfaceで実装
+  ```typescript
+  // ✅ 関数とinterface
+  interface UserService { create(data: UserData): User }
+  const userService: UserService = { create: (data) => {...} }
+  // ❌ 不要なクラス
+  class UserService { create(data: UserData) {...} }
+  ```
+
+**関数設計**
+- **引数は0-2個まで**: 3個以上はオブジェクト化
+  ```typescript
+  // ✅ オブジェクト引数
+  function createUser({ name, email, role }: CreateUserParams) {}
+  // ❌ 多数の引数
+  function createUser(name: string, email: string, role: string) {}
+  ```
+
+**依存性注入**
+- **外部依存は引数で注入**: テスト可能性とモジュール性確保
+  ```typescript
+  // ✅ 依存性を引数で受け取る
+  function createService(repository: Repository) { return {...} }
+  // ❌ 直接importした実装に依存
+  import { userRepository } from './infrastructure/repository'
+  ```
 
 **非同期処理**
 - Promise処理: 必ず`async/await`を使用
@@ -57,6 +111,17 @@
 ## エラーハンドリング
 
 **絶対ルール**: エラーの握りつぶし禁止。すべてのエラーは必ずログ出力と適切な処理を行う。
+
+**Result型パターン**: エラーを型で表現し、明示的に処理
+```typescript
+type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }
+
+// 使用例：エラーの可能性を型で表現
+function parseUser(data: unknown): Result<User, ValidationError> {
+  if (!isValid(data)) return { ok: false, error: new ValidationError() }
+  return { ok: true, value: data as User }
+}
+```
 
 **カスタムエラークラス**
 ```typescript
