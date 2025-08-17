@@ -21,6 +21,16 @@
 3. **Union Types・Intersection Types**: Combinations of multiple types
 4. **Type Assertions (Last Resort)**: Only when type is certain
 
+**Type Guard Implementation Pattern**
+```typescript
+// Safely validate external input
+function isUser(value: unknown): value is User {
+  return typeof value === 'object' && value !== null && 
+    'id' in value && 'name' in value
+}
+// Usage: if (isUser(data)) { /* data is typed as User */ }
+```
+
 **Modern Type Features**
 - **satisfies Operator**: Type check while preserving type inference
   ```typescript
@@ -54,18 +64,22 @@
 Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → Output Layer (Serialization)
 
 **Type Complexity Management**
-- Field Count: Up to 20 (split by responsibility if exceeded)
+- Field Count: Up to 20 (split by responsibility if exceeded, external API types are exceptions)
 - Optional Ratio: Up to 30% (separate required/optional if exceeded)
 - Nesting Depth: Up to 3 levels (flatten if exceeded)
 - Type Assertions: Review design if used 3+ times
+- **External API Types**: Relax constraints and define according to reality (convert appropriately internally)
 
 ## Coding Conventions
 
 **Class Usage Criteria**
+- **Recommended: Implementation with Functions and Interfaces**
+  - Rationale: Improves testability and flexibility of function composition
 - **Classes Allowed**: 
   - Framework requirements (NestJS Controller/Service, TypeORM Entity, etc.)
   - Custom error class definitions
-- **Classes Prohibited**: Use functions and interfaces for everything else
+  - When state and business logic are tightly coupled (e.g., ShoppingCart, Session, StateMachine)
+- **Decision Criterion**: If "Does this data have behavior?" is Yes, consider using a class
   ```typescript
   // ✅ Functions and interfaces
   interface UserService { create(data: UserData): User }
