@@ -21,6 +21,29 @@
 3. **Union Types・Intersection Types**: Combinations of multiple types
 4. **Type Assertions (Last Resort)**: Only when type is certain
 
+**Modern Type Features**
+- **satisfies Operator**: Type check while preserving type inference
+  ```typescript
+  const config = { port: 3000 } satisfies Config  // ✅ Preserves inference
+  const config: Config = { port: 3000 }           // ❌ Loses inference
+  ```
+- **const Assertion**: Ensure immutability with literal types
+  ```typescript
+  const ROUTES = { HOME: '/' } as const satisfies Routes  // ✅ Immutable and type-safe
+  ```
+- **Branded Types**: Distinguish meaning for same primitive types
+  ```typescript
+  type UserId = string & { __brand: 'UserId' }
+  type OrderId = string & { __brand: 'OrderId' }
+  // UserId and OrderId are incompatible - prevents mixing
+  ```
+- **Template Literal Types**: Express string patterns with types
+  ```typescript
+  type Route = `/${string}`
+  type HttpMethod = 'GET' | 'POST'
+  type Endpoint = `${HttpMethod} ${Route}`
+  ```
+
 **Type Safety in Implementation**
 - API Communication: Always receive responses as `unknown`, validate with type guards
 - Form Input: External input as `unknown`, type determined after validation
@@ -37,6 +60,37 @@ Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → 
 - Type Assertions: Review design if used 3+ times
 
 ## Coding Conventions
+
+**Class Usage Criteria**
+- **Classes Allowed**: 
+  - Framework requirements (NestJS Controller/Service, TypeORM Entity, etc.)
+  - Custom error class definitions
+- **Classes Prohibited**: Use functions and interfaces for everything else
+  ```typescript
+  // ✅ Functions and interfaces
+  interface UserService { create(data: UserData): User }
+  const userService: UserService = { create: (data) => {...} }
+  // ❌ Unnecessary class
+  class UserService { create(data: UserData) {...} }
+  ```
+
+**Function Design**
+- **0-2 parameters maximum**: Use object for 3+ parameters
+  ```typescript
+  // ✅ Object parameter
+  function createUser({ name, email, role }: CreateUserParams) {}
+  // ❌ Multiple parameters
+  function createUser(name: string, email: string, role: string) {}
+  ```
+
+**Dependency Injection**
+- **Inject external dependencies as parameters**: Ensure testability and modularity
+  ```typescript
+  // ✅ Receive dependency as parameter
+  function createService(repository: Repository) { return {...} }
+  // ❌ Direct import dependency
+  import { userRepository } from './infrastructure/repository'
+  ```
 
 **Asynchronous Processing**
 - Promise Handling: Always use `async/await`
@@ -57,6 +111,17 @@ Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → 
 ## Error Handling
 
 **Absolute Rule**: Error suppression prohibited. All errors must have log output and appropriate handling.
+
+**Result Type Pattern**: Express errors with types for explicit handling
+```typescript
+type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }
+
+// Example: Express error possibility with types
+function parseUser(data: unknown): Result<User, ValidationError> {
+  if (!isValid(data)) return { ok: false, error: new ValidationError() }
+  return { ok: true, value: data as User }
+}
+```
 
 **Custom Error Classes**
 ```typescript
@@ -85,11 +150,11 @@ Never include sensitive information (password, token, apiKey, secret, creditCard
 ## Refactoring Techniques
 
 **Basic Policy**
-- Test First: Create tests to protect existing behavior first
 - Small Steps: Maintain always-working state through gradual improvements
 - Safe Changes: Minimize the scope of changes at once
+- Behavior Guarantee: Ensure existing behavior remains unchanged while proceeding
 
-**Implementation Procedure**: Understand Current State → Create Protective Tests → Gradual Changes → Verification → Final Confirmation
+**Implementation Procedure**: Understand Current State → Gradual Changes → Behavior Verification → Final Validation
 
 **Priority**: Duplicate Code Removal > Large Function Division > Complex Conditional Branch Simplification > Type Safety Improvement
 

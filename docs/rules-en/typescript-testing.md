@@ -28,17 +28,26 @@
    - Use actual dependencies (DB, API, etc.)
    - Verify major functional flows
 
+## Red-Green-Refactor Process (Test-First Development)
+
+**Recommended Principle**: Always start code changes with tests
+
+**Background**: 
+- Ensure behavior before changes, prevent regression
+- Clarify expected behavior before implementation
+- Ensure safety during refactoring
+
+**Development Steps**:
+1. **Red**: Write test for expected behavior (it fails)
+2. **Green**: Pass test with minimal implementation
+3. **Refactor**: Improve code while maintaining passing tests
+
+**NG Cases (Test-first not required)**:
+- Pure configuration file changes (.env, config, etc.)
+- Documentation-only updates (README, comments, etc.)
+- Emergency production incident response (post-incident tests mandatory)
+
 ## Test Design Principles
-
-### Red-Green-Refactor Process (TDD)
-
-**Principle**: Start all new features and bug fixes with tests
-
-1. **Red**: Write failing tests
-2. **Green**: Pass tests with minimal implementation
-3. **Refactor**: Improve code while tests pass
-
-**Exceptions**: Configuration changes, documentation updates, refactoring covered by existing tests, emergency response (tests required after)
 
 ### Test Case Structure
 - Tests consist of three stages: "Arrange," "Act," "Assert"

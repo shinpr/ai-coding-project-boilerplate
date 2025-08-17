@@ -4,14 +4,18 @@
 rules:
   typescript:
     file: "typescript.md"
-    tags: [implementation, type-safety, async, refactoring, coding-style]
-    typical-use: "TypeScriptコードの作成・修正・リファクタリング"
+    tags: [implementation, type-safety, async, refactoring, coding-style, functional-programming, dependency-injection, branded-types]
+    typical-use: "TypeScriptコードの作成・修正・リファクタリング、モダンな型機能活用"
     size: medium
     key-references:
       - "YAGNI原則 - Kent Beck"
       - "Clean Code - Robert C. Martin"
       - "DRY原則 - The Pragmatic Programmer"
       - "Refactoring - Martin Fowler"
+      - "TypeScript 4.9 satisfies演算子 - Microsoft"
+      - "Branded Types - TypeScript Community"
+      - "Effect-TS / fp-ts - 関数型プログラミング"
+      - "Dependency Injection - Martin Fowler"
     sections:
       - "基本原則"
       - "コメント記述ルール"
@@ -24,7 +28,7 @@ rules:
   typescript-testing:
     file: "typescript-testing.md"
     tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring]
-    typical-use: "テスト作成、TDD実践、品質チェック、実装・修正時のテストファースト"
+    typical-use: "テスト作成、品質チェック、コード修正・バグ修正・リファクタリング・新機能実装時の開発ステップ"
     size: medium
     key-references:
       - "Test-Driven Development - Kent Beck"
@@ -34,6 +38,7 @@ rules:
     sections:
       - "テストフレームワーク"
       - "テストの基本方針"
+      - "Red-Green-Refactorプロセス（テストファースト開発）"
       - "テストの設計原則"
       - "テストヘルパーの活用ルール"
       - "テストの実装規約"
@@ -67,13 +72,11 @@ rules:
     key-references:
       - "ADRフォーマット - Michael Nygard"
       - "単一データソース原則 - Single Source of Truth"
-      - "依存性注入（DI） - Martin Fowler"
     sections:
       - "技術スタックの基本方針"
       - "環境変数管理とセキュリティ"
       - "アーキテクチャ設計"
-      - "依存性注入（DI）パターン"
-      - "設計ドキュメントとプロセス"
+      - "データフロー統一原則"
       - "ビルドとテスト"
 
   project-context:
@@ -91,7 +94,7 @@ rules:
   documentation-criteria:
     file: "documentation-criteria.md"
     tags: [documentation, decision-making, adr, prd, design-doc, planning, process]
-    typical-use: "ドキュメント作成判定、ADR/PRD/Design Doc/作業計画書の作成基準"
+    typical-use: "実装開始時の規模判定、ドキュメント作成判定、ADR/PRD/Design Doc/作業計画書の作成基準"
     size: medium
     key-references:
       - "ADR手法 - Michael Nygard"
@@ -147,7 +150,7 @@ rules:
   implementation-approach:
     file: "architecture/implementation-approach.md"
     tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
-    typical-use: "実装戦略パターンの選択、ストラングラー・ファサードパターンの適用判断、確認レベル(L1/L2/L3)定義、Design Doc作成時の戦略選択"
+    typical-use: "実装戦略の選択、タスク分解、設計判断、大規模変更の計画"
     size: medium
     key-references:
       - "Strangler Fig Pattern - Martin Fowler"

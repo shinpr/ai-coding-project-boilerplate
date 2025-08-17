@@ -277,22 +277,6 @@ Stop autonomous execution and escalate to user in the following cases:
 - **Stopping is mandatory**: Always wait for human response at the following timings
 - **Confirmation → Agreement cycle**: After document generation, proceed to next step after agreement or fix instructions in update mode
 - **Specific questions**: Make decisions easy with options (A/B/C) or comparison tables
-- **Dialogue over efficiency**: Get confirmation early to prevent rework
-
-### Major Stop Points
-- **After requirement-analyzer completion**: Confirmation of requirement analysis results and questions
-- **After PRD creation → document-reviewer execution**: Requirement understanding and consistency confirmation (confirm with question list)
-- **After ADR creation → document-reviewer execution**: Technical direction and consistency confirmation (present multiple options with comparison table)
-  - When user approves: Main AI (me) updates Status: Accepted
-  - When user rejects: Main AI (me) updates Status: Rejected
-- **After Design Doc creation → document-reviewer execution**: Design content and consistency confirmation
-- **After plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
-
-### Stop Points During Autonomous Execution
-- **When requirement change detected**: Match in requirement change checklist → Return to requirement-analyzer
-- **When critical error occurs**: Error report → Wait for response instructions
-- **When user interrupts**: Explicit stop instruction → Situation confirmation
-
 ## 🎯 My Action Checklist
 
 When receiving a task, I check the following:

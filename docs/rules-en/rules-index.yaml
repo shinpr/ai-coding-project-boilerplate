@@ -4,14 +4,18 @@
 rules:
   typescript:
     file: "typescript.md"
-    tags: [implementation, type-safety, async, refactoring, coding-style]
-    typical-use: "TypeScript code creation, modification, and refactoring"
+    tags: [implementation, type-safety, async, refactoring, coding-style, functional-programming, dependency-injection, branded-types]
+    typical-use: "TypeScript code creation, modification, refactoring, modern type features utilization"
     size: medium
     key-references:
       - "YAGNI Principle - Kent Beck"
       - "Clean Code - Robert C. Martin"
       - "DRY Principle - The Pragmatic Programmer"
       - "Refactoring - Martin Fowler"
+      - "TypeScript 4.9 satisfies Operator - Microsoft"
+      - "Branded Types - TypeScript Community"
+      - "Effect-TS / fp-ts - Functional Programming"
+      - "Dependency Injection - Martin Fowler"
     sections:
       - "Basic Principles"
       - "Comment Writing Rules"
@@ -24,7 +28,7 @@ rules:
   typescript-testing:
     file: "typescript-testing.md"
     tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring]
-    typical-use: "Test creation, TDD practice, quality checks, test-first for implementation/modification"
+    typical-use: "Test creation, quality checks, development steps for code/bug fixes, refactoring, and new feature implementation"
     size: medium
     key-references:
       - "Test-Driven Development - Kent Beck"
@@ -34,6 +38,7 @@ rules:
     sections:
       - "Test Framework"
       - "Basic Testing Policy"
+      - "Red-Green-Refactor Process (Test-First Development)"
       - "Test Design Principles"
       - "Test Helper Utilization Rules"
       - "Test Implementation Conventions"
@@ -67,13 +72,11 @@ rules:
     key-references:
       - "ADR Format - Michael Nygard"
       - "Single Data Source Principle - Single Source of Truth"
-      - "Dependency Injection (DI) - Martin Fowler"
     sections:
       - "Basic Technology Stack Policy"
       - "Environment Variable Management and Security"
       - "Architecture Design"
-      - "Dependency Injection (DI) Pattern"
-      - "Design Documents and Processes"
+      - "Unified Data Flow Principles"
       - "Build and Testing"
 
   project-context:
@@ -91,38 +94,22 @@ rules:
   documentation-criteria:
     file: "documentation-criteria.md"
     tags: [documentation, adr, prd, design-doc, work-plan, decision-matrix]
-    typical-use: "Document creation decisions, ADR/PRD/Design Doc requirements, scale determination"
+    typical-use: "Implementation start scale assessment, document creation decisions, ADR/PRD/Design Doc/work plan creation criteria"
     size: medium
     key-references:
       - "ADR Methodology - Michael Nygard"
       - "Design Doc Culture - Google Engineering Practices"
-      - "Product Requirements - Marty Cagan"
-      - "MoSCoW Method - DSDM Consortium"
+      - "Single Source of Truth"
     sections:
       - "Creation Decision Matrix"
-      - "ADR Creation Conditions"
+      - "ADR Creation Conditions (Required if Any Apply)"
       - "Detailed Document Definitions"
       - "Creation Process"
       - "Storage Locations"
+      - "ADR Status"
+      - "AI Automation Rules"
       - "Diagram Requirements"
       - "Common ADR Relationships"
-
-  implementation-approach:
-    file: "architecture/implementation-approach.md"
-    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
-    typical-use: "Implementation strategy pattern selection, Strangler/Facade pattern application decisions, Verification level (L1/L2/L3) definitions, Design Doc strategy selection"
-    size: medium
-    key-references:
-      - "Strangler Fig Pattern - Martin Fowler"
-      - "Feature Slicing - Martin Fowler"
-      - "Walking Skeleton - Alistair Cockburn"
-      - "Facade Pattern - Gang of Four"
-    sections:
-      - "Meta-cognitive Strategy Selection Process"
-      - "Verification Level Definitions"
-      - "Integration Point Definitions"
-      - "Anti-patterns"
-      - "Guidelines for Meta-cognitive Execution"
 
   vertical-slice-architecture:
     file: "architecture/vertical-slice/rules.md"
@@ -159,3 +146,20 @@ rules:
       - "Quality Management"
       - "LLM Implementation Guidelines"
       - "Summary"
+
+  implementation-approach:
+    file: "architecture/implementation-approach.md"
+    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
+    typical-use: "Implementation strategy selection, task decomposition, design decisions, large-scale change planning"
+    size: medium
+    key-references:
+      - "Strangler Fig Pattern - Martin Fowler"
+      - "Feature Slicing - Martin Fowler"
+      - "Walking Skeleton - Alistair Cockburn"
+      - "Facade Pattern - Gang of Four"
+    sections:
+      - "Meta-cognitive Strategy Selection Process"
+      - "Verification Level Definitions"
+      - "Integration Point Definitions"
+      - "Anti-patterns"
+      - "Guidelines for Meta-cognitive Execution"

@@ -14,11 +14,11 @@
 ### Agreement Checklist
 
 #### Scope
-- [ ] [Functions/components to change]
-- [ ] [Functions to add]
+- [ ] [Features/components to change]
+- [ ] [Features to add]
 
 #### Non-Scope (Explicitly not changing)
-- [ ] [Functions/components not to change]
+- [ ] [Features/components not to change]
 - [ ] [Existing logic to preserve]
 
 #### Constraints
@@ -28,11 +28,11 @@
 
 ### Problem to Solve
 
-[Specific problems or challenges this feature aims to solve]
+[Specific problems or challenges this feature aims to address]
 
 ### Current Challenges
 
-[Problems or limitations in the current system]
+[Current system issues or limitations]
 
 ### Requirements
 
@@ -42,58 +42,87 @@
 
 #### Non-Functional Requirements
 
-- **Performance**: [Requirements for response time, throughput, etc.]
+- **Performance**: [Response time, throughput requirements]
 - **Scalability**: [Requirements for handling increased load]
-- **Reliability**: [Requirements for error rate, availability, etc.]
-- **Maintainability**: [Code understandability, ease of modification]
+- **Reliability**: [Error rate, availability requirements]
+- **Maintainability**: [Code readability and changeability]
 
 ## Acceptance Criteria
 
-Define specific and verifiable conditions for determining successful implementation of each functional requirement.
-These conditions serve as the basis for test cases and are used to objectively judge implementation completion.
-(Note: Checkboxes remain empty at design time since implementation is not yet complete)
+Define specific and verifiable conditions that determine successful implementation for each functional requirement.
+These conditions serve as the basis for test cases and are used to objectively determine implementation completion.
+(Note: Checkboxes remain empty at design time as implementation is not yet complete)
 
 - [ ] [Specific acceptance criteria for functional requirement 1]
   - Example: "When user clicks login button, authentication succeeds with correct credentials"
-  - Example: "When invalid credentials are entered, appropriate error message displays"
+  - Example: "When credentials are invalid, appropriate error message is displayed"
 - [ ] [Specific acceptance criteria for functional requirement 2]
-  - Example: "In data list screen, pagination displays 10 items per page"
-  - Example: "When typing in search field, real-time filtering occurs"
+  - Example: "Data list screen displays with pagination of 10 items per page"
+  - Example: "When input is entered in search field, real-time filtering is applied"
 
 ## Existing Codebase Analysis
 
 ### Implementation Path Mapping
 | Type | Path | Description |
 |------|------|-------------|
-| Existing | src/[actual path] | [Current implementation] |
-| New | src/[planned path] | [Planned new creation] |
+| Existing | src/[actual-path] | [Current implementation] |
+| New | src/[planned-path] | [Planned new creation] |
 
-### Integration Points
-| Integration Point | Location | Old Implementation | New Implementation | Switch Method |
-|------------------|----------|-------------------|-------------------|---------------|
-| Point 1 | [Class/Function] | [Existing process] | [New process] | [DI/Factory etc.] |
-| Point 2 | [Another location] | [Existing] | [New] | [Method] |
+### Integration Points (Include even for new implementations)
+- **Integration Target**: [What to connect with]
+- **Invocation Method**: [How it will be invoked]
+
+## Design
+
+### Change Impact Map
+
+```yaml
+Change Target: [Component/feature to change]
+Direct Impact:
+  - [Files/functions requiring direct changes]
+  - [Interface change points]
+Indirect Impact:
+  - [Data format changes]
+  - [Processing time changes]
+No Ripple Effect:
+  - [Explicitly specify unaffected features]
+```
+
+### Architecture Overview
+
+[How this feature is positioned within the overall system]
+
+### Data Flow
+
+```
+[Express data flow using diagrams or pseudo-code]
+```
+
+### Integration Points List
+
+| Integration Point | Location | Old Implementation | New Implementation | Switching Method |
+|-------------------|----------|-------------------|-------------------|------------------|
+| Integration Point 1 | [Class/Function] | [Existing Process] | [New Process] | [DI/Factory etc.] |
+| Integration Point 2 | [Another Location] | [Existing] | [New] | [Method] |
 
 ### Main Components
 
 #### Component 1
 
-**Responsibility**: [What this component is responsible for]
-
-**Input/Output**:
-- Input: [What it receives]
-- Output: [What it returns]
-
-**Dependencies**: [What other components it depends on]
+- **Responsibility**: [Scope of responsibility for this component]
+- **Interface**: [APIs and type definitions provided]
+- **Dependencies**: [Relationships with other components]
 
 #### Component 2
 
-[Same format]
+- **Responsibility**: [Scope of responsibility for this component]
+- **Interface**: [APIs and type definitions provided]
+- **Dependencies**: [Relationships with other components]
 
-## Type Definitions
+### Type Definitions
 
 ```typescript
-// Include main type definitions here
+// Record major type definitions here
 ```
 
 ### Data Contract
@@ -108,17 +137,17 @@ Input:
 
 Output:
   Type: [TypeScript type definition]
-  Guarantees: [Conditions always satisfied]
+  Guarantees: [Conditions that must always be met]
   On Error: [Exception/null/default value]
 
 Invariants:
-  - [Conditions that remain unchanged before/after processing]
+  - [Conditions that remain unchanged before and after processing]
 ```
 
 ### State Transitions and Invariants (When Applicable)
 
 ```yaml
-State Definitions:
+State Definition:
   - Initial State: [Initial values and conditions]
   - Possible States: [List of states]
 
@@ -131,28 +160,28 @@ System Invariants:
 
 ### Error Handling
 
-[Types of errors and handling methods]
+[Types of errors and how to handle them]
 
-### Security Considerations
+### Logging and Monitoring
 
-[Security measures, authentication, authorization, data protection]
+[What to record in logs and how to monitor]
 
 ## Implementation Plan
 
 ### Phase Division
 
 #### Phase 1: [Phase Name]
-**Purpose**: [What this phase aims to achieve]
+**Purpose**: [What to achieve in this phase]
 
-**Implementation Content**:
+**Implementation Items**:
 - [Implementation item 1]
 - [Implementation item 2]
 
-(Duration goes to work plan)
+(Timeline goes to work plan document)
 
-**Phase Completion Criteria**:
-- [ ] [Functional completion criteria]
-- [ ] [Quality completion criteria]
+**Phase Completion Conditions**:
+- [ ] [Functional completion conditions]
+- [ ] [Quality completion conditions]
 
 **E2E Verification Procedures**:
 1. [Operation verification steps]
@@ -160,15 +189,15 @@ System Invariants:
 3. [Performance verification (when applicable)]
 
 #### Phase 2: [Phase Name]
-**Purpose**: [What this phase aims to achieve]
+**Purpose**: [What to achieve in this phase]
 
-**Implementation Content**:
+**Implementation Items**:
 - [Implementation item 1]
 - [Implementation item 2]
 
-**Phase Completion Criteria**:
-- [ ] [Functional completion criteria]
-- [ ] [Quality completion criteria]
+**Phase Completion Conditions**:
+- [ ] [Functional completion conditions]
+- [ ] [Quality completion conditions]
 
 **E2E Verification Procedures**:
 1. [Operation verification steps]
@@ -176,60 +205,66 @@ System Invariants:
 
 ### Migration Strategy
 
-[Technical migration approach, backward compatibility assurance methods]
+[Technical migration approach, ensuring backward compatibility]
 
 ## Test Strategy
 
-### Test Categories
+### Basic Test Design Policy
 
-#### Unit Tests
-- [Testing scope and methods]
-- Target coverage: [percentage]
+Automatically derive test cases from acceptance criteria:
+- Create at least one test case for each acceptance criterion
+- Implement measurable standards from acceptance criteria as assertions
 
-#### Integration Tests
-- [What integration points to test]
+### Unit Tests
 
-#### E2E Tests
-- [Main scenarios to test]
+[Unit testing policy and coverage goals]
+- Verify individual elements of functional acceptance criteria
 
-### Test Data
+### Integration Tests
 
-[Test data requirements and preparation methods]
+[Integration testing policy and important test cases]
+- Verify combined operations of functional acceptance criteria
 
-## Performance and Monitoring
+### E2E Tests
 
-### Performance Targets
+[E2E testing policy]
+- Verify entire scenarios of acceptance criteria
+- Confirm functional operation from user perspective
 
-- Response time: [target value]
-- Throughput: [target value]
-- Resource usage: [memory, CPU, etc.]
+### Performance Tests
 
-### Monitoring
+[Performance testing methods and standards]
+- Verify performance standards of non-functional acceptance criteria
 
-[Metrics to monitor, logging strategy]
+## Security Considerations
 
-## Deployment and Operations
+[Security concerns and countermeasures]
 
-### Deployment Strategy
+## Future Extensibility
 
-[Deployment method, rollback plan]
+[Considerations for future feature additions or changes]
 
-### Feature Flags
+## Alternative Solutions
 
-[If feature flags are used, describe control method]
+### Alternative 1
+
+- **Overview**: [Description of alternative solution]
+- **Advantages**: [Advantages]
+- **Disadvantages**: [Disadvantages]
+- **Reason for Rejection**: [Why it wasn't adopted]
 
 ## Risks and Mitigation
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
-| [Risk 1] | [High/Medium/Low] | [High/Medium/Low] | [Countermeasure] |
-| [Risk 2] | [High/Medium/Low] | [High/Medium/Low] | [Countermeasure] |
-
-## Open Questions
-
-- [ ] [Question 1]
-- [ ] [Question 2]
+| [Risk 1] | High/Medium/Low | High/Medium/Low | [Countermeasure] |
 
 ## References
 
-- [Related documentation, technical articles, etc.]
+- [Related documentation and links]
+
+## Update History
+
+| Date | Version | Changes | Author |
+|------|---------|---------|--------|
+| YYYY-MM-DD | 1.0 | Initial version | [Name] |

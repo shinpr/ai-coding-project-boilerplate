@@ -2,8 +2,6 @@
 description: Execute decomposed tasks in autonomous execution mode
 ---
 
-**Command Context**: This command is dedicated to the implementation phase with autonomous execution.
-
 Strictly follow @docs/guides/sub-agents.md and act as an orchestrator.
 
 Work plan: $ARGUMENTS
@@ -21,8 +19,6 @@ Before starting any task, always:
 ! ls -la docs/plans/*.md | head -10
 
 Verify approval status before proceeding. Once confirmed, initiate autonomous execution mode.
-
-**Scope**: From task decomposition through implementation completion. Immediate halt upon detecting requirement changes.
 
 ## Output Example
 Implementation phase completed.

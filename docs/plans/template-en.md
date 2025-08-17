@@ -103,9 +103,6 @@ Related Issue/PR: #XXX (if any)
 - [ ] Lint check pass
 - [ ] Build success
 
-## Progress Tracking
-[Track work progress and record any issues encountered]
-
 ## Completion Criteria
 - [ ] All phases completed
 - [ ] Each phase's E2E verification procedures executed
@@ -113,6 +110,18 @@ Related Issue/PR: #XXX (if any)
 - [ ] Staged quality checks completed (zero errors)
 - [ ] All tests pass
 - [ ] Necessary documentation updated
+- [ ] User review approval obtained
+
+## Progress Tracking
+### Phase 1
+- Start: YYYY-MM-DD HH:MM
+- Complete: YYYY-MM-DD HH:MM
+- Notes: [Any special remarks]
+
+### Phase 2
+- Start: YYYY-MM-DD HH:MM
+- Complete: YYYY-MM-DD HH:MM
+- Notes: [Any special remarks]
 
 ## Notes
-[Record important decisions, changes, or considerations during implementation]
+[Special notes, reference information, important points, etc.]
