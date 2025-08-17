@@ -34,40 +34,6 @@ Maintain consistent data flow throughout the application:
 - **Unidirectional Flow**: Data flows in a predictable direction
 - **Immutable Updates**: Prefer immutable data transformations
 
-## Design Documents and Processes
-
-### PRD/ADR/Design Doc/work plan Creation Process
-
-#### Cases Requiring Creation
-1. **New Feature Addition**: PRD → ADR (if architectural changes) → Design Doc → work plan → Implementation
-2. **Large-scale Changes (6+ files)**: ADR → Design Doc → work plan (mandatory) → Implementation
-3. **Medium-scale Changes (3-5 files)**: Consider Design Doc creation → work plan (recommended) → Implementation
-4. **Small-scale Modifications (1-2 files)**: Direct implementation
-
-#### About work plans
-- **Storage Location**: `docs/plans/` (excluded by .gitignore)
-- **Naming Convention**: `YYYYMMDD-{feature|fix|refactor}-{brief-description}.md`
-- **Template**: `docs/plans/template-en.md`
-- **Operational Flow**: 
-  1. Create when starting medium-scale or larger changes
-  2. Update progress when each phase completes (checkboxes)
-  3. Delete after all tasks complete with user approval
-
-#### ADR (Architecture Decision Record)
-Record important technical decisions to enable future implementers to understand the background of decision-making.
-
-### Data Flow Unification Principles
-
-#### Basic Principles
-1. **Single Data Source**: Store same information in only one place
-2. **Structured Data Priority**: Use parsed objects instead of JSON strings
-3. **Clear Responsibility Separation**: Clearly define responsibilities of each layer
-
-#### Data Flow Best Practices
-- **Input Point Validation**: Validate data at input layer and pass internally in type-safe form
-- **Centralized Transformation**: Consolidate data transformation logic in dedicated utilities
-- **Structured Logging**: Output structured logs at each stage of data flow
-
 ## Build and Testing
 
 Define build commands and test execution methods for each project.

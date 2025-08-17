@@ -45,34 +45,13 @@ Scale determination and required document details follow @docs/rules/documentati
 
 ## Conditions Requiring ADR
 
-Detailed ADR creation conditions are defined in @docs/rules/documentation-criteria.md.
+Detailed ADR creation conditions follow @docs/rules/documentation-criteria.md.
 
 ### Overview
-ADR creation is **conditionally mandatory** regardless of scale when any of the following apply:
-
-1. **Type System Changes**
-   - Nested types with 3+ levels (e.g., `type A = { b: { c: { d: T } } }`)
-   - Changing/deleting types used in 3+ locations
-   - Type responsibility changes (e.g., DTO→Entity)
-
-2. **Data Flow Changes**
-   - Storage location changes (DB→File, Memory→Cache)
-   - Processing order changes with 3+ steps
-   - Data passing method changes (props→Context, direct reference→events)
-
-3. **Architecture Changes**
-   - Layer addition, responsibility changes, component relocation
-
-4. **External Dependency Changes**
-   - Library/framework/external API introduction or replacement
-
-5. **Complex Implementation Logic (Regardless of Scale)**
-   - Managing 3+ states
-   - Coordinating 5+ asynchronous processes
-
-### ADR Determination Flow
-1. Does it match any of the above conditions? → Yes: ADR mandatory / No: Next
-2. Apply document requirements based on scale
+- Type system changes (3+ level nesting, types used in 3+ locations)
+- Data flow changes (storage location, processing order, passing methods)
+- Architecture changes (layer addition, responsibility changes)
+- External dependency changes (libraries, frameworks, APIs)
 
 ## Ensuring Determination Consistency
 
