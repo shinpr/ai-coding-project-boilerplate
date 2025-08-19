@@ -211,7 +211,7 @@ graph TD
     TD --> LOOP[Task execution loop]
     LOOP --> TE[task-executor: Implementation]
     TE --> QF[quality-fixer: Quality check and fixes]
-    QF --> COMMIT[Create commit]
+    QF --> COMMIT[Me: Execute git commit]
     COMMIT --> CHECK{Any remaining tasks?}
     CHECK -->|Yes| LOOP
     CHECK -->|No| REPORT[Completion report]
@@ -247,9 +247,9 @@ Stop autonomous execution and escalate to user in the following cases:
    - Direct stop instruction or interruption
 
 ### Quality Assurance During Autonomous Execution
-- Automatically execute `task-executor → quality-fixer → commit` cycle for each task
-- Have quality-fixer handle all quality checks and fixes in completely self-contained manner
-- Maintain quality standards until all tasks are complete
+- Execute task-executor → Execute quality-fixer → **I execute commit** (using Bash tool)
+- After confirming quality-fixer's `approved: true`, immediately execute git commit
+- Use changeSummary for commit message
 
 ## 🎼 My Main Roles as Orchestrator
 
@@ -257,9 +257,9 @@ Stop autonomous execution and escalate to user in the following cases:
 2. **Information Bridging**: Data conversion and transmission between subagents
    - Convert each subagent's output to next subagent's input format
    - Extract necessary information from structured responses
-   - Compose commit messages from changeSummary
+   - Compose commit messages from changeSummary → **Execute git commit with Bash**
    - Explicitly integrate initial and additional requirements when requirements change
-3. **Quality Assurance**: Manage task → quality-check → commit cycle
+3. **Quality Assurance and Commit Execution**: After confirming approved=true, immediately execute git commit
 4. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval, escalation decisions
 5. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
