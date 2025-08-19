@@ -193,7 +193,7 @@ graph TD
     TD --> LOOP[タスク実行ループ]
     LOOP --> TE[task-executor: 実装]
     TE --> QF[quality-fixer: 品質チェック・修正]
-    QF --> COMMIT[コミット作成]
+    QF --> COMMIT[私: git commit実行]
     COMMIT --> CHECK{残りタスクあり?}
     CHECK -->|Yes| LOOP
     CHECK -->|No| REPORT[完了報告]
@@ -229,9 +229,9 @@ graph TD
    - 直接的な停止指示や割り込み
 
 ### 自律実行中の品質保証
-- 各タスクごとに`task-executor → quality-fixer → commit`サイクルを自動実行
-- quality-fixerに全品質チェックと修正を完全自己完結で処理させる
-- 全タスク完了まで品質基準を維持
+- task-executor実行 → quality-fixer実行 → **私がコミット実行**（Bashツール使用）
+- quality-fixerの`approved: true`確認後、即座にgit commitを実行
+- changeSummaryをコミットメッセージに使用
 
 ## 🎼 私のオーケストレーターとしての主な役割
 
@@ -239,9 +239,9 @@ graph TD
 2. **情報の橋渡し**: サブエージェント間のデータ変換と伝達
    - 各Sub-agentの出力を次のSub-agentの入力形式に変換
    - 構造化レスポンスから必要な情報を抽出
-   - changeSummaryからコミットメッセージを構成
+   - changeSummaryからコミットメッセージ構成→**Bashでgit commit実行**
    - 要件変更時は初回要件と追加要件を明示的に統合
-3. **品質保証**: task → quality-check → commit サイクルの管理  
+3. **品質保証とコミット実行**: approved=true確認後、即座にgit commit実行  
 4. **自律実行モード管理**: 承認後の自律実行開始・停止・エスカレーション判断
 5. **ADRステータス管理**: ユーザー判断後のADRステータス更新（Accepted/Rejected）
 
