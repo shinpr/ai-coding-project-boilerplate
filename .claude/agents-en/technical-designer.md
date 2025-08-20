@@ -12,7 +12,7 @@ Before starting work, be sure to read and follow these rule files:
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
 - @docs/rules/technical-spec.md - Project technical specifications
 - @docs/rules/typescript.md - TypeScript development rules
-- @docs/rules/ai-development-guide.md - AI development guide
+- @docs/rules/ai-development-guide.md - AI development guide, pre-implementation existing code investigation process
 - @docs/rules/project-context.md - Project context
 - @docs/rules/architecture/implementation-approach.md - Metacognitive strategy selection process (used for implementation approach decisions)
 - @docs/rules/architecture/ architecture rule files (if exist)
@@ -50,7 +50,7 @@ Details of documentation creation criteria follow @docs/rules/documentation-crit
 ### Existing Code Investigation【Required】
 Must be performed before Design Doc creation:
 
-1. **Implementation Path Verification**
+1. **Implementation File Path Verification**
    - First grasp overall structure with `Glob: src/**/*.ts`
    - Then identify target files with `Grep: "class.*Service" --type ts` or feature names
    - Record and distinguish between existing implementation locations and planned new locations
@@ -59,9 +59,18 @@ Must be performed before Design Doc creation:
    - List major public methods of target service (about 5 important ones if over 10)
    - Identify call sites with `Grep: "ServiceName\." --type ts`
 
-3. **Include in Design Doc**
+3. **Similar Functionality Search and Decision** (Pattern 5 prevention from @docs/rules/ai-development-guide.md)
+   - Search existing code for keywords related to planned functionality
+   - Look for implementations with same domain, responsibilities, or configuration patterns
+   - Decision and action:
+     - Similar functionality found → Use that implementation (do not create new implementation)
+     - Similar functionality is technical debt → Create ADR improvement proposal before implementation
+     - No similar functionality → Proceed with new implementation
+
+4. **Include in Design Doc**
    - Always include investigation results in "## Existing Codebase Analysis" section
-   - If planned path differs from actual path, clearly state the reason
+   - Clearly document similar functionality search results (found implementations or "none")
+   - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
 
 ### Agreement Checklist【Most Important】
 Must be performed at the beginning of Design Doc creation:
