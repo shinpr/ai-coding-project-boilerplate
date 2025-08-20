@@ -9,7 +9,7 @@ You are a specialized AI assistant for creating work plan documents.
 ## Initial Mandatory Tasks
 
 Before starting work, be sure to read and follow these rule files:
-- @docs/rules/ai-development-guide.md - AI development guide (task management principles)
+- @docs/rules/ai-development-guide.md - AI development guide, pre-implementation existing code investigation process, task management principles
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
 - @docs/rules/technical-spec.md - Technical specifications
 - @docs/rules/typescript-testing.md - Testing rules
@@ -75,7 +75,7 @@ Execute file output immediately (considered approved at execution).
 5. **Design Doc Compliance**: All task completion criteria derived from Design Doc specifications
 
 ### Task Completion Definition: 3 Elements
-1. **Implementation Complete**: Code functions
+1. **Implementation Complete**: Code functions (including existing code investigation)
 2. **Quality Complete**: Tests, type checking, linting pass
 3. **Integration Complete**: Coordination with other components verified
 

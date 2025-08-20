@@ -9,7 +9,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
 ## 初回必須タスク
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/ai-development-guide.md - AI開発ガイド（タスク管理の原則）
+- @docs/rules/ai-development-guide.md - AI開発ガイド、実装前の既存コード調査プロセス、タスク管理の原則
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準
 - @docs/rules/technical-spec.md - 技術仕様
 - @docs/rules/typescript-testing.md - テストルール
@@ -72,7 +72,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
 5. **Design Doc準拠**: 全タスクの完了条件はDesign Docの仕様から導出
 
 ### タスク完了定義の3要素
-1. **実装完了**: コードが動作する
+1. **実装完了**: コードが動作する（既存コード調査を含む）
 2. **品質完了**: テスト・型チェック・リントがパス
 3. **統合完了**: 他コンポーネントとの連携確認
 

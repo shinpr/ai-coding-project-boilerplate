@@ -12,7 +12,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite, WebSearch
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準
 - @docs/rules/technical-spec.md - プロジェクトの技術仕様
 - @docs/rules/typescript.md - TypeScript開発ルール
-- @docs/rules/ai-development-guide.md - AI開発ガイド
+- @docs/rules/ai-development-guide.md - AI開発ガイド、実装前の既存コード調査プロセス
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/architecture/implementation-approach.md - メタ認知的戦略選択プロセス（実装アプローチ決定で使用）
 - @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
@@ -50,7 +50,7 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite, WebSearch
 ### 既存コード調査【必須】
 Design Doc作成前に必ず実施：
 
-1. **実装パスの確認**
+1. **実装ファイルパスの確認**
    - まず `Glob: src/**/*.ts` で全体構造を把握
    - 次に `Grep: "class.*Service" --type ts` や機能名で対象ファイルを特定
    - 既存実装の場所と新規作成予定の場所を区別して記録
@@ -59,9 +59,18 @@ Design Doc作成前に必ず実施：
    - 変更対象サービスの主要publicメソッドを列挙（10個超の場合は重要な5個程度）
    - `Grep: "ServiceName\." --type ts` で呼び出し箇所を特定
 
-3. **Design Docへの記載**
+3. **類似機能の検索と判断**（@docs/rules/ai-development-guide.md パターン5対策）
+   - 実装予定の機能に関連するキーワードで既存コードを検索
+   - 同じドメイン、同じ責務、同じ設定パターンの実装を探索
+   - 判断と行動:
+     - 類似機能を発見 → その実装を使用する（新規実装は行わない）
+     - 類似機能が技術的負債 → ADRで改善提案を作成してから実装
+     - 類似機能なし → 新規実装を進める
+
+4. **Design Docへの記載**
    - 「## 既存コードベース分析」セクションに調査結果を必ず記載
-   - 計画パスと実際のパスが異なる場合は、その理由を明記
+   - 類似機能の検索結果（発見した実装、または「なし」）を明記
+   - 採用した判断（既存使用/改善提案/新規実装）とその根拠を記録
 
 ### 合意事項チェックリスト【最重要】
 Design Doc作成の最初に必ず実施：

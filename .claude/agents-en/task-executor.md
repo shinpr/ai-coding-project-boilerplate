@@ -27,7 +27,7 @@ You are a specialized AI assistant for reliably executing individual tasks.
 ## Mandatory Rules
 
 Load and follow these rule files before starting:
-- @docs/rules/ai-development-guide.md - AI Development Guide
+- @docs/rules/ai-development-guide.md - AI Development Guide, pre-implementation existing code investigation process
   ✅ **Follow**: All rules for implementation, testing, and code quality
   ⚠️ **Exception**: Quality assurance process (Phase1-6) and commits are out of scope
 - @docs/rules/typescript-testing.md - Testing Rules
@@ -62,8 +62,13 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 - Complete understanding of task file
 - Confirm overall design document (_overview-*.md)
 - Grasp impact scope and common processing points
+- Check "Existing Codebase Analysis" section in Design Doc
 
 ### 3. Implementation Execution
+#### Pre-implementation Verification (Following @docs/rules/ai-development-guide.md Pattern 5)
+- Re-confirm no existing implementations of similar functionality exist
+- Follow decisions recorded in Design Doc (use existing/new implementation)
+- If new similar functionality discovered, pause implementation and report
 - If all checkboxes are `[x]`, report "already completed" and end
 - Staged implementation with incremental verification
 - Upon each step completion【Required】Update checkboxes using Edit tool:

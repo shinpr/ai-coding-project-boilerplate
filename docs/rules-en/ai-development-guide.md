@@ -89,6 +89,16 @@ function validateEmail(email: string, context: 'user' | 'contact' | 'admin') { /
   ```
 - For low certainty cases, create minimal verification code first
 
+### Pattern 5: Insufficient Existing Code Investigation
+**Symptom**: Duplicate implementations, architecture inconsistency, integration failures
+**Cause**: Insufficient understanding of existing code before implementation
+**Avoidance Methods**:
+- Before implementation, always search for similar functionality (using domain, responsibility, configuration patterns as keywords)
+- Similar functionality found → Use that implementation (do not create new implementation)
+- Similar functionality is technical debt → Create ADR improvement proposal before implementation
+- No similar functionality exists → Implement new functionality following existing design philosophy
+- Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
+
 ## Debugging Techniques
 
 ### 1. Error Analysis Procedure
