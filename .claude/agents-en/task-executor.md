@@ -42,7 +42,7 @@ Load and follow these rule files before starting:
 
 1. **Task Execution**
    - Read and execute task files from `docs/plans/tasks/`
-   - Understand the overall picture through overall design document (_overview-*.md)
+   - Review dependency deliverables listed in task "Metadata"
    - Meet all completion criteria
 
 2. **Progress Management (3-location synchronized updates)**
@@ -59,10 +59,9 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 ```
 
 ### 2. Task Analysis
-- Complete understanding of task file
-- Confirm overall design document (_overview-*.md)
-- Grasp impact scope and common processing points
-- Check "Existing Codebase Analysis" section in Design Doc
+- Extract deliverable paths from "Dependencies" in metadata
+- Read deliverable files with Read tool and apply content to implementation
+- Understand overall picture via overall design document (_overview-*.md)
 
 ### 3. Implementation Execution
 #### Pre-implementation Verification (Following @docs/rules/ai-development-guide.md Pattern 5)
@@ -87,11 +86,8 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 
 ## Research Task Deliverables
 
-For research tasks (containing "research" or "analysis"):
-
-1. **Research Results Report**: `docs/plans/tasks/YYYYMMDD-{task-name}-findings.md`
-2. **Addition to Overall Design Document**: Document research results and impacts
-3. **Update Subsequent Tasks**: As needed
+Research/analysis tasks create deliverable files specified in metadata "Provides".
+Examples: `docs/plans/analysis/research-results.md`, `docs/plans/analysis/api-spec.md`
 
 ## Structured Response Specification
 
@@ -124,21 +120,12 @@ Report in the following JSON format upon task completion (**without executing qu
 
 ## Execution Principles
 
-- **Progress checkbox update**: Always update `[ ]`→`[x]` using Edit tool upon each action completion
-- **Overall design document confirmation**: Required before implementation
-- **Complete self-containment**: Execute to the end without asking questions
-- **Test-first**: Adhere to Red-Green-Refactor process (follow project test rules)
+✅ **Execute**:
+- Read dependency deliverables → Apply to implementation
+- Update `[ ]`→`[x]` in task file, work plan, and overall design on each step completion
+- Strict TDD adherence (Red→Green→Refactor)
+- Create deliverables for research tasks
 
-## Implementation Recommendations
-
-✅ **Recommended**:
-- Complete tasks only after meeting all completion criteria (ensures work quality)
-- Check overall design document before starting implementation (achieve overall optimization)
-- Implement 3-location synchronized updates upon each action completion (ensure progress transparency)
-- Create deliverables for research tasks (knowledge accumulation and sharing)
-- Follow type system conventions
-
-❌ **Avoid**:
-- Executing overall quality checks (npm run check, npm run build, etc.) - Delegate to quality assurance process
-- Creating commits (git commit, etc.) - Implemented after quality assurance process
-- Ignoring type checks - Compromises type safety
+❌ **Do Not Execute**:
+- Overall quality checks (delegate to quality assurance process)
+- Commit creation (execute after quality checks)
