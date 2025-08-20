@@ -2,13 +2,40 @@
 
 *Read this in other languages: [日本語](README.ja.md)*
 
-TypeScript project boilerplate optimized for AI-assisted development with layered architecture, comprehensive development rules, and best practices. Specifically designed for Claude Code with comprehensive rules and guidelines to generate high-quality code through LLM development.
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-green?logo=node.js)](https://nodejs.org/)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
+
+### 🚀 Start AI-Driven Development in 30 Seconds - Claude Code & Sub agents Generate Production-Ready TypeScript Code
+
+Multi-agent orchestration automates your entire development workflow from design to deployment. Transform requirements into high-quality, tested TypeScript code with AI-powered assistance at every step.
+
+## 📸 Quick Demo
+
+![Demo](./.github/assets/demo.gif)
+
+## ⚡ Get Started in 3 Steps
+
+```bash
+# 1. Create your project (30 seconds)
+npx github:shinpr/ai-coding-project-boilerplate my-project
+
+# 2. Install dependencies (automatic)
+cd my-project && npm install
+
+# 3. Launch Claude Code and start building
+claude  # Launch Claude Code in terminal
+```
+
+> 💡 **Start development with `/implement` command for end-to-end support from requirement analysis to production-ready implementation**
 
 ## 🎯 Features
 
-- **Claude Code Specialized**: Rule set optimized for high-quality development with Claude Code and subagents
+- **Claude Code Specialized**: Rule set optimized for high-quality development with Claude Code and Sub agents
 - **Quality Assurance**: Progressive quality checks and automatic correction system
-- **TypeScript Optimized**: Configuration that balances type safety and performance
+- **TypeScript Optimized**: Strict type checking with comprehensive Vitest testing environment
 - **Comprehensive Rules**: Development standardization through rule files
 - **Boilerplate Design**: Project-specific parts are placeholder-based
 - **Multilingual Support**: Supports both Japanese and English languages
@@ -18,8 +45,8 @@ TypeScript project boilerplate optimized for AI-assisted development with layere
 ```
 ai-coding-project-boilerplate/
 ├── .claude/
-│   ├── agents-ja/          # subagent definitions (Japanese)
-│   ├── agents-en/          # subagent definitions (English)
+│   ├── agents-ja/          # Sub agents definitions (Japanese)
+│   ├── agents-en/          # Sub agents definitions (English)
 │   ├── commands-ja/        # Custom slash commands (Japanese)
 │   └── commands-en/        # Custom slash commands (English)
 ├── docs/
@@ -29,9 +56,9 @@ ai-coding-project-boilerplate/
 │   │   └── rules-index.yaml  # Rule file index with metadata
 │   ├── guides/
 │   │   ├── ja/
-│   │   │   └── sub-agents.md  # subagents practical guide (Japanese)
+│   │   │   └── sub-agents.md  # Sub agents practical guide (Japanese)
 │   │   └── en/
-│   │       └── sub-agents.md  # subagents practical guide (English)
+│   │       └── sub-agents.md  # Sub agents practical guide (English)
 │   ├── adr/               # Architecture Decision Records
 │   ├── design/            # Design documents
 │   ├── plans/             # Work plans (excluded from git)
@@ -69,9 +96,9 @@ npm run lang:status
 When you switch languages, the following files are automatically updated:
 - `CLAUDE.md` - Claude Code configuration file
 - `docs/rules/` - Development rules directory
-- `docs/guides/sub-agents.md` - subagents guide
+- `docs/guides/sub-agents.md` - Sub agents guide
 - `.claude/commands/` - Slash commands
-- `.claude/agents/` - subagent definitions
+- `.claude/agents/` - Sub agents definitions
 
 ## 🚀 Getting Started
 
@@ -87,8 +114,8 @@ cd my-project
 # Install dependencies
 npm install
 
-# Start developing!
-npm run dev
+# Start developing with Claude Code!
+claude
 ```
 
 Options:
@@ -150,8 +177,8 @@ npm run lang:en    # Set up as English project
    ```
 
 3. **Repository Settings (GitHub UI)**
-   - **Description**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and subagent architecture for generating high quality code efficiently."
-   - **Topics**: `claude-code`, `typescript`, `boilerplate`, `ai-development`, `subagents`, `code-quality`, `multilingual`
+   - **Description**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and Sub agents architecture for generating high quality code efficiently."
+   - **Topics**: `claude-code`, `typescript`, `boilerplate`, `ai-development`, `sub-agents`, `code-quality`, `multilingual`
 
 ## 💻 Development Commands
 
@@ -240,16 +267,16 @@ These commands are located in `.claude/commands/` and are only available within 
 
 ## 🤖 Claude Code Specialized Workflow
 
-### Boilerplate Core: Achieving High Quality with Claude Code
+### Boilerplate Core: Maximizing Development Efficiency with Claude Code
 
-This boilerplate is specifically designed for Claude Code and subagents to generate high-quality TypeScript code.
+This boilerplate is specifically engineered for Claude Code and Sub agents to generate production-ready, high-quality TypeScript code with unprecedented efficiency.
 
 ### Essential Workflow
 
 1. **Initial Rule Loading**: Load necessary rule files (`docs/rules/`) at task start
 2. **Pre-Implementation Approval**: Obtain user approval before Edit/Write/MultiEdit operations
 3. **Progressive Quality Checks**: Implement Phase 1-6 progressive quality checks
-4. **subagent Utilization**: Delegate specialized tasks to appropriate subagents
+4. **Sub agents Utilization**: Delegate specialized tasks to appropriate Sub agents
 
 ### Claude Code Development Process
 
@@ -265,7 +292,7 @@ graph TD
     G -->|No| H[Complete]
 ```
 
-### Available subagents
+### Available Sub agents
 
 - **quality-fixer**: Quality check & automatic correction - Automatically fixes TypeScript project quality issues
 - **task-executor**: Individual task execution - Executes tasks according to task file instructions
@@ -288,7 +315,7 @@ This boilerplate provides a comprehensive rule set:
 - **Recommended Format**: Explain prohibitions with benefits/drawbacks (promotes LLM understanding)
 - **Flexible Implementation Choice**: Adjustable backward compatibility consideration levels based on project requirements
 - **Progressive Quality Assurance**: 6-phase systematic quality check process
-- **subagent Integration**: Delegate specialized tasks to appropriate subagents
+- **Sub agents Integration**: Delegate specialized tasks to appropriate Sub agents
 
 ### Key Rules
 - ✅ **Recommended**: unknown type + type guards (ensure type safety)
@@ -384,7 +411,7 @@ This boilerplate provides systematic documentation for efficient Claude Code dev
 ### Q: What's the development procedure with Claude Code?
 A: 1) Load 7 rule files → 2) Plan & get approval → 3) Implement → 4) Progressive quality checks → 5) Commit
 
-### Q: How to use subagents?
+### Q: How to use Sub agents?
 A: Properly utilize quality-fixer (quality checks), task-executor (task execution), etc. See `CLAUDE.md` for details.
 
 ### Q: What to do when errors occur?
@@ -402,7 +429,7 @@ MIT License - Free to use, modify, and distribute
 
 ## 🎯 About This Boilerplate
 
-AI Coding Project Boilerplate is specifically designed to enable Claude Code and subagents to generate high-quality TypeScript code. With multilingual support, it provides an optimal development experience in both Japanese and English environments.
+AI Coding Project Boilerplate is the ultimate TypeScript development accelerator, specifically engineered for Claude Code and Sub agents to generate production-ready, high-quality code. With multilingual support, it delivers an exceptional development experience in both Japanese and English environments.
 
 ---
 

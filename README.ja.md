@@ -2,14 +2,40 @@
 
 *他の言語で読む: [English](README.md)*
 
-TypeScript プロジェクトボイラープレート - AI支援開発に最適化。レイヤードアーキテクチャ、包括的な開発ルール、ベストプラクティスを提供します。
-Claude Code専用に最適化され、LLMによる開発で高品質のコードを生み出すための包括的なルールとガイドラインを提供します。
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-green?logo=node.js)](https://nodejs.org/)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
+
+### 🚀 30秒でAI駆動開発を開始 - Claude CodeとSub agentsがTypeScript開発を支援
+
+マルチエージェント連携で設計・実装・品質保証を自動化。要件分析から実装まで、AIが開発プロセスをサポートします。
+
+## 📸 デモ
+
+![Demo](./.github/assets/demo.gif)
+
+## ⚡ 3ステップで開発開始
+
+```bash
+# 1. プロジェクト作成（30秒）
+npx github:shinpr/ai-coding-project-boilerplate my-project --lang=ja
+
+# 2. 依存関係インストール（自動）
+cd my-project && npm install
+
+# 3. Claude Codeで開発開始
+claude  # ターミナルでClaude Codeを起動
+```
+
+> 💡 **開発を開始するには `/implement` コマンドで要件分析から実装まで一貫サポート**
 
 ## 🎯 特徴
 
-- **Claude Code特化**: Claude CodeとSub-agentで高品質を実現するルール群
+- **Claude Code特化**: Claude CodeとSub agentsに最適化されたルール群
 - **品質保証**: 段階的品質チェックと自動修正システム
-- **TypeScript最適化**: 型安全性とパフォーマンスを両立した設定
+- **TypeScript最適化**: 厳格な型チェックとVitestによるテスト環境
 - **包括的ルール**: ルールファイルによる開発標準化
 - **ボイラープレート設計**: プロジェクト固有部分はプレースホルダー化
 - **多言語対応**: 日本語・英語の両言語に対応
@@ -19,8 +45,8 @@ Claude Code専用に最適化され、LLMによる開発で高品質のコード
 ```
 ai-coding-project-boilerplate/
 ├── .claude/
-│   ├── agents-ja/          # Sub-agent定義（日本語）
-│   ├── agents-en/          # Sub-agent定義（英語）
+│   ├── agents-ja/          # Sub agents定義（日本語）
+│   ├── agents-en/          # Sub agents定義（英語）
 │   ├── commands-ja/        # カスタムスラッシュコマンド（日本語）
 │   └── commands-en/        # カスタムスラッシュコマンド（英語）
 ├── docs/
@@ -30,9 +56,9 @@ ai-coding-project-boilerplate/
 │   │   └── rules-index.yaml  # ルールファイルのインデックスとメタデータ
 │   ├── guides/
 │   │   ├── ja/
-│   │   │   └── sub-agents.md  # Sub-agents実践ガイド（日本語）
+│   │   │   └── sub-agents.md  # Sub agents実践ガイド（日本語）
 │   │   └── en/
-│   │       └── sub-agents.md  # Sub-agents実践ガイド（英語）
+│   │       └── sub-agents.md  # Sub agents実践ガイド（英語）
 │   ├── adr/               # アーキテクチャ決定記録
 │   ├── design/            # 設計ドキュメント
 │   ├── plans/             # 作業計画書（git管理外）
@@ -150,9 +176,9 @@ npm run lang:status
 言語を切り替えると、以下のファイルが自動的に更新されます：
 - `CLAUDE.md` - Claude Code設定ファイル
 - `docs/rules/` - 開発ルールディレクトリ
-- `docs/guides/sub-agents.md` - Sub-agentsガイド
+- `docs/guides/sub-agents.md` - Sub agentsガイド
 - `.claude/commands/` - スラッシュコマンド
-- `.claude/agents/` - Sub-agent定義
+- `.claude/agents/` - Sub agents定義
 
 ## 💻 開発コマンド
 
@@ -241,16 +267,16 @@ Design Doc準拠検証と必要に応じた自動修正を実行します。
 
 ## 🤖 Claude Code専用ワークフロー
 
-### ボイラープレートの核心：Claude Codeで高品質を実現
+### ボイラープレートの核心：Claude Code向けに最適化
 
-このボイラープレートは、Claude CodeとSub-agentが高品質のTypeScriptコードを生成するために特別に設計されています。
+このボイラープレートは、Claude CodeとSub agentsがTypeScriptプロジェクトを効率的に開発できるよう設計されています。
 
 ### 必須ワークフロー
 
 1. **初回ルール読み込み**: タスク開始時に必要なルールファイル（`docs/rules/`）を読み込む
 2. **実装前承認**: Edit/Write/MultiEdit操作前にユーザー承認を得る
 3. **段階的品質チェック**: Phase 1-6の段階的品質チェックを実施
-4. **Sub-agent活用**: 専門的なタスクは適切なSub-agentに委譲
+4. **Sub agents活用**: 専門的なタスクは適切なSub agentsに委譲
 
 ### Claude Code開発プロセス
 
@@ -266,7 +292,7 @@ graph TD
     G -->|No| H[完了]
 ```
 
-### 利用可能なSub-agent
+### 利用可能なSub agents
 
 - **quality-fixer**: 品質チェック・自動修正 - TypeScriptプロジェクトの品質問題を自動修正
 - **task-executor**: 個別タスク実行 - タスクファイルの手順に従って実装を実行
@@ -289,7 +315,7 @@ graph TD
 - **推奨形式**: 禁止事項をメリット・デメリット付きで説明（LLM理解促進）
 - **柔軟な実装選択**: プロジェクトの要件に応じて、後方互換性の考慮レベルを調整可能
 - **段階的品質保証**: 6段階の体系的品質チェックプロセス
-- **Sub-agent連携**: 専門タスクは適切なSub-agentに委譲
+- **Sub agents連携**: 専門タスクは適切なSub agentsに委譲
 
 ### 主要ルール
 - ✅ **推奨**: unknown型+型ガード（型安全性確保）
@@ -385,7 +411,7 @@ npm run cleanup:processes     # テスト後のプロセスクリーンアップ
 ### Q: Claude Codeでの開発手順は？
 A: 1) 7つのルールファイルを読み込み → 2) 計画立案・承認 → 3) 実装 → 4) 段階的品質チェック → 5) コミット
 
-### Q: Sub-agentはどう使う？
+### Q: Sub agentsはどう使う？
 A: quality-fixer（品質チェック）、task-executor（タスク実行）等を適切に活用。詳細は`CLAUDE.md`参照。
 
 ### Q: エラーが発生したら？
@@ -403,8 +429,8 @@ MIT License - 自由に使用・改変・配布可能
 
 ## 🎯 このボイラープレートについて
 
-AI コーディングプロジェクト ボイラープレートは、Claude CodeとSub-agentが高品質のTypeScriptコードを生成できるよう特別に設計されたボイラープレートです。多言語対応により、日本語・英語の開発環境で最適な開発体験を提供します。
+AI コーディングプロジェクト ボイラープレートは、Claude CodeとSub agentsがTypeScriptプロジェクトを効率的に開発できるよう設計されたボイラープレートです。多言語対応により、日本語・英語の開発環境で最適な開発体験を提供します。
 
 ---
 
-Claude Codeで楽しい開発を！ 🤖✨
+開発の効率化にお役立てください 🤖
