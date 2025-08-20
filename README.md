@@ -12,6 +12,10 @@
 
 Multi-agent orchestration automates your entire development workflow from design to deployment. Transform requirements into high-quality, tested TypeScript code with AI-powered assistance at every step.
 
+## 📸 Quick Demo
+
+![Demo](./.github/assets/demo.gif)
+
 ## ⚡ Get Started in 3 Steps
 
 ```bash
