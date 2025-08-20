@@ -97,88 +97,45 @@ Decompose tasks based on implementation strategy patterns determined in @docs/ru
 
 ## Task File Template
 
-**Important**: Use checkbox format in all sections to enable progress tracking
-
 ```markdown
 # Task: [Task Name]
 
-Plan Document: [Original plan document filename]
-Overall Design Document: _overview-[plan-name].md
-Task Number: [Number]
-Task Size: [Small/Medium]
-Expected File Count: [1-5]
-Estimated Work Time: [Hours]
-Dependent Tasks: [Dependent task numbers, "None" if none]
+Metadata:
+- Dependencies: task-01 → Deliverable: docs/plans/analysis/research-results.md
+- Provides: docs/plans/analysis/api-spec.md (for research/design tasks)
+- Size: Small (1-2 files)
 
-## Position in Overall Context
-### Overall Project Purpose
-[Overall purpose extracted from work plan]
-
-### This Task's Role
-[Role this task plays in achieving overall purpose]
-
-### Relationship with Previous Task
-- Previous Task: [Task name or "None"]
-- Inherited Information: [Design or implementation inherited from previous task]
-
-### Impact on Subsequent Tasks
-- Subsequent Task: [Task name or "None"]
-- Provided Information: [Design or implementation passed to subsequent task]
-
-## Overview
+## Implementation Content
 [What this task will achieve]
+*Reference dependency deliverables if applicable
 
 ## Target Files
-- [ ] path/to/file1.ts
-- [ ] path/to/file2.ts
-- [ ] __tests__/file1.test.ts
-
-## Operation Verification Methods【Mandatory】
-Verification Level: [Select from L1/L2/L3 - follow implementation-approach.md]
-- [ ] Verification Command: `[specific command]`
-- [ ] Expected Result: [what should happen for success]
-- [ ] Alternative Method if Verification Impossible: [unit tests, etc.]
+- [ ] [Implementation file path]
+- [ ] [Test file path]
 
 ## Implementation Steps (TDD: Red-Green-Refactor)
+### 1. Red Phase
+- [ ] Review dependency deliverables (if any)
+- [ ] Verify/create type definitions
+- [ ] Write failing tests
+- [ ] Run tests and confirm failure
 
-### 0. **Interface First - Interface Definition**
-   - [ ] Input type definitions (or verify existing)
-   - [ ] Output type definitions (or verify existing)
-   - [ ] Existing compatibility verification (method names, parameters, return values)
+### 2. Green Phase  
+- [ ] Add minimal implementation to pass tests
+- [ ] Run only added tests and confirm they pass
 
-### 1. **Red Phase - Write Failing Tests**
-   - [ ] [Define expected behavior in tests (e.g., `expect(result).toBe(expected)`)]
-   - [ ] [Run tests and confirm failure (e.g., `npm test -- path/to/test.ts`)]
-   - [ ] [Create additional test cases as needed (edge cases, etc.)]
-
-### 2. **Green Phase - Minimal Implementation**
-   - [ ] [Add minimal implementation to make tests pass]
-   - [ ] [Hardcoding is acceptable (prioritize making it work first)]
-   - [ ] [Run only added tests and confirm they pass]
-
-### 3. **Refactor Phase - Code Improvement**
-   - [ ] [Improve code while maintaining passing state of added tests]
-   - [ ] [Remove duplication, improve readability, appropriate abstraction]
-   - [ ] [Confirm added tests continue to pass]
+### 3. Refactor Phase
+- [ ] Improve code (maintain passing tests)
+- [ ] Confirm added tests still pass
 
 ## Completion Criteria
-- [ ] Red Phase: Failing tests created
-- [ ] Green Phase: Tests pass with minimal implementation
-- [ ] Refactor Phase: Code improved, added tests maintain passing state
-- [ ] All added tests pass (overall tests executed in quality assurance process)
-- [ ] **Note**: Overall quality assurance and commit creation separately executed in quality assurance process
+- [ ] All added tests pass
+- [ ] Operation verified (select L1/L2/L3, per implementation-approach.md)
+- [ ] Deliverables created (for research/design tasks)
 
-## Important Notes
-### Implementation Considerations
-[Technical considerations, consistency with existing design, etc.]
-
-### Impact Scope Control
-- Parts that must not be changed in this task: [Explicitly state]
-- Areas where impact might propagate: [Items requiring confirmation]
-
-### Common Processing Guidelines
-- Processing to be shared with other tasks: [Specify if applicable]
-- Checks to avoid redundant implementation: [Checkpoints]
+## Notes
+- Impact scope: [Areas where changes may propagate]
+- Constraints: [Areas not to be modified]
 ```
 
 ## Overall Design Document Template
@@ -206,11 +163,11 @@ Target Plan Document: [Plan document filename]
 
 ### Inter-task Relationship Map
 ```
-Task 1: Foundation Implementation
-  ↓ (provides type definitions)
-Task 2: Feature Implementation
-  ↓ (provides API)
-Task 3: Test Addition
+Task 1: [Content] → Deliverable: docs/plans/analysis/[filename]
+  ↓
+Task 2: [Content] → Deliverable: docs/plans/analysis/[filename]
+  ↓ (references Task 2's deliverable)
+Task 3: [Content]
 ```
 
 ### Interface Change Impact Analysis
@@ -268,22 +225,17 @@ Please execute decomposed tasks according to the order.
 
 ## Important Considerations
 
-### Pre-decomposition Overall Optimization Check
+### Core Principles of Task Decomposition
 
-1. **Common Processing Identification**
-   - Check for similar processing in multiple tasks
-   - Implement shareable parts in preceding tasks
-   - Design for reuse in subsequent tasks
+1. **Explicit Deliverable Inheritance**
+   - Research/verification tasks must generate deliverables
+   - Subsequent tasks explicitly reference dependency deliverable paths
 
-2. **Pre-analysis of Impact Scope**
-   - How changes in each task affect others
-   - Boundary settings to prevent unintended side effects
-   - Clarify interfaces between tasks
+2. **Pre-identify Common Processing**
+   - Implement shared functionality in earlier tasks to prevent duplication
 
-3. **Redundant Implementation Prevention**
-   - Don't implement similar features separately
-   - Confirm reusability of existing code
-   - Design considering future extensibility
+3. **Impact Scope Boundary Setting**
+   - Clearly define changeable scope for each task
 
 ### Basic Considerations for Task Decomposition
 
@@ -308,6 +260,8 @@ Please execute decomposed tasks according to the order.
 
 ## Task Decomposition Checklist
 
+- [ ] Previous task deliverable paths specified in subsequent tasks
+- [ ] Deliverable filenames specified for research tasks
 - [ ] Common processing identification and shared design
 - [ ] Task dependencies and execution order clarification
 - [ ] Impact scope and boundaries definition for each task
@@ -318,26 +272,15 @@ Please execute decomposed tasks according to the order.
 
 ## Important Task Design Principles
 
-### Task Design Best Practices
-- ✅ Task division with clear dependencies (maximize parallel execution possibility)
-- ✅ Concrete and verifiable completion criteria (clear standards like "tests pass")
-- ✅ Appropriate task size (1-5 files, recommend splitting for 6+ files)
-- ✅ Task decomposition after overall design document creation (after grasping overall picture)
-- ✅ Identify common processing and prevent duplicate implementation (DRY principle)
-- ✅ Clearly define impact scope of each task (prevent unintended side effects)
+### Task Design Principles
 
-### Important Task Design Guidelines
+**Required**:
+- Research tasks generate deliverables
+- Implementation tasks follow TDD (Red→Green→Refactor)
+- Dependency deliverables explicitly referenced
+- Task size 1-5 files (split if 6+)
 
-✅ **Recommended**:
-- Implementation tasks complete with "Red (failing test) + Green (minimal implementation) + Refactor (improvement)"
-- Research tasks always create deliverables (reports, design documents, etc.)
-- Design where each task completes independently
-- Set completion criteria within task executor's responsibility scope
-
-❌ **Avoid**:
-- Including quality assurance process in implementation tasks (for responsibility separation)
-- Completing research tasks without deliverables (cannot accumulate value)
-- Quality checking multiple tasks together (ensure quality in each task)
-- Completion criteria beyond executor's responsibility scope (becomes unexecutable)
-
-**Principle**: Implementation tasks up to "Red (failing test) + Green (minimal implementation) + Refactor (improvement) + Added tests passing". Overall quality check → commit separately executed in quality assurance process after each task completion.
+**Prohibited**:
+- Including quality assurance in tasks
+- Research tasks without deliverables
+- Implicit dependency assumptions
