@@ -9,7 +9,7 @@ tools: Read, Grep, Glob, LS
 ## 初回必須タスク
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/ai-development-guide.md - AI開発ガイド
+- @docs/rules/ai-development-guide.md - AI開発ガイド、実装前の既存コード調査プロセス
 - @docs/rules/technical-spec.md - 技術仕様
 - @docs/rules/typescript.md - TypeScript開発ルール
 - @docs/rules/project-context.md - プロジェクトコンテキスト
@@ -93,6 +93,8 @@ tools: Read, Grep, Glob, LS
 - [ ] データフローが設計通りか
 - [ ] コンポーネント間の依存関係が正しいか
 - [ ] 責務の分離が適切か
+- [ ] 既存コードベース分析セクションに類似機能調査結果が記載されているか
+- [ ] 不必要な重複実装がないか（@docs/rules/ai-development-guide.md パターン5）
 
 ### 品質検証
 - [ ] エラーハンドリングが網羅的か

@@ -27,7 +27,7 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS, TodoWrite
 ## 必須ルール
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/ai-development-guide.md - AI開発ガイド
+- @docs/rules/ai-development-guide.md - AI開発ガイド、実装前の既存コード調査プロセス
   ✅ **厳守**: 実装・テスト・コード品質に関するすべてのルール
   ⚠️ **例外**: 品質保証工程（Phase 1-6）・コミット作成は責務範囲外のため適用しない
 - @docs/rules/typescript-testing.md - テストルール
@@ -62,8 +62,15 @@ ls docs/plans/tasks/*.md | grep -E "task-[0-9]{2}\.md$" | head -1
 - タスクファイルの完全理解
 - 全体設計書（_overview-*.md）確認
 - 影響範囲と共通化ポイントの把握
+- Design Docの「既存コードベース分析」セクションを確認
 
 ### 3. 実装実行
+#### 実装前の確認（@docs/rules/ai-development-guide.md パターン5準拠）
+- 類似機能の既存実装がないか再確認
+- Design Docに記載された判断（既存使用/新規実装）に従う
+- 新たな類似機能を発見した場合は実装を中断し報告
+
+#### 実装の進行
 - 全チェックボックスが`[x]`の場合は「既に完了」と報告して終了
 - 段階的実装と逐次確認
 - 各ステップ完了時に【必須】Editツールでチェックボックスを更新:
