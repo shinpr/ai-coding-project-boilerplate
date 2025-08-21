@@ -8,13 +8,32 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
-### 🚀 Start AI-Driven Development in 30 Seconds - Claude Code & Sub agents Generate Production-Ready TypeScript Code
+## 🚀 Beat Context Exhaustion with Sub agents - Production-Ready AI Development at Scale
 
-Multi-agent orchestration automates your entire development workflow from design to deployment. Transform requirements into high-quality, tested TypeScript code with AI-powered assistance at every step.
+Sub agents orchestration solves the #1 problem in AI coding: context exhaustion. Maintain consistent quality across large projects with specialized agents handling each task independently.
 
 ## 📸 Quick Demo
 
 ![Demo](./.github/assets/demo.gif)
+*Creating a production-ready TypeScript project with sub agents in action*
+
+## 🎯 Real Project Built with This Boilerplate
+
+See what's possible with this boilerplate and Claude Code:
+
+### [Sub agents MCP Server](https://github.com/shinpr/sub-agents-mcp)
+**MCP server that enables Claude Code/Cursor CLI to work as sub agents**
+
+- **Development Time**: ~2 days
+- **Scale**: ~30 TypeScript files with comprehensive test suite
+- **Published**: [GitHub](https://github.com/shinpr/sub-agents-mcp)
+- **Features**: 
+  - MCP server implementation specialized for AI CLI tools
+  - Enables Claude Code/Cursor CLI to function as sub agents via MCP
+  - 3-minute setup with simple installation
+  - Production-quality code (tests, type definitions, CI/CD included)
+
+> 💡 **Key Insight**: With proper rules and processes, AI coding can produce production-ready code that matches human developer standards.
 
 ## ⚡ Get Started in 3 Steps
 
@@ -29,160 +48,124 @@ cd my-project && npm install
 claude  # Launch Claude Code in terminal
 ```
 
-> 💡 **Start development with `/implement` command for end-to-end support from requirement analysis to production-ready implementation**
+> 💡 **Start development**: Type `/implement` for end-to-end support from requirements to production-ready code
 
-## 🎯 Features
+## 🎯 Why Sub agents?
 
-- **Claude Code Specialized**: Rule set optimized for high-quality development with Claude Code and Sub agents
-- **Quality Assurance**: Progressive quality checks and automatic correction system
-- **TypeScript Optimized**: Strict type checking with comprehensive Vitest testing environment
-- **Comprehensive Rules**: Development standardization through rule files
-- **Boilerplate Design**: Project-specific parts are placeholder-based
-- **Multilingual Support**: Supports both Japanese and English languages
+### The Problem with Traditional AI Coding
+- ❌ **Context Exhaustion**: AI forgets earlier context in long sessions
+- ❌ **Quality Degradation**: Implementation accuracy drops over time
+- ❌ **Session Switching**: Large tasks require frequent restarts
+
+### The Sub agents Solution
+- ✅ **Independent Specialized Agents**: Each task handled by a fresh, specialized AI
+- ✅ **Consistent Quality**: Maintains high standards throughout the entire project
+- ✅ **Large-Scale Projects**: Complete complex projects without session switching
+
+## 🤖 Complete Sub agents Roster
+
+Specialized AI agents work independently on each task type, preventing context exhaustion
+
+| Agent | Role | When It's Used |
+|-------|------|----------------|
+| **quality-fixer** | Automated quality fixes | Triggered on type errors, lint issues, test failures |
+| **task-executor** | Task implementation | Executes work plan steps systematically |
+| **technical-designer** | Design documentation | Creates ADRs and Design Docs when needed |
+| **work-planner** | Work plan creation | Transforms design docs into implementation plans |
+| **requirement-analyzer** | Requirements analysis | Assesses task scale and recommends approach |
+| **prd-creator** | PRD creation | Structures business requirements |
+| **document-reviewer** | Document review | Validates consistency and completeness |
+| **task-decomposer** | Task breakdown | Splits work plans into single-commit tasks |
+| **rule-advisor** | Rule selection | Selects optimal ruleset at task start |
+| **code-reviewer** | Code review | Objectively evaluates compliance with Design Docs |
+
+See `CLAUDE.md` and individual definition files in `.claude/agents/` for details.
 
 ## 📂 Project Structure
 
 ```
 ai-coding-project-boilerplate/
 ├── .claude/
-│   ├── agents-ja/          # Sub agents definitions (Japanese)
 │   ├── agents-en/          # Sub agents definitions (English)
-│   ├── commands-ja/        # Custom slash commands (Japanese)
-│   └── commands-en/        # Custom slash commands (English)
+│   ├── agents-ja/          # Sub agents definitions (Japanese)
+│   ├── commands-en/        # Slash commands (English)
+│   └── commands-ja/        # Slash commands (Japanese)
 ├── docs/
-│   ├── rules-ja/           # Development rules for Claude Code (Japanese)
-│   │   └── rules-index.yaml  # Rule file index with metadata
-│   ├── rules-en/           # Development rules for Claude Code (English)
-│   │   └── rules-index.yaml  # Rule file index with metadata
+│   ├── rules-en/           # Claude Code development rules (English)
+│   │   └── rules-index.yaml  # Rule file index
+│   ├── rules-ja/           # Claude Code development rules (Japanese)
+│   │   └── rules-index.yaml  # Rule file index
 │   ├── guides/
-│   │   ├── ja/
-│   │   │   └── sub-agents.md  # Sub agents practical guide (Japanese)
-│   │   └── en/
-│   │       └── sub-agents.md  # Sub agents practical guide (English)
+│   │   ├── en/
+│   │   │   └── sub-agents.md  # Sub agents practical guide
+│   │   └── ja/
+│   │       └── sub-agents.md  # Sub agents practical guide
 │   ├── adr/               # Architecture Decision Records
 │   ├── design/            # Design documents
-│   ├── plans/             # Work plans (excluded from git)
+│   ├── plans/             # Work plans (git-ignored)
 │   └── prd/               # Product Requirements Documents
 ├── src/                   # Source code directory
 │   └── index.ts           # Entry point sample
 ├── scripts/               # Development support scripts
 │   └── set-language.js    # Language switching script
-├── CLAUDE.ja.md           # Claude Code configuration (Japanese)
 ├── CLAUDE.en.md           # Claude Code configuration (English)
+├── CLAUDE.ja.md           # Claude Code configuration (Japanese)
+├── README.md              # This file
 ├── README.ja.md           # README (Japanese)
-├── README.md              # README (English - this file)
 ├── tsconfig.json          # TypeScript strict configuration
-├── biome.json            # Linter & Formatter configuration
-└── vitest.config.mjs     # Test configuration
+├── biome.json             # Linter & Formatter configuration
+└── vitest.config.mjs      # Test configuration
 ```
 
-## 🌐 Multilingual Support
+## 📝 Slash Commands
 
-This boilerplate supports both Japanese and English languages.
+Powerful commands available in Claude Code
 
-### Language Switching Commands
+| Command | Description | Use Case |
+|---------|-------------|----------|
+| `/implement` | End-to-end automation from requirements to code | New feature development |
+| `/design` | Create design docs (PRD/ADR/Design Doc) | Architecture decisions |
+| `/plan` | Work planning and task decomposition | Large-scale changes |
+| `/build` | Automatic task execution | Implementing planned tasks |
+| `/task` | Rule-based execution | Single task execution |
+| `/review` | Design Doc compliance check | Post-implementation validation |
+| `/rule-maintenance` | Rule management | Adding/updating rules |
+| `/onboard` | Load project rules | Project initialization |
 
-```bash
-# Switch to Japanese
-npm run lang:ja
+See individual definition files in `.claude/commands/` for details.
 
-# Switch to English
-npm run lang:en
+## 🚀 Basic Usage
 
-# Check current language setting
-npm run lang:status
-```
-
-When you switch languages, the following files are automatically updated:
-- `CLAUDE.md` - Claude Code configuration file
-- `docs/rules/` - Development rules directory
-- `docs/guides/sub-agents.md` - Sub agents guide
-- `.claude/commands/` - Slash commands
-- `.claude/agents/` - Sub agents definitions
-
-## 🚀 Getting Started
-
-### 1. Setting Up a New Project (Recommended)
+### Creating a New Project
 
 ```bash
-# Create a new project using npx
+# Create with npx (recommended)
 npx github:shinpr/ai-coding-project-boilerplate my-project
-
-# Navigate to your project
 cd my-project
-
-# Install dependencies
 npm install
-
-# Start developing with Claude Code!
-claude
 ```
 
-Options:
-- `--lang=en` - Set up as English project (default)
-- `--lang=ja` - Set up as Japanese project
+### Project Configuration
 
-### Alternative: Customizing This Repository
-
-If you want to customize the boilerplate itself:
+```json
+// package.json
+{
+  "name": "your-project-name",
+  "description": "Your project description",
+  "author": "Your name"
+}
+```
 
 ```bash
-# Clone the repository
-git clone https://github.com/shinpr/ai-coding-project-boilerplate.git
-cd ai-coding-project-boilerplate
-
-# Install dependencies
-npm install
-
-# Set your preferred language
-npm run lang:en    # Set up as English project
-# npm run lang:ja  # Set up as Japanese project if preferred
+# Replace placeholders in docs/rules/project-context.md
+# [Project Name] → Your actual project name
+# [Product Name Here] → Your actual product name
+# [Target User Role Here] → Your actual target users
 ```
-
-### 2. Project-Specific Configuration
-
-1. **Update Basic Information**
-   ```json
-   // package.json
-   {
-     "name": "your-project-name",
-     "description": "Your project description",
-     "author": "Your name"
-   }
-   ```
-
-2. **Configure Project Context**
-   ```bash
-   # Replace placeholders in docs/rules/project-context.md
-   # [Project Name] → Actual project name
-   # [Product Name Here] → Actual product name
-   # [Target User Role Here] → Actual target users
-   ```
-
-### 3. GitHub Repository Setup
-
-1. **Create New Repository on GitHub**
-   ```bash
-   # Recommended repository names
-   - claude-code-typescript-boilerplate
-   - claude-typescript-template
-   - ai-coding-boilerplate
-   ```
-
-2. **Add Remote Repository**
-   ```bash
-   git remote add origin https://github.com/your-username/your-repo-name.git
-   git branch -M main
-   git push -u origin main
-   ```
-
-3. **Repository Settings (GitHub UI)**
-   - **Description**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and Sub agents architecture for generating high quality code efficiently."
-   - **Topics**: `claude-code`, `typescript`, `boilerplate`, `ai-development`, `sub-agents`, `code-quality`, `multilingual`
 
 ## 💻 Development Commands
 
-### Basic Commands
+### Essential Commands
 ```bash
 npm run dev        # Start development server
 npm run build      # Production build
@@ -192,93 +175,22 @@ npm run test:watch # Test watch mode
 
 ### Quality Checks
 ```bash
-npm run check:all   # Overall quality check
+npm run check:all   # Complete quality check
 npm run lint        # Lint check
 npm run format      # Code formatting
 npm run check:deps  # Circular dependency check
 ```
 
-### Additional Commands
-```bash
-npm run test:coverage       # Generate coverage report
-npm run check:unused        # Detect unused exports
-npm run cleanup:processes   # Cleanup test processes
-```
+## 🤖 Claude Code Workflow
 
-## 🎯 Claude Code Custom Slash Commands
+### Recommended Workflow
 
-This boilerplate includes 6 custom slash commands to streamline development with Claude Code:
+1. **Initial Rule Loading**: Load necessary rule files from `docs/rules/` at task start
+2. **Pre-Implementation Approval**: Get user approval before Edit/Write/MultiEdit operations
+3. **Progressive Quality Checks**: Execute Phase 1-6 quality checks systematically
+4. **Sub agents Utilization**: Leverage appropriate Sub agents for specialized tasks
 
-### `/onboard`
-Loads project rule files and enforces development conventions.
-- Load all rule files
-- Understand critical rules (especially "Investigation OK, Implementation STOP")
-- Confirm architecture patterns
-
-### `/implement`
-Acts as orchestrator managing the complete cycle from requirement analysis to implementation.
-- Interactive requirement clarification
-- Scale assessment via requirement-analyzer
-- Automated progression: design → planning → implementation
-- Automatic detection and re-analysis of requirement changes
-
-### `/design`
-Executes from requirement analysis to design document creation.
-- Deep dive into requirement background and objectives
-- Scale-appropriate design document creation (PRD/ADR/Design Doc)
-- Present design alternatives and trade-offs
-
-### `/plan`
-Creates work plans and task decomposition from design documents.
-- Review and select existing design documents
-- Create work plans via work-planner
-- Task decomposition to commit-level granularity via task-decomposer
-- Obtain bulk approval for entire implementation phase
-
-### `/build`
-Implements decomposed tasks in autonomous execution mode.
-- Review task files
-- Automated cycle: task-executor → quality-fixer → commit
-- Detect requirement changes or critical errors with appropriate responses
-- Post-implementation summary and coverage reporting
-
-### `/task`
-Executes tasks following appropriate rules.
-- Clarify applicable development rules before execution
-- Determine initial actions based on rules
-- Identify prohibitions to avoid in the task
-- Promote metacognition and prevent implementation errors proactively
-
-### `/review`
-Design Doc compliance validation with optional auto-fixes.
-- Validate Design Doc compliance rate
-- Interactive fix confirmation (y/n)
-- Execute metacognition before fixes (rule-advisor → TodoWrite → task-executor → quality-fixer)
-- Report improvement metrics after fixes
-
-### `/rule-maintenance`
-Add, update, and search development rules.
-- Add new rule files with metadata
-- Update existing rules
-- Search rules by keywords
-- Manage rules-index.yaml
-
-These commands are located in `.claude/commands/` and are only available within the project.
-
-## 🤖 Claude Code Specialized Workflow
-
-### Boilerplate Core: Maximizing Development Efficiency with Claude Code
-
-This boilerplate is specifically engineered for Claude Code and Sub agents to generate production-ready, high-quality TypeScript code with unprecedented efficiency.
-
-### Essential Workflow
-
-1. **Initial Rule Loading**: Load necessary rule files (`docs/rules/`) at task start
-2. **Pre-Implementation Approval**: Obtain user approval before Edit/Write/MultiEdit operations
-3. **Progressive Quality Checks**: Implement Phase 1-6 progressive quality checks
-4. **Sub agents Utilization**: Delegate specialized tasks to appropriate Sub agents
-
-### Claude Code Development Process
+### Development Process
 
 ```mermaid
 graph TD
@@ -292,136 +204,88 @@ graph TD
     G -->|No| H[Complete]
 ```
 
-### Available Sub agents
-
-- **quality-fixer**: Quality check & automatic correction - Automatically fixes TypeScript project quality issues
-- **task-executor**: Individual task execution - Executes tasks according to task file instructions
-- **technical-designer**: ADR & Design Doc creation - Creates technical design documents
-- **work-planner**: Work plan creation - Creates structured implementation plans from design documents
-- **document-reviewer**: Review document consistency and completeness - Validates documents from multiple perspectives
-- **prd-creator**: Product Requirements Document (PRD) creation - Creates structured business requirements
-- **requirement-analyzer**: Requirement analysis and work scale assessment - Analyzes user requirements and determines appropriate development approach
-- **task-decomposer**: Decompose work plans into commit-level tasks - Breaks down plans into 1-commit granular tasks
-- **rule-advisor**: Selects minimal effective ruleset for maximum AI execution accuracy
-- **code-reviewer**: Design Doc compliance validation - Evaluates implementation completeness from third-party perspective
-
-For details, refer to `CLAUDE.md` and individual definition files in `.claude/agents/` and `.claude/commands/`.
-
 ## 📋 Development Rules Overview
 
-This boilerplate provides a comprehensive rule set:
-
 ### Core Principles
-- **Recommended Format**: Explain prohibitions with benefits/drawbacks (promotes LLM understanding)
-- **Flexible Implementation Choice**: Adjustable backward compatibility consideration levels based on project requirements
+- **Recommended Format**: Explain prohibitions with pros/cons for better LLM understanding
+- **Flexible Implementation**: Adjust based on project requirements
 - **Progressive Quality Assurance**: 6-phase systematic quality check process
-- **Sub agents Integration**: Delegate specialized tasks to appropriate Sub agents
+- **Sub agents Integration**: Leverage specialized agents for complex tasks
 
 ### Key Rules
-- ✅ **Recommended**: unknown type + type guards (ensure type safety)
+- ✅ **Recommended**: unknown type + type guards for type safety
 - ❌ **Avoid**: any type usage (disables type checking)
 - ✅ **Recommended**: Test-first development (Red-Green-Refactor)
-- ❌ **Avoid**: Commented-out code (use version control for history)
-- ✅ **Recommended**: YAGNI principle (implement only currently needed features)
+- ❌ **Avoid**: Commented-out code (use version control)
+- ✅ **Recommended**: YAGNI principle (implement only what's needed now)
 
-### Rule Index System
+## 🧪 AI-Powered Quality Assurance
 
-The `rules-index.yaml` file in each language directory provides:
-- **Metadata**: Description, priority, and keywords for each rule file
-- **Dynamic Rule Selection**: AI agents can select appropriate rules based on task context
-- **Efficiency**: Load only necessary rules to optimize context usage
+### Quality Checks with Sub agents
 
-### Core Rule Files
-1. **technical-spec.md**: Technical specifications, environment setup, data flow principles
-2. **typescript.md**: TypeScript development rules (including performance optimization)
-3. **typescript-testing.md**: Testing rules & Vitest utilization
-4. **project-context.md**: Project context (template)
-5. **ai-development-guide.md**: Implementation guide for AI developers & anti-pattern collection
-6. **documentation-criteria.md**: Documentation creation criteria (ADR/PRD/Design Doc/Work Plan)
-7. **architecture/implementation-approach.md**: Implementation strategy selection framework (meta-cognitive approach)
+Sub agents automatically ensure code quality:
+- **task-executor** implements with TDD (Red-Green-Refactor), ensures new tests pass
+- **quality-fixer** automatically fixes type errors, lint issues, and ensures all tests pass
+- **code-reviewer** validates implementation completeness
 
-## 🧪 Testing
+### Manual Verification
 
-### Testing Strategy for Claude Code
-
-This boilerplate is designed for LLMs to implement tests efficiently:
-
-### Running Tests
 ```bash
-npm test                       # Run unit tests
-npm run test:coverage:fresh    # Accurate coverage measurement
-npm run test:ui               # Launch Vitest UI
-npm run cleanup:processes     # Cleanup processes after testing
+npm test                    # Run tests
+npm run test:coverage:fresh # Measure coverage
+npm run check:all           # Complete quality check (types, lint, tests, build)
 ```
-
-### Test Helper Utilization Policy
-- **Builder Pattern**: Simplify construction of complex test data
-- **Custom Assertions**: Share common validation logic
-- **Mock Decision Criteria**: Share simple and stable mocks, implement complex/frequently changing ones individually
-- **Duplication Prevention**: Consider sharing on 3rd duplication (Rule of Three)
-
-### Vitest Optimization
-- Process Management: Prevent zombie processes with automatic cleanup
-- Type-Safe Mocks: Type-safe mock implementation avoiding any types
-- Red-Green-Refactor: Support test-first development
 
 ## 🏗️ Architecture
 
-### Claude Code Optimized Architecture
+### Claude Code-Optimized Patterns
 
-This boilerplate provides architecture patterns that are easy for LLMs to understand and implement:
+Architecture patterns designed for AI coding efficiency:
+- **Layered Architecture**: Clear separation of concerns, enterprise-ready
+- **Vertical Slice Architecture**: One feature per file, optimized for context efficiency
+- **Hybrid Progressive Architecture**: Scales from small to large projects gracefully
 
-### Architecture Pattern Selection
+See `docs/rules/architecture/` for detailed patterns.
 
-`docs/rules/architecture/` contains architecture patterns optimized for LLM development:
+## 🌐 Multilingual Support
 
-#### 1. **Layered Architecture** 
-- **Features**: Clear separation of concerns, optimal for enterprise development
-- **LLM Benefits**: Clear role definition for each layer, easy to understand
-- **Use Cases**: Large-scale, complex business logic
+This boilerplate supports both English and Japanese.
 
-#### 2. **Vertical Slice Architecture** 
-- **Features**: One feature per file, optimized for LLM development
-- **LLM Benefits**: Efficient use of context window
-- **Use Cases**: Claude Code development, feature independence focus
+### Language Switching
 
-#### 3. **Hybrid Progressive Architecture** 
-- **Features**: Progressive evolution from small to large scale
-- **LLM Benefits**: Flexible response to project growth
-- **Use Cases**: Startups, progressive growth
+```bash
+# Switch to Japanese
+npm run lang:ja
 
-### Design Principles (LLM Optimized)
-- **Clear Separation of Concerns**: One file, one responsibility for context efficiency
-- **Dependency Injection**: Testability and easy mocking
-- **Type Safety Priority**: Prevent runtime errors with unknown types + type guards
-- **YAGNI Adherence**: Avoid excessive abstraction, implement only what's needed
+# Switch to English
+npm run lang:en
 
-## 📚 Documentation System
+# Check current language
+npm run lang:status
+```
 
-This boilerplate provides systematic documentation for efficient Claude Code development:
+Language switching automatically updates:
+- `CLAUDE.md` - Claude Code configuration
+- `docs/rules/` - Development rules
+- `.claude/agents/` - Sub agents definitions
+- `.claude/commands/` - Slash commands
 
-- **`docs/rules/`**: 6 comprehensive development rules (required reading for Claude Code)
-- **`docs/adr/`**: Architecture Decision Records (record of important technical decisions)
-- **`docs/design/`**: Design documents (detailed design for complex features)
-- **`docs/plans/`**: Work plans (created for medium-scale or larger changes)
-- **`docs/prd/`**: Product Requirements Documents (for new feature development)
+## 🤔 FAQ
 
-## 🤔 Frequently Asked Questions
+### Q: How do I use Sub agents?
+A: Use `/implement` or `/task` commands. The appropriate specialized agents activate automatically.
 
-### Q: What's the development procedure with Claude Code?
-A: 1) Load 7 rule files → 2) Plan & get approval → 3) Implement → 4) Progressive quality checks → 5) Commit
+### Q: What happens when errors occur?
+A: quality-fixer attempts automatic fixes. If it can't resolve them, it provides specific instructions.
 
-### Q: How to use Sub agents?
-A: Properly utilize quality-fixer (quality checks), task-executor (task execution), etc. See `CLAUDE.md` for details.
+### Q: How do I switch languages?
+A: Run `npm run lang:ja` (Japanese) or `npm run lang:en` (English).
 
-### Q: What to do when errors occur?
-A: Execute Phase 1-6 progressive quality checks. Completely resolve errors in each Phase before proceeding.
+### Q: How do I customize the boilerplate?
+A: Replace placeholders in `docs/rules/project-context.md`.
 
-### Q: How to customize the boilerplate?
-A: Replace placeholders in `docs/rules/project-context.md`, adjust environment variables and type definitions for your project.
-
-### Q: How to switch languages?
-A: Use `npm run lang:ja` (Japanese) or `npm run lang:en` (English) to easily switch. Settings are saved in the `.claudelang` file.
+### Q: What's the Claude Code development workflow?
+A: 1) Load rules → 2) Plan & approve → 3) Implement → 4) Quality check → 5) Commit
 
 ## 📄 License
 
@@ -429,7 +293,7 @@ MIT License - Free to use, modify, and distribute
 
 ## 🎯 About This Boilerplate
 
-AI Coding Project Boilerplate is the ultimate TypeScript development accelerator, specifically engineered for Claude Code and Sub agents to generate production-ready, high-quality code. With multilingual support, it delivers an exceptional development experience in both Japanese and English environments.
+AI Coding Project Boilerplate is the ultimate TypeScript development accelerator, engineered for Claude Code and Sub agents to generate production-ready code at unprecedented speed and quality. With comprehensive multilingual support, it delivers exceptional development experiences for teams worldwide.
 
 ---
 

@@ -8,19 +8,20 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
-### 🚀 コンテキスト枯渇を防ぐSub agents - 大規模プロジェクトでも安定した開発を実現
+## 🚀 コンテキスト枯渇を防ぐSub agents - 大規模プロジェクトでも安定した開発を実現
 
 AIコーディングの課題「コンテキスト枯渇による品質低下」をSub agentsの連携で改善。長時間の作業でも安定した開発をサポートします。
 
 ## 📸 デモ
 
 ![Demo](./.github/assets/demo.gif)
+*Sub agentsを活用したプロダクション品質のTypeScriptプロジェクト作成*
 
 ## 🎯 このボイラープレートで作成されたプロジェクト例
 
 実際にこのボイラープレートとClaude Codeを使用して開発されたプロジェクトをご紹介します。
 
-### [Sub-Agents MCP Server](https://github.com/shinpr/sub-agents-mcp)
+### [Sub agents MCP Server](https://github.com/shinpr/sub-agents-mcp)
 **MCP経由でClaude Code/Cursor CLIをサブエージェント的に呼び出せるサーバー**
 
 - **作成期間**: 約2日間
