@@ -15,6 +15,7 @@ Sub agents orchestration solves the #1 problem in AI coding: context exhaustion.
 ## 📸 Quick Demo
 
 ![Demo](./.github/assets/demo.gif)
+
 *Creating a production-ready TypeScript project with sub agents in action*
 
 ## 🎯 Real Project Built with This Boilerplate
