@@ -226,6 +226,12 @@ graph TD
     G -->|No| H[完了]
 ```
 
+## 💡 実践ガイド
+
+[設計書駆動で品質を保証する「Agentic Coding」実践ガイド](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)
+
+このボイラープレートの詳しい使い方と、なぜこのような仕組みになっているのかをまとめた記事です。Sub agentsやContext Engineeringの実装背景も含めて解説しています。
+
 ## 📋 開発ルール概要
 
 ### 基本方針
