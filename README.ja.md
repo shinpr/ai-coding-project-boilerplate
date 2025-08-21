@@ -8,13 +8,32 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
-### 🚀 30秒でAI駆動開発を開始 - Claude CodeとSub agentsがTypeScript開発を支援
+## 🚀 コンテキスト枯渇を防ぐSub agents - 大規模プロジェクトでも安定した開発を実現
 
-マルチエージェント連携で設計・実装・品質保証を自動化。要件分析から実装まで、AIが開発プロセスをサポートします。
+AIコーディングの課題「コンテキスト枯渇による品質低下」をSub agentsの連携で改善。長時間の作業でも安定した開発をサポートします。
 
 ## 📸 デモ
 
 ![Demo](./.github/assets/demo.gif)
+*Sub agentsを活用したプロダクション品質のTypeScriptプロジェクト作成*
+
+## 🎯 このボイラープレートで作成されたプロジェクト例
+
+実際にこのボイラープレートとClaude Codeを使用して開発されたプロジェクトをご紹介します。
+
+### [Sub agents MCP Server](https://github.com/shinpr/sub-agents-mcp)
+**MCP経由でClaude Code/Cursor CLIをサブエージェント的に呼び出せるサーバー**
+
+- **作成期間**: 約2日間
+- **規模**: TypeScript 約30ファイル、包括的なテストスイート付き
+- **公開**: [GitHub](https://github.com/shinpr/sub-agents-mcp)
+- **特徴**: 
+  - AI CLIツールに特化したMCPサーバー実装
+  - MCP経由でClaude Code/Cursor CLIをサブエージェントとして活用
+  - 3分でセットアップ可能な簡単インストール
+  - プロダクション品質のコード（テスト、型定義、CI/CD完備）
+
+> 💡 **ポイント**: 適切なルールとプロセスがあれば、AIコーディングでもプロダクションレベルのコード作成をサポートできます。
 
 ## ⚡ 3ステップで開発開始
 
@@ -29,36 +48,79 @@ cd my-project && npm install
 claude  # ターミナルでClaude Codeを起動
 ```
 
-> 💡 **開発を開始するには `/implement` コマンドで要件分析から実装まで一貫サポート**
+> 💡 **開発を開始**: `/implement` コマンドで要件分析から実装までを一貫サポート
 
-## 🎯 特徴
+## 🌐 日本語環境への切り替え
 
-- **Claude Code特化**: Claude CodeとSub agentsに最適化されたルール群
-- **品質保証**: 段階的品質チェックと自動修正システム
-- **TypeScript最適化**: 厳格な型チェックとVitestによるテスト環境
-- **包括的ルール**: ルールファイルによる開発標準化
-- **ボイラープレート設計**: プロジェクト固有部分はプレースホルダー化
-- **多言語対応**: 日本語・英語の両言語に対応
+このボイラープレートは日本語と英語の両方をサポートしています。
+
+```bash
+# 日本語に切り替え
+npm run lang:ja
+
+# 英語に切り替え（必要な場合）
+npm run lang:en
+
+# 現在の言語設定を確認
+npm run lang:status
+```
+
+言語を切り替えると、以下が自動的に更新されます
+- `CLAUDE.md` - Claude Code設定ファイル
+- `docs/rules/` - 開発ルール
+- `.claude/agents/` - Sub agents定義
+- `.claude/commands/` - スラッシュコマンド
+
+## 🎯 なぜSub agentsなのか？
+
+### 従来のAIコーディングの問題
+- ❌ **コンテキスト枯渇**: 長時間の作業でAIが前の内容を忘れる
+- ❌ **品質低下**: タスクが進むにつれて実装精度が落ちる
+- ❌ **セッション切り替え**: 大規模タスクで頻繁な再起動が必要
+
+### Sub agentsによる改善アプローチ
+- ✅ **専門エージェントが独立動作**: 各タスクを専門AIが新鮮な状態で処理
+- ✅ **品質の安定性向上**: 長時間の作業でも品質低下を抑制
+- ✅ **大規模プロジェクト対応**: セッション切り替えの頻度を削減
+
+## 🤖 利用可能なSub agents一覧
+
+専門タスクごとに独立したAIエージェントが動作。コンテキスト枯渇を緩和します
+
+| エージェント | 役割 | いつ使われるか |
+|------------|------|--------------|
+| **quality-fixer** | 品質問題の修正サポート | 型エラー、lint、テスト失敗時に起動 |
+| **task-executor** | タスク実行 | 作業計画書の手順を着実に実装 |
+| **technical-designer** | 設計書作成 | ADR、Design Docが必要な時 |
+| **work-planner** | 作業計画書作成 | 設計ドキュメントから実装計画を作成 |
+| **requirement-analyzer** | 要件分析 | タスクの規模判定と開発アプローチ提案 |
+| **prd-creator** | PRD作成 | ビジネス要件を構造化 |
+| **document-reviewer** | ドキュメントレビュー | 整合性と完成度を検証 |
+| **task-decomposer** | タスク分解 | 作業計画を1コミット単位に分割 |
+| **rule-advisor** | ルール選択 | タスク開始時に適切なルールセットを選択 |
+| **code-reviewer** | コードレビュー | Design Doc準拠を第三者視点で評価 |
+
+詳細は`CLAUDE.md`および`.claude/agents/`内の各定義ファイルを参照してください。
 
 ## 📂 プロジェクト構成
 
 ```
 ai-coding-project-boilerplate/
 ├── .claude/
-│   ├── agents-ja/          # Sub agents定義（日本語）
+│   ├── agents-ja/          # Sub agents定義（日本語）⭐
 │   ├── agents-en/          # Sub agents定義（英語）
-│   ├── commands-ja/        # カスタムスラッシュコマンド（日本語）
-│   └── commands-en/        # カスタムスラッシュコマンド（英語）
+│   ├── commands-ja/        # スラッシュコマンド（日本語）⭐
+│   └── commands-en/        # スラッシュコマンド（英語）
 ├── docs/
-│   ├── rules-ja/           # Claude Code向け開発ルール（日本語）
-│   │   └── rules-index.yaml  # ルールファイルのインデックスとメタデータ
+│   ├── rules-ja/           # Claude Code向け開発ルール（日本語）⭐
+│   │   └── rules-index.yaml  # ルールファイルのインデックス
 │   ├── rules-en/           # Claude Code向け開発ルール（英語）
-│   │   └── rules-index.yaml  # ルールファイルのインデックスとメタデータ
+│   │   └── rules-index.yaml  # ルールファイルのインデックス
 │   ├── guides/
 │   │   ├── ja/
-│   │   │   └── sub-agents.md  # Sub agents実践ガイド（日本語）
+│   │   │   └── sub-agents.md  # Sub agents実践ガイド
 │   │   └── en/
-│   │       └── sub-agents.md  # Sub agents実践ガイド（英語）
+│   │       └── sub-agents.md  # Sub agents実践ガイド
 │   ├── adr/               # アーキテクチャ決定記録
 │   ├── design/            # 設計ドキュメント
 │   ├── plans/             # 作業計画書（git管理外）
@@ -67,118 +129,60 @@ ai-coding-project-boilerplate/
 │   └── index.ts           # エントリーポイントサンプル
 ├── scripts/               # 開発支援スクリプト
 │   └── set-language.js    # 言語切り替えスクリプト
-├── CLAUDE.ja.md           # Claude Code専用設定（日本語）
+├── CLAUDE.ja.md           # Claude Code専用設定（日本語）⭐
 ├── CLAUDE.en.md           # Claude Code専用設定（英語）
 ├── README.ja.md           # このファイル
 ├── README.md              # README（英語版）
 ├── tsconfig.json          # TypeScript厳格設定
-├── biome.json            # Linter・Formatter設定
-└── vitest.config.mjs     # テスト設定
+├── biome.json             # Linter・Formatter設定
+└── vitest.config.mjs      # テスト設定
 ```
 
-## 🚀 使い方
+## 📝 スラッシュコマンド
 
-### 1. 新しいプロジェクトの作成（推奨）
+Claude Codeで使える便利なコマンド一覧
+
+| コマンド | 説明 | 使用例 |
+|---------|------|--------|
+| `/implement` | 要件分析から実装まで全自動 | 新機能開発時 |
+| `/design` | 設計書作成（PRD/ADR/Design Doc） | アーキテクチャ決定時 |
+| `/plan` | 作業計画とタスク分解 | 大規模変更時 |
+| `/build` | タスク自動実行 | 計画済みタスクの実装 |
+| `/task` | ルールベース実行 | 単一タスク実行時 |
+| `/review` | Design Doc準拠検証 | 実装完了後の検証 |
+| `/rule-maintenance` | ルール管理 | ルール追加・更新時 |
+| `/onboard` | ルール読み込み | プロジェクト開始時 |
+
+詳細は `.claude/commands/` 内の各定義ファイルを参照してください。
+
+## 🚀 基本的な使い方
+
+### 新しいプロジェクトの作成
 
 ```bash
-# npxを使用して新しいプロジェクトを作成
+# npxで作成（推奨）
 npx github:shinpr/ai-coding-project-boilerplate my-project --lang=ja
-
-# プロジェクトに移動
 cd my-project
-
-# 依存関係をインストール
 npm install
-
-# 開発を開始！
-npm run dev
 ```
 
-オプション:
-- `--lang=ja` - 日本語プロジェクトとして設定
-- `--lang=en` - 英語プロジェクトとして設定（デフォルト）
+### プロジェクト固有の設定
 
-### 別の方法: このリポジトリをカスタマイズする場合
-
-ボイラープレート自体をカスタマイズしたい場合：
+```json
+// package.json
+{
+  "name": "your-project-name",
+  "description": "プロジェクトの説明",
+  "author": "あなたの名前"
+}
+```
 
 ```bash
-# リポジトリをクローン
-git clone https://github.com/shinpr/ai-coding-project-boilerplate.git
-cd ai-coding-project-boilerplate
-
-# 依存関係をインストール
-npm install
-
-# 使用する言語を設定
-npm run lang:ja    # 日本語版として設定
-# npm run lang:en  # 英語版として設定する場合
+# docs/rules-ja/project-context.md のプレースホルダーを置き換え
+# [プロジェクト名] → 実際のプロジェクト名
+# [プロダクト名をここに記載] → 実際のプロダクト名
+# [ターゲットユーザーの職種をここに記載] → 実際のターゲット
 ```
-
-### 2. プロジェクト固有の設定
-
-1. **基本情報の更新**
-   ```json
-   // package.json
-   {
-     "name": "your-project-name",
-     "description": "プロジェクトの説明",
-     "author": "あなたの名前"
-   }
-   ```
-
-2. **プロジェクトコンテキストの設定**
-   ```bash
-   # docs/rules-ja/project-context.md のプレースホルダーを置き換え
-   # [プロジェクト名] → 実際のプロジェクト名
-   # [プロダクト名をここに記載] → 実際のプロダクト名
-   # [ターゲットユーザーの職種をここに記載] → 実際のターゲット
-   ```
-
-### 3. GitHubリポジトリの設定
-
-1. **GitHubで新しいリポジトリを作成**
-   ```bash
-   # 推奨リポジトリ名
-   - claude-code-typescript-boilerplate
-   - claude-typescript-template
-   - ai-coding-boilerplate
-   ```
-
-2. **リモートリポジトリの追加**
-   ```bash
-   git remote add origin https://github.com/your-username/your-repo-name.git
-   git branch -M main
-   git push -u origin main
-   ```
-
-3. **リポジトリ設定（GitHub UI）**
-   - **説明文**: "TypeScript project boilerplate specifically designed for Claude Code. Features a comprehensive rule system and sub-agent architecture for generating high quality code efficiently."
-   - **トピックス**: `claude-code`, `typescript`, `boilerplate`, `ai-development`, `subagents`, `code-quality`, `multilingual`
-
-## 🌐 多言語化機能
-
-このボイラープレートは日本語と英語の両方をサポートしています。
-
-### 言語切り替えコマンド
-
-```bash
-# 日本語に切り替え
-npm run lang:ja
-
-# 英語に切り替え
-npm run lang:en
-
-# 現在の言語設定を確認
-npm run lang:status
-```
-
-言語を切り替えると、以下のファイルが自動的に更新されます：
-- `CLAUDE.md` - Claude Code設定ファイル
-- `docs/rules/` - 開発ルールディレクトリ
-- `docs/guides/sub-agents.md` - Sub agentsガイド
-- `.claude/commands/` - スラッシュコマンド
-- `.claude/agents/` - Sub agents定義
 
 ## 💻 開発コマンド
 
@@ -198,85 +202,14 @@ npm run format      # コードフォーマット
 npm run check:deps  # 循環依存チェック
 ```
 
-### その他のコマンド
-```bash
-npm run test:coverage       # カバレッジレポート生成
-npm run check:unused        # 未使用エクスポート検出
-npm run cleanup:processes   # テストプロセスクリーンアップ
-```
-
-## 🎯 Claude Code カスタムスラッシュコマンド
-
-このボイラープレートには、Claude Codeでの開発を効率化する6つのカスタムスラッシュコマンドが含まれています：
-
-### `/onboard`
-プロジェクトのルールファイルを読み込み、開発規約を徹底します。
-- 全ルールファイルの読み込み
-- 最重要ルール（特に「調査OK・実装STOP」）の理解
-- アーキテクチャパターンの確認
-
-### `/implement`
-オーケストレーターとして要件分析から実装まで完全サイクルを管理します。
-- 要件の具体化のための対話
-- requirement-analyzerによる規模判定
-- 設計→計画→実装の自動進行
-- 要件変更の自動検知と再分析
-
-### `/design`
-要件分析から設計書作成まで実行します。
-- 要件の背景と目的の深掘り
-- 規模に応じた設計書作成（PRD/ADR/Design Doc）
-- 設計の代替案とトレードオフの提示
-
-### `/plan`
-設計書から作業計画とタスク分解を作成します。
-- 既存設計書の確認と選択
-- work-plannerによる作業計画書作成
-- task-decomposerによる1コミット粒度のタスク分解
-- 実装フェーズ全体の一括承認取得
-
-### `/build`
-分解済みタスクを自律実行モードで実装します。
-- タスクファイルの確認
-- task-executor → quality-fixer → commitの自動サイクル
-- 要件変更や重大エラーの検知と適切な対応
-- 実装完了後のサマリーとカバレッジ報告
-
-### `/task`
-タスクを適切なルールに従って実行します。
-- 実行前に適用すべき開発ルールを明確化
-- ルールに基づく初動アクションの決定
-- タスクで避けるべき禁止事項の確認
-- メタ認知を促進し、実装エラーを事前に防止
-
-### `/review`
-Design Doc準拠検証と必要に応じた自動修正を実行します。
-- Design Doc準拠率の検証
-- 修正実行のインタラクティブ確認 (y/n)
-- 修正前のメタ認知実行（rule-advisor → TodoWrite → task-executor → quality-fixer）
-- 修正後の改善度レポート
-
-### `/rule-maintenance`
-開発ルールの追加・更新・検索を行います。
-- 新規ルールファイルの追加（メタデータ付き）
-- 既存ルールの更新
-- キーワードによるルール検索
-- rules-index.yamlの管理
-
-これらのコマンドは `.claude/commands/` に配置されており、プロジェクト内でのみ使用可能です。
-
 ## 🤖 Claude Code専用ワークフロー
 
-### ボイラープレートの核心：Claude Code向けに最適化
-
-このボイラープレートは、Claude CodeとSub agentsがTypeScriptプロジェクトを効率的に開発できるよう設計されています。
-
-### 必須ワークフロー
+### 推奨ワークフロー
 
 1. **初回ルール読み込み**: タスク開始時に必要なルールファイル（`docs/rules/`）を読み込む
-2. **実装前承認**: Edit/Write/MultiEdit操作前にユーザー承認を得る
+2. **実装前確認**: Edit/Write/MultiEdit操作前にユーザー確認を推奨
 3. **段階的品質チェック**: Phase 1-6の段階的品質チェックを実施
-4. **Sub agents活用**: 専門的なタスクは適切なSub agentsに委譲
+4. **Sub agents活用**: 専門的なタスクでSub agentsを活用
 
 ### Claude Code開発プロセス
 
@@ -292,30 +225,13 @@ graph TD
     G -->|No| H[完了]
 ```
 
-### 利用可能なSub agents
-
-- **quality-fixer**: 品質チェック・自動修正 - TypeScriptプロジェクトの品質問題を自動修正
-- **task-executor**: 個別タスク実行 - タスクファイルの手順に従って実装を実行
-- **technical-designer**: ADR・Design Doc作成 - 技術設計ドキュメントを作成
-- **work-planner**: 作業計画書作成 - 設計ドキュメントから構造化された実装計画を作成
-- **document-reviewer**: ドキュメントの整合性と完成度をレビュー - 複数の観点からドキュメントを検証
-- **prd-creator**: Product Requirements Document（PRD）作成 - 構造化されたビジネス要件を作成
-- **requirement-analyzer**: 要件分析と作業規模判定 - ユーザー要件を分析し適切な開発アプローチを提案
-- **task-decomposer**: 作業計画書から1コミット粒度のタスクに分解 - 計画書を細かいタスクに分割
-- **rule-advisor**: AI実行精度最大化のための最小限で効果的なルールセットを選択
-- **code-reviewer**: Design Doc準拠検証 - 実装の完全性を第三者視点で評価
-
-詳細は`CLAUDE.md`および`.claude/agents/`、`.claude/commands/`内の各定義ファイルを参照してください。
-
 ## 📋 開発ルール概要
 
-このボイラープレートは、包括的なルールセットを提供します：
-
-### 核心原則
+### 基本方針
 - **推奨形式**: 禁止事項をメリット・デメリット付きで説明（LLM理解促進）
-- **柔軟な実装選択**: プロジェクトの要件に応じて、後方互換性の考慮レベルを調整可能
+- **柔軟な実装選択**: プロジェクトの要件に応じて調整可能
 - **段階的品質保証**: 6段階の体系的品質チェックプロセス
-- **Sub agents連携**: 専門タスクは適切なSub agentsに委譲
+- **Sub agents連携**: 専門タスクでSub agentsを活用
 
 ### 主要ルール
 - ✅ **推奨**: unknown型+型ガード（型安全性確保）
@@ -324,104 +240,50 @@ graph TD
 - ❌ **避けるべき**: コメントアウト（バージョン管理で履歴管理）
 - ✅ **推奨**: YAGNI原則（現在必要な機能のみ実装）
 
-### ルールインデックスシステム
+## 🧪 AIがサポートする品質保証
 
-各言語ディレクトリの`rules-index.yaml`ファイルは以下を提供：
-- **メタデータ**: 各ルールファイルの説明、優先度、キーワード
-- **動的ルール選択**: AIエージェントがタスクコンテキストに基づいて適切なルールを選択
-- **効率性**: 必要なルールのみ読み込むことでコンテキスト使用を最適化
+### AIを活用した品質チェック
 
-### コアルールファイル
-1. **technical-spec.md**: 技術仕様・環境設定・データフロー原則
-2. **typescript.md**: TypeScript開発ルール（パフォーマンス最適化を含む）
-3. **typescript-testing.md**: テストルール・Vitestの活用
-4. **project-context.md**: プロジェクトコンテキスト（テンプレート）
-5. **ai-development-guide.md**: AI開発者向け実装ガイド・アンチパターン集
-6. **documentation-criteria.md**: ドキュメント作成基準（ADR/PRD/Design Doc/作業計画書）
-7. **architecture/implementation-approach.md**: 実装戦略選択フレームワーク（メタ認知的アプローチ）
+Sub agentsが品質チェックをサポート
+- **task-executor** がTDD（Red-Green-Refactor）で実装、追加したテストのパスまで対応
+- **quality-fixer** が型エラー、lint修正、全テストパスまで自律的に完遂
+- **code-reviewer** が実装の完全性を検証
 
-## 🧪 テスト
+### 手動で確認したい場合
 
-### Claude Code向けテスト戦略
-
-このボイラープレートは、LLMが効率的にテストを実装できるよう設計されています：
-
-### テストの実行
 ```bash
-npm test                       # 単体テスト実行
-npm run test:coverage:fresh    # 正確なカバレッジ計測
-npm run test:ui               # Vitest UI起動
-npm run cleanup:processes     # テスト後のプロセスクリーンアップ
+npm test                    # テスト実行
+npm run test:coverage:fresh # カバレッジ計測
+npm run check:all           # 全品質チェック（型、lint、テスト、ビルド）
 ```
-
-### テストヘルパーの活用方針
-- **ビルダーパターン**: 複雑なテストデータの構築を簡素化
-- **カスタムアサーション**: 繰り返し使用する検証ロジックを共通化
-- **モックの判断基準**: シンプルで安定的なものは共通化、複雑・変更頻度の高いものは個別実装
-- **重複防止**: 3回目の重複で共通化を検討（Rule of Three）
-
-### Vitest最適化
-- プロセス管理: 自動クリーンアップでゾンビプロセス防止
-- 型安全モック: any型を避けた型安全なモック実装
-- Red-Green-Refactor: テストファースト開発をサポート
 
 ## 🏗️ アーキテクチャ
 
-### Claude Code最適化アーキテクチャ
+### Claude Code向けアーキテクチャパターン
 
-このボイラープレートは、LLMが理解・実装しやすいアーキテクチャパターンを提供します：
+AIコーディングに適したアーキテクチャパターンを用意
+- **Layered Architecture**: 明確な責務分離、企業開発向け  
+- **Vertical Slice Architecture**: 1機能1ファイル、コンテキスト効率を重視
+- **Hybrid Progressive Architecture**: 小規模から大規模への段階的進化
 
-### アーキテクチャパターンの選択
-
-`docs/rules/architecture/`にLLM開発に最適化されたアーキテクチャパターンを用意：
-
-#### 1. **Layered Architecture** 
-- **特徴**: 明確な責務分離、企業開発に最適
-- **LLMメリット**: 各層の役割が明確で理解しやすい
-- **適用場面**: 大規模・複雑なビジネスロジック
-
-#### 2. **Vertical Slice Architecture** 
-- **特徴**: 1機能1ファイル、LLM開発に最適化
-- **LLMメリット**: コンテキストウィンドウ効率利用
-- **適用場面**: Claude Code開発、機能の独立性重視
-
-#### 3. **Hybrid Progressive Architecture** 
-- **特徴**: 小規模→大規模への段階的進化
-- **LLMメリット**: プロジェクト成長に応じて柔軟に対応
-- **適用場面**: スタートアップ、段階的成長
-
-### 設計原則（LLM最適化）
-- **明確な責務分離**: 1ファイル1責務でコンテキスト効率化
-- **依存性注入**: テスタビリティとモック化容易性
-- **型安全性優先**: unknown型+型ガードでランタイムエラー防止
-- **YAGNI徹底**: 過度な抽象化を避け、必要最小限の実装
-
-## 📚 ドキュメント体系
-
-このボイラープレートは、Claude Codeが効率的に開発できるよう体系的なドキュメントを提供：
-
-- **`docs/rules/`**: 6つの包括的な開発ルール（Claude Code必読）
-- **`docs/adr/`**: アーキテクチャ決定記録（重要な技術決定の記録）
-- **`docs/design/`**: 設計ドキュメント（複雑な機能の詳細設計）
-- **`docs/plans/`**: 作業計画書（中規模以上の変更時に作成）
-- **`docs/prd/`**: 製品要件定義書（新機能開発時）
+詳細は`docs/rules/architecture/`を参照してください。
 
 ## 🤔 よくある質問
 
-### Q: Claude Codeでの開発手順は？
-A: 1) 7つのルールファイルを読み込み → 2) 計画立案・承認 → 3) 実装 → 4) 段階的品質チェック → 5) コミット
-
 ### Q: Sub agentsはどう使う？
-A: quality-fixer（品質チェック）、task-executor（タスク実行）等を適切に活用。詳細は`CLAUDE.md`参照。
+A: `/implement`や`/task`コマンドで呼び出せます。適切なタイミングで専門エージェントが起動します。
 
 ### Q: エラーが発生したら？
-A: Phase 1-6の段階的品質チェックを実行。各Phaseでエラーを完全解消してから次へ。
-
-### Q: ボイラープレートのカスタマイズ方法は？
-A: `docs/rules/project-context.md`のプレースホルダーを置き換え、環境変数と型定義をプロジェクト向けに調整。
+A: quality-fixerが修正を試みます。自動修正できない場合は、具体的な対処法をご案内します。
 
 ### Q: 言語の切り替え方法は？
-A: `npm run lang:ja`（日本語）または`npm run lang:en`（英語）で簡単に切り替え可能。設定は`.claudelang`ファイルに保存されます。
+A: `npm run lang:ja`（日本語）または`npm run lang:en`（英語）で切り替え。
+
+### Q: カスタマイズ方法は？
+A: `docs/rules/project-context.md`のプレースホルダーを置き換えるだけ。
+
+### Q: Claude Codeでの開発手順は？
+A: 1) ルールファイルを読み込み → 2) 計画立案・承認 → 3) 実装 → 4) 品質チェック → 5) コミット
 
 ## 📄 ライセンス
 
@@ -429,7 +291,7 @@ MIT License - 自由に使用・改変・配布可能
 
 ## 🎯 このボイラープレートについて
 
-AI コーディングプロジェクト ボイラープレートは、Claude CodeとSub agentsがTypeScriptプロジェクトを効率的に開発できるよう設計されたボイラープレートです。多言語対応により、日本語・英語の開発環境で最適な開発体験を提供します。
+AI コーディングプロジェクト ボイラープレートは、Claude CodeとSub agentsを活用したTypeScript開発をサポートするボイラープレートです。日本語・英語の両言語に対応し、AIコーディングの第一歩を支援します。
 
 ---
 
