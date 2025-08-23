@@ -107,10 +107,8 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS, TodoWrite
 ## 作業フロー
 
 ### 1. タスク選択
-```bash
-# 自動選択（プロジェクトのパターンに合わせて調整）
-ls docs/plans/tasks/*.md | head -1
-```
+
+`docs/plans/tasks/*-task-*.md` パターンのファイルから、未完了のチェックボックス `[ ]` が残っているものを選択して実行
 
 ### 2. タスク背景理解
 **依存成果物の活用**：
