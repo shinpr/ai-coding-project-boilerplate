@@ -100,6 +100,7 @@ npm run lang:status
 | **task-decomposer** | タスク分解 | 作業計画を1コミット単位に分割 |
 | **rule-advisor** | ルール選択 | タスク開始時に適切なルールセットを選択 |
 | **code-reviewer** | コードレビュー | Design Doc準拠を第三者視点で評価 |
+| **e2e-test-generator** | 統合テスト生成 | Design DocのACからit.todoスケルトンを自動生成 |
 
 詳細は`CLAUDE.md`および`.claude/agents/`内の各定義ファイルを参照してください。
 
