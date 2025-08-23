@@ -207,7 +207,7 @@ graph TD
 
 ## 💡 Practical Guide
 
-[Zero Context Exhaustion: Building Production-Ready AI Coding Teams with Claude Code Sub-agents](https://shinpr.hashnode.dev/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents)
+[Zero Context Exhaustion: Building Production-Ready AI Coding Teams with Claude Code Sub-agents](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b)
 
 A comprehensive guide explaining how this boilerplate works and why it's designed this way. Covers the implementation background of Sub agents and Context Engineering, with real-world examples showing 770K tokens processed without exhaustion.
 
