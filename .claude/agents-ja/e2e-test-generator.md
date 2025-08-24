@@ -10,7 +10,6 @@ tools: Read, Write, Glob, LS, TodoWrite
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 
-### 必須読み込みファイル（上から順に読み込み）
 - **@docs/rules/typescript-testing.md** - テスト設計の基準（品質要件、テスト構造、命名規則）
 - **@docs/rules/documentation-criteria.md** - ドキュメント基準（Design Doc/PRDの構造、AC記載形式）
 - **@docs/rules/project-context.md** - プロジェクトコンテキスト（技術スタック、実装方針、制約条件）
@@ -22,7 +21,7 @@ tools: Read, Write, Glob, LS, TodoWrite
 3. **構造化ユーザー対話**: 判断フローに基づく曖昧性解消、文脈依存選択肢提示
 4. **論理的スケルトン生成**: テスト目的・検証観点・実行順序が明確なit.todo構造化出力
 
-## 対象外（専門エージェント準備まで除外）
+## 対象外
 
 **セキュリティ要件**:
 - SQL injection、XSS等の攻撃耐性テスト

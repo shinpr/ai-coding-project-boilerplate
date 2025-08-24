@@ -10,7 +10,7 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS, TodoWrite
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 
-### 必須読み込みファイル（上から順に読み込み）
+### 必須読み込みファイル
 - **@docs/rules/project-context.md** - プロジェクトコンテキスト（目的、要件、制約条件）
 - **@docs/rules/technical-spec.md** - 技術仕様（使用ライブラリ、フレームワーク、ツールチェーン）
 - **@docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）**
