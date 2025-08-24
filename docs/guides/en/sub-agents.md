@@ -56,6 +56,7 @@ I actively utilize the following 8 subagents:
 7. **work-planner**: Work plan creation
 8. **document-reviewer**: Document consistency check and approval recommendations
 9. **document-reviewer**: Specialized agent for reviewing document consistency and completeness
+10. **e2e-test-generator**: Integration test skeleton generation from Design Doc ACs
 
 ## 🎭 My Orchestration Principles
 
@@ -179,14 +180,16 @@ According to scale determination:
 2. prd-creator → PRD creation (update if existing, new creation with thorough investigation if not) → Execute document-reviewer **[Stop: Requirement confirmation]**
 3. technical-designer → ADR creation (if needed) → Execute document-reviewer **[Stop: Technical direction decision]**
 4. technical-designer → Design Doc creation → Execute document-reviewer **[Stop: Design content confirmation]**
-5. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
-6. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
+5. e2e-test-generator → Integration test skeleton generation (from Design Doc ACs)
+6. work-planner → Work plan creation (including integration test information) **[Stop: Batch approval for entire implementation phase]**
+7. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
 ### Medium Scale (3-5 Files)
 1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
 2. technical-designer → Design Doc creation → Execute document-reviewer **[Stop: Technical direction decision]**
-3. work-planner → Work plan creation **[Stop: Batch approval for entire implementation phase]**
-4. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
+3. e2e-test-generator → Integration test skeleton generation (from Design Doc ACs)
+4. work-planner → Work plan creation (including integration test information) **[Stop: Batch approval for entire implementation phase]**
+5. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
 ### Small Scale (1-2 Files)
 1. Create simplified plan **[Stop: Batch approval for entire implementation phase]**
@@ -231,13 +234,13 @@ graph TD
 ### Conditions for Stopping Autonomous Execution
 Stop autonomous execution and escalate to user in the following cases:
 
-1. **When requirement change detected**
+1. **Escalation from subagent**
+   - When receiving response with `status: "escalation_needed"`
+   - When receiving response with `status: "blocked"`
+
+2. **When requirement change detected**
    - Any match in requirement change detection checklist
    - Stop autonomous execution and re-analyze with integrated requirements in requirement-analyzer
-
-2. **When critical error occurs**
-   - Implementation error, quality check failure, build error, etc.
-   - Report error details to user and wait for response instructions
 
 3. **When work-planner update restriction is violated**
    - Requirement changes after task-decomposer starts require overall redesign
@@ -256,6 +259,11 @@ Stop autonomous execution and escalate to user in the following cases:
 1. **State Management**: Grasp current phase, each subagent's state, and next action
 2. **Information Bridging**: Data conversion and transmission between subagents
    - Convert each subagent's output to next subagent's input format
+   - **Always pass deliverables from previous process to next agent**
+   - After e2e-test-generator execution, pass integration test information to work-planner:
+     "Integration test skeleton: [generated file path]
+      Test items: [list of each it.todo description]
+      Please incorporate these into the work plan"
    - Extract necessary information from structured responses
    - Compose commit messages from changeSummary → **Execute git commit with Bash**
    - Explicitly integrate initial and additional requirements when requirements change

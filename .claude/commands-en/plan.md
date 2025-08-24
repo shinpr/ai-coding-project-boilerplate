@@ -4,12 +4,24 @@ description: Create work plan from design document and obtain plan approval
 
 **Command Context**: This command is dedicated to the planning phase.
 
-Use @work-planner to create a work plan, interact with the user to complete the plan, and obtain approval for the plan content.
+Follow @docs/guides/sub-agents.md strictly and create work plan with the following process:
 
-! ls -la docs/design/*.md | head -10
+## Execution Process
 
-Check for the existence of design documents and notify the user if none exist.
-If multiple exist, present options (can be specified with $ARGUMENTS).
+1. **Design Document Selection**
+   ! ls -la docs/design/*.md | head -10
+   - Check for existence of design documents, notify user if none exist
+   - Present options if multiple exist (can be specified with $ARGUMENTS)
+
+2. **E2E Test Skeleton Generation Confirmation**
+   - Confirm with user whether to generate E2E test skeleton first
+   - If user wants generation: Generate test skeleton with e2e-test-generator
+   - Pass generation results to next process according to sub-agents.md coordination specification
+
+3. **Work Plan Creation**
+   - Create work plan with work-planner
+   - Utilize deliverables from previous process according to sub-agents.md coordination specification
+   - Interact with user to complete plan and obtain approval for plan content
 
 **Think deeply** Create a work plan from the selected design document, clarifying specific implementation steps and risks.
 

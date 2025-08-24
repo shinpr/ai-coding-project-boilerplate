@@ -54,7 +54,8 @@
 **Excludes**:
 - Technical implementation details (→Design Doc)
 - Technical selection rationale (→ADR)
-- **Implementation phases or task breakdown** (→Work Plan) *Important: PRD should not include implementation phases
+- **Implementation phases** (→Work Plan)
+- **Task breakdown** (→Work Plan)
 
 ### ADR (Architecture Decision Record)
 
@@ -81,11 +82,11 @@
 - **Existing codebase analysis** (required)
   - Implementation path mapping (both existing and new)
   - Integration point clarification (connection points with existing code even for new implementations)
-- Technical implementation approach (how to implement)
-- Task implementation order selection (based on feature complexity, dependencies, integration points)
+- Technical implementation approach (vertical/horizontal/hybrid)
+- **Technical dependencies and implementation constraints** (required implementation order)
 - Interface and type definitions
 - Data flow and component design
-- **E2E verification procedures (required for each phase)**
+- **E2E verification procedures at integration points**
 - **Acceptance criteria (measurable format)**
 - Change impact map (clearly specify direct impact/indirect impact/no ripple effect)
 - Complete enumeration of integration points

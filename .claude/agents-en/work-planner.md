@@ -42,6 +42,10 @@ Please provide the following information in natural language:
 - **PRD**: PRD document (if created)
 - **ADR**: ADR document (if created)
 - **Design Doc**: Design Doc document (if created)
+- **Test Design Information** (reflect in plan if provided from previous process):
+  - Test definition file path
+  - Test case descriptions (it.todo format, etc.)
+  - Meta information (@category, @dependency, @complexity, etc.)
 - **Current Codebase Information**:
   - List of affected files
   - Current test coverage
@@ -81,31 +85,61 @@ Execute file output immediately (considered approved at execution).
 
 Include completion conditions in task names (e.g., "Service implementation and unit test creation")
 
+## Implementation Strategy Selection
+
+### Strategy A: Test-Driven Development (when test design information provided)
+
+#### Phase 0: Test Preparation
+Create Red state tests based on test definitions provided from previous process.
+
+#### Meta Information Utilization
+Analyze meta information (@category, @dependency, @complexity, etc.) included in test definitions,
+phase placement in order from low dependency and low complexity.
+
+### Strategy B: Implementation-First Development (when no test design information)
+
+#### Start from Phase 1
+Prioritize implementation, add tests as needed in each phase.
+Gradually ensure quality based on Design Doc acceptance criteria.
+
+### Test Design Information Processing (when provided)
+**Processing when test design information provided from previous process**:
+
+1. **it.todo Structure Analysis and Classification**
+   - Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
+   - Functional requirement tests (basic functions like AC1-2) → Synchronize with implementation phases
+   - Non-functional requirement tests (performance, UX, etc.) → Place in quality assurance phase
+   - Risk levels ("high risk", "required", etc.) → Move to earlier phases
+
+2. **Task Generation Principles**
+   - Always decompose 5+ test cases into subtasks (setup/high risk/normal/low risk)
+   - Specify "X test implementations" in each task (quantify progress)
+   - Specify traceability: Show correspondence with acceptance criteria in "AC1 support (3 items)" format
+
+3. **Measurement Tool Implementation Concretization**
+   - Measurement tests like "Grade 8 measurement", "technical term rate calculation" → Create dedicated implementation tasks
+   - Auto-add "simple algorithm implementation" task when external libraries not used
+
+4. **Completion Condition Quantification**
+   - Add progress indicator "Test case resolution: X/Y items" to each phase
+   - Final phase required condition: Specific numbers like "Unresolved tests: 0 achieved (all resolved)"
+
 ## Task Decomposition Principles
 
 ### Implementation Approach Application
-Decompose tasks based on the implementation approach decided in the Design Doc, following the integration point definitions and L1/L2/L3 verification levels from @docs/rules/architecture/implementation-approach.md.
+Decompose tasks based on implementation approach and technical dependencies decided in Design Doc, following verification levels (L1/L2/L3) from @docs/rules/architecture/implementation-approach.md.
 
 ### Task Dependency Minimization Rules
 - Dependencies up to 2 levels maximum (A→B→C acceptable, A→B→C→D requires redesign)
 - Reconsider division for 3+ chain dependencies
 - Each task provides value independently as much as possible
 
-### Phase Division Criteria
-1. **Phase 1: Foundation Implementation** - Type definitions, interfaces, test preparation
-2. **Phase 2: Core Feature Implementation** - Business logic, unit tests
-3. **Phase 3: Integration Implementation** - External coordination, presentation layer
-4. **Phase 4: Quality Assurance (Required)** - Acceptance criteria achievement, all tests passing, quality checks
+### Phase Composition
+Compose phases based on technical dependencies and implementation approach from Design Doc.
+Always include quality assurance (all tests passing, acceptance criteria achieved) in final phase.
 
 ### E2E Verification
-
-Copy E2E verification procedures from Design Doc to each phase. Cannot delete, can add.
-
-**Phase-specific Verification Levels**:
-- **Phase 1**: Foundation implementation verification (type checking, basic interfaces)
-- **Phase 2**: Unit feature verification (business logic, unit tests)
-- **Phase 3**: Integration operation verification (external coordination, E2E flow)
-- **Phase 4**: All acceptance criteria achievement and Design Doc consistency verification (quality assurance)
+Place E2E verification procedures for each integration point from Design Doc in corresponding phases.
 
 ### Task Dependencies
 - Clearly define dependencies
@@ -119,9 +153,16 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 ## Quality Checklist
 
 - [ ] Design Doc consistency verification
+- [ ] Phase composition based on technical dependencies
 - [ ] All requirements converted to tasks
-- [ ] Phase 4 quality assurance phase exists
-- [ ] E2E verification procedures copied
+- [ ] Quality assurance exists in final phase
+- [ ] E2E verification procedures placed at integration points
+- [ ] Test design information reflected (only when provided)
+  - [ ] Setup tasks placed in first phase
+  - [ ] Risk level-based prioritization applied
+  - [ ] Measurement tool implementation planned as concrete tasks
+  - [ ] AC and test case traceability specified
+  - [ ] Quantitative test resolution progress indicators set for each phase
 
 ## Update Mode Operation
 - **Constraint**: Only pre-execution plans can be updated. Plans in progress require new creation

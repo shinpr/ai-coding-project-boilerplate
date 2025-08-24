@@ -101,18 +101,18 @@ Must be performed when creating Design Doc:
    - Verification level for each task (L1/L2/L3 defined in @docs/rules/architecture/implementation-approach.md)
 
 ### Change Impact Map【Required】
-Must be included when creating Design Doc.
+Must be included when creating Design Doc:
 
 ```yaml
-Change Target: [Component/Feature to change]
+Change Target: UserService.authenticate()
 Direct Impact:
-  - [Files/Functions requiring direct changes]
-  - [Interface change locations]
+  - src/services/UserService.ts (method change)
+  - src/api/auth.ts (call site)
 Indirect Impact:
-  - [Data format changes]
-  - [Processing time changes]
+  - Session management (token format change)
+  - Log output (new fields added)
 No Ripple Effect:
-  - [Explicitly state unaffected features]
+  - Other services, DB structure
 ```
 
 ### Interface Change Impact Analysis【Required】
@@ -142,6 +142,18 @@ Define input/output between components (types, preconditions, guarantees, error 
 ### State Transitions (When Applicable)
 Document state definitions and transitions for stateful components.
 
+### Integration Boundary Contracts【Required】
+Define input/output, sync/async, and error handling at component boundaries in language-agnostic manner.
+
+```yaml
+Boundary Name: [Connection Point]
+  Input: [What is received]
+  Output: [What is returned (specify sync/async)]
+  On Error: [How to handle]
+```
+
+Confirm and document conflicts with existing systems (priority, naming conventions, etc.) to prevent integration inconsistencies.
+
 ## Required Information
 
 - **Operation Mode**:
@@ -168,40 +180,35 @@ Document state definitions and transitions for stateful components.
 ## Document Output Format
 
 ### ADR Creation (Multiple Option Comparison Mode)
-Present technical options in the following structured format:
 
-1. **Background and Problems to Solve**
-   - Explain technical challenges in 1-2 sentences
-   - List constraint conditions
+**Basic Structure**:
+```markdown
+# ADR-XXXX: [Title]
+Status: Proposed
 
-2. **Options Considered** (minimum 3 options)
+## Background
+[Technical challenges and constraints in 1-2 sentences]
 
-   **Option A: [Approach Name]**
-   - Overview: [Explain in one sentence]
-   - Benefits: [2-3 bullet points]
-   - Drawbacks: [2-3 bullet points]
-   - Effort: [Days]
-   - Main Risks: [1-2 items]
+## Options
+### Option A: [Approach Name]
+- Overview: [Explain in one sentence]
+- Benefits: [2-3 items]
+- Drawbacks: [2-3 items]
+- Effort: X days
 
-   **Option B: [Approach Name]**
-   - (Same format)
+### Option B/C: [Document similarly]
 
-   **Option C: [Approach Name]**
-   - (Same format)
+## Comparison
+| Evaluation Axis | Option A | Option B | Option C |
+|-----------------|----------|----------|----------|
+| Implementation Effort | 3 days | 5 days | 2 days |
+| Maintainability | High | Medium | Low |
 
-3. **Comparison Matrix**
+## Decision
+Option [X] selected. Reason: [2-3 sentences including trade-offs]
+```
 
-   | Evaluation Axis | Option A | Option B | Option C |
-   |-----------------|----------|----------|----------|
-   | Implementation Effort | X days | Y days | Z days |
-   | Maintainability | High/Med/Low | High/Med/Low | High/Med/Low |
-   | Extensibility | High/Med/Low | High/Med/Low | High/Med/Low |
-   | Risk | Low/Med/High | Low/Med/High | Low/Med/High |
-
-4. **Recommended Option and Rationale**
-   - Recommendation: Option [X]
-   - Main reasons: [Explain in 2-3 sentences]
-   - Trade-offs: [What was prioritized and what was compromised]
+See `docs/adr/template-en.md` for details.
 
 ### Normal Document Creation
 - **ADR**: `docs/adr/ADR-[4-digit number]-[title].md` (e.g., ADR-0001)
@@ -233,15 +240,8 @@ Execute file output immediately (considered approved at execution).
 
 ## Diagram Creation (using mermaid notation)
 
-### ADR Creation
-- **Option Comparison Diagram**: Visualize trade-offs of 3+ options
-- **Decision Impact Diagram**: Impact scope on architecture
-
-### Design Doc Creation
-- **Architecture Diagram**: Component structure and relationships
-- **Data Flow Diagram**: Data flow and transformations
-- **State Transition Diagram** (if state management exists): States and transition conditions
-- **Sequence Diagram** (for complex process flows): Chronological processing
+**ADR**: Option comparison diagram, decision impact diagram
+**Design Doc**: Architecture diagram and data flow diagram are mandatory. Add state transition diagram and sequence diagram for complex cases.
 
 ## Quality Checklist
 
@@ -258,6 +258,7 @@ Execute file output immediately (considered approved at execution).
 - [ ] **Agreement checklist completed** (most important)
 - [ ] **Prerequisite common ADRs referenced** (required)
 - [ ] **Change impact map created** (required)
+- [ ] **Integration boundary contracts defined** (required)
 - [ ] **Integration points completely enumerated** (required)
 - [ ] **Data contracts clarified** (required)
 - [ ] **E2E verification procedures for each phase** (required)
@@ -268,23 +269,12 @@ Execute file output immediately (considered approved at execution).
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
 - [ ] Latest best practices researched and references cited
 
-## Diagram Creation (using mermaid notation)
-
-When creating Design Docs, **Architecture Diagrams** and **Data Flow Diagrams** are mandatory. For complex designs, additionally use sequence diagrams, class diagrams, and state transition diagrams.
 
 ## Acceptance Criteria Creation Guidelines
 
-### Key Points for Feature Acceptance Criteria
-
-1. **Specificity**: Avoid ambiguous expressions, specify concrete behaviors and results
-   - Poor example: "Login works correctly"
-   - Good example: "Clicking login button with correct credentials navigates to dashboard screen"
-
-2. **Verifiability**: Set conditions that can be confirmed through testing
-   - Confirm each condition can be converted to test cases
-   - Prioritize formats verifiable through automated testing
-
-3. **Comprehensiveness**: Cover both happy and unhappy paths
+**Principle**: Set specific, verifiable conditions. Avoid ambiguous expressions, document in format convertible to test cases.
+**Example**: "Login works" → "After authentication with correct credentials, navigates to dashboard screen"
+**Comprehensiveness**: Cover happy path, unhappy path, and edge cases. Define non-functional requirements in separate section.
    - Expected behavior (happy path)
    - Error handling (unhappy path)
    - Edge cases
@@ -307,17 +297,17 @@ When creating Design Docs, **Architecture Diagrams** and **Data Flow Diagrams** 
    - When considering improvements to existing patterns
 
 ### Research Method
-1. Use WebSearch tool to search for:
-   - `[technology] best practices 2024/2025`
-   - `[technology] vs [alternative] comparison`
-   - `[problem domain] solution architecture`
-   - Latest version of official documentation
 
-2. Priority of reliable sources:
-   - Official documentation
-   - Engineering blogs from major tech companies
-   - Implementation examples from notable OSS projects
-   - Highly rated answers on Stack Overflow (verify multiple)
+**Required Research Timing**: New technology introduction, performance optimization, security design, major version upgrades
+
+**Specific Search Pattern Examples**:
+- `React Server Components best practices 2024` (new feature research)
+- `PostgreSQL vs MongoDB performance comparison 2024` (technology selection)
+- `microservices authentication patterns` (design patterns)
+- `Node.js v20 breaking changes migration guide` (version upgrade)
+- `[framework name] official documentation` (official information)
+
+**Citation**: Add "## References" section at end of ADR/Design Doc with URLs and descriptions
 
 ### Citation Format
 
