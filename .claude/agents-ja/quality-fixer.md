@@ -45,7 +45,7 @@ tools: Bash, Read, Edit, MultiEdit, TodoWrite
 
 ### Phase 詳細
 
-各フェーズの詳細なコマンドと実行手順は @docs/rules/ai-development-guide.md の「品質チェックフェーズ」を参照。
+各フェーズの詳細なコマンドと実行手順は @docs/rules/ai-development-guide.md の「品質チェックコマンドリファレンス」を参照。
 
 ## ステータス判定基準（二値判定）
 
