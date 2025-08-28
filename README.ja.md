@@ -153,6 +153,7 @@ Claude Codeで使える便利なコマンド一覧
 | `/task` | ルールベース実行 | 単一タスク実行時 |
 | `/review` | Design Doc準拠検証 | 実装完了後の検証 |
 | `/rule-maintenance` | ルール管理 | ルール追加・更新時 |
+| `/project-inject` | プロジェクトコンテキスト注入 | ボイラープレート利用開始時 |
 | `/onboard` | ルール読み込み | プロジェクト開始時 |
 
 詳細は `.claude/commands/` 内の各定義ファイルを参照してください。
@@ -170,20 +171,26 @@ npm install
 
 ### プロジェクト固有の設定
 
+プロジェクトに合わせたコンテキスト設定を行います：
+
+```bash
+# 1. Claude Codeでプロジェクトコンテキストを注入
+/project-inject
+
+# このコマンドが対話的に以下を収集・設定します：
+# - プロジェクトが解決する問題
+# - ターゲットユーザーと利用シーン
+# - ビジネス制約と開発体制
+# → docs/rules/project-context.md を自動更新
+```
+
 ```json
-// package.json
+// 2. package.json の基本情報を更新（必要に応じて）
 {
   "name": "your-project-name",
   "description": "プロジェクトの説明",
   "author": "あなたの名前"
 }
-```
-
-```bash
-# docs/rules-ja/project-context.md のプレースホルダーを置き換え
-# [プロジェクト名] → 実際のプロジェクト名
-# [プロダクト名をここに記載] → 実際のプロダクト名
-# [ターゲットユーザーの職種をここに記載] → 実際のターゲット
 ```
 
 ## 💻 開発コマンド
@@ -288,10 +295,11 @@ A: quality-fixerが修正を試みます。自動修正できない場合は、�
 A: `npm run lang:ja`（日本語）または`npm run lang:en`（英語）で切り替え。
 
 ### Q: カスタマイズ方法は？
-A: `docs/rules/project-context.md`のプレースホルダーを置き換えるだけ。
+A: `/project-inject`コマンドを実行して、対話的にプロジェクトコンテキストを設定。
 
 ### Q: Claude Codeでの開発手順は？
-A: 1) ルールファイルを読み込み → 2) 計画立案・承認 → 3) 実装 → 4) 品質チェック → 5) コミット
+A: 【初回】1) `/project-inject`でコンテキスト設定 → 2) `/onboard`でルール読み込み
+   【開発】3) `/implement`または`/task`で実装 → 4) 品質チェック → 5) コミット
 
 ## 📄 ライセンス
 
