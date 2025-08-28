@@ -132,6 +132,7 @@ Powerful commands available in Claude Code
 | `/task` | Rule-based execution | Single task execution |
 | `/review` | Design Doc compliance check | Post-implementation validation |
 | `/rule-maintenance` | Rule management | Adding/updating rules |
+| `/project-inject` | Inject project context | When starting with boilerplate |
 | `/onboard` | Load project rules | Project initialization |
 
 See individual definition files in `.claude/commands/` for details.
@@ -149,20 +150,26 @@ npm install
 
 ### Project Configuration
 
+Configure project-specific context for your project:
+
+```bash
+# 1. Inject project context using Claude Code
+/project-inject
+
+# This command interactively collects and configures:
+# - The problem your project solves
+# - Target users and usage scenarios  
+# - Business constraints and development structure
+# → Automatically updates docs/rules/project-context.md
+```
+
 ```json
-// package.json
+// 2. Update package.json basics (if needed)
 {
   "name": "your-project-name",
   "description": "Your project description",
   "author": "Your name"
 }
-```
-
-```bash
-# Replace placeholders in docs/rules/project-context.md
-# [Project Name] → Your actual project name
-# [Product Name Here] → Your actual product name
-# [Target User Role Here] → Your actual target users
 ```
 
 ## 💻 Development Commands
@@ -290,10 +297,11 @@ A: quality-fixer attempts automatic fixes. If it can't resolve them, it provides
 A: Run `npm run lang:ja` (Japanese) or `npm run lang:en` (English).
 
 ### Q: How do I customize the boilerplate?
-A: Replace placeholders in `docs/rules/project-context.md`.
+A: Run `/project-inject` to interactively configure project context.
 
 ### Q: What's the Claude Code development workflow?
-A: 1) Load rules → 2) Plan & approve → 3) Implement → 4) Quality check → 5) Commit
+A: [Initial] 1) `/project-inject` for context setup → 2) `/onboard` to load rules
+   [Development] 3) `/implement` or `/task` to build → 4) Quality check → 5) Commit
 
 ## 📄 License
 
