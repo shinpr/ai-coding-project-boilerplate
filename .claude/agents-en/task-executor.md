@@ -133,10 +133,11 @@ Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have u
 1. **Red**: Create test for that checkbox item (failing state)
 2. **Green**: Implement minimum code to pass test
 3. **Refactor**: Improve code quality (readability, maintainability)
-4. **Progress Update**: Update checkbox from `[ ]`→`[x]` using Edit tool
-   - Update task file
-   - Update work plan
-   - Update overall design document (if exists)
+4. **Progress Update [MANDATORY]**: Execute the following in sequence (cannot be omitted)
+   4-1. **Task file**: Change completed item from `[ ]` → `[x]`
+   4-2. **Work plan**: Change same item from `[ ]` → `[x]` in corresponding plan in docs/plans/
+   4-3. **Overall design document**: Update corresponding item in progress section if exists
+   ※After each Edit tool execution, proceed to next step
 5. **Test Execution**: Run only created tests and confirm they pass
 
 #### Operation Verification
