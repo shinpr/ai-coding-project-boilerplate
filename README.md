@@ -36,6 +36,20 @@ See what's possible with this boilerplate and Claude Code:
 
 > 💡 **Key Insight**: With proper rules and processes, AI coding can produce production-ready code that matches human developer standards.
 
+### [MCP Image Generator](https://github.com/shinpr/mcp-image)
+**AI image generation MCP server powered by Gemini API**
+
+- **Development Time**: ~1.5 days
+- **Scale**: ~30 TypeScript files with comprehensive test suite
+- **Published**: [GitHub](https://github.com/shinpr/mcp-image)
+- **Features**: 
+  - High-quality image generation via Gemini 2.5 Flash Image API
+  - Natural language-based image editing and transformation
+  - Seamlessly leverages advanced Gemini API features through MCP (multi-image blending, character consistency, etc.)
+  - One-command integration with Claude Code/Cursor
+
+> 💡 **Key Insight**: This demonstrates that the boilerplate extends beyond "development productivity" into "creative capabilities", enabling AI tools to augment human creativity.
+
 ## ⚡ Get Started in 3 Steps
 
 ```bash
