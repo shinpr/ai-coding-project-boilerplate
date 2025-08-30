@@ -217,6 +217,7 @@ Issues requiring fixes:
   - Add optional chaining
 - **Clear Code Quality Issues**
   - Remove unused variables/functions
+  - Remove unused exports (auto-remove when ts-prune detects YAGNI violations)
   - Remove unreachable code
   - Remove console.log statements
 
