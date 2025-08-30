@@ -1,6 +1,6 @@
 {
   "name": "ai-coding-project-boilerplate",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "TypeScript project boilerplate optimized for Claude Code development with comprehensive development rules, architecture patterns, and quality assurance tools",
   "main": "dist/index.js",
   "keywords": [
@@ -39,7 +39,8 @@
     "lint:fix": "biome lint --write src",
     "check": "biome check src",
     "check:fix": "biome check --write src",
-    "check:unused": "ts-prune --project tsconfig.json --ignore 'src/index.ts|__tests__|test|vitest'",
+    "check:unused": "node scripts/check-unused-exports.js",
+    "check:unused:all": "ts-prune --project tsconfig.json --ignore 'src/index.ts|__tests__|test|vitest'",
     "check:deps": "madge --circular --extensions ts src",
     "check:deps:graph": "madge --extensions ts --image graph.svg src",
     "check:all": "npm run check && npm run lint && npm run format:check && npm run check:unused && npm run check:deps && npm run build && npm run test",
