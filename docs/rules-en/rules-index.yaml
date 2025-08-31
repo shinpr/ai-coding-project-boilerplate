@@ -42,6 +42,8 @@ rules:
       - "Test Design Principles"
       - "Test Helper Utilization Rules"
       - "Test Implementation Conventions"
+      - "Test Granularity Principles"
+      - "Mock Type Safety Enforcement"
       - "Basic Vitest Example"
 
   ai-development-guide:
