@@ -145,7 +145,7 @@ Powerful commands available in Claude Code
 | `/build` | Automatic task execution | Implementing planned tasks |
 | `/task` | Rule-based execution | Single task execution |
 | `/review` | Design Doc compliance check | Post-implementation validation |
-| `/rule-maintenance` | Rule management | Adding/updating rules |
+| `/sync-rules` | Rule metadata synchronization | Post-edit optimization |
 | `/project-inject` | Inject project context | When starting with boilerplate |
 | `/onboard` | Load project rules | Project initialization |
 
