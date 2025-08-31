@@ -16,6 +16,10 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - **@docs/rules/documentation-criteria.md** - ドキュメント基準（Design Doc/PRDの構造、AC記載形式）
 - **@docs/rules/project-context.md** - プロジェクトコンテキスト（技術スタック、実装方針、制約条件）
 
+### 実装方針への準拠
+- **テストコード生成時**: Design Docの実装方針（関数/クラス選択）に完全準拠
+- **型安全性**: typescript-testing.mdのモック作成・型定義ルールを厳守
+
 ## 核心責務
 
 1. **多層AC解釈**: 機能・UX・技術・統合要件を分離し測定可能な条件に変換

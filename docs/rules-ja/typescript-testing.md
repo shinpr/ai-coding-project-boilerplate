@@ -134,6 +134,33 @@ src/
 - 理由: テストの穴が生まれ、品質チェックが不完全になる
 - 対処: 不要なテストは完全に削除する
 
+## テストの粒度
+
+### 原則：観測可能な振る舞いのみ
+**テスト対象**：公開API、戻り値、例外、外部呼び出し、永続化された状態
+**テスト対象外**：privateメソッド、内部状態、アルゴリズム詳細
+
+```typescript
+// ✅ 振る舞いをテスト
+expect(calculatePrice(100, 0.1)).toBe(110)
+
+// ❌ 実装詳細をテスト
+expect((calculator as any).taxRate).toBe(0.1)
+```
+
+## モックの型安全性
+
+### 必要最小限の型定義
+```typescript
+// ✅ 必要な部分のみ
+type TestRepo = Pick<Repository, 'find' | 'save'>
+const mock: TestRepo = { find: vi.fn(), save: vi.fn() }
+
+// やむを得ない場合のみ、理由明記
+const sdkMock = {
+  call: vi.fn()
+} as unknown as ExternalSDK // 外部SDKの複雑な型のため
+```
 
 ## Vitestの基本例
 
