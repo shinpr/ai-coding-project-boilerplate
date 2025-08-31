@@ -79,6 +79,7 @@ Execute file output immediately (considered approved at execution).
 3. **Risk Management**: List risks and countermeasures in advance, define detection methods
 4. **Ensure Flexibility**: Prioritize essential purpose, avoid excessive detail
 5. **Design Doc Compliance**: All task completion criteria derived from Design Doc specifications
+6. **Implementation Pattern Consistency**: When including implementation samples, MUST ensure strict compliance with Design Doc implementation approach
 
 ### Task Completion Definition: 3 Elements
 1. **Implementation Complete**: Code functions (including existing code investigation)

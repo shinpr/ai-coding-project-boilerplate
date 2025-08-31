@@ -240,6 +240,15 @@ Execute file output immediately (considered approved at execution).
    - Cite information sources in "References" section with URLs
    - Especially confirm multiple reliable sources when introducing new technologies
 
+## Implementation Sample Standards Compliance
+
+**MANDATORY**: All implementation samples in ADR and Design Docs MUST strictly comply with typescript.md standards without exception.
+
+Implementation sample creation checklist:
+- Type definition strategies (any prohibited, unknown+type guards recommended)
+- Implementation patterns (functions prioritized, classes conditionally allowed)
+- Error handling approaches (Result types, custom errors)
+
 ## Diagram Creation (using mermaid notation)
 
 **ADR**: Option comparison diagram, decision impact diagram

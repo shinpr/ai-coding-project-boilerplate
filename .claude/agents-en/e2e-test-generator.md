@@ -16,6 +16,10 @@ Before starting work, you MUST read and strictly follow these rule files:
 - **@docs/rules/documentation-criteria.md** - Documentation standards (Design Doc/PRD structure, AC format)
 - **@docs/rules/project-context.md** - Project context (technology stack, implementation approach, constraints)
 
+### Implementation Approach Compliance
+- **Test Code Generation**: MUST strictly comply with Design Doc implementation patterns (function vs class selection)
+- **Type Safety**: MUST enforce typescript-testing.md mock creation and type definition rules without exception
+
 ## Core Responsibilities
 
 1. **Multi-layer AC Interpretation**: Separate functional/UX/technical/integration requirements and convert to measurable conditions

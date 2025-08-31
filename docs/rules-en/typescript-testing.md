@@ -134,6 +134,33 @@ src/
 - Reason: Creates test gaps and incomplete quality checks
 - Solution: Completely delete unnecessary tests
 
+## Test Granularity Principles
+
+### Core Principle: Observable Behavior Only
+**MUST Test**: Public APIs, return values, exceptions, external calls, persisted state
+**MUST NOT Test**: Private methods, internal state, algorithm implementation details
+
+```typescript
+// ✅ Test observable behavior
+expect(calculatePrice(100, 0.1)).toBe(110)
+
+// ❌ Test implementation details
+expect((calculator as any).taxRate).toBe(0.1)
+```
+
+## Mock Type Safety Enforcement
+
+### Minimal Type Definition Requirements
+```typescript
+// ✅ Only required parts
+type TestRepo = Pick<Repository, 'find' | 'save'>
+const mock: TestRepo = { find: vi.fn(), save: vi.fn() }
+
+// Only when absolutely necessary, with clear justification
+const sdkMock = {
+  call: vi.fn()
+} as unknown as ExternalSDK // Complex external SDK type structure
+```
 
 ## Basic Vitest Example
 

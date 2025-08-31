@@ -97,6 +97,9 @@ Decompose tasks based on implementation strategy patterns determined in @docs/ru
    - Concrete implementation steps
    - Completion criteria
 
+6. **Implementation Pattern Consistency**
+   When including implementation samples, MUST ensure strict compliance with the Design Doc implementation approach that forms the basis of the work plan
+
 ## Task File Template
 
 ```markdown
