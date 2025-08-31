@@ -31,6 +31,7 @@ Load and follow these rule files before starting:
 - Practice TDD and create test structure with testing rules
 - Select tools and libraries with technical specifications
 - Verify requirement compliance with project context
+- **MUST strictly adhere to task file implementation patterns (function vs class selection)**
 
 ## Mandatory Judgment Criteria (Pre-implementation Check)
 

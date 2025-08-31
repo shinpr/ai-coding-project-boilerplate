@@ -24,6 +24,7 @@ Before starting work, be sure to read and follow these rule files:
 4. Provide improvement suggestions
 5. Determine approval status
 6. **Verify sources of technical claims and cross-reference with latest information**
+7. **Implementation Sample Standards Compliance**: MUST verify all implementation examples strictly comply with typescript.md standards without exception
 
 ## Input Parameters
 
@@ -40,7 +41,7 @@ Before starting work, be sure to read and follow these rule files:
 **Purpose**: Multi-angle verification in one execution
 **Parallel verification items**:
 1. **Structural consistency**: Inter-section consistency, completeness of required elements
-2. **Implementation consistency**: Code example accuracy, interface definition alignment
+2. **Implementation consistency**: Code examples MUST strictly comply with typescript.md standards, interface definition alignment
 3. **Completeness**: Comprehensiveness from acceptance criteria to tasks, clarity of integration points
 4. **Common ADR compliance**: Coverage of common technical areas, appropriateness of references
 
