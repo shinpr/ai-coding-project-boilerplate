@@ -92,8 +92,12 @@ Include completion conditions in task names (e.g., "Service implementation and u
 
 ### Strategy A: Test-Driven Development (when test design information provided)
 
-#### Phase 0: Test Preparation
-Create Red state tests based on test definitions provided from previous process.
+#### Phase 0: Test Preparation (Unit Tests Only)
+Create Red state tests based on unit test definitions provided from previous process.
+
+**Handling of E2E/Integration Tests**:
+E2E tests by nature cannot be verified without implementation, therefore Red-Green-Refactor process is not applied.
+When the relevant feature implementation is complete and behavior verification is possible, conduct behavior verification and issue resolution simultaneously.
 
 #### Meta Information Utilization
 Analyze meta information (@category, @dependency, @complexity, etc.) included in test definitions,
@@ -110,7 +114,8 @@ Gradually ensure quality based on Design Doc acceptance criteria.
 
 1. **it.todo Structure Analysis and Classification**
    - Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
-   - Functional requirement tests (basic functions like AC1-2) → Synchronize with implementation phases
+   - Unit tests (individual functions) → Start from Phase 0 with Red-Green-Refactor
+   - E2E/Integration tests → Place as behavior verification tasks when relevant feature implementation is complete
    - Non-functional requirement tests (performance, UX, etc.) → Place in quality assurance phase
    - Risk levels ("high risk", "required", etc.) → Move to earlier phases
 

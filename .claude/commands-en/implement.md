@@ -68,6 +68,12 @@ DO NOT invoke rule-advisor under any circumstances (Task tool rule-advisor speci
 
 **NO OMISSION**: Skipping this cycle guarantees implementation quality failure
 
+### E2E Test Information Communication
+After e2e-test-generator execution, when calling work-planner, communicate:
+- Generated test file path
+- Explicit test type (E2E integration test)
+- Note that Red-Green-Refactor process is not used
+
 ## Responsibility Boundaries
 
 **This Command's Responsibility**: Orchestrate sub-agents through the complete implementation lifecycle

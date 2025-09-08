@@ -262,8 +262,8 @@ Stop autonomous execution and escalate to user in the following cases:
    - **Always pass deliverables from previous process to next agent**
    - After e2e-test-generator execution, pass integration test information to work-planner:
      "Integration test skeleton: [generated file path]
-      Test items: [list of each it.todo description]
-      Please incorporate these into the work plan"
+      Test type: E2E integration test
+      Note: E2E tests do not use Red-Green-Refactor process"
    - Extract necessary information from structured responses
    - Compose commit messages from changeSummary → **Execute git commit with Bash**
    - Explicitly integrate initial and additional requirements when requirements change
