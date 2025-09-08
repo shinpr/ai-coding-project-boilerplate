@@ -8,19 +8,25 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
+## 📚 ドキュメント＆ガイド
+
+初めての方は**[クイックスタートガイド](docs/guides/ja/quickstart.md)**で5分でセットアップから最初の機能実装まで体験できます。日常的な開発でサッと参照する**[ユースケース別クイックリファレンス](docs/guides/ja/use-cases.md)**も用意しています。
+
+このツールの背景や思想について知りたい方は、[設計書駆動で品質を保証する「Agentic Coding」実践ガイド](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)をご覧ください。
+
 ## 🚀 コンテキスト枯渇を防ぐSub agents - 大規模プロジェクトでも安定した開発を実現
 
-AIコーディングの課題「コンテキスト枯渇による品質低下」をSub agentsの連携で改善。長時間の作業でも安定した開発をサポートします。
+AIコーディングの課題「コンテキスト枯渇による品質低下」をSub agents（サブエージェント）の連携で改善。長時間の作業でも安定した開発をサポートします。
 
 ## 📸 デモ
 
 ![Demo](./.github/assets/demo.gif)
 
-*Sub agentsを活用したプロダクション品質のTypeScriptプロジェクト作成*
+*Sub agents（サブエージェント）を活用したプロダクション品質のTypeScriptプロジェクト作成*
 
 ## 🎯 このボイラープレートで作成されたプロジェクト例
 
-実際にこのボイラープレートとClaude Codeを使用して開発されたプロジェクトをご紹介します。
+実際にこのボイラープレートで作られたプロジェクトです。
 
 ### [Sub agents MCP Server](https://github.com/shinpr/sub-agents-mcp)
 **MCP経由でClaude Code/Cursor CLIをサブエージェント的に呼び出せるサーバー**
@@ -34,7 +40,7 @@ AIコーディングの課題「コンテキスト枯渇による品質低下」
   - 3分でセットアップ可能な簡単インストール
   - プロダクション品質のコード（テスト、型定義、CI/CD完備）
 
-> 💡 **ポイント**: 適切なルールとプロセスがあれば、AIコーディングでもプロダクションレベルのコード作成をサポートできます。
+> 💡 適切なルールとプロセスがあれば、AIコーディングでもプロダクションレベルのコードを作成できます。
 
 ### [MCP Image Generator](https://github.com/shinpr/mcp-image)
 **Gemini APIを活用したAI画像生成MCPサーバー**
@@ -48,7 +54,7 @@ AIコーディングの課題「コンテキスト枯渇による品質低下」
   - Gemini APIの先進機能をMCP経由でシームレスに活用（マルチ画像ブレンディング、キャラクター一貫性維持など）
   - Claude Code/Cursorへワンコマンドで統合可能
 
-> 💡 **ポイント**: AIツールの「開発効率化」だけでなく「創造性拡張」の領域でも、このボイラープレートが活用できることを実証しています。
+> 💡 開発効率化だけでなく、創造性拡張の領域でも活用できます。
 
 ## ⚡ 3ステップで開発開始
 
@@ -80,25 +86,15 @@ npm run lang:en
 npm run lang:status
 ```
 
-言語を切り替えると、以下が自動的に更新されます
-- `CLAUDE.md` - Claude Code設定ファイル
-- `docs/rules/` - 開発ルール
-- `.claude/agents/` - Sub agents定義
-- `.claude/commands/` - スラッシュコマンド
+言語を切り替えると、Claude Code設定ファイル（CLAUDE.md）、開発ルール（docs/rules/）、サブエージェント定義（.claude/agents/）、カスタムスラッシュコマンド（.claude/commands/）が自動更新されます。
 
-## 🎯 なぜSub agentsなのか？
+## 🎯 なぜサブエージェントなのか？
 
-### 従来のAIコーディングの問題
-- ❌ **コンテキスト枯渇**: 長時間の作業でAIが前の内容を忘れる
-- ❌ **品質低下**: タスクが進むにつれて実装精度が落ちる
-- ❌ **セッション切り替え**: 大規模タスクで頻繁な再起動が必要
+従来のAIコーディングでは、長時間の作業によってAIが作業途中の内容を忘れたり、auto-compactが実行されコンテキストが欠落する「コンテキスト枯渇」、タスクが進むにつれて実装精度が落ちる「品質低下」、といった問題が発生していました。
 
-### Sub agentsによる改善アプローチ
-- ✅ **専門エージェントが独立動作**: 各タスクを専門AIが新鮮な状態で処理
-- ✅ **品質の安定性向上**: 長時間の作業でも品質低下を抑制
-- ✅ **大規模プロジェクト対応**: セッション切り替えの頻度を削減
+サブエージェントを活用することでこれらを改善できます。各タスクを専門のAIエージェントが必要なコンテキストだけを得た状態で処理でき、長時間の作業でも品質低下を抑制し、大規模プロジェクトでもセッション切り替えの頻度を削減できます。
 
-## 🤖 利用可能なSub agents一覧
+## 🤖 利用可能なサブエージェント一覧
 
 専門タスクごとに独立したAIエージェントが動作。コンテキスト枯渇を緩和します
 
@@ -123,8 +119,8 @@ npm run lang:status
 ```
 ai-coding-project-boilerplate/
 ├── .claude/
-│   ├── agents-ja/          # Sub agents定義（日本語）⭐
-│   ├── agents-en/          # Sub agents定義（英語）
+│   ├── agents-ja/          # サブエージェント定義（日本語）⭐
+│   ├── agents-en/          # サブエージェント定義（英語）
 │   ├── commands-ja/        # スラッシュコマンド（日本語）⭐
 │   └── commands-en/        # スラッシュコマンド（英語）
 ├── docs/
@@ -134,9 +130,13 @@ ai-coding-project-boilerplate/
 │   │   └── rules-index.yaml  # ルールファイルのインデックス
 │   ├── guides/
 │   │   ├── ja/
-│   │   │   └── sub-agents.md  # Sub agents実践ガイド
+│   │   │   ├── quickstart.md     # クイックスタートガイド
+│   │   │   ├── use-cases.md      # コマンドチートシート
+│   │   │   └── sub-agents.md     # サブエージェント実践ガイド
 │   │   └── en/
-│   │       └── sub-agents.md  # Sub agents実践ガイド
+│   │       ├── quickstart.md     # Quick Start Guide
+│   │       ├── use-cases.md      # Use Cases Guide
+│   │       └── sub-agents.md     # Sub-agents Practice Guide
 │   ├── adr/               # アーキテクチャ決定記録
 │   ├── design/            # 設計ドキュメント
 │   ├── plans/             # 作業計画書（git管理外）
@@ -166,6 +166,7 @@ Claude Codeで使える便利なコマンド一覧
 | `/build` | タスク自動実行 | 計画済みタスクの実装 |
 | `/task` | ルールベース実行 | 単一タスク実行時 |
 | `/review` | Design Doc準拠検証 | 実装完了後の検証 |
+| `/refine-rule` | ルール変更要求を精度最大化して実装 | ルール改善・明確化時 |
 | `/sync-rules` | ルールメタデータ同期 | ルール編集後の最適化 |
 | `/project-inject` | プロジェクトコンテキスト注入 | ボイラープレート利用開始時 |
 | `/onboard` | ルール読み込み | プロジェクト開始時 |
@@ -185,16 +186,10 @@ npm install
 
 ### プロジェクト固有の設定
 
-プロジェクトに合わせたコンテキスト設定を行います：
-
 ```bash
-# 1. Claude Codeでプロジェクトコンテキストを注入
+# Claude Codeでプロジェクトコンテキストを注入
 /project-inject
-
-# このコマンドが対話的に以下を収集・設定します：
-# - プロジェクトが解決する問題
-# - ターゲットユーザーと利用シーン
-# - ビジネス制約と開発体制
+# プロジェクトの背景情報を対話的に設定
 # → docs/rules/project-context.md を自動更新
 ```
 
@@ -229,10 +224,10 @@ npm run check:deps  # 循環依存チェック
 
 ### 推奨ワークフロー
 
-1. **初回ルール読み込み**: タスク開始時に必要なルールファイル（`docs/rules/`）を読み込む
-2. **実装前確認**: Edit/Write/MultiEdit操作前にユーザー確認を推奨
-3. **段階的品質チェック**: Phase 1-6の段階的品質チェックを実施
-4. **Sub agents活用**: 専門的なタスクでSub agentsを活用
+1. 初回ルール読み込み: タスク開始時に必要なルールファイル（`docs/rules/`）を読み込む
+2. 実装前確認: Edit/Write/MultiEdit操作前にユーザー確認を推奨
+3. 段階的品質チェック: Phase 1-6の段階的品質チェックを実施
+4. サブエージェント活用: 専門的なタスクでサブエージェントを活用
 
 ### Claude Code開発プロセス
 
@@ -252,31 +247,23 @@ graph TD
 
 [設計書駆動で品質を保証する「Agentic Coding」実践ガイド](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)
 
-このボイラープレートの詳しい使い方と、なぜこのような仕組みになっているのかをまとめた記事です。Sub agentsやContext Engineeringの実装背景も含めて解説しています。
+このボイラープレートの詳しい使い方と実装背景をまとめた記事です。
 
 ## 📋 開発ルール概要
 
 ### 基本方針
-- **推奨形式**: 禁止事項をメリット・デメリット付きで説明（LLM理解促進）
-- **柔軟な実装選択**: プロジェクトの要件に応じて調整可能
-- **段階的品質保証**: 6段階の体系的品質チェックプロセス
-- **Sub agents連携**: 専門タスクでSub agentsを活用
+
+禁止事項をメリット・デメリット付きで説明することでLLMの理解を促進。プロジェクトの要件に応じて柔軟に調整可能で、6段階の体系的品質チェックプロセスとサブエージェント連携により品質を保証します。
 
 ### 主要ルール
-- ✅ **推奨**: unknown型+型ガード（型安全性確保）
-- ❌ **避けるべき**: any型使用（型チェック無効化のため）
-- ✅ **推奨**: テストファースト開発（Red-Green-Refactor）
-- ❌ **避けるべき**: コメントアウト（バージョン管理で履歴管理）
-- ✅ **推奨**: YAGNI原則（現在必要な機能のみ実装）
+
+unknown型+型ガードで型安全性を確保し、any型は避ける。テストファースト開発（Red-Green-Refactor）を基本とし、コメントアウトではなくバージョン管理で履歴管理。YAGNI原則に従い現在必要な機能のみ実装します。
 
 ## 🧪 AIがサポートする品質保証
 
 ### AIを活用した品質チェック
 
-Sub agentsが品質チェックをサポート
-- **task-executor** がTDD（Red-Green-Refactor）で実装、追加したテストのパスまで対応
-- **quality-fixer** が型エラー、lint修正、全テストパスまで自律的に完遂
-- **code-reviewer** が実装の完全性を検証
+サブエージェントが品質チェックをサポート。task-executorがTDD（Red-Green-Refactor）で実装し、quality-fixerが型エラーやlintを修正、code-reviewerが実装の完全性を検証します。
 
 ### 手動で確認したい場合
 
@@ -290,30 +277,27 @@ npm run check:all           # 全品質チェック（型、lint、テスト、�
 
 ### Claude Code向けアーキテクチャパターン
 
-AIコーディングに適したアーキテクチャパターンを用意
-- **Layered Architecture**: 明確な責務分離、企業開発向け  
-- **Vertical Slice Architecture**: 1機能1ファイル、コンテキスト効率を重視
-- **Hybrid Progressive Architecture**: 小規模から大規模への段階的進化
+AIコーディングに適した3つのアーキテクチャパターンを用意。Layered Architecture（明確な責務分離、企業開発向け）、Vertical Slice Architecture（1機能1ファイル、コンテキスト効率重視）、Hybrid Progressive Architecture（小規模から大規模への段階的進化）から選択できます。
 
 詳細は`docs/rules/architecture/`を参照してください。
 
 ## 🤔 よくある質問
 
-### Q: Sub agentsはどう使う？
-A: `/implement`や`/task`コマンドで呼び出せます。適切なタイミングで専門エージェントが起動します。
+**Q: サブエージェントはどう使う？**  
+`/implement`コマンドなどで呼び出せます。もちろん、サブエージェント名をプロンプトに含めることで明示的に呼び出すことができます。
 
-### Q: エラーが発生したら？
-A: quality-fixerが修正を試みます。自動修正できない場合は、具体的な対処法をご案内します。
+**Q: エラーが発生したら？**  
+quality-fixerが修正を試みます。自動修正できない場合は、具体的な対処法を案内します。
 
-### Q: 言語の切り替え方法は？
-A: `npm run lang:ja`（日本語）または`npm run lang:en`（英語）で切り替え。
+**Q: 言語の切り替え方法は？**  
+`npm run lang:ja`（日本語）または`npm run lang:en`（英語）で切り替え。
 
-### Q: カスタマイズ方法は？
-A: `/project-inject`コマンドを実行して、対話的にプロジェクトコンテキストを設定。
+**Q: カスタマイズ方法は？**  
+`/project-inject`コマンドを実行して、対話的にプロジェクトコンテキストを設定。
 
-### Q: Claude Codeでの開発手順は？
-A: 【初回】1) `/project-inject`でコンテキスト設定 → 2) `/onboard`でルール読み込み
-   【開発】3) `/implement`または`/task`で実装 → 4) 品質チェック → 5) コミット
+**Q: Claude Codeでの開発手順は？**  
+初回：`/project-inject`でコンテキスト設定 → `/onboard`でルール読み込み  
+開発：`/implement`または`/task`で実装 → 品質チェック → コミット
 
 ## 📄 ライセンス
 
@@ -321,7 +305,7 @@ MIT License - 自由に使用・改変・配布可能
 
 ## 🎯 このボイラープレートについて
 
-AI コーディングプロジェクト ボイラープレートは、Claude CodeとSub agentsを活用したTypeScript開発をサポートするボイラープレートです。日本語・英語の両言語に対応し、AIコーディングの第一歩を支援します。
+Claude CodeとSub agentsを活用したTypeScript開発をサポートするボイラープレート。日本語・英語の両言語に対応。
 
 ---
 
