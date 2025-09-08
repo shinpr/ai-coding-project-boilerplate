@@ -8,9 +8,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
-## 🚀 Beat Context Exhaustion with Sub agents - Production-Ready AI Development at Scale
+## 📚 Documentation & Guides
 
-Sub agents orchestration solves the #1 problem in AI coding: context exhaustion. Maintain consistent quality across large projects with specialized agents handling each task independently.
+Get started with the **[Quick Start Guide](docs/guides/en/quickstart.md)** - build your first feature in 5 minutes. For a quick command reference, see the **[Use Cases Quick Reference](docs/guides/en/use-cases.md)**.
+
+Learn about the design philosophy in [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
+
+## 🚀 Beat Context Exhaustion with Sub agents
+
+Sub agents solve AI coding's biggest challenge: context exhaustion. Maintain quality across large projects with specialized agents handling each phase. Each Sub agents focuses on a specific phase, from design to implementation, ensuring high-quality results throughout the development lifecycle.
 
 ## 📸 Quick Demo
 
@@ -113,9 +119,13 @@ ai-coding-project-boilerplate/
 │   │   └── rules-index.yaml  # Rule file index
 │   ├── guides/
 │   │   ├── en/
-│   │   │   └── sub-agents.md  # Sub agents practical guide
+│   │   │   ├── quickstart.md     # Quick Start Guide
+│   │   │   ├── use-cases.md      # Command Cheatsheet
+│   │   │   └── sub-agents.md     # Sub agents Practice Guide
 │   │   └── ja/
-│   │       └── sub-agents.md  # Sub agents practical guide
+│   │       ├── quickstart.md     # Quick Start Guide
+│   │       ├── use-cases.md      # Command Cheatsheet
+│   │       └── sub-agents.md     # Sub agents Practice Guide
 │   ├── adr/               # Architecture Decision Records
 │   ├── design/            # Design documents
 │   ├── plans/             # Work plans (git-ignored)
@@ -145,6 +155,7 @@ Powerful commands available in Claude Code
 | `/build` | Automatic task execution | Implementing planned tasks |
 | `/task` | Rule-based execution | Single task execution |
 | `/review` | Design Doc compliance check | Post-implementation validation |
+| `/refine-rule` | Optimize rule changes for accuracy | Rule improvement & clarification |
 | `/sync-rules` | Rule metadata synchronization | Post-edit optimization |
 | `/project-inject` | Inject project context | When starting with boilerplate |
 | `/onboard` | Load project rules | Project initialization |
