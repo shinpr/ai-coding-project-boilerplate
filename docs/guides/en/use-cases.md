@@ -18,24 +18,24 @@ New to this? Start with the [Quick Start Guide](./quickstart.md). This is your d
 graph LR
     A[Requirements] --> B[Scale Detection]
     B -->|Small:1-2 files| C[Direct Implementation]
-    B -->|Medium:3-5 files| D[Design Doc<br>→Implementation]
-    B -->|Large:6+ files| E[PRD→ADR<br>→Design Doc<br>→Implementation]
+    B -->|Medium:3-5 files| D[Design Doc→Implementation]
+    B -->|Large:6+ files| E[PRD→ADR→Design Doc→Implementation]
 ```
 
 ## Inside /implement Command
 
 ```mermaid
 graph TD
-    Start[/implement requirements] --> RA[requirement-analyzer<br>scale detection]
+    Start[/implement requirements] --> RA[requirement-analyzer scale detection]
     RA -->|Small| Direct[Direct implementation]
-    RA -->|Medium| TD[technical-designer<br>Design Doc]
-    RA -->|Large| PRD[prd-creator<br>PRD]
+    RA -->|Medium| TD[technical-designer Design Doc]
+    RA -->|Large| PRD[prd-creator PRD]
     
-    PRD --> ADR[technical-designer<br>ADR]
+    PRD --> ADR[technical-designer ADR]
     ADR --> TD
-    TD --> WP[work-planner<br>Work plan]
-    WP --> TE[task-executor<br>Execute tasks]
-    Direct --> QF[quality-fixer<br>Quality checks]
+    TD --> WP[work-planner Work plan]
+    WP --> TE[task-executor Execute tasks]
+    Direct --> QF[quality-fixer Quality checks]
     TE --> QF
     QF --> End[Complete]
     
