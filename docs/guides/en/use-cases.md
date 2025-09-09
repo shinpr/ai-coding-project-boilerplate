@@ -26,7 +26,7 @@ graph LR
 
 ```mermaid
 graph TD
-    Start[/implement requirements] --> RA["requirement-analyzer scale detection"]
+    Start["/implement requirements"] --> RA["requirement-analyzer scale detection"]
     RA -->|Small| Direct[Direct implementation]
     RA -->|Medium| TD["technical-designer Design Doc"]
     RA -->|Large| PRD["prd-creator PRD"]
