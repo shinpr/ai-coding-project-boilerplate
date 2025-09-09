@@ -49,6 +49,10 @@
     "lang:ja": "node scripts/set-language.js ja",
     "lang:en": "node scripts/set-language.js en",
     "lang:status": "node scripts/set-language.js --status",
+    "stack:settings": "node scripts/stack-settings.js",
+    "stack:status": "node scripts/stack-status.js --detect-only",
+    "package-manager:npm": "",
+    "package-manager:pnpm": "",
     "postinstall": "node scripts/set-language.js ja",
     "prepare": "husky"
   },
@@ -68,7 +72,9 @@
     "tsc-alias": "^1.8.7",
     "tsx": "^4.19.4",
     "typescript": "^5.0.0",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "commander": "14.0.0",
+    "inquirer": "12.9.4"
   },
   "engines": {
     "node": "20"
