@@ -86,7 +86,7 @@ Instead of one AI trying to handle everything, specialized sub-agents handle spe
 
 This approach prevents context overflow and maintains quality even for large projects.
 
-For technical details, see [this article](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5).
+For technical details, see [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
 
 ## Troubleshooting
 
