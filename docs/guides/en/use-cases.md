@@ -26,16 +26,16 @@ graph LR
 
 ```mermaid
 graph TD
-    Start[/implement requirements] --> RA[requirement-analyzer scale detection]
+    Start[/implement requirements] --> RA["requirement-analyzer scale detection"]
     RA -->|Small| Direct[Direct implementation]
-    RA -->|Medium| TD[technical-designer Design Doc]
-    RA -->|Large| PRD[prd-creator PRD]
+    RA -->|Medium| TD["technical-designer Design Doc"]
+    RA -->|Large| PRD["prd-creator PRD"]
     
-    PRD --> ADR[technical-designer ADR]
+    PRD --> ADR["technical-designer ADR"]
     ADR --> TD
-    TD --> WP[work-planner Work plan]
-    WP --> TE[task-executor Execute tasks]
-    Direct --> QF[quality-fixer Quality checks]
+    TD --> WP["work-planner Work plan"]
+    WP --> TE["task-executor Execute tasks"]
+    Direct --> QF["quality-fixer Quality checks"]
     TE --> QF
     QF --> End[Complete]
     
