@@ -18,24 +18,24 @@
 graph LR
     A[要件] --> B[規模判定]
     B -->|小:1-2ファイル| C[実装のみ]
-    B -->|中:3-5ファイル| D[Design Doc<br>→実装]
-    B -->|大:6ファイル以上| E[PRD→ADR<br>→Design Doc<br>→実装]
+    B -->|中:3-5ファイル| D[Design Doc→実装]
+    B -->|大:6ファイル以上| E[PRD→ADR→Design Doc→実装]
 ```
 
 ## /implementコマンドの裏側
 
 ```mermaid
 graph TD
-    Start[/implement 要件] --> RA[requirement-analyzer<br>規模判定]
+    Start["/implement 要件"] --> RA["requirement-analyzer 規模判定"]
     RA -->|小規模| Direct[直接実装]
-    RA -->|中規模| TD[technical-designer<br>Design Doc作成]
-    RA -->|大規模| PRD[prd-creator<br>PRD作成]
+    RA -->|中規模| TD["technical-designer Design Doc作成"]
+    RA -->|大規模| PRD["prd-creator PRD作成"]
     
-    PRD --> ADR[technical-designer<br>ADR作成]
+    PRD --> ADR["technical-designer ADR作成"]
     ADR --> TD
-    TD --> WP[work-planner<br>作業計画書]
-    WP --> TE[task-executor<br>タスク実行]
-    Direct --> QF[quality-fixer<br>品質チェック]
+    TD --> WP["work-planner 作業計画書"]
+    WP --> TE["task-executor タスク実行"]
+    Direct --> QF["quality-fixer 品質チェック"]
     TE --> QF
     QF --> End[完了]
     
