@@ -99,7 +99,7 @@ Specialized AI agents work independently on each task type, preventing context e
 | **task-decomposer** | Task breakdown | Splits work plans into single-commit tasks |
 | **rule-advisor** | Rule selection | Selects optimal ruleset at task start |
 | **code-reviewer** | Code review | Objectively evaluates compliance with Design Docs |
-| **e2e-test-generator** | Integration test generation | Auto-generates it.todo skeletons from Design Doc ACs |
+| **acceptance-test-generator** | Acceptance test generation | Generates integration/E2E test skeletons from Design Doc ACs |
 
 See `CLAUDE.md` and individual definition files in `.claude/agents/` for details.
 

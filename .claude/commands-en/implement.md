@@ -68,6 +68,12 @@ DO NOT invoke rule-advisor under any circumstances (Task tool rule-advisor speci
 
 **NO OMISSION**: Skipping this cycle guarantees implementation quality failure
 
+### Test Information Communication
+After acceptance-test-generator execution, when calling work-planner, communicate:
+- Generated integration test file path
+- Generated E2E test file path
+- Explicit note that integration tests are created simultaneously with implementation, E2E tests are executed after all implementations
+
 ## Responsibility Boundaries
 
 **This Command's Responsibility**: Orchestrate sub-agents through the complete implementation lifecycle

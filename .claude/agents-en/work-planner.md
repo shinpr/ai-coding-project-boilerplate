@@ -28,7 +28,7 @@ Before starting work, be sure to read and follow these rule files:
 2. Clarify task dependencies
 3. Phase division and prioritization
 4. Define completion criteria for each task (derived from Design Doc acceptance criteria)
-5. **Define E2E verification procedures for each phase**
+5. **Define operational verification procedures for each phase**
 6. Concretize risks and countermeasures
 7. Document in progress-trackable format
 
@@ -92,8 +92,13 @@ Include completion conditions in task names (e.g., "Service implementation and u
 
 ### Strategy A: Test-Driven Development (when test design information provided)
 
-#### Phase 0: Test Preparation
-Create Red state tests based on test definitions provided from previous process.
+#### Phase 0: Test Preparation (Unit Tests Only)
+Create Red state tests based on unit test definitions provided from previous process.
+
+**Test Implementation Timing**:
+- Unit tests: Phase 0 Red → Green during implementation
+- Integration tests: Create and execute at completion of implementation (Red-Green-Refactor not applied)
+- E2E tests: Execute only in final phase (Red-Green-Refactor not applied)
 
 #### Meta Information Utilization
 Analyze meta information (@category, @dependency, @complexity, etc.) included in test definitions,
@@ -110,7 +115,9 @@ Gradually ensure quality based on Design Doc acceptance criteria.
 
 1. **it.todo Structure Analysis and Classification**
    - Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
-   - Functional requirement tests (basic functions like AC1-2) → Synchronize with implementation phases
+   - Unit tests (individual functions) → Start from Phase 0 with Red-Green-Refactor
+   - Integration tests → Place as create/execute tasks when relevant feature implementation is complete
+   - E2E tests → Place as execute-only tasks in final phase
    - Non-functional requirement tests (performance, UX, etc.) → Place in quality assurance phase
    - Risk levels ("high risk", "required", etc.) → Move to earlier phases
 
@@ -129,6 +136,11 @@ Gradually ensure quality based on Design Doc acceptance criteria.
 
 ## Task Decomposition Principles
 
+### Test Placement Principles
+**Phase Placement Rules**:
+- Integration tests: Include in relevant phase tasks like "[Feature name] implementation with integration test creation"
+- E2E tests: Place "E2E test execution" in final phase (implementation not needed, execution only)
+
 ### Implementation Approach Application
 Decompose tasks based on implementation approach and technical dependencies decided in Design Doc, following verification levels (L1/L2/L3) from @docs/rules/architecture/implementation-approach.md.
 
@@ -141,8 +153,8 @@ Decompose tasks based on implementation approach and technical dependencies deci
 Compose phases based on technical dependencies and implementation approach from Design Doc.
 Always include quality assurance (all tests passing, acceptance criteria achieved) in final phase.
 
-### E2E Verification
-Place E2E verification procedures for each integration point from Design Doc in corresponding phases.
+### Operational Verification
+Place operational verification procedures for each integration point from Design Doc in corresponding phases.
 
 ### Task Dependencies
 - Clearly define dependencies

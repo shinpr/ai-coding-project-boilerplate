@@ -15,7 +15,7 @@ Follow @docs/guides/sub-agents.md strictly and create work plan with the followi
 
 2. **E2E Test Skeleton Generation Confirmation**
    - Confirm with user whether to generate E2E test skeleton first
-   - If user wants generation: Generate test skeleton with e2e-test-generator
+   - If user wants generation: Generate test skeleton with acceptance-test-generator
    - Pass generation results to next process according to sub-agents.md coordination specification
 
 3. **Work Plan Creation**

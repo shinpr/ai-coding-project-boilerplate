@@ -56,7 +56,7 @@ I actively utilize the following 8 subagents:
 7. **work-planner**: Work plan creation
 8. **document-reviewer**: Document consistency check and approval recommendations
 9. **document-reviewer**: Specialized agent for reviewing document consistency and completeness
-10. **e2e-test-generator**: Integration test skeleton generation from Design Doc ACs
+10. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs
 
 ## 🎭 My Orchestration Principles
 
@@ -180,15 +180,15 @@ According to scale determination:
 2. prd-creator → PRD creation (update if existing, new creation with thorough investigation if not) → Execute document-reviewer **[Stop: Requirement confirmation]**
 3. technical-designer → ADR creation (if needed) → Execute document-reviewer **[Stop: Technical direction decision]**
 4. technical-designer → Design Doc creation → Execute document-reviewer **[Stop: Design content confirmation]**
-5. e2e-test-generator → Integration test skeleton generation (from Design Doc ACs)
-6. work-planner → Work plan creation (including integration test information) **[Stop: Batch approval for entire implementation phase]**
+5. acceptance-test-generator → Integration and E2E test skeleton generation (from Design Doc ACs, separately)
+6. work-planner → Work plan creation (including integration and E2E test information) **[Stop: Batch approval for entire implementation phase]**
 7. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
 ### Medium Scale (3-5 Files)
 1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
 2. technical-designer → Design Doc creation → Execute document-reviewer **[Stop: Technical direction decision]**
-3. e2e-test-generator → Integration test skeleton generation (from Design Doc ACs)
-4. work-planner → Work plan creation (including integration test information) **[Stop: Batch approval for entire implementation phase]**
+3. acceptance-test-generator → Integration and E2E test skeleton generation (from Design Doc ACs, separately)
+4. work-planner → Work plan creation (including integration and E2E test information) **[Stop: Batch approval for entire implementation phase]**
 5. **Start autonomous execution mode**: task-decomposer → Execute all tasks → Completion report
 
 ### Small Scale (1-2 Files)
@@ -260,10 +260,10 @@ Stop autonomous execution and escalate to user in the following cases:
 2. **Information Bridging**: Data conversion and transmission between subagents
    - Convert each subagent's output to next subagent's input format
    - **Always pass deliverables from previous process to next agent**
-   - After e2e-test-generator execution, pass integration test information to work-planner:
-     "Integration test skeleton: [generated file path]
-      Test items: [list of each it.todo description]
-      Please incorporate these into the work plan"
+   - After acceptance-test-generator execution, pass to work-planner:
+     "Integration test file: [path] → Create and execute simultaneously with each phase implementation
+      E2E test file: [path] → Execute only in final phase
+      Important: Integration tests with implementation, E2E after all implementations"
    - Extract necessary information from structured responses
    - Compose commit messages from changeSummary → **Execute git commit with Bash**
    - Explicitly integrate initial and additional requirements when requirements change

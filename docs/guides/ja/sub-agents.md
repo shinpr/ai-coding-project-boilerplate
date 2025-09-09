@@ -56,7 +56,7 @@ graph TD
 7. **work-planner**: 作業計画書作成
 8. **document-reviewer**: ドキュメント整合性チェックと推奨判定
 9. **document-reviewer**: ドキュメントの整合性と完成度をレビューする専門エージェント
-10. **e2e-test-generator**: Design DocのACから統合テストスケルトン生成
+10. **acceptance-test-generator**: Design DocのAC（受入条件）から統合テストとE2Eテストのスケルトンを別々に生成
 
 ## 🎭 私のオーケストレーション原則
 
@@ -162,15 +162,15 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 2. prd-creator → PRD作成（既存あれば更新、なければ徹底調査で新規作成） → document-reviewer実行 **[停止: 要件確認]**
 3. technical-designer → ADR作成（必要な場合） → document-reviewer実行 **[停止: 技術方針決定]**
 4. technical-designer → Design Doc作成 → document-reviewer実行 **[停止: 設計内容確認]**
-5. e2e-test-generator → 統合テストスケルトン生成（Design DocのACから）
-6. work-planner → 作業計画書作成（統合テスト情報を含めて） **[停止: 実装フェーズ全体の一括承認]**
+5. acceptance-test-generator → 統合テスト・E2Eテストスケルトン生成（Design DocのACから別々に）
+6. work-planner → 作業計画書作成（統合テスト・E2Eテスト情報を含めて） **[停止: 実装フェーズ全体の一括承認]**
 7. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
 
 ### 中規模（3-5ファイル）
 1. requirement-analyzer → 要件分析 **[停止: 要件確認・質問事項対応]**
 2. technical-designer → Design Doc作成 → document-reviewer実行 **[停止: 技術方針決定]**
-3. e2e-test-generator → 統合テストスケルトン生成（Design DocのACから）
-4. work-planner → 作業計画書作成（統合テスト情報を含めて） **[停止: 実装フェーズ全体の一括承認]**
+3. acceptance-test-generator → 統合テスト・E2Eテストスケルトン生成（Design DocのACから別々に）
+4. work-planner → 作業計画書作成（統合テスト・E2Eテスト情報を含めて） **[停止: 実装フェーズ全体の一括承認]**
 5. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
 
 ### 小規模（1-2ファイル）
@@ -242,10 +242,10 @@ graph TD
 2. **情報の橋渡し**: サブエージェント間のデータ変換と伝達
    - 各Sub-agentの出力を次のSub-agentの入力形式に変換
    - **前工程の成果物を必ず次のエージェントに伝達**
-   - e2e-test-generator実行後はwork-plannerに統合テスト情報を伝達：
-     「統合テストスケルトン: [生成されたファイルパス]
-      テスト項目: [各it.todoの説明文リスト]
-      これらを作業計画に組み込んでください」
+   - acceptance-test-generator実行後はwork-plannerに以下を伝達：
+     「統合テストファイル: [パス] → 各Phase実装時に同時作成・実行
+      E2Eテストファイル: [パス] → 最終Phaseでのみ実行
+      重要: 統合テストは実装と同時、E2Eは全実装後」
    - 構造化レスポンスから必要な情報を抽出
    - changeSummaryからコミットメッセージ構成→**Bashでgit commit実行**
    - 要件変更時は初回要件と追加要件を明示的に統合
