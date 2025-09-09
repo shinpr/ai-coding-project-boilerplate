@@ -46,7 +46,7 @@ Related Issue/PR: #XXX (if any)
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
 
-#### E2E Verification Procedures
+#### Operational Verification Procedures
 1. [Operation verification steps]
 2. [Expected result verification]
 3. [Performance verification (when applicable)]
@@ -64,7 +64,7 @@ Related Issue/PR: #XXX (if any)
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
 
-#### E2E Verification Procedures
+#### Operational Verification Procedures
 1. [Operation verification steps]
 2. [Expected result verification]
 3. [Performance verification (when applicable)]
@@ -82,8 +82,8 @@ Related Issue/PR: #XXX (if any)
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
 
-#### E2E Verification Procedures
-[Copy relevant integration point E2E verification from Design Doc]
+#### Operational Verification Procedures
+[Copy relevant integration point operational verification from Design Doc]
 
 ### Final Phase: Quality Assurance (Required) (Estimated commits: 1)
 **Purpose**: Overall quality assurance and Design Doc consistency verification
@@ -95,8 +95,8 @@ Related Issue/PR: #XXX (if any)
 - [ ] Coverage 70%+
 - [ ] Document updates
 
-#### E2E Verification Procedures
-[Copy E2E verification procedures from Design Doc]
+#### Operational Verification Procedures
+[Copy operational verification procedures from Design Doc]
 
 ### Quality Assurance
 - [ ] Implement staged quality checks (details: refer to @docs/rules/ai-development-guide.md)
@@ -107,7 +107,7 @@ Related Issue/PR: #XXX (if any)
 
 ## Completion Criteria
 - [ ] All phases completed
-- [ ] Each phase's E2E verification procedures executed
+- [ ] Each phase's operational verification procedures executed
 - [ ] Design Doc acceptance criteria satisfied
 - [ ] Staged quality checks completed (zero errors)
 - [ ] All tests pass

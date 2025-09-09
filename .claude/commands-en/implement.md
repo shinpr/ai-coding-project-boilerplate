@@ -68,11 +68,11 @@ DO NOT invoke rule-advisor under any circumstances (Task tool rule-advisor speci
 
 **NO OMISSION**: Skipping this cycle guarantees implementation quality failure
 
-### E2E Test Information Communication
-After e2e-test-generator execution, when calling work-planner, communicate:
-- Generated test file path
-- Explicit test type (E2E integration test)
-- Note that Red-Green-Refactor process is not used
+### Test Information Communication
+After acceptance-test-generator execution, when calling work-planner, communicate:
+- Generated integration test file path
+- Generated E2E test file path
+- Explicit note that integration tests are created simultaneously with implementation, E2E tests are executed after all implementations
 
 ## Responsibility Boundaries
 

@@ -134,7 +134,7 @@ Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have u
 
 **Implementation procedure for each checkbox item**:
 1. **Red**: Create test for that checkbox item (failing state)
-   ※For E2E/integration tests, conduct behavior verification simultaneously with implementation
+   ※For integration tests, create and execute simultaneously with implementation; E2E tests are executed in final phase only
 2. **Green**: Implement minimum code to pass test
 3. **Refactor**: Improve code quality (readability, maintainability)
 4. **Progress Update [MANDATORY]**: Execute the following in sequence (cannot be omitted)
