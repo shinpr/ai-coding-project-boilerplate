@@ -26,7 +26,7 @@ graph LR
 
 ```mermaid
 graph TD
-    Start[/implement 要件] --> RA["requirement-analyzer 規模判定"]
+    Start["/implement 要件"] --> RA["requirement-analyzer 規模判定"]
     RA -->|小規模| Direct[直接実装]
     RA -->|中規模| TD["technical-designer Design Doc作成"]
     RA -->|大規模| PRD["prd-creator PRD作成"]
