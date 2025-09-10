@@ -202,10 +202,6 @@ Auto-fix is suggested if compliance is below 70%.
 **Args**: None
 **Process**: Interactive project information collection
 
-### /onboard
-**Purpose**: Load all rules
-**Args**: None
-**Warning**: High context consumption
 
 ---
 
@@ -216,7 +212,7 @@ Auto-fix is suggested if compliance is below 70%.
 | Repeating same error | `npm run check:all` | Check environment, fix with `/task` |
 | Code differs from design | `/review` | Check compliance, auto-fix |
 | Task stuck | `ls docs/plans/tasks/` | Identify blocker, check task file |
-| Command not recognized | `ls .claude/commands-en/` | Check typo, reset with `/onboard` |
+| Command not recognized | `ls .claude/commands-en/` | Check typo |
 
 ---
 

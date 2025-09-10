@@ -158,7 +158,6 @@ Powerful commands available in Claude Code
 | `/refine-rule` | Optimize rule changes for accuracy | Rule improvement & clarification |
 | `/sync-rules` | Rule metadata synchronization | Post-edit optimization |
 | `/project-inject` | Inject project context | When starting with boilerplate |
-| `/onboard` | Load project rules | Project initialization |
 
 See individual definition files in `.claude/commands/` for details.
 
@@ -325,8 +324,8 @@ A: Run `npm run lang:ja` (Japanese) or `npm run lang:en` (English).
 A: Run `/project-inject` to interactively configure project context.
 
 ### Q: What's the Claude Code development workflow?
-A: [Initial] 1) `/project-inject` for context setup → 2) `/onboard` to load rules
-   [Development] 3) `/implement` or `/task` to build → 4) Quality check → 5) Commit
+A: [Initial] 1) `/project-inject` for context setup
+   [Development] 2) `/implement` or `/task` to build → 3) Quality check → 4) Commit
 
 ## 📄 License
 
