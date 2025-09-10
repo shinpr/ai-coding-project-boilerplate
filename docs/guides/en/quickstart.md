@@ -1,94 +1,111 @@
-# Quick Start Guide
+# Quick Start Guide for AI Development
 
-Set up and build your first feature in 5 minutes. See how sub-agents handle everything from design to implementation.
+This guide walks you through setting up the AI Coding Project Boilerplate and implementing your first feature. Let's skip the complex stuff for now and just get it running.
 
-## Prerequisites
+## Setup (5 minutes to complete)
 
-- Node.js 20+
-- Claude Code installed
-- Basic terminal knowledge
+### For New Projects
 
-## Setup (30 seconds)
+Open your terminal and run these commands. Feel free to change the project name to whatever you like.
 
 ```bash
-# Create project
-npx github:shinpr/ai-coding-project-boilerplate my-project
+npx github:shinpr/ai-coding-project-boilerplate my-awesome-project
+cd my-awesome-project
+npm install
+```
 
-# Install dependencies
-cd my-project && npm install
+That's it! You now have a `my-awesome-project` folder with all the necessary files ready to use.
 
-# Launch Claude Code
+### For Existing Projects
+
+If you already have a TypeScript project, you can copy the necessary files. First, download the boilerplate to a temporary location.
+
+```bash
+# Download the boilerplate temporarily
+npx github:shinpr/ai-coding-project-boilerplate temp-boilerplate
+```
+
+Then copy the following files into the root directory of your existing project.
+
+```bash
+# Run in your existing project directory
+cp -r temp-boilerplate/.claude/agents .claude/agents
+cp -r temp-boilerplate/.claude/commands .claude/commands
+cp -r temp-boilerplate/docs/rules docs/rules
+cp -r temp-boilerplate/docs/adr docs/
+cp -r temp-boilerplate/docs/design docs/
+cp -r temp-boilerplate/docs/plans docs/
+cp -r temp-boilerplate/docs/prd docs/
+cp -r temp-boilerplate/docs/guides/en/sub-agents.md docs/guides/sub-agents.md
+cp temp-boilerplate/CLAUDE.md .
+```
+
+If you want to change the directory structure, you'll need to adjust paths starting with `@docs/rules/` in sub-agents and command definition files. Also update `docs/rules-index.yaml` accordingly.
+Because this can get complicated, we recommend sticking with the default structure unless you have specific needs.
+
+## Launch Claude Code and Initial Setup
+
+Launch Claude Code in your project directory.
+
+```bash
 claude
 ```
 
-## Initial Configuration (1 minute)
+Once launched, let's set up project-specific information. This is a crucial step for the AI to understand your project.
 
-Set up your project context:
+Run the following custom slash command inside Claude Code.
 
-```
+```bash
 /project-inject
 ```
 
-Answer a few questions about your project. This customizes rules for your specific needs.
+You'll be guided through an interactive dialog to clarify your project information. Feel free to answer casually - you can change this information later.
+Once you finish answering, your project context will be saved to `docs/rules/project-context.md`. This enables the AI to understand your project's purpose and generate more appropriate code.
 
-## Your First Feature (3 minutes)
-
-Let's implement a real feature - a user management API with authentication:
-
-```
-/implement Create a user management API with the following features:
-- User registration (email, password, name)
-- Login with JWT token generation
-- Get user profile endpoint
-- Update user profile endpoint
-- Password reset functionality
-```
-
-When you run `/implement`, here's what happens behind the scenes:
-1. **requirement-analyzer** determines this is a medium-scale task (4-5 files)
-2. **technical-designer** creates a Design Doc
-3. **work-planner** breaks it down into tasks
-4. **task-executor** implements each task
-5. **quality-fixer** ensures everything passes checks
-
-## Next Steps
-
-After implementation completes, try these:
+After reviewing the file and confirming it looks good, complete this step with the following command.
 
 ```bash
-# Run tests
-npm test
-
-# Check code quality
-npm run check:all
-
-# Review implementation against design
-/review
+/sync-rules
 ```
 
-## Frequently Used Commands
+## Let's Implement Your First Feature
 
-- `/implement` - Build features from requirements
-- `/task` - Execute single tasks with high precision
-- `/design` - Create design docs only
-- `/review` - Verify code against design docs
-- `/build` - Resume or continue implementation
+Now let's create your first feature. Specify it using the following command in Claude Code.
 
-See the [Use Cases Quick Reference](./use-cases.md) for daily workflow patterns.
+```bash
+/implement Create a simple API that returns "Hello"
+```
 
-## How Sub-agents Work
+The `/implement` command guides you through the entire workflow from design to implementation.
 
-Instead of one AI trying to handle everything, specialized sub-agents handle specific phases:
+First, it analyzes your requirements to determine the feature scale. It might say something like "This is a medium-scale feature requiring about 3 files." Based on the scale, it creates necessary design documents.
 
-1. **Design Phase**: Create design docs that you review
-2. **Planning Phase**: Break work into manageable tasks
-3. **Execution Phase**: Each task runs with focused context
+For small features, it creates just a simple work plan. For large features, it creates a complete flow from PRD (Product Requirements Document) to Design Doc (Technical Design Document). After each design document is created, an automatic review is performed.
 
-This approach prevents context overflow and maintains quality even for large projects.
+Once the design is complete, the AI will ask "Here's the design I've created. Could you review it?" Read through it and request changes if needed, or approve it if it looks good.
+Depending on the Claude Code model you're using, it may automatically proceed to the next design document if your review is positive. At some point it will ask for your approval, so you can provide batch feedback then.
 
-For technical details, see [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
+After design approval, integration test skeletons and a work plan are created. Once you review the implementation steps (requesting changes if needed) and approve, the actual implementation begins.
+
+The AI breaks down the work plan into single-commit task units and autonomously implements each task using a TDD approach. After each task, it performs a defined 6-step quality check, fixes any errors, and creates a commit if everything passes. You can simply watch the progress.
+
+When all tasks are complete, it will report "Implementation complete." Check `git log` to see a clean series of commits.
+
+## Development Philosophy of This Boilerplate
+
+Let me explain the thinking behind this boilerplate.
+
+To maximize throughput with AI assistance, it's crucial to minimize human intervention. However, achieving high execution accuracy with AI requires careful context management—providing the right information at the right time. Without proper systems, humans need to guide the implementation process, which prevents throughput maximization.
+
+This boilerplate solves this through systematic approaches: selecting appropriate context (rules, requirements, specifications) for each phase and limiting unnecessary information during task execution.
+
+The workflow is: create design documents, review them with users to align understanding, use those documents as context for planning and task creation. Tasks are executed by sub-agents with dedicated contexts, which removes unnecessary information and stabilizes implementation. This system helps maintain quality even for projects too large to fit within a single coding agent's context window (Claude Opus 4.1 supports 200K tokens, Sonnet 4 beta supports up to 1M tokens, but the basic limit is 200K tokens).
+
+For detailed mechanics, see [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
 
 ## Troubleshooting
 
-**If implementation stops midway:**
-Tell Claude Code where implementation stopped: "You've completed the Design Doc. Please continue from planning phase through implementation."
+If things aren't working, check the following.
+
+**If implementation stops midway**
+Describe the current state to Claude Code and ask it to resume, for example: "You've completed up to the Design Doc creation, so please continue from there and complete the implementation."

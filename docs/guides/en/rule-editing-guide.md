@@ -1,11 +1,11 @@
 # Rule Editing Guide
 
-This guide provides concepts and key points for creating effective rules that maximize LLM execution accuracy based on LLM characteristics.
+This guide explains the core concepts and best practices for writing effective rules that maximize LLM execution accuracy, based on how LLMs work.
 
 ## Project Philosophy and the Importance of Rule Files
 
 This boilerplate is designed based on the concepts of "Agentic Coding" and "Context Engineering":
-- **Agentic Coding**: LLMs autonomously making decisions and executing implementation tasks
+- **Agentic Coding**: LLMs autonomously making decisions and carrying out implementation tasks
 - **Context Engineering**: Building mechanisms to provide appropriate context at the right time for LLMs to make proper decisions
 
 For details, see [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
@@ -14,8 +14,8 @@ Proper rule management and [sub-agents](https://docs.anthropic.com/en/docs/claud
 
 Rule files are written to maximize LLM execution accuracy as described below.
 
-Sub-agents have dedicated contexts separate from the main agent, designed to load only the necessary rule files to fulfill single responsibilities.
-When the main agent executes tasks, it uses "metacognition" (objectively understanding one's own thinking and learning processes) to understand task context, select necessary rules from the rule file collection, and execute tasks.
+Sub-agents have dedicated contexts separate from the main agent. They are designed to load only the necessary rule files to fulfill specific responsibilities.
+When the main agent executes tasks, it uses "metacognition" (reflecting on and analyzing its own reasoning process) to understand task context, select necessary rules from the rule file collection, and execute tasks.
 This approach maximizes execution accuracy by retrieving the right rules at the right time without excess or deficiency.
 
 While it's impossible to completely control LLM output, it is possible to maximize execution accuracy by establishing proper systems.
@@ -45,7 +45,7 @@ All errors must be logged
 Record all errors
 ```
 
-Aim for shorter expressions with the same meaning. However, be careful not to make it so short that ambiguity arises.
+Aim for concise expressions that keep the same meaning. But don't shorten so much that ambiguity is introduced.
 
 ### 2. Completely Unify Notation
 
@@ -60,7 +60,7 @@ Always use the same terms for the same concepts. Notation inconsistencies hinder
 
 ### 3. Thoroughly Eliminate Duplication
 
-Writing the same content in multiple places wastes context. Consolidate in one place.
+Repeating the same content across multiple files wastes context capacity. Consolidate in one place.
 
 ```markdown
 ❌ Same content in multiple locations
@@ -137,11 +137,11 @@ NG Example: window.globalState = { ... }
 - Don't save values to window object
 ```
 
-Use prohibitions as background information.
+If prohibitions are needed, present them as background context rather than the main rule.
 
 ### 7. Verbalize Implicit Assumptions
 
-Even things obvious within a project must be explicitly stated for LLMs to understand.
+Even things obvious to human developers must be explicitly stated for LLMs to understand.
 
 ```markdown
 ## Prerequisites
@@ -216,7 +216,7 @@ All 9 principles are practiced across these files, serving as practical referenc
 
 ## Troubleshooting
 
-### Problem: Rules are too long and pressure context
+### Problem: Rules are too long and overload the context window
 
 **Solutions**
 1. Find and remove duplications
@@ -242,4 +242,4 @@ All 9 principles are practiced across these files, serving as practical referenc
 
 ## Summary
 
-Effective rules stabilize LLM generation. By being conscious of the 9 principles and continuously optimizing, you can maximize LLM capabilities. Build the optimal rule set for your project through regular implementation review and improvement.
+Well-written rules stabilize LLM output. By following the 9 principles and continuously refining your rules, you can maximize LLM capabilities. Build the optimal rule set for your project through regular implementation review and improvement.

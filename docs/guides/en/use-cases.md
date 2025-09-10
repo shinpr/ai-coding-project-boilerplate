@@ -1,12 +1,12 @@
 # Use Cases Quick Reference
 
-New to this? Start with the [Quick Start Guide](./quickstart.md). This is your daily development cheatsheet.
+New here? Start with the [Quick Start Guide](./quickstart.md). This page serves as your daily development cheatsheet.
 
 ## Top 5 Commands (Learn These First)
 
 | Command | Purpose | Example |
 |---------|---------|---------|
-| `/implement` | Full feature implementation (requirements to completion) | `/implement Add rate limiting to API` |
+| `/implement` | End-to-end feature implementation (from requirements to completion) | `/implement Add rate limiting to API` |
 | `/task` | Single task with rule-based precision | `/task Fix bug` |
 | `/design` | Design docs only (no implementation) | `/design Design payment system` |
 | `/review` | Code review and auto-fix | `/review auth-system` |
@@ -62,7 +62,7 @@ The LLM automatically detects scale, creates necessary documentation, and comple
 ```
 
 Clarifies rules before fixing the issue.
-`/task` is a command that triggers "metacognition" (objectively understanding one's own thinking and learning processes). It prompts the LLM to understand the situation, retrieve rules, create internal task lists, and understand work context, improving execution accuracy.
+`/task` triggers a process of metacognition (self-reflection on reasoning). It helps the LLM clarify the situation, retrieve relevant rules, build task lists, and understand the work context—improving execution accuracy.
 
 ## Want design only?
 
@@ -74,7 +74,7 @@ Creates design documents, conducts LLM self-review, requests user review as need
 
 ## Want to work step by step?
 
-Execute Design → Plan → Build individually. You can work more incrementally by specifying detailed phases in command arguments.
+Execute Design → Plan → Build individually. You can work more incrementally by specifying phases directly in the command arguments.
 
 ```bash
 /design                    # Create design docs
@@ -96,7 +96,7 @@ git log --oneline -5
 ```
 
 Tasks are marked complete with checkmarks (- [x]) in Markdown format.
-Some Claude Code models may not automatically check completed tasks. In that case, instruct: "Please check completed tasks by reviewing commit history."
+Some Claude Code models may not automatically mark tasks as completed. In that case, you can instruct: "Please mark completed tasks by reviewing the commit history."
 
 ## Want code review?
 
@@ -138,8 +138,8 @@ Fixes are created as task files under `docs/plans/tasks` and executed by sub-age
 4. quality-fixer ensures quality
 5. Commit per task
 
-Clarifies requirements and creates design documents. Creates work plans and task files from design docs, then completes implementation according to the plan.
-Aimed at completing Agentic Coding (LLMs autonomously making decisions and executing implementation tasks), performing autonomous execution following the flow with minimal human intervention except for design clarification and handling issues beyond LLM judgment.
+Helps clarify requirements and creates design documents. Creates work plans and task files from design docs, then completes implementation according to the plan.
+Aimed at completing Agentic Coding (LLMs autonomously making decisions and executing implementation tasks), performing automatic execution following the flow with minimal human intervention except for design clarification and handling issues beyond LLM judgment.
 
 ### /task
 **Purpose**: Rule-based high-precision task execution
@@ -150,7 +150,7 @@ Aimed at completing Agentic Coding (LLMs autonomously making decisions and execu
 3. Confirm restrictions
 4. Execute task
 
-Promotes metacognition (objectively understanding one's own thinking and learning processes), understands task essence and rules to be understood, then refines the specified task. Uses the `rule-advisor` sub-agent to retrieve and utilize appropriate rules from rule files under `docs/rules`.
+Encourages metacognition (self-reflection on reasoning), understands task essence and applicable rules, then refines the specified task. Uses the `rule-advisor` sub-agent to retrieve and utilize appropriate rules from rule files under `docs/rules`.
 
 ### /design
 **Purpose**: Design docs creation (no implementation)
@@ -192,7 +192,7 @@ Use when not adopting the full design-to-implementation process via `/implement`
 Executes implementation tasks described in specified task files. If only work plan exists without task files, uses `task-decomposer` to break down tasks before executing.
 Use when not adopting the full design-to-implementation process via `/implement`.
 
-Unless specified otherwise, autonomously executes until completing the implementation described in the plan. If you want work done in phases or task units, clearly communicate the desired phase in arguments. Be careful as explicitly interrupting implementation midway may leave code in an unexecutable state.
+Unless specified otherwise, automatically executes until completing the implementation described in the plan. If you want work done in phases or task units, clearly communicate the desired phase in arguments. Be careful as explicitly interrupting implementation midway may leave code in an unexecutable state.
 
 **Example for phase-based implementation**
 ```bash
@@ -255,11 +255,11 @@ This command sets project background information as rule files to maximize the p
 ## Task Files
 
 Task files exist under `docs/plans/tasks`. Implementation is performed in units of these task files, with completed tasks marked with Markdown checkmarks (- [x]) upon completion.
-Some Claude Code models may not automatically check completed tasks. In that case, instruct: "Please check completed tasks by reviewing commit history."
+Some Claude Code models may not automatically mark tasks as completed. In that case, you can instruct: "Please mark completed tasks by reviewing the commit history."
 
 ## When implementation is interrupted
 
-Use `/implement` or `/build` commands to instruct work resumption.
+Use the `/implement` or `/build` commands to resume work.
 ```bash
 /implement Resume from task 3 and complete the work
 /build Search for incomplete tasks from docs/plans/tasks and resume implementation
@@ -276,7 +276,7 @@ Use `/implement` or `/build` commands to instruct work resumption.
 
 # Examples
 
-## Webhook Feature (Medium - 4 files)
+## Webhook Feature (Medium scale – about 4 files)
 ```bash
 /implement External system webhook API
 ```
@@ -286,7 +286,7 @@ Use `/implement` or `/build` commands to instruct work resumption.
 - src/services/retry.service.ts
 - src/controllers/webhook.controller.ts
 
-## Auth System (Large - 10+ files)
+## Auth System (Large scale – 10+ files)
 ```bash
 /implement JWT auth with RBAC system
 ```
@@ -300,7 +300,7 @@ Use `/implement` or `/build` commands to instruct work resumption.
 
 ## Next Steps
 
-Once you understand the basics, try using them in practice. As you use them and develop motivation to improve rules, try customizing the rules.
+Once you understand the basics, start applying them in practice. As you gain experience and feel the need to improve, try customizing the rules.
 
 → **[Rule Editing Guide](./rule-editing-guide.md)** - How to understand LLM characteristics and create effective rules
 
