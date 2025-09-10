@@ -72,14 +72,14 @@ Final result: Rule-advisor precision optimization complete
 - Typical-use must specify concrete usage scenarios
 - Key-references must cover current methodologies
 
-## Important Decision Criteria
+## Change Necessity Evaluation
 
-**Think deeply** to determine if changes are needed:
-- If sections are 100% synchronized → Report "Synchronization confirmed, no updates required" and exit
-- If content and tags match appropriately → Determine no updates needed
-- Only if improvements are possible → Present specific modification proposals
+**EVALUATION SEQUENCE**:
+- IF sections achieve 100% synchronization → OUTPUT "Synchronization verified. No updates required." THEN TERMINATE
+- IF content-to-tag mapping shows zero mismatches → DETERMINE no_changes_needed = true THEN TERMINATE  
+- IF AND ONLY IF measurable improvements exist → GENERATE specific modification proposals WITH exact before/after values
 
-**IMPORTANT**: Changes are not required every time. If no updates are needed, clearly report this and exit.
+**NOTE**: You MUST NOT force changes. When no improvements are detected, you SHALL report "No modifications necessary" and STOP execution.
 
 ## Execution Timing
 
