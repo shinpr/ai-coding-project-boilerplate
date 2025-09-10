@@ -24,6 +24,27 @@ Conversely, LLM execution accuracy can easily degrade depending on rule file con
 With the premise that complete control is impossible, executing tasks, reflecting on issues that arise, and feeding back into the system enables maintaining and improving execution accuracy.
 When using this in actual projects and results don't match expectations, consider improving rule files.
 
+## Determining Where to Document Rules
+
+### File Roles and Scope
+
+| File | Scope | When Applied | Example Content |
+|------|-------|--------------|-----------------|
+| **CLAUDE.md** | All tasks | Always | Approval required before Edit/Write, stop at 5+ file changes |
+| **Rule files** | Specific technical domains | When using that technology | Use specific types, error handling required, functions under 30 lines |
+| **Guidelines** | Specific workflows | When performing that workflow | Sub-agent selection strategies |
+| **Design Docs** | Specific features | When developing that feature | Feature requirements, API specifications, security constraints |
+
+### Decision Flow
+
+```
+When is this rule needed?
+├─ Always → CLAUDE.md
+├─ Only for specific feature development → Design Doc
+├─ When using specific technology → Rule files
+└─ When performing specific workflow → Guidelines
+```
+
 ## 9 Rule Principles for Maximizing LLM Execution Accuracy
 
 Here are 9 rule creation principles based on LLM characteristics and this boilerplate's design philosophy.
