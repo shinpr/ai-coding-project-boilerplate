@@ -12,6 +12,8 @@
 
 Get started with the **[Quick Start Guide](docs/guides/en/quickstart.md)** - build your first feature in 5 minutes. For a quick command reference, see the **[Use Cases Quick Reference](docs/guides/en/use-cases.md)**.
 
+To customize rules for your project, check the **[Rule Editing Guide](docs/guides/en/rule-editing-guide.md)** for effective rule creation methods based on LLM characteristics.
+
 Learn about the design philosophy in [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
 
 ## 🚀 Beat Context Exhaustion with Sub agents
@@ -119,13 +121,15 @@ ai-coding-project-boilerplate/
 │   │   └── rules-index.yaml  # Rule file index
 │   ├── guides/
 │   │   ├── en/
-│   │   │   ├── quickstart.md     # Quick Start Guide
-│   │   │   ├── use-cases.md      # Command Cheatsheet
-│   │   │   └── sub-agents.md     # Sub agents Practice Guide
+│   │   │   ├── quickstart.md        # Quick Start Guide
+│   │   │   ├── use-cases.md         # Command Cheatsheet
+│   │   │   ├── sub-agents.md        # Sub agents Practice Guide
+│   │   │   └── rule-editing-guide.md # Rule Editing Guide
 │   │   └── ja/
-│   │       ├── quickstart.md     # Quick Start Guide
-│   │       ├── use-cases.md      # Command Cheatsheet
-│   │       └── sub-agents.md     # Sub agents Practice Guide
+│   │       ├── quickstart.md        # Quick Start Guide
+│   │       ├── use-cases.md         # Command Cheatsheet
+│   │       ├── sub-agents.md        # Sub agents Practice Guide
+│   │       └── rule-editing-guide.md # Rule Editing Guide
 │   ├── adr/               # Architecture Decision Records
 │   ├── design/            # Design documents
 │   ├── plans/             # Work plans (git-ignored)
