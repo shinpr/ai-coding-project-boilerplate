@@ -22,6 +22,23 @@ Immediately stop and reconsider design when detecting the following patterns:
 - **Symptomatic fixes** - Surface-level fixes that don't solve root causes
 - **Unplanned large-scale changes** - Lack of incremental approach
 
+## Fallback Design Principles
+
+### Core Principle: Fail-Fast
+Design philosophy that prioritizes improving primary code reliability over fallback implementations in distributed systems.
+
+### Criteria for Fallback Implementation
+- **Default Prohibition**: Do not implement unconditional fallbacks on errors
+- **Exception Approval**: Implement only when explicitly defined in Design Doc
+- **Layer Responsibilities**:
+  - Infrastructure Layer: Always throw errors upward (no fallback decisions)
+  - Application Layer: Implement decisions based on business requirements
+
+### Detection of Excessive Fallbacks
+- Require design review when writing the 3rd catch statement in the same feature
+- Verify Design Doc definition before implementing fallbacks
+- Properly log errors and make failures explicit
+
 ## Rule of Three - Criteria for Code Duplication
 
 How to handle duplicate code based on Martin Fowler's "Refactoring":

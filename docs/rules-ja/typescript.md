@@ -126,6 +126,20 @@ function isUser(value: unknown): value is User {
 
 **絶対ルール**: エラーの握りつぶし禁止。すべてのエラーは必ずログ出力と適切な処理を行う。
 
+**Fail-Fast原則**: エラー時は速やかに失敗させ、不正な状態での処理継続を防ぐ
+```typescript
+// ❌ 禁止: 無条件フォールバック
+catch (error) {
+  return defaultValue // エラーを隠蔽
+}
+
+// ✅ 必須: 明示的な失敗
+catch (error) {
+  logger.error('処理失敗', error)
+  throw error // 上位層で適切に処理
+}
+```
+
 **Result型パターン**: エラーを型で表現し、明示的に処理
 ```typescript
 type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }

@@ -28,6 +28,13 @@
    - Use actual dependencies (DB, API, etc.)
    - Verify major functional flows
 
+3. **Cross-functional Verification in E2E Tests**
+   - Mandatory verification of impact on existing features when adding new features
+   - Cover integration points with "High" and "Medium" impact levels from Design Doc's "Integration Point Map"
+   - Verification pattern: Existing feature operation → Enable new feature → Verify continuity of existing features
+   - Success criteria: No change in response content, processing time within 5 seconds
+   - Designed for automatic execution in CI/CD pipelines
+
 ## Red-Green-Refactor Process (Test-First Development)
 
 **Recommended Principle**: Always start code changes with tests

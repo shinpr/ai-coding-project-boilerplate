@@ -16,6 +16,7 @@ rules:
       - "Branded Types - TypeScript Community"
       - "Effect-TS / fp-ts - Functional Programming"
       - "Dependency Injection - Martin Fowler"
+      - "Avoiding fallback in distributed systems - AWS Builders' Library"
     sections:
       - "Basic Principles"
       - "Comment Writing Rules"
@@ -57,8 +58,10 @@ rules:
       - "DRY Principle - The Pragmatic Programmer"
       - "Single Responsibility Principle (SRP) - Clean Code"
       - "YAGNI Principle - Extreme Programming"
+      - "Avoiding fallback in distributed systems - AWS Builders' Library"
     sections:
       - "Technical Anti-patterns (Red Flag Patterns)"
+      - "Fallback Design Principles"
       - "Rule of Three - Criteria for Code Duplication"
       - "Common Failure Patterns and Avoidance Methods"
       - "Debugging Techniques"
