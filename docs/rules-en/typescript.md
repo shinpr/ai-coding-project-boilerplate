@@ -126,6 +126,20 @@ Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → 
 
 **Absolute Rule**: Error suppression prohibited. All errors must have log output and appropriate handling.
 
+**Fail-Fast Principle**: Fail quickly on errors to prevent continued processing in invalid states
+```typescript
+// ❌ Prohibited: Unconditional fallback
+catch (error) {
+  return defaultValue // Hides error
+}
+
+// ✅ Required: Explicit failure
+catch (error) {
+  logger.error('Processing failed', error)
+  throw error // Handle appropriately at higher layer
+}
+```
+
 **Result Type Pattern**: Express errors with types for explicit handling
 ```typescript
 type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }
