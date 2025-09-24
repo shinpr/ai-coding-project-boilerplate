@@ -74,6 +74,29 @@ Must be performed before Design Doc creation:
    - Clearly document similar functionality search results (found implementations or "none")
    - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
 
+### Integration Point Analysis【Important】
+Clarify integration points with existing systems when adding new features or modifying existing ones:
+
+1. **Identify and Document Integration Points**
+   ```yaml
+   ## Integration Point Map
+   Integration Point 1:
+     Existing Component: [Service Name/Method Name]
+     Integration Method: [Hook Addition/Call Addition/Data Reference/etc]
+     Impact Level: High (Process Flow Change) / Medium (Data Usage) / Low (Read-Only)
+     Required Test Coverage: [Continuity Verification of Existing Features]
+   ```
+
+2. **Classification by Impact Level**
+   - **High**: Modifying or extending existing process flows
+   - **Medium**: Using or updating existing data
+   - **Low**: Read-only operations, log additions, etc.
+
+3. **Reflection in Design Doc**
+   - Create "## Integration Point Map" section
+   - Clarify responsibilities and boundaries at each integration point
+   - Define error behavior at design phase
+
 ### Agreement Checklist【Most Important】
 Must be performed at the beginning of Design Doc creation:
 
