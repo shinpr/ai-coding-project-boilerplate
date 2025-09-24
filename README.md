@@ -10,7 +10,7 @@
 
 ⚡ **This boilerplate is for developers who want to:**
 - Build **production-ready TypeScript projects** faster with AI
-- Avoid **context exhaustion** in long AI coding sessions  
+- Avoid **context exhaustion** in long AI coding sessions
 - Standardize team workflows with **specialized AI agents**
 
 ## 📖 Table of Contents
@@ -26,6 +26,10 @@
 10. [Architecture Patterns](#-architecture)
 11. [Multilingual Support](#-multilingual-support)
 12. [FAQ](#-faq)
+
+> **Which should you use?**
+> - **Use this Boilerplate** if you're on **Claude Code** and building **TypeScript** apps with a rich **sub-agent** setup.
+> - **Use [Agentic Code](https://github.com/shinpr/agentic-code)** if you want **zero-config**, **tool-agnostic** workflows **without language restrictions** (Codex CLI/Cursor/Aider etc.).
 
 ## ⚡ Quick Start (3 Steps)
 
