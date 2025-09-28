@@ -21,10 +21,7 @@ TypeScript-based application implementation. Architecture patterns should be sel
 ## Architecture Design
 
 ### Architecture Patterns
-Select appropriate architecture patterns according to project requirements and scale:
-- **Vertical Slice Architecture**: LLM-optimized, one-feature-one-file principle
-- **Hybrid Progressive Architecture**: Progressive evolution from small to large scale
-- **Architecture Consistency**: Strictly follow the selected pattern
+Select and strictly follow project-specific patterns. Note: This refers to design/implementation consistency, not runtime data consistency (e.g., LLM outputs).
 
 ## Unified Data Flow Principles
 

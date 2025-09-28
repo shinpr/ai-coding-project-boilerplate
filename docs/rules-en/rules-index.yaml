@@ -45,6 +45,7 @@ rules:
       - "Test Implementation Conventions"
       - "Test Granularity Principles"
       - "Mock Type Safety Enforcement"
+      - "Continuity Test Scope"
       - "Basic Vitest Example"
 
   ai-development-guide:
@@ -81,6 +82,7 @@ rules:
       - "Basic Technology Stack Policy"
       - "Environment Variable Management and Security"
       - "Architecture Design"
+      - "Architecture Patterns"
       - "Unified Data Flow Principles"
       - "Build and Testing"
 

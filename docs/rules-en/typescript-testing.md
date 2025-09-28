@@ -169,6 +169,10 @@ const sdkMock = {
 } as unknown as ExternalSDK // Complex external SDK type structure
 ```
 
+## Continuity Test Scope
+
+Limited to verifying existing feature impact when adding new features. Long-term operations and load testing are infrastructure responsibilities, not test scope.
+
 ## Basic Vitest Example
 
 ```typescript
