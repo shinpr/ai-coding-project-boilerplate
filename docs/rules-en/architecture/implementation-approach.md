@@ -139,7 +139,6 @@ Resource Constraints:
 
 Business Constraints:
   - Market launch timing requirements
-  - Operational continuity necessity
   - Customer impact minimization requirements
   - Regulatory/industry standard compliance
 ```

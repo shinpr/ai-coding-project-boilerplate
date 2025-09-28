@@ -281,6 +281,12 @@ Response in the following format upon execution completion:
 - **Post-execution**: Complete AC→test case correspondence, dependency validity
 - **Output requirements**: Integration tests and E2E tests MUST be generated in separate files
 
+## LLM Generation Test Design Notice
+
+**Exclude from testing**:
+- Output reproducibility (LLM outputs vary normally)
+- Long-term operations (infrastructure responsibility)
+
 ## Exception Handling and Escalation
 
 ### Auto-processable
