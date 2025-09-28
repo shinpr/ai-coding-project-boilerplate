@@ -169,6 +169,10 @@ const sdkMock = {
 } as unknown as ExternalSDK // 外部SDKの複雑な型のため
 ```
 
+## 継続性テストの範囲
+
+新機能追加時の既存機能への影響確認に限定。長時間運用・負荷テストはインフラ層の責務のため対象外。
+
 ## Vitestの基本例
 
 ```typescript
