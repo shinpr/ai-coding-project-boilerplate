@@ -118,42 +118,6 @@ rules:
       - "Diagram Requirements"
       - "Common ADR Relationships"
 
-  vertical-slice-architecture:
-    file: "architecture/vertical-slice/rules.md"
-    tags: [architecture, vertical-slice, llm-optimized, single-file, implementation]
-    typical-use: "When adopting Vertical Slice Architecture, feature implementation"
-    size: medium
-    key-references:
-      - "Vertical Slice Architecture - Jimmy Bogard"
-      - "Anthropic LLM Research"
-    sections:
-      - "Core Implementation Rules"
-      - "Implementation Guidelines"
-      - "Consolidation Decision Criteria"
-      - "LLM Implementation Checklist"
-      - "Anti-patterns"
-      - "Best Practices"
-      - "LLM Implementation Guidelines"
-      - "Summary"
-
-  hybrid-progressive-architecture:
-    file: "architecture/hybrid-progressive/rules.md"
-    tags: [architecture, scalable, progressive, layered, implementation]
-    typical-use: "Progressively growing projects, implementation rule application"
-    size: medium
-    key-references:
-      - "Evolutionary Architecture - Neal Ford"
-      - "Building Microservices - Sam Newman"
-    sections:
-      - "Basic Principles"
-      - "Stage-specific Implementation Rules"
-      - "Migration Rules"
-      - "Decision Flowchart"
-      - "Coding Conventions"
-      - "Quality Management"
-      - "LLM Implementation Guidelines"
-      - "Summary"
-
   implementation-approach:
     file: "architecture/implementation-approach.md"
     tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]

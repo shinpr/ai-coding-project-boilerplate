@@ -118,42 +118,6 @@ rules:
       - "図表作成要件"
       - "共通ADRとの関係性"
 
-  vertical-slice-architecture:
-    file: "architecture/vertical-slice/rules.md"
-    tags: [architecture, vertical-slice, llm-optimized, single-file, implementation]
-    typical-use: "Vertical Slice Architecture採用時、機能実装"
-    size: medium
-    key-references:
-      - "Vertical Slice Architecture - Jimmy Bogard"
-      - "Anthropic LLM Research"
-    sections:
-      - "コア実装ルール"
-      - "実装ガイドライン"
-      - "共通化の判断基準"
-      - "LLM向け実装チェックリスト"
-      - "アンチパターン"
-      - "ベストプラクティス"
-      - "LLM向け実装指針"
-      - "まとめ"
-
-  hybrid-progressive-architecture:
-    file: "architecture/hybrid-progressive/rules.md"
-    tags: [architecture, scalable, progressive, layered, implementation]
-    typical-use: "段階的に成長するプロジェクト、実装ルール適用"
-    size: medium
-    key-references:
-      - "Evolutionary Architecture - Neal Ford"
-      - "Building Microservices - Sam Newman"
-    sections:
-      - "基本原則"
-      - "Stage別実装ルール"
-      - "移行ルール"
-      - "判断フローチャート"
-      - "コーディング規約"
-      - "品質管理"
-      - "LLM向け実装指針"
-      - "まとめ"
-
   implementation-approach:
     file: "architecture/implementation-approach.md"
     tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
