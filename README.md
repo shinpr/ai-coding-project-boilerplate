@@ -23,9 +23,8 @@
 7. [Project Structure](#-project-structure)
 8. [Development Commands](#-development-commands)
 9. [Rules & Quality Assurance](#-development-rules--quality-assurance)
-10. [Architecture Patterns](#-architecture)
-11. [Multilingual Support](#-multilingual-support)
-12. [FAQ](#-faq)
+10. [Multilingual Support](#-multilingual-support)
+11. [FAQ](#-faq)
 
 > **Which should you use?**
 > - **Use this Boilerplate** if you're on **Claude Code** and building **TypeScript** apps with a rich **sub-agent** setup.
@@ -191,18 +190,6 @@ Sub agents handle quality automatically:
 - **code-reviewer**: Validates against design docs
 
 Manual verification: `npm run check:all`
-
-## 🏗️ Architecture
-
-Three proven patterns optimized for AI coding:
-
-| Pattern | Best For | Key Benefit |
-|---------|----------|-------------|
-| **Layered** | Enterprise apps | Clear separation of concerns |
-| **Vertical Slice** | Features-first development | Minimal context per feature |
-| **Hybrid Progressive** | Growing projects | Scales from MVP to enterprise |
-
-Details in `docs/rules/architecture/`
 
 ## 🌐 Multilingual Support
 
