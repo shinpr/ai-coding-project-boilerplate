@@ -28,7 +28,7 @@
 
 > **Which one should you use?**
 > - **Use this Boilerplate** if you want to **maximize precision** with **TypeScript × Sub-agent** setup optimized for **Claude Code**.
-> - **Use [claude-code-workflows](https://github.com/shinpr/claude-code-workflows)** if you're on **Claude Code** and want to **get started immediately** with **2 commands** and **language-agnostic** workflows.
+> - **Use [claude-code-workflows](https://github.com/shinpr/claude-code-workflows)** if you're on **Claude Code** and want to **start with any project** in **2 commands** and **language-agnostic** workflows.
 > - **Use [Agentic Code](https://github.com/shinpr/agentic-code)** if you want **zero-config**, **tool-agnostic** workflows **without language restrictions** (Codex CLI/Cursor/Aider etc.).
 
 ## ⚡ Quick Start (3 Steps)
