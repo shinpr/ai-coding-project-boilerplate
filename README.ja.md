@@ -26,8 +26,9 @@
 10. [多言語対応](#-多言語対応)
 11. [よくある質問](#-よくある質問)
 
-> **どちらを使うべき？**
-> - **このボイラープレート**を使う → **Claude Code**で**TypeScript**アプリを**サブエージェント**環境で開発したい場合
+> **どれを使うべき？**
+> - **このボイラープレート**を使う → **Claude Code**で**TypeScript × サブエージェント**に最適化し、**精度を最大化**したい場合
+> - **[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)**を使う → **Claude Code**で**2コマンドですぐ始められる**、**プログラミング言語非依存**のワークフロー
 > - **[Agentic Code](https://github.com/shinpr/agentic-code)**を使う → **設定不要**で**どんなツール**でも**プログラミング言語の指定なく**開発したい場合（Codex CLI/Cursor/Aider等）
 
 ## ⚡ クイックスタート（3ステップ）
