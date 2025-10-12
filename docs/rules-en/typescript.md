@@ -23,36 +23,16 @@
 
 **Type Guard Implementation Pattern**
 ```typescript
-// Safely validate external input
 function isUser(value: unknown): value is User {
-  return typeof value === 'object' && value !== null && 
-    'id' in value && 'name' in value
+  return typeof value === 'object' && value !== null && 'id' in value && 'name' in value
 }
-// Usage: if (isUser(data)) { /* data is typed as User */ }
 ```
 
 **Modern Type Features**
-- **satisfies Operator**: Type check while preserving type inference
-  ```typescript
-  const config = { port: 3000 } satisfies Config  // ✅ Preserves inference
-  const config: Config = { port: 3000 }           // ❌ Loses inference
-  ```
-- **const Assertion**: Ensure immutability with literal types
-  ```typescript
-  const ROUTES = { HOME: '/' } as const satisfies Routes  // ✅ Immutable and type-safe
-  ```
-- **Branded Types**: Distinguish meaning for same primitive types
-  ```typescript
-  type UserId = string & { __brand: 'UserId' }
-  type OrderId = string & { __brand: 'OrderId' }
-  // UserId and OrderId are incompatible - prevents mixing
-  ```
-- **Template Literal Types**: Express string patterns with types
-  ```typescript
-  type Route = `/${string}`
-  type HttpMethod = 'GET' | 'POST'
-  type Endpoint = `${HttpMethod} ${Route}`
-  ```
+- **satisfies Operator**: `const config = { port: 3000 } satisfies Config` - Preserves inference
+- **const Assertion**: `const ROUTES = { HOME: '/' } as const satisfies Routes` - Immutable and type-safe
+- **Branded Types**: `type UserId = string & { __brand: 'UserId' }` - Distinguish meaning
+- **Template Literal Types**: `type Endpoint = \`\${HttpMethod} \${Route}\`` - Express string patterns with types
 
 **Type Safety in Implementation**
 - API Communication: Always receive responses as `unknown`, validate with type guards
@@ -84,8 +64,6 @@ Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → 
   // ✅ Functions and interfaces
   interface UserService { create(data: UserData): User }
   const userService: UserService = { create: (data) => {...} }
-  // ❌ Unnecessary class
-  class UserService { create(data: UserData) {...} }
   ```
 
 **Function Design**
@@ -93,8 +71,6 @@ Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → 
   ```typescript
   // ✅ Object parameter
   function createUser({ name, email, role }: CreateUserParams) {}
-  // ❌ Multiple parameters
-  function createUser(name: string, email: string, role: string) {}
   ```
 
 **Dependency Injection**
@@ -102,8 +78,6 @@ Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → 
   ```typescript
   // ✅ Receive dependency as parameter
   function createService(repository: Repository) { return {...} }
-  // ❌ Direct import dependency
-  import { userRepository } from './infrastructure/repository'
   ```
 
 **Asynchronous Processing**
