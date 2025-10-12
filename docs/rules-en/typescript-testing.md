@@ -85,7 +85,7 @@
 ## Test Helper Utilization Rules
 
 ### Basic Principles
-Test helpers are utilized to reduce duplication in test code and improve maintainability.
+Use test helpers to reduce duplication and improve maintainability.
 
 ### Decision Criteria
 | Mock Characteristics | Response Policy |
