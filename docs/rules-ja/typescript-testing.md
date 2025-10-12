@@ -97,18 +97,13 @@
 
 ### テストヘルパー活用例
 ```typescript
-// ✅ 推奨: ビルダーパターンの活用
-const testData = new TestDataBuilder()
-  .withDefaults()
-  .withName('Test User')
-  .build()
+// ✅ ビルダーパターン
+const testData = new TestDataBuilder().withDefaults().withName('Test User').build()
 
-// ✅ 推奨: カスタムアサーション
-function assertValidUser(user: unknown): asserts user is User {
-  // バリデーションロジック
-}
+// ✅ カスタムアサーション
+function assertValidUser(user: unknown): asserts user is User {}
 
-// ❌ 避ける: 重複する複雑なモックの個別実装
+// ❌ 重複する複雑なモックの個別実装
 ```
 
 ## テストの実装規約
@@ -176,9 +171,8 @@ const sdkMock = {
 ## Vitestの基本例
 
 ```typescript
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
-// モックの設定例
 vi.mock('./userService', () => ({
   getUserById: vi.fn(),
   updateUser: vi.fn()
@@ -186,13 +180,8 @@ vi.mock('./userService', () => ({
 
 describe('ComponentName', () => {
   it('should follow AAA pattern', () => {
-    // Arrange
     const input = 'test'
-    
-    // Act
     const result = someFunction(input)
-    
-    // Assert
     expect(result).toBe('expected')
   })
 })
