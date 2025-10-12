@@ -23,36 +23,16 @@
 
 **型ガードの実装パターン**
 ```typescript
-// 外部入力を安全に検証
 function isUser(value: unknown): value is User {
-  return typeof value === 'object' && value !== null && 
-    'id' in value && 'name' in value
+  return typeof value === 'object' && value !== null && 'id' in value && 'name' in value
 }
-// 使用例: if (isUser(data)) { /* dataはUser型 */ }
 ```
 
 **モダンな型機能の活用**
-- **satisfies演算子**: 型推論を維持しつつ型チェック
-  ```typescript
-  const config = { port: 3000 } satisfies Config  // ✅ 型推論維持
-  const config: Config = { port: 3000 }           // ❌ 型推論失われる
-  ```
-- **const assertion**: リテラル型で不変性を保証
-  ```typescript
-  const ROUTES = { HOME: '/' } as const satisfies Routes  // ✅ 不変かつ型安全
-  ```
-- **ブランド型**: 同じプリミティブ型でも意味を区別
-  ```typescript
-  type UserId = string & { __brand: 'UserId' }
-  type OrderId = string & { __brand: 'OrderId' }
-  // UserIdとOrderIdは互換性なし - 混同を防止
-  ```
-- **テンプレートリテラル型**: 文字列パターンを型で表現
-  ```typescript
-  type Route = `/${string}`
-  type HttpMethod = 'GET' | 'POST'
-  type Endpoint = `${HttpMethod} ${Route}`
-  ```
+- **satisfies演算子**: `const config = { port: 3000 } satisfies Config` - 型推論維持
+- **const assertion**: `const ROUTES = { HOME: '/' } as const satisfies Routes` - 不変かつ型安全
+- **ブランド型**: `type UserId = string & { __brand: 'UserId' }` - 意味を区別
+- **テンプレートリテラル型**: `type Endpoint = \`\${HttpMethod} \${Route}\`` - 文字列パターンを型で表現
 
 **実装での型安全性**
 - API通信: レスポンスは必ず`unknown`で受け、型ガードで検証
@@ -84,8 +64,6 @@ function isUser(value: unknown): value is User {
   // ✅ 関数とinterface
   interface UserService { create(data: UserData): User }
   const userService: UserService = { create: (data) => {...} }
-  // ❌ 不要なクラス
-  class UserService { create(data: UserData) {...} }
   ```
 
 **関数設計**
@@ -93,8 +71,6 @@ function isUser(value: unknown): value is User {
   ```typescript
   // ✅ オブジェクト引数
   function createUser({ name, email, role }: CreateUserParams) {}
-  // ❌ 多数の引数
-  function createUser(name: string, email: string, role: string) {}
   ```
 
 **依存性注入**
@@ -102,8 +78,6 @@ function isUser(value: unknown): value is User {
   ```typescript
   // ✅ 依存性を引数で受け取る
   function createService(repository: Repository) { return {...} }
-  // ❌ 直接importした実装に依存
-  import { userRepository } from './infrastructure/repository'
   ```
 
 **非同期処理**

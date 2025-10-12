@@ -1,7 +1,5 @@
 # Technical Design Rules
 
-This rule file defines rules and guidelines for the project's technical architecture design, data flow design, and environment configuration.
-
 ## Basic Technology Stack Policy
 TypeScript-based application implementation. Architecture patterns should be selected according to project requirements and scale.
 
@@ -21,7 +19,7 @@ TypeScript-based application implementation. Architecture patterns should be sel
 ## Architecture Design
 
 ### Architecture Patterns
-Select and strictly follow project-specific patterns. Note: This refers to design/implementation consistency, not runtime data consistency (e.g., LLM outputs).
+Strictly adhere to selected project patterns. Project-specific details reference `docs/rules/architecture/`.
 
 ## Unified Data Flow Principles
 

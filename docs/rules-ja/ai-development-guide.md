@@ -1,7 +1,5 @@
 # AI開発者ガイド - 技術的判断基準とアンチパターン集
 
-このドキュメントは、LLM（あなた）が実装時に参照すべき技術的な判断基準、アンチパターン、デバッグ手法、品質チェックコマンドをまとめたものです。本ドキュメントは純粋に技術的なガイダンスに特化します。
-
 ## 技術的アンチパターン（赤信号パターン）
 
 以下のパターンを検出したら即座に停止し、設計を見直すこと：
@@ -65,15 +63,11 @@ Martin Fowler「Refactoring」に基づく重複コードの扱い方：
 
 ### 実装例
 ```typescript
-// ❌ 悪い例: 1回目の重複で即共通化
+// ❌ 1回目の重複で即共通化
 function validateUserEmail(email: string) { /* ... */ }
 function validateContactEmail(email: string) { /* ... */ }
-// → 早すぎる抽象化
 
-// ✅ 良い例: 3回目で共通化
-// 1回目: inline実装
-// 2回目: コピーだが将来を意識
-// 3回目: 共通バリデーターに抽出
+// ✅ 3回目で共通化
 function validateEmail(email: string, context: 'user' | 'contact' | 'admin') { /* ... */ }
 ```
 
@@ -120,12 +114,9 @@ function validateEmail(email: string, context: 'user' | 'contact' | 'admin') { /
 ## デバッグ手法
 
 ### 1. エラー分析手順
-```bash
-# スタックトレースの読み方
 1. エラーメッセージ（最初の行）を正確に読む
 2. スタックトレースの最初と最後に注目
 3. 自分のコードが現れる最初の行を特定
-```
 
 ### 2. 5 Whys - 根本原因分析
 ```
@@ -142,9 +133,8 @@ Why5: 破壊的変更を含むメジャーバージョンアップ
 - モックで外部依存を置き換え
 - 問題が再現する最小構成を作成
 
-### 4. デバッグのためのログ出力
+### 4. デバッグログ出力
 ```typescript
-// 構造化ログで問題を追跡
 console.log('DEBUG:', {
   context: 'user-creation',
   input: { email, name },

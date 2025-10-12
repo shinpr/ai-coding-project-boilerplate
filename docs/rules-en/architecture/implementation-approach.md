@@ -1,7 +1,5 @@
 # Implementation Strategy Selection Framework (Meta-cognitive Approach)
 
-An implementation strategy selection framework based on meta-cognitive thinking. Derives optimal implementation approaches through a systematic decision process from understanding existing implementations to constraint compatibility.
-
 ## Meta-cognitive Strategy Selection Process
 
 ### Phase 1: Comprehensive Current State Analysis
@@ -10,23 +8,9 @@ An implementation strategy selection framework based on meta-cognitive thinking.
 
 #### Analysis Framework
 ```yaml
-Architecture Analysis:
-  - Current responsibility separation and improvement potential
-  - Data flow identification and evaluation
-  - Dependency visualization and impact scope
-  - Technical debt quantification
-
-Implementation Quality Assessment:
-  - Code quality and maintainability
-  - Test coverage and reliability
-  - Performance characteristics
-  - Security considerations
-
-Historical Context Understanding:
-  - Why did it become the current form?
-  - Validity check of past decisions
-  - Changes in technical constraints
-  - Evolution of business requirements
+Architecture Analysis: Responsibility separation, data flow, dependencies, technical debt
+Implementation Quality Assessment: Code quality, test coverage, performance, security
+Historical Context Understanding: Current form rationale, past decision validity, constraint changes, requirement evolution
 ```
 
 #### Meta-cognitive Question List
@@ -41,17 +25,8 @@ Historical Context Understanding:
 
 #### Strategy Discovery Process
 ```yaml
-Research and Exploration:
-  - Implementation examples and patterns from similar tech stacks (use WebSearch)
-  - Approach collection from projects handling similar challenges
-  - Open source implementation references
-  - Technical literature and blog research
-
-Creative Thinking:
-  - Sequential/parallel application of multiple strategies
-  - Design based on project time/human/technical constraints
-  - Phase division and milestone setting
-  - Pre-design of necessary extension points
+Research and Exploration: Tech stack examples (WebSearch), similar projects, OSS references, literature/blogs
+Creative Thinking: Strategy combinations, constraint-based design, phase division, extension point design
 ```
 
 #### Reference Strategy Patterns (Creative Combinations Encouraged)
@@ -79,38 +54,15 @@ Creative Thinking:
 
 #### Risk Analysis Matrix
 ```yaml
-Technical Risks:
-  - Impact on existing systems
-  - Data consistency assurance
-  - Performance degradation possibility
-  - Integration complexity
-
-Operational Risks:
-  - Service availability impact
-  - Deployment downtime
-  - Monitoring/operation process changes
-  - Failure rollback procedures
-
-Project Risks:
-  - Schedule delay possibility
-  - Technology learning costs
-  - Quality requirement achievement
-  - Cross-team coordination complexity
+Technical Risks: System impact, data consistency, performance degradation, integration complexity
+Operational Risks: Service availability, deployment downtime, process changes, rollback procedures
+Project Risks: Schedule delays, learning costs, quality achievement, team coordination
 ```
 
 #### Risk Control Strategies
 ```yaml
-Preventive Measures:
-  - Phased migration to new system without service disruption
-  - Verification through parallel operation of old and new systems
-  - Addition of integration and regression tests for new features
-  - Pre-implementation setup of performance and error monitoring
-
-Incident Response:
-  - Clarify rollback procedures and conditions to old system
-  - Prepare log analysis and metrics dashboards
-  - Define communication system and role assignments for failures
-  - Document partial service continuation procedures
+Preventive Measures: Phased migration, parallel operation verification, integration/regression tests, monitoring setup
+Incident Response: Rollback procedures, log/metrics preparation, communication system, service continuation procedures
 ```
 
 ### Phase 4: Constraint Compatibility Verification
@@ -119,28 +71,10 @@ Incident Response:
 
 #### Constraint Checklist
 ```yaml
-Technical Constraints:
-  - Compatibility with existing libraries/frameworks
-  - Server resource, network, database capacity limits
-  - Mandatory requirements like data protection, access control, audit logging
-  - Numerical targets like response time <5 seconds, 99.9% uptime
-
-Temporal Constraints:
-  - Project deadlines and priorities
-  - Dependencies with other projects
-  - Milestone/release plans
-  - Learning/acquisition period considerations
-
-Resource Constraints:
-  - Team size, new technology learning time, existing skill sets
-  - Developer work hours, server resources, operational system allocation
-  - Project budget ceiling, running cost ceiling
-  - External vendor support deadlines, SLAs, contract terms
-
-Business Constraints:
-  - Market launch timing requirements
-  - Customer impact minimization requirements
-  - Regulatory/industry standard compliance
+Technical Constraints: Library compatibility, resource capacity, mandatory requirements, numerical targets
+Temporal Constraints: Deadlines/priorities, dependencies, milestones, learning periods
+Resource Constraints: Team/skills, work hours/systems, budget, external contracts
+Business Constraints: Market launch timing, customer impact, regulatory compliance
 ```
 
 ### Phase 5: Implementation Approach Decision

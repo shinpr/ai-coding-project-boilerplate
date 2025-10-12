@@ -1,7 +1,5 @@
 # Project Context
 
-This document defines the project characteristics, background, development structure, and other contexts that should always be considered during code implementation.
-
 ## Basic Configuration
 
 ### Project Nature

@@ -85,7 +85,7 @@
 ## Test Helper Utilization Rules
 
 ### Basic Principles
-Test helpers are utilized to reduce duplication in test code and improve maintainability.
+Use test helpers to reduce duplication and improve maintainability.
 
 ### Decision Criteria
 | Mock Characteristics | Response Policy |
@@ -97,18 +97,13 @@ Test helpers are utilized to reduce duplication in test code and improve maintai
 
 ### Test Helper Usage Examples
 ```typescript
-// ✅ Recommended: Utilize builder pattern
-const testData = new TestDataBuilder()
-  .withDefaults()
-  .withName('Test User')
-  .build()
+// ✅ Builder pattern
+const testData = new TestDataBuilder().withDefaults().withName('Test User').build()
 
-// ✅ Recommended: Custom assertions
-function assertValidUser(user: unknown): asserts user is User {
-  // Validation logic
-}
+// ✅ Custom assertions
+function assertValidUser(user: unknown): asserts user is User {}
 
-// ❌ Avoid: Individual implementation of duplicate complex mocks
+// ❌ Individual implementation of duplicate complex mocks
 ```
 
 ## Test Implementation Conventions
@@ -176,9 +171,8 @@ Limited to verifying existing feature impact when adding new features. Long-term
 ## Basic Vitest Example
 
 ```typescript
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
-// Mock setup example
 vi.mock('./userService', () => ({
   getUserById: vi.fn(),
   updateUser: vi.fn()
@@ -186,13 +180,8 @@ vi.mock('./userService', () => ({
 
 describe('ComponentName', () => {
   it('should follow AAA pattern', () => {
-    // Arrange
     const input = 'test'
-    
-    // Act
     const result = someFunction(input)
-    
-    // Assert
     expect(result).toBe('expected')
   })
 })
