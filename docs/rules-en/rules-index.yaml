@@ -50,8 +50,8 @@ rules:
 
   ai-development-guide:
     file: "ai-development-guide.md"
-    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices]
-    typical-use: "Technical decision criteria, anti-pattern detection, debugging techniques, quality check commands, implementation best practices"
+    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion]
+    typical-use: "Technical decision criteria, anti-pattern detection, debugging techniques, quality check commands, implementation best practices, impact analysis, unused code deletion"
     size: medium
     key-references:
       - "Rule of Three - Martin Fowler"
@@ -69,6 +69,7 @@ rules:
       - "Quality Check Command Reference"
       - "Situations Requiring Technical Decisions"
       - "Continuous Improvement Mindset"
+      - "Implementation Completeness Assurance"
 
   technical-spec:
     file: "technical-spec.md"

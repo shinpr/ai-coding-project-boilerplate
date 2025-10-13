@@ -211,3 +211,49 @@ npm run lint:fix      # Lint fixes
 - **Humility**: Perfect code doesn't exist, welcome feedback
 - **Courage**: Execute necessary refactoring boldly
 - **Transparency**: Clearly document technical decision reasoning
+
+## Implementation Completeness Assurance
+
+### Required Procedure for Impact Analysis
+
+**Completion Criteria**: Complete all 3 stages
+
+#### 1. Discovery
+```bash
+Grep -n "TargetClass\|TargetMethod" -o content
+Grep -n "DependencyClass" -o content
+Grep -n "targetData\|SetData\|UpdateData" -o content
+```
+
+#### 2. Understanding
+**Mandatory**: Read all discovered files and include necessary parts in context:
+- Caller's purpose and context
+- Dependency direction
+- Data flow: generation → modification → reference
+
+#### 3. Identification
+Structured impact report (mandatory):
+```
+## Impact Analysis
+### Direct Impact: ClassA, ClassB (with reasons)
+### Indirect Impact: SystemX, PrefabY (with integration paths)
+### Processing Flow: Input → Process1 → Process2 → Output
+```
+
+**Important**: Do not stop at search; execute all 3 stages
+
+### Unused Code Deletion Rule
+
+When unused code is detected → Will it be used?
+- Yes → Implement immediately (no deferral allowed)
+- No → Delete immediately (remains in Git history)
+
+Target: Code, documentation, configuration files
+
+### Existing Code Deletion Decision Flow
+
+```
+In use? No → Delete immediately (remains in Git history)
+       Yes → Working? No → Delete + Reimplement
+                     Yes → Fix
+```

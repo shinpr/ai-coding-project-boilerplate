@@ -50,8 +50,8 @@ rules:
 
   ai-development-guide:
     file: "ai-development-guide.md"
-    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices]
-    typical-use: "技術的判断基準、アンチパターン検出、デバッグ手法、品質チェックコマンド、実装時のベストプラクティス"
+    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion]
+    typical-use: "技術的判断基準、アンチパターン検出、デバッグ手法、品質チェックコマンド、実装時のベストプラクティス、影響範囲調査、未使用コード削除"
     size: medium
     key-references:
       - "Rule of Three - Martin Fowler"
@@ -69,6 +69,7 @@ rules:
       - "品質チェックコマンドリファレンス"
       - "技術的判断が必要な場面"
       - "継続的改善のマインドセット"
+      - "実装作業の完全性担保"
 
   technical-spec:
     file: "technical-spec.md"
