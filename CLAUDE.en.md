@@ -33,7 +33,7 @@ Reason: To prevent implementations that differ from user intent and ensure corre
 - When updating task status: Recording implementation details is mandatory (no blanks)
 
 ### Execution Prerequisites
-1. **rule-advisor output** → JSON response must exist
+1. **rule-advisor agent execution (invoke using Task tool)** → JSON response must exist
 2. **TodoWrite task** → in_progress status must exist
 3. **User approval record** → Explicit approval before Edit/Write
 4. **Quality check results** → Cannot complete with errors > 0
