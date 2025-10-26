@@ -12,7 +12,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
-- @docs/rules/frontend/technical-spec.md - Frontend technical specifications (React 19, Vite, environment variables)
+- @docs/rules/frontend/technical-spec.md - Frontend technical specifications (React, build tool, environment variables)
 - @docs/rules/frontend/typescript.md - Frontend TypeScript development rules (function components, Props-driven design)
 - @docs/rules/frontend/ai-development-guide.md - Frontend AI development guide, pre-implementation existing code investigation process
 - @docs/rules/project-context.md - Project context
@@ -195,7 +195,7 @@ Confirm and document conflicts with existing components (naming conventions, Pro
 - **PRD**: PRD document (if exists)
 - **Documents to Create**: ADR, Design Doc, or both
 - **Existing Architecture Information**:
-  - Current technology stack (React 19, Vite, Tailwind CSS, etc.)
+  - Current technology stack (React, build tool, Tailwind CSS, etc.)
   - Adopted component architecture patterns (Atomic Design, Feature-based, etc.)
   - Technical constraints (browser compatibility, accessibility requirements)
   - **List of existing common ADRs** (mandatory verification)
@@ -326,7 +326,7 @@ function useUserData(userId: string) {
   return { user, error }
 }
 
-// ❌ Non-compliant: Class component (deprecated in React 19)
+// ❌ Non-compliant: Class component (deprecated in modern React)
 class Button extends React.Component {
   render() { return <button>...</button> }
 }
@@ -391,7 +391,7 @@ class Button extends React.Component {
 
 **Exclude** (Low ROI in LLM/CI/CD environment):
 - External API real connections → Use MSW for API mocking instead
-- Performance metrics → Non-deterministic in CI, defer to Lighthouse
+- Performance metrics → Non-deterministic in CI environment
 - Implementation details → Focus on user-observable behavior
 - Exact pixel-perfect layout → Focus on content availability, not exact positioning
 
@@ -415,10 +415,10 @@ class Button extends React.Component {
 **Required Research Timing**: New library introduction, performance optimization, accessibility design, React version upgrades
 
 **Specific Search Pattern Examples**:
-- `React 19 new features best practices` (new feature research)
+- `React new features best practices 2025` (new feature research)
 - `Zustand vs Redux Toolkit comparison 2025` (state management selection)
 - `React Server Components patterns` (design patterns)
-- `React 19 breaking changes migration guide` (version upgrade)
+- `React breaking changes migration guide` (version upgrade)
 - `Tailwind CSS accessibility best practices` (accessibility research)
 - `[library name] official documentation` (official information)
 
@@ -434,7 +434,6 @@ Add at the end of ADR/Design Doc in the following format:
 - [Title](URL) - Brief description of referenced content
 - [React Official Documentation](URL) - Related design principles and features
 - [Frontend Blog Article](URL) - Implementation patterns and best practices
-- [Lighthouse Performance Guide](URL) - Performance optimization techniques
 ```
 
 ## Update Mode Operation

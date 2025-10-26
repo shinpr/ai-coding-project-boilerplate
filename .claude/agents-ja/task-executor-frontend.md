@@ -19,19 +19,19 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
   - プロジェクト固有のアーキテクチャルールが定義されている場合は読み込む
   - 採用されているアーキテクチャパターンに応じたルールを適用
   - コンポーネント階層、機能ベース構造等
-- **@docs/rules/frontend/typescript.md** - フロントエンドTypeScript開発ルール（React 19 function components、Props-driven設計、型安全性）
-- **@docs/rules/frontend/typescript-testing.md** - フロントエンドテストルール（React Testing Library、MSW、80%カバレッジ、Co-location原則）
+- **@docs/rules/frontend/typescript.md** - フロントエンドTypeScript開発ルール（React function components、Props-driven設計、型安全性）
+- **@docs/rules/frontend/typescript-testing.md** - フロントエンドテストルール（React Testing Library、MSW、60%カバレッジ、Co-location原則）
 - **@docs/rules/frontend/ai-development-guide.md** - フロントエンドAI開発ガイド、実装前の既存コード調査プロセス
   **厳守**: 実装・テスト・コード品質に関するすべてのルール
-  **例外**: 品質保証工程（Lighthouse含むPhase）・コミット作成は責務範囲外のため適用しない
+  **例外**: 品質保証工程・コミット作成は責務範囲外のため適用しない
 
 ### 実装への反映
 - アーキテクチャルールでコンポーネント階層・データフローを決定
 - TypeScriptルールで型定義（React Props、State）・エラーハンドリングを実装
 - テストルールでTDD実践・テスト構造を作成（React Testing Library）
-- 技術仕様で使用ツール・ライブラリを選択（React 19、Vite、MSW）
+- 技術仕様で使用ツール・ライブラリを選択（React、ビルドツール、MSW）
 - プロジェクトコンテキストで要件適合性を検証
-- **function components（React 19標準）の使用を必ず厳守**
+- **function components（モダンReact標準）の使用を必ず厳守**
 
 ## 必須判断基準（実装前チェック）
 
@@ -135,7 +135,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 **各チェックボックス項目の実装手順**:
 1. **Red**: そのチェックボックス項目のReact Testing Libraryテストを作成（失敗状態）
    ※統合テスト（複数コンポーネント）は実装と同時作成・実行；E2Eテストは最終フェーズで実行のみ
-2. **Green**: テストをパスさせる最小限のコード実装（React 19 function component）
+2. **Green**: テストをパスさせる最小限のコード実装（React function component）
 3. **Refactor**: コード品質向上（可読性、保守性、Reactベストプラクティス）
 4. **進捗更新【必須】**: 以下を順次実行（省略不可）
    4-1. **タスクファイル**: 完了項目を `[ ]` → `[x]` に変更
@@ -186,7 +186,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
     "reason": "テスト実行理由・検証内容"
   },
   "readyForQualityCheck": true,
-  "nextActions": "品質保証プロセスによる全体品質検証（Lighthouse含む）"
+  "nextActions": "品質保証プロセスによる全体品質検証"
 }
 ```
 
@@ -259,14 +259,14 @@ Design Doc通りに実装できない場合、以下のJSON形式でエスカレ
 - 各ステップ完了時にタスクファイル/作業計画書/全体設計の `[ ]`→`[x]` 更新
 - React Testing LibraryによるTDD厳守（Red→Green→Refactor）
 - 調査タスクの成果物作成
-- 常にfunction componentsを使用（React 19標準）
+- 常にfunction componentsを使用（モダンReact標準）
 - テストをコンポーネントとCo-location（同一ディレクトリ）
 
 **実行しない**:
-- 全体品質チェック（Lighthouse含む品質保証プロセスに委譲）
+- 全体品質チェック（品質保証プロセスに委譲）
 - コミット作成（品質チェック後に実行）
 - Design Doc通りに実装できない場合の強行実装（必ずエスカレーション）
-- class componentsの使用（React 19で非推奨）
+- class componentsの使用（モダンReactで非推奨）
 
 **エスカレーション必須**:
 - 設計乖離や近道修正を検討する場合（上記判定基準参照）

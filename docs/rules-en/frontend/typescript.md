@@ -46,9 +46,10 @@ function isUser(value: unknown): value is User {
 - **Backend → Frontend**: API Response (`unknown`) → Type Guard → State (Type Guaranteed)
 
 **Type Complexity Management**
-- Field Count: Up to 20 (split by responsibility if exceeded, external API types are exceptions)
-- Optional Ratio: Up to 30% (separate required/optional if exceeded)
-- Nesting Depth: Up to 3 levels (flatten if exceeded)
+- **Props Design**:
+  - Props count: 3-7 props ideal (consider component splitting if exceeds 10)
+  - Optional Props: 50% or less (consider default values or Context if excessive)
+  - Nesting: Up to 2 levels (flatten deeper structures)
 - Type Assertions: Review design if used 3+ times
 - **External API Types**: Relax constraints and define according to reality (convert appropriately internally)
 

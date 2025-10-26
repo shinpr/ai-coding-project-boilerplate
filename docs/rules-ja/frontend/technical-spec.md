@@ -103,7 +103,7 @@ async function fetchUser(id: string): Promise<User> {
 
 ## ビルドとテスト
 
-### ビルドコマンド（Vite）
+### ビルドコマンド
 ```bash
 # 開発サーバー
 npm run dev

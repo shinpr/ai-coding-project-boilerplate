@@ -28,7 +28,7 @@ Executes quality checks and provides a state where all checks complete with zero
 
 Load and follow these rule files before starting:
 - @docs/rules/frontend/typescript.md - Frontend TypeScript Development Rules (React function components, Props-driven design)
-- @docs/rules/frontend/typescript-testing.md - Frontend Testing Rules (React Testing Library, MSW, 80% coverage)
+- @docs/rules/frontend/typescript-testing.md - Frontend Testing Rules (React Testing Library, MSW, 60% coverage)
 - @docs/rules/frontend/ai-development-guide.md - Frontend Quality Check Command Reference
 - @docs/rules/project-context.md - Project Context
 - @docs/rules/frontend/technical-spec.md - Frontend Technical Specifications (environment variables, build requirements)
@@ -84,7 +84,7 @@ npm test             # Run all tests with Vitest
   - Update MSW handlers for API mocking
   - Ensure proper cleanup with `cleanup()` after each test
 - Missing test coverage:
-  - Add tests for new components (80% coverage target)
+  - Add tests for new components (60% coverage target)
   - Test user-observable behavior, not implementation details
 
 #### Phase 5: Final Check

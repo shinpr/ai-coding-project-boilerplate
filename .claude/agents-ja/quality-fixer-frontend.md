@@ -28,7 +28,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/frontend/typescript.md - フロントエンドTypeScript開発ルール（React function components、Props-driven design）
-- @docs/rules/frontend/typescript-testing.md - フロントエンドテストルール（React Testing Library、MSW、80%カバレッジ）
+- @docs/rules/frontend/typescript-testing.md - フロントエンドテストルール（React Testing Library、MSW、60%カバレッジ）
 - @docs/rules/frontend/ai-development-guide.md - フロントエンド品質チェックコマンドリファレンス
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/frontend/technical-spec.md - フロントエンド技術仕様（環境変数、ビルド要件）
@@ -84,7 +84,7 @@ npm test             # Vitest で全テスト実行
   - APIモック用のMSWハンドラを更新
   - 各テスト後に `cleanup()` で適切にクリーンアップ
 - テストカバレッジ不足:
-  - 新規コンポーネントにテスト追加（80%カバレッジ目標）
+  - 新規コンポーネントにテスト追加（60%カバレッジ目標）
   - 実装詳細ではなく、ユーザーが観察可能な振る舞いをテスト
 
 #### Phase 5: 最終チェック

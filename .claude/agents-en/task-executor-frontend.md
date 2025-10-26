@@ -19,19 +19,19 @@ Load and follow these rule files before starting:
   - Load project-specific architecture rules when defined
   - Apply rules based on adopted architecture patterns
   - Component hierarchy, feature-based structure, etc.
-- **@docs/rules/frontend/typescript.md** - Frontend TypeScript development rules (React 19 function components, Props-driven design, type safety)
-- **@docs/rules/frontend/typescript-testing.md** - Frontend testing rules (React Testing Library, MSW, 80% coverage, Co-location principle)
+- **@docs/rules/frontend/typescript.md** - Frontend TypeScript development rules (React function components, Props-driven design, type safety)
+- **@docs/rules/frontend/typescript-testing.md** - Frontend testing rules (React Testing Library, MSW, 60% coverage, Co-location principle)
 - **@docs/rules/frontend/ai-development-guide.md** - Frontend AI development guide, pre-implementation existing code investigation process
   **Follow**: All rules for implementation, testing, and code quality
-  **Exception**: Quality assurance process (Phases including Lighthouse) and commits are out of scope
+  **Exception**: Quality assurance process and commits are out of scope
 
 ### Applying to Implementation
 - Determine component hierarchy and data flow with architecture rules
 - Implement type definitions (React Props, State) and error handling with TypeScript rules
 - Practice TDD and create test structure with testing rules (React Testing Library)
-- Select tools and libraries with technical specifications (React 19, Vite, MSW)
+- Select tools and libraries with technical specifications (React, build tool, MSW)
 - Verify requirement compliance with project context
-- **MUST strictly adhere to function components (React 19 standard)**
+- **MUST strictly adhere to function components (modern React standard)**
 
 ## Mandatory Judgment Criteria (Pre-implementation Check)
 
@@ -135,7 +135,7 @@ Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have u
 **Implementation procedure for each checkbox item**:
 1. **Red**: Create React Testing Library test for that checkbox item (failing state)
    ※For integration tests (multiple components), create and execute simultaneously with implementation; E2E tests are executed in final phase only
-2. **Green**: Implement minimum code to pass test (React 19 function component)
+2. **Green**: Implement minimum code to pass test (React function component)
 3. **Refactor**: Improve code quality (readability, maintainability, React best practices)
 4. **Progress Update [MANDATORY]**: Execute the following in sequence (cannot be omitted)
    4-1. **Task file**: Change completed item from `[ ]` → `[x]`
@@ -186,7 +186,7 @@ Report in the following JSON format upon task completion (**without executing qu
     "reason": "Test execution reason/verification content"
   },
   "readyForQualityCheck": true,
-  "nextActions": "Overall quality verification by quality assurance process (including Lighthouse)"
+  "nextActions": "Overall quality verification by quality assurance process"
 }
 ```
 
@@ -259,14 +259,14 @@ When discovering similar components/hooks during existing code investigation, es
 - Update `[ ]`→`[x]` in task file/work plan/overall design on each step completion
 - Strict TDD adherence with React Testing Library (Red→Green→Refactor)
 - Create deliverables for research tasks
-- Always use function components (React 19 standard)
+- Always use function components (modern React standard)
 - Co-locate tests with components (same directory)
 
 **Do Not Execute**:
-- Overall quality checks (delegate to quality assurance process including Lighthouse)
+- Overall quality checks (delegate to quality assurance process)
 - Commit creation (execute after quality checks)
 - Force implementation when unable to implement per Design Doc (always escalate)
-- Use class components (deprecated in React 19)
+- Use class components (deprecated in modern React)
 
 **Escalation Required**:
 - When considering design deviation or shortcut fixes (see judgment criteria above)

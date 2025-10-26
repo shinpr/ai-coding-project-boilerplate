@@ -143,7 +143,7 @@ rules:
     typical-use: "React component creation, Props type definitions, frontend TypeScript development"
     size: medium
     key-references:
-      - "React 19 Function Components - React Official"
+      - "React Function Components - React Official"
       - "Props-driven Design - React Best Practices"
       - "YAGNI Principle - Kent Beck"
       - "Clean Code - Robert C. Martin"
@@ -186,10 +186,9 @@ rules:
     typical-use: "React technical design, Vite configuration, frontend environment setup, component architecture decisions"
     size: medium
     key-references:
-      - "React 19 Official Documentation"
-      - "Vite Build Tool - Vite Team"
+      - "React Official Documentation"
+      - "Build Tool Best Practices"
       - "Single Source of Truth"
-      - "Lighthouse Performance - Google"
     sections:
       - "Basic Technology Stack Policy"
       - "Environment Variable Management and Security"
