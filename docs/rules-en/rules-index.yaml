@@ -135,3 +135,90 @@ rules:
       - "Integration Point Definitions"
       - "Anti-patterns"
       - "Guidelines for Meta-cognitive Execution"
+
+  # Frontend-specific Rules
+  frontend-typescript:
+    file: "frontend/typescript.md"
+    tags: [frontend, react, implementation, type-safety, function-components, props-driven, async, refactoring, coding-style]
+    typical-use: "React component creation, Props type definitions, frontend TypeScript development"
+    size: medium
+    key-references:
+      - "React 19 Function Components - React Official"
+      - "Props-driven Design - React Best Practices"
+      - "YAGNI Principle - Kent Beck"
+      - "Clean Code - Robert C. Martin"
+      - "TypeScript satisfies Operator - Microsoft"
+    sections:
+      - "Basic Principles"
+      - "Comment Writing Rules"
+      - "Type Safety"
+      - "Coding Conventions"
+      - "Error Handling"
+      - "Refactoring Techniques"
+      - "Performance Optimization"
+
+  frontend-typescript-testing:
+    file: "frontend/typescript-testing.md"
+    tags: [frontend, react, quality, testing, tdd, coverage, vitest, react-testing-library, msw, implementation]
+    typical-use: "React component testing, React Testing Library tests, MSW API mocking, frontend test creation"
+    size: medium
+    key-references:
+      - "React Testing Library - Kent C. Dodds"
+      - "MSW (Mock Service Worker) - MSW Team"
+      - "Test-Driven Development - Kent Beck"
+      - "Red-Green-Refactor - Kent Beck"
+      - "User-Observable Behavior Testing - Testing Library"
+    sections:
+      - "Test Framework"
+      - "Basic Testing Policy"
+      - "Red-Green-Refactor Process (Test-First Development)"
+      - "Test Design Principles"
+      - "Test Helper Utilization Rules"
+      - "Test Implementation Conventions"
+      - "Test Granularity Principles"
+      - "Mock Type Safety Enforcement"
+      - "Continuity Test Scope"
+      - "Basic React Testing Library Example"
+
+  frontend-technical-spec:
+    file: "frontend/technical-spec.md"
+    tags: [frontend, react, vite, architecture, design, environment, data-flow, implementation, performance]
+    typical-use: "React technical design, Vite configuration, frontend environment setup, component architecture decisions"
+    size: medium
+    key-references:
+      - "React 19 Official Documentation"
+      - "Vite Build Tool - Vite Team"
+      - "Single Source of Truth"
+      - "Lighthouse Performance - Google"
+    sections:
+      - "Basic Technology Stack Policy"
+      - "Environment Variable Management and Security"
+      - "Architecture Design"
+      - "Unified Data Flow Principles"
+      - "Build and Testing"
+      - "Quality Check Requirements"
+      - "Coverage Requirements"
+      - "Non-functional Requirements"
+
+  frontend-ai-development-guide:
+    file: "frontend/ai-development-guide.md"
+    tags: [frontend, react, anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, lighthouse, bundle-size]
+    typical-use: "Frontend technical decision criteria, React anti-pattern detection, Lighthouse quality checks, bundle size optimization, frontend debugging"
+    size: medium
+    key-references:
+      - "Rule of Three - Martin Fowler"
+      - "React Component Best Practices - React Team"
+      - "Lighthouse Performance Guide - Google"
+      - "5 Whys - Toyota Production System"
+      - "Single Responsibility Principle (SRP) - Clean Code"
+    sections:
+      - "Technical Anti-patterns (Red Flag Patterns)"
+      - "Fallback Design Principles"
+      - "Rule of Three - Criteria for Code Duplication"
+      - "Common Failure Patterns and Avoidance Methods"
+      - "Debugging Techniques"
+      - "Quality Check Command Reference"
+      - "Situations Requiring Technical Decisions"
+      - "Continuous Improvement Mindset"
+      - "Implementation Completeness Assurance"
+      - "Unused Code Deletion Rule"
