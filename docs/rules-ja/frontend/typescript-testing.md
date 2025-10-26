@@ -1,0 +1,215 @@
+# TypeScript テストルール（フロントエンド）
+
+## テストフレームワーク
+- **Vitest**: このプロジェクトではVitestを使用
+- **React Testing Library**: コンポーネントテスト用
+- **MSW (Mock Service Worker)**: APIモック用
+- テストのインポート: `import { describe, it, expect, beforeEach, vi } from 'vitest'`
+- コンポーネントテストのインポート: `import { render, screen, fireEvent } from '@testing-library/react'`
+- モックの作成: `vi.mock()` を使用
+
+## テストの基本方針
+
+### 品質要件
+- **カバレッジ**: 単体テストのカバレッジは60%以上を必須（フロントエンド標準 2025）
+- **独立性**: 各テストは他のテストに依存せず実行可能
+- **再現性**: テストは環境に依存せず、常に同じ結果を返す
+- **可読性**: テストコードも製品コードと同様の品質を維持
+
+### カバレッジ要件（ADR-0002準拠）
+**必須**: 単体テストのカバレッジは60%以上
+**コンポーネント別目標**:
+- Atoms（Button、Text等）: 70%以上
+- Molecules（FormField等）: 65%以上
+- Organisms（Header、Footer等）: 60%以上
+- Custom Hooks: 65%以上
+- Utils: 70%以上
+
+**指標**: Statements（文）、Branches（分岐）、Functions（関数）、Lines（行）
+
+### テストの種類と範囲
+1. **単体テスト（React Testing Library）**
+   - 個々のコンポーネントや関数の動作を検証
+   - 外部依存はすべてモック化
+   - 最も数が多く、細かい粒度で実施
+   - ユーザーから観測可能な振る舞いに焦点を当てる
+
+2. **統合テスト（React Testing Library + MSW）**
+   - 複数のコンポーネントの連携を検証
+   - MSW（Mock Service Worker）でAPIをモック
+   - 実際のDB接続なし（DBはバックエンドが管理）
+   - 主要な機能フローの検証
+
+3. **E2Eテストでの機能横断検証**
+   - 新機能追加時、既存機能への影響を必ず検証
+   - Design Docの「統合ポイントマップ」で影響度「高」「中」の箇所をカバー
+   - 検証パターン: 既存機能動作 → 新機能有効化 → 既存機能の継続性確認
+   - 判定基準: 表示内容の変化なし、レンダリング時間5秒以内
+   - CI/CDでの自動実行を前提とした設計
+
+## Red-Green-Refactorプロセス（テストファースト開発）
+
+**推奨原則**: コード変更は必ずテストから始める
+
+**背景**:
+- 変更前の動作を保証し、リグレッションを防止
+- 期待する動作を明確化してから実装
+- リファクタリング時の安全性を確保
+
+**開発ステップ**:
+1. **Red**: 期待する動作のテストを書く（失敗する）
+2. **Green**: 最小限の実装でテストを通す
+3. **Refactor**: テストが通る状態を維持しながらコード改善
+
+**NGケース（テストファースト不要）**:
+- 純粋な設定ファイル変更（vite.config.ts、tailwind.config.js等）
+- ドキュメントのみの更新（README、コメント等）
+- 緊急本番障害対応（ただし事後テスト必須）
+
+## テストの設計原則
+
+### テストケースの構造
+- テストは「準備（Arrange）」「実行（Act）」「検証（Assert）」の3段階で構成
+- 各テストの目的が明確に分かる命名
+- 1つのテストケースでは1つの振る舞いのみを検証
+
+### テストデータ管理
+- テストデータは専用ディレクトリで管理、またはテストと同じ場所に配置
+- テスト用の環境変数値を定義
+- 機密情報は必ずモック化
+- テストデータは最小限に保ち、テストケースの検証目的に直接関連するデータのみ使用
+
+### モックとスタブの使用方針
+
+✅ **推奨: 単体テストでの外部依存モック化**
+- メリット: テストの独立性と再現性を確保
+- 実践: MSWでAPI呼び出しをモック、外部ライブラリをモック化
+
+❌ **避けるべき: 単体テストでの実際のAPI接続**
+- 理由: テスト速度が遅くなり、環境依存の問題が発生するため
+
+### テスト失敗時の対応判断基準
+
+**テストを修正**: 間違った期待値、存在しない機能参照、実装詳細への依存、テストのためだけの実装
+**実装を修正**: 妥当な仕様、ビジネスロジック、重要なエッジケース
+**判断に迷ったら**: ユーザーに確認
+
+## テストヘルパーの活用ルール
+
+### 基本原則
+テストヘルパーは、テストコードの重複を減らし、保守性を高めるために活用します。
+
+### 判断基準
+| モックの特性 | 対応方針 |
+|-------------|---------|
+| **単純で安定** | 共通ヘルパーに集約 |
+| **複雑または変更頻度高** | 個別実装 |
+| **3箇所以上で重複** | 共通化を検討 |
+| **テスト固有ロジック** | 個別実装 |
+
+### テストヘルパー活用例
+```typescript
+// ✅ テストデータのビルダーパターン
+const testUser = createTestUser({ name: 'Test User', email: 'test@example.com' })
+
+// ✅ Providerを含むカスタムレンダー関数
+function renderWithProviders(ui: React.ReactElement) {
+  return render(<TestProvider>{ui}</TestProvider>)
+}
+
+// ❌ 重複する複雑なモックの個別実装
+```
+
+## テストの実装規約
+
+### ディレクトリ構造（Co-location原則）
+```
+src/
+└── components/
+    └── Button/
+        ├── Button.tsx
+        ├── Button.test.tsx  # コンポーネントと同じ場所に配置
+        └── index.ts
+```
+
+**理由**:
+- React Testing Libraryのベストプラクティス
+- ADR-0002 Co-location原則
+- 実装と一緒にテストを見つけやすく、保守しやすい
+
+### 命名規則
+- テストファイル: `{ComponentName}.test.tsx`
+- 統合テストファイル: `{FeatureName}.integration.test.tsx`
+- テストスイート: 対象のコンポーネントや機能を説明する名前
+- テストケース: ユーザー視点から期待される動作を説明する名前
+
+### テストコードの品質ルール
+
+✅ **推奨: すべてのテストを常に有効に保つ**
+- メリット: テストスイートの完全性を保証
+- 実践: 問題があるテストは修正して有効化
+
+❌ **避けるべき: test.skip()やコメントアウト**
+- 理由: テストの穴が生まれ、品質チェックが不完全になる
+- 対処: 不要なテストは完全に削除する
+
+## テストの粒度原則
+
+### 基本原則：ユーザーから観測可能な振る舞いのみ
+**テスト対象**: レンダリング結果、ユーザーインタラクション、アクセシビリティ、エラー状態
+**テスト対象外**: コンポーネント内部状態、実装詳細、CSSクラス名
+
+```typescript
+// ✅ ユーザーから観測可能な振る舞いをテスト
+expect(screen.getByRole('button', { name: 'Submit' })).toBeInTheDocument()
+
+// ❌ 実装詳細をテスト
+expect(component.state.count).toBe(0)
+```
+
+## モックの型安全性の徹底
+
+### MSW（Mock Service Worker）セットアップ
+```typescript
+// ✅ 型安全なMSWハンドラー
+import { rest } from 'msw'
+
+const handlers = [
+  rest.get('/api/users/:id', (req, res, ctx) => {
+    return res(ctx.json({ id: '1', name: 'John' } satisfies User))
+  })
+]
+```
+
+### コンポーネントモックの型安全性
+```typescript
+// ✅ 必要な部分のみ
+type TestProps = Pick<ButtonProps, 'label' | 'onClick'>
+const mockProps: TestProps = { label: 'Click', onClick: vi.fn() }
+
+// やむを得ない場合のみ、理由明記
+const mockRouter = {
+  push: vi.fn()
+} as unknown as Router // 複雑なRouter型構造のため
+```
+
+## 継続性テストの範囲
+
+新機能追加時の既存機能への影響確認に限定。長時間運用・負荷テストはインフラ層の責務のため対象外。
+
+## React Testing Libraryの基本例
+
+```typescript
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { Button } from './Button'
+
+describe('Button', () => {
+  it('should call onClick when clicked', () => {
+    const onClick = vi.fn()
+    render(<Button label="Click me" onClick={onClick} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Click me' }))
+    expect(onClick).toHaveBeenCalledOnce()
+  })
+})
+```

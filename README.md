@@ -103,11 +103,15 @@ Essential commands for Claude Code:
 
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
-| `/implement` | End-to-end feature development | New features |
+| `/implement` | End-to-end feature development | New features (Backend) |
 | `/task` | Single task with rule precision | Bug fixes, small changes |
-| `/design` | Create design docs only | Architecture planning |
-| `/build` | Execute from existing plan | Resume work |
+| `/design` | Create design docs only | Architecture planning (Backend) |
+| `/plan` | Create work plan from design | After design approval (Backend) |
+| `/build` | Execute from existing plan | Resume work (Backend) |
 | `/review` | Check code compliance | Post-implementation |
+| `/front-design` | Create frontend design docs | React/Vite architecture planning |
+| `/front-plan` | Create frontend work plan | After frontend design approval |
+| `/front-build` | Execute frontend implementation | React component development |
 
 [Full command reference →](docs/guides/en/use-cases.md)
 
@@ -155,9 +159,19 @@ ai-coding-project-boilerplate/
 
 ### Core Scripts
 ```bash
-npm run dev              # Start development server
-npm run build            # Production build
+# Backend
+npm run dev              # Start development server (Backend)
+npm run build            # Production build (Backend, default)
+npm run build:backend    # Production build (Backend, explicit)
+
+# Frontend
+npm run dev:frontend     # Start Vite dev server
+npm run build:frontend   # Production build with Vite
+npm run preview          # Preview production build
+
+# Common
 npm run test[:watch]     # Run tests (with optional watch mode)
+npm run type-check       # TypeScript type check only
 npm run check:all        # Complete check: types + lint + test + build
 ```
 
@@ -186,9 +200,16 @@ With them, you get predictable, production-ready results.
 ### Automated Quality Checks
 
 Sub agents handle quality automatically:
+
+**Backend:**
 - **task-executor**: Implements with TDD approach
 - **quality-fixer**: Fixes type/lint/test issues
 - **code-reviewer**: Validates against design docs
+
+**Frontend:**
+- **task-executor-frontend**: React component implementation with TDD
+- **quality-fixer-frontend**: Fixes quality + Lighthouse + bundle size
+- **technical-designer-frontend**: React architecture & design decisions
 
 Manual verification: `npm run check:all`
 

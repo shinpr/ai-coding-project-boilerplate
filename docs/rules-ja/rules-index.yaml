@@ -135,3 +135,96 @@ rules:
       - "統合ポイントの定義"
       - "アンチパターン"
       - "メタ認知的実行のための指針"
+
+  frontend-typescript:
+    file: "frontend/typescript.md"
+    tags: [frontend, react, implementation, type-safety, async, refactoring, coding-style, props-driven, hooks, component-design, vite, error-boundary]
+    typical-use: "React/Viteでのフロントエンド開発、コンポーネント設計、TypeScript実装、モダンな型機能活用"
+    size: medium
+    key-references:
+      - "YAGNI原則 - Kent Beck"
+      - "Clean Code - Robert C. Martin"
+      - "DRY原則 - The Pragmatic Programmer"
+      - "Refactoring - Martin Fowler"
+      - "TypeScript 4.9 satisfies演算子 - Microsoft"
+      - "Branded Types - TypeScript Community"
+      - "React公式ドキュメント - Function Components"
+      - "Props-driven開発 - React Patterns"
+    sections:
+      - "基本原則"
+      - "コメント記述ルール"
+      - "型安全性"
+      - "コーディング規約"
+      - "エラーハンドリング"
+      - "リファクタリング手法"
+      - "パフォーマンス最適化"
+
+  frontend-typescript-testing:
+    file: "frontend/typescript-testing.md"
+    tags: [frontend, react, quality, testing, tdd, coverage, vitest, react-testing-library, msw, component-testing, implementation, debugging, refactoring, user-observable-behavior]
+    typical-use: "Reactコンポーネントのテスト作成、品質チェック、コード修正・バグ修正・リファクタリング・新機能実装時の開発ステップ"
+    size: medium
+    key-references:
+      - "Test-Driven Development - Kent Beck"
+      - "Rule of Three - Martin Fowler"
+      - "Red-Green-Refactor - Kent Beck"
+      - "AAAパターン - Arrange-Act-Assert"
+      - "React Testing Library - Kent C. Dodds"
+      - "MSW (Mock Service Worker) - API Mocking"
+      - "ADR-0002 Co-location原則"
+      - "Testing Implementation Details - Kent C. Dodds"
+    sections:
+      - "テストフレームワーク"
+      - "テストの基本方針"
+      - "Red-Green-Refactorプロセス（テストファースト開発）"
+      - "テストの設計原則"
+      - "テストヘルパーの活用ルール"
+      - "テストの実装規約"
+      - "テストの粒度原則"
+      - "モックの型安全性の徹底"
+      - "継続性テストの範囲"
+      - "React Testing Libraryの基本例"
+
+  frontend-ai-development-guide:
+    file: "frontend/ai-development-guide.md"
+    tags: [frontend, react, anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion, prop-drilling, component-hierarchy, lighthouse, bundle-size]
+    typical-use: "React開発での技術的判断基準、アンチパターン検出、デバッグ手法、品質チェックコマンド、実装時のベストプラクティス、影響範囲調査、未使用コード削除、フロントエンド固有の品質指標"
+    size: medium
+    key-references:
+      - "Rule of Three - Martin Fowler"
+      - "5 Whys - トヨタ生産方式"
+      - "DRY原則 - The Pragmatic Programmer"
+      - "単一責任原則（SRP） - Clean Code"
+      - "YAGNI原則 - Extreme Programming"
+      - "Avoiding fallback in distributed systems - AWS Builders' Library"
+      - "React DevTools - Meta"
+      - "Lighthouse - Google"
+    sections:
+      - "技術的アンチパターン（赤信号パターン）"
+      - "フォールバック処理に関する設計原則"
+      - "Rule of Three - コード重複の判断基準"
+      - "よくある失敗パターンと回避方法"
+      - "デバッグ手法"
+      - "品質チェックコマンドリファレンス"
+      - "技術的判断が必要な場面"
+      - "継続的改善のマインドセット"
+      - "実装作業の完全性担保"
+
+  frontend-technical-spec:
+    file: "frontend/technical-spec.md"
+    tags: [frontend, react, architecture, design, documentation, environment, data-flow, implementation, vite, security, client-side, state-management, context-api, hooks, lighthouse, bundle-size, non-functional-requirements]
+    typical-use: "フロントエンド技術設計、環境変数管理（Vite）、セキュリティ制約、アーキテクチャ設計、状態管理パターン、実装方針決定、非機能要件の確認"
+    size: medium
+    key-references:
+      - "Vite公式ドキュメント - Environment Variables"
+      - "React公式ドキュメント - State Management"
+      - "Single Source of Truth - データフロー原則"
+      - "Immutable Update Patterns - React"
+      - "Lighthouse - Google Web Performance"
+      - "Web.dev - Performance Best Practices"
+    sections:
+      - "技術スタックの基本方針"
+      - "環境変数管理とセキュリティ"
+      - "アーキテクチャ設計"
+      - "データフロー統一原則"
+      - "ビルドとテスト"
