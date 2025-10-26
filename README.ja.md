@@ -97,11 +97,15 @@ Claude Codeで利用できる主要なコマンド：
 
 | コマンド | 目的 | 使用場面 |
 |---------|------|----------|
-| `/implement` | 要件から実装までの一貫した開発 | 新機能開発 |
+| `/implement` | 要件から実装までの一貫した開発 | 新機能開発（Backend） |
 | `/task` | ルールに基づいた単一タスクの実行 | バグ修正、小規模な変更 |
-| `/design` | 設計書の作成 | アーキテクチャの計画時 |
-| `/build` | 既存の計画から実行 | 作業の再開時 |
+| `/design` | 設計書の作成 | アーキテクチャの計画時（Backend） |
+| `/plan` | 設計書から作業計画書を作成 | 設計承認後（Backend） |
+| `/build` | 既存の計画から実行 | 作業の再開時（Backend） |
 | `/review` | コードの準拠性確認 | 実装完了後 |
+| `/front-design` | フロントエンド設計書の作成 | React/Viteアーキテクチャ計画時 |
+| `/front-plan` | フロントエンド作業計画書を作成 | フロントエンド設計承認後 |
+| `/front-build` | フロントエンド実装の実行 | Reactコンポーネント開発 |
 
 [コマンドの詳細はこちら →](docs/guides/ja/use-cases.md)
 
@@ -149,9 +153,19 @@ ai-coding-project-boilerplate/
 
 ### 基本スクリプト
 ```bash
-npm run dev              # 開発サーバー起動
-npm run build            # プロダクションビルド
+# Backend
+npm run dev              # 開発サーバー起動（Backend）
+npm run build            # プロダクションビルド（Backend、デフォルト）
+npm run build:backend    # プロダクションビルド（Backend、明示的）
+
+# Frontend
+npm run dev:frontend     # Vite開発サーバー起動
+npm run build:frontend   # Viteでプロダクションビルド
+npm run preview          # プロダクションビルドのプレビュー
+
+# 共通
 npm run test[:watch]     # テスト実行（監視モードも利用可能）
+npm run type-check       # TypeScript型チェックのみ
 npm run check:all        # 総合チェック: 型 + lint + テスト + ビルド
 ```
 
@@ -178,10 +192,17 @@ npm run check:deps       # 循環依存チェック
 
 ### 品質チェックのサポート
 
-サブエージェントが品質管理をサポートします：
+サブエージェントが品質管理を自動的にサポートします：
+
+**Backend:**
 - **task-executor**: TDDアプローチによる実装支援
 - **quality-fixer**: 型エラーやlint、テストの問題を検出・修正
 - **code-reviewer**: 設計ドキュメントとの整合性を確認
+
+**Frontend:**
+- **task-executor-frontend**: TDDアプローチでReactコンポーネント実装
+- **quality-fixer-frontend**: 品質チェック + Lighthouse + バンドルサイズ検証
+- **technical-designer-frontend**: Reactアーキテクチャ設計と技術決定
 
 手動での確認: `npm run check:all`
 

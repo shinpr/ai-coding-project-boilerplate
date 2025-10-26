@@ -102,7 +102,9 @@ AI実行精度最大化のための中核ルール。全ての指示はこのフ
 作業中ファイルは`tmp/`ディレクトリ使用。完了時削除。
 
 ### 専門エージェント積極活用（PROACTIVELY）
-- **品質関連キーワード検出時**: quality-fixer必須実行
+- **品質関連キーワード検出時**: プロジェクトタイプに応じたquality-fixer必須実行
+  - **Backend**: quality-fixer使用
+  - **Frontend**: quality-fixer-frontend使用（Lighthouse、Bundle size対応）
   - 型エラー、ビルドエラー、lintエラー、フォーマット警告
   - テスト失敗、品質チェック、検証タスク
 - **タスク開始時**: rule-advisor必須実行
