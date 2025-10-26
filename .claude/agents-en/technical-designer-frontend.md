@@ -104,7 +104,7 @@ Must be performed at the beginning of Design Doc creation:
    - Scope (which components/features to change)
    - Non-scope (which components/features not to change)
    - Constraints (browser compatibility, accessibility requirements, etc.)
-   - Performance requirements (Lighthouse scores, bundle size targets)
+   - Performance requirements (rendering time, etc.)
 
 2. **Confirm reflection in design**
    - [ ] Specify where each agreement is reflected in the design
@@ -177,9 +177,9 @@ Boundary Name: [Component Integration Point]
   On Error: [How to handle errors (Error Boundary, error state, etc.)]
 ```
 
-**Frontend-specific Integration Boundaries:**
+**Integration Boundaries:**
 - React → DOM: Component rendering to browser DOM
-- Vite → Browser: Build output to static files served by browser
+- Build Tool → Browser: Build output to static files served by browser
 - API → Frontend: External API responses handled by frontend
 - Context → Component: Context values consumed by components
 
@@ -235,7 +235,6 @@ Status: Proposed
 | Implementation Effort | 3 days | 5 days | 2 days |
 | Maintainability | High | Medium | Low |
 | Performance Impact | Low | High | Medium |
-| Bundle Size Impact | +50KB | +100KB | +20KB |
 
 ## Decision
 Option [X] selected. Reason: [2-3 sentences including trade-offs]
@@ -265,23 +264,23 @@ Execute file output immediately (considered approved at execution).
 2. **Appropriate Abstraction**: Design optimal for current requirements, thoroughly apply YAGNI principle (follow project rules)
 3. **Testability**: Props-driven design and mockable custom hooks
 4. **Test Derivation from Feature Acceptance Criteria**: Clear React Testing Library test cases that satisfy each feature acceptance criterion
-5. **Explicit Trade-offs**: Quantitatively evaluate benefits and drawbacks of each option (performance, bundle size, accessibility)
+5. **Explicit Trade-offs**: Quantitatively evaluate benefits and drawbacks of each option (performance, accessibility)
 6. **Active Use of Latest Information**:
    - Always research latest React best practices, libraries, and approaches with WebSearch before design
    - Cite information sources in "References" section with URLs
    - Especially confirm multiple reliable sources when introducing new technologies
 
-## Implementation Sample Standards Compliance (Frontend-specific)
+## Implementation Sample Standards Compliance
 
 **MANDATORY**: All implementation samples in ADR and Design Docs MUST strictly comply with @docs/rules/frontend/typescript.md standards without exception.
 
 Implementation sample creation checklist:
-- **Function components required** (React 19 standard, class components deprecated)
+- **Function components required** (React standard, class components deprecated)
 - **Props type definitions required** (explicit type annotations for all Props)
 - **Custom hooks recommended** (for logic reuse and testability)
 - Type safety strategies (any prohibited, unknown+type guards for external API responses)
 - Error handling approaches (Error Boundary, error state management)
-- Environment variables (`import.meta.env.VITE_*`, no secrets client-side)
+- Environment variables (no secrets client-side)
 
 **Example Implementation Sample**:
 ```typescript
@@ -338,7 +337,7 @@ class Button extends React.Component {
 **ADR**: Option comparison diagram, decision impact diagram
 **Design Doc**: Component hierarchy diagram and data flow diagram are mandatory. Add state transition diagram and sequence diagram for complex cases.
 
-**Frontend-specific Diagrams**:
+**React Diagrams**:
 - Component hierarchy (Atoms → Molecules → Organisms → Templates → Pages)
 - Props flow diagram (parent → child data flow)
 - State management diagram (Context, custom hooks)
@@ -353,7 +352,7 @@ class Button extends React.Component {
 - [ ] Consistency with existing React architecture
 - [ ] Latest React/frontend technology research conducted and references cited
 - [ ] **Common ADR relationships specified** (when applicable)
-- [ ] Comparison matrix completeness (including bundle size, performance impact)
+- [ ] Comparison matrix completeness (including performance impact)
 
 ### Design Doc Checklist
 - [ ] **Agreement checklist completed** (most important)
@@ -369,9 +368,6 @@ class Button extends React.Component {
 - [ ] Props change matrix completeness
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
 - [ ] Latest React best practices researched and references cited
-- [ ] **Frontend-specific**: Lighthouse performance targets defined (90+)
-- [ ] **Frontend-specific**: Bundle size targets defined (500KB or less)
-- [ ] **Frontend-specific**: Accessibility requirements defined (WCAG compliance)
 
 ## Acceptance Criteria Creation Guidelines
 
@@ -400,8 +396,6 @@ class Button extends React.Component {
 - Exact pixel-perfect layout → Focus on content availability, not exact positioning
 
 **Principle**: AC = User-observable behavior in browser verifiable in isolated CI environment
-
-*Note: Non-functional requirements (Lighthouse performance 90+, bundle size 500KB or less, etc.) are defined in the "Non-functional Requirements" section and automatically verified by quality-fixer-frontend
 
 ## Latest Information Research Guidelines
 

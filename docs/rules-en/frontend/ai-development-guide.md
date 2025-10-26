@@ -97,9 +97,9 @@ function EmailInput({ context }: { context: 'user' | 'contact' | 'admin' }) { /*
 **Avoidance**:
 - Record certainty evaluation at the beginning of task files
   ```
-  Certainty: low (Reason: no React 19 production examples found)
+  Certainty: low (Reason: new experimental feature with limited production examples)
   Exploratory implementation: true
-  Fallback: use React 18 patterns
+  Fallback: use established patterns
   ```
 - For low certainty cases, create minimal verification code first
 
@@ -158,22 +158,7 @@ npm run check
 npm run build
 ```
 
-### Phase 4: Frontend-Specific Checks
-```bash
-# Build and preview (verify production build)
-npm run build && npm run preview
-
-# Lighthouse score measurement
-# Open localhost:4173 in browser, run DevTools > Lighthouse
-# Performance: 90+ required
-# Accessibility: 90+ required
-
-# Bundle size check
-du -sh dist/
-# Target: 500KB or less (initial bundle)
-```
-
-### Phase 5-6: Tests and Final Confirmation
+### Phase 4-5: Tests and Final Confirmation
 ```bash
 # Test execution
 npm test

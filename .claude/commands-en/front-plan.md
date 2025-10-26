@@ -4,24 +4,21 @@ description: Create frontend work plan from design document and obtain plan appr
 
 **Command Context**: This command is dedicated to the frontend planning phase.
 
-Follow @docs/guides/sub-agents.md strictly and create frontend work plan with the following process:
+Create frontend work plan with the following process:
 
 ## Execution Process
 
-1. **Design Document Selection**
-   ! ls -la docs/design/*.md | head -10
-   - Check for existence of design documents, notify user if none exist
-   - Present options if multiple exist (can be specified with $ARGUMENTS)
+### 1. Design Document Selection
+! ls -la docs/design/*.md | head -10
+- Check for existence of design documents, notify user if none exist
+- Present options if multiple exist (can be specified with $ARGUMENTS)
 
-2. **E2E Test Skeleton Generation Confirmation**
-   - Confirm with user whether to generate E2E test skeleton first
-   - If user wants generation: Generate test skeleton with acceptance-test-generator
-   - Pass generation results to next process according to sub-agents.md coordination specification
-
-3. **Work Plan Creation**
-   - Create work plan with work-planner
-   - Utilize deliverables from previous process according to sub-agents.md coordination specification
-   - Interact with user to complete plan and obtain approval for plan content
+### 2. Work Plan Creation
+Invoke **work-planner** using Task tool:
+- `subagent_type: "work-planner"`
+- `description: "Work plan creation"`
+- `prompt: "Create work plan from Design Doc at [path]"`
+- Interact with user to complete plan and obtain approval for plan content
 
 **Think deeply** Create a work plan from the selected design document, clarifying specific implementation steps and risks.
 

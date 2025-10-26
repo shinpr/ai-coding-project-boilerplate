@@ -5,17 +5,17 @@ TypeScript-based React application implementation. Architecture patterns should 
 
 ## Environment Variable Management and Security
 
-### Environment Variable Management (Vite)
-- **Use `import.meta.env.VITE_*` only**: `process.env` does not work in browser environments
+### Environment Variable Management
+- **Use build tool's environment variable system**: `process.env` does not work in browser environments
 - Centrally manage environment variables through configuration layer
 - Implement proper type safety with TypeScript
 - Properly implement default value settings and mandatory checks
 
 ```typescript
-// ✅ Vite environment variables (public values only)
+// ✅ Build tool environment variables (public values only)
 const config = {
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-  appName: import.meta.env.VITE_APP_NAME || 'My App'
+  apiUrl: import.meta.env.API_URL || 'http://localhost:3000',
+  appName: import.meta.env.APP_NAME || 'My App'
 }
 
 // ❌ Does not work in frontend
@@ -32,7 +32,7 @@ const apiUrl = process.env.API_URL
 **Correct Approach for Secrets**:
 ```typescript
 // ❌ Security risk: API key exposed in browser
-const apiKey = import.meta.env.VITE_API_KEY
+const apiKey = import.meta.env.API_KEY
 const response = await fetch(`https://api.example.com/data?key=${apiKey}`)
 
 // ✅ Correct: Backend manages secrets, frontend accesses via proxy
@@ -44,7 +44,7 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 ### Frontend Architecture Patterns
 Strictly adhere to selected project patterns. Project-specific details reference `docs/rules/architecture/`.
 
-**React 19 Component Architecture**:
+**React Component Architecture**:
 - **Function Components**: Mandatory, class components deprecated
 - **Custom Hooks**: For logic reuse and dependency injection
 - **Component Hierarchy**: Atoms → Molecules → Organisms → Templates → Pages
@@ -145,16 +145,7 @@ npm run check        # Biome (lint + format)
 npm run build        # TypeScript build
 ```
 
-**Phase 4: Frontend-Specific Checks**
-```bash
-npm run build && npm run preview  # Production build verification
-# Lighthouse score measurement (localhost:4173)
-# - Performance: 90+ required
-# - Accessibility: 90+ required
-du -sh dist/  # Bundle size check (500KB or less target)
-```
-
-**Phase 5-6: Tests and Final Confirmation**
+**Phase 4-5: Tests and Final Confirmation**
 ```bash
 npm test                    # Test execution
 npm run test:coverage:fresh # Coverage measurement
@@ -171,8 +162,5 @@ npm run check:all           # Overall integrated check
   - Utils: 70% or higher
 
 ### Non-functional Requirements
-- **Lighthouse Performance Score**: 90+ required
-- **Lighthouse Accessibility Score**: 90+ required
-- **Initial Bundle Size**: 500KB or less
 - **Browser Compatibility**: Chrome/Firefox/Safari/Edge (latest 2 versions)
 - **Rendering Time**: Within 5 seconds for major pages

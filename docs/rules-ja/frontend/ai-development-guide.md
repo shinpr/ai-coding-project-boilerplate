@@ -1,143 +1,143 @@
-# AI Developer Guide - Technical Decision Criteria and Anti-pattern Collection (Frontend)
+# AI開発者ガイド - 技術的判断基準とアンチパターン集（フロントエンド）
 
-## Technical Anti-patterns (Red Flag Patterns)
+## 技術的アンチパターン（赤信号パターン）
 
-Immediately stop and reconsider design when detecting the following patterns:
+以下のパターンを検出したら即座に停止し、設計を見直すこと：
 
-### Code Quality Anti-patterns
-1. **Writing similar code 3 or more times** - Violates Rule of Three
-2. **Multiple responsibilities mixed in a single component** - Violates Single Responsibility Principle (SRP)
-3. **Defining same content in multiple components** - Violates DRY principle
-4. **Making changes without checking dependencies** - Potential for unexpected impacts
-5. **Disabling code with comments** - Should use version control
-6. **Error suppression** - Hiding problems creates technical debt
-7. **Excessive use of type assertions (as)** - Abandoning type safety
-8. **Prop drilling through 3+ levels** - Should use Context API or state management
-9. **Massive components (300+ lines)** - Split into smaller components
+### コード品質のアンチパターン
+1. **同じようなコードを3回以上書いた** - Rule of Threeに違反
+2. **単一コンポーネントに複数の責務が混在** - 単一責任原則（SRP）違反
+3. **同じ内容を複数コンポーネントで定義** - DRY原則違反
+4. **依存関係を確認せずに変更** - 予期しない影響の可能性
+5. **コメントアウトでコード無効化** - バージョン管理を活用すべき
+6. **エラーの握りつぶし** - 問題の隠蔽は技術的負債
+7. **型アサーション（as）の多用** - 型安全性の放棄
+8. **3階層以上のProp drilling** - Context APIまたは状態管理を使用すべき
+9. **大規模コンポーネント（300行以上）** - より小さいコンポーネントに分割
 
-### Design Anti-patterns
-- **"Make it work for now" thinking** - Accumulation of technical debt
-- **Patchwork implementation** - Unplanned additions to existing components
-- **Optimistic implementation of uncertain technology** - Designing unknown elements assuming "it'll probably work"
-- **Symptomatic fixes** - Surface-level fixes that don't solve root causes
-- **Unplanned large-scale changes** - Lack of incremental approach
+### 設計のアンチパターン
+- **「一旦動くように」という思考** - 技術的負債の蓄積
+- **継ぎ足し実装** - 既存コンポーネントへの無計画な追加
+- **不確実技術の楽観的実装** - 未知要素を「たぶん動く」前提で設計
+- **対処療法的修正** - 根本原因を解決しない表面的な修正
+- **無計画な大規模変更** - 段階的アプローチの欠如
 
-## Fallback Design Principles
+## フォールバック処理に関する設計原則
 
-### Core Principle: Fail-Fast
-Design philosophy that prioritizes improving primary code reliability over fallback implementations.
+### 基本原則：Fail-Fast
+分散システムにおいて、フォールバック処理よりもプライマリコードの信頼性向上を優先する設計思想。
 
-### Criteria for Fallback Implementation
-- **Default Prohibition**: Do not implement unconditional fallbacks on errors
-- **Exception Approval**: Implement only when explicitly defined in Design Doc
-- **Layer Responsibilities**:
-  - Component Layer: Use Error Boundary for error handling
-  - Hook Layer: Implement decisions based on business requirements
+### フォールバック実装の判断基準
+- **原則禁止**: エラー時の無条件フォールバックは実装しない
+- **例外的許可**: Design Docで明示的に定義された場合のみ実装
+- **レイヤー責務**:
+  - コンポーネント層: Error Boundaryでエラーハンドリング
+  - フック層: ビジネス要件に基づく判断を実装
 
-### Detection of Excessive Fallbacks
-- Require design review when writing the 3rd catch statement in the same feature
-- Verify Design Doc definition before implementing fallbacks
-- Properly log errors and make failures explicit
+### フォールバック過多の検出
+- 同一機能で3つ目のcatch文を書く時点で設計見直しを必須とする
+- フォールバックを実装する前にDesign Docでの定義を確認
+- エラーは適切にログ出力し、失敗を明確にする
 
-## Rule of Three - Criteria for Code Duplication
+## Rule of Three - コード重複の判断基準
 
-How to handle duplicate code based on Martin Fowler's "Refactoring":
+Martin Fowler「Refactoring」に基づく重複コードの扱い方：
 
-| Duplication Count | Action | Reason |
-|-------------------|--------|--------|
-| 1st time | Inline implementation | Cannot predict future changes |
-| 2nd time | Consider future consolidation | Pattern beginning to emerge |
-| 3rd time | Implement commonalization | Pattern established |
+| 重複回数 | 対応 | 理由 |
+|---------|------|------|
+| 1回目 | インライン実装 | 将来の変化が予測できない |
+| 2回目 | 将来の統合を意識 | パターンが見え始める |
+| 3回目 | 共通化実施 | パターンが確立された |
 
-### Criteria for Commonalization
+### 共通化の判断基準
 
-**Cases for Commonalization**
-- Business logic duplication
-- Complex processing algorithms
-- Component patterns (form fields, cards, etc.)
-- Custom hooks
-- Validation rules
+**共通化すべきケース**
+- ビジネスロジックの重複
+- 複雑な処理アルゴリズム
+- コンポーネントパターン（フォームフィールド、カード等）
+- カスタムフック
+- バリデーションルール
 
-**Cases to Avoid Commonalization**
-- Accidental matches (coincidentally same code)
-- Possibility of evolving in different directions
-- Significant readability decrease from commonalization
-- Simple helpers in test code
+**共通化を避けるべきケース**
+- 偶然の一致（たまたま同じコード）
+- 将来異なる方向に進化する可能性
+- 共通化により可読性が著しく低下
+- テストコード内の簡単なヘルパー
 
-### Implementation Example
+### 実装例
 ```typescript
-// ❌ Immediate commonalization on 1st duplication
+// ❌ 1回目の重複で即共通化
 function UserEmailInput() { /* ... */ }
 function ContactEmailInput() { /* ... */ }
 
-// ✅ Commonalize on 3rd occurrence
+// ✅ 3回目で共通化
 function EmailInput({ context }: { context: 'user' | 'contact' | 'admin' }) { /* ... */ }
 ```
 
-## Common Failure Patterns and Avoidance Methods
+## よくある失敗パターンと回避方法
 
-### Pattern 1: Error Fix Chain
-**Symptom**: Fixing one error causes new errors
-**Cause**: Surface-level fixes without understanding root cause
-**Avoidance**: Identify root cause with 5 Whys before fixing
+### パターン1: エラー修正の連鎖
+**症状**: エラーを修正すると新しいエラーが発生
+**原因**: 根本原因を理解せずに表面的な修正
+**回避方法**: 5 Whysで根本原因を特定してから修正
 
-### Pattern 2: Abandoning Type Safety
-**Symptom**: Excessive use of any type or as
-**Cause**: Impulse to avoid type errors
-**Avoidance**: Handle safely with unknown type and type guards
+### パターン2: 型安全性の放棄
+**症状**: any型やasの多用
+**原因**: 型エラーを回避したい衝動
+**回避方法**: unknown型と型ガードで安全に処理
 
-### Pattern 3: Implementation Without Sufficient Testing
-**Symptom**: Many bugs after implementation
-**Cause**: Ignoring Red-Green-Refactor process
-**Avoidance**: Always start with failing tests
+### パターン3: テスト不足での実装
+**症状**: 実装後にバグ多発
+**原因**: Red-Green-Refactorプロセスの無視
+**回避方法**: 必ず失敗するテストから開始
 
-### Pattern 4: Ignoring Technical Uncertainty
-**Symptom**: Frequent unexpected errors when introducing new technology
-**Cause**: Assuming "it should work according to official documentation" without prior investigation
-**Avoidance**:
-- Record certainty evaluation at the beginning of task files
+### パターン4: 技術的不確実性の無視
+**症状**: 新技術導入時の想定外エラー多発
+**原因**: 事前調査なしで「公式ドキュメント通りなら動くはず」
+**回避方法**:
+- タスクファイル冒頭に確実性評価を記載
   ```
-  Certainty: low (Reason: no React 19 production examples found)
-  Exploratory implementation: true
-  Fallback: use React 18 patterns
+  確実性: low（理由: 本番実績が限定的な実験的機能）
+  探索的実装: true
+  フォールバック: 確立されたパターンを使用
   ```
-- For low certainty cases, create minimal verification code first
+- 確実性lowの場合、最初に最小限の動作確認コードを作成
 
-### Pattern 5: Insufficient Existing Code Investigation
-**Symptom**: Duplicate implementations, architecture inconsistency, integration failures
-**Cause**: Insufficient understanding of existing code before implementation
-**Avoidance Methods**:
-- Before implementation, always search for similar functionality (using domain, responsibility, component patterns as keywords)
-- Similar functionality found → Use that implementation (do not create new implementation)
-- Similar functionality is technical debt → Create ADR improvement proposal before implementation
-- No similar functionality exists → Implement new functionality following existing design philosophy
-- Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
+### パターン5: 既存コード調査不足
+**症状**: 重複実装、アーキテクチャ不整合、結合時の障害
+**原因**: 実装前の既存コード理解不足
+**回避方法**:
+- 実装前に類似機能の存在を必ず検索（同じドメイン、責務、コンポーネントパターンをキーワードに）
+- 類似機能を発見 → その実装を使用する（新規実装は行わない）
+- 類似機能が技術的負債 → ADRで改善提案を作成してから実装
+- 類似機能が存在しない → 既存の設計思想に沿って新規実装
+- すべての判断と根拠をDesign Docの「既存コードベース分析」セクションに記録
 
-## Debugging Techniques
+## デバッグ手法
 
-### 1. Error Analysis Procedure
-1. Read error message (first line) accurately
-2. Focus on first and last of stack trace
-3. Identify first line where your code appears
-4. Check React DevTools for component hierarchy
+### 1. エラー分析手順
+1. エラーメッセージ（最初の行）を正確に読む
+2. スタックトレースの最初と最後に注目
+3. 自分のコードが現れる最初の行を特定
+4. React DevToolsでコンポーネント階層を確認
 
-### 2. 5 Whys - Root Cause Analysis
+### 2. 5 Whys - 根本原因分析
 ```
-Symptom: Component not rendering
-Why1: Props are undefined → Why2: Parent component didn't pass props
-Why3: Parent using old prop names → Why4: Component interface was updated
-Why5: No update to parent after refactoring
-Root cause: Incomplete refactoring, missing call-site updates
+症状: コンポーネントがレンダリングされない
+Why1: Propsがundefined → Why2: 親コンポーネントがPropsを渡していない
+Why3: 親が古いProp名を使用 → Why4: コンポーネントインターフェースが更新された
+Why5: リファクタリング後に親の更新漏れ
+根本原因: リファクタリングが不完全、呼び出し側の更新漏れ
 ```
 
-### 3. Minimal Reproduction Code
-To isolate problems, attempt reproduction with minimal code:
-- Remove unrelated components
-- Replace API calls with mocks
-- Create minimal configuration that reproduces problem
-- Use React DevTools to inspect component tree
+### 3. 最小再現コード
+問題を切り分けるため、最小限のコードで再現を試みる：
+- 関連のないコンポーネントを削除
+- API呼び出しをモックで置き換え
+- 問題が再現する最小構成を作成
+- React DevToolsでコンポーネントツリーを検査
 
-### 4. Debug Log Output
+### 4. デバッグログ出力
 ```typescript
 console.log('DEBUG:', {
   context: 'user-form-submission',
@@ -147,131 +147,115 @@ console.log('DEBUG:', {
 })
 ```
 
-## Quality Check Command Reference
+## 品質チェックコマンドリファレンス
 
-### Phase 1-3: Basic Checks
+### Phase 1-3: 基本チェック
 ```bash
-# Biome comprehensive check (lint + format)
+# Biome総合チェック（lint + format）
 npm run check
 
-# TypeScript build
+# TypeScriptビルド
 npm run build
 ```
 
-### Phase 4: Frontend-Specific Checks
+### Phase 4-5: テストと最終確認
 ```bash
-# Build and preview (verify production build)
-npm run build && npm run preview
-
-# Lighthouse score measurement
-# Open localhost:4173 in browser, run DevTools > Lighthouse
-# Performance: 90+ required
-# Accessibility: 90+ required
-
-# Bundle size check
-du -sh dist/
-# Target: 500KB or less (initial bundle)
-```
-
-### Phase 5-6: Tests and Final Confirmation
-```bash
-# Test execution
+# テスト実行
 npm test
 
-# Coverage measurement (clear cache)
+# カバレッジ測定（キャッシュクリア）
 npm run test:coverage:fresh
 
-# Overall integrated check
+# 全体統合チェック
 npm run check:all
 ```
 
-### Auxiliary Commands
+### 補助コマンド
 ```bash
-# Check coverage report
+# カバレッジレポート確認
 open coverage/index.html
 
-# Vitest process cleanup (mandatory after tests)
+# Vitestプロセスのクリーンアップ（テスト後必須）
 npm run cleanup:processes
 
-# Safe test execution (with auto cleanup)
+# 安全なテスト実行（自動クリーンアップ付き）
 npm run test:safe
 
-# Auto fixes
-npm run format        # Format fixes
-npm run lint:fix      # Lint fixes
+# 自動修正
+npm run format        # フォーマット修正
+npm run lint:fix      # Lint修正
 ```
 
-### Troubleshooting
-- **Port in use error**: `npm run cleanup:processes`
-- **Cache issues**: `npm run test:coverage:fresh`
-- **Dependency errors**: Reinstall with `npm ci`
-- **Vite preview not starting**: Check port 4173 availability
+### トラブルシューティング
+- **ポート使用中エラー**: `npm run cleanup:processes`
+- **キャッシュ問題**: `npm run test:coverage:fresh`
+- **依存関係エラー**: `npm ci`で再インストール
 
-## Situations Requiring Technical Decisions
+## 技術的判断が必要な場面
 
-### Timing of Abstraction
-- Extract patterns after writing concrete implementation 3 times
-- Be conscious of YAGNI, implement only currently needed features
-- Prioritize current simplicity over future extensibility
+### 抽象化のタイミング
+- 具体的な実装を3回書いてからパターンを抽出
+- YAGNIを意識し、現在必要な機能のみ実装
+- 将来の拡張性より現在のシンプルさを優先
 
-### Performance vs Readability
-- Prioritize readability unless clear bottleneck exists
-- Measure before optimizing (don't guess, use React DevTools Profiler)
-- Document reason with comments when optimizing
+### パフォーマンス vs 可読性
+- 明確なボトルネックがない限り可読性を優先
+- 計測してから最適化（推測するな、React DevTools Profilerを使え）
+- 最適化する場合はコメントで理由を明記
 
-### Granularity of Component/Type Definitions
-- Overly detailed components/types reduce maintainability
-- Design components that appropriately express UI patterns
-- Use composition over inheritance
+### コンポーネント/型定義の粒度
+- 過度に細かいコンポーネント/型は保守性を低下させる
+- UIパターンを適切に表現するコンポーネントを設計
+- 継承よりコンポジションを使用
 
-## Continuous Improvement Mindset
+## 継続的改善のマインドセット
 
-- **Humility**: Perfect code doesn't exist, welcome feedback
-- **Courage**: Execute necessary refactoring boldly
-- **Transparency**: Clearly document technical decision reasoning
+- **謙虚**: 完璧なコードは存在しない、フィードバック歓迎
+- **勇気**: 必要なリファクタリングは大胆に実行
+- **透明性**: 技術的な判断理由を明確に記録
 
-## Implementation Completeness Assurance
+## 実装作業の完全性担保
 
-### Required Procedure for Impact Analysis
+### 影響範囲調査の必須手順
 
-**Completion Criteria**: Complete all 3 stages
+**完了定義**: 以下3段階すべての完了
 
-#### 1. Discovery
+#### 1. 検索（Discovery）
 ```bash
 Grep -n "ComponentName\|hookName" -o content
 Grep -n "importedFunction" -o content
 Grep -n "propsType\|StateType" -o content
 ```
 
-#### 2. Understanding
-**Mandatory**: Read all discovered files and include necessary parts in context:
-- Caller's purpose and context
-- Component hierarchy
-- Data flow: Props → State → Event handlers → Callbacks
+#### 2. 読解（Understanding）
+**必須**: 発見した全ファイルを読み込み、作業に必要な部分をコンテキストに含める：
+- 呼び出し元の目的と文脈
+- コンポーネント階層
+- データフロー: Props → State → イベントハンドラ → コールバック
 
-#### 3. Identification
-Structured impact report (mandatory):
+#### 3. 特定（Identification）
+影響範囲の構造化報告（必須）：
 ```
-## Impact Analysis
-### Direct Impact: ComponentA, ComponentB (with reasons)
-### Indirect Impact: FeatureX, PageY (with integration paths)
-### Processing Flow: Props → Render → Events → Callbacks
+## 影響範囲分析
+### 直接影響: ComponentA、ComponentB（理由明記）
+### 間接影響: FeatureX、PageY（連携経路明記）
+### 処理フロー: Props → Render → Events → Callbacks
 ```
 
-**Important**: Do not stop at search; execute all 3 stages
+**重要**: 検索のみで完了とせず、3段階すべてを実行すること
 
-### Unused Code Deletion Rule
+### 未使用コード削除ルール
 
-When unused code is detected → Will it be used?
-- Yes → Implement immediately (no deferral allowed)
-- No → Delete immediately (remains in Git history)
+未使用コード検出時 → 使用予定？
+- Yes → 即実装（保留禁止）
+- No → 即削除（Git履歴に残る）
 
-Target: Components, hooks, utilities, documentation, configuration files
+対象: コンポーネント、フック、ユーティリティ、ドキュメント、設定ファイル
 
-### Existing Code Deletion Decision Flow
+### 既存コード削除判断フロー
 
 ```
-In use? No → Delete immediately (remains in Git history)
-       Yes → Working? No → Delete + Reimplement
-                     Yes → Fix
+使用中？ No → 即削除（Git履歴に残る）
+      Yes → 動作？ No → 削除+再実装
+                  Yes → 修正
 ```

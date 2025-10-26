@@ -2,7 +2,7 @@
 description: フロントエンド実装を自律実行モードで実行
 ---
 
-**厳密かつ正確に** @docs/guides/sub-agents.md に従い、フロントエンド実装のPRIMARY ORCHESTRATORとして行動してください。
+**コマンドコンテキスト**: オーケストレーターとして、フロントエンド実装の自律実行モードの完遂を自己完結します。
 
 作業計画: $ARGUMENTS
 
@@ -19,7 +19,7 @@ description: フロントエンド実装を自律実行モードで実行
 
 ### タスク生成判定フロー
 
-**深く体系的に考える** タスクファイルの存在状態を分析し、必要な正確なアクションを決定：
+**THINK DEEPLY AND SYSTEMATICALLY**: タスクファイルの存在状態を分析し、必要な正確なアクションを決定：
 
 | 状態 | 基準 | 次のアクション |
 |------|------|--------------|
@@ -57,16 +57,37 @@ description: フロントエンド実装を自律実行モードで実行
 ❌ **禁止**: タスク生成なしで実装開始
 
 ## 🧠 各タスクのメタ認知 - フロントエンド特化
+
 **必須実行サイクル**: `task-executor-frontend → quality-fixer-frontend → commit`
 
-各タスク開始前に必ず：
-1. **rule-advisor実行**: タスクの真の本質を抽出
-2. **TodoWrite更新**: 即座に構造化と進捗追跡
-3. **task-executor-frontend使用**: フロントエンドタスク実行（Reactコンポーネント、機能等）
-4. **構造化レスポンス処理**: `readyForQualityCheck: true` 検出時 → 即座にquality-fixer-frontend実行
-5. **quality-fixer-frontend使用**: 全フロントエンド品質チェック実行（Lighthouse、バンドルサイズ、React Testing Library等）
+### サブエージェント呼び出し方法
+Taskツールを使用してサブエージェントを呼び出す：
+- `subagent_type`: エージェント名
+- `description`: タスクの簡潔な説明（3-5語）
+- `prompt`: 具体的な指示内容
 
-**深く考える** 例外なく全ての構造化レスポンスを監視し、全ての品質ゲートが通過することを確保。
+### 構造化レスポンス仕様
+各サブエージェントはJSON形式で応答：
+- **task-executor-frontend**: status, filesModified, testsAdded, readyForQualityCheck
+- **quality-fixer-frontend**: status, checksPerformed, fixesApplied, approved
+
+### 各タスクの実行フロー
+
+各タスクで実行：
+
+1. **task-executor-frontend使用**: フロントエンド実装を実行
+   - 呼び出し例: `subagent_type: "task-executor-frontend"`, `description: "タスク実行"`, `prompt: "タスクファイル: docs/plans/tasks/[ファイル名].md 実装を実行"`
+2. **構造化レスポンス処理**: `readyForQualityCheck: true` 検出時 → 即座にquality-fixer-frontend実行
+3. **quality-fixer-frontend使用**: 全品質チェック実行（Lighthouse、バンドルサイズ、テスト等）
+   - 呼び出し例: `subagent_type: "quality-fixer-frontend"`, `description: "品質チェック"`, `prompt: "全てのフロントエンド品質チェックと修正を実行"`
+4. **コミット実行**: `approved: true`確認後、即座にgit commitを実行
+
+### 自律実行中の品質保証（詳細）
+- task-executor-frontend実行 → quality-fixer-frontend実行 → **私（メインAI）がコミット実行**（Bashツール使用）
+- quality-fixer-frontendの`approved: true`確認後、即座にgit commitを実行
+- changeSummaryをコミットメッセージに使用
+
+**THINK DEEPLY**: 例外なく全ての構造化レスポンスを監視し、全ての品質ゲートが通過することを確保。
 
 ! ls -la docs/plans/*.md | head -10
 

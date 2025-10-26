@@ -12,7 +12,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準
-- @docs/rules/frontend/technical-spec.md - フロントエンド技術仕様（React 19、Vite、環境変数）
+- @docs/rules/frontend/technical-spec.md - フロントエンド技術仕様（React、ビルドツール、環境変数）
 - @docs/rules/frontend/typescript.md - フロントエンドTypeScript開発ルール（function components、Props-driven設計）
 - @docs/rules/frontend/ai-development-guide.md - フロントエンドAI開発ガイド、実装前の既存コード調査プロセス
 - @docs/rules/project-context.md - プロジェクトコンテキスト
@@ -104,7 +104,7 @@ Design Doc作成開始時に必ず実施：
    - スコープ（どのコンポーネント・機能を変更するか）
    - 非スコープ（どのコンポーネント・機能は変更しないか）
    - 制約条件（ブラウザ互換性、アクセシビリティ要件等）
-   - パフォーマンス要件（Lighthouseスコア、バンドルサイズ目標）
+   - パフォーマンス要件（レンダリング時間等）
 
 2. **設計への反映を確認**
    - [ ] 各合意事項が設計のどこに反映されているか明記
@@ -177,9 +177,9 @@ Design Doc作成前に実施：
   エラー時: [エラーハンドリング方法（Error Boundary、error state等）]
 ```
 
-**フロントエンド固有の統合境界:**
+**統合境界:**
 - React → DOM: コンポーネントのブラウザDOMへのレンダリング
-- Vite → Browser: ビルド出力の静的ファイルをブラウザが提供
+- ビルドツール → Browser: ビルド出力の静的ファイルをブラウザが提供
 - API → Frontend: 外部APIレスポンスをフロントエンドで処理
 - Context → Component: Context値をコンポーネントで消費
 
@@ -195,7 +195,7 @@ Design Doc作成前に実施：
 - **PRD**: PRDドキュメント（存在する場合）
 - **作成対象ドキュメント**: ADR、Design Doc、または両方
 - **既存アーキテクチャ情報**:
-  - 現在の技術スタック（React 19、Vite、Tailwind CSS等）
+  - 現在の技術スタック（React、ビルドツール、CSSフレームワーク等）
   - 採用しているコンポーネントアーキテクチャパターン（Atomic Design、Feature-based等）
   - 技術的制約（ブラウザ互換性、アクセシビリティ要件）
   - **既存の共通ADR一覧**（必須確認）
@@ -235,7 +235,6 @@ Status: Proposed
 | 実装工数 | 3日 | 5日 | 2日 |
 | 保守性 | 高 | 中 | 低 |
 | パフォーマンス影響 | 低 | 高 | 中 |
-| バンドルサイズ影響 | +50KB | +100KB | +20KB |
 
 ## 決定
 選択肢[X]を選択。理由: [トレードオフを含めて2-3文で]
@@ -265,23 +264,23 @@ ADRに含めない: スケジュール、実装手順、具体的コード
 2. **適切な抽象化**: 現在の要件に最適な設計、YAGNI原則を徹底適用（プロジェクトルールに従う）
 3. **テスト可能性**: Props-driven設計とモック可能なカスタムフック
 4. **機能受入条件からのテスト導出**: 各機能受入条件を満たす明確なReact Testing Libraryテストケース
-5. **トレードオフの明示**: 各選択肢のメリット・デメリットを定量評価（パフォーマンス、バンドルサイズ、アクセシビリティ）
+5. **トレードオフの明示**: 各選択肢のメリット・デメリットを定量評価（パフォーマンス、アクセシビリティ）
 6. **最新情報の積極活用**:
    - 設計前に必ずWebSearchで最新のReactベストプラクティス、ライブラリ、アプローチを調査
    - 「References」セクションに情報源をURL付きで引用
    - 特に新技術導入時は複数の信頼できる情報源を確認
 
-## 実装サンプル基準準拠（フロントエンド固有）
+## 実装サンプル基準準拠
 
 **必須**: ADRとDesign Doc内の全実装サンプルは、例外なく @docs/rules/frontend/typescript.md 基準に厳格準拠すること。
 
 実装サンプル作成チェックリスト:
-- **function components必須**（React 19標準、class componentsは非推奨）
+- **function components必須**（React標準、class componentsは非推奨）
 - **Props型定義必須**（全Propsに明示的な型注釈）
 - **カスタムフック推奨**（ロジック再利用とテスト可能性のため）
 - 型安全性戦略（any禁止、外部APIレスポンスにunknown+型ガード）
 - エラーハンドリングアプローチ（Error Boundary、error state管理）
-- 環境変数（`import.meta.env.VITE_*`、クライアントサイドに秘密情報なし）
+- 環境変数（クライアントサイドに秘密情報なし）
 
 **実装サンプル例**:
 ```typescript
@@ -327,7 +326,7 @@ function useUserData(userId: string) {
   return { user, error }
 }
 
-// ❌ 非準拠: class component（React 19で非推奨）
+// ❌ 非準拠: class component（Reactで非推奨）
 class Button extends React.Component {
   render() { return <button>...</button> }
 }
@@ -338,7 +337,7 @@ class Button extends React.Component {
 **ADR**: 選択肢比較図、決定の影響図
 **Design Doc**: コンポーネント階層図とデータフロー図は必須。複雑な場合は状態遷移図とシーケンス図を追加。
 
-**フロントエンド固有の図表**:
+**React図表**:
 - コンポーネント階層（Atoms → Molecules → Organisms → Templates → Pages）
 - Propsフロー図（parent → child のデータフロー）
 - 状態管理図（Context、カスタムフック）
@@ -353,7 +352,7 @@ class Button extends React.Component {
 - [ ] 既存Reactアーキテクチャとの整合性
 - [ ] 最新のReact/フロントエンド技術調査済み、参考文献引用
 - [ ] **共通ADR関係性の明記**（該当する場合）
-- [ ] 比較マトリックスの完全性（バンドルサイズ、パフォーマンス影響含む）
+- [ ] 比較マトリックスの完全性（パフォーマンス影響含む）
 
 ### Design Docチェックリスト
 - [ ] **合意事項チェックリスト完了**（最重要）
@@ -369,9 +368,6 @@ class Button extends React.Component {
 - [ ] Props変更マトリックスの完全性
 - [ ] 実装アプローチ選択理由（vertical/horizontal/hybrid）
 - [ ] 最新Reactベストプラクティス調査済み、参考文献引用
-- [ ] **フロントエンド固有**: Lighthouseパフォーマンス目標定義（90+）
-- [ ] **フロントエンド固有**: バンドルサイズ目標定義（500KB以下）
-- [ ] **フロントエンド固有**: アクセシビリティ要件定義（WCAG準拠）
 
 ## 受入条件作成ガイドライン
 
@@ -395,13 +391,11 @@ class Button extends React.Component {
 
 **除外**（LLM/CI/CD環境でROI低い）:
 - 外部APIの実接続 → MSWでAPIモックを使用
-- パフォーマンスメトリクス → CIで非決定的、Lighthouseに委ねる
+- パフォーマンスメトリクス → CIで非決定的
 - 実装詳細 → ユーザーが観察可能な振る舞いに焦点
 - ピクセルパーフェクトなレイアウト → コンテンツの有無に焦点、位置の正確性は不要
 
 **原則**: AC = 隔離されたCI環境でブラウザ上で検証可能なユーザー観察可能動作
-
-*注: 非機能要件（Lighthouseパフォーマンス90+、バンドルサイズ500KB以下等）は「非機能要件」セクションで定義し、quality-fixer-frontendが自動検証
 
 ## 最新情報調査ガイドライン
 
@@ -421,10 +415,10 @@ class Button extends React.Component {
 **必須調査タイミング**: 新ライブラリ導入、パフォーマンス最適化、アクセシビリティ設計、Reactバージョンアップ
 
 **具体的検索パターン例**:
-- `React 19 new features best practices`（新機能調査）
+- `React new features best practices`（新機能調査）
 - `Zustand vs Redux Toolkit comparison 2025`（状態管理選定）
 - `React Server Components patterns`（設計パターン）
-- `React 19 breaking changes migration guide`（バージョンアップ）
+- `React breaking changes migration guide`（バージョンアップ）
 - `Tailwind CSS accessibility best practices`（アクセシビリティ調査）
 - `[ライブラリ名] official documentation`（公式情報）
 
@@ -440,7 +434,7 @@ ADR/Design Doc末尾に以下の形式で追加:
 - [タイトル](URL) - 参照内容の簡潔な説明
 - [React公式ドキュメント](URL) - 関連する設計原則や機能
 - [フロントエンドブログ記事](URL) - 実装パターンとベストプラクティス
-- [Lighthouseパフォーマンスガイド](URL) - パフォーマンス最適化手法
+- [パフォーマンス最適化ガイド](URL) - レンダリング最適化手法
 ```
 
 ## updateモード動作

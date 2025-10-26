@@ -2,7 +2,7 @@
 description: Execute frontend implementation in autonomous execution mode
 ---
 
-**STRICTLY AND PRECISELY** follow @docs/guides/sub-agents.md and act as the PRIMARY ORCHESTRATOR for frontend implementation.
+**Command Context**: As orchestrator, autonomously completes frontend implementation in autonomous execution mode.
 
 Work plan: $ARGUMENTS
 
@@ -19,7 +19,7 @@ Work plan: $ARGUMENTS
 
 ### Task Generation Decision Flow
 
-**THINK DEEPLY AND SYSTEMATICALLY** Analyze task file existence state and determine the EXACT action required:
+**THINK DEEPLY AND SYSTEMATICALLY**: Analyze task file existence state and determine the EXACT action required:
 
 | State | Criteria | Next Action |
 |-------|----------|-------------|
@@ -57,16 +57,37 @@ Generate tasks from the work plan? (y/n):
 ❌ **PROHIBITED**: Starting implementation without task generation
 
 ## 🧠 Metacognition for Each Task - Frontend Specialized
+
 **MANDATORY EXECUTION CYCLE**: `task-executor-frontend → quality-fixer-frontend → commit`
 
-Before starting EACH task, YOU MUST:
-1. **EXECUTE rule-advisor**: Extract the TRUE ESSENCE of the task
-2. **UPDATE TodoWrite**: Structure and track progress IMMEDIATELY
-3. **USE task-executor-frontend**: Execute frontend tasks (React components, features, etc.)
-4. **PROCESS structured responses**: When `readyForQualityCheck: true` is detected → EXECUTE quality-fixer-frontend IMMEDIATELY
-5. **USE quality-fixer-frontend**: Execute all frontend quality checks (Lighthouse, bundle size, React Testing Library, etc.)
+### Sub-agent Invocation Method
+Use Task tool to invoke sub-agents:
+- `subagent_type`: Agent name
+- `description`: Brief task description (3-5 words)
+- `prompt`: Specific instructions
 
-**THINK DEEPLY** Monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
+### Structured Response Specification
+Each sub-agent responds in JSON format:
+- **task-executor-frontend**: status, filesModified, testsAdded, readyForQualityCheck
+- **quality-fixer-frontend**: status, checksPerformed, fixesApplied, approved
+
+### Execution Flow for Each Task
+
+Execute for EACH task:
+
+1. **USE task-executor-frontend**: Execute frontend implementation
+   - Invocation example: `subagent_type: "task-executor-frontend"`, `description: "Task execution"`, `prompt: "Task file: docs/plans/tasks/[filename].md Execute implementation"`
+2. **PROCESS structured responses**: When `readyForQualityCheck: true` is detected → EXECUTE quality-fixer-frontend IMMEDIATELY
+3. **USE quality-fixer-frontend**: Execute all quality checks (Lighthouse, bundle size, tests, etc.)
+   - Invocation example: `subagent_type: "quality-fixer-frontend"`, `description: "Quality check"`, `prompt: "Execute all frontend quality checks and fixes"`
+4. **EXECUTE commit**: After `approved: true` confirmation, execute git commit IMMEDIATELY
+
+### Quality Assurance During Autonomous Execution (Details)
+- task-executor-frontend execution → quality-fixer-frontend execution → **I (Main AI) execute commit** (using Bash tool)
+- After quality-fixer-frontend's `approved: true` confirmation, execute git commit IMMEDIATELY
+- Use `changeSummary` for commit message
+
+**THINK DEEPLY**: Monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
 
 ! ls -la docs/plans/*.md | head -10
 

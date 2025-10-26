@@ -54,8 +54,8 @@ function isUser(value: unknown): value is User {
 
 ## Coding Conventions
 
-**Component Design Criteria (React 19)**
-- **Function Components (Mandatory)**: React 19 official recommendation, React Compiler optimization target
+**Component Design Criteria**
+- **Function Components (Mandatory)**: Official React recommendation, optimizable by modern tooling
 - **Classes Prohibited**: Class components completely deprecated (Exception: Error Boundary)
 - **Custom Hooks**: Standard pattern for logic reuse
 
@@ -71,8 +71,8 @@ function isUser(value: unknown): value is User {
 - Avoid implicit dependencies: Do not depend on global state or context without necessity
 - Type-safe: Always define Props type explicitly
 
-**Environment Variables (Vite)**
-- **`import.meta.env.VITE_*` only**: `process.env` does not work in browsers
+**Environment Variables**
+- **Use build tool's environment variable system**: `process.env` does not work in browsers
 - **No secrets on client-side**: All frontend code is public, manage secrets in backend
 
 **Dependency Injection**

@@ -54,8 +54,8 @@ function isUser(value: unknown): value is User {
 
 ## コーディング規約
 
-**コンポーネント設計基準（React 19）**
-- **Function Components（必須）**: React 19公式推奨、React Compiler最適化対象
+**コンポーネント設計基準**
+- **Function Components（必須）**: React公式推奨、モダンツールで最適化可能
 - **Classes禁止**: Class componentsは完全非推奨（例外: Error Boundary）
 - **Custom Hooks**: ロジック再利用の標準パターン
 
@@ -71,8 +71,8 @@ function isUser(value: unknown): value is User {
 - 暗黙的依存を避ける: 必要なくグローバルstateやcontextに依存しない
 - 型安全性: Props型を常に明示的に定義
 
-**環境変数（Vite）**
-- **`import.meta.env.VITE_*`のみ**: `process.env`はブラウザで動作しない
+**環境変数**
+- **ビルドツールの環境変数システムを使用**: `process.env`はブラウザで動作しない
 - **クライアントサイドに秘密情報なし**: フロントエンドコードは全て公開、秘密情報はバックエンドで管理
 
 **依存性注入**
@@ -163,4 +163,4 @@ export class AppError extends Error {
 - コンポーネントメモ化: 高コストコンポーネントにReact.memo使用
 - State最適化: 適切なstate構造で再レンダリングを最小化
 - 遅延読み込み: React.lazyとSuspenseでコード分割
-- バンドルサイズ: `npm run build`で監視し500KB以下を維持
+- バンドルサイズ: `npm run build`で監視し最適化

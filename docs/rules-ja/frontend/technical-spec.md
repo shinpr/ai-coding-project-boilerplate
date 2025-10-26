@@ -1,94 +1,94 @@
-# Technical Design Rules (Frontend)
+# 技術設計ルール（フロントエンド）
 
-## Basic Technology Stack Policy
-TypeScript-based React application implementation. Architecture patterns should be selected according to project requirements and scale.
+## 技術スタックの基本方針
+TypeScriptベースのReactアプリケーション実装。アーキテクチャパターンはプロジェクトの要件と規模に応じて選択する。
 
-## Environment Variable Management and Security
+## 環境変数管理とセキュリティ
 
-### Environment Variable Management (Vite)
-- **Use `import.meta.env.VITE_*` only**: `process.env` does not work in browser environments
-- Centrally manage environment variables through configuration layer
-- Implement proper type safety with TypeScript
-- Properly implement default value settings and mandatory checks
+### 環境変数管理
+- **ビルドツールの環境変数システムを使用**: `process.env`はブラウザ環境で動作しない
+- 設定レイヤーを通じて環境変数を一元管理
+- TypeScriptによる適切な型安全性の実装
+- デフォルト値設定と必須チェックの適切な実装
 
 ```typescript
-// ✅ Vite environment variables (public values only)
+// ✅ ビルドツールの環境変数（公開値のみ）
 const config = {
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-  appName: import.meta.env.VITE_APP_NAME || 'My App'
+  apiUrl: import.meta.env.API_URL || 'http://localhost:3000',
+  appName: import.meta.env.APP_NAME || 'My App'
 }
 
-// ❌ Does not work in frontend
+// ❌ フロントエンドでは動作しない
 const apiUrl = process.env.API_URL
 ```
 
-### Security (Client-side Constraints)
-- **CRITICAL**: All frontend code is public and visible in browser
-- **Never store secrets client-side**: No API keys, tokens, or secrets in environment variables
-- Do not include `.env` files in Git (same as backend)
-- Prohibit logging of sensitive information (passwords, tokens, personal data)
-- Do not include sensitive information in error messages
+### セキュリティ（クライアントサイド制約）
+- **重要**: すべてのフロントエンドコードは公開され、ブラウザで見える
+- **クライアントサイドに秘密情報を保存しない**: APIキー、トークン、シークレットを環境変数に含めない
+- `.env`ファイルをGitに含めない（バックエンドと同様）
+- 機密情報のログ出力を禁止（パスワード、トークン、個人情報）
+- エラーメッセージに機密情報を含めない
 
-**Correct Approach for Secrets**:
+**秘密情報の正しい取り扱い**:
 ```typescript
-// ❌ Security risk: API key exposed in browser
+// ❌ セキュリティリスク: APIキーがブラウザで露出
 const apiKey = import.meta.env.VITE_API_KEY
 const response = await fetch(`https://api.example.com/data?key=${apiKey}`)
 
-// ✅ Correct: Backend manages secrets, frontend accesses via proxy
-const response = await fetch('/api/data') // Backend handles API key authentication
+// ✅ 正しい: バックエンドが秘密情報を管理、フロントエンドはプロキシ経由でアクセス
+const response = await fetch('/api/data') // バックエンドがAPIキー認証を処理
 ```
 
-## Architecture Design
+## アーキテクチャ設計
 
-### Frontend Architecture Patterns
-Strictly adhere to selected project patterns. Project-specific details reference `docs/rules/architecture/`.
+### フロントエンドアーキテクチャパターン
+選択したプロジェクトパターンを厳格に遵守。プロジェクト固有の詳細は`docs/rules/architecture/`を参照。
 
-**React 19 Component Architecture**:
-- **Function Components**: Mandatory, class components deprecated
-- **Custom Hooks**: For logic reuse and dependency injection
-- **Component Hierarchy**: Atoms → Molecules → Organisms → Templates → Pages
-- **Props-driven**: Components receive all necessary data via props
-- **Co-location**: Place tests, styles, and related files alongside components
+**Reactコンポーネントアーキテクチャ**:
+- **Function Components**: 必須、class componentsは非推奨
+- **Custom Hooks**: ロジック再利用と依存性注入のため
+- **コンポーネント階層**: Atoms → Molecules → Organisms → Templates → Pages
+- **Props-driven**: コンポーネントは必要なすべてのデータをPropsで受け取る
+- **Co-location**: テスト、スタイル、関連ファイルをコンポーネントと同じ場所に配置
 
-**State Management Patterns**:
-- **Local State**: `useState` for component-specific state
-- **Context API**: For sharing state across component tree (theme, auth, etc.)
-- **Custom Hooks**: Encapsulate state logic and side effects
-- **Server State**: React Query or SWR for API data caching
+**状態管理パターン**:
+- **Local State**: コンポーネント固有の状態には`useState`
+- **Context API**: コンポーネントツリー全体で状態を共有（テーマ、認証等）
+- **Custom Hooks**: 状態ロジックと副作用をカプセル化
+- **Server State**: APIデータのキャッシュにはReact QueryまたはSWR
 
-## Unified Data Flow Principles
+## データフロー統一原則
 
-### Client-side Data Flow
-Maintain consistent data flow throughout the React application:
+### クライアントサイドのデータフロー
+Reactアプリケーション全体で一貫したデータフローを維持：
 
-- **Single Source of Truth**: Each piece of state has one authoritative source
-  - UI state: Component state or Context
-  - Server data: API responses cached in React Query/SWR
-  - Form data: Controlled components with React Hook Form
+- **Single Source of Truth**: 各状態には1つの権威あるソースがある
+  - UI状態: コンポーネントStateまたはContext
+  - サーバーデータ: React Query/SWRでキャッシュされたAPIレスポンス
+  - フォームデータ: React Hook Formを使ったControlled Components
 
-- **Unidirectional Flow**: Data flows top-down via props
+- **単方向フロー**: データはPropsを通じて上から下へ流れる
   ```
-  API Response → State → Props → Render → UI
-  User Input → Event Handler → State Update → Re-render
+  APIレスポンス → State → Props → Render → UI
+  ユーザー入力 → イベントハンドラ → State更新 → 再レンダリング
   ```
 
-- **Immutable Updates**: Use immutable patterns for state updates
+- **Immutable Updates**: State更新には不変パターンを使用
   ```typescript
-  // ✅ Immutable state update
+  // ✅ 不変なState更新
   setUsers(prev => [...prev, newUser])
 
-  // ❌ Mutable state update
+  // ❌ 可変なState更新
   users.push(newUser)
   setUsers(users)
   ```
 
-### Type Safety in Data Flow
-- **Frontend → Backend**: Props/State (Type Guaranteed) → API Request (Serialization)
-- **Backend → Frontend**: API Response (`unknown`) → Type Guard → State (Type Guaranteed)
+### データフローにおける型安全性
+- **Frontend → Backend**: Props/State（型保証済み） → APIリクエスト（シリアライゼーション）
+- **Backend → Frontend**: APIレスポンス（`unknown`） → 型ガード → State（型保証済み）
 
 ```typescript
-// ✅ Type-safe data flow
+// ✅ 型安全なデータフロー
 async function fetchUser(id: string): Promise<User> {
   const response = await fetch(`/api/users/${id}`)
   const data: unknown = await response.json()
@@ -97,82 +97,70 @@ async function fetchUser(id: string): Promise<User> {
     throw new Error('Invalid user data')
   }
 
-  return data // Type guaranteed as User
+  return data // User型として保証
 }
 ```
 
-## Build and Testing
+## ビルドとテスト
 
-### Build Commands (Vite)
+### ビルドコマンド（Vite）
 ```bash
-# Development server
+# 開発サーバー
 npm run dev
 
-# Production build
+# 本番ビルド
 npm run build
 
-# Preview production build
+# 本番ビルドのプレビュー
 npm run preview
 
-# Type check (no emit)
+# 型チェック（出力なし）
 npm run type-check
 ```
 
-### Testing Commands
+### テストコマンド
 ```bash
-# Run tests
+# テスト実行
 npm test
 
-# Run tests with coverage
+# カバレッジ付きテスト実行
 npm run test:coverage
 
-# Run tests with coverage (fresh cache)
+# カバレッジ付きテスト実行（キャッシュクリア）
 npm run test:coverage:fresh
 
-# Safe test execution (with auto cleanup)
+# 安全なテスト実行（自動クリーンアップ付き）
 npm run test:safe
 
-# Cleanup Vitest processes
+# Vitestプロセスのクリーンアップ
 npm run cleanup:processes
 ```
 
-### Quality Check Requirements
-Quality checks are mandatory upon implementation completion:
+### 品質チェック要件
+実装完了時に品質チェックは必須：
 
-**Phase 1-3: Basic Checks**
+**Phase 1-3: 基本チェック**
 ```bash
-npm run check        # Biome (lint + format)
-npm run build        # TypeScript build
+npm run check        # Biome（lint + format）
+npm run build        # TypeScriptビルド
 ```
 
-**Phase 4: Frontend-Specific Checks**
+**Phase 4-5: テストと最終確認**
 ```bash
-npm run build && npm run preview  # Production build verification
-# Lighthouse score measurement (localhost:4173)
-# - Performance: 90+ required
-# - Accessibility: 90+ required
-du -sh dist/  # Bundle size check (500KB or less target)
+npm test                    # テスト実行
+npm run test:coverage:fresh # カバレッジ測定
+npm run check:all           # 全体統合チェック
 ```
 
-**Phase 5-6: Tests and Final Confirmation**
-```bash
-npm test                    # Test execution
-npm run test:coverage:fresh # Coverage measurement
-npm run check:all           # Overall integrated check
-```
+### カバレッジ要件
+- **必須**: 単体テストのカバレッジは60%以上
+- **コンポーネント別目標**:
+  - Atoms: 70%以上
+  - Molecules: 65%以上
+  - Organisms: 60%以上
+  - Custom Hooks: 65%以上
+  - Utils: 70%以上
 
-### Coverage Requirements
-- **Mandatory**: Unit test coverage must be 60% or higher
-- **Component-specific targets**:
-  - Atoms: 70% or higher
-  - Molecules: 65% or higher
-  - Organisms: 60% or higher
-  - Custom Hooks: 65% or higher
-  - Utils: 70% or higher
-
-### Non-functional Requirements
-- **Lighthouse Performance Score**: 90+ required
-- **Lighthouse Accessibility Score**: 90+ required
-- **Initial Bundle Size**: 500KB or less
-- **Browser Compatibility**: Chrome/Firefox/Safari/Edge (latest 2 versions)
-- **Rendering Time**: Within 5 seconds for major pages
+### 非機能要件
+- **ブラウザ互換性**: Chrome/Firefox/Safari/Edge（最新2バージョン）
+- **レンダリング時間**: 主要ページで5秒以内
