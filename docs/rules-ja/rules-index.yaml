@@ -50,8 +50,8 @@ rules:
 
   ai-development-guide:
     file: "ai-development-guide.md"
-    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion]
-    typical-use: "技術的判断基準、アンチパターン検出、デバッグ手法、品質チェックコマンド、実装時のベストプラクティス、影響範囲調査、未使用コード削除"
+    tags: [anti-patterns, technical-judgment, debugging, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion]
+    typical-use: "技術的判断基準、アンチパターン検出、デバッグ手法、実装時のベストプラクティス、影響範囲調査、未使用コード削除"
     size: medium
     key-references:
       - "Rule of Three - Martin Fowler"
@@ -66,15 +66,14 @@ rules:
       - "Rule of Three - コード重複の判断基準"
       - "よくある失敗パターンと回避方法"
       - "デバッグ手法"
-      - "品質チェックコマンドリファレンス"
       - "技術的判断が必要な場面"
       - "継続的改善のマインドセット"
       - "実装作業の完全性担保"
 
   technical-spec:
     file: "technical-spec.md"
-    tags: [architecture, design, documentation, environment, data-flow, implementation]
-    typical-use: "技術設計、環境設定、ドキュメント作成プロセス、実装方針決定"
+    tags: [architecture, design, documentation, environment, data-flow, implementation, quality-commands, testing, build]
+    typical-use: "技術設計、環境設定、ドキュメント作成プロセス、実装方針決定、品質チェックコマンド、ビルドとテスト実行"
     size: medium
     key-references:
       - "ADRフォーマット - Michael Nygard"
@@ -86,6 +85,12 @@ rules:
       - "パターン適用の一貫性"
       - "データフロー統一原則"
       - "ビルドとテスト"
+      - "ビルドコマンド"
+      - "テストコマンド"
+      - "品質チェック要件"
+      - "補助コマンド"
+      - "トラブルシューティング"
+      - "カバレッジ要件"
 
   project-context:
     file: "project-context.md"
@@ -187,8 +192,8 @@ rules:
 
   frontend-ai-development-guide:
     file: "frontend/ai-development-guide.md"
-    tags: [frontend, react, anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion, prop-drilling, component-hierarchy, lighthouse, bundle-size]
-    typical-use: "React開発での技術的判断基準、アンチパターン検出、デバッグ手法、品質チェックコマンド、実装時のベストプラクティス、影響範囲調査、未使用コード削除、フロントエンド固有の品質指標"
+    tags: [frontend, react, anti-patterns, technical-judgment, debugging, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion, prop-drilling, component-hierarchy, lighthouse, bundle-size]
+    typical-use: "React開発での技術的判断基準、アンチパターン検出、デバッグ手法、実装時のベストプラクティス、影響範囲調査、未使用コード削除、フロントエンド固有の品質指標"
     size: medium
     key-references:
       - "Rule of Three - Martin Fowler"
@@ -205,7 +210,6 @@ rules:
       - "Rule of Three - コード重複の判断基準"
       - "よくある失敗パターンと回避方法"
       - "デバッグ手法"
-      - "品質チェックコマンドリファレンス"
       - "技術的判断が必要な場面"
       - "継続的改善のマインドセット"
       - "実装作業の完全性担保"

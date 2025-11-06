@@ -143,53 +143,6 @@ console.log('DEBUG:', {
 })
 ```
 
-## 品質チェックコマンドリファレンス
-
-### Phase 1-3: 基本チェック
-```bash
-# Biome総合チェック（lint + format）
-npm run check
-
-# 未使用エクスポートの検出
-npm run check:unused
-
-# TypeScriptビルド
-npm run build
-```
-
-### Phase 4-6: テストと最終確認
-```bash
-# テスト実行
-npm test
-
-# カバレッジ測定（キャッシュクリア）
-npm run test:coverage:fresh
-
-# 全体統合チェック
-npm run check:all
-```
-
-### 補助コマンド
-```bash
-# カバレッジレポート確認
-open coverage/index.html
-
-# Vitestプロセスのクリーンアップ（テスト後必須）
-npm run cleanup:processes
-
-# 安全なテスト実行（自動クリーンアップ付き）
-npm run test:safe
-
-# 自動修正
-npm run format        # フォーマット修正
-npm run lint:fix      # Lint修正
-```
-
-### トラブルシューティング
-- **ポート使用中エラー**: `npm run cleanup:processes`
-- **キャッシュ問題**: `npm run test:coverage:fresh`
-- **依存関係エラー**: `npm ci`で再インストール
-
 ## 技術的判断が必要な場面
 
 ### 抽象化のタイミング
