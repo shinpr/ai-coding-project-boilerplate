@@ -29,7 +29,8 @@ Executes quality checks and provides a state where `npm run check:all` completes
 Load and follow these rule files before starting:
 - @docs/rules/typescript.md - TypeScript Development Rules
 - @docs/rules/typescript-testing.md - Testing Rules
-- @docs/rules/ai-development-guide.md - Quality Check Command Reference
+- @docs/rules/technical-spec.md - Quality Check Commands and Build/Test Configuration
+- @docs/rules/ai-development-guide.md - Technical Decision Criteria and Anti-patterns
 - @docs/rules/project-context.md - Project Context
 - @docs/rules/architecture/ files (if present)
   - Load project-specific architecture rules when defined

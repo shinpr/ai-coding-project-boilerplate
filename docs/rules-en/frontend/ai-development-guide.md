@@ -147,51 +147,6 @@ console.log('DEBUG:', {
 })
 ```
 
-## Quality Check Command Reference
-
-### Phase 1-3: Basic Checks
-```bash
-# Biome comprehensive check (lint + format)
-npm run check
-
-# TypeScript build
-npm run build
-```
-
-### Phase 4-5: Tests and Final Confirmation
-```bash
-# Test execution
-npm test
-
-# Coverage measurement (clear cache)
-npm run test:coverage:fresh
-
-# Overall integrated check
-npm run check:all
-```
-
-### Auxiliary Commands
-```bash
-# Check coverage report
-open coverage/index.html
-
-# Vitest process cleanup (mandatory after tests)
-npm run cleanup:processes
-
-# Safe test execution (with auto cleanup)
-npm run test:safe
-
-# Auto fixes
-npm run format        # Format fixes
-npm run lint:fix      # Lint fixes
-```
-
-### Troubleshooting
-- **Port in use error**: `npm run cleanup:processes`
-- **Cache issues**: `npm run test:coverage:fresh`
-- **Dependency errors**: Reinstall with `npm ci`
-- **Vite preview not starting**: Check port 4173 availability
-
 ## Situations Requiring Technical Decisions
 
 ### Timing of Abstraction

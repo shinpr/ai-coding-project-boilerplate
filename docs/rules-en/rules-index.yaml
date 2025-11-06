@@ -50,8 +50,8 @@ rules:
 
   ai-development-guide:
     file: "ai-development-guide.md"
-    tags: [anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion]
-    typical-use: "Technical decision criteria, anti-pattern detection, debugging techniques, quality check commands, implementation best practices, impact analysis, unused code deletion"
+    tags: [anti-patterns, technical-judgment, debugging, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion]
+    typical-use: "Technical decision criteria, anti-pattern detection, debugging techniques, implementation best practices, impact analysis, unused code deletion"
     size: medium
     key-references:
       - "Rule of Three - Martin Fowler"
@@ -66,15 +66,14 @@ rules:
       - "Rule of Three - Criteria for Code Duplication"
       - "Common Failure Patterns and Avoidance Methods"
       - "Debugging Techniques"
-      - "Quality Check Command Reference"
       - "Situations Requiring Technical Decisions"
       - "Continuous Improvement Mindset"
       - "Implementation Completeness Assurance"
 
   technical-spec:
     file: "technical-spec.md"
-    tags: [architecture, design, documentation, environment, data-flow, implementation]
-    typical-use: "Technical design, environment configuration, documentation creation process, implementation policy decisions"
+    tags: [architecture, design, documentation, environment, data-flow, implementation, quality-commands, testing, build]
+    typical-use: "Technical design, environment configuration, documentation creation process, implementation policy decisions, quality check commands, build and test execution"
     size: medium
     key-references:
       - "ADR Format - Michael Nygard"
@@ -86,6 +85,12 @@ rules:
       - "Architecture Patterns"
       - "Unified Data Flow Principles"
       - "Build and Testing"
+      - "Build Commands"
+      - "Testing Commands"
+      - "Quality Check Requirements"
+      - "Auxiliary Commands"
+      - "Troubleshooting"
+      - "Coverage Requirements"
 
   project-context:
     file: "project-context.md"
@@ -201,7 +206,7 @@ rules:
 
   frontend-ai-development-guide:
     file: "frontend/ai-development-guide.md"
-    tags: [frontend, react, anti-patterns, technical-judgment, debugging, quality-commands, rule-of-three, implementation, lighthouse, bundle-size]
+    tags: [frontend, react, anti-patterns, technical-judgment, debugging, rule-of-three, implementation, lighthouse, bundle-size]
     typical-use: "Frontend technical decision criteria, React anti-pattern detection, Lighthouse quality checks, bundle size optimization, frontend debugging"
     size: medium
     key-references:
@@ -216,7 +221,6 @@ rules:
       - "Rule of Three - Criteria for Code Duplication"
       - "Common Failure Patterns and Avoidance Methods"
       - "Debugging Techniques"
-      - "Quality Check Command Reference"
       - "Situations Requiring Technical Decisions"
       - "Continuous Improvement Mindset"
       - "Implementation Completeness Assurance"
