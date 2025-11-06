@@ -85,12 +85,6 @@ rules:
       - "Architecture Patterns"
       - "Unified Data Flow Principles"
       - "Build and Testing"
-      - "Build Commands"
-      - "Testing Commands"
-      - "Quality Check Requirements"
-      - "Auxiliary Commands"
-      - "Troubleshooting"
-      - "Coverage Requirements"
 
   project-context:
     file: "project-context.md"
