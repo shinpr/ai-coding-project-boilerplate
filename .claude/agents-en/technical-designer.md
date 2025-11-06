@@ -309,34 +309,10 @@ Implementation sample creation checklist:
 **Principle**: Set specific, verifiable conditions. Avoid ambiguous expressions, document in format convertible to test cases.
 **Example**: "Login works" → "After authentication with correct credentials, navigates to dashboard screen"
 **Comprehensiveness**: Cover happy path, unhappy path, and edge cases. Define non-functional requirements in separate section.
-   - Expected behavior (happy path)
-   - Error handling (unhappy path)
-   - Edge cases
 
-4. **Priority**: Place important acceptance criteria at the top
+### Writing Measurable ACs
 
-### AC Scoping for Autonomous Implementation
-
-**Core Principle**: AC = User-observable behavior verifiable in isolated CI environment
-
-**Behavior-First Principle** (Test Generation Upstream Control):
-
-Before writing any AC, apply the observability test:
-
-1. **User-Observable Check**:
-   - Question: "Can a user (or system operator) observe this behavior?"
-   - If NO → This is an **implementation detail**, exclude from AC
-   - If YES → Continue to check 2
-
-2. **Verification Context Check**:
-   - Question: "Can this be verified without full system integration?"
-   - If YES → This is **unit/component level**, exclude from integration/E2E AC
-   - If NO → This is a valid AC for integration/E2E tests
-
-3. **CI Environment Check**:
-   - Question: "Is this verifiable deterministically in CI?"
-   - If NO → Exclude (e.g., performance metrics, real external services)
-   - If YES → Valid AC
+**Core Principle**: AC = User-observable behavior verifiable in isolated environment
 
 **Include** (High automation ROI):
 - Business logic correctness (calculations, state transitions, data transformations)
@@ -347,68 +323,34 @@ Before writing any AC, apply the observability test:
 **Exclude** (Low ROI in LLM/CI/CD environment):
 - External service real connections → Use contract/interface verification instead
 - Performance metrics → Non-deterministic in CI, defer to load testing
-- Implementation details (hashing algorithms, internal function calls) → Focus on observable behavior
-- UI layout specifics (exact pixel positions, styling) → Focus on information availability, not presentation
+- Implementation details (technology choice, algorithms, internal structure) → Focus on observable behavior
+- UI presentation method (layout, styling) → Focus on information availability
 
-**Examples of Proper AC Formulation**:
+**Example**:
+- ❌ Implementation detail: "Data is stored using specific technology X"
+- ✅ Observable behavior: "Saved data can be retrieved after system restart"
 
-**❌ Bad (Implementation Detail)**:
-- "Password must be hashed using bcrypt with 10 salt rounds"
-- "Use Redis for session storage"
-- "API response time must be < 200ms"
-
-**✅ Good (User-Observable Behavior)**:
-- "After successful login, user can access protected resources without re-authenticating for 24 hours"
-- "Failed login attempts are logged and visible in admin security audit"
-- "System processes checkout requests without blocking user interaction"
-
-**Rationale**:
-- Implementation details (bcrypt, Redis) are verified via code review and unit tests
-- User-observable outcomes (session persistence, audit logs, non-blocking UX) are verified via integration/E2E tests
-- Performance targets belong in "Non-functional Requirements" section for specialized testing
-
-**Downstream Impact**:
-
-This scoping is **mandatory for acceptance-test-generator**. Tests are generated only from ACs that pass all 3 checks above, preventing over-generation of low-ROI tests.
-
-*Note: Non-functional requirements (performance, reliability, scalability) are defined in the "Non-functional Requirements" section and automatically verified by tools like quality-fixer*
+*Note: Non-functional requirements (performance, reliability, scalability) are defined in "Non-functional Requirements" section*
 
 ## Latest Information Research Guidelines
 
-### Research Timing
-1. **Mandatory Research**:
-   - When considering new technology/library introduction
-   - When designing performance optimization
-   - When designing security-related implementation
-   - When major version upgrades of existing technology
-
-2. **Recommended Research**:
-   - Before implementing complex algorithms
-   - When considering improvements to existing patterns
-
-### Research Method
-
 **Required Research Timing**: New technology introduction, performance optimization, security design, major version upgrades
+**Recommended Research**: Before implementing complex algorithms, when considering improvements to existing patterns
 
-**Specific Search Pattern Examples**:
-- `React Server Components best practices 2024` (new feature research)
-- `PostgreSQL vs MongoDB performance comparison 2024` (technology selection)
-- `microservices authentication patterns` (design patterns)
-- `Node.js v20 breaking changes migration guide` (version upgrade)
-- `[framework name] official documentation` (official information)
+**Search Pattern Examples**:
+To get latest information, always check current year before searching:
+```bash
+date +%Y  # e.g., 2025
+```
+Include this year in search queries:
+- `React Server Components best practices {current_year}` (new feature research)
+- `PostgreSQL vs MongoDB performance comparison {current_year}` (technology selection)
+- `[framework name] official documentation` (official docs don't need year)
 
-**Citation**: Add "## References" section at end of ADR/Design Doc with URLs and descriptions
-
-### Citation Format
-
-Add at the end of ADR/Design Doc in the following format:
-
+**Citation**: Add "## References" section at end of ADR/Design Doc
 ```markdown
 ## References
-
 - [Title](URL) - Brief description of referenced content
-- [Framework Official Documentation](URL) - Related design principles and features
-- [Technical Blog Article](URL) - Implementation patterns and best practices
 ```
 
 ## Update Mode Operation
