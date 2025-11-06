@@ -72,28 +72,6 @@ rules:
       - "Mock Type Safety Enforcement"
       - "Basic Vitest Example"
 
-  ai-development-guide:
-    file: "ai-development-guide.md"
-    tags: [anti-patterns, technical-judgment, debugging, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion]
-    typical-use: "Technical decision criteria, anti-pattern detection, debugging techniques, implementation best practices, impact analysis, unused code deletion"
-    size: medium
-    key-references:
-      - "Rule of Three - Martin Fowler"
-      - "5 Whys - Toyota Production System"
-      - "DRY Principle - The Pragmatic Programmer"
-      - "Single Responsibility Principle (SRP) - Clean Code"
-      - "YAGNI Principle - Extreme Programming"
-      - "Avoiding fallback in distributed systems - AWS Builders' Library"
-    sections:
-      - "Technical Anti-patterns (Red Flag Patterns)"
-      - "Fallback Design Principles"
-      - "Rule of Three - Criteria for Code Duplication"
-      - "Common Failure Patterns and Avoidance Methods"
-      - "Debugging Techniques"
-      - "Situations Requiring Technical Decisions"
-      - "Continuous Improvement Mindset"
-      - "Implementation Completeness Assurance"
-
   technical-spec:
     file: "technical-spec.md"
     tags: [architecture, design, documentation, environment, data-flow, implementation, quality-commands, testing, build]
