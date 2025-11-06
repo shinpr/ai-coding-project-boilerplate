@@ -21,7 +21,7 @@ Load and follow these rule files before starting:
   - Layered architecture, clean architecture, hexagonal, etc.
 - **@docs/rules/typescript.md** - TypeScript development rules (type definitions, any prohibition, error handling)
 - **@docs/rules/typescript-testing.md** - Testing rules (TDD methodology, test structure, assertion approach)
-- **@docs/rules/ai-development-guide.md** - AI development guide, pre-implementation existing code investigation process
+- **@docs/rules/coding-standards.md** - Universal Coding Standards, pre-implementation existing code investigation process
   **Follow**: All rules for implementation, testing, and code quality
   **Exception**: Quality assurance process (Phase 1-6) and commits are out of scope
 

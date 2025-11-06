@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 ## Initial Required Tasks
 
 Load and follow these rule files before starting:
-- @docs/rules/ai-development-guide.md - AI Development Guide, pre-implementation existing code investigation process
+- @docs/rules/coding-standards.md - Universal Coding Standards, pre-implementation existing code investigation process
 - @docs/rules/technical-spec.md - Technical Specifications
 - @docs/rules/typescript.md - TypeScript Development Rules
 - @docs/rules/project-context.md - Project Context
@@ -96,7 +96,7 @@ Load and follow these rule files before starting:
 - [ ] Component dependencies correct
 - [ ] Responsibilities properly separated
 - [ ] Existing codebase analysis section includes similar functionality investigation results
-- [ ] No unnecessary duplicate implementations (Pattern 5 from @docs/rules/ai-development-guide.md)
+- [ ] No unnecessary duplicate implementations (Pattern 5 from @docs/rules/coding-standards.md)
 
 ### Quality Validation
 - [ ] Comprehensive error handling

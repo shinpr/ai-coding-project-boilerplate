@@ -27,10 +27,10 @@ Executes quality checks and provides a state where all checks complete with zero
 ## Initial Required Tasks
 
 Load and follow these rule files before starting:
+- @docs/rules/coding-standards.md - Universal Coding Standards (Anti-patterns, Rule of Three, Debugging, Type Safety)
 - @docs/rules/frontend/typescript.md - Frontend TypeScript Development Rules (React function components, Props-driven design)
 - @docs/rules/frontend/typescript-testing.md - Frontend Testing Rules (React Testing Library, MSW, 60% coverage)
 - @docs/rules/frontend/technical-spec.md - Frontend Quality Check Commands and Build/Test Configuration
-- @docs/rules/frontend/ai-development-guide.md - Frontend Technical Decision Criteria and Anti-patterns
 - @docs/rules/project-context.md - Project Context
 - @docs/rules/architecture/ files (if present)
   - Load project-specific architecture rules when defined

@@ -2,11 +2,43 @@
 # Manages overview, tags, typical usage scenarios, and size for each rule
 
 rules:
+  coding-standards:
+    file: "coding-standards.md"
+    tags: [universal, anti-patterns, refactoring, type-safety, testing, code-deletion, rule-of-three, fail-fast, impact-analysis]
+    typical-use: "Universal coding principles applicable across all domains, foundational standards for all developers"
+    size: large
+    key-references:
+      - "Rule of Three - Martin Fowler"
+      - "Single Responsibility Principle - Clean Code"
+      - "DRY Principle - The Pragmatic Programmer"
+      - "YAGNI Principle - Kent Beck"
+      - "5 Whys - Toyota Production System"
+      - "Red-Green-Refactor - Kent Beck"
+      - "AAA Pattern - Arrange-Act-Assert"
+    sections:
+      - "Technical Anti-patterns (Red Flag Patterns)"
+      - "Basic Principles"
+      - "Comment Writing Rules"
+      - "Fallback Design Principles"
+      - "Rule of Three - Criteria for Code Duplication"
+      - "Common Failure Patterns and Avoidance Methods"
+      - "Debugging Techniques"
+      - "Type Safety Fundamentals"
+      - "Refactoring Techniques"
+      - "Situations Requiring Technical Decisions"
+      - "Continuous Improvement Mindset"
+      - "Implementation Completeness Assurance"
+      - "Red-Green-Refactor Process (Test-First Development)"
+      - "Test Design Principles"
+      - "Test Helper Utilization Rules"
+      - "Test Granularity Principles"
+      - "Continuity Test Scope"
+
   typescript:
     file: "typescript.md"
-    tags: [implementation, type-safety, async, refactoring, coding-style, functional-programming, dependency-injection, branded-types]
-    typical-use: "TypeScript code creation, modification, refactoring, modern type features utilization"
-    size: medium
+    tags: [implementation, type-safety, async, refactoring, coding-style, functional-programming, dependency-injection, branded-types, backend]
+    typical-use: "Backend TypeScript code creation, modification, refactoring, modern type features utilization"
+    size: small
     key-references:
       - "YAGNI Principle - Kent Beck"
       - "Clean Code - Robert C. Martin"
@@ -18,19 +50,16 @@ rules:
       - "Dependency Injection - Martin Fowler"
       - "Avoiding fallback in distributed systems - AWS Builders' Library"
     sections:
-      - "Basic Principles"
-      - "Comment Writing Rules"
-      - "Type Safety"
+      - "Type Safety in Backend Implementation"
       - "Coding Conventions"
       - "Error Handling"
-      - "Refactoring Techniques"
       - "Performance Optimization"
 
   typescript-testing:
     file: "typescript-testing.md"
-    tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring]
-    typical-use: "Test creation, quality checks, development steps for code/bug fixes, refactoring, and new feature implementation"
-    size: medium
+    tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring, backend]
+    typical-use: "Backend test creation, quality checks, development steps for code/bug fixes, refactoring, and new feature implementation"
+    size: small
     key-references:
       - "Test-Driven Development - Kent Beck"
       - "Rule of Three - Martin Fowler"
@@ -39,13 +68,8 @@ rules:
     sections:
       - "Test Framework"
       - "Basic Testing Policy"
-      - "Red-Green-Refactor Process (Test-First Development)"
-      - "Test Design Principles"
-      - "Test Helper Utilization Rules"
       - "Test Implementation Conventions"
-      - "Test Granularity Principles"
       - "Mock Type Safety Enforcement"
-      - "Continuity Test Scope"
       - "Basic Vitest Example"
 
   ai-development-guide:
@@ -140,7 +164,7 @@ rules:
     file: "frontend/typescript.md"
     tags: [frontend, react, implementation, type-safety, function-components, props-driven, async, refactoring, coding-style]
     typical-use: "React component creation, Props type definitions, frontend TypeScript development"
-    size: medium
+    size: small
     key-references:
       - "React Function Components - React Official"
       - "Props-driven Design - React Best Practices"
@@ -148,19 +172,17 @@ rules:
       - "Clean Code - Robert C. Martin"
       - "TypeScript satisfies Operator - Microsoft"
     sections:
-      - "Basic Principles"
-      - "Comment Writing Rules"
-      - "Type Safety"
+      - "Frontend-Specific Anti-patterns"
+      - "Type Safety in Frontend Implementation"
       - "Coding Conventions"
       - "Error Handling"
-      - "Refactoring Techniques"
       - "Performance Optimization"
 
   frontend-typescript-testing:
     file: "frontend/typescript-testing.md"
     tags: [frontend, react, quality, testing, tdd, coverage, vitest, react-testing-library, msw, implementation]
     typical-use: "React component testing, React Testing Library tests, MSW API mocking, frontend test creation"
-    size: medium
+    size: small
     key-references:
       - "React Testing Library - Kent C. Dodds"
       - "MSW (Mock Service Worker) - MSW Team"
@@ -170,13 +192,8 @@ rules:
     sections:
       - "Test Framework"
       - "Basic Testing Policy"
-      - "Red-Green-Refactor Process (Test-First Development)"
-      - "Test Design Principles"
-      - "Test Helper Utilization Rules"
       - "Test Implementation Conventions"
-      - "Test Granularity Principles"
       - "Mock Type Safety Enforcement"
-      - "Continuity Test Scope"
       - "Basic React Testing Library Example"
 
   frontend-technical-spec:
@@ -197,25 +214,3 @@ rules:
       - "Quality Check Requirements"
       - "Coverage Requirements"
       - "Non-functional Requirements"
-
-  frontend-ai-development-guide:
-    file: "frontend/ai-development-guide.md"
-    tags: [frontend, react, anti-patterns, technical-judgment, debugging, rule-of-three, implementation, lighthouse, bundle-size]
-    typical-use: "Frontend technical decision criteria, React anti-pattern detection, Lighthouse quality checks, bundle size optimization, frontend debugging"
-    size: medium
-    key-references:
-      - "Rule of Three - Martin Fowler"
-      - "React Component Best Practices - React Team"
-      - "Lighthouse Performance Guide - Google"
-      - "5 Whys - Toyota Production System"
-      - "Single Responsibility Principle (SRP) - Clean Code"
-    sections:
-      - "Technical Anti-patterns (Red Flag Patterns)"
-      - "Fallback Design Principles"
-      - "Rule of Three - Criteria for Code Duplication"
-      - "Common Failure Patterns and Avoidance Methods"
-      - "Debugging Techniques"
-      - "Situations Requiring Technical Decisions"
-      - "Continuous Improvement Mindset"
-      - "Implementation Completeness Assurance"
-      - "Unused Code Deletion Rule"

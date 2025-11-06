@@ -21,7 +21,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
   - レイヤード・アーキテクチャ、クリーンアーキテクチャ、ヘキサゴナル等
 - **@docs/rules/typescript.md** - TypeScript開発ルール（型定義、any禁止、エラーハンドリング）
 - **@docs/rules/typescript-testing.md** - テストルール（TDD手法、テスト構造、アサーション方針）
-- **@docs/rules/ai-development-guide.md** - AI開発ガイド、実装前の既存コード調査プロセス
+- **@docs/rules/coding-standards.md** - 普遍的コーディング規約、実装前の既存コード調査プロセス
   **厳守**: 実装・テスト・コード品質に関するすべてのルール
   **例外**: 品質保証工程（Phase 1-6）・コミット作成は責務範囲外のため適用しない
 

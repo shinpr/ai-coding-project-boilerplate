@@ -13,7 +13,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/technical-spec.md - 技術仕様（ドキュメント作成プロセス参照）
-- @docs/rules/ai-development-guide.md - AI開発ガイド（エスカレーション基準参照）
+- @docs/rules/coding-standards.md - 普遍的コーディング規約（エスカレーション基準参照）
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準（規模判定とADR条件）
 
 ## 責務

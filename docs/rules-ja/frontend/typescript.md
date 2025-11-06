@@ -1,51 +1,26 @@
-# TypeScript開発ルール（フロントエンド）
+# TypeScript開発ルール
 
-## 基本原則
+## フロントエンド固有のアンチパターン
 
-✅ **積極的なリファクタリング** - 技術的負債を防ぎ、健全性を維持
-❌ **「念のため」の未使用コード** - YAGNI原則違反（Kent Beck）
+coding-standards.mdの普遍的アンチパターンに加え、以下のフロントエンド固有の問題に注意：
 
-## コメント記述ルール
-- **機能説明に集中**: コードが「何をするか」を説明
-- **履歴情報なし**: 開発経緯は記録しない
-- **時間に依存しない**: いつ読んでも有効な内容のみ記載
-- **簡潔性**: 必要最小限の説明に留める
+- **3階層以上のProp drilling** - Context APIまたは状態管理を使用すべき
+- **巨大なコンポーネント（300行以上）** - 小さなコンポーネントに分割
 
-## 型安全性
+## Frontend実装における型安全性
 
-**絶対ルール**: any型は完全禁止。型チェックを無効化し、実行時エラーの元凶となる。
+**データフローにおける型安全性**
+- **Frontend → Backend**: Props/State（型保証済み） → APIリクエスト（シリアライゼーション）
+- **Backend → Frontend**: APIレスポンス（`unknown`） → 型ガード → State（型保証済み）
 
-**any型の代替策（優先順位順）**
-1. **unknown型 + 型ガード**: 外部入力の検証に使用（APIレスポンス、localStorage、URLパラメータ）
-2. **ジェネリクス**: 型の柔軟性が必要な場合
-3. **Union Types・Intersection Types**: 複数の型の組み合わせ
-4. **型アサーション（最終手段）**: 型が確実な場合のみ
-
-**型ガード実装パターン**
-```typescript
-function isUser(value: unknown): value is User {
-  return typeof value === 'object' && value !== null && 'id' in value && 'name' in value
-}
-```
-
-**モダンな型機能**
-- **satisfies演算子**: `const config = { apiUrl: '/api' } satisfies Config` - 推論を保持
-- **const assertion**: `const ROUTES = { HOME: '/' } as const satisfies Routes` - 不変かつ型安全
-- **Branded Types**: `type UserId = string & { __brand: 'UserId' }` - 意味を区別
-- **Template Literal Types**: `type EventName = \`on\${Capitalize<string>}\`` - 文字列パターンを型で表現
-
-**フロントエンド実装における型安全性**
+**Frontend固有の型シナリオ**:
 - **React Props/State**: TypeScriptが型管理、unknown不要
 - **外部APIレスポンス**: 常に`unknown`として受け取り、型ガードで検証
 - **localStorage/sessionStorage**: `unknown`として扱い、検証
 - **URLパラメータ**: `unknown`として扱い、検証
 - **Form入力（Controlled Components）**: React合成イベントで型安全
 
-**データフローにおける型安全性**
-- **Frontend → Backend**: Props/State（型保証済み） → APIリクエスト（シリアライゼーション）
-- **Backend → Frontend**: APIレスポンス（`unknown`） → 型ガード → State（型保証済み）
-
-**型の複雑性管理**
+**型の複雑性管理（Frontend）**
 - **Props設計**:
   - Props数: 3-7個が理想（10個超えたらコンポーネント分割検討）
   - Optional Props: 50%以下（多すぎる場合はデフォルト値やContext使用検討）
@@ -147,17 +122,6 @@ export class AppError extends Error {
 - Error Boundaryセットアップ必須: レンダリングエラーをキャッチ
 - イベントハンドラ内の全async/awaitでtry-catch使用
 - エラーは常にログ記録し、再スローまたはerror stateで表示
-
-## リファクタリング手法
-
-**基本方針**
-- 小さなステップ: 段階的改善により常に動作する状態を維持
-- 安全な変更: 一度に変更する範囲を最小化
-- 動作保証: 既存の動作が変わらないことを確認しながら進める
-
-**実施手順**: 現状把握 → 段階的変更 → 動作確認 → 最終検証
-
-**優先順位**: 重複コード削除 > 大きな関数の分割 > 複雑な条件分岐の簡略化 > 型安全性向上
 
 ## パフォーマンス最適化
 

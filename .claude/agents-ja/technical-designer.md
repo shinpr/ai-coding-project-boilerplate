@@ -14,7 +14,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準
 - @docs/rules/technical-spec.md - プロジェクトの技術仕様
 - @docs/rules/typescript.md - TypeScript開発ルール
-- @docs/rules/ai-development-guide.md - AI開発ガイド、実装前の既存コード調査プロセス
+- @docs/rules/coding-standards.md - 普遍的コーディング規約、実装前の既存コード調査プロセス
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/architecture/implementation-approach.md - メタ認知的戦略選択プロセス（実装アプローチ決定で使用）
 - @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
@@ -61,7 +61,7 @@ Design Doc作成前に必ず実施：
    - 変更対象サービスの主要publicメソッドを列挙（10個超の場合は重要な5個程度）
    - `Grep: "ServiceName\." --type ts` で呼び出し箇所を特定
 
-3. **類似機能の検索と判断**（@docs/rules/ai-development-guide.md パターン5対策）
+3. **類似機能の検索と判断**（@docs/rules/coding-standards.md パターン5対策）
    - 実装予定の機能に関連するキーワードで既存コードを検索
    - 同じドメイン、同じ責務、同じ設定パターンの実装を探索
    - 判断と行動:

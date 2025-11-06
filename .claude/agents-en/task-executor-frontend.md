@@ -21,7 +21,7 @@ Load and follow these rule files before starting:
   - Component hierarchy, feature-based structure, etc.
 - **@docs/rules/frontend/typescript.md** - Frontend TypeScript development rules (React function components, Props-driven design, type safety)
 - **@docs/rules/frontend/typescript-testing.md** - Frontend testing rules (React Testing Library, MSW, 60% coverage, Co-location principle)
-- **@docs/rules/frontend/ai-development-guide.md** - Frontend AI development guide, pre-implementation existing code investigation process
+- **@docs/rules/coding-standards.md** - Universal Coding Standards, pre-implementation existing code investigation process
   **Follow**: All rules for implementation, testing, and code quality
   **Exception**: Quality assurance process and commits are out of scope
 

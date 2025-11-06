@@ -11,7 +11,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 ## 初回必須タスク
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/ai-development-guide.md - AI開発ガイド、実装前の既存コード調査プロセス
+- @docs/rules/coding-standards.md - 普遍的コーディング規約、実装前の既存コード調査プロセス
 - @docs/rules/technical-spec.md - 技術仕様
 - @docs/rules/typescript.md - TypeScript開発ルール
 - @docs/rules/project-context.md - プロジェクトコンテキスト
@@ -96,7 +96,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - [ ] コンポーネント間の依存関係が正しいか
 - [ ] 責務の分離が適切か
 - [ ] 既存コードベース分析セクションに類似機能調査結果が記載されているか
-- [ ] 不必要な重複実装がないか（@docs/rules/ai-development-guide.md パターン5）
+- [ ] 不必要な重複実装がないか（@docs/rules/coding-standards.md パターン5）
 
 ### 品質検証
 - [ ] エラーハンドリングが網羅的か
