@@ -317,6 +317,27 @@ Implementation sample creation checklist:
 
 ### AC Scoping for Autonomous Implementation
 
+**Core Principle**: AC = User-observable behavior verifiable in isolated CI environment
+
+**Behavior-First Principle** (Test Generation Upstream Control):
+
+Before writing any AC, apply the observability test:
+
+1. **User-Observable Check**:
+   - Question: "Can a user (or system operator) observe this behavior?"
+   - If NO → This is an **implementation detail**, exclude from AC
+   - If YES → Continue to check 2
+
+2. **Verification Context Check**:
+   - Question: "Can this be verified without full system integration?"
+   - If YES → This is **unit/component level**, exclude from integration/E2E AC
+   - If NO → This is a valid AC for integration/E2E tests
+
+3. **CI Environment Check**:
+   - Question: "Is this verifiable deterministically in CI?"
+   - If NO → Exclude (e.g., performance metrics, real external services)
+   - If YES → Valid AC
+
 **Include** (High automation ROI):
 - Business logic correctness (calculations, state transitions, data transformations)
 - Data integrity and persistence behavior
@@ -326,12 +347,31 @@ Implementation sample creation checklist:
 **Exclude** (Low ROI in LLM/CI/CD environment):
 - External service real connections → Use contract/interface verification instead
 - Performance metrics → Non-deterministic in CI, defer to load testing
-- Implementation details → Focus on observable behavior
-- UI layout specifics → Focus on information availability, not presentation
+- Implementation details (hashing algorithms, internal function calls) → Focus on observable behavior
+- UI layout specifics (exact pixel positions, styling) → Focus on information availability, not presentation
 
-**Principle**: AC = User-observable behavior verifiable in isolated CI environment
+**Examples of Proper AC Formulation**:
 
-*Note: Non-functional requirements (performance, reliability, etc.) are defined in the "Non-functional Requirements" section and automatically verified by tools like quality-fixer
+**❌ Bad (Implementation Detail)**:
+- "Password must be hashed using bcrypt with 10 salt rounds"
+- "Use Redis for session storage"
+- "API response time must be < 200ms"
+
+**✅ Good (User-Observable Behavior)**:
+- "After successful login, user can access protected resources without re-authenticating for 24 hours"
+- "Failed login attempts are logged and visible in admin security audit"
+- "System processes checkout requests without blocking user interaction"
+
+**Rationale**:
+- Implementation details (bcrypt, Redis) are verified via code review and unit tests
+- User-observable outcomes (session persistence, audit logs, non-blocking UX) are verified via integration/E2E tests
+- Performance targets belong in "Non-functional Requirements" section for specialized testing
+
+**Downstream Impact**:
+
+This scoping is **mandatory for acceptance-test-generator**. Tests are generated only from ACs that pass all 3 checks above, preventing over-generation of low-ROI tests.
+
+*Note: Non-functional requirements (performance, reliability, scalability) are defined in the "Non-functional Requirements" section and automatically verified by tools like quality-fixer*
 
 ## Latest Information Research Guidelines
 
