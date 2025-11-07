@@ -13,7 +13,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/project-context.md - Project context
 - @docs/rules/technical-spec.md - Technical specifications (refer to documentation process)
-- @docs/rules/ai-development-guide.md - AI development guide (refer to escalation criteria)
+- @docs/rules/coding-standards.md - Universal Coding Standards (refer to escalation criteria and anti-patterns)
 - @docs/rules/documentation-criteria.md - Documentation creation criteria (scale determination and ADR conditions)
 
 ## Responsibilities

@@ -158,7 +158,8 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
    - 複数の情報源で妥当性を検証
 
 3. **積極的な最新情報収集**：
-   - `[技術名] best practices 2024/2025`
+   検索前に現在年を確認: `date +%Y`
+   - `[技術名] best practices {現在年}`
    - `[技術名] deprecation`、`[技術名] security vulnerability`
    - 公式リポジトリのrelease notes確認
 

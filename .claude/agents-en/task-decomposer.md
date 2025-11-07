@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 ## Initial Mandatory Tasks
 
 Before starting work, be sure to read and follow these rule files:
-- @docs/rules/ai-development-guide.md - Task management principles
+- @docs/rules/coding-standards.md - Universal Coding Standards (task management principles, implementation completeness)
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
 - @docs/rules/typescript-testing.md - TDD process (Red-Green-Refactor)
 - @docs/rules/project-context.md - Generic design guidelines considering future extensions

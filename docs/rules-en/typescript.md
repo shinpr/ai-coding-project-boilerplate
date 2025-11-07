@@ -1,61 +1,22 @@
 # TypeScript Development Rules
 
-## Basic Principles
-
-✅ **Aggressive Refactoring** - Prevent technical debt and maintain health
-❌ **Unused "Just in Case" Code** - Violates YAGNI principle (Kent Beck)
-
-## Comment Writing Rules
-- **Function Description Focus**: Describe what the code "does"
-- **No Historical Information**: Do not record development history
-- **Timeless**: Write only content that remains valid whenever read
-- **Conciseness**: Keep explanations to necessary minimum
-
-## Type Safety
-
-**Absolute Rule**: any type is completely prohibited. It disables type checking and becomes a source of runtime errors.
-
-**any Type Alternatives (Priority Order)**
-1. **unknown Type + Type Guards**: Use for validating external input
-2. **Generics**: When type flexibility is needed
-3. **Union Types・Intersection Types**: Combinations of multiple types
-4. **Type Assertions (Last Resort)**: Only when type is certain
-
-**Type Guard Implementation Pattern**
-```typescript
-function isUser(value: unknown): value is User {
-  return typeof value === 'object' && value !== null && 'id' in value && 'name' in value
-}
-```
-
-**Modern Type Features**
-- **satisfies Operator**: `const config = { port: 3000 } satisfies Config` - Preserves inference
-- **const Assertion**: `const ROUTES = { HOME: '/' } as const satisfies Routes` - Immutable and type-safe
-- **Branded Types**: `type UserId = string & { __brand: 'UserId' }` - Distinguish meaning
-- **Template Literal Types**: `type Endpoint = \`\${HttpMethod} \${Route}\`` - Express string patterns with types
-
-**Type Safety in Implementation**
-- API Communication: Always receive responses as `unknown`, validate with type guards
-- Form Input: External input as `unknown`, type determined after validation
-- Legacy Integration: Stepwise assertion like `window as unknown as LegacyWindow`
-- Test Code: Always define types for mocks, utilize `Partial<T>` and `vi.fn<[Args], Return>()`
+## Type Safety in Backend Implementation
 
 **Type Safety in Data Flow**
 Input Layer (`unknown`) → Type Guard → Business Layer (Type Guaranteed) → Output Layer (Serialization)
 
-**Type Complexity Management**
-- Field Count: Up to 20 (split by responsibility if exceeded, external API types are exceptions)
-- Optional Ratio: Up to 30% (separate required/optional if exceeded)
-- Nesting Depth: Up to 3 levels (flatten if exceeded)
-- Type Assertions: Review design if used 3+ times
-- **External API Types**: Relax constraints and define according to reality (convert appropriately internally)
+**Backend-Specific Type Scenarios**:
+- **API Communication**: Always receive responses as `unknown`, validate with type guards
+- **Form Input**: External input as `unknown`, type determined after validation
+- **Legacy Integration**: Stepwise assertion like `window as unknown as LegacyWindow`
+- **Test Code**: Always define types for mocks, utilize `Partial<T>` and `vi.fn<[Args], Return>()`
 
 ## Coding Conventions
 
 **Class Usage Criteria**
 - **Recommended: Implementation with Functions and Interfaces**
   - Rationale: Improves testability and flexibility of function composition
-- **Classes Allowed**: 
+- **Classes Allowed**:
   - Framework requirements (NestJS Controller/Service, TypeORM Entity, etc.)
   - Custom error class definitions
   - When state and business logic are tightly coupled (e.g., ShoppingCart, Session, StateMachine)
@@ -136,7 +97,7 @@ export class AppError extends Error {
 // Purpose-specific: ValidationError(400), BusinessRuleError(400), DatabaseError(500), ExternalServiceError(502)
 ```
 
-**Layer-Specific Error Handling**
+**Layer-Specific Error Handling (Backend)**
 - API Layer: Convert to HTTP response, log output excluding sensitive information
 - Service Layer: Detect business rule violations, propagate AppError as-is
 - Repository Layer: Convert technical errors to domain errors
@@ -148,17 +109,6 @@ Never include sensitive information (password, token, apiKey, secret, creditCard
 - Global handler setup mandatory: `unhandledRejection`, `uncaughtException`
 - Use try-catch with all async/await
 - Always log and re-throw errors
-
-## Refactoring Techniques
-
-**Basic Policy**
-- Small Steps: Maintain always-working state through gradual improvements
-- Safe Changes: Minimize the scope of changes at once
-- Behavior Guarantee: Ensure existing behavior remains unchanged while proceeding
-
-**Implementation Procedure**: Understand Current State → Gradual Changes → Behavior Verification → Final Validation
-
-**Priority**: Duplicate Code Removal > Large Function Division > Complex Conditional Branch Simplification > Type Safety Improvement
 
 ## Performance Optimization
 

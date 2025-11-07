@@ -14,7 +14,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準
 - @docs/rules/technical-spec.md - プロジェクトの技術仕様
 - @docs/rules/typescript.md - TypeScript開発ルール
-- @docs/rules/ai-development-guide.md - AI開発ガイド、実装前の既存コード調査プロセス
+- @docs/rules/coding-standards.md - 普遍的コーディング規約、実装前の既存コード調査プロセス
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/architecture/implementation-approach.md - メタ認知的戦略選択プロセス（実装アプローチ決定で使用）
 - @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
@@ -61,7 +61,7 @@ Design Doc作成前に必ず実施：
    - 変更対象サービスの主要publicメソッドを列挙（10個超の場合は重要な5個程度）
    - `Grep: "ServiceName\." --type ts` で呼び出し箇所を特定
 
-3. **類似機能の検索と判断**（@docs/rules/ai-development-guide.md パターン5対策）
+3. **類似機能の検索と判断**（@docs/rules/coding-standards.md パターン5対策）
    - 実装予定の機能に関連するキーワードで既存コードを検索
    - 同じドメイン、同じ責務、同じ設定パターンの実装を探索
    - 判断と行動:
@@ -309,34 +309,48 @@ ADRに含まない：スケジュール、実装手順、具体的コード
 **例**: 「ログインが動作する」→「正しい認証情報で認証後、ダッシュボード画面に遷移」
 **網羅性**: 正常系・異常系・エッジケースをカバー。非機能要件は別セクションで定義。
 
-### 自律実装のためのACスコーピング
+### 測定可能なACの書き方
 
-**含めるべき** (自動化ROI高):
+**原則**: AC = 独立した環境で検証可能かつユーザーが観測可能な振る舞い
+
+**含めるべき**（自動化可能で高ROI）:
 - ビジネスロジックの正確性（計算、状態遷移、データ変換）
 - データ整合性と永続化の振る舞い
 - ユーザーから見える機能の完全性
 - エラーハンドリングの振る舞い（ユーザーに見える/体験する内容）
 
-**除外すべき** (LLM/CI/CD環境でROI低):
+**除外すべき**（LLM/CI/CD環境では低ROI）:
 - 外部サービスの実接続 → 契約/インターフェース検証で代替
 - パフォーマンス指標 → CI環境で非決定的、負荷テストに委ねる
-- 実装詳細 → 観測可能な振る舞いに集中
-- UIレイアウト詳細 → 情報の有無に集中、表現方法ではない
+- 実装詳細（使用技術、アルゴリズム、内部構造） → 観測可能な振る舞いに集中
+- UIの表現方法（レイアウト、スタイル） → 情報の有無に集中
 
-**原則**: AC = 独立したCI環境で検証可能なユーザー観測可能な振る舞い
+**記述例**:
+- ❌ 実装詳細: "データは特定の技術Xで保存"
+- ✅ 観測可能な振る舞い: "保存したデータは再起動後も取得できる"
+
+*注: 非機能要件（パフォーマンス、信頼性、スケーラビリティ）は「非機能要件」セクションで定義*
 
 ## 最新情報調査のガイドライン
 
 **必須調査タイミング**: 新技術導入、パフォーマンス最適化、セキュリティ設計、大幅バージョンアップ時
+**推奨調査**: 複雑なアルゴリズム実装前、既存パターン改善時
 
-**具体的な検索パターン例**:
-- `React Server Components best practices 2024` （新機能調査）
-- `PostgreSQL vs MongoDB performance comparison 2024` （技術選定）
-- `microservices authentication patterns` （設計パターン）
-- `Node.js v20 breaking changes migration guide` （バージョンアップ）
-- `[フレームワーク名] official documentation` （公式情報）
+**検索パターン例**:
+最新情報を取得するため、検索前に必ず現在年を確認：
+```bash
+date +%Y  # 例: 2025
+```
+この年を検索クエリに含める：
+- `React Server Components best practices {現在年}` （新機能調査）
+- `PostgreSQL vs MongoDB performance comparison {現在年}` （技術選定）
+- `[フレームワーク名] official documentation` （公式情報は年不要）
 
-**出典記載**: ADR/Design Doc末尾に「## 参考資料」セクションで URL と説明を記載
+**出典記載**: ADR/Design Doc末尾に「## 参考資料」セクションを追加
+```markdown
+## 参考資料
+- [タイトル](URL) - 参照内容の簡単な説明
+```
 
 ## updateモード動作
 - **ADR**: 軽微な変更は既存ファイル更新、大幅な変更は新規ファイル作成

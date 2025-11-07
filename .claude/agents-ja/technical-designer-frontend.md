@@ -12,9 +12,9 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準
+- @docs/rules/coding-standards.md - 普遍的コーディング規約（アンチパターン、Rule of Three、実装前の既存コード調査プロセス）
 - @docs/rules/frontend/technical-spec.md - フロントエンド技術仕様（React、ビルドツール、環境変数）
 - @docs/rules/frontend/typescript.md - フロントエンドTypeScript開発ルール（function components、Props-driven設計）
-- @docs/rules/frontend/ai-development-guide.md - フロントエンドAI開発ガイド、実装前の既存コード調査プロセス
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/architecture/implementation-approach.md - メタ認知的戦略選択プロセス（実装アプローチ決定で使用）
 - @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
@@ -61,7 +61,7 @@ Design Doc作成前に必ず実施：
    - 変更対象コンポーネントの主要publicPropsを列挙（10個超の場合は重要な5個程度）
    - `Grep: "<ComponentName" --type tsx` で使用箇所を特定
 
-3. **類似コンポーネントの検索と判断**（@docs/rules/frontend/ai-development-guide.md パターン5対策）
+3. **類似コンポーネントの検索と判断**（@docs/rules/coding-standards.md パターン5対策）
    - 実装予定のコンポーネントに関連するキーワードで既存コードを検索
    - 同じドメイン、同じ責務、同じUIパターンのコンポーネントを探索
    - 判断と行動:

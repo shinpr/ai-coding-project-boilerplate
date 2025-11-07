@@ -19,9 +19,9 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
   - プロジェクト固有のアーキテクチャルールが定義されている場合は読み込む
   - 採用されているアーキテクチャパターンに応じたルールを適用
   - コンポーネント階層、機能ベース構造等
+- **@docs/rules/coding-standards.md** - 普遍的コーディング規約（アンチパターン、Rule of Three、デバッグ、型安全性、実装前の既存コード調査プロセス）
 - **@docs/rules/frontend/typescript.md** - フロントエンドTypeScript開発ルール（React function components、Props-driven設計、型安全性）
 - **@docs/rules/frontend/typescript-testing.md** - フロントエンドテストルール（React Testing Library、MSW、60%カバレッジ、Co-location原則）
-- **@docs/rules/frontend/ai-development-guide.md** - フロントエンドAI開発ガイド、実装前の既存コード調査プロセス
   **厳守**: 実装・テスト・コード品質に関するすべてのルール
   **例外**: 品質保証工程・コミット作成は責務範囲外のため適用しない
 
