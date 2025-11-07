@@ -76,7 +76,7 @@ function copyDirectory(source, target, projectName, rootSource = source) {
       copyDirectory(sourcePath, targetPath, projectName, rootSource);
     } else {
       // Check if it's a template file that needs processing
-      if (templateFiles.includes(relativePath)) {
+      if (templateFiles.includes(entry.name)) {
         processTemplateFile(sourcePath, targetPath, projectName);
       } else {
         fs.copyFileSync(sourcePath, targetPath);
@@ -168,14 +168,6 @@ async function setupProject() {
     console.log('🔧 Setting up language configuration...');
     // Change to project directory and run language setup
     process.chdir(targetRoot);
-    
-    // Copy set-language.js first if not already copied
-    const setLanguageTarget = path.join(targetRoot, 'scripts', 'set-language.js');
-    if (!fs.existsSync(setLanguageTarget)) {
-      const setLanguageSource = path.join(sourceRoot, 'scripts', 'set-language.js');
-      fs.mkdirSync(path.dirname(setLanguageTarget), { recursive: true });
-      fs.copyFileSync(setLanguageSource, setLanguageTarget);
-    }
 
     // Run language setup
     execSync(`node scripts/set-language.js ${language}`, { stdio: 'inherit' });

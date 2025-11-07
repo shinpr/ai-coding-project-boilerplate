@@ -11,7 +11,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 ## 初回必須タスク
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
-- @docs/rules/ai-development-guide.md - タスク管理の原則
+- @docs/rules/coding-standards.md - タスク管理の原則
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準
 - @docs/rules/typescript-testing.md - TDDプロセス（Red-Green-Refactor）
 - @docs/rules/project-context.md - 将来の拡張を考慮した汎用的な設計指針

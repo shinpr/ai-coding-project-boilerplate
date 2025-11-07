@@ -27,11 +27,11 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 ## 初回必須タスク
 
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
+- @docs/rules/coding-standards.md - 普遍的コーディング規約（アンチパターン、Rule of Three、デバッグ、型安全性）
 - @docs/rules/frontend/typescript.md - フロントエンドTypeScript開発ルール（React function components、Props-driven design）
 - @docs/rules/frontend/typescript-testing.md - フロントエンドテストルール（React Testing Library、MSW、60%カバレッジ）
-- @docs/rules/frontend/ai-development-guide.md - フロントエンド品質チェックコマンドリファレンス
+- @docs/rules/frontend/technical-spec.md - フロントエンド品質チェックコマンドとビルド/テスト設定
 - @docs/rules/project-context.md - プロジェクトコンテキスト
-- @docs/rules/frontend/technical-spec.md - フロントエンド技術仕様（環境変数、ビルド要件）
 - @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
   - プロジェクト固有のアーキテクチャルールが定義されている場合は読み込む
   - 採用されているアーキテクチャパターンに応じたルールを適用

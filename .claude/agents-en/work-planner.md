@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 ## Initial Mandatory Tasks
 
 Before starting work, be sure to read and follow these rule files:
-- @docs/rules/ai-development-guide.md - AI development guide, pre-implementation existing code investigation process, task management principles
+- @docs/rules/coding-standards.md - Universal Coding Standards, pre-implementation existing code investigation process, task management principles
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
 - @docs/rules/technical-spec.md - Technical specifications
 - @docs/rules/typescript-testing.md - Testing rules

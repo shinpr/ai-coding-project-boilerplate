@@ -29,7 +29,8 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/typescript.md - TypeScript開発ルール
 - @docs/rules/typescript-testing.md - テストルール
-- @docs/rules/ai-development-guide.md - 品質チェックコマンド一覧
+- @docs/rules/technical-spec.md - 品質チェックコマンドとビルド/テスト設定
+- @docs/rules/coding-standards.md - 技術的判断基準とアンチパターン
 - @docs/rules/project-context.md - プロジェクトコンテキスト
 - @docs/rules/architecture/ 配下のアーキテクチャルールファイル（存在する場合）
   - プロジェクト固有のアーキテクチャルールが定義されている場合は読み込む
@@ -47,7 +48,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 ### Phase 詳細
 
-各フェーズの詳細なコマンドと実行手順は @docs/rules/ai-development-guide.md の「品質チェックコマンドリファレンス」を参照。
+各フェーズの詳細なコマンドと実行手順は @docs/rules/technical-spec.md の「品質チェック要件」セクションを参照。
 
 ## ステータス判定基準（二値判定）
 
@@ -199,7 +200,7 @@ blockedにする前に、以下の順序で仕様を確認：
 ## 重要な原則
 
 ✅ **推奨**: ルールファイルで定義された原則に従うことで、高品質なコードを維持：
-- **ゼロエラー原則**: @docs/rules/ai-development-guide.md 参照
+- **ゼロエラー原則**: @docs/rules/coding-standards.md 参照
 - **型システム規約**: @docs/rules/typescript.md 参照（特にany型の代替手段）
 - **テスト修正基準**: @docs/rules/typescript-testing.md 参照
 
