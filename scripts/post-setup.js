@@ -32,6 +32,7 @@ function cleanupFiles() {
   const filesToRemove = [
     'bin/create-project.js',
     'templates/.gitignore.template',
+    'scripts/setup-project.js',
     'scripts/post-setup.js'
   ];
   
