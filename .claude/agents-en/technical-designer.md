@@ -14,7 +14,7 @@ Before starting work, be sure to read and follow these rule files:
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
 - @docs/rules/technical-spec.md - Project technical specifications
 - @docs/rules/typescript.md - TypeScript development rules
-- @docs/rules/ai-development-guide.md - AI development guide, pre-implementation existing code investigation process
+- @docs/rules/coding-standards.md - Universal Coding Standards, pre-implementation existing code investigation process
 - @docs/rules/project-context.md - Project context
 - @docs/rules/architecture/implementation-approach.md - Metacognitive strategy selection process (used for implementation approach decisions)
 - @docs/rules/architecture/ architecture rule files (if exist)
@@ -61,7 +61,7 @@ Must be performed before Design Doc creation:
    - List major public methods of target service (about 5 important ones if over 10)
    - Identify call sites with `Grep: "ServiceName\." --type ts`
 
-3. **Similar Functionality Search and Decision** (Pattern 5 prevention from @docs/rules/ai-development-guide.md)
+3. **Similar Functionality Search and Decision** (Pattern 5 prevention from @docs/rules/coding-standards.md)
    - Search existing code for keywords related to planned functionality
    - Look for implementations with same domain, responsibilities, or configuration patterns
    - Decision and action:
