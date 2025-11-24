@@ -32,22 +32,12 @@ Immediately stop and reconsider design when detecting the following patterns:
 - **Timeless**: Write only content that remains valid whenever read
 - **Conciseness**: Keep explanations to necessary minimum
 
-## Fallback Design Principles
+## Error Handling Fundamentals
 
-### Core Principle: Fail-Fast
-Design philosophy that prioritizes improving primary code reliability over fallback implementations in distributed systems.
+### Fail-Fast Principle
+Fail quickly on errors to prevent processing continuation in invalid states. Error suppression is prohibited.
 
-### Criteria for Fallback Implementation
-- **Default Prohibition**: Do not implement unconditional fallbacks on errors
-- **Exception Approval**: Implement only when explicitly defined in Design Doc
-- **Layer Responsibilities**:
-  - Infrastructure Layer: Always throw errors upward (no fallback decisions)
-  - Application Layer: Implement decisions based on business requirements
-
-### Detection of Excessive Fallbacks
-- Require design review when writing the 3rd catch statement in the same feature
-- Verify Design Doc definition before implementing fallbacks
-- Properly log errors and make failures explicit
+For detailed implementation methods (Result type, custom error classes, layered error handling, etc.), refer to language and framework-specific rules.
 
 ## Rule of Three - Criteria for Code Duplication
 

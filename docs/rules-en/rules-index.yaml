@@ -19,7 +19,7 @@ rules:
       - "Technical Anti-patterns (Red Flag Patterns)"
       - "Basic Principles"
       - "Comment Writing Rules"
-      - "Fallback Design Principles"
+      - "Error Handling Fundamentals"
       - "Rule of Three - Criteria for Code Duplication"
       - "Common Failure Patterns and Avoidance Methods"
       - "Debugging Techniques"
