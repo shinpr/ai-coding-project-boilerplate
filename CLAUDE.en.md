@@ -100,12 +100,3 @@ Reason: To prevent implementations that differ from user intent and ensure corre
 
 ### Temporary File Creation Rules
 Use `tmp/` directory for work files. Delete upon completion.
-
-### Proactive Use of Specialized Agents (PROACTIVELY)
-- **When quality-related keywords detected**: Execute quality-fixer according to project type
-  - **Backend**: Use quality-fixer
-  - **Frontend**: Use quality-fixer-frontend (Lighthouse, Bundle size support)
-  - Type errors, build errors, lint errors, format warnings
-  - Test failures, quality checks, verification tasks
-- **At task start**: rule-advisor mandatory execution
-  - Execute before TodoWrite creation and reflect results
