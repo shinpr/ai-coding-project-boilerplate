@@ -25,10 +25,10 @@ Reason: To prevent implementations that differ from user intent and ensure corre
 ### TodoWrite and Metacognition Integration
 **Execution Rules**:
 - When `pending → in_progress`: rule-advisor output is mandatory
-- **After rule-advisor execution**: Always update TodoWrite (revise task content, priority, granularity)
-  - Concretize task description based on taskEssence
-  - Reflect firstActionGuidance in the first task
-  - Restructure tasks considering warningPatterns
+- **After rule-advisor execution**: Always update TodoWrite in the following format
+  1. Add firstActionGuidance as the first task in Todo
+  2. Record taskEssence as the completion criteria for each task
+  3. Record warningPatterns as checkpoints during execution
 - Using Edit tools without TodoWrite: Stop as rule violation
 - When updating task status: Recording implementation details is mandatory (no blanks)
 
@@ -38,15 +38,15 @@ Reason: To prevent implementations that differ from user intent and ensure corre
 3. **User approval record** → Explicit approval before Edit/Write
 4. **Quality check results** → Cannot complete with errors > 0
 
-### Prohibited Actions
-- **Using any type** → Causes type check errors
-  Reason: Destroys type safety and causes runtime errors
-- **Using Edit without TodoWrite** → Rule violation
-  Reason: Cannot track progress or ensure quality without task management
-- **Edit/Write/MultiEdit without approval** → Move to approval waiting
-  Reason: To prevent violating the most important principle
-- **Declaring completion with quality errors** → Does not meet completion criteria
-  Reason: To prevent incomplete code from being mixed in
+### Required Alternative Patterns
+- **Instead of any type** → Use unknown type with type guards
+  Reason: To ensure type safety and prevent runtime errors
+- **When using Edit** → Always precede with TodoWrite for task management
+  Reason: To enable progress tracking and quality assurance
+- **When using Edit/Write/MultiEdit** → Obtain user approval before execution
+  Reason: To comply with the most important principle (Research OK, Implementation STOP)
+- **When declaring completion** → Confirm zero quality check errors before declaration
+  Reason: To merge only complete code
 
 ## Metacognitive Execution (Mandatory at Task Start)
 
