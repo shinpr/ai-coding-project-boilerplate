@@ -285,7 +285,7 @@ Please execute decomposed tasks according to the order.
 - Dependency deliverables explicitly referenced
 - Task size 1-5 files (split if 6+)
 
-**Prohibited**:
-- Including quality assurance in tasks
-- Research tasks without deliverables
-- Implicit dependency assumptions
+**Instead**:
+- Quality assurance → Separate as distinct phase, not included in task completion criteria
+- Research tasks → Define concrete deliverables (research report, etc.)
+- Dependencies → Explicitly state prerequisite tasks

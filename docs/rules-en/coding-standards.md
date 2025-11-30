@@ -146,7 +146,7 @@ console.log('DEBUG:', {
 
 ## Type Safety Fundamentals
 
-**Absolute Rule**: `any` type is completely prohibited. It disables type checking and becomes a source of runtime errors.
+**Type Safety Principle**: Use `unknown` type with type guards. `any` type disables type checking and causes runtime errors.
 
 **any Type Alternatives (Priority Order)**
 1. **unknown Type + Type Guards**: Use for validating external input

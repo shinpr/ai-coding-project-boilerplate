@@ -299,20 +299,20 @@ Issues requiring fixes:
 - React Testing Library test errors: Check component rendering, user interactions, async operations
 - Circular dependencies: Organize component dependencies, extract to common modules
 
-## Prohibited Fix Patterns
+## Correct Fix Patterns (Without Hiding Problems)
 
-The following fix methods hide problems and MUST NOT be used:
+Use the following alternative approaches:
 
 ### Test-related
-- **Test deletion solely to pass quality checks** (deletion of obsolete tests is allowed)
-- **Test skipping** (`it.skip`, `describe.skip`)
-- **Meaningless assertions** (`expect(true).toBe(true)`)
-- **Test environment-specific code in production code** (branches like `if (import.meta.env.MODE === 'test')`)
+- **When tests fail** → Fix implementation or tests (obsolete tests can be deleted)
+- **When temporary skip is needed** → Fix after identifying cause and remove skip
+- **When adding assertions** → Set specific expected values (`expect(result).toEqual(expectedValue)`)
+- **When environment branching is needed** → Absorb environment differences via DI/config files
 
 ### Type and Error Handling Related
-- **Use of any type** (use unknown type and type guards for external API responses)
-- **Ignoring type errors with @ts-ignore**
-- **Empty catch blocks** (minimum error logging required)
+- **For external API responses** → Use unknown type with type guards
+- **When type errors occur** → Add correct type definitions (not @ts-ignore)
+- **For error handling** → Output minimum error logging
 
 ## Fix Determination Flow
 
