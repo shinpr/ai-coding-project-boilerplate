@@ -21,10 +21,11 @@
 5. [Slash Commands](#-slash-commands)
 6. [Development Workflow](#-claude-code-workflow)
 7. [Project Structure](#-project-structure)
-8. [Development Commands](#-development-commands)
-9. [Rules & Quality Assurance](#-development-rules--quality-assurance)
-10. [Multilingual Support](#-multilingual-support)
-11. [FAQ](#-faq)
+8. [Package Manager Configuration](#-package-manager-configuration)
+9. [Development Commands](#-development-commands)
+10. [Rules & Quality Assurance](#-development-rules--quality-assurance)
+11. [Multilingual Support](#-multilingual-support)
+12. [FAQ](#-faq)
 
 > **Which one should you use?**
 > - **Use this Boilerplate** if you want to **maximize precision** with **TypeScript × Sub-agent** setup optimized for **Claude Code**.
@@ -154,6 +155,36 @@ ai-coding-project-boilerplate/
 ├── scripts/              # Utility scripts
 └── CLAUDE.md             # Claude Code configuration
 ```
+
+## 🔧 Package Manager Configuration
+
+This boilerplate uses npm by default, but you can switch to your preferred package manager like bun or pnpm.
+
+There are two environment-dependent settings in `package.json`:
+
+- **`packageManager`**: The package manager and version to use
+- **`scripts`**: The execution commands for each script
+
+When you change these, Claude Code will recognize them and execute with the appropriate commands.
+
+### Switching to bun
+
+```json
+{
+  "packageManager": "bun@1.3.3",
+  "scripts": {
+    "build": "bun run tsc && tsc-alias",
+    "dev": "bun run src/index.ts",
+    "test": "bun test",
+    "check": "bunx @biomejs/biome check src",
+    "check:all": "bun run check && bun run lint && bun run format:check && bun run check:unused && bun run check:deps && bun run build && bun test"
+  }
+}
+```
+
+The above are representative examples. The following scripts are referenced in rules and sub-agent definitions. Update them as needed:
+
+`build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
 ## 🛠️ Development Commands
 

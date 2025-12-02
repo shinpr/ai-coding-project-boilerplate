@@ -30,66 +30,42 @@ Maintain consistent data flow throughout the application:
 - **Immutable Updates**: Prefer immutable data transformations
 
 ## Build and Testing
+Use the appropriate run command based on the `packageManager` field in package.json.
 
 ### Build Commands
-```bash
-# TypeScript build
-npm run build
-
-# Type check (no emit)
-npm run type-check
-```
+- `build` - TypeScript build
+- `type-check` - Type check (no emit)
 
 ### Testing Commands
-```bash
-# Run tests
-npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Run tests with coverage (fresh cache)
-npm run test:coverage:fresh
-
-# Safe test execution (with auto cleanup)
-npm run test:safe
-
-# Cleanup Vitest processes
-npm run cleanup:processes
-```
+- `test` - Run tests
+- `test:coverage` - Run tests with coverage
+- `test:coverage:fresh` - Run tests with coverage (fresh cache)
+- `test:safe` - Safe test execution (with auto cleanup)
+- `cleanup:processes` - Cleanup Vitest processes
 
 ### Quality Check Requirements
 
 Quality checks are mandatory upon implementation completion:
 
 **Phase 1-3: Basic Checks**
-```bash
-npm run check        # Biome (lint + format)
-npm run check:unused # Detect unused exports
-npm run build        # TypeScript build
-```
+- `check` - Biome (lint + format)
+- `check:unused` - Detect unused exports
+- `build` - TypeScript build
 
 **Phase 4-6: Tests and Final Confirmation**
-```bash
-npm test                    # Test execution
-npm run test:coverage:fresh # Coverage measurement
-npm run check:all           # Overall integrated check
-```
+- `test` - Test execution
+- `test:coverage:fresh` - Coverage measurement
+- `check:all` - Overall integrated check
 
 ### Auxiliary Commands
-```bash
-# Check coverage report
-open coverage/index.html
-
-# Auto fixes
-npm run format        # Format fixes
-npm run lint:fix      # Lint fixes
-```
+- `open coverage/index.html` - Check coverage report
+- `format` - Format fixes
+- `lint:fix` - Lint fixes
 
 ### Troubleshooting
-- **Port in use error**: `npm run cleanup:processes`
-- **Cache issues**: `npm run test:coverage:fresh`
-- **Dependency errors**: Reinstall with `npm ci`
+- **Port in use error**: Run the `cleanup:processes` script
+- **Cache issues**: Run the `test:coverage:fresh` script
+- **Dependency errors**: Clean reinstall dependencies
 
 ### Coverage Requirements
 - **Mandatory**: Unit test coverage must be 70% or higher

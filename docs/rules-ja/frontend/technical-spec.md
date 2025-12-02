@@ -102,55 +102,32 @@ async function fetchUser(id: string): Promise<User> {
 ```
 
 ## ビルドとテスト
+package.jsonの`packageManager`フィールドに応じた実行コマンドを使用すること。
 
 ### ビルドコマンド
-```bash
-# 開発サーバー
-npm run dev
-
-# 本番ビルド
-npm run build
-
-# 本番ビルドのプレビュー
-npm run preview
-
-# 型チェック（出力なし）
-npm run type-check
-```
+- `dev` - 開発サーバー
+- `build` - 本番ビルド
+- `preview` - 本番ビルドのプレビュー
+- `type-check` - 型チェック（出力なし）
 
 ### テストコマンド
-```bash
-# テスト実行
-npm test
-
-# カバレッジ付きテスト実行
-npm run test:coverage
-
-# カバレッジ付きテスト実行（キャッシュクリア）
-npm run test:coverage:fresh
-
-# 安全なテスト実行（自動クリーンアップ付き）
-npm run test:safe
-
-# Vitestプロセスのクリーンアップ
-npm run cleanup:processes
-```
+- `test` - テスト実行
+- `test:coverage` - カバレッジ付きテスト実行
+- `test:coverage:fresh` - カバレッジ付きテスト実行（キャッシュクリア）
+- `test:safe` - 安全なテスト実行（自動クリーンアップ付き）
+- `cleanup:processes` - Vitestプロセスのクリーンアップ
 
 ### 品質チェック要件
 実装完了時に品質チェックは必須：
 
 **Phase 1-3: 基本チェック**
-```bash
-npm run check        # Biome（lint + format）
-npm run build        # TypeScriptビルド
-```
+- `check` - Biome（lint + format）
+- `build` - TypeScriptビルド
 
 **Phase 4-5: テストと最終確認**
-```bash
-npm test                    # テスト実行
-npm run test:coverage:fresh # カバレッジ測定
-npm run check:all           # 全体統合チェック
-```
+- `test` - テスト実行
+- `test:coverage:fresh` - カバレッジ測定
+- `check:all` - 全体統合チェック
 
 ### カバレッジ要件
 - **必須**: 単体テストのカバレッジは60%以上

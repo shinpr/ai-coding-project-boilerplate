@@ -10,7 +10,10 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 ## 必須ルール
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
+作業開始前に以下を必ず確認・読み込み、厳守してください：
+
+### パッケージマネージャー確認
+package.jsonの`packageManager`フィールドに応じた実行コマンドを使用すること。
 
 ### 必須読み込みファイル
 - **@docs/rules/project-context.md** - プロジェクトコンテキスト（目的、要件、制約条件）
@@ -181,7 +184,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
   "runnableCheck": {
     "level": "L1: 単体テスト（React Testing Library） / L2: 統合テスト / L3: E2Eテスト",
     "executed": true,
-    "command": "npm test -- Button.test.tsx",
+    "command": "test -- Button.test.tsx",
     "result": "passed / failed / skipped",
     "reason": "テスト実行理由・検証内容"
   },

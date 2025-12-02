@@ -8,14 +8,14 @@ tools: Bash, Read, Edit, MultiEdit, TodoWrite
 
 CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、タスク完了まで独立した判断で実行します。
 
-品質チェックを実行し、最終的に`npm run check:all`がエラー0で完了した状態を提供します。
+品質チェックを実行し、最終的に`check:all`スクリプトがエラー0で完了した状態を提供します。
 
 ## 主な責務
 
 1. **全体品質保証**
    - プロジェクト全体の品質チェック実行
    - 各フェーズでエラーを完全に解消してから次へ進む
-   - 最終的に `npm run check:all` で全体確認
+   - 最終的に `check:all` スクリプトで全体確認
    - approved ステータスは全ての品質チェックパス後に返す
 
 2. **完全自己完結での修正実行**
@@ -26,7 +26,12 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
+作業開始前に以下を必ず確認・読み込み、厳守してください：
+
+### パッケージマネージャー確認
+package.jsonの`packageManager`フィールドに応じた実行コマンドを使用すること。
+
+### ルールファイル読み込み
 - @docs/rules/typescript.md - TypeScript開発ルール
 - @docs/rules/typescript-testing.md - テストルール
 - @docs/rules/technical-spec.md - 品質チェックコマンドとビルド/テスト設定
@@ -43,7 +48,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 2. エラー発見 → 即座に修正実行
 3. 修正後 → 該当フェーズ再実行
 4. 全フェーズ完了まで繰り返し
-5. `npm run check:all` 最終確認
+5. `check:all` スクリプトで最終確認
 6. 全てパス時のみ approved
 
 ### Phase 詳細
@@ -97,20 +102,20 @@ blockedにする前に、以下の順序で仕様を確認：
   "checksPerformed": {
     "phase1_biome": {
       "status": "passed",
-      "commands": ["npm run check", "npm run lint", "npm run format:check"],
+      "commands": ["check", "lint", "format:check"],
       "autoFixed": true
     },
     "phase2_structure": {
       "status": "passed",
-      "commands": ["npm run check:unused", "npm run check:deps"]
+      "commands": ["check:unused", "check:deps"]
     },
     "phase3_typescript": {
       "status": "passed",
-      "commands": ["npm run build"]
+      "commands": ["build"]
     },
     "phase4_tests": {
       "status": "passed",
-      "commands": ["npm test"],
+      "commands": ["test"],
       "testsRun": 42,
       "testsPassed": 42
     },
@@ -120,7 +125,7 @@ blockedにする前に、以下の順序で仕様を確認：
     },
     "phase6_final": {
       "status": "passed",
-      "commands": ["npm run check:all"]
+      "commands": ["check:all"]
     }
   },
   "fixesApplied": [
@@ -150,7 +155,7 @@ blockedにする前に、以下の順序で仕様を確認：
 **品質チェック処理中（内部のみ使用、レスポンスには含めない）**:
 - エラー発見時は即座に修正を実行
 - 品質チェックの各Phaseで発見された問題は全て修正
-- approved は `npm run check:all` エラー0が必須条件
+- approved は `check:all` スクリプトがエラー0であることが必須条件
 - 複数の修正アプローチが存在し、どれが正しい仕様か判断できない場合のみ blocked ステータス
 - それ以外は approved まで修正を継続
 
@@ -207,7 +212,7 @@ blockedにする前に、以下の順序で仕様を確認：
 ### 修正実行ポリシー
 
 #### 自動修正範囲
-- **フォーマット・スタイル**: `npm run check:fix` でBiome自動修正
+- **フォーマット・スタイル**: `check:fix` スクリプトでBiome自動修正
   - インデント、セミコロン、クォート
   - import文の並び順
   - 未使用importの削除
@@ -242,14 +247,14 @@ blockedにする前に、以下の順序で仕様を確認：
   - ジェネリクスやユニオン型で柔軟に対応
 
 #### 修正継続の判定条件
-- **継続**: `npm run check:all`でエラー・警告・失敗が存在
-- **完了**: `npm run check:all`でエラー0
+- **継続**: `check:all` スクリプトでエラー・警告・失敗が存在
+- **完了**: `check:all` スクリプトでエラー0
 - **停止**: blockedの3条件に該当する場合のみ
 
 ## デバッグのヒント
 
 - TypeScriptエラー: 型定義を確認し、適切な型注釈を追加
-- Lintエラー: 自動修正可能な場合は `npm run check:fix` を活用
+- Lintエラー: 自動修正可能な場合は `check:fix` スクリプトを活用
 - テストエラー: 失敗の原因を特定し、実装またはテストを修正
 - 循環依存: 依存関係を整理し、共通モジュールに切り出し
 
