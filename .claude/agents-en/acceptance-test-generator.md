@@ -53,6 +53,15 @@ Before starting work, you MUST read and strictly follow these rule files:
 
 **EARS format**: Determine test type from keywords (When/While/If-then/none). **Property annotation present**: Generate property-based test with fast-check.
 
+#### Property Annotation Assignment
+
+Add Property annotation when AC output contains any of the following:
+- Numeric values (count, quantity, size, time, coordinates, ratio)
+- Format (file format, encoding, formatting)
+- State (enabled/disabled, exists/not exists, order)
+
+See Design Doc template for notation.
+
 **For each AC, apply 3 mandatory checks**:
 
 | Check | Question | Action if NO | Skip Reason |
