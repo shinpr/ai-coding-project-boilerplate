@@ -15,7 +15,7 @@ Executes quality checks and provides a state where all checks complete with zero
 1. **Overall Quality Assurance**
    - Execute quality checks for entire frontend project
    - Completely resolve errors in each phase before proceeding to next
-   - Final confirmation with `npm run check:all`
+   - Final confirmation with the `check:all` script
    - Return approved status only after all quality checks pass
 
 2. **Completely Self-contained Fix Execution**
@@ -26,7 +26,12 @@ Executes quality checks and provides a state where all checks complete with zero
 
 ## Initial Required Tasks
 
-Load and follow these rule files before starting:
+Before starting, verify and load the following:
+
+### Package Manager
+Use the appropriate run command based on the `packageManager` field in package.json.
+
+### Rule Files
 - @docs/rules/coding-standards.md - Universal Coding Standards (Anti-patterns, Rule of Three, Debugging, Type Safety)
 - @docs/rules/frontend/typescript.md - Frontend TypeScript Development Rules (React function components, Props-driven design)
 - @docs/rules/frontend/typescript-testing.md - Frontend Testing Rules (React Testing Library, MSW, 60% coverage)
@@ -43,26 +48,20 @@ Load and follow these rule files before starting:
 2. Error found → Execute fix immediately
 3. After fix → Re-execute relevant phase
 4. Repeat until all phases complete
-5. Final confirmation with `npm run check:all`
+5. Final confirmation with the `check:all` script
 6. Approved only when all pass
 
 ### Phase Details
 
 #### Phase 1: Biome Check (Lint + Format)
-```bash
-npm run check        # Biome comprehensive check
-```
+Run the `check` script (Biome comprehensive check)
+
 **Pass Criteria**: Zero lint errors, zero format errors
 
-**Auto-fix**:
-```bash
-npm run check:fix    # Auto-fix format and some lint issues
-```
+**Auto-fix**: Run the `check:fix` script (Auto-fix format and some lint issues)
 
 #### Phase 3: TypeScript Build
-```bash
-npm run build:frontend        # Production build
-```
+Run the `build:frontend` script (Production build)
 **Pass Criteria**: Build succeeds with zero type errors
 
 **Common Fixes**:
@@ -72,9 +71,7 @@ npm run build:frontend        # Production build
 - Handle external API responses with type guards
 
 #### Phase 4: Test Execution
-```bash
-npm test             # Run all tests with Vitest
-```
+Run the `test` script (Run all tests with Vitest)
 **Pass Criteria**: All tests pass (100% pass rate)
 
 **Common Fixes**:
@@ -88,9 +85,7 @@ npm test             # Run all tests with Vitest
   - Test user-observable behavior, not implementation details
 
 #### Phase 5: Final Check
-```bash
-npm run check:all    # Run all quality checks
-```
+Run the `check:all` script (Run all quality checks)
 **Pass Criteria**: All checks pass with zero errors
 
 ## Status Determination Criteria (Binary Determination)
@@ -140,23 +135,23 @@ Before setting status to blocked, confirm specifications in this order:
   "checksPerformed": {
     "phase1_biome": {
       "status": "passed",
-      "commands": ["npm run check"],
+      "commands": ["check"],
       "autoFixed": true
     },
     "phase3_typescript": {
       "status": "passed",
-      "commands": ["npm run build:frontend"]
+      "commands": ["build:frontend"]
     },
     "phase4_tests": {
       "status": "passed",
-      "commands": ["npm test"],
+      "commands": ["test"],
       "testsRun": 42,
       "testsPassed": 42,
       "coverage": "85%"
     },
     "phase5_final": {
       "status": "passed",
-      "commands": ["npm run check:all"]
+      "commands": ["check:all"]
     }
   },
   "fixesApplied": [
@@ -192,7 +187,7 @@ Before setting status to blocked, confirm specifications in this order:
 **During quality check processing (internal use only, not included in response)**:
 - Execute fix immediately when error found
 - Fix all problems found in each Phase of quality checks
-- `npm run check:all` with zero errors is mandatory for approved status
+- The `check:all` script completing with zero errors is mandatory for approved status
 - Multiple fix approaches exist and cannot determine correct specification: blocked status only
 - Otherwise continue fixing until approved
 
@@ -250,7 +245,7 @@ Issues requiring fixes:
 ### Fix Execution Policy
 
 #### Auto-fix Range
-- **Format/Style**: Biome auto-fix with `npm run check:fix`
+- **Format/Style**: Biome auto-fix with the `check:fix` script
   - Indentation, semicolons, quotes
   - Import statement ordering
   - Remove unused imports
@@ -295,7 +290,7 @@ Issues requiring fixes:
 ## Debugging Hints
 
 - TypeScript errors: Check Props type definitions, add appropriate type annotations
-- Lint errors: Utilize `npm run check:fix` when auto-fixable
+- Lint errors: Utilize the `check:fix` script when auto-fixable
 - React Testing Library test errors: Check component rendering, user interactions, async operations
 - Circular dependencies: Organize component dependencies, extract to common modules
 

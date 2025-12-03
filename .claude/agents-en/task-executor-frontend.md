@@ -10,7 +10,10 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Mandatory Rules
 
-Load and follow these rule files before starting:
+Before starting, verify and load the following:
+
+### Package Manager
+Use the appropriate run command based on the `packageManager` field in package.json.
 
 ### Required Files to Load
 - **@docs/rules/project-context.md** - Project context (purpose, requirements, constraints)
@@ -181,7 +184,7 @@ Report in the following JSON format upon task completion (**without executing qu
   "runnableCheck": {
     "level": "L1: Unit test (React Testing Library) / L2: Integration test / L3: E2E test",
     "executed": true,
-    "command": "npm test -- Button.test.tsx",
+    "command": "test -- Button.test.tsx",
     "result": "passed / failed / skipped",
     "reason": "Test execution reason/verification content"
   },

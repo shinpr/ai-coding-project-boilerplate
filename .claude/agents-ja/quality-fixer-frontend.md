@@ -15,7 +15,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 1. **全体品質保証**
    - フロントエンドプロジェクト全体の品質チェック実行
    - 各フェーズでエラーを完全に解消してから次へ進む
-   - 最終的に `npm run check:all` で全体確認
+   - 最終的に `check:all` スクリプトで全体確認
    - approved ステータスは全ての品質チェックパス後に返す
 
 2. **完全自己完結での修正実行**
@@ -26,7 +26,12 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 ## 初回必須タスク
 
-作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
+作業開始前に以下を必ず確認・読み込み、厳守してください：
+
+### パッケージマネージャー確認
+package.jsonの`packageManager`フィールドに応じた実行コマンドを使用すること。
+
+### ルールファイル読み込み
 - @docs/rules/coding-standards.md - 普遍的コーディング規約（アンチパターン、Rule of Three、デバッグ、型安全性）
 - @docs/rules/frontend/typescript.md - フロントエンドTypeScript開発ルール（React function components、Props-driven design）
 - @docs/rules/frontend/typescript-testing.md - フロントエンドテストルール（React Testing Library、MSW、60%カバレッジ）
@@ -43,26 +48,20 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 2. エラー発見 → 即座に修正実行
 3. 修正後 → 該当フェーズ再実行
 4. 全フェーズ完了まで繰り返し
-5. `npm run check:all` 最終確認
+5. `check:all` スクリプトで最終確認
 6. 全てパス時のみ approved
 
 ### Phase 詳細
 
 #### Phase 1: Biome Check (Lint + Format)
-```bash
-npm run check        # Biome包括チェック
-```
+`check` スクリプトを実行（Biome包括チェック）
+
 **合格基準**: Lintエラー0、Formatエラー0
 
-**自動修正**:
-```bash
-npm run check:fix    # Format と一部 Lint 問題を自動修正
-```
+**自動修正**: `check:fix` スクリプトを実行（Format と一部 Lint 問題を自動修正）
 
 #### Phase 3: TypeScript Build
-```bash
-npm run build:frontend        # プロダクションビルド
-```
+`build:frontend` スクリプトを実行（プロダクションビルド）
 **合格基準**: ビルド成功、型エラー0
 
 **よくある修正**:
@@ -72,9 +71,7 @@ npm run build:frontend        # プロダクションビルド
 - 外部API レスポンスを型ガードで処理
 
 #### Phase 4: テスト実行
-```bash
-npm test             # Vitest で全テスト実行
-```
+`test` スクリプトを実行（Vitest で全テスト実行）
 **合格基準**: 全テストパス（100%成功率）
 
 **よくある修正**:
@@ -88,9 +85,7 @@ npm test             # Vitest で全テスト実行
   - 実装詳細ではなく、ユーザーが観察可能な振る舞いをテスト
 
 #### Phase 5: 最終チェック
-```bash
-npm run check:all    # 全品質チェック実行
-```
+`check:all` スクリプトを実行（全品質チェック）
 **合格基準**: 全チェックがエラー0でパス
 
 ## ステータス判定基準（二値判定）
@@ -140,23 +135,23 @@ blockedにする前に、以下の順序で仕様を確認：
   "checksPerformed": {
     "phase1_biome": {
       "status": "passed",
-      "commands": ["npm run check"],
+      "commands": ["check"],
       "autoFixed": true
     },
     "phase3_typescript": {
       "status": "passed",
-      "commands": ["npm run build:frontend"]
+      "commands": ["build:frontend"]
     },
     "phase4_tests": {
       "status": "passed",
-      "commands": ["npm test"],
+      "commands": ["test"],
       "testsRun": 42,
       "testsPassed": 42,
       "coverage": "85%"
     },
     "phase5_final": {
       "status": "passed",
-      "commands": ["npm run check:all"]
+      "commands": ["check:all"]
     }
   },
   "fixesApplied": [
@@ -192,7 +187,7 @@ blockedにする前に、以下の順序で仕様を確認：
 **品質チェック処理中（内部利用のみ、レスポンスに含めない）**:
 - エラー発見時は即座に修正実行
 - 品質チェックの各Phaseで見つかった問題を全て修正
-- `npm run check:all` がエラー0は approved ステータスの必須条件
+- `check:all` スクリプトがエラー0であることは approved ステータスの必須条件
 - 複数の修正アプローチがあり正しい仕様が判断できない場合のみ blocked ステータス
 - それ以外は approved になるまで修正継続
 
@@ -249,7 +244,7 @@ blockedにする前に、以下の順序で仕様を確認：
 ### 修正実行方針
 
 #### 自動修正範囲
-- **Format/Style**: Biome自動修正 `npm run check:fix`
+- **Format/Style**: `check:fix` スクリプトでBiome自動修正
   - インデント、セミコロン、引用符
   - import文の順序整理
   - 未使用import削除
@@ -297,7 +292,7 @@ blockedにする前に、以下の順序で仕様を確認：
 ## デバッグヒント
 
 - TypeScriptエラー: Props型定義を確認、適切な型注釈を追加
-- Lintエラー: 自動修正可能な場合は `npm run check:fix` を活用
+- Lintエラー: 自動修正可能な場合は `check:fix` スクリプトを活用
 - React Testing Libraryテストエラー: コンポーネントレンダリング、ユーザーインタラクション、非同期操作を確認
 - 循環依存: コンポーネント依存関係を整理、共通モジュールに抽出
 

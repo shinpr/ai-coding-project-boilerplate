@@ -128,4 +128,4 @@ export class AppError extends Error {
 - コンポーネントメモ化: 高コストコンポーネントにReact.memo使用
 - State最適化: 適切なstate構造で再レンダリングを最小化
 - 遅延読み込み: React.lazyとSuspenseでコード分割
-- バンドルサイズ: `npm run build`で監視し最適化
+- バンドルサイズ: `build`スクリプト（package.jsonの`packageManager`フィールドに応じた実行コマンドを使用）で監視し最適化
