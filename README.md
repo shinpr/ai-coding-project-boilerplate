@@ -22,10 +22,8 @@
 6. [Development Workflow](#-claude-code-workflow)
 7. [Project Structure](#-project-structure)
 8. [Package Manager Configuration](#-package-manager-configuration)
-9. [Development Commands](#-development-commands)
-10. [Rules & Quality Assurance](#-development-rules--quality-assurance)
-11. [Multilingual Support](#-multilingual-support)
-12. [FAQ](#-faq)
+9. [Multilingual Support](#-multilingual-support)
+10. [FAQ](#-faq)
 
 > **Which one should you use?**
 > - **Use this Boilerplate** if you want to **maximize precision** with **TypeScript × Sub-agent** setup optimized for **Claude Code**.
@@ -186,64 +184,6 @@ The above are representative examples. The following scripts are referenced in r
 
 `build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
-## 🛠️ Development Commands
-
-### Core Scripts
-```bash
-# Backend
-npm run dev              # Start development server (Backend)
-npm run build            # Production build (Backend, default)
-npm run build:backend    # Production build (Backend, explicit)
-
-# Frontend
-npm run dev:frontend     # Start Vite dev server
-npm run build:frontend   # Production build with Vite
-npm run preview          # Preview production build
-
-# Common
-npm run test[:watch]     # Run tests (with optional watch mode)
-npm run type-check       # TypeScript type check only
-npm run check:all        # Complete check: types + lint + test + build
-```
-
-### Quality Tools
-```bash
-npm run lint             # Lint check
-npm run format           # Auto-format code
-npm run check:deps       # Check circular dependencies
-```
-
-## 📋 Development Rules & Quality Assurance
-
-### Why Rules Matter
-
-Rules guide AI to produce consistent, high-quality code. Without them, AI output varies wildly.  
-With them, you get predictable, production-ready results.
-
-### Core Principles
-
-- ✅ **Use**: `unknown` type + type guards for safety
-- ❌ **Avoid**: `any` type (breaks type checking)
-- ✅ **Use**: Test-first development (Red-Green-Refactor)
-- ❌ **Avoid**: Commented-out code (use git instead)
-- ✅ **Use**: YAGNI principle (only build what's needed now)
-
-### Automated Quality Checks
-
-Sub agents handle quality automatically:
-
-**Backend:**
-- **task-executor**: Implements with TDD approach
-- **quality-fixer**: Fixes type/lint/test issues
-- **code-reviewer**: Validates against design docs
-
-**Frontend:**
-- **task-executor-frontend**: React component implementation with TDD
-- **quality-fixer-frontend**: Fixes quality + Lighthouse + bundle size
-- **technical-designer-frontend**: React architecture & design decisions
-
-Manual verification: `npm run check:all`
-
 ## 🌐 Multilingual Support
 
 Full support for English and Japanese:
@@ -279,6 +219,9 @@ A: Those help write code. This manages entire development lifecycle with special
 |-------|---------------|------------|
 | **requirement-analyzer** | Scale assessment | Start of `/implement` |
 | **technical-designer** | Design documentation | Medium/large features |
+| **document-reviewer** | Document quality check | After document creation |
+| **design-sync** | Design Doc consistency | After Design Doc creation |
+| **acceptance-test-generator** | Test skeleton from ACs | After design approval |
 | **work-planner** | Task breakdown | After design approval |
 | **task-executor** | Implementation | During build phase |
 | **quality-fixer** | Automated fixes | On any quality issue |

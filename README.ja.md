@@ -22,10 +22,8 @@
 6. [開発ワークフロー](#-claude-code-ワークフロー)
 7. [プロジェクト構成](#-プロジェクト構成)
 8. [パッケージマネージャーの設定](#-パッケージマネージャーの設定)
-9. [開発コマンド](#-開発コマンド)
-10. [開発ルールと品質保証](#-開発ルールと品質保証)
-11. [多言語対応](#-多言語対応)
-12. [よくある質問](#-よくある質問)
+9. [多言語対応](#-多言語対応)
+10. [よくある質問](#-よくある質問)
 
 > **どれを使うべき？**
 > - **このボイラープレート**を使う → **Claude Code**で**TypeScript × サブエージェント**に最適化し、**精度を最大化**したい場合
@@ -180,63 +178,6 @@ ai-coding-project-boilerplate/
 
 `build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
-## 🛠️ 開発コマンド
-
-### 基本スクリプト
-```bash
-# Backend
-npm run dev              # 開発サーバー起動（Backend）
-npm run build            # プロダクションビルド（Backend、デフォルト）
-npm run build:backend    # プロダクションビルド（Backend、明示的）
-
-# Frontend
-npm run dev:frontend     # Vite開発サーバー起動
-npm run build:frontend   # Viteでプロダクションビルド
-npm run preview          # プロダクションビルドのプレビュー
-
-# 共通
-npm run test[:watch]     # テスト実行（監視モードも利用可能）
-npm run type-check       # TypeScript型チェックのみ
-npm run check:all        # 総合チェック: 型 + lint + テスト + ビルド
-```
-
-### 品質ツール
-```bash
-npm run lint             # Lintチェック
-npm run format           # コード自動フォーマット
-npm run check:deps       # 循環依存チェック
-```
-
-## 📋 開発ルールと品質保証
-
-### ルールの役割
-
-ルールは、AIが一貫性のあるコードを生成するためのガイドラインです。適切なルールを設定することで、安定した品質の成果物を得ることができます。
-
-### 基本的な原則
-
-- ✅ **推奨**: 型安全性のための`unknown`型と型ガードの活用
-- ❌ **非推奨**: `any`型の使用（型チェックが機能しなくなるため）
-- ✅ **推奨**: テストファースト開発（Red-Green-Refactorサイクル）
-- ❌ **非推奨**: コメントアウトによるコード管理（gitを活用しましょう）
-- ✅ **推奨**: YAGNI原則（現時点で必要な機能のみ実装）
-
-### 品質チェックのサポート
-
-サブエージェントが品質管理を自動的にサポートします：
-
-**Backend:**
-- **task-executor**: TDDアプローチによる実装支援
-- **quality-fixer**: 型エラーやlint、テストの問題を検出・修正
-- **code-reviewer**: 設計ドキュメントとの整合性を確認
-
-**Frontend:**
-- **task-executor-frontend**: TDDアプローチでReactコンポーネント実装
-- **quality-fixer-frontend**: 品質チェック + Lighthouse + バンドルサイズ検証
-- **technical-designer-frontend**: Reactアーキテクチャ設計と技術決定
-
-手動での確認: `npm run check:all`
-
 ## 🌐 多言語対応
 
 日本語と英語に対応しています：
@@ -272,6 +213,9 @@ A: これらのツールはコード記述の支援に特化していますが�
 |------------|---------|------------------|
 | **requirement-analyzer** | タスク規模の判定 | `/implement`コマンド実行時 |
 | **technical-designer** | 設計ドキュメントの作成 | 中規模・大規模機能の開発時 |
+| **document-reviewer** | ドキュメント品質チェック | ドキュメント作成後 |
+| **design-sync** | Design Doc間の整合性検証 | Design Doc作成後 |
+| **acceptance-test-generator** | ACからテストスケルトン生成 | 設計承認後 |
 | **work-planner** | タスクの分解と計画 | 設計完了後 |
 | **task-executor** | 実装作業 | 開発フェーズ |
 | **quality-fixer** | 品質問題の修正 | エラーや警告の検出時 |
