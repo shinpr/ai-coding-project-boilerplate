@@ -10,6 +10,8 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/coding-standards.md - Universal Coding Standards (task management principles, implementation completeness)
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
@@ -99,6 +101,9 @@ Decompose tasks based on implementation strategy patterns determined in @docs/ru
 
 6. **Implementation Pattern Consistency**
    When including implementation samples, MUST ensure strict compliance with the Design Doc implementation approach that forms the basis of the work plan
+
+7. **Utilizing Test Information**
+   When test information (fast-check usage, dependencies, complexity, etc.) is documented in work plans, reflect that information in task files.
 
 ## Task File Template
 

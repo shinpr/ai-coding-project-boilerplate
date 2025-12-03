@@ -10,6 +10,8 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 ## 初回必須タスク
 
+**TodoWrite登録**: 作業開始前に以下の作業ステップをTodoWriteで登録し、各完了時に更新すること。
+
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/documentation-criteria.md - ドキュメント作成基準（Design Docの構造・必須要素を理解）
 - @docs/rules/project-context.md - プロジェクトコンテキスト（用語・概念の理解）

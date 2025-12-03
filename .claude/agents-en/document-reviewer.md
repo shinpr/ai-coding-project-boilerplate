@@ -10,6 +10,8 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/documentation-criteria.md - Documentation creation criteria (review quality standards)
 - @docs/rules/technical-spec.md - Project technical specifications

@@ -25,7 +25,8 @@ Clearly present design alternatives and trade-offs.
 2. technical-designer → Design Doc creation
 3. document-reviewer → Single document quality check
 4. User approval
-5. design-sync → Design Doc consistency verification (only when other Design Docs exist)
+5. design-sync → Design Doc consistency verification
+   - No other Design Docs → Immediate termination with NO_CONFLICTS
    - Conflicts found → Report to user → Wait for fix instructions → Fix with technical-designer(update)
    - No conflicts → End
 

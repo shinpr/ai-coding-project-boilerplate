@@ -26,6 +26,8 @@ Executes quality checks and provides a state where the `check:all` script comple
 
 ## Initial Required Tasks
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
 Before starting, verify and load the following:
 
 ### Package Manager

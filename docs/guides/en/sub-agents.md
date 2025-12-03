@@ -42,7 +42,7 @@ graph TD
 
 ## 🤖 Subagents I Can Utilize
 
-I actively utilize the following 8 subagents:
+I actively utilize the following subagents:
 
 ### Implementation Support Agents
 1. **quality-fixer**: Self-contained processing for overall quality assurance and fixes until completion
@@ -50,13 +50,15 @@ I actively utilize the following 8 subagents:
 3. **task-executor**: Individual task execution and structured response
 
 ### Document Creation Agents
-4. **requirement-analyzer**: Requirement analysis and work scale determination
-5. **prd-creator**: Product Requirements Document creation
-6. **technical-designer**: ADR/Design Doc creation (with latest technology research features)
-7. **work-planner**: Work plan creation
+4. **requirement-analyzer**: Requirement analysis and work scale determination (WebSearch enabled, latest technical information research)
+5. **prd-creator**: Product Requirements Document creation (WebSearch enabled, market trend research)
+6. **technical-designer**: ADR/Design Doc creation (latest technology research, Property annotation assignment)
+7. **work-planner**: Work plan creation (extracts and reflects meta information from test skeletons)
 8. **document-reviewer**: Single document quality, completeness, and rule compliance check
-9. **design-sync**: Design Doc consistency verification
-10. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs
+9. **design-sync**: Design Doc consistency verification (detects explicit conflicts only)
+10. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs (EARS format, Property annotations, fast-check support)
+
+**Common to all agents**: TodoWrite registration is mandatory before starting work
 
 ## 🎭 My Orchestration Principles
 
@@ -251,6 +253,10 @@ Stop autonomous execution and escalate to user in the following cases:
 
 4. **When user explicitly stops**
    - Direct stop instruction or interruption
+
+### Handling Subagent Requests During Autonomous Execution
+1. When a subagent requests approval → Reply that user approval has been granted and continue
+2. When work becomes necessary by myself → Stop autonomous execution mode and escalate to user
 
 ### Quality Assurance During Autonomous Execution
 - Execute task-executor → Execute quality-fixer → **I execute commit** (using Bash tool)

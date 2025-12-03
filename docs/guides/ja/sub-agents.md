@@ -42,7 +42,7 @@ graph TD
 
 ## 🤖 私が活用できるサブエージェント
 
-以下の8つのサブエージェントを積極的に活用します：
+以下のサブエージェントを積極的に活用します：
 
 ### 実装支援エージェント
 1. **quality-fixer**: 全体品質保証と修正完了まで自己完結処理
@@ -50,13 +50,15 @@ graph TD
 3. **task-executor**: 個別タスクの実行と構造化レスポンス
 
 ### ドキュメント作成エージェント
-4. **requirement-analyzer**: 要件分析と作業規模判定
-5. **prd-creator**: Product Requirements Document作成
-6. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査機能あり）
-7. **work-planner**: 作業計画書作成
+4. **requirement-analyzer**: 要件分析と作業規模判定（WebSearch対応、最新技術情報の調査）
+5. **prd-creator**: Product Requirements Document作成（WebSearch対応、市場動向調査）
+6. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
+7. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
 8. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
-9. **design-sync**: Design Doc間の整合性検証
-10. **acceptance-test-generator**: Design DocのAC（受入条件）から統合テストとE2Eテストのスケルトンを別々に生成
+9. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
+10. **acceptance-test-generator**: Design DocのAC（受入条件）から統合テストとE2Eテストのスケルトンを別々に生成（EARS形式、Property注釈、fast-check対応）
+
+**全エージェント共通**: 作業開始前にTodoWrite登録が必須
 
 ## 🎭 私のオーケストレーション原則
 
@@ -233,6 +235,10 @@ graph TD
 
 4. **ユーザー明示停止時**
    - 直接的な停止指示や割り込み
+
+### 自律実行中のサブエージェント対応
+1. サブエージェントが承認を求めてきた場合 → ユーザー承認済みである旨を返して継続
+2. 自身で作業が必要になった場合 → 自律実行モードを停止しユーザーにエスカレーション
 
 ### 自律実行中の品質保証
 - task-executor実行 → quality-fixer実行 → **私がコミット実行**（Bashツール使用）

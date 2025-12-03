@@ -10,6 +10,8 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Mandatory Initial Tasks
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
 Before starting work, you MUST read and strictly follow these rule files:
 
 - **@docs/rules/typescript-testing.md** - Test design standards (quality requirements, test structure, naming conventions)
@@ -53,15 +55,6 @@ Before starting work, you MUST read and strictly follow these rule files:
 
 **EARS format**: Determine test type from keywords (When/While/If-then/none). **Property annotation present**: Generate property-based test with fast-check.
 
-#### Property Annotation Assignment
-
-Add Property annotation when AC output contains any of the following:
-- Numeric values (count, quantity, size, time, coordinates, ratio)
-- Format (file format, encoding, formatting)
-- State (enabled/disabled, exists/not exists, order)
-
-See Design Doc template for notation.
-
 **For each AC, apply 3 mandatory checks**:
 
 | Check | Question | Action if NO | Skip Reason |
@@ -100,6 +93,7 @@ For each valid AC from Phase 1:
 2. **Classify test level**:
    - Integration test candidate (feature-level interaction)
    - E2E test candidate (complete user journey)
+   - Property-based test candidate (AC with Property annotation → placed in integration test file)
 
 3. **Annotate metadata**:
    - Business value: 0-10 (revenue impact)
@@ -153,7 +147,8 @@ ROI Score = (Business Value × User Frequency + Legal Requirement × 10 + Defect
 
 ```
 1. Sort candidates by ROI (descending)
-2. Select top N within budget:
+2. Select all property-based tests (excluded from budget calculation)
+3. Select top N within budget:
    - Integration: Pick top 3 highest-ROI
    - E2E: Pick top 1-2 IF ROI score > 50
 ```
@@ -210,7 +205,21 @@ describe('[Feature Name] E2E Test', () => {
 })
 ```
 
-### Generation Report
+### Property-Annotated Test (fast-check)
+
+```typescript
+// AC: "[behavior description]"
+// Property: `[verification expression]`
+// ROI: [value] | Test Type: property-based
+// @category: core-functionality
+it.todo('[AC#]-property: [invariant in natural language]')
+// fast-check: fc.property(fc.constantFrom([input variations]), (input) => [invariant])
+```
+
+### Generation Report (Response to Main AI)
+
+Response to the main AI (orchestrator) contains only file paths.
+Detailed meta information is included in comments within the test skeleton files, and downstream agents extract it by reading the files.
 
 ```json
 {
@@ -221,37 +230,13 @@ describe('[Feature Name] E2E Test', () => {
     "e2e": "[path]/[feature].e2e.test.ts"
   },
   "testCounts": {
-    "selected": {
-      "integration": 2,
-      "e2e": 1,
-      "total": 3
-    },
-    "candidates": {
-      "integration": 8,
-      "e2e": 3,
-      "total": 11
-    },
-    "selectionRate": "27%"
-  },
-  "budgetUsage": {
-    "integration": "2/3",
-    "e2e": "1/2"
-  },
-  "roiMetrics": {
-    "avgSelectedROI": 84,
-    "minSelectedROI": 72
-  },
-  "acValidation": {
-    "total": 12,
-    "passed": 6,
-    "filtered": {
-      "implementationDetail": 2,
-      "unitLevel": 3,
-      "outOfScope": 1
-    }
+    "integration": 2,
+    "e2e": 1
   }
 }
 ```
+
+**Note**: ROI, @category, @dependency, @complexity, fast-check and other detailed information are documented in comments within the test skeleton files. They are utilized by downstream processes reading the files.
 
 ## Test Meta Information Assignment
 

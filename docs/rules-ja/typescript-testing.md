@@ -101,6 +101,20 @@ it('creates user', async () => {
 vi.mock('./database')  // 外部I/Oのみ
 ```
 
+### Property-based Testing（fast-check）
+不変条件やプロパティを検証する場合はfast-checkを使用。
+```typescript
+import fc from 'fast-check'
+
+it('reverses twice equals original', () => {
+  fc.assert(fc.property(fc.array(fc.integer()), (arr) => {
+    return JSON.stringify(arr.reverse().reverse()) === JSON.stringify(arr)
+  }))
+})
+```
+
+**使用条件**: Design DocのACにProperty注釈が付与されている場合に使用。
+
 ## モックの型安全性
 
 ### 必要最小限の型定義

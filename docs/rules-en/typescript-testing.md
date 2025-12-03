@@ -101,6 +101,20 @@ Mock only direct external I/O dependencies. Use real implementations for indirec
 vi.mock('./database')  // external I/O only
 ```
 
+### Property-based Testing (fast-check)
+Use fast-check when verifying invariants or properties.
+```typescript
+import fc from 'fast-check'
+
+it('reverses twice equals original', () => {
+  fc.assert(fc.property(fc.array(fc.integer()), (arr) => {
+    return JSON.stringify(arr.reverse().reverse()) === JSON.stringify(arr)
+  }))
+})
+```
+
+**Usage condition**: Use when Property annotations are assigned to ACs in Design Doc.
+
 ## Mock Type Safety Enforcement
 
 ### Minimal Type Definition Requirements
