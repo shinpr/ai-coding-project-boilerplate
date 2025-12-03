@@ -17,11 +17,21 @@ Once requirements are moderately clarified, analyze with requirement-analyzer an
 
 Clearly present design alternatives and trade-offs.
 
-**Scope**: Up to design document (ADR/Design Doc) approval. Work planning and beyond are outside the scope of this command.
+**Scope**: Up to design document (ADR/Design Doc) approval + Design Doc consistency verification. Work planning and beyond are outside the scope of this command.
+
+## Execution Flow
+
+1. requirement-analyzer → Requirement analysis
+2. technical-designer → Design Doc creation
+3. document-reviewer → Single document quality check
+4. User approval
+5. design-sync → Design Doc consistency verification (only when other Design Docs exist)
+   - Conflicts found → Report to user → Wait for fix instructions → Fix with technical-designer(update)
+   - No conflicts → End
 
 ## Output Example
 Design phase completed.
-- Design document: docs/design/[document-name].md or docs/adr/[document-name].md
-- Approval status: User approved
+- Design document: docs/design/[document-name].md
+- Consistency: No conflicts with other Design Docs (or fixes completed)
 
-**Important**: This command ends with design approval. Does not propose transition to next phase.
+**Important**: This command ends with design approval + consistency verification. Does not propose transition to next phase.

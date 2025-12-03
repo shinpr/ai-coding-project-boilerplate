@@ -54,8 +54,8 @@ graph TD
 5. **prd-creator**: Product Requirements Document作成
 6. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査機能あり）
 7. **work-planner**: 作業計画書作成
-8. **document-reviewer**: ドキュメント整合性チェックと推奨判定
-9. **document-reviewer**: ドキュメントの整合性と完成度をレビューする専門エージェント
+8. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
+9. **design-sync**: Design Doc間の整合性検証
 10. **acceptance-test-generator**: Design DocのAC（受入条件）から統合テストとE2Eテストのスケルトンを別々に生成
 
 ## 🎭 私のオーケストレーション原則
@@ -119,6 +119,7 @@ Taskツールを使用してサブエージェントを呼び出す：
 - **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
 - **quality-fixer**: status, checksPerformed, fixesApplied, approved
 - **document-reviewer**: status, reviewsPerformed, issues, recommendations, approvalReady
+- **design-sync**: sync_status, total_conflicts, conflicts (severity, type, source_file, target_file)
 
 
 ## 🔄 要件変更への対応パターン
@@ -161,7 +162,7 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 1. requirement-analyzer → 要件分析＋既存PRD確認 **[停止: 要件確認・質問事項対応]**
 2. prd-creator → PRD作成（既存あれば更新、なければ徹底調査で新規作成） → document-reviewer実行 **[停止: 要件確認]**
 3. technical-designer → ADR作成（必要な場合） → document-reviewer実行 **[停止: 技術方針決定]**
-4. technical-designer → Design Doc作成 → document-reviewer実行 **[停止: 設計内容確認]**
+4. technical-designer → Design Doc作成 → document-reviewer実行 → design-sync実行（※2） **[停止: 設計内容確認]**
 5. acceptance-test-generator → 統合テスト・E2Eテストスケルトン生成
    → メインAI: 生成確認後、work-plannerへ情報引き渡し（※1）
 6. work-planner → 作業計画書作成（統合テスト・E2Eテスト情報を含む） **[停止: 実装フェーズ全体の一括承認]**
@@ -169,7 +170,7 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 
 ### 中規模（3-5ファイル）
 1. requirement-analyzer → 要件分析 **[停止: 要件確認・質問事項対応]**
-2. technical-designer → Design Doc作成 → document-reviewer実行 **[停止: 技術方針決定]**
+2. technical-designer → Design Doc作成 → document-reviewer実行 → design-sync実行（※2） **[停止: 技術方針決定]**
 3. acceptance-test-generator → 統合テスト・E2Eテストスケルトン生成
    → メインAI: 生成確認後、work-plannerへ情報引き渡し（※1）
 4. work-planner → 作業計画書作成（統合テスト・E2Eテスト情報を含む） **[停止: 実装フェーズ全体の一括承認]**
@@ -261,6 +262,13 @@ graph TD
    - E2Eテストファイル: [パス]（最終Phaseでのみ実行）
 
    **異常時**: ファイル未生成の場合はユーザーにエスカレーション
+
+   #### ※2 design-sync実行条件
+
+   **実行条件**: docs/design/配下に他のDesign Docが存在する場合のみ
+   **目的**: 新規/更新されたDesign Docと既存Design Doc間の整合性を検証
+   **矛盾検出時**: ユーザーに報告し、修正指示を待つ → technical-designer(update)で修正
+
 3. **品質保証とコミット実行**: approved=true確認後、即座にgit commit実行  
 4. **自律実行モード管理**: 承認後の自律実行開始・停止・エスカレーション判断
 5. **ADRステータス管理**: ユーザー判断後のADRステータス更新（Accepted/Rejected）

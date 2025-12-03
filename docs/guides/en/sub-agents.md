@@ -54,8 +54,8 @@ I actively utilize the following 8 subagents:
 5. **prd-creator**: Product Requirements Document creation
 6. **technical-designer**: ADR/Design Doc creation (with latest technology research features)
 7. **work-planner**: Work plan creation
-8. **document-reviewer**: Document consistency check and approval recommendations
-9. **document-reviewer**: Specialized agent for reviewing document consistency and completeness
+8. **document-reviewer**: Single document quality, completeness, and rule compliance check
+9. **design-sync**: Design Doc consistency verification
 10. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs
 
 ## 🎭 My Orchestration Principles
@@ -137,6 +137,7 @@ Each subagent responds in JSON format:
 - **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
 - **quality-fixer**: status, checksPerformed, fixesApplied, approved
 - **document-reviewer**: status, reviewsPerformed, issues, recommendations, approvalReady
+- **design-sync**: sync_status, total_conflicts, conflicts (severity, type, source_file, target_file)
 
 
 ## 🔄 Handling Requirement Changes
@@ -179,7 +180,7 @@ According to scale determination:
 1. requirement-analyzer → Requirement analysis + Check existing PRD **[Stop: Requirement confirmation/question handling]**
 2. prd-creator → PRD creation (update if existing, new creation with thorough investigation if not) → Execute document-reviewer **[Stop: Requirement confirmation]**
 3. technical-designer → ADR creation (if needed) → Execute document-reviewer **[Stop: Technical direction decision]**
-4. technical-designer → Design Doc creation → Execute document-reviewer **[Stop: Design content confirmation]**
+4. technical-designer → Design Doc creation → Execute document-reviewer → Execute design-sync (*2) **[Stop: Design content confirmation]**
 5. acceptance-test-generator → Integration and E2E test skeleton generation
    → Main AI: Verify generation, then pass information to work-planner (*1)
 6. work-planner → Work plan creation (including integration and E2E test information) **[Stop: Batch approval for entire implementation phase]**
@@ -187,7 +188,7 @@ According to scale determination:
 
 ### Medium Scale (3-5 Files)
 1. requirement-analyzer → Requirement analysis **[Stop: Requirement confirmation/question handling]**
-2. technical-designer → Design Doc creation → Execute document-reviewer **[Stop: Technical direction decision]**
+2. technical-designer → Design Doc creation → Execute document-reviewer → Execute design-sync (*2) **[Stop: Technical direction decision]**
 3. acceptance-test-generator → Integration and E2E test skeleton generation
    → Main AI: Verify generation, then pass information to work-planner (*1)
 4. work-planner → Work plan creation (including integration and E2E test information) **[Stop: Batch approval for entire implementation phase]**
@@ -279,6 +280,13 @@ Stop autonomous execution and escalate to user in the following cases:
    - E2E test file: [path] (execute only in final phase)
 
    **On error**: Escalate to user if files are not generated
+
+   #### *2 design-sync Execution Conditions
+
+   **Condition**: Only when other Design Docs exist in docs/design/
+   **Purpose**: Verify consistency between new/updated Design Doc and existing Design Docs
+   **On conflict detection**: Report to user and wait for fix instructions → Fix with technical-designer(update)
+
 3. **Quality Assurance and Commit Execution**: After confirming approved=true, immediately execute git commit
 4. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval, escalation decisions
 5. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
