@@ -51,7 +51,7 @@ Before starting work, you MUST read and strictly follow these rule files:
 
 ### Phase 1: AC Validation (Behavior-First Filtering)
 
-**EARS format**: Determine test type from keywords (When/While/If-then/none).
+**EARS format**: Determine test type from keywords (When/While/If-then/none). **Property annotation present**: Generate property-based test with fast-check.
 
 **For each AC, apply 3 mandatory checks**:
 

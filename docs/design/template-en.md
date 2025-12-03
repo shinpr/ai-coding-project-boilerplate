@@ -61,6 +61,7 @@ Each AC is written in EARS format. Keywords determine test type.
 
 - [ ] The system shall display data list with pagination of 10 items per page
 - [ ] **When** input is entered in search field, the system shall apply real-time filtering
+  - **Property**: `filtered.every(item => item.name.includes(query))`
 
 ## Existing Codebase Analysis
 

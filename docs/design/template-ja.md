@@ -61,6 +61,7 @@
 
 - [ ] The system shall データ一覧を10件ずつページネーションして表示
 - [ ] **When** 検索フィールドに入力, the system shall リアルタイムでフィルタリングを適用
+  - **Property**: `filtered.every(item => item.name.includes(query))`
 
 ## 既存コードベース分析
 

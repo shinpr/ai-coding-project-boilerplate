@@ -65,6 +65,42 @@ src/
 - 理由: テストの穴が生まれ、品質チェックが不完全になる
 - 対処: 不要なテストは完全に削除する
 
+## テスト品質基準
+
+### 境界値・異常系の網羅
+正常系に加え、境界値と異常系を含める。
+```typescript
+it('returns 0 for empty array', () => expect(calc([])).toBe(0))
+it('throws on negative price', () => expect(() => calc([{price: -1}])).toThrow())
+```
+
+### 期待値の直接記述
+期待値はリテラルで記述。実装ロジックを再現しない。
+```typescript
+expect(calcTax(100)).toBe(10)  // not: 100 * TAX_RATE
+```
+
+### 結果ベースの検証
+呼び出し順序・回数ではなく結果を検証。
+```typescript
+expect(mock).toHaveBeenCalledWith('a')  // not: toHaveBeenNthCalledWith
+```
+
+### 意味あるアサーション
+各テストに最低1つの検証を含める。
+```typescript
+it('creates user', async () => {
+  const user = await createUser({name: 'test'})
+  expect(user.id).toBeDefined()
+})
+```
+
+### 適切なモック範囲
+直接依存の外部I/Oのみモック。間接依存は実物使用。
+```typescript
+vi.mock('./database')  // 外部I/Oのみ
+```
+
 ## モックの型安全性
 
 ### 必要最小限の型定義

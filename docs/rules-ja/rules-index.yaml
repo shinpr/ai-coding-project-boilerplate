@@ -52,7 +52,7 @@ rules:
   typescript-testing:
     file: "typescript-testing.md"
     tags: [quality, testing, coverage, vitest, backend, implementation]
-    typical-use: "バックエンドテスト作成、Vitest設定、70%カバレッジ要件"
+    typical-use: "バックエンドテスト作成、Vitest設定、70%カバレッジ要件、テスト品質基準"
     size: small
     key-references:
       - "Vitest公式ドキュメント"
@@ -60,6 +60,7 @@ rules:
       - "テストフレームワーク"
       - "テストの基本方針"
       - "テストの実装規約"
+      - "テスト品質基準"
       - "モックの型安全性"
       - "Vitestの基本例"
 

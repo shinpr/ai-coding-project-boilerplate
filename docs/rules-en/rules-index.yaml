@@ -58,7 +58,7 @@ rules:
   typescript-testing:
     file: "typescript-testing.md"
     tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring, backend]
-    typical-use: "Backend test creation, quality checks, development steps for code/bug fixes, refactoring, and new feature implementation"
+    typical-use: "Backend test creation, quality checks, test quality criteria, development steps for code/bug fixes, refactoring, and new feature implementation"
     size: small
     key-references:
       - "Test-Driven Development - Kent Beck"
@@ -69,6 +69,7 @@ rules:
       - "Test Framework"
       - "Basic Testing Policy"
       - "Test Implementation Conventions"
+      - "Test Quality Criteria"
       - "Mock Type Safety Enforcement"
       - "Basic Vitest Example"
 

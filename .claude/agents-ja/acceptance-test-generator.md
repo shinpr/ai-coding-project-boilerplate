@@ -51,7 +51,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 ### Phase 1: AC検証（振る舞い優先フィルタリング）
 
-**EARS形式の場合**: キーワード（When/While/If-then/無印）からテスト種別を判定。
+**EARS形式の場合**: キーワード（When/While/If-then/無印）からテスト種別を判定。**Property注釈がある場合**: fast-checkでproperty-based testを生成。
 
 **各ACに対して3つの必須チェックを適用**:
 
