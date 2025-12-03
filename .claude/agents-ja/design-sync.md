@@ -43,6 +43,12 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 - **source_design**: 今回作成/更新されたDesign Docパス（これが基準となる）
 
+## 早期終了条件
+
+**対象Design Docが0件の場合**（docs/design/配下にsource_design以外のファイルがない場合）：
+- 調査をスキップし、即座にNO_CONFLICTSステータスで終了
+- 理由：比較対象が存在しないため整合性検証は不要
+
 ## 作業フロー
 
 ### 1. ソースDesign Docの解析

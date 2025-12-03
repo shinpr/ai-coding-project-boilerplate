@@ -162,7 +162,7 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 1. requirement-analyzer → 要件分析＋既存PRD確認 **[停止: 要件確認・質問事項対応]**
 2. prd-creator → PRD作成（既存あれば更新、なければ徹底調査で新規作成） → document-reviewer実行 **[停止: 要件確認]**
 3. technical-designer → ADR作成（必要な場合） → document-reviewer実行 **[停止: 技術方針決定]**
-4. technical-designer → Design Doc作成 → document-reviewer実行 → design-sync実行（※2） **[停止: 設計内容確認]**
+4. technical-designer → Design Doc作成 → document-reviewer実行 → design-sync実行 **[停止: 設計内容確認]**
 5. acceptance-test-generator → 統合テスト・E2Eテストスケルトン生成
    → メインAI: 生成確認後、work-plannerへ情報引き渡し（※1）
 6. work-planner → 作業計画書作成（統合テスト・E2Eテスト情報を含む） **[停止: 実装フェーズ全体の一括承認]**
@@ -170,7 +170,7 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 
 ### 中規模（3-5ファイル）
 1. requirement-analyzer → 要件分析 **[停止: 要件確認・質問事項対応]**
-2. technical-designer → Design Doc作成 → document-reviewer実行 → design-sync実行（※2） **[停止: 技術方針決定]**
+2. technical-designer → Design Doc作成 → document-reviewer実行 → design-sync実行 **[停止: 技術方針決定]**
 3. acceptance-test-generator → 統合テスト・E2Eテストスケルトン生成
    → メインAI: 生成確認後、work-plannerへ情報引き渡し（※1）
 4. work-planner → 作業計画書作成（統合テスト・E2Eテスト情報を含む） **[停止: 実装フェーズ全体の一括承認]**
@@ -262,12 +262,6 @@ graph TD
    - E2Eテストファイル: [パス]（最終Phaseでのみ実行）
 
    **異常時**: ファイル未生成の場合はユーザーにエスカレーション
-
-   #### ※2 design-sync実行条件
-
-   **実行条件**: docs/design/配下に他のDesign Docが存在する場合のみ
-   **目的**: 新規/更新されたDesign Docと既存Design Doc間の整合性を検証
-   **矛盾検出時**: ユーザーに報告し、修正指示を待つ → technical-designer(update)で修正
 
 3. **品質保証とコミット実行**: approved=true確認後、即座にgit commit実行  
 4. **自律実行モード管理**: 承認後の自律実行開始・停止・エスカレーション判断
