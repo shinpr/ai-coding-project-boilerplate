@@ -87,7 +87,7 @@
 - Interface and type definitions
 - Data flow and component design
 - **E2E verification procedures at integration points**
-- **Acceptance criteria (measurable format)**
+- **Acceptance criteria (EARS format: When/While/If-then/none)**
 - Change impact map (clearly specify direct impact/indirect impact/no ripple effect)
 - Complete enumeration of integration points
 - Data contract clarification

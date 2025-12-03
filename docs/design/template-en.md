@@ -47,18 +47,20 @@
 - **Reliability**: [Error rate, availability requirements]
 - **Maintainability**: [Code readability and changeability]
 
-## Acceptance Criteria (AC)
+## Acceptance Criteria (AC) - EARS Format
 
-Define specific and verifiable conditions that determine successful implementation for each functional requirement.
-These conditions serve as the basis for test cases and are used to objectively determine implementation completion.
-(Note: Checkboxes remain empty at design time as implementation is not yet complete)
+Each AC is written in EARS format. Keywords determine test type.
 
-- [ ] [Specific acceptance criteria for functional requirement 1]
-  - Example: "When user clicks login button, authentication succeeds with correct credentials"
-  - Example: "When credentials are invalid, appropriate error message is displayed"
-- [ ] [Specific acceptance criteria for functional requirement 2]
-  - Example: "Data list screen displays with pagination of 10 items per page"
-  - Example: "When input is entered in search field, real-time filtering is applied"
+### [Functional Requirement 1]
+
+- [ ] **When** user clicks login button with valid credentials, the system shall authenticate and redirect to dashboard
+- [ ] **If** credentials are invalid, **then** the system shall display error message "Invalid credentials"
+- [ ] **While** user is logged in, the system shall maintain the session for 60 minutes
+
+### [Functional Requirement 2]
+
+- [ ] The system shall display data list with pagination of 10 items per page
+- [ ] **When** input is entered in search field, the system shall apply real-time filtering
 
 ## Existing Codebase Analysis
 

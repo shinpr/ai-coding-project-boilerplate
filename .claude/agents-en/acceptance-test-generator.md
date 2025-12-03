@@ -51,6 +51,8 @@ Before starting work, you MUST read and strictly follow these rule files:
 
 ### Phase 1: AC Validation (Behavior-First Filtering)
 
+**EARS format**: Determine test type from keywords (When/While/If-then/none).
+
 **For each AC, apply 3 mandatory checks**:
 
 | Check | Question | Action if NO | Skip Reason |
