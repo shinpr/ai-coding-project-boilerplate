@@ -59,8 +59,6 @@ graph TD
 10. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
 11. **acceptance-test-generator**: Design DocのAC（受入条件）から統合テストとE2Eテストのスケルトンを別々に生成（EARS形式、Property注釈、fast-check対応）
 
-**全エージェント共通**: 作業開始前にTodoWrite登録が必須
-
 ## 🎭 私のオーケストレーション原則
 
 ### 責務分離を意識した振り分け
