@@ -78,7 +78,7 @@ Taskツールを使用してサブエージェントを呼び出す：
 1. **task-executor-frontend使用**: フロントエンド実装を実行
    - 呼び出し例: `subagent_type: "task-executor-frontend"`, `description: "タスク実行"`, `prompt: "タスクファイル: docs/plans/tasks/[ファイル名].md 実装を実行"`
 2. **構造化レスポンス処理**: `readyForQualityCheck: true` 検出時 → 即座にquality-fixer-frontend実行
-3. **quality-fixer-frontend使用**: 全品質チェック実行（Lighthouse、バンドルサイズ、テスト等）
+3. **quality-fixer-frontend使用**: 全品質チェック実行（Biome、TypeScriptビルド、テスト）
    - 呼び出し例: `subagent_type: "quality-fixer-frontend"`, `description: "品質チェック"`, `prompt: "全てのフロントエンド品質チェックと修正を実行"`
 4. **コミット実行**: `approved: true`確認後、即座にgit commitを実行
 
@@ -97,7 +97,7 @@ Taskツールを使用してサブエージェントを呼び出す：
 フロントエンド実装フェーズ完了。
 - タスク分解: docs/plans/tasks/ 配下に生成
 - 実装タスク: [件数] タスク
-- 品質チェック: 全てパス（Lighthouse、バンドルサイズ、テスト）
+- 品質チェック: 全てパス（Biome、TypeScriptビルド、テスト）
 - コミット: [件数] コミット作成
 
 **重要**: このコマンドは、タスク分解から完了までのフロントエンド実装全体の自律実行フローを管理します。フロントエンド特化エージェント（task-executor-frontend、quality-fixer-frontend）を自動使用します。

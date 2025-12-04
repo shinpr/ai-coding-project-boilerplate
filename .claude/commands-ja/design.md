@@ -25,8 +25,7 @@ description: 要件分析から設計書作成まで実行
 2. technical-designer → Design Doc作成
 3. document-reviewer → 単一ドキュメント品質チェック
 4. ユーザー承認
-5. design-sync → Design Doc間整合性検証
-   - 他Design Docなし → NO_CONFLICTSで即終了
+5. design-sync → Design Doc間整合性検証（他Design Docが存在する場合のみ）
    - 矛盾あり → ユーザーに報告 → 修正指示待ち → technical-designer(update)で修正
    - 矛盾なし → 終了
 

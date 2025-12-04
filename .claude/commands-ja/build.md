@@ -56,15 +56,12 @@ description: 分解済みタスクを自律実行モードで実装
 ✅ **推奨**: タスク生成完了後、自動的に自律実行モードへ移行
 ❌ **避ける**: タスク未生成のまま実装を開始
 
-## 🧠 各タスクでメタ認知
-**必須サイクル**: `task-executor → quality-fixer → commit`
-
-タスク開始前に必ず：
-1. **rule-advisor実行**: タスクの本質を理解
-2. **TodoWrite更新**: 進捗を構造化
-3. **構造化レスポンス処理**: `readyForQualityCheck: true` → quality-fixer即実行
-
-**Think deeply** 構造化レスポンスを見落とさず、品質ゲートを確実に通過させます。
+## 🧠 タスク実行フロー
+sub-agents.mdの「自律実行中のタスク管理」に従い、TodoWriteで4ステップを管理：
+1. task-executor実行
+2. エスカレーション判定・フォローアップ
+3. quality-fixer実行
+4. git commit
 
 承認確認後、自律実行モードを開始。要件変更検知時は即座に停止。
 

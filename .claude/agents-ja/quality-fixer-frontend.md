@@ -15,7 +15,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 1. **全体品質保証**
    - フロントエンドプロジェクト全体の品質チェック実行
    - 各フェーズでエラーを完全に解消してから次へ進む
-   - 最終的に `check:all` スクリプトで全体確認
+   - 最終的に Phase 4 で全体確認
    - approved ステータスは全ての品質チェックパス後に返す
 
 2. **完全自己完結での修正実行**
@@ -46,12 +46,11 @@ package.jsonの`packageManager`フィールドに応じた実行コマンドを�
 ## 作業フロー
 
 ### 完全自己完結フロー
-1. Phase 1-6 段階的品質チェック
+1. Phase 1-3 段階的品質チェック
 2. エラー発見 → 即座に修正実行
 3. 修正後 → 該当フェーズ再実行
 4. 全フェーズ完了まで繰り返し
-5. `check:all` スクリプトで最終確認
-6. 全てパス時のみ approved
+5. Phase 4 で最終確認、全てパス時のみ approved
 
 ### Phase 詳細
 
@@ -62,7 +61,7 @@ package.jsonの`packageManager`フィールドに応じた実行コマンドを�
 
 **自動修正**: `check:fix` スクリプトを実行（Format と一部 Lint 問題を自動修正）
 
-#### Phase 3: TypeScript Build
+#### Phase 2: TypeScript Build
 `build:frontend` スクリプトを実行（プロダクションビルド）
 **合格基準**: ビルド成功、型エラー0
 
@@ -72,7 +71,7 @@ package.jsonの`packageManager`フィールドに応じた実行コマンドを�
 - Reactコンポーネントの Props 型定義を修正
 - 外部API レスポンスを型ガードで処理
 
-#### Phase 4: テスト実行
+#### Phase 3: テスト実行
 `test` スクリプトを実行（Vitest で全テスト実行）
 **合格基準**: 全テストパス（100%成功率）
 
@@ -86,9 +85,10 @@ package.jsonの`packageManager`フィールドに応じた実行コマンドを�
   - 新規コンポーネントにテスト追加（60%カバレッジ目標）
   - 実装詳細ではなく、ユーザーが観察可能な振る舞いをテスト
 
-#### Phase 5: 最終チェック
-`check:all` スクリプトを実行（全品質チェック）
-**合格基準**: 全チェックがエラー0でパス
+#### Phase 4: 最終確認
+- 全Phaseの結果を確認
+- approved判定
+**合格基準**: 全Phase（1-3）がエラー0でパス
 
 ## ステータス判定基準（二値判定）
 
@@ -140,20 +140,20 @@ blockedにする前に、以下の順序で仕様を確認：
       "commands": ["check"],
       "autoFixed": true
     },
-    "phase3_typescript": {
+    "phase2_typescript": {
       "status": "passed",
       "commands": ["build:frontend"]
     },
-    "phase4_tests": {
+    "phase3_tests": {
       "status": "passed",
       "commands": ["test"],
       "testsRun": 42,
       "testsPassed": 42,
       "coverage": "85%"
     },
-    "phase5_final": {
+    "phase4_final": {
       "status": "passed",
-      "commands": ["check:all"]
+      "summary": "全Phase完了"
     }
   },
   "fixesApplied": [
@@ -189,7 +189,7 @@ blockedにする前に、以下の順序で仕様を確認：
 **品質チェック処理中（内部利用のみ、レスポンスに含めない）**:
 - エラー発見時は即座に修正実行
 - 品質チェックの各Phaseで見つかった問題を全て修正
-- `check:all` スクリプトがエラー0であることは approved ステータスの必須条件
+- 全Phase（1-4）がエラー0であることは approved ステータスの必須条件
 - 複数の修正アプローチがあり正しい仕様が判断できない場合のみ blocked ステータス
 - それ以外は approved になるまで修正継続
 
@@ -257,7 +257,7 @@ blockedにする前に、以下の順序で仕様を確認：
   - オプショナルチェーン追加
 - **明確なコード品質問題**
   - 未使用の変数/関数/コンポーネント削除
-  - 未使用エクスポート削除（ts-pruneがYAGNI違反を検出時は自動削除）
+  - 未使用エクスポート削除
   - 到達不可能コード削除
   - console.log文削除
 

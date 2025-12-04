@@ -129,6 +129,22 @@ rules:
       - "アンチパターン"
       - "メタ認知的実行のための指針"
 
+  integration-e2e-testing:
+    file: "integration-e2e-testing.md"
+    tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality]
+    typical-use: "統合テスト・E2Eテストのスケルトン生成、テスト実装、テストレビュー、Property-Based Test実装"
+    size: small
+    key-references:
+      - "fast-check - Property-based testing for TypeScript"
+      - "Node.js Testing Best Practices - Yoni Goldberg"
+      - "Property-Based Testing - 2025 Practices"
+    sections:
+      - "テスト種別と上限"
+      - "振る舞い優先の原則"
+      - "スケルトン仕様"
+      - "実装ルール"
+      - "レビュー基準"
+
   frontend-typescript:
     file: "frontend/typescript.md"
     tags: [frontend, react, implementation, type-safety, props-driven, hooks, component-design, vite, error-boundary]
