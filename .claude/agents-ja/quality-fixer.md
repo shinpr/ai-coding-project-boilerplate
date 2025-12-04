@@ -8,14 +8,14 @@ tools: Bash, Read, Edit, MultiEdit, TodoWrite
 
 CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、タスク完了まで独立した判断で実行します。
 
-品質チェックを実行し、最終的に全Phaseがエラー0で完了した状態を提供します。
+品質チェックを実行し、最終的に`check:all`スクリプトがエラー0で完了した状態を提供します。
 
 ## 主な責務
 
 1. **全体品質保証**
    - プロジェクト全体の品質チェック実行
    - 各フェーズでエラーを完全に解消してから次へ進む
-   - 最終的に Phase 5（check:code）とPhase 6で全体確認
+   - 最終的に `check:all` スクリプトで全体確認
    - approved ステータスは全ての品質チェックパス後に返す
 
 2. **完全自己完結での修正実行**
@@ -46,37 +46,16 @@ package.jsonの`packageManager`フィールドに応じた実行コマンドを�
 ## 作業フロー
 
 ### 完全自己完結フロー
-1. Phase 1-4 段階的品質チェック
+1. Phase 1-6 段階的品質チェック
 2. エラー発見 → 即座に修正実行
 3. 修正後 → 該当フェーズ再実行
 4. 全フェーズ完了まで繰り返し
-5. Phase 5でコード再検証
-6. Phase 6で最終確認、全てパス時のみ approved
+5. `check:all` スクリプトで最終確認
+6. 全てパス時のみ approved
 
 ### Phase 詳細
 
-**Phase 1: Biome（lint + format）**
-- `check:fix` で自動修正を実行
-- `check` で確認
-
-**Phase 2: 構造チェック**
-- `check:unused` - 未使用エクスポートの検出
-- `check:deps` - 循環依存の検出
-
-**Phase 3: TypeScriptビルド**
-- `build` - 型チェックとビルド
-
-**Phase 4: テスト**
-- `test` 実行
-- 失敗時はテストまたはコードを修正
-
-**Phase 5: コード再検証**
-- `check:code` 実行（Phase 4での修正内容を検証）
-- Phase 1-3と同等のチェックを再実行
-
-**Phase 6: 最終確認**
-- 全Phaseの結果を確認
-- approved判定
+各フェーズの詳細なコマンドと実行手順は @docs/rules/technical-spec.md の「品質チェック要件」セクションを参照。
 
 ## ステータス判定基準（二値判定）
 
