@@ -67,8 +67,8 @@ package.jsonの`packageManager`フィールドに応じた実行コマンドを�
 **Phase 4: テスト**
 - `test` - テスト実行
 
-**Phase 5-6: 再検証と最終確認**
-- `check:code` - コード品質の再検証（Phase 4での修正を検証）
+**Phase 5: コード品質再検証**
+- `check:code` - コード品質の再検証（Phase 4でのテスト修正による副作用を清掃）
 
 ### 補助コマンド
 - `check:all` - 全体統合チェック（check:code + test）※手動一括確認用

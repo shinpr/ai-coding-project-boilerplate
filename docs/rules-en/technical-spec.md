@@ -67,8 +67,8 @@ Quality checks are mandatory upon implementation completion:
 **Phase 4: Tests**
 - `test` - Test execution
 
-**Phase 5-6: Re-verification and Final Confirmation**
-- `check:code` - Re-verify code quality (verify fixes from Phase 4)
+**Phase 5: Code Quality Re-verification**
+- `check:code` - Re-verify code quality (clean up side effects from test fixes in Phase 4)
 
 ### Auxiliary Commands
 - `check:all` - Overall integrated check (check:code + test) *for manual batch verification
