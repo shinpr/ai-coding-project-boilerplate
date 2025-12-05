@@ -226,6 +226,7 @@ A: Those help write code. This manages entire development lifecycle with special
 | **task-executor** | Implementation | During build phase |
 | **quality-fixer** | Automated fixes | On any quality issue |
 | **code-reviewer** | Compliance check | `/review` command |
+| **integration-test-reviewer** | Test implementation quality | After test implementation |
 
 [Full agent list →](.claude/agents-en/)
 

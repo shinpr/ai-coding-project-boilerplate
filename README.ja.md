@@ -220,6 +220,7 @@ A: これらのツールはコード記述の支援に特化していますが�
 | **task-executor** | 実装作業 | 開発フェーズ |
 | **quality-fixer** | 品質問題の修正 | エラーや警告の検出時 |
 | **code-reviewer** | コードレビュー | `/review`コマンド実行時 |
+| **integration-test-reviewer** | テスト実装品質の検証 | テスト実装後 |
 
 [エージェントの詳細 →](.claude/agents-ja/)
 

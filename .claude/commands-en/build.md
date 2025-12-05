@@ -2,7 +2,7 @@
 description: Execute decomposed tasks in autonomous execution mode
 ---
 
-**STRICTLY AND PRECISELY** follow @docs/guides/sub-agents.md and act as the PRIMARY ORCHESTRATOR.
+Follow @docs/guides/sub-agents.md strictly and act as the **orchestrator**.
 
 Work plan: $ARGUMENTS
 
@@ -19,7 +19,7 @@ Work plan: $ARGUMENTS
 
 ### Task Generation Decision Flow
 
-**THINK DEEPLY AND SYSTEMATICALLY** Analyze task file existence state and determine the EXACT action required:
+**Think deeply** Analyze task file existence state and determine the appropriate action:
 
 | State | Criteria | Next Action |
 |-------|----------|-------------|
@@ -36,7 +36,7 @@ When task files don't exist:
 No task files found.
 Work plan: docs/plans/[plan-name].md
 
-Generate tasks from the work plan? (y/n): 
+Generate tasks from the work plan? (y/n):
 ```
 
 ### 2. Task Decomposition (if approved)
@@ -53,28 +53,25 @@ Generate tasks from the work plan? (y/n):
 ! ls -la docs/plans/tasks/*.md | head -10
 ```
 
-✅ **MANDATORY**: After task generation, AUTOMATICALLY proceed to autonomous execution
-❌ **PROHIBITED**: Starting implementation without task generation
+✅ **Recommended**: After task generation, automatically proceed to autonomous execution
+❌ **Avoid**: Starting implementation without task generation
 
-## 🧠 Metacognition for Each Task
-**MANDATORY EXECUTION CYCLE**: `task-executor → quality-fixer → commit`
+## 🧠 Task Execution Flow
+Following "Autonomous Execution Task Management" in sub-agents.md, manage 4 steps with TodoWrite:
+1. task-executor execution
+2. Escalation judgment and follow-up
+3. quality-fixer execution
+4. git commit
 
-Before starting EACH task, YOU MUST:
-1. **EXECUTE rule-advisor**: Extract the TRUE ESSENCE of the task
-2. **UPDATE TodoWrite**: Structure and track progress IMMEDIATELY  
-3. **PROCESS structured responses**: When `readyForQualityCheck: true` is detected → EXECUTE quality-fixer IMMEDIATELY
-
-**THINK DEEPLY** Monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
-
-! ls -la docs/plans/*.md | head -10
-
-VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
+After approval confirmation, start autonomous execution mode. Stop immediately when requirement changes detected.
 
 ## Output Example
 Implementation phase completed.
-- Task decomposition: Generated under docs/plans/tasks/
+- Task decomposition: Generated under docs/plans/tasks/ (if executed)
 - Implemented tasks: [number] tasks
 - Quality checks: All passed
 - Commits: [number] commits created
 
-**Important**: This command manages the entire autonomous execution flow from task decomposition to implementation completion. Automatically stops when requirement changes are detected.
+**Responsibility Boundary**:
+- IN SCOPE: Task decomposition to implementation completion
+- OUT OF SCOPE: Design phase, planning phase

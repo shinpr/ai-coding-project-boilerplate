@@ -18,16 +18,27 @@ TypeScript-based application implementation. Architecture patterns should be sel
 
 ## Architecture Design
 
-### Architecture Patterns
-Strictly adhere to selected project patterns. Project-specific details reference `docs/rules/architecture/`.
+### Architecture Design Principles
+Select appropriate architecture for each project and define clearly:
+
+- **Clear Definition**: Project architecture is defined in dedicated files under `docs/rules/architecture/`
+- **Separation of Responsibilities**: Clearly define responsibilities for each layer and module, and maintain boundaries
+
+## Pattern Application Consistency
+
+Strictly follow selected architecture patterns. See `docs/rules/architecture/` for project-specific details.
 
 ## Unified Data Flow Principles
 
-### Data Flow Consistency
-Maintain consistent data flow throughout the application:
-- **Single Source of Truth**: Each piece of data has one authoritative source
-- **Unidirectional Flow**: Data flows in a predictable direction
-- **Immutable Updates**: Prefer immutable data transformations
+#### Basic Principles
+1. **Single Data Source**: Store the same information in only one place
+2. **Structured Data Priority**: Use parsed objects rather than JSON strings
+3. **Clear Responsibility Separation**: Clearly define responsibilities for each layer
+
+#### Data Flow Best Practices
+- **Validation at Input**: Validate data at input layer and pass internally in type-safe form
+- **Centralized Transformation**: Consolidate data transformation logic in dedicated utilities
+- **Structured Logging**: Output structured logs at each stage of data flow
 
 ## Build and Testing
 Use the appropriate run command based on the `packageManager` field in package.json.
@@ -47,17 +58,20 @@ Use the appropriate run command based on the `packageManager` field in package.j
 
 Quality checks are mandatory upon implementation completion:
 
-**Phase 1-3: Basic Checks**
+**Phase 1-3: Code Quality Checks**
 - `check` - Biome (lint + format)
 - `check:unused` - Detect unused exports
+- `check:deps` - Detect circular dependencies
 - `build` - TypeScript build
 
-**Phase 4-6: Tests and Final Confirmation**
+**Phase 4: Tests**
 - `test` - Test execution
-- `test:coverage:fresh` - Coverage measurement
-- `check:all` - Overall integrated check
+
+**Phase 5-6: Re-verification and Final Confirmation**
+- `check:code` - Re-verify code quality (verify fixes from Phase 4)
 
 ### Auxiliary Commands
+- `check:all` - Overall integrated check (check:code + test) *for manual batch verification
 - `open coverage/index.html` - Check coverage report
 - `format` - Format fixes
 - `lint:fix` - Lint fixes
@@ -68,5 +82,5 @@ Quality checks are mandatory upon implementation completion:
 - **Dependency errors**: Clean reinstall dependencies
 
 ### Coverage Requirements
-- **Mandatory**: Unit test coverage must be 70% or higher
+- **MANDATORY**: Unit test coverage MUST be 70% or higher
 - **Metrics**: Statements, Branches, Functions, Lines

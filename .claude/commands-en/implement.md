@@ -4,7 +4,7 @@ description: Orchestrate the complete implementation lifecycle from requirements
 
 **Command Context**: Full-cycle implementation management (Requirements Analysis → Design → Planning → Implementation → Quality Assurance)
 
-Strictly adhere to @docs/guides/sub-agents.md and operate exclusively as an orchestrator.
+Strictly adhere to @docs/guides/sub-agents.md and operate as an orchestrator.
 
 ## Execution Decision Flow
 
@@ -21,67 +21,55 @@ Instruction Content: $ARGUMENTS
 | Ambiguous | Intent unclear, multiple interpretations possible | Confirm with user |
 
 ### 2. Progress Verification for Continuation
-
 When continuing existing flow, verify:
 - Latest artifacts (PRD/ADR/Design Doc/Work Plan/Tasks)
 - Current phase position (Requirements/Design/Planning/Implementation/QA)
 - Identify next step in sub-agents.md corresponding flow
 
-### 3. Next Action Execution
+### 3. After Scale Determination: Register All Flow Steps to TodoWrite (Required)
 
-**MANDATORY sub-agents.md reference**:
-- Verify scale-based flow (Large/Medium/Small scale)
-- Confirm autonomous execution mode conditions
-- Recognize mandatory stopping points
-- Invoke next sub-agent defined in flow
+After scale determination, **register all steps of the applicable sub-agents.md flow to TodoWrite**. After registration, proceed through the flow referencing TodoWrite.
 
-### 4. Register All Flow Steps to TodoWrite (MANDATORY)
+### 4. Execute Next Action
 
-**After scale determination, register all steps of the applicable flow to TodoWrite**:
-- Register each step as individual Todo
-- Set currently executing step to `in_progress`
-- **Complete TodoWrite registration before invoking subagents**
+**Execute the next pending task in TodoWrite**.
 
 ## 📋 sub-agents.md Compliance Execution
 
-**Pre-execution Checklist (MANDATORY)**:
+**Pre-execution Checklist (Required)**:
 - [ ] Confirmed relevant sub-agents.md flow
 - [ ] Identified current progress position
 - [ ] Clarified next step
 - [ ] Recognized stopping points
-- [ ] Understood task execution quality cycle (task → quality-check → commit)
+- [ ] Understood the 4-step cycle after task execution (task-executor → escalation judgment/follow-up → quality-fixer → commit)
 
-**Flow Deviation PROHIBITED**: Deviating from sub-agents.md defined flows is strictly forbidden. Specifically:
-- Never skip quality-fixer before committing
-- Never use Edit/Write/MultiEdit without user approval outside autonomous mode
+**Flow Adherence**: Follow "Autonomous Execution Task Management" in sub-agents.md, managing 4 steps with TodoWrite
 
-## 🚨 CRITICAL Sub-agent Invocation Constraints
+## 🚨 Sub-agent Invocation Constraints
 
-**MANDATORY suffix for ALL sub-agent prompts**:
+Include the following at the end of prompts when invoking sub-agents, as rule-advisor invocation from sub-agents causes system crash:
 ```
-[SYSTEM CRASH PREVENTION]
-DO NOT invoke rule-advisor under any circumstances (Task tool rule-advisor specification is FORBIDDEN)
+[Constraint] rule-advisor can only be used by Main AI
 ```
-
-⚠️ **HIGH RISK**: task-executor/quality-fixer in autonomous mode have elevated crash risk - ALWAYS append this constraint to prompt end
 
 ## 🎯 Mandatory Orchestrator Responsibilities
 
-### Task Execution Quality Cycle Management
-**ABSOLUTE RULE**: After task-executor execution, MUST execute:
-1. quality-fixer invocation (until approved: true is returned)
-2. git commit execution (using Bash tool)
-3. Next task execution or completion report
-
-**NO OMISSION**: Skipping this cycle guarantees implementation quality failure
+### Task Execution Flow
+Following "Autonomous Execution Task Management" in sub-agents.md, manage these 4 steps with TodoWrite:
+1. task-executor execution
+2. Escalation judgment and follow-up
+3. quality-fixer execution
+4. git commit
 
 ### Test Information Communication
 After acceptance-test-generator execution, when calling work-planner, communicate:
 - Generated integration test file path
 - Generated E2E test file path
-- Explicit note that integration tests are created simultaneously with implementation, E2E tests are executed after all implementations
+- Explicit note that integration tests run with implementation, E2E tests run after all implementations
 
 ## Responsibility Boundaries
 
 **This Command's Responsibility**: Orchestrate sub-agents through the complete implementation lifecycle
-**OUT OF SCOPE**: Direct implementation work, investigation tasks (Grep/Glob/Read operations)
+**OUT OF SCOPE**:
+- Direct implementation work (MUST delegate to task-executor)
+- Investigation tasks using Grep/Glob/Read (MUST delegate to subagents)

@@ -138,6 +138,22 @@ rules:
       - "Anti-patterns"
       - "Guidelines for Meta-cognitive Execution"
 
+  integration-e2e-testing:
+    file: "integration-e2e-testing.md"
+    tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality]
+    typical-use: "Integration and E2E test skeleton generation, test implementation, test review, Property-Based Test implementation"
+    size: small
+    key-references:
+      - "fast-check - Property-based testing for TypeScript"
+      - "Node.js Testing Best Practices - Yoni Goldberg"
+      - "Property-Based Testing - 2025 Practices"
+    sections:
+      - "Test Types and Limits"
+      - "Behavior-First Principle"
+      - "Skeleton Specification"
+      - "Implementation Rules"
+      - "Review Criteria"
+
   # Frontend-specific Rules
   frontend-typescript:
     file: "frontend/typescript.md"
