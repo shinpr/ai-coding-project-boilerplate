@@ -182,7 +182,7 @@ When you change these, Claude Code will recognize them and execute with the appr
 
 The above are representative examples. The following scripts are referenced in rules and sub-agent definitions. Update them as needed:
 
-`build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
+`build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
 ## 🌐 Multilingual Support
 

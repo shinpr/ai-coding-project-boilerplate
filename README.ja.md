@@ -176,7 +176,7 @@ ai-coding-project-boilerplate/
 
 上記は代表例です。ルールやサブエージェント定義で言及されているスクリプトは以下の通りです。必要に応じて書き換えてください：
 
-`build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
+`build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
 ## 🌐 多言語対応
 
