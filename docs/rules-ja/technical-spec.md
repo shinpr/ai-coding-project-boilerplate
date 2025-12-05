@@ -58,17 +58,20 @@ package.jsonの`packageManager`フィールドに応じた実行コマンドを�
 
 品質チェックは実装完了時に必須：
 
-**Phase 1-3: 基本チェック**
+**Phase 1-3: コード品質チェック**
 - `check` - Biome（lint + format）
 - `check:unused` - 未使用エクスポートの検出
+- `check:deps` - 循環依存の検出
 - `build` - TypeScriptビルド
 
-**Phase 4-6: テストと最終確認**
+**Phase 4: テスト**
 - `test` - テスト実行
-- `test:coverage:fresh` - カバレッジ測定
-- `check:all` - 全体統合チェック
+
+**Phase 5: コード品質再検証**
+- `check:code` - コード品質の再検証（Phase 4でのテスト修正による副作用を清掃）
 
 ### 補助コマンド
+- `check:all` - 全体統合チェック（check:code + test）※手動一括確認用
 - `open coverage/index.html` - カバレッジレポート確認
 - `format` - フォーマット修正
 - `lint:fix` - Lint修正

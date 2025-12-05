@@ -19,7 +19,7 @@ Work plan: $ARGUMENTS
 
 ### Task Generation Decision Flow
 
-**THINK DEEPLY AND SYSTEMATICALLY**: Analyze task file existence state and determine the EXACT action required:
+**Think deeply**: Analyze task file existence state and determine the appropriate action:
 
 | State | Criteria | Next Action |
 |-------|----------|-------------|
@@ -53,12 +53,12 @@ Generate tasks from the work plan? (y/n):
 ! ls -la docs/plans/tasks/*.md | head -10
 ```
 
-✅ **MANDATORY**: After task generation, AUTOMATICALLY proceed to autonomous execution
-❌ **PROHIBITED**: Starting implementation without task generation
+✅ **Recommended**: After task generation, automatically proceed to autonomous execution
+❌ **Avoid**: Starting implementation without task generation
 
 ## 🧠 Metacognition for Each Task - Frontend Specialized
 
-**MANDATORY EXECUTION CYCLE**: `task-executor-frontend → quality-fixer-frontend → commit`
+**Required Execution Cycle**: `task-executor-frontend → quality-fixer-frontend → commit`
 
 ### Sub-agent Invocation Method
 Use Task tool to invoke sub-agents:
@@ -77,27 +77,27 @@ Execute for EACH task:
 
 1. **USE task-executor-frontend**: Execute frontend implementation
    - Invocation example: `subagent_type: "task-executor-frontend"`, `description: "Task execution"`, `prompt: "Task file: docs/plans/tasks/[filename].md Execute implementation"`
-2. **PROCESS structured responses**: When `readyForQualityCheck: true` is detected → EXECUTE quality-fixer-frontend IMMEDIATELY
-3. **USE quality-fixer-frontend**: Execute all quality checks (Lighthouse, bundle size, tests, etc.)
+2. **PROCESS structured responses**: When `readyForQualityCheck: true` is detected → Execute quality-fixer-frontend immediately
+3. **USE quality-fixer-frontend**: Execute all quality checks (Biome, TypeScript build, tests)
    - Invocation example: `subagent_type: "quality-fixer-frontend"`, `description: "Quality check"`, `prompt: "Execute all frontend quality checks and fixes"`
-4. **EXECUTE commit**: After `approved: true` confirmation, execute git commit IMMEDIATELY
+4. **EXECUTE commit**: After `approved: true` confirmation, execute git commit immediately
 
 ### Quality Assurance During Autonomous Execution (Details)
 - task-executor-frontend execution → quality-fixer-frontend execution → **I (Main AI) execute commit** (using Bash tool)
-- After quality-fixer-frontend's `approved: true` confirmation, execute git commit IMMEDIATELY
-- Use `changeSummary` for commit message
+- After quality-fixer-frontend's `approved: true` confirmation, execute git commit immediately
+- Use changeSummary for commit message
 
-**THINK DEEPLY**: Monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
+**Think deeply**: Monitor all structured responses and ensure every quality gate is passed.
 
 ! ls -la docs/plans/*.md | head -10
 
-VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
+Verify approval status before proceeding. Once confirmed, initiate autonomous execution mode. Stop immediately upon detecting any requirement changes.
 
 ## Output Example
 Frontend implementation phase completed.
 - Task decomposition: Generated under docs/plans/tasks/
 - Implemented tasks: [number] tasks
-- Quality checks: All passed (Lighthouse, bundle size, tests)
+- Quality checks: All passed (Biome, TypeScript build, tests)
 - Commits: [number] commits created
 
-**Important**: This command manages the entire autonomous execution flow for FRONTEND implementation from task decomposition to completion. Automatically uses frontend-specialized agents (task-executor-frontend, quality-fixer-frontend).
+**Important**: This command manages the entire autonomous execution flow for frontend implementation from task decomposition to completion. Automatically uses frontend-specialized agents (task-executor-frontend, quality-fixer-frontend).

@@ -10,6 +10,8 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Mandatory Rules
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
 Load and follow these rule files before starting:
 
 ### Required Files to Load
@@ -93,7 +95,7 @@ Load and follow these rule files before starting:
 ## Implementation Authority and Responsibility Boundaries
 
 **Responsibility Scope**: Implementation and test creation (quality checks and commits out of scope)
-**Basic Policy**: Start implementation immediately (assuming approved), escalate only for design deviation or shortcut fixes
+**Basic Policy**: Start implementation immediately (assuming user approved), escalate only for design deviation or shortcut fixes
 
 ## Main Responsibilities
 

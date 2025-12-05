@@ -10,6 +10,8 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/coding-standards.md - Universal Coding Standards, pre-implementation existing code investigation process, task management principles
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
@@ -111,7 +113,37 @@ Prioritize implementation, add tests as needed in each phase.
 Gradually ensure quality based on Design Doc acceptance criteria.
 
 ### Test Design Information Processing (when provided)
-**Processing when test design information provided from previous process**:
+
+**Mandatory processing when test skeleton file paths are provided from previous process**:
+
+#### Step 1: Read Test Skeleton Files (Mandatory)
+
+Read test skeleton files (integration tests, E2E tests) with the Read tool and extract meta information from comments.
+
+**Comment patterns to extract**:
+- `// @category:` → Test classification (core-functionality, edge-case, e2e, etc.)
+- `// @dependency:` → Dependent components (material for phase placement decisions)
+- `// @complexity:` → Complexity (high/medium/low, material for effort estimation)
+- `// fast-check:` → Property-Based Test implementation pattern (**Important**: Tests with this comment should clearly state "use fast-check library" in work plan)
+- `// ROI:` → Priority determination
+
+#### Step 2: Reflect Meta Information in Work Plan
+
+1. **Explicit Documentation of Property-Based Tests (fast-check)**
+   - Tests with `// fast-check:` comments → Add the following to the task's implementation steps:
+     - "Implement property-based test using fast-check library"
+     - Include the pattern in the comment (`fc.property(...)`) as sample code
+
+2. **Phase Placement Based on Dependencies**
+   - `// @dependency: none` → Place in early phases
+   - `// @dependency: [component name]` → Place in phase after dependent component implementation
+   - `// @dependency: full-system` → Place in final phase
+
+3. **Effort Estimation Based on Complexity**
+   - `// @complexity: high` → Split task into subtasks, or estimate higher effort
+   - `// @complexity: low` → Consider combining multiple tests into one task
+
+#### Step 3: Structure Analysis and Classification of it.todo
 
 1. **it.todo Structure Analysis and Classification**
    - Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1

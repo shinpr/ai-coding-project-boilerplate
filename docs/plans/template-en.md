@@ -1,8 +1,7 @@
-# Work Plan: [Feature Name] Implementation
+# Work Plan: [Title]
 
 Created Date: YYYY-MM-DD
 Type: feature|fix|refactor
-Estimated Duration: X days
 Estimated Impact: X files
 Related Issue/PR: #XXX (if any)
 
@@ -14,22 +13,23 @@ Related Issue/PR: #XXX (if any)
 ## Objective
 [Why this change is necessary, what problem it solves]
 
-## Background
-[Current state and why changes are needed]
+## Impact Scope
+### Target Files
+- [ ] src/domain/xxx
+- [ ] src/application/xxx
+- [ ] src/infrastructure/xxx
+- [ ] src/presentation/xxx
 
-## Risks and Countermeasures
+### Test Files
+- [ ] __tests__/xxx.test.ts
+- [ ] __tests__/xxx.test.ts
 
-### Technical Risks
-- **Risk**: [Risk description]
-  - **Impact**: [Impact assessment]
-  - **Countermeasure**: [How to address it]
+### Documentation
+- [ ] ADR creation needed (for architecture changes)
+- [ ] Design Doc update needed
+- [ ] README update needed
 
-### Schedule Risks
-- **Risk**: [Risk description]
-  - **Impact**: [Impact assessment]
-  - **Countermeasure**: [How to address it]
-
-## Implementation Phases
+## Implementation Plan
 
 (Note: Phase structure is determined based on Design Doc technical dependencies and implementation approach)
 
@@ -39,7 +39,7 @@ Related Issue/PR: #XXX (if any)
 #### Tasks
 - [ ] Task 1: Specific work content
 - [ ] Task 2: Specific work content
-- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/ai-development-guide.md)
+- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/technical-spec.md "Build and Testing")
 - [ ] Unit tests: All related tests pass
 
 #### Phase Completion Criteria
@@ -57,7 +57,7 @@ Related Issue/PR: #XXX (if any)
 #### Tasks
 - [ ] Task 1: Specific work content
 - [ ] Task 2: Specific work content
-- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/ai-development-guide.md)
+- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/technical-spec.md "Build and Testing")
 - [ ] Integration tests: Verify overall feature functionality
 
 #### Phase Completion Criteria
@@ -75,7 +75,7 @@ Related Issue/PR: #XXX (if any)
 #### Tasks
 - [ ] Task 1: Specific work content
 - [ ] Task 2: Specific work content
-- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/ai-development-guide.md)
+- [ ] Quality check: Implement staged quality checks (refer to @docs/rules/technical-spec.md "Build and Testing")
 - [ ] Integration tests: Verify component coordination
 
 #### Phase Completion Criteria
@@ -83,7 +83,7 @@ Related Issue/PR: #XXX (if any)
 - [ ] [Quality completion criteria]
 
 #### Operational Verification Procedures
-[Copy relevant integration point operational verification from Design Doc]
+[Copy relevant integration point E2E verification from Design Doc]
 
 ### Final Phase: Quality Assurance (Required) (Estimated commits: 1)
 **Purpose**: Overall quality assurance and Design Doc consistency verification
@@ -96,14 +96,15 @@ Related Issue/PR: #XXX (if any)
 - [ ] Document updates
 
 #### Operational Verification Procedures
-[Copy operational verification procedures from Design Doc]
+[Copy E2E verification procedures from Design Doc]
 
 ### Quality Assurance
-- [ ] Implement staged quality checks (details: refer to @docs/rules/ai-development-guide.md)
-- [ ] All tests pass
-- [ ] Type check pass
-- [ ] Lint check pass
-- [ ] Build success
+- [ ] Implement staged quality checks (details: refer to @docs/rules/technical-spec.md "Build and Testing")
+
+## Risks and Countermeasures
+| Risk | Countermeasure |
+|------|----------------|
+| [Expected risk] | [How to address it] |
 
 ## Completion Criteria
 - [ ] All phases completed

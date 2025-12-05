@@ -4,10 +4,10 @@ description: Execute tasks following appropriate rules
 
 Task: $ARGUMENTS
 
-Before execution, clarify the following:
+**Pre-execution Checklist** (MUST clarify BEFORE starting):
 
 1. **Applicable Rules**: Which development rules apply to this task?
-2. **Initial Action**: Based on the rules, what should be the first step?
-3. **Prohibitions**: What should be avoided in this task?
+2. **Initial Action**: Based on the rules, what is the FIRST step?
+3. **Scope Boundary**: What are the completion criteria and scope of responsibility?
 
-Proceed with the task after making the above explicit.
+Proceed with the task ONLY AFTER making the above explicit.

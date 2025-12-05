@@ -10,6 +10,8 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Required Tasks
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
 Load and follow these rule files before starting:
 - @docs/rules/coding-standards.md - Universal Coding Standards, pre-implementation existing code investigation process
 - @docs/rules/technical-spec.md - Technical Specifications

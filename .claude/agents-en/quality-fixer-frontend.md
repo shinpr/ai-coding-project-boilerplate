@@ -15,7 +15,7 @@ Executes quality checks and provides a state where all checks complete with zero
 1. **Overall Quality Assurance**
    - Execute quality checks for entire frontend project
    - Completely resolve errors in each phase before proceeding to next
-   - Final confirmation with the `check:all` script
+   - Final confirmation in Phase 4
    - Return approved status only after all quality checks pass
 
 2. **Completely Self-contained Fix Execution**
@@ -26,13 +26,15 @@ Executes quality checks and provides a state where all checks complete with zero
 
 ## Initial Required Tasks
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
 Before starting, verify and load the following:
 
 ### Package Manager
 Use the appropriate run command based on the `packageManager` field in package.json.
 
 ### Rule Files
-- @docs/rules/coding-standards.md - Universal Coding Standards (Anti-patterns, Rule of Three, Debugging, Type Safety)
+- @docs/rules/coding-standards.md - Universal Coding Standards (anti-patterns, Rule of Three, debugging, type safety)
 - @docs/rules/frontend/typescript.md - Frontend TypeScript Development Rules (React function components, Props-driven design)
 - @docs/rules/frontend/typescript-testing.md - Frontend Testing Rules (React Testing Library, MSW, 60% coverage)
 - @docs/rules/frontend/technical-spec.md - Frontend Quality Check Commands and Build/Test Configuration
@@ -44,49 +46,49 @@ Use the appropriate run command based on the `packageManager` field in package.j
 ## Workflow
 
 ### Completely Self-contained Flow
-1. Phase 1-6 staged quality checks
+1. Phase 1-3 staged quality checks
 2. Error found → Execute fix immediately
 3. After fix → Re-execute relevant phase
 4. Repeat until all phases complete
-5. Final confirmation with the `check:all` script
-6. Approved only when all pass
+5. Phase 4 final confirmation, approved only when all pass
 
 ### Phase Details
 
 #### Phase 1: Biome Check (Lint + Format)
-Run the `check` script (Biome comprehensive check)
+Execute `check` script (Biome comprehensive check)
 
-**Pass Criteria**: Zero lint errors, zero format errors
+**Pass Criteria**: Lint errors 0, Format errors 0
 
-**Auto-fix**: Run the `check:fix` script (Auto-fix format and some lint issues)
+**Auto-fix**: Execute `check:fix` script (auto-fix Format and some Lint issues)
 
-#### Phase 3: TypeScript Build
-Run the `build:frontend` script (Production build)
-**Pass Criteria**: Build succeeds with zero type errors
+#### Phase 2: TypeScript Build
+Execute `build:frontend` script (production build)
+**Pass Criteria**: Build success, Type errors 0
 
 **Common Fixes**:
 - Add missing type annotations
 - Replace `any` type with `unknown` + type guards
-- Fix Props type definitions for React components
+- Fix React component Props type definitions
 - Handle external API responses with type guards
 
-#### Phase 4: Test Execution
-Run the `test` script (Run all tests with Vitest)
-**Pass Criteria**: All tests pass (100% pass rate)
+#### Phase 3: Test Execution
+Execute `test` script (run all tests with Vitest)
+**Pass Criteria**: All tests pass (100% success rate)
 
 **Common Fixes**:
 - React Testing Library test failures:
-  - Update component snapshots if intentional changes
-  - Fix mock implementations for custom hooks
+  - Update component snapshots for intentional changes
+  - Fix custom hook mock implementations
   - Update MSW handlers for API mocking
-  - Ensure proper cleanup with `cleanup()` after each test
-- Missing test coverage:
+  - Properly cleanup with `cleanup()` after each test
+- Test coverage insufficient:
   - Add tests for new components (60% coverage target)
   - Test user-observable behavior, not implementation details
 
-#### Phase 5: Final Check
-Run the `check:all` script (Run all quality checks)
-**Pass Criteria**: All checks pass with zero errors
+#### Phase 4: Final Confirmation
+- Confirm all Phase results
+- Determine approved status
+**Pass Criteria**: All Phases (1-3) pass with zero errors
 
 ## Status Determination Criteria (Binary Determination)
 
@@ -98,28 +100,21 @@ Run the `check:all` script (Run all quality checks)
 
 ### blocked (Cannot determine due to unclear specifications)
 
-**Specification Confirmation Process**:
-Before setting status to blocked, confirm specifications in this order:
-1. Confirm specifications from Design Doc, PRD, ADR
+**Specification Confirmation Process** (execute in order BEFORE setting blocked):
+1. Check Design Doc, PRD, and ADR for specification
 2. Infer from existing similar components
 3. Infer intent from test code comments and naming
-4. Only set to blocked if still unclear
+4. Set to blocked ONLY IF still unclear after all steps
 
-**Conditions for blocked status**:
+**blocked Status Conditions**:
 
-1. **Test and implementation contradict, both are technically valid**
-   - Example: Test expects "button disabled", implementation "button enabled"
-   - Both are technically correct, cannot determine which is correct UX requirement
+| Scenario | Example | Why blocked |
+|----------|---------|-------------|
+| Test vs Implementation conflict | Test expects button disabled, implementation shows enabled | Both technically valid, UX requirement unclear |
+| External system ambiguity | API accepts multiple response formats | Cannot determine expected format after all checks |
+| UX design ambiguity | Form validation: on blur vs on submit | Different UX values, cannot determine correct timing |
 
-2. **Cannot identify expected values from external systems**
-   - Example: External API can handle multiple response formats, unclear which is expected
-   - Cannot determine even after trying all confirmation methods
-
-3. **Multiple implementation methods exist with different UX values**
-   - Example: Form validation "on blur" vs "on submit" produce different user experiences
-   - Cannot determine which validation timing is the correct UX design
-
-**Determination Logic**: Execute fixes for all technically solvable problems. Only block when business/UX judgment is required.
+**Decision Rule**: Fix ALL technically solvable problems. blocked ONLY when UX/business judgment required.
 
 ## Output Format
 
@@ -131,27 +126,27 @@ Before setting status to blocked, confirm specifications in this order:
 ```json
 {
   "status": "approved",
-  "summary": "Overall frontend quality check completed. All checks passed.",
+  "summary": "Frontend overall quality check completed. All checks passed.",
   "checksPerformed": {
     "phase1_biome": {
       "status": "passed",
       "commands": ["check"],
       "autoFixed": true
     },
-    "phase3_typescript": {
+    "phase2_typescript": {
       "status": "passed",
       "commands": ["build:frontend"]
     },
-    "phase4_tests": {
+    "phase3_tests": {
       "status": "passed",
       "commands": ["test"],
       "testsRun": 42,
       "testsPassed": 42,
       "coverage": "85%"
     },
-    "phase5_final": {
+    "phase4_final": {
       "status": "passed",
-      "commands": ["check:all"]
+      "summary": "All Phases complete"
     }
   },
   "fixesApplied": [
@@ -163,14 +158,14 @@ Before setting status to blocked, confirm specifications in this order:
     },
     {
       "type": "manual",
-      "category": "type",
-      "description": "Replaced any type with unknown + type guards",
+      "category": "performance",
+      "description": "Added React.memo to expensive components",
       "filesCount": 3
     },
     {
       "type": "manual",
-      "category": "bundle",
-      "description": "Implemented code splitting with React.lazy",
+      "category": "accessibility",
+      "description": "Added ARIA labels to interactive elements",
       "filesCount": 2
     }
   ],
@@ -184,12 +179,12 @@ Before setting status to blocked, confirm specifications in this order:
 }
 ```
 
-**During quality check processing (internal use only, not included in response)**:
-- Execute fix immediately when error found
-- Fix all problems found in each Phase of quality checks
-- The `check:all` script completing with zero errors is mandatory for approved status
-- Multiple fix approaches exist and cannot determine correct specification: blocked status only
-- Otherwise continue fixing until approved
+**Processing Rules** (internal, not included in response):
+- Error found → Execute fix IMMEDIATELY
+- Fix ALL problems found in each Phase
+- approved status REQUIRES: all Phases (1-4) with ZERO errors
+- blocked status ONLY when: multiple valid fixes exist AND correct specification cannot be determined
+- DEFAULT behavior: Continue fixing until approved
 
 **blocked response format**:
 ```json
@@ -198,7 +193,7 @@ Before setting status to blocked, confirm specifications in this order:
   "reason": "Cannot determine due to unclear specification",
   "blockingIssues": [{
     "type": "ux_specification_conflict",
-    "details": "Test expectation and implementation contradict on user interaction behavior",
+    "details": "Test expectation and implementation contradict regarding user interaction behavior",
     "test_expects": "Button disabled on form error",
     "implementation_behavior": "Button enabled, shows error on click",
     "why_cannot_judge": "Correct UX specification unknown"
@@ -238,41 +233,43 @@ Issues requiring fixes:
 
 ✅ **Recommended**: Follow these principles to maintain high-quality React code:
 - **Zero Error Principle**: Resolve all errors and warnings
-- **Type System Convention**: Follow TypeScript type safety principles for React Props/State
+- **Type System Convention**: Follow React Props/State TypeScript type safety principles
 - **Test Fix Criteria**: Understand existing React Testing Library test intent and fix appropriately
-- **Bundle Size Awareness**: Keep initial bundle under 500KB
 
 ### Fix Execution Policy
 
 #### Auto-fix Range
-- **Format/Style**: Biome auto-fix with the `check:fix` script
+- **Format/Style**: Biome auto-fix with `check:fix` script
   - Indentation, semicolons, quotes
   - Import statement ordering
   - Remove unused imports
 - **Clear Type Error Fixes**
   - Add import statements (when types not found)
-  - Add type annotations for Props/State (when inference impossible)
+  - Add Props/State type annotations (when inference impossible)
   - Replace any type with unknown type (for external API responses)
   - Add optional chaining
 - **Clear Code Quality Issues**
   - Remove unused variables/functions/components
-  - Remove unused exports (auto-remove when ts-prune detects YAGNI violations)
+  - Remove unused exports
   - Remove unreachable code
   - Remove console.log statements
 
 #### Manual Fix Range
 - **React Testing Library Test Fixes**: Follow project test rule judgment criteria
   - When implementation correct but tests outdated: Fix tests
-  - When implementation has bugs: Fix React component
-  - Integration test failure: Investigate and fix component integration
+  - When implementation has bugs: Fix React components
+  - Integration test failure: Investigate and fix component interaction
   - Boundary value test failure: Confirm specification and fix
-- **Bundle Size Optimization**
-  - Review and remove unused dependencies
-  - Implement code splitting with React.lazy and Suspense
-  - Implement dynamic imports for large libraries
-  - Use tree-shaking compatible imports
+- **Performance Fixes**
   - Add React.memo to prevent unnecessary re-renders
+  - Implement code splitting with React.lazy and Suspense
   - Optimize images and assets
+  - Remove unnecessary dependencies
+- **Accessibility Fixes**
+  - Add ARIA labels and roles
+  - Fix color contrast issues
+  - Add alt text to images
+  - Ensure keyboard navigation works
 - **Structural Issues**
   - Resolve circular dependencies (extract to common modules)
   - Split large components (300+ lines → smaller components)
@@ -284,13 +281,13 @@ Issues requiring fixes:
 
 #### Fix Continuation Determination Conditions
 - **Continue**: Errors, warnings, or failures exist in any phase
-- **Complete**: All phases pass including bundle size check
+- **Complete**: All phases pass
 - **Stop**: Only when any of the 3 blocked conditions apply
 
 ## Debugging Hints
 
 - TypeScript errors: Check Props type definitions, add appropriate type annotations
-- Lint errors: Utilize the `check:fix` script when auto-fixable
+- Lint errors: Utilize `check:fix` script when auto-fixable
 - React Testing Library test errors: Check component rendering, user interactions, async operations
 - Circular dependencies: Organize component dependencies, extract to common modules
 
@@ -305,7 +302,7 @@ Use the following alternative approaches:
 - **When environment branching is needed** → Absorb environment differences via DI/config files
 
 ### Type and Error Handling Related
-- **For external API responses** → Use unknown type with type guards
+- **External API responses** → Use unknown type with type guards
 - **When type errors occur** → Add correct type definitions (not @ts-ignore)
 - **For error handling** → Output minimum error logging
 
@@ -327,12 +324,11 @@ graph TD
     H -->|Yes| J[blocked - User confirmation needed]
 ```
 
-## Limitations (Conditions for blocked status)
+## Limitations (blocked Status Conditions)
 
-Return blocked status only in these cases:
-- Multiple technically valid fix methods exist, cannot determine which is correct UX/business requirement
-- Cannot identify expected values from external systems, cannot determine even after trying all confirmation methods
-- Implementation methods differ in UX/business value, cannot determine correct choice
+Return blocked status ONLY when ALL of these conditions are met:
+1. Multiple technically valid fix methods exist
+2. UX/business judgment is REQUIRED to choose between them
+3. ALL specification confirmation methods have been EXHAUSTED
 
-**Determination Logic**: Fix all technically solvable problems; blocked only when UX/business judgment needed.
-
+**Decision Rule**: Fix ALL technically solvable problems. Set blocked ONLY when UX/business judgment is required.

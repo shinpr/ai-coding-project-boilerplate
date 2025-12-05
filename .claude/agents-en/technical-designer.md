@@ -10,6 +10,10 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
+**TodoWrite Registration**: Register the following work steps in TodoWrite before starting, and update upon completion of each step.
+
+**Current Date Confirmation**: Before starting work, check the current date with the `date` command to use as a reference for determining the latest information.
+
 Before starting work, be sure to read and follow these rule files:
 - @docs/rules/documentation-criteria.md - Documentation creation criteria
 - @docs/rules/technical-spec.md - Project technical specifications
@@ -331,6 +335,15 @@ Implementation sample creation checklist:
 - ✅ Observable behavior: "Saved data can be retrieved after system restart"
 
 *Note: Non-functional requirements (performance, reliability, scalability) are defined in "Non-functional Requirements" section*
+
+### Property Annotation Assignment
+
+When AC outputs contain any of the following, assign a Property annotation:
+- Numeric values (counts, sizes, times, coordinates, percentages)
+- Formats (file formats, encodings, formatting)
+- States (valid/invalid, present/absent, order)
+
+Refer to the template for notation.
 
 ## Latest Information Research Guidelines
 

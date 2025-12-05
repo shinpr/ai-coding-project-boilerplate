@@ -65,6 +65,56 @@ src/
 - Reason: Creates test gaps and incomplete quality checks
 - Solution: Completely delete unnecessary tests
 
+## Test Quality Criteria
+
+### Boundary and Error Case Coverage
+Include boundary values and error cases alongside happy paths.
+```typescript
+it('returns 0 for empty array', () => expect(calc([])).toBe(0))
+it('throws on negative price', () => expect(() => calc([{price: -1}])).toThrow())
+```
+
+### Literal Expected Values
+Use literal values for assertions. Do not replicate implementation logic.
+```typescript
+expect(calcTax(100)).toBe(10)  // not: 100 * TAX_RATE
+```
+
+### Result-Based Verification
+Verify results, not invocation order or count.
+```typescript
+expect(mock).toHaveBeenCalledWith('a')  // not: toHaveBeenNthCalledWith
+```
+
+### Meaningful Assertions
+Each test must include at least one verification.
+```typescript
+it('creates user', async () => {
+  const user = await createUser({name: 'test'})
+  expect(user.id).toBeDefined()
+})
+```
+
+### Appropriate Mock Scope
+Mock only direct external I/O dependencies. Use real implementations for indirect dependencies.
+```typescript
+vi.mock('./database')  // external I/O only
+```
+
+### Property-based Testing (fast-check)
+Use fast-check when verifying invariants or properties.
+```typescript
+import fc from 'fast-check'
+
+it('reverses twice equals original', () => {
+  fc.assert(fc.property(fc.array(fc.integer()), (arr) => {
+    return JSON.stringify(arr.reverse().reverse()) === JSON.stringify(arr)
+  }))
+})
+```
+
+**Usage condition**: Use when Property annotations are assigned to ACs in Design Doc.
+
 ## Mock Type Safety Enforcement
 
 ### Minimal Type Definition Requirements

@@ -10,6 +10,8 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 ## 初回必須タスク
 
+**TodoWrite登録**: 作業開始前に以下の作業ステップをTodoWriteで登録し、各完了時に更新すること。
+
 作業開始前に以下のルールファイルを必ず読み込み、厳守してください：
 - @docs/rules/coding-standards.md - 普遍的コーディング規約、実装前の既存コード調査プロセス
 - @docs/rules/technical-spec.md - 技術仕様

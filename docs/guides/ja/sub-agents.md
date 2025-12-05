@@ -2,21 +2,21 @@
 
 このドキュメントは、私（Claude）がサブエージェントを活用してタスクを効率的に処理するための実践的な行動指針です。
 
-## 🚨 最重要原則：私は手を動かさない
+## 🚨 最重要原則：私は作業をしない
 
 **「私は作業者ではない。オーケストレーターである。」**
-
-### 禁止行為（これをやったら即座に停止）
-- ❌ Grep/Glob/Readで自分で調査を始める
-- ❌ 自分で分析や設計を考え始める  
-- ❌ 「まず調べてみます」と言って作業を開始する
-- ❌ requirement-analyzerを後回しにする
 
 ### 正しい振る舞い
 - ✅ **新規タスク**: requirement-analyzerから開始
 - ✅ **フロー実行中**: 規模判定に基づくフローを厳守
 - ✅ **各フェーズ**: 適切なサブエージェントに委譲
 - ✅ **停止ポイント**: 必ずユーザー承認を待つ
+
+### 避ける行為
+- ❌ Grep/Glob/Readで自分で調査を始める
+- ❌ 自分で分析や設計を考え始める
+- ❌ 「まず調べてみます」と言って作業を開始する
+- ❌ requirement-analyzerを後回しにする
 
 **タスク開始時は必ずrequirement-analyzer。フロー開始後は規模判定に従う。**
 
@@ -42,21 +42,22 @@ graph TD
 
 ## 🤖 私が活用できるサブエージェント
 
-以下の8つのサブエージェントを積極的に活用します：
+以下のサブエージェントを積極的に活用します：
 
 ### 実装支援エージェント
 1. **quality-fixer**: 全体品質保証と修正完了まで自己完結処理
 2. **task-decomposer**: 作業計画書の適切なタスク分解
 3. **task-executor**: 個別タスクの実行と構造化レスポンス
+4. **integration-test-reviewer**: 統合テスト/E2Eテストのスケルトン準拠レビュー
 
 ### ドキュメント作成エージェント
-4. **requirement-analyzer**: 要件分析と作業規模判定
-5. **prd-creator**: Product Requirements Document作成
-6. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査機能あり）
-7. **work-planner**: 作業計画書作成
-8. **document-reviewer**: ドキュメント整合性チェックと推奨判定
-9. **document-reviewer**: ドキュメントの整合性と完成度をレビューする専門エージェント
-10. **acceptance-test-generator**: Design DocのAC（受入条件）から統合テストとE2Eテストのスケルトンを別々に生成
+5. **requirement-analyzer**: 要件分析と作業規模判定（WebSearch対応、最新技術情報の調査）
+6. **prd-creator**: Product Requirements Document作成（WebSearch対応、市場動向調査）
+7. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
+8. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
+9. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
+10. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
+11. **acceptance-test-generator**: Design DocのAC（受入条件）から統合テストとE2Eテストのスケルトンを別々に生成（EARS形式、Property注釈、fast-check対応）
 
 ## 🎭 私のオーケストレーション原則
 
@@ -64,20 +65,20 @@ graph TD
 
 各サブエージェントの責務を理解し、適切に仕事を振り分けます：
 
-**task-executorに任せること**:
+**task-executorの責務**:
 - 実装作業とテスト追加
-- 追加したテストのパス確認まで（既存テストは対象外）
-- 品質保証は任せない
+- 追加したテストのパス確認（既存テストは対象外）
+- 品質保証はtask-executorの責務外
 
-**quality-fixerに任せること**:
+**quality-fixerの責務**:
 - 全体品質保証（型チェック、lint、全テスト実行等）
 - 品質エラーの完全修正実行
-- 修正完了まで自己完結で処理してもらう
+- 修正完了まで自己完結で処理
 - 最終的な approved 判定（修正完了後のみ）
 
 ### 私が管理する標準フロー
 
-**基本サイクル**: `task → quality-check(修正込み) → commit` のサイクルを管理します。
+**基本サイクル**: `task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit` の4ステップサイクルを管理します。
 各タスクごとにこのサイクルを繰り返し、品質を保証します。
 
 ## 🛡️ Sub-agent間の制約
@@ -87,7 +88,7 @@ graph TD
 ## 📏 規模判定とドキュメント要件
 | 規模 | ファイル数 | PRD | ADR | Design Doc | 作業計画書 |
 |------|-----------|-----|-----|------------|-----------|
-| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | 簡易版 |
+| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | 簡易版（インラインコメントのみ） |
 | 中規模 | 3-5 | 更新※1 | 条件付き※2 | **必須** | **必須** |
 | 大規模 | 6以上 | **必須**※3 | 条件付き※2 | **必須** | **必須** |
 
@@ -117,8 +118,10 @@ Taskツールを使用してサブエージェントを呼び出す：
 
 各サブエージェントはJSON形式で応答：
 - **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
+- **integration-test-reviewer**: status, verdict (approved/needs_revision), requiredFixes
 - **quality-fixer**: status, checksPerformed, fixesApplied, approved
 - **document-reviewer**: status, reviewsPerformed, issues, recommendations, approvalReady
+- **design-sync**: sync_status, total_conflicts, conflicts (severity, type, source_file, target_file)
 
 
 ## 🔄 要件変更への対応パターン
@@ -161,7 +164,7 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 1. requirement-analyzer → 要件分析＋既存PRD確認 **[停止: 要件確認・質問事項対応]**
 2. prd-creator → PRD作成（既存あれば更新、なければ徹底調査で新規作成） → document-reviewer実行 **[停止: 要件確認]**
 3. technical-designer → ADR作成（必要な場合） → document-reviewer実行 **[停止: 技術方針決定]**
-4. technical-designer → Design Doc作成 → document-reviewer実行 **[停止: 設計内容確認]**
+4. technical-designer → Design Doc作成 → document-reviewer実行 → design-sync実行 **[停止: 設計内容確認]**
 5. acceptance-test-generator → 統合テスト・E2Eテストスケルトン生成
    → メインAI: 生成確認後、work-plannerへ情報引き渡し（※1）
 6. work-planner → 作業計画書作成（統合テスト・E2Eテスト情報を含む） **[停止: 実装フェーズ全体の一括承認]**
@@ -169,7 +172,7 @@ requirement-analyzerは「完全自己完結」の原則に従い、要件変更
 
 ### 中規模（3-5ファイル）
 1. requirement-analyzer → 要件分析 **[停止: 要件確認・質問事項対応]**
-2. technical-designer → Design Doc作成 → document-reviewer実行 **[停止: 技術方針決定]**
+2. technical-designer → Design Doc作成 → document-reviewer実行 → design-sync実行 **[停止: 技術方針決定]**
 3. acceptance-test-generator → 統合テスト・E2Eテストスケルトン生成
    → メインAI: 生成確認後、work-plannerへ情報引き渡し（※1）
 4. work-planner → 作業計画書作成（統合テスト・E2Eテスト情報を含む） **[停止: 実装フェーズ全体の一括承認]**
@@ -195,24 +198,23 @@ work-plannerでの「実装フェーズ全体の一括承認」後、以下の�
 graph TD
     START[実装フェーズ全体の一括承認] --> AUTO[自律実行モード開始]
     AUTO --> TD[task-decomposer: タスク分解]
-    TD --> LOOP[タスク実行ループ]
-    LOOP --> TE[task-executor: 実装]
-    TE --> QF[quality-fixer: 品質チェック・修正]
-    QF --> COMMIT[私: git commit実行]
-    COMMIT --> CHECK{残りタスクあり?}
-    CHECK -->|Yes| LOOP
-    CHECK -->|No| REPORT[完了報告]
-    
-    LOOP --> INTERRUPT{ユーザー入力?}
-    INTERRUPT -->|なし| TE
-    INTERRUPT -->|あり| REQCHECK{要件変更チェック}
-    REQCHECK -->|変更なし| TE
-    REQCHECK -->|変更あり| STOP[自律実行停止]
-    STOP --> RA[requirement-analyzerで再分析]
-    
-    TE --> ERROR{重大エラー?}
-    ERROR -->|なし| QF
-    ERROR -->|あり| ESC[エスカレーション]
+    TD --> PHASE[フェーズ管理Todo登録]
+    PHASE --> PSTART[フェーズ開始: タスクTodo展開]
+    PSTART --> TE[task-executor: 実装]
+    TE --> ESC{エスカレーション判定}
+    ESC -->|問題なし| FOLLOW[フォローアップ処理]
+    ESC -->|問題あり| STOP[ユーザーにエスカレーション]
+    FOLLOW --> QF[quality-fixer: 品質チェック・修正]
+    QF --> COMMIT[git commit実行]
+    COMMIT --> TCHECK{タスク残り?}
+    TCHECK -->|Yes| TE
+    TCHECK -->|No| PCHECK{フェーズ残り?}
+    PCHECK -->|Yes| PSTART
+    PCHECK -->|No| REPORT[完了報告]
+
+    TE --> INTERRUPT{ユーザー入力?}
+    INTERRUPT -->|要件変更| STOP2[自律実行停止]
+    STOP2 --> RA[requirement-analyzerで再分析]
 ```
 
 ### 自律実行の停止条件
@@ -233,10 +235,44 @@ graph TD
 4. **ユーザー明示停止時**
    - 直接的な停止指示や割り込み
 
-### 自律実行中の品質保証
-- task-executor実行 → quality-fixer実行 → **私がコミット実行**（Bashツール使用）
-- quality-fixerの`approved: true`確認後、即座にgit commitを実行
-- changeSummaryをコミットメッセージに使用
+### 自律実行中のサブエージェント対応
+1. サブエージェントが承認を求めてきた場合 → ユーザー承認済みである旨を返して継続
+2. 自身で作業が必要になった場合 → 自律実行モードを停止しユーザーにエスカレーション
+
+### 自律実行中のタスク管理
+
+**2段階のTodoWrite管理**
+
+#### Step1: task-decomposer完了後
+フェーズ管理Todoを登録：
+```
+[in_progress] 実装フェーズ管理: Phase1開始
+[pending] 実装フェーズ管理: Phase2開始
+[pending] 実装フェーズ管理: Phase3開始
+```
+
+#### Step2: フェーズ開始時
+該当フェーズのタスクを4ステップで展開：
+```
+[completed] 実装フェーズ管理: Phase1開始
+[pending] 実装フェーズ管理: Phase2開始
+[in_progress] Phase1-Task01: task-executor実行
+[pending] Phase1-Task01: エスカレーション判定・フォローアップ
+[pending] Phase1-Task01: quality-fixer実行
+[pending] Phase1-Task01: git commit
+... （同パターンで繰り返し）
+[pending] Phase1: 完了チェック
+```
+
+**フェーズ完了時**: 完了チェックをcompletedにし、次フェーズのタスクを展開
+
+**各ステップの実行内容**:
+- task-executor実行: サブエージェント呼び出し
+- エスカレーション判定・フォローアップ:
+  - `status: escalation_needed/blocked` → ユーザーにエスカレーション
+  - `testsAdded`に`*.int.test.ts`/`*.e2e.test.ts` → integration-test-reviewer実行
+- quality-fixer実行: サブエージェント呼び出し
+- git commit: Bashツールでコミット実行
 
 ## 🎼 私のオーケストレーターとしての主な役割
 
@@ -250,18 +286,19 @@ graph TD
 
    #### ※1 acceptance-test-generator → work-planner
 
-   **目的**: work-plannerが作業計画書に組み込むための情報を準備
+   **目的**: work-plannerがテスト情報を作業計画に組み込む
 
    **メインAIの確認項目**:
    - 統合テストファイルのパス取得・存在確認
    - E2Eテストファイルのパス取得・存在確認
 
    **work-plannerへの伝達**:
-   - 統合テストファイル: [パス]（各Phase実装時に同時作成・実行）
-   - E2Eテストファイル: [パス]（最終Phaseでのみ実行）
+   - 統合テストファイルパス: [パス]（各Phase実装時に同時作成・実行）
+   - E2Eテストファイルパス: [パス]（最終Phaseでのみ実行）
 
    **異常時**: ファイル未生成の場合はユーザーにエスカレーション
-3. **品質保証とコミット実行**: approved=true確認後、即座にgit commit実行  
+
+3. **品質保証とコミット実行**: approved=true確認後、即座にgit commit実行
 4. **自律実行モード管理**: 承認後の自律実行開始・停止・エスカレーション判断
 5. **ADRステータス管理**: ユーザー判断後のADRステータス更新（Accepted/Rejected）
 

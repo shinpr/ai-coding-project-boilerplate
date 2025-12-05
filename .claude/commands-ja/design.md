@@ -17,11 +17,21 @@ description: 要件分析から設計書作成まで実行
 
 設計の代替案とトレードオフを明確に提示します。
 
-**スコープ**: 設計書（ADR/Design Doc）承認まで。作業計画以降は本コマンドの責務外。
+**スコープ**: 設計書（ADR/Design Doc）承認＋Design Doc間整合性確認まで。作業計画以降は本コマンドの責務外。
+
+## 実行フロー
+
+1. requirement-analyzer → 要件分析
+2. technical-designer → Design Doc作成
+3. document-reviewer → 単一ドキュメント品質チェック
+4. ユーザー承認
+5. design-sync → Design Doc間整合性検証
+   - 矛盾あり → ユーザーに報告 → 修正指示待ち → technical-designer(update)で修正
+   - 矛盾なし → 終了
 
 ## 出力例
 設計フェーズが完了しました。
-- 設計書: docs/design/[ドキュメント名].md または docs/adr/[ドキュメント名].md
-- 承認状態: ユーザー承認済み
+- 設計書: docs/design/[ドキュメント名].md
+- 整合性: 他Design Docと矛盾なし（または修正完了）
 
-**重要**: 本コマンドは設計承認で終了。次フェーズへの移行提案は行わない。
+**重要**: 本コマンドは設計承認＋整合性確認で終了。次フェーズへの移行提案は行わない。
