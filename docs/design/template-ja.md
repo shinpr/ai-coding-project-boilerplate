@@ -4,6 +4,22 @@
 
 [この機能の目的と概要を2-3文で説明]
 
+## Design Summary (Meta)
+
+```yaml
+design_type: "新機能|既存拡張|リファクタリング"
+risk_level: "low|medium|high"
+main_constraints:
+  - "例: 既存APIとの後方互換必須"
+  - "例: デプロイ停止時間は5分以内"
+biggest_risks:
+  - "例: キャッシュの不整合"
+  - "例: 外部API側のレート制限"
+unknowns:
+  - "例: 実際のトラフィックパターン"
+  - "例: 既存コードの実運用での使われ方"
+```
+
 ## 背景とコンテキスト
 
 ### 前提となるADR
