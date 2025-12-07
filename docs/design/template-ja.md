@@ -4,6 +4,22 @@
 
 [この機能の目的と概要を2-3文で説明]
 
+## Design Summary (Meta)
+
+```yaml
+design_type: "新機能|既存拡張|リファクタリング"
+risk_level: "low|medium|high"
+main_constraints:
+  - "[制約1]"
+  - "[制約2]"
+biggest_risks:
+  - "[リスク1]"
+  - "[リスク2]"
+unknowns:
+  - "[不確実な点1]"
+  - "[不確実な点2]"
+```
+
 ## 背景とコンテキスト
 
 ### 前提となるADR
