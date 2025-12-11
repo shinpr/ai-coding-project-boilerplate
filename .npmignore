@@ -1,0 +1,21 @@
+# Build output
+dist/
+
+# Test and coverage
+coverage/
+.vitest-cache/
+
+# Temporary files
+tmp/
+
+# GitHub specific (workflows, etc.)
+.github/
+
+# Language config (generated)
+.claudelang
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
