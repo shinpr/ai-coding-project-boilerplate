@@ -34,7 +34,7 @@
 
 ```bash
 # 1. プロジェクト作成（30秒）
-npx github:shinpr/ai-coding-project-boilerplate my-project --lang=ja
+npx create-ai-project my-project --lang=ja
 
 # 2. 依存関係インストール（自動）
 cd my-project && npm install

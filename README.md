@@ -34,7 +34,7 @@
 
 ```bash
 # 1. Create your project (30 seconds)
-npx github:shinpr/ai-coding-project-boilerplate my-project
+npx create-ai-project my-project
 
 # 2. Install dependencies (automatic)
 cd my-project && npm install

@@ -1,6 +1,6 @@
 {
-  "name": "ai-coding-project-boilerplate",
-  "version": "1.11.1",
+  "name": "create-ai-project",
+  "version": "1.11.2",
   "packageManager": "npm@10.8.2",
   "description": "TypeScript project boilerplate optimized for Claude Code development with comprehensive development rules, architecture patterns, and quality assurance tools",
   "main": "dist/index.js",
@@ -21,7 +21,7 @@
     "url": "https://github.com/shinpr/ai-coding-project-boilerplate.git"
   },
   "bin": {
-    "ai-coding-project-boilerplate": "./bin/create-project.js"
+    "create-ai-project": "./bin/create-project.js"
   },
   "scripts": {
     "build": "tsc && tsc-alias",

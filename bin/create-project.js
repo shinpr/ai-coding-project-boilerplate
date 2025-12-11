@@ -12,15 +12,17 @@ if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
 🚀 AI Coding Project Boilerplate
 
 Usage:
-  npx ai-coding-project-boilerplate <project-name> [options]
+  npx create-ai-project <project-name> [options]
+  npm init ai-project <project-name> [options]
 
 Options:
   --lang=<language>  Set the project language (ja or en, default: en)
   --help, -h         Show this help message
 
 Examples:
-  npx ai-coding-project-boilerplate my-project
-  npx ai-coding-project-boilerplate my-project --lang=ja
+  npx create-ai-project my-project
+  npx create-ai-project my-project --lang=ja
+  npm init ai-project my-project --lang=ja
   `);
   process.exit(0);
 }
