@@ -76,6 +76,7 @@ it('throws on negative price', () => expect(() => calc([{price: -1}])).toThrow()
 
 ### Literal Expected Values
 Use literal values for assertions. Do not replicate implementation logic.
+**Valid test**: Expected value ≠ Mock return value (implementation transforms/processes data)
 ```typescript
 expect(calcTax(100)).toBe(10)  // not: 100 * TAX_RATE
 ```

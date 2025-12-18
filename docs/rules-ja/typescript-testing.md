@@ -76,6 +76,7 @@ it('throws on negative price', () => expect(() => calc([{price: -1}])).toThrow()
 
 ### 期待値の直接記述
 期待値はリテラルで記述。実装ロジックを再現しない。
+**有効なテスト**: 期待値 ≠ モック戻り値（実装による変換・処理がある）
 ```typescript
 expect(calcTax(100)).toBe(10)  // not: 100 * TAX_RATE
 ```
