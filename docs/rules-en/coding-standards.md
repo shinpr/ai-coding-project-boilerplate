@@ -324,8 +324,9 @@ Use test helpers to reduce duplication and improve maintainability.
 // ✅ Test observable behavior
 expect(calculateTotal(100, 0.1)).toBe(110)
 
-// ❌ Test implementation details
+// ❌ Test implementation details (as any access)
 expect((calculator as any).internalState).toBe(someValue)
+expect((service as any).validate(input)).toBe(true)
 ```
 
 ## Continuity Test Scope

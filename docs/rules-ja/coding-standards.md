@@ -324,8 +324,9 @@ Grep -n "targetData\|SetData\|UpdateData" -o content
 // ✅ 振る舞いをテスト
 expect(calculatePrice(100, 0.1)).toBe(110)
 
-// ❌ 実装詳細をテスト
+// ❌ 実装詳細をテスト（as anyでのアクセス）
 expect((calculator as any).taxRate).toBe(0.1)
+expect((service as any).validate(input)).toBe(true)
 ```
 
 ## 継続性テストの範囲
