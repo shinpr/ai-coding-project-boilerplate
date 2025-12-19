@@ -56,9 +56,9 @@ description: メタ認知的タスク分析とスキル選択。タスクの本�
 タスク説明から関連タグを抽出し、skills-index.yamlとマッチング：
 
 ```yaml
-タスク: "テスト付きでユーザー認証を実装"
-抽出されたタグ: [implementation, testing, security]
-マッチしたスキル:
+Task: "Implement user authentication with tests"
+Extracted tags: [implementation, testing, security]
+Matched skills:
   - coding-standards (implementation, security)
   - typescript-testing (testing)
   - typescript-rules (implementation)
