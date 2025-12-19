@@ -19,3 +19,9 @@ tmp/
 
 # OS files
 .DS_Store
+
+# Claude Code generated/local files
+.claude/settings.local.json
+.claude/agents/
+.claude/commands/
+.claude/skills/
