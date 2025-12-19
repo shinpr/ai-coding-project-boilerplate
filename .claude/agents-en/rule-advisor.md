@@ -62,7 +62,7 @@ Return structured JSON:
     "scale": "small|medium|large",
     "extractedTags": ["implementation", "testing", "security"]
   },
-  "selectedRules": [
+  "selectedSkills": [
     {
       "skill": "coding-standards",
       "sections": [

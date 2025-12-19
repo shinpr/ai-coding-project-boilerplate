@@ -62,7 +62,7 @@ task-analyzerスキル（frontmatterで自動読み込み）が提供するも�
     "scale": "small|medium|large",
     "extractedTags": ["implementation", "testing", "security"]
   },
-  "selectedRules": [
+  "selectedSkills": [
     {
       "skill": "coding-standards",
       "sections": [
