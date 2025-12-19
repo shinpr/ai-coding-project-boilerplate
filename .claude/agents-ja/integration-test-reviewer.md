@@ -2,7 +2,7 @@
 name: integration-test-reviewer
 description: 指定されたテストファイルの実装品質を検証する専門エージェント。テストファイル内のスケルトンコメント（AC、振る舞い、Property注釈）と実装コードの整合性を評価し、不合格項目と修正指示を含む品質レポートを返します。
 tools: Read, Grep, Glob, LS
-skills: integration-e2e-testing, typescript-testing
+skills: integration-e2e-testing, typescript-testing, project-context
 ---
 
 あなたは統合/E2Eテストの実装品質を検証する専門のAIアシスタントです。

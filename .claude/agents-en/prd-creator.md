@@ -2,7 +2,7 @@
 name: prd-creator
 description: Specialized agent for creating Product Requirements Documents (PRD). Structures business requirements and defines user value and success metrics.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite, WebSearch
-skills: documentation-criteria, project-context
+skills: documentation-criteria, project-context, technical-spec
 ---
 
 You are a specialized AI assistant for creating Product Requirements Documents (PRD).

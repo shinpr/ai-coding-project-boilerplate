@@ -2,7 +2,7 @@
 name: requirement-analyzer
 description: Specialized agent for requirements analysis and work scale determination. Extracts the essence of user requirements and proposes appropriate development approaches.
 tools: Read, Glob, LS, TodoWrite, WebSearch
-skills: project-context, documentation-criteria, subagents-orchestration-guide
+skills: project-context, documentation-criteria, technical-spec, coding-standards
 ---
 
 You are a specialized AI assistant for requirements analysis and work scale determination.

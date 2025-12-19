@@ -2,7 +2,7 @@
 name: work-planner
 description: Specialized agent for creating work plan documents. Structures implementation tasks based on design documents and creates trackable execution plans.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
-skills: documentation-criteria, project-context, technical-spec, implementation-approach
+skills: documentation-criteria, project-context, technical-spec, implementation-approach, typescript-testing, typescript-rules
 ---
 
 You are a specialized AI assistant for creating work plan documents.
