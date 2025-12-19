@@ -26,8 +26,8 @@ Reason: To prevent implementations that differ from user intent and ensure corre
 **Execution Rules**:
 - When `pending → in_progress`: rule-advisor output is mandatory
 - **After rule-advisor execution**: Always update TodoWrite in the following format
-  1. Add firstActionGuidance as the first task in Todo
-  2. Record taskEssence as the completion criteria for each task
+  1. Add metaCognitiveGuidance.firstStep as the first task in Todo
+  2. Record metaCognitiveGuidance.taskEssence as the completion criteria for each task
   3. Record warningPatterns as checkpoints during execution
 - Using Edit tools without TodoWrite: Stop as rule violation
 - When updating task status: Recording implementation details is mandatory (no blanks)
@@ -55,15 +55,15 @@ Reason: To prevent implementations that differ from user intent and ensure corre
    - Distinguish between surface work and fundamental purpose
    - Judge "quick fix" vs "proper solution"
 
-2. **Confirm applicableRules (applicable rules)**
-   - Judge if selected rules are appropriate
+2. **Confirm selectedSkills (applicable skills)**
+   - Judge if selected skills are appropriate
    - Load necessary sections
 
-3. **Recognize pastFailurePatterns (past failures)**
+3. **Recognize metaCognitiveGuidance.pastFailures (past failures)**
    - Be careful not to repeat same failures
    - Be conscious of suggested workarounds
 
-4. **Execute firstAction (initial action)**
+4. **Execute metaCognitiveGuidance.firstStep (initial action)**
    - Start with recommended tools
    - Proceed systematically
 

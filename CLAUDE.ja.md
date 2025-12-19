@@ -26,8 +26,8 @@ AI実行精度最大化のための中核ルール。全ての指示はこのフ
 **実行ルール**：
 - `pending → in_progress`時: rule-advisorの出力が必須
 - **rule-advisor実行後**: 必ずTodoWriteを以下の形式で更新
-  1. firstActionGuidanceをTodoの先頭タスクとして追加
-  2. taskEssenceを各タスクの完了判断基準として記録
+  1. metaCognitiveGuidance.firstStepをTodoの先頭タスクとして追加
+  2. metaCognitiveGuidance.taskEssenceを各タスクの完了判断基準として記録
   3. warningPatternsを実行中の確認項目として記録
 - TodoWriteなしでEditツール使用: ルール違反として停止
 - 各タスクのステータス更新時: 実施内容の記録を必須化（空白不可）
@@ -55,15 +55,15 @@ AI実行精度最大化のための中核ルール。全ての指示はこのフ
    - 表面的な作業内容と根本目的の区別
    - 「quick fix」vs「proper solution」の判定
 
-2. **applicableRules（適用ルール）を確認**
-   - 選択されたルールが適切か判断
+2. **selectedSkills（適用スキル）を確認**
+   - 選択されたスキルが適切か判断
    - 必要なセクションを読み込む
 
-3. **pastFailurePatterns（過去の失敗）を認識**
+3. **metaCognitiveGuidance.pastFailures（過去の失敗）を認識**
    - 同じ失敗を繰り返さないよう注意
    - 提示された回避策を意識
 
-4. **firstAction（初動アクション）を実行**
+4. **metaCognitiveGuidance.firstStep（初動アクション）を実行**
    - 推奨されたツールから開始
    - 計画的に進める
 
