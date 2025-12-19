@@ -7,7 +7,7 @@ description: プロジェクト固有のコンテキストをproject-context.md�
 ## 実行プロセス
 
 ### 1. 現状確認
-! ls -la docs/rules/project-context.md
+! ls -la .claude/skills/project-context/SKILL.md
 ! cat package.json | grep -E '"name":|"description":'
 
 ### 2. プロジェクトコンテキストの収集
@@ -50,7 +50,7 @@ description: プロジェクト固有のコンテキストをproject-context.md�
 ### 責務の境界
 project-context.mdの単一責務は「プロジェクト固有の文脈情報」のみ：
 - ✅ 含める: プロジェクトの目的、ターゲット、ビジネス制約
-- ❌ 含めない: 技術スタック（→technical-spec.md）、実装原則（→typescript.md）、アーキテクチャ（→technical-spec.md）
+- ❌ 含めない: 技術スタック（→technical-specスキル）、実装原則（→typescript-rulesスキル）、アーキテクチャ（→technical-specスキル）
 
 ### 構造化
 ```markdown
@@ -70,7 +70,7 @@ project-context.mdの単一責務は「プロジェクト固有の文脈情報�
 2. [検証可能な要件]
 ```
 
-### 4. rules-index.yaml更新
+### 4. skills-index.yaml更新
 project-contextセクションのtypical-useをプロジェクトに合わせて更新。
 
-**スコープ**: project-context.mdの更新のみ。技術選択は他のルールファイルの責務。
+**スコープ**: project-contextスキルの更新のみ。技術選択は他のスキルの責務。

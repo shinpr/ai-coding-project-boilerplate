@@ -2,7 +2,7 @@
 description: Execute decomposed tasks in autonomous execution mode
 ---
 
-Follow @docs/guides/sub-agents.md strictly and act as the **orchestrator**.
+Follow subagents-orchestration-guide skill strictly and act as the **orchestrator**.
 
 Work plan: $ARGUMENTS
 
@@ -57,7 +57,7 @@ Generate tasks from the work plan? (y/n):
 ❌ **Avoid**: Starting implementation without task generation
 
 ## 🧠 Task Execution Flow
-Following "Autonomous Execution Task Management" in sub-agents.md, manage 4 steps with TodoWrite:
+Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage 4 steps with TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity":
 1. task-executor execution
 2. Escalation judgment and follow-up
 3. quality-fixer execution

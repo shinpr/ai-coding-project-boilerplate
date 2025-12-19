@@ -4,7 +4,7 @@ description: 設計書から作業計画書を作成し計画承認を取得
 
 **コマンドコンテキスト**: このコマンドは計画フェーズ専用です。
 
-@docs/guides/sub-agents.md を厳守し、以下のプロセスで作業計画書を作成します：
+subagents-orchestration-guideスキルの指針に従い、以下のプロセスで作業計画書を作成します：
 
 ## 実行プロセス
 
@@ -16,11 +16,11 @@ description: 設計書から作業計画書を作成し計画承認を取得
 2. **E2Eテストスケルトンの生成確認**
    - E2Eテストスケルトンを先に生成するかユーザーに確認
    - 生成を希望する場合: acceptance-test-generator でテストスケルトンを生成
-   - 生成結果を sub-agents.md の連携仕様に従って次工程に引き継ぐ
+   - 生成結果を subagents-orchestration-guideスキル の連携仕様に従って次工程に引き継ぐ
 
 3. **作業計画書の作成**
    - work-planner で作業計画書を作成
-   - 前工程の成果物を sub-agents.md の連携仕様に従って活用
+   - 前工程の成果物を subagents-orchestration-guideスキル の連携仕様に従って活用
    - ユーザーと対話して計画を完成させ、計画内容の承認を得る
 
 **Think deeply** 選択された設計書から作業計画書を作成し、実装の具体的なステップとリスクを明確にします。

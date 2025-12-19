@@ -4,7 +4,7 @@ description: Execute from requirement analysis to design document creation
 
 **Command Context**: This command is dedicated to the design phase.
 
-Following the design flow described in @docs/guides/sub-agents.md, execute **from requirement-analyzer to design document creation and approval**.
+Following the design flow described in subagents-orchestration-guide skill, execute **from requirement-analyzer to design document creation and approval**.
 
 Requirements: $ARGUMENTS
 

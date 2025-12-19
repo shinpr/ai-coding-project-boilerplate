@@ -2,7 +2,7 @@
 description: 分解済みタスクを自律実行モードで実装
 ---
 
-@docs/guides/sub-agents.md を厳守し、**オーケストレーター**として振る舞います。
+subagents-orchestration-guideスキルの指針に従い、**オーケストレーター**として振る舞います。
 
 作業計画書: $ARGUMENTS
 
@@ -57,7 +57,7 @@ description: 分解済みタスクを自律実行モードで実装
 ❌ **避ける**: タスク未生成のまま実装を開始
 
 ## 🧠 タスク実行フロー
-sub-agents.mdの「自律実行中のタスク管理」に従い、TodoWriteで4ステップを管理：
+subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TodoWriteで4ステップを管理。最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を必ず含める：
 1. task-executor実行
 2. エスカレーション判定・フォローアップ
 3. quality-fixer実行

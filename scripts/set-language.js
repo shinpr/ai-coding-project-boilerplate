@@ -12,15 +12,6 @@ const LANGUAGE_PATHS = {
     source: (lang) => `CLAUDE.${lang}.md`,
     target: 'CLAUDE.md'
   },
-  rules: {
-    source: (lang) => `docs/rules-${lang}`,
-    target: 'docs/rules'
-  },
-  guides: {
-    source: (lang) => `docs/guides/${lang}`,
-    target: 'docs/guides/sub-agents.md',
-    sourceFile: (lang) => `docs/guides/${lang}/sub-agents.md`
-  },
   commands: {
     source: (lang) => `.claude/commands-${lang}`,
     target: '.claude/commands'
@@ -28,6 +19,10 @@ const LANGUAGE_PATHS = {
   agents: {
     source: (lang) => `.claude/agents-${lang}`,
     target: '.claude/agents'
+  },
+  skills: {
+    source: (lang) => `.claude/skills-${lang}`,
+    target: '.claude/skills'
   }
 };
 
@@ -148,35 +143,7 @@ function switchLanguage(targetLang) {
     hasErrors = true;
   }
 
-  // 2. Switch docs/rules
-  const rulesSource = LANGUAGE_PATHS.rules.source(targetLang);
-  const rulesTarget = LANGUAGE_PATHS.rules.target;
-  
-  if (fs.existsSync(rulesSource)) {
-    removeDirectory(rulesTarget);
-    copyDirectory(rulesSource, rulesTarget);
-    console.log(`✅ Updated ${rulesTarget}`);
-  } else {
-    console.warn(`⚠️  ${rulesSource} does not exist`);
-    hasErrors = true;
-  }
-
-
-  // 3. Switch docs/guides/sub-agents.md
-  const guideSource = LANGUAGE_PATHS.guides.sourceFile(targetLang);
-  const guideTarget = LANGUAGE_PATHS.guides.target;
-  
-  if (fs.existsSync(guideSource)) {
-    if (fs.existsSync(guideTarget)) {
-      fs.unlinkSync(guideTarget);
-    }
-    copyFile(guideSource, guideTarget);
-    console.log(`✅ Updated ${guideTarget}`);
-  } else {
-    console.warn(`⚠️  ${guideSource} does not exist`);
-  }
-
-  // 4. Switch .claude/commands (only if exists)
+  // 2. Switch .claude/commands (only if exists)
   const commandsSource = LANGUAGE_PATHS.commands.source(targetLang);
   const commandsTarget = LANGUAGE_PATHS.commands.target;
   
@@ -186,14 +153,24 @@ function switchLanguage(targetLang) {
     console.log(`✅ Updated ${commandsTarget}`);
   }
 
-  // 5. Switch .claude/agents (only if exists)
+  // 3. Switch .claude/agents (only if exists)
   const agentsSource = LANGUAGE_PATHS.agents.source(targetLang);
   const agentsTarget = LANGUAGE_PATHS.agents.target;
-  
+
   if (fs.existsSync(agentsSource)) {
     removeDirectory(agentsTarget);
     copyDirectory(agentsSource, agentsTarget);
     console.log(`✅ Updated ${agentsTarget}`);
+  }
+
+  // 4. Switch .claude/skills (only if exists)
+  const skillsSource = LANGUAGE_PATHS.skills.source(targetLang);
+  const skillsTarget = LANGUAGE_PATHS.skills.target;
+
+  if (fs.existsSync(skillsSource)) {
+    removeDirectory(skillsTarget);
+    copyDirectory(skillsSource, skillsTarget);
+    console.log(`✅ Updated ${skillsTarget}`);
   }
 
   // Save configuration
@@ -226,25 +203,30 @@ function showStatus() {
   console.log('📁 File existence check:');
   for (const lang of SUPPORTED_LANGUAGES) {
     console.log(`\n  ${lang.toUpperCase()} language files:`);
-    
+
     // CLAUDE.md
     const claudeFile = LANGUAGE_PATHS.claude.source(lang);
     console.log(`    ${claudeFile}: ${fs.existsSync(claudeFile) ? '✅' : '❌'}`);
-    
-    // docs/rules
-    const rulesDir = LANGUAGE_PATHS.rules.source(lang);
-    console.log(`    ${rulesDir}: ${fs.existsSync(rulesDir) ? '✅' : '❌'}`);
-    
-    // docs/guides
-    const guideFile = LANGUAGE_PATHS.guides.sourceFile(lang);
-    console.log(`    ${guideFile}: ${fs.existsSync(guideFile) ? '✅' : '❌'}`);
-    
+
+    // .claude/commands
+    const commandsDir = LANGUAGE_PATHS.commands.source(lang);
+    console.log(`    ${commandsDir}: ${fs.existsSync(commandsDir) ? '✅' : '❌'}`);
+
+    // .claude/agents
+    const agentsDir = LANGUAGE_PATHS.agents.source(lang);
+    console.log(`    ${agentsDir}: ${fs.existsSync(agentsDir) ? '✅' : '❌'}`);
+
+    // .claude/skills
+    const skillsDir = LANGUAGE_PATHS.skills.source(lang);
+    console.log(`    ${skillsDir}: ${fs.existsSync(skillsDir) ? '✅' : '❌'}`);
+
   }
-  
+
   console.log('\n📝 Currently active files:');
   console.log(`   CLAUDE.md: ${fs.existsSync('CLAUDE.md') ? '✅' : '❌'}`);
-  console.log(`   docs/rules: ${fs.existsSync('docs/rules') ? '✅' : '❌'}`);
-  console.log(`   docs/guides/sub-agents.md: ${fs.existsSync('docs/guides/sub-agents.md') ? '✅' : '❌'}`);
+  console.log(`   .claude/commands: ${fs.existsSync('.claude/commands') ? '✅' : '❌'}`);
+  console.log(`   .claude/agents: ${fs.existsSync('.claude/agents') ? '✅' : '❌'}`);
+  console.log(`   .claude/skills: ${fs.existsSync('.claude/skills') ? '✅' : '❌'}`);
 }
 
 /**

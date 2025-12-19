@@ -7,7 +7,7 @@ description: Inject project-specific context into project-context.md
 ## Execution Process
 
 ### 1. Current State Verification
-! ls -la docs/rules/project-context.md
+! ls -la .claude/skills/project-context/SKILL.md
 ! cat package.json | grep -E '"name":|"description":'
 
 ### 2. Project Context Collection
@@ -50,7 +50,7 @@ Generated project-context.md must follow these criteria:
 ### Responsibility Boundaries
 project-context.md's single responsibility is "project-specific contextual information" only:
 - ✅ Include: Project objectives, target users, business constraints
-- ❌ Exclude: Tech stack (→technical-spec.md), implementation principles (→typescript.md), architecture (→technical-spec.md)
+- ❌ Exclude: Tech stack (→technical-spec skill), implementation principles (→typescript-rules skill), architecture (→technical-spec skill)
 
 ### Structure
 ```markdown
@@ -70,7 +70,7 @@ project-context.md's single responsibility is "project-specific contextual infor
 2. [Verifiable requirement]
 ```
 
-### 4. Update rules-index.yaml
+### 4. Update skills-index.yaml
 Update the typical-use in the project-context section to match the project.
 
-**Scope**: Update project-context.md only. Technology choices are the responsibility of other rule files.
+**Scope**: Update project-context skill only. Technology choices are the responsibility of other skills.
