@@ -4,7 +4,7 @@ description: Create work plan from design document and obtain plan approval
 
 **Command Context**: This command is dedicated to the planning phase.
 
-Follow @docs/guides/sub-agents.md strictly and create work plan with the following process:
+Follow subagents-orchestration-guide skill strictly and create work plan with the following process:
 
 ## Execution Process
 
@@ -16,11 +16,11 @@ Follow @docs/guides/sub-agents.md strictly and create work plan with the followi
 2. **E2E Test Skeleton Generation Confirmation**
    - Confirm with user whether to generate E2E test skeleton first
    - If user wants generation: Generate test skeleton with acceptance-test-generator
-   - Pass generation results to next process according to sub-agents.md coordination specification
+   - Pass generation results to next process according to subagents-orchestration-guide skill coordination specification
 
 3. **Work Plan Creation**
    - Create work plan with work-planner
-   - Utilize deliverables from previous process according to sub-agents.md coordination specification
+   - Utilize deliverables from previous process according to subagents-orchestration-guide skill coordination specification
    - Interact with user to complete plan and obtain approval for plan content
 
 **Think deeply** Create a work plan from the selected design document, clarifying specific implementation steps and risks.

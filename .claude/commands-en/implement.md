@@ -4,7 +4,7 @@ description: Orchestrate the complete implementation lifecycle from requirements
 
 **Command Context**: Full-cycle implementation management (Requirements Analysis → Design → Planning → Implementation → Quality Assurance)
 
-Strictly adhere to @docs/guides/sub-agents.md and operate as an orchestrator.
+Strictly adhere to subagents-orchestration-guide skill and operate as an orchestrator.
 
 ## Execution Decision Flow
 
@@ -16,7 +16,7 @@ Instruction Content: $ARGUMENTS
 | Situation Pattern | Decision Criteria | Next Action |
 |------------------|------------------|-------------|
 | New Requirements | No existing work, new feature/fix request | Start with requirement-analyzer |
-| Flow Continuation | Existing docs/tasks present, continuation directive | Identify next step in sub-agents.md flow |
+| Flow Continuation | Existing docs/tasks present, continuation directive | Identify next step in subagents-orchestration-guide skill flow |
 | Quality Errors | Error detection, test failures, build errors | Execute quality-fixer |
 | Ambiguous | Intent unclear, multiple interpretations possible | Confirm with user |
 
@@ -24,26 +24,26 @@ Instruction Content: $ARGUMENTS
 When continuing existing flow, verify:
 - Latest artifacts (PRD/ADR/Design Doc/Work Plan/Tasks)
 - Current phase position (Requirements/Design/Planning/Implementation/QA)
-- Identify next step in sub-agents.md corresponding flow
+- Identify next step in subagents-orchestration-guide skill corresponding flow
 
 ### 3. After Scale Determination: Register All Flow Steps to TodoWrite (Required)
 
-After scale determination, **register all steps of the applicable sub-agents.md flow to TodoWrite**. After registration, proceed through the flow referencing TodoWrite.
+After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow to TodoWrite**. Always include: first "Confirm skill constraints", final "Verify skill fidelity". After registration, proceed through the flow referencing TodoWrite.
 
 ### 4. Execute Next Action
 
 **Execute the next pending task in TodoWrite**.
 
-## 📋 sub-agents.md Compliance Execution
+## 📋 subagents-orchestration-guide skill Compliance Execution
 
 **Pre-execution Checklist (Required)**:
-- [ ] Confirmed relevant sub-agents.md flow
+- [ ] Confirmed relevant subagents-orchestration-guide skill flow
 - [ ] Identified current progress position
 - [ ] Clarified next step
 - [ ] Recognized stopping points
 - [ ] Understood the 4-step cycle after task execution (task-executor → escalation judgment/follow-up → quality-fixer → commit)
 
-**Flow Adherence**: Follow "Autonomous Execution Task Management" in sub-agents.md, managing 4 steps with TodoWrite
+**Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TodoWrite
 
 ## 🚨 Sub-agent Invocation Constraints
 
@@ -55,7 +55,7 @@ Include the following at the end of prompts when invoking sub-agents, as rule-ad
 ## 🎯 Mandatory Orchestrator Responsibilities
 
 ### Task Execution Flow
-Following "Autonomous Execution Task Management" in sub-agents.md, manage these 4 steps with TodoWrite:
+Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these 4 steps with TodoWrite:
 1. task-executor execution
 2. Escalation judgment and follow-up
 3. quality-fixer execution

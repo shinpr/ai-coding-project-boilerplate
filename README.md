@@ -16,14 +16,15 @@
 ## 📖 Table of Contents
 1. [Quick Start (3 Steps)](#-quick-start-3-steps)
 2. [Why Sub Agents?](#-why-sub-agents)
-3. [Real Projects & Results](#-real-world-results)
-4. [Documentation & Guides](#-documentation--guides)
-5. [Slash Commands](#-slash-commands)
-6. [Development Workflow](#-claude-code-workflow)
-7. [Project Structure](#-project-structure)
-8. [Package Manager Configuration](#-package-manager-configuration)
-9. [Multilingual Support](#-multilingual-support)
-10. [FAQ](#-faq)
+3. [Skills System](#-skills-system)
+4. [Real Projects & Results](#-real-world-results)
+5. [Documentation & Guides](#-documentation--guides)
+6. [Slash Commands](#-slash-commands)
+7. [Development Workflow](#-claude-code-workflow)
+8. [Project Structure](#-project-structure)
+9. [Package Manager Configuration](#-package-manager-configuration)
+10. [Multilingual Support](#-multilingual-support)
+11. [FAQ](#-faq)
 
 > **Which one should you use?**
 > - **Use this Boilerplate** if you want to **maximize precision** with **TypeScript × Sub-agent** setup optimized for **Claude Code**.
@@ -68,6 +69,27 @@ Each agent focuses on one thing and does it well. No context exhaustion, no qual
 ![Demo](./.github/assets/demo.gif)
 
 *Sub agents working together to build a production-ready TypeScript project*
+
+## 🎨 Skills System
+
+This boilerplate provides the principles used in agentic implementation workflows as skills, making them available for reference in everyday tasks as needed.
+
+### Applied Skills
+
+| Skill | Purpose |
+|-------|---------|
+| `coding-standards` | Universal coding principles, anti-patterns, debugging |
+| `typescript-rules` | TypeScript type safety, async patterns, refactoring |
+| `typescript-testing` | Vitest, TDD, coverage requirements |
+| `documentation-criteria` | PRD, ADR, Design Doc standards |
+| `technical-spec` | Architecture, environment, build commands |
+| `implementation-approach` | Strategy patterns, task decomposition |
+| `integration-e2e-testing` | Integration/E2E test design, ROI-based selection |
+| `project-context` | Project-specific configuration (customizable) |
+
+**Frontend-specific skills** are also available under `frontend/` (e.g., `frontend/typescript-rules`).
+
+👉 [Learn how Skills work (Claude Code docs)](https://code.claude.com/docs/en/skills)
 
 ## 🎯 Real-World Results
 
@@ -142,9 +164,16 @@ graph LR
 ai-coding-project-boilerplate/
 ├── .claude/               # AI agent configurations
 │   ├── agents/           # Specialized sub-agent definitions
-│   └── commands/         # Slash command definitions
+│   ├── commands/         # Slash command definitions
+│   └── skills/           # Skills for automatic context loading
+│       ├── coding-standards/
+│       ├── typescript-rules/
+│       ├── typescript-testing/
+│       ├── documentation-criteria/
+│       ├── technical-spec/
+│       ├── project-context/
+│       └── frontend/     # Frontend-specific skills
 ├── docs/
-│   ├── rules/            # Development rules & patterns
 │   ├── guides/           # User documentation
 │   ├── adr/              # Architecture decisions
 │   ├── design/           # Design documents

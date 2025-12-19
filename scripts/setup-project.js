@@ -30,6 +30,7 @@ const excludeList = [
   'docs/guides/sub-agents.md',
   '.claude/commands',
   '.claude/agents',
+  '.claude/skills',
   'bin', // Exclude bin directory for production use
   'templates' // Exclude templates directory for production use
 ];
@@ -137,6 +138,7 @@ docs/guides/ja/
 docs/guides/en/
 .claude/commands-*/
 .claude/agents-*/
+.claude/skills-*/
 `;
 
   // Remove current language-related exclusions and add new ones
@@ -147,7 +149,8 @@ docs/guides/en/
            !trimmed.startsWith('docs/rules/') &&
            !trimmed.startsWith('docs/guides/sub-agents.md') &&
            !trimmed.startsWith('.claude/commands/') &&
-           !trimmed.startsWith('.claude/agents/');
+           !trimmed.startsWith('.claude/agents/') &&
+           !trimmed.startsWith('.claude/skills/');
   });
 
   content = filteredLines.join('\n') + languageExclusions;

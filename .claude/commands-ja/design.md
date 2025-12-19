@@ -4,7 +4,7 @@ description: 要件分析から設計書作成まで実行
 
 **コマンドコンテキスト**: このコマンドは設計フェーズ専用です。
 
-@docs/guides/sub-agents.md の設計フローに従い、**requirement-analyzer から設計書作成・承認まで**を実行します。
+subagents-orchestration-guideスキルの設計フローに従い、**requirement-analyzer から設計書作成・承認まで**を実行します。
 
 要件: $ARGUMENTS
 
