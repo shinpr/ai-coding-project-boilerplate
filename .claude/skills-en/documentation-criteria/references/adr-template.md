@@ -57,7 +57,7 @@
 ## Implementation Guidance
 
 [Principled direction only. Implementation procedures go to Design Doc]
-Example: "Use dependency injection" O, "Implement in Phase 1" X
+Example: "Use dependency injection" ✓, "Implement in Phase 1" ✗
 
 ## Related Information
 

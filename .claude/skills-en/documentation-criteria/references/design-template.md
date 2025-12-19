@@ -132,6 +132,12 @@ No Ripple Effect:
 - **Interface**: [APIs and type definitions provided]
 - **Dependencies**: [Relationships with other components]
 
+#### Component 2
+
+- **Responsibility**: [Scope of responsibility for this component]
+- **Interface**: [APIs and type definitions provided]
+- **Dependencies**: [Relationships with other components]
+
 ### Type Definitions
 
 ```typescript
@@ -156,6 +162,19 @@ Output:
 Invariants:
   - [Conditions that remain unchanged before and after processing]
 ```
+
+### State Transitions and Invariants
+
+[If the feature involves state management, describe state transitions and invariants here]
+
+```
+[State A] ---(event 1)---> [State B]
+[State B] ---(event 2)---> [State C]
+```
+
+**Invariants**:
+- [Condition that must always hold true]
+- [Constraints on valid state transitions]
 
 ### Error Handling
 
