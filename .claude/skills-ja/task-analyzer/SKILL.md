@@ -1,142 +1,131 @@
 ---
 name: task-analyzer
-description: メタ認知的タスク分析とスキル選択。タスクの本質を分析し、規模を見積もり、適切なスキルをメタデータと共に返却。
+description: メタ認知的タスク分析とスキル選択。タスクの本質を分析し、規模を見積もり、適切なスキルをメタデータと共に返却。rule-advisorが処理。
 ---
 
-# タスクアナライザー - メタ認知的分析フレームワーク
+# タスクアナライザー
 
-## 目的
+メタ認知的タスク分析とスキル選択ガイダンスを提供。
 
-受け取ったタスクの本質を分析し、以下を決定：
-1. 作業規模の判定（小規模/中規模/大規模）
-2. 適用するスキルの特定
-3. 潜在的な失敗パターンの認識
-4. 初動アクションのガイダンス提供
+## スキルインデックス
 
-## 分析フレームワーク
+利用可能なスキルのメタデータは **[skills-index.yaml](references/skills-index.yaml)** を参照。
 
-### タスク本質の抽出
+## タスク分析プロセス
 
-タスクを受け取った際に分析：
+### 1. タスク本質の理解
 
-```yaml
-taskEssence:
-  surfaceRequest: "[ユーザーが文字通り求めたこと]"
-  underlyingGoal: "[ユーザーが実際に達成したいこと]"
-  implicitRequirements: "[明示されていないが暗黙の要件]"
-  scaleDetermination:
-    fileCount: "[変更予定ファイル数]"
-    scale: "small|medium|large"
-    confidence: "high|medium|low"
-```
+表面的な作業を超えた根本目的を特定：
 
-### 規模判定基準
+| 表面的な作業 | 根本目的 |
+|-------------|---------|
+| 「このバグを直して」 | 問題解決、根本原因分析 |
+| 「この機能を実装して」 | 機能追加、価値提供 |
+| 「このコードをリファクタリングして」 | 品質改善、保守性向上 |
+| 「このファイルを更新して」 | 変更管理、一貫性確保 |
 
-| 規模 | ファイル数 | 特徴 |
-|------|----------|-----|
-| 小規模 | 1-2ファイル | 単一責務の変更、局所的な影響 |
-| 中規模 | 3-5ファイル | コンポーネント横断の変更、調整が必要 |
-| 大規模 | 6ファイル以上 | システム全体への影響、ドキュメントが必要 |
+**キーとなる質問：**
+- 本当に解決しようとしている問題は何か？
+- 期待される成果は何か？
+- 表面的にアプローチした場合、何が問題になり得るか？
 
-### スキル選択マトリクス
+### 2. タスク規模の見積もり
 
-タスク特性に基づいて適用するスキルを選択：
+| 規模 | ファイル数 | 指標 |
+|------|----------|------|
+| 小規模 | 1-2 | 単一の関数/コンポーネントの変更 |
+| 中規模 | 3-5 | 複数の関連コンポーネント |
+| 大規模 | 6以上 | 横断的関心事、アーキテクチャへの影響 |
 
-| タスク種別 | 必要なスキル |
-|-----------|------------|
-| 新機能 | documentation-criteria, implementation-approach, typescript-rules, coding-standards |
-| バグ修正 | coding-standards, typescript-rules, coding-standardsのデバッグ技法 |
-| リファクタリング | coding-standards, implementation-approach |
-| テスト作成 | typescript-testing, integration-e2e-testing |
-| ドキュメント | documentation-criteria |
-| フロントエンド | frontend/typescript-rules, frontend/typescript-testing, frontend/technical-spec |
+**規模がスキル優先度に影響：**
+- 大規模 → プロセス/ドキュメントスキルがより重要
+- 小規模 → 実装スキルに集中
 
-### 失敗パターンの認識
+### 3. タスクタイプの特定
 
-開始前に潜在的な失敗パターンを特定：
+| タイプ | 特徴 | キースキル |
+|--------|------|-----------|
+| 実装 | 新規コード、機能 | coding-standards, typescript-testing |
+| 修正 | バグ解決 | coding-standards, typescript-testing |
+| リファクタリング | 構造改善 | coding-standards, implementation-approach |
+| 設計 | アーキテクチャ決定 | documentation-criteria, implementation-approach |
+| 品質 | テスト、レビュー | typescript-testing, integration-e2e-testing |
 
-```yaml
-warningPatterns:
-  - pattern: "[検出されたパターン名]"
-    risk: "high|medium|low"
-    mitigation: "[このパターンを避ける方法]"
-```
+### 4. タグベースのスキルマッチング
 
-監視すべき一般的なパターン：
-1. **エラー修正連鎖** - 根本原因分析なしの表面的な修正
-2. **型安全性の放棄** - any/asの過剰使用
-3. **不十分なテスト** - Red-Green-Refactorのスキップ
-4. **技術的不確実性** - スパイクなしでの未知技術の採用
-5. **調査不足** - 既存コードを確認せずに開始
-
-### 初動アクションガイダンス
-
-分析に基づいて具体的な最初のステップを提供：
+タスク説明から関連タグを抽出し、skills-index.yamlとマッチング：
 
 ```yaml
-firstActionGuidance:
-  action: "[使用すべき具体的なツールまたはアクション]"
-  rationale: "[なぜこれが最初のステップであるべきか]"
-  expectedOutcome: "[このアクションで何が明らかになるか]"
+タスク: "テスト付きでユーザー認証を実装"
+抽出されたタグ: [implementation, testing, security]
+マッチしたスキル:
+  - coding-standards (implementation, security)
+  - typescript-testing (testing)
+  - typescript-rules (implementation)
 ```
+
+### 5. 暗黙的な関連性
+
+隠れた依存関係を考慮：
+
+| タスクに含まれる | 追加で含める |
+|-----------------|-------------|
+| エラーハンドリング | デバッグ、テスト |
+| 新機能 | 設計、実装、ドキュメント |
+| パフォーマンス | プロファイリング、最適化、テスト |
+| フロントエンド | typescript-rules, typescript-testing |
+| API/統合 | integration-e2e-testing |
 
 ## 出力形式
 
-タスクを分析する際、構造化されたJSONを返却：
+skills-index.yamlからのスキルメタデータを含む構造化された分析を返却：
 
-```json
-{
-  "taskEssence": {
-    "surfaceRequest": "...",
-    "underlyingGoal": "...",
-    "implicitRequirements": ["..."],
-    "scaleDetermination": {
-      "fileCount": "...",
-      "scale": "...",
-      "confidence": "..."
-    }
-  },
-  "applicableSkills": [
-    {
-      "name": "...",
-      "relevance": "primary|secondary",
-      "sections": ["..."]
-    }
-  ],
-  "warningPatterns": [
-    {
-      "pattern": "...",
-      "risk": "...",
-      "mitigation": "..."
-    }
-  ],
-  "firstActionGuidance": {
-    "action": "...",
-    "rationale": "...",
-    "expectedOutcome": "..."
-  }
-}
+```yaml
+taskAnalysis:
+  essence: <string>  # 特定された根本目的
+  type: <implementation|fix|refactoring|design|quality>
+  scale: <small|medium|large>
+  estimatedFiles: <number>
+  tags: [<string>, ...]  # タスク説明から抽出
+
+selectedSkills:
+  - skill: <skill-name>  # skills-index.yamlから
+    priority: <high|medium|low>
+    reason: <string>  # このスキルが選択された理由
+    # skills-index.yamlからメタデータを引き継ぐ
+    tags: [...]
+    typical-use: <string>
+    size: <small|medium|large>
+    sections: [...]  # yamlからの全セクション（フィルタなし）
 ```
 
-## TodoWriteとの統合
+**注意**: セクション選択（どのセクションが関連するかの選定）は、rule-advisorが実際のSKILL.mdファイルを読み込んだ後に行う。
 
-task-analyzer完了後：
+## スキル選択の優先順位
 
-1. **TodoWriteを更新**: taskEssenceに基づいてタスク説明を精緻化
-2. **スキル制約を追加**: 最初のtodoとして「スキル制約の確認」
-3. **検証を追加**: 最終todoとして「スキル忠実度の検証」
-4. **警告を反映**: 失敗パターンを避けるためタスク分解に反映
+1. **必須** - タスクタイプに直接関連
+2. **品質** - テストと品質保証
+3. **プロセス** - ワークフローとドキュメント
+4. **補助** - リファレンスとベストプラクティス
 
-## 使用パターン
+## メタ認知質問の設計
 
-1. ユーザーから新規タスクを受け取る
-2. task-analyzerを実行して本質を理解
-3. 適用するスキルを読み込む
-4. 精緻化した理解でTodoWriteを更新
-5. スキルガイドラインに従って実装開始
-6. 完了時にスキル忠実度を検証
+タスクの性質に応じて3-5個の質問を生成：
 
-## リファレンス
+| タスクタイプ | 質問の焦点 |
+|-------------|-----------|
+| 実装 | 設計の妥当性、エッジケース、パフォーマンス |
+| 修正 | 根本原因（5 Whys）、影響範囲、回帰テスト |
+| リファクタリング | 現状の問題、目標状態、段階的計画 |
+| 設計 | 要件の明確性、将来の拡張性、トレードオフ |
 
-スキルのメタデータと選択：
-- [スキルインデックス](references/skills-index.yaml) - 利用可能なすべてのスキルのメタデータ（タグ、典型的な使用法、主要な参照先を含む）
+## 警告パターン
+
+これらのパターンを検出してフラグを立てる：
+
+| パターン | 警告 | 緩和策 |
+|---------|------|--------|
+| 一度に大規模変更 | 高リスク | フェーズに分割 |
+| テストなしの実装 | 品質リスク | TDDに従う |
+| エラー発見時の即座の修正 | 根本原因の見落とし | 一時停止、分析 |
+| 計画なしのコーディング | スコープクリープ | まず計画 |

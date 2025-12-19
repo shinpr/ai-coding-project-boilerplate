@@ -1,142 +1,131 @@
 ---
 name: task-analyzer
-description: Metacognitive task analysis and skill selection. Analyzes task essence, estimates scale, and returns appropriate skills with metadata.
+description: Metacognitive task analysis and skill selection. Analyzes task essence, estimates scale, and returns appropriate skills with metadata for rule-advisor to process.
 ---
 
-# Task Analyzer - Metacognitive Analysis Framework
+# Task Analyzer
 
-## Purpose
+Provides metacognitive task analysis and skill selection guidance.
 
-Analyze the essence of incoming tasks to:
-1. Determine work scale (small/medium/large)
-2. Identify applicable skills
-3. Recognize potential failure patterns
-4. Provide first action guidance
+## Skills Index
 
-## Analysis Framework
+See **[skills-index.yaml](references/skills-index.yaml)** for available skills metadata.
 
-### Task Essence Extraction
+## Task Analysis Process
 
-When receiving a task, analyze:
+### 1. Understand Task Essence
 
-```yaml
-taskEssence:
-  surfaceRequest: "[What user literally asked for]"
-  underlyingGoal: "[What user actually wants to achieve]"
-  implicitRequirements: "[Requirements not explicitly stated but implied]"
-  scaleDetermination:
-    fileCount: "[Estimated files to change]"
-    scale: "small|medium|large"
-    confidence: "high|medium|low"
-```
+Identify the fundamental purpose beyond surface-level work:
 
-### Scale Determination Criteria
+| Surface Work | Fundamental Purpose |
+|--------------|---------------------|
+| "Fix this bug" | Problem solving, root cause analysis |
+| "Implement this feature" | Feature addition, value delivery |
+| "Refactor this code" | Quality improvement, maintainability |
+| "Update this file" | Change management, consistency |
 
-| Scale | File Count | Characteristics |
-|-------|------------|-----------------|
-| Small | 1-2 files | Single responsibility change, localized impact |
-| Medium | 3-5 files | Cross-component change, requires coordination |
-| Large | 6+ files | System-wide impact, requires documentation |
+**Key Questions:**
+- What problem are we really solving?
+- What is the expected outcome?
+- What could go wrong if we approach this superficially?
 
-### Skill Selection Matrix
+### 2. Estimate Task Scale
 
-Based on task characteristics, select applicable skills:
+| Scale | File Count | Indicators |
+|-------|------------|------------|
+| Small | 1-2 | Single function/component change |
+| Medium | 3-5 | Multiple related components |
+| Large | 6+ | Cross-cutting concerns, architecture impact |
 
-| Task Type | Required Skills |
-|-----------|-----------------|
-| New Feature | documentation-criteria, implementation-approach, typescript-rules, coding-standards |
-| Bug Fix | coding-standards, typescript-rules, debugging techniques from coding-standards |
-| Refactoring | coding-standards, implementation-approach |
-| Test Writing | typescript-testing, integration-e2e-testing |
-| Documentation | documentation-criteria |
-| Frontend | frontend/typescript-rules, frontend/typescript-testing, frontend/technical-spec |
+**Scale affects skill priority:**
+- Larger scale → process/documentation skills more important
+- Smaller scale → implementation skills more focused
 
-### Failure Pattern Recognition
+### 3. Identify Task Type
 
-Identify potential failure patterns before starting:
+| Type | Characteristics | Key Skills |
+|------|-----------------|------------|
+| Implementation | New code, features | coding-standards, typescript-testing |
+| Fix | Bug resolution | coding-standards, typescript-testing |
+| Refactoring | Structure improvement | coding-standards, implementation-approach |
+| Design | Architecture decisions | documentation-criteria, implementation-approach |
+| Quality | Testing, review | typescript-testing, integration-e2e-testing |
 
-```yaml
-warningPatterns:
-  - pattern: "[Detected pattern name]"
-    risk: "high|medium|low"
-    mitigation: "[How to avoid this pattern]"
-```
+### 4. Tag-Based Skill Matching
 
-Common patterns to watch for:
-1. **Error Fix Chain** - Surface fixes without root cause analysis
-2. **Type Safety Abandonment** - Overuse of any/as
-3. **Insufficient Testing** - Skipping Red-Green-Refactor
-4. **Technical Uncertainty** - Unknown technology without spike
-5. **Missing Investigation** - Not checking existing code first
-
-### First Action Guidance
-
-Provide concrete first step based on analysis:
+Extract relevant tags from task description and match against skills-index.yaml:
 
 ```yaml
-firstActionGuidance:
-  action: "[Specific tool or action to take]"
-  rationale: "[Why this should be the first step]"
-  expectedOutcome: "[What this action should reveal]"
+Task: "Implement user authentication with tests"
+Extracted tags: [implementation, testing, security]
+Matched skills:
+  - coding-standards (implementation, security)
+  - typescript-testing (testing)
+  - typescript-rules (implementation)
 ```
+
+### 5. Implicit Relationships
+
+Consider hidden dependencies:
+
+| Task Involves | Also Include |
+|---------------|--------------|
+| Error handling | debugging, testing |
+| New features | design, implementation, documentation |
+| Performance | profiling, optimization, testing |
+| Frontend | typescript-rules, typescript-testing |
+| API/Integration | integration-e2e-testing |
 
 ## Output Format
 
-When analyzing a task, return structured JSON:
+Return structured analysis with skill metadata from skills-index.yaml:
 
-```json
-{
-  "taskEssence": {
-    "surfaceRequest": "...",
-    "underlyingGoal": "...",
-    "implicitRequirements": ["..."],
-    "scaleDetermination": {
-      "fileCount": "...",
-      "scale": "...",
-      "confidence": "..."
-    }
-  },
-  "applicableSkills": [
-    {
-      "name": "...",
-      "relevance": "primary|secondary",
-      "sections": ["..."]
-    }
-  ],
-  "warningPatterns": [
-    {
-      "pattern": "...",
-      "risk": "...",
-      "mitigation": "..."
-    }
-  ],
-  "firstActionGuidance": {
-    "action": "...",
-    "rationale": "...",
-    "expectedOutcome": "..."
-  }
-}
+```yaml
+taskAnalysis:
+  essence: <string>  # Fundamental purpose identified
+  type: <implementation|fix|refactoring|design|quality>
+  scale: <small|medium|large>
+  estimatedFiles: <number>
+  tags: [<string>, ...]  # Extracted from task description
+
+selectedSkills:
+  - skill: <skill-name>  # From skills-index.yaml
+    priority: <high|medium|low>
+    reason: <string>  # Why this skill was selected
+    # Pass through metadata from skills-index.yaml
+    tags: [...]
+    typical-use: <string>
+    size: <small|medium|large>
+    sections: [...]  # All sections from yaml, unfiltered
 ```
 
-## Integration with TodoWrite
+**Note**: Section selection (choosing which sections are relevant) is done by rule-advisor after reading the actual SKILL.md files.
 
-After task-analyzer completes:
+## Skill Selection Priority
 
-1. **Update TodoWrite** with refined task description based on taskEssence
-2. **Add skill constraints** as first todo: "Confirm skill constraints"
-3. **Add verification** as final todo: "Verify skill fidelity"
-4. **Reflect warnings** in task decomposition to avoid failure patterns
+1. **Essential** - Directly related to task type
+2. **Quality** - Testing and quality assurance
+3. **Process** - Workflow and documentation
+4. **Supplementary** - Reference and best practices
 
-## Usage Pattern
+## Metacognitive Question Design
 
-1. Receive new task from user
-2. Run task-analyzer to understand essence
-3. Load applicable skills
-4. Update TodoWrite with refined understanding
-5. Begin implementation following skill guidelines
-6. Verify skill fidelity at completion
+Generate 3-5 questions according to task nature:
 
-## References
+| Task Type | Question Focus |
+|-----------|----------------|
+| Implementation | Design validity, edge cases, performance |
+| Fix | Root cause (5 Whys), impact scope, regression testing |
+| Refactoring | Current problems, target state, phased plan |
+| Design | Requirement clarity, future extensibility, trade-offs |
 
-For skill metadata and selection:
-- [Skills Index](references/skills-index.yaml) - Metadata for all available skills including tags, typical usage, and key references
+## Warning Patterns
+
+Detect and flag these patterns:
+
+| Pattern | Warning | Mitigation |
+|---------|---------|------------|
+| Large change at once | High risk | Split into phases |
+| Implementation without tests | Quality risk | Follow TDD |
+| Immediate fix on error | Root cause missed | Pause, analyze |
+| Coding without plan | Scope creep | Plan first |
