@@ -57,80 +57,28 @@ task-analyzerスキル（frontmatterで自動読み込み）が提供するも�
 {
   "taskAnalysis": {
     "taskType": "実装|修正|リファクタリング|設計|品質改善",
-    "essence": "タスクの根本目的",
-    "estimatedFiles": 3,
-    "scale": "small|medium|large",
+    "essence": "根本目的", "estimatedFiles": 3, "scale": "small|medium|large",
     "extractedTags": ["implementation", "testing", "security"]
   },
   "selectedSkills": [
     {
       "skill": "coding-standards",
-      "sections": [
-        {
-          "title": "関数設計",
-          "content": "## 関数設計\n\n### 基本原則\n- 単一責任原則\n..."
-        },
-        {
-          "title": "エラーハンドリング",
-          "content": "## エラーハンドリング\n\n### エラー分類\n..."
-        }
-      ],
-      "reason": "コア実装ルールが必要",
-      "priority": "high"
-    },
-    {
-      "skill": "typescript-testing",
-      "sections": [
-        {
-          "title": "Red-Green-Refactorプロセス",
-          "content": "## Red-Green-Refactorプロセス\n\n1. Red: 失敗するテストを書く\n..."
-        }
-      ],
-      "reason": "TDD実践が必要",
-      "priority": "high"
+      "sections": [{"title": "セクション名", "content": "## セクション内容..."}],
+      "reason": "必要な理由", "priority": "high"
     }
   ],
   "metaCognitiveGuidance": {
     "taskEssence": "表面作業でなく根本目的の理解",
-    "ruleAdequacy": "選択ルールがタスク特性に合致するかの評価",
-    "pastFailures": [
-      "エラー修正衝動",
-      "一度に大変更",
-      "テスト不足"
-    ],
-    "potentialPitfalls": [
-      "根本原因分析なしのエラー修正衝動",
-      "段階的アプローチなしの大変更",
-      "テストなしの実装"
-    ],
-    "firstStep": {
-      "action": "最初に取るべき具体的アクション",
-      "rationale": "なぜこれを最初に行うべきか"
-    }
+    "pastFailures": ["エラー修正衝動", "一度に大変更", "テスト不足"],
+    "potentialPitfalls": ["根本原因分析なし", "段階的アプローチなし", "テストなし"],
+    "firstStep": {"action": "最初のアクション", "rationale": "なぜ最初か"}
   },
-  "metaCognitiveQuestions": [
-    "このタスクで最も重要な品質基準は何か？",
-    "過去に類似タスクで発生した問題は？",
-    "最初に着手すべき部分はどこか？",
-    "当初想定を超える可能性はあるか？"
-  ],
+  "metaCognitiveQuestions": ["最重要品質基準は？", "類似タスクでの過去の問題は？", "どこから着手？"],
   "warningPatterns": [
-    {
-      "pattern": "一度に大変更",
-      "risk": "高複雑性、デバッグ困難",
-      "mitigation": "フェーズに分割"
-    },
-    {
-      "pattern": "テストなしの実装",
-      "risk": "回帰バグ、品質低下",
-      "mitigation": "Red-Green-Refactor遵守"
-    }
+    {"pattern": "一度に大変更", "risk": "高複雑性", "mitigation": "フェーズ分割"},
+    {"pattern": "テストなし", "risk": "回帰バグ", "mitigation": "Red-Green-Refactor"}
   ],
-  "criticalRules": [
-    "型チェックの完全実施 - 型安全性を確保",
-    "実装前のユーザー承認必須",
-    "品質チェック完了前のコミット禁止"
-  ],
+  "criticalRules": ["型安全性確保", "実装前ユーザー承認", "品質チェック後コミット"],
   "confidence": "high|medium|low"
 }
 ```

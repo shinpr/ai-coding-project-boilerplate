@@ -57,80 +57,28 @@ Return structured JSON:
 {
   "taskAnalysis": {
     "taskType": "implementation|fix|refactoring|design|quality-improvement",
-    "essence": "Fundamental purpose of the task",
-    "estimatedFiles": 3,
-    "scale": "small|medium|large",
+    "essence": "Fundamental purpose", "estimatedFiles": 3, "scale": "small|medium|large",
     "extractedTags": ["implementation", "testing", "security"]
   },
   "selectedSkills": [
     {
       "skill": "coding-standards",
-      "sections": [
-        {
-          "title": "Function Design",
-          "content": "## Function Design\n\n### Basic Principles\n- Single responsibility principle\n..."
-        },
-        {
-          "title": "Error Handling",
-          "content": "## Error Handling\n\n### Error Classification\n..."
-        }
-      ],
-      "reason": "Core implementation rules needed",
-      "priority": "high"
-    },
-    {
-      "skill": "typescript-testing",
-      "sections": [
-        {
-          "title": "Red-Green-Refactor Process",
-          "content": "## Red-Green-Refactor Process\n\n1. Red: Write failing test\n..."
-        }
-      ],
-      "reason": "TDD practice required",
-      "priority": "high"
+      "sections": [{"title": "Section Name", "content": "## Section content..."}],
+      "reason": "Why needed", "priority": "high"
     }
   ],
   "metaCognitiveGuidance": {
     "taskEssence": "Understanding fundamental purpose, not surface work",
-    "ruleAdequacy": "Evaluation of whether selected rules match task characteristics",
-    "pastFailures": [
-      "error-fixing impulse",
-      "large changes at once",
-      "insufficient testing"
-    ],
-    "potentialPitfalls": [
-      "Error-fixing impulse without root cause analysis",
-      "Large changes without phased approach",
-      "Implementation without tests"
-    ],
-    "firstStep": {
-      "action": "Specific first action to take",
-      "rationale": "Why this should be done first"
-    }
+    "pastFailures": ["error-fixing impulse", "large changes at once", "insufficient testing"],
+    "potentialPitfalls": ["No root cause analysis", "No phased approach", "No tests"],
+    "firstStep": {"action": "First action", "rationale": "Why first"}
   },
-  "metaCognitiveQuestions": [
-    "What is the most important quality criterion for this task?",
-    "What problems occurred in similar tasks in the past?",
-    "Which part should be tackled first?",
-    "Is there a possibility of exceeding initial assumptions?"
-  ],
+  "metaCognitiveQuestions": ["Most important quality criterion?", "Past problems in similar tasks?", "Which part first?"],
   "warningPatterns": [
-    {
-      "pattern": "Large changes at once",
-      "risk": "High complexity, difficult debugging",
-      "mitigation": "Split into phases"
-    },
-    {
-      "pattern": "Implementation without tests",
-      "risk": "Regression bugs, quality degradation",
-      "mitigation": "Follow Red-Green-Refactor"
-    }
+    {"pattern": "Large changes at once", "risk": "High complexity", "mitigation": "Split into phases"},
+    {"pattern": "No tests", "risk": "Regression bugs", "mitigation": "Red-Green-Refactor"}
   ],
-  "criticalRules": [
-    "Complete type checking - ensure type safety",
-    "User approval mandatory before implementation",
-    "No commits before quality check completion"
-  ],
+  "criticalRules": ["Type safety", "User approval before implementation", "Quality check before commit"],
   "confidence": "high|medium|low"
 }
 ```
