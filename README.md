@@ -133,6 +133,7 @@ Essential commands for Claude Code:
 | `/front-design` | Create frontend design docs | React/Vite architecture planning |
 | `/front-plan` | Create frontend work plan | After frontend design approval |
 | `/front-build` | Execute frontend implementation | React component development |
+| `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
 
 [Full command reference →](docs/guides/en/use-cases.md)
 
@@ -256,6 +257,9 @@ A: Those help write code. This manages entire development lifecycle with special
 | **quality-fixer** | Automated fixes | On any quality issue |
 | **code-reviewer** | Compliance check | `/review` command |
 | **integration-test-reviewer** | Test implementation quality | After test implementation |
+| **investigator** | Problem investigation | `/diagnose` Step 1 |
+| **verifier** | Investigation verification | `/diagnose` Step 3 |
+| **solver** | Solution derivation | `/diagnose` Step 4 |
 
 [Full agent list →](.claude/agents-en/)
 
