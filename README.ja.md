@@ -127,6 +127,7 @@ Claude Codeで利用できる主要なコマンド：
 | `/front-design` | フロントエンド設計書の作成 | React/Viteアーキテクチャ計画時 |
 | `/front-plan` | フロントエンド作業計画書を作成 | フロントエンド設計承認後 |
 | `/front-build` | フロントエンド実装の実行 | Reactコンポーネント開発 |
+| `/diagnose` | 根本原因分析ワークフロー | デバッグ、トラブルシューティング |
 
 [コマンドの詳細はこちら →](docs/guides/ja/use-cases.md)
 
@@ -250,6 +251,9 @@ A: これらのツールはコード記述の支援に特化していますが�
 | **quality-fixer** | 品質問題の修正 | エラーや警告の検出時 |
 | **code-reviewer** | コードレビュー | `/review`コマンド実行時 |
 | **integration-test-reviewer** | テスト実装品質の検証 | テスト実装後 |
+| **investigator** | 問題調査 | `/diagnose` ステップ1 |
+| **verifier** | 調査結果の検証 | `/diagnose` ステップ3 |
+| **solver** | 解決策の導出 | `/diagnose` ステップ4 |
 
 [エージェントの詳細 →](.claude/agents-ja/)
 
