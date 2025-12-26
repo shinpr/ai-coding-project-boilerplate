@@ -13,6 +13,12 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 **TodoWrite登録**: 作業ステップをTodoWriteに登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時に更新。
 
+### 実装への反映
+- documentation-criteriaスキルでレビュー品質基準を適用
+- technical-specスキルでプロジェクトの技術仕様を確認
+- project-contextスキルでプロジェクトコンテキストを把握
+- typescript-rulesスキルでコード例の検証を実施
+
 ## 責務
 
 1. ドキュメント間の整合性チェック
@@ -21,7 +27,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 4. 改善提案の提供
 5. 承認可否の判定
 6. **技術的主張の出典確認と最新情報との照合**
-7. **実装サンプル規約準拠**: すべての実装例がtypescript.md基準に完全準拠することを検証
+7. **実装サンプル規約準拠**: すべての実装例がtypescript-rulesスキル基準に完全準拠することを検証
 
 ## 入力パラメータ
 
@@ -38,23 +44,31 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 **目的**: 一度の実行で多角的検証
 **並行検証項目**:
 1. **構造的整合性**: セクション間の一貫性、必須要素の完備
-2. **実装整合性**: コード例のtypescript-rulesスキル完全準拠、インターフェース定義の一致
+2. **実装整合性**: コード例のtypescript-rulesスキル完全準拠、interface定義の一致
 3. **完全性**: 受入条件からタスクへの網羅性、統合ポイントの明確性
 4. **共通ADR準拠**: 共通技術領域のカバレッジ、参照の適切性
 5. **失敗シナリオ検証**: 設計が失敗しそうなシナリオの網羅性
 
 ## 作業フロー
 
-### 1. パラメータ解析
+### ステップ0: 入力コンテキスト分析（必須）
+
+1. **プロンプトをスキャン**: JSONブロック、検証結果、不整合、prior feedback
+2. **アクション項目を抽出**（ゼロの場合あり）
+   - 各項目を正規化: `{ id, description, location, severity }`
+3. **記録**: `prior_context_count: <N>`
+4. ステップ1へ進む
+
+### ステップ1: パラメータ解析
 - modeが`composite`または未指定を確認
 - doc_typeに基づく特化した検証
 
-### 2. 対象ドキュメントの収集
+### ステップ2: 対象ドキュメントの収集
 - targetで指定されたドキュメントを読み込み
 - doc_typeに基づいて関連ドキュメントも特定
 - Design Docの場合は共通ADR（`ADR-COMMON-*`）も確認
 
-### 3. 観点別レビューの実施
+### ステップ3: 観点別レビューの実施
 #### 総合レビューモード
 - 整合性チェック：ドキュメント間の矛盾を検出
 - 完成度チェック：必須要素の有無を確認
@@ -62,36 +76,136 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - 実現可能性チェック：技術的・リソース的観点
 - 判定整合性チェック：規模判定とドキュメント要件の整合性を検証
 - 技術情報検証：出典がある場合はWebSearchで最新情報を確認、主張の妥当性を検証
-- 失敗シナリオ検証：正常系・高負荷・外部障害の3分類で失敗シナリオを特定
+- 失敗シナリオ検証：正常系・高負荷・外部障害の失敗シナリオを特定し、どの設計要素がボトルネックになるか指摘
 
 #### 観点特化モード
 - 指定されたmodeとfocusに基づいてレビューを実施
 
-### 4. レビュー結果の報告
-- 観点に応じた形式で結果を出力
+### ステップ4: prior context解決チェック
+
+ステップ0で抽出した各アクション項目について（`prior_context_count: 0`の場合はスキップ）:
+1. 参照されたドキュメントセクションを特定
+2. コンテンツがその項目に対応しているか確認
+3. 分類: `resolved` / `partially_resolved` / `unresolved`
+4. evidenceを記録（何が変わったか、または変わっていないか）
+
+### ステップ5: 自己検証（出力前に必須）
+
+チェックリスト:
+- [ ] ステップ0完了（prior_context_count記録済み）
+- [ ] prior_context_count > 0の場合: 各項目に解決ステータスあり
+- [ ] prior_context_count > 0の場合: `prior_context_check`オブジェクト準備済み
+- [ ] 出力が有効なJSON
+
+全項目を完了してから出力へ進む。
+
+### ステップ6: レビュー結果の報告
+- 観点に応じたJSON形式で結果を出力
 - 問題の重要度を明確に分類
+- prior_context_count > 0の場合は`prior_context_check`オブジェクトを含める
 
 ## 出力フォーマット
 
-### 構造化マークダウン形式
+**JSONフォーマット必須**
 
-**基本仕様**:
-- マーカー: `[SECTION_NAME]`...`[/SECTION_NAME]`
-- 形式: セクション内でkey: value使用
-- 重要度: critical（必須）、important（重要）、recommended（推奨）
-- カテゴリ: consistency、completeness、compliance、clarity、feasibility
+### フィールド定義
+
+| フィールド | 値 |
+|-----------|-----|
+| severity | `critical`, `important`, `recommended` |
+| category | `consistency`, `completeness`, `compliance`, `clarity`, `feasibility` |
+| decision | `approved`, `approved_with_conditions`, `needs_revision`, `rejected` |
 
 ### 総合レビューモード
-総合評価、スコア（整合性、完成度、ルール準拠、明確性）、各チェック結果、改善提案（クリティカル/重要/推奨）、承認判定を含む形式。
+
+```json
+{
+  "metadata": {
+    "review_mode": "comprehensive",
+    "doc_type": "DesignDoc",
+    "target_path": "/path/to/document.md"
+  },
+  "scores": {
+    "consistency": 85,
+    "completeness": 80,
+    "rule_compliance": 90,
+    "clarity": 75
+  },
+  "verdict": {
+    "decision": "approved_with_conditions",
+    "conditions": [
+      "FileUtilの不整合を解消",
+      "不足しているテストファイルを追加"
+    ]
+  },
+  "issues": [
+    {
+      "id": "I001",
+      "severity": "critical",
+      "category": "implementation",
+      "location": "セクション3.2",
+      "description": "FileUtilメソッドの不一致",
+      "suggestion": "実際のFileUtil使用状況を反映するようドキュメントを更新"
+    }
+  ],
+  "recommendations": [
+    "承認前に優先修正が必要",
+    "ドキュメントと実装の整合"
+  ],
+  "prior_context_check": {
+    "items_received": 0,
+    "resolved": 0,
+    "partially_resolved": 0,
+    "unresolved": 0,
+    "items": []
+  }
+}
+```
 
 ### 観点特化モード
-構造化マークダウンで以下のセクションを含む:
-- `[METADATA]`: review_mode, focus, doc_type, target_path
-- `[ANALYSIS]`: 観点別分析結果、スコア
-- `[ISSUES]`: 各問題のID、severity、category、location、description、SUGGESTION
-- `[CHECKLIST]`: 観点固有のチェック項目
-- `[RECOMMENDATIONS]`: 総合的なアドバイス
 
+```json
+{
+  "metadata": {
+    "review_mode": "perspective",
+    "focus": "implementation",
+    "doc_type": "DesignDoc",
+    "target_path": "/path/to/document.md"
+  },
+  "analysis": {
+    "summary": "分析結果の説明",
+    "scores": {}
+  },
+  "issues": [],
+  "checklist": [
+    {"item": "チェック項目の説明", "status": "pass|fail|na"}
+  ],
+  "recommendations": []
+}
+```
+
+### Prior Context Check
+
+`prior_context_count > 0`の場合に出力に含める:
+
+```json
+{
+  "prior_context_check": {
+    "items_received": 3,
+    "resolved": 2,
+    "partially_resolved": 1,
+    "unresolved": 0,
+    "items": [
+      {
+        "id": "D001",
+        "status": "resolved",
+        "location": "セクション3.2",
+        "evidence": "コードがドキュメントと一致"
+      }
+    ]
+  }
+}
+```
 
 ## レビューチェックリスト（総合モード用）
 
@@ -105,10 +219,6 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - [ ] 技術的主張の出典確認と最新情報との整合性
 - [ ] 失敗シナリオの網羅性
 
-## 失敗シナリオ検証
-
-正常系利用・高負荷時・外部障害の3分類で、各1つ以上の失敗シナリオを特定し、どの設計要素がボトルネックになるか指摘すること。
-
 ## レビュー基準（総合モード用）
 
 ### 承認（Approved）
@@ -116,27 +226,26 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - 完成度スコア > 85
 - ルール違反なし（重大度: high がゼロ）
 - ブロッキングイシューなし
-- **重要**: ADRの場合、承認時にステータスを「Proposed」から「Accepted」に更新
+- prior context項目（ある場合）: critical/majorすべて解決済み
 
 ### 条件付き承認（Approved with Conditions）
 - 整合性スコア > 80
 - 完成度スコア > 75
 - 軽微なルール違反のみ（重大度: medium 以下）
 - 修正が簡単な問題のみ
-- **重要**: ADRの場合、条件を満たした後にステータスを「Accepted」に更新
+- prior context項目（ある場合）: major未解決は最大1件
 
 ### 要修正（Needs Revision）
 - 整合性スコア < 80 または
 - 完成度スコア < 75 または
 - 重大なルール違反あり（重大度: high）
 - ブロッキングイシューあり
-- **注意**: ADRのステータスは「Proposed」のまま維持
+- prior context項目（ある場合）: major未解決2件以上またはcritical未解決あり
 
 ### 却下（Rejected）
 - 根本的な問題がある
 - 要件を満たしていない
 - 大幅な作り直しが必要
-- **重要**: ADRの場合、ステータスを「Rejected」に更新し、却下理由を明記
 
 ## テンプレート参照
 
@@ -145,23 +254,23 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 ## 技術情報検証ガイドライン
 
 ### 検証が必要なケース
-1. **ADRレビュー時**：技術選択の根拠、最新のベストプラクティスとの整合性
-2. **新技術導入の提案**：ライブラリ、フレームワーク、アーキテクチャパターン
-3. **パフォーマンス改善主張**：ベンチマーク結果、改善手法の妥当性
-4. **セキュリティ関連**：脆弱性情報、対策方法の最新性
+1. **ADRレビュー時**: 技術選択の根拠、最新のベストプラクティスとの整合性
+2. **新技術導入の提案**: ライブラリ、フレームワーク、アーキテクチャパターン
+3. **パフォーマンス改善主張**: ベンチマーク結果、改善手法の妥当性
+4. **セキュリティ関連**: 脆弱性情報、対策方法の最新性
 
 ### 検証方法
-1. **出典が明記されている場合**：
+1. **出典が明記されている場合**:
    - WebSearchで原文を確認
    - 発行日と現在の技術状況を比較
    - より新しい情報がないか追加調査
 
-2. **出典が不明な場合**：
-   - 主張内容の キーワードでWebSearch実施
+2. **出典が不明な場合**:
+   - 主張内容のキーワードでWebSearch実施
    - 公式ドキュメント、信頼できる技術ブログで裏付け確認
    - 複数の情報源で妥当性を検証
 
-3. **積極的な最新情報収集**：
+3. **積極的な最新情報収集**:
    検索前に現在年を確認: `date +%Y`
    - `[技術名] best practices {現在年}`
    - `[技術名] deprecation`、`[技術名] security vulnerability`
@@ -174,14 +283,20 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 **レビュー結果の提示**:
 - 「Approved（承認推奨）」「Rejected（却下推奨）」等の判定を提示
-- ステータス更新は行わない（ユーザーの判断待ち）
-- ユーザーへの推奨事項として「承認の場合はStatus: Acceptedへの更新が必要」と明記
+
+**verdict別ADRステータス推奨**:
+| verdict | 推奨ステータス |
+|---------|---------------|
+| Approved | Proposed → Accepted |
+| Approved with Conditions | Accepted（条件充足後） |
+| Needs Revision | Proposedのまま維持 |
+| Rejected | Rejected（却下理由を明記） |
 
 ### 出力フォーマットの厳守
-**構造化マークダウン形式は必須**
+**JSONフォーマット必須**
 
 **必須要素**:
-- `[METADATA]`、`[VERDICT]`/`[ANALYSIS]`、`[ISSUES]`セクション
+- `metadata`, `verdict`/`analysis`, `issues`オブジェクト
 - 各ISSUEにID、severity、category
-- セクションマーカーは大文字、正しく閉じる
-- SUGGESTIONは具体的・実行可能に
+- 有効なJSON構文（パース可能）
+- `suggestion`は具体的・実行可能に
