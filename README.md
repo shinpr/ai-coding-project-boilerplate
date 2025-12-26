@@ -134,6 +134,7 @@ Essential commands for Claude Code:
 | `/front-plan` | Create frontend work plan | After frontend design approval |
 | `/front-build` | Execute frontend implementation | React component development |
 | `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
+| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation |
 
 [Full command reference →](docs/guides/en/use-cases.md)
 
@@ -145,10 +146,33 @@ graph LR
     B -->|Small| C[Direct Implementation]
     B -->|Medium| D[Design → Implementation]
     B -->|Large| E[PRD → Design → Implementation]
-    
+
     C --> F[Quality Check → Commit]
     D --> F
     E --> F
+```
+
+### Reverse Engineering Workflow
+
+Generate PRD and Design Docs from existing code:
+
+```mermaid
+graph TB
+    subgraph Phase1[Phase 1: PRD Generation]
+        CMD[/reverse-engineer] --> SD1[scope-discoverer]
+        SD1 --> PRD[prd-creator]
+        PRD --> CV1[code-verifier]
+        CV1 --> DR1[document-reviewer]
+    end
+
+    subgraph Phase2[Phase 2: Design Doc Generation]
+        SD2[scope-discoverer] --> DD[technical-designer]
+        DD --> CV2[code-verifier]
+        CV2 --> DR2[document-reviewer]
+        DR2 --> DONE[Complete]
+    end
+
+    DR1 --> |All PRDs Approved| SD2
 ```
 
 ### How It Works
@@ -260,6 +284,8 @@ A: Those help write code. This manages entire development lifecycle with special
 | **investigator** | Problem investigation | `/diagnose` Step 1 |
 | **verifier** | Investigation verification | `/diagnose` Step 3 |
 | **solver** | Solution derivation | `/diagnose` Step 4 |
+| **scope-discoverer** | PRD/Design Doc scope discovery | `/reverse-engineer` Step 1 |
+| **code-verifier** | Document-code consistency | `/reverse-engineer` verification |
 
 [Full agent list →](.claude/agents-en/)
 
