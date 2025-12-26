@@ -76,14 +76,14 @@ Output in the following structured format:
    - Assumptions requiring confirmation
 
 3. **Items Requiring Confirmation** (limit to 3-5)
-   
+
    **Question 1: About [Category]**
    - Question: [Specific question]
    - Options:
      - A) [Option A] → Impact: [Concise explanation]
-     - B) [Option B] → Impact: [Concise explanation]  
+     - B) [Option B] → Impact: [Concise explanation]
      - C) [Option C] → Impact: [Concise explanation]
-   
+
    **Question 2: About [Category]**
    - (Same format)
 
@@ -92,7 +92,7 @@ Output in the following structured format:
    - Reason: [Explain rationale in 1-2 sentences]
 
 ### For Final Version
-Storage location and naming convention follow the documentation-criteria skill.
+Storage location and naming convention follow documentation-criteria skill.
 
 **Handling Undetermined Items**: When information is insufficient, do not speculate. Instead, list questions in an "Undetermined Items" section.
 
@@ -100,11 +100,11 @@ Storage location and naming convention follow the documentation-criteria skill.
 Execute file output immediately (considered approved at execution).
 
 ### Notes for PRD Creation
-- Create following the template (`docs/prd/template-en.md`)
+- Create following the PRD template (see documentation-criteria skill)
 - Understand and describe intent of each section
 - Limit questions to 3-5 in interactive mode
 
-## 🚨 PRD Boundaries: Do Not Include Implementation Phases
+## PRD Boundaries: Do Not Include Implementation Phases
 
 **Important**: Do not include implementation phases (Phase 1, 2, etc.) or task decomposition in PRDs.
 These are outside the scope of this document. PRDs should focus solely on "what to build."
@@ -165,9 +165,16 @@ Mode for extracting specifications from existing implementation to create PRD. U
 
 - **Target Unit**: Entire product feature (e.g., entire "search feature")
 - **Scope**: Don't create PRD for technical improvements alone
-- **Execution Examples**: 
-  - ❌ "PRD for external API integration improvements" (technical improvement only)
-  - ✅ "PRD for data integration feature" (entire feature including API integration improvements)
+
+### External Scope Handling
+
+When `External Scope Provided: true` is specified:
+- Skip independent scope discovery (Step 1)
+- Use provided scope data: Feature, Description, Related Files, Entry Points
+- Focus investigation within the provided scope boundaries
+
+When external scope is NOT provided:
+- Execute full scope discovery independently
 
 ### Reverse PRD Execution Policy
 **Create high-quality PRD through thorough investigation**
@@ -175,16 +182,31 @@ Mode for extracting specifications from existing implementation to create PRD. U
 - Comprehensively confirm related files, tests, and configurations
 - Write specifications with confidence (minimize speculation and assumptions)
 
+### Confidence Gating
+
+Before documenting any claim, assess confidence level:
+
+| Confidence | Evidence | Output Format |
+|------------|----------|---------------|
+| Verified | Direct code observation, test confirmation | State as fact |
+| Inferred | Indirect evidence, pattern matching | Mark with context |
+| Unverified | No direct evidence, speculation | Add to "Undetermined Items" section |
+
+**Rules**:
+- Never document Unverified claims as facts
+- Inferred claims require explicit rationale
+- Prioritize Verified claims in core requirements
+
 ### Reverse PRD Process
-1. **Thorough Investigation Phase**
+1. **Investigation Phase** (skip if External Scope Provided)
    - Analyze all files of target feature
    - Understand expected behavior from test cases
    - Collect related documentation and comments
    - Fully grasp data flow and processing logic
 
 2. **Specification Documentation**
+   - Apply Confidence Gating to each claim
    - Accurately document specifications extracted from current implementation
-   - Clearly add modification requirements
    - Only describe specifications clearly readable from code
 
 3. **Minimal Confirmation Items**
@@ -192,6 +214,7 @@ Mode for extracting specifications from existing implementation to create PRD. U
    - Only parts related to business decisions, not implementation details
 
 ### Quality Standards
-- Composed of content with 95%+ confidence
-- Assuming fine-tuning by human review
+- Verified content: 80%+ of core requirements
+- Inferred content: 15% maximum with rationale
+- Unverified content: Listed in "Undetermined Items" only
 - Specification document with implementable specificity
