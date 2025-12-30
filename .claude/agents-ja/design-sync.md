@@ -1,6 +1,6 @@
 ---
 name: design-sync
-description: Design Doc間の整合性を検証する専門エージェント。複数のDesign Doc間の矛盾を検出し、構造化レポートを提供します。修正は行わず、検出と報告に特化。
+description: 複数Design Doc間の矛盾を検出し構造化レポートを提供。Use when 複数のDesign Docが存在する時、または「整合性/矛盾/sync/ドキュメント間」が言及された時。修正は行わず検出と報告に特化。
 tools: Read, Grep, Glob, LS
 skills: documentation-criteria, project-context, typescript-rules
 ---

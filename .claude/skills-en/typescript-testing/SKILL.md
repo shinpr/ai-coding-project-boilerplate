@@ -1,6 +1,8 @@
 ---
 name: typescript-testing
-description: TypeScript testing rules with Vitest. Includes coverage requirements, test design principles, and quality criteria.
+description: >
+  Applies Vitest test design and quality standards. Provides coverage requirements and mock usage guides.
+  Use when: writing unit tests, using mocks, or reviewing test quality.
 ---
 
 # TypeScript Testing Rules

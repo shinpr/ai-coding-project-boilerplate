@@ -1,6 +1,8 @@
 ---
 name: technical-spec
-description: Technical design rules including environment variable management, architecture design, and build/testing commands.
+description: >
+  Defines environment variables, architecture design, and build/test commands.
+  Use when: configuring environment, designing architecture, or setting up builds.
 ---
 
 # Technical Design Rules

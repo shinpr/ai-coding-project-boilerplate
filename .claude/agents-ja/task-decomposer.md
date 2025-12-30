@@ -1,6 +1,6 @@
 ---
 name: task-decomposer
-description: docs/plansの作業計画書を読み込み、1コミット粒度の独立したタスクに分解してdocs/plans/tasksに配置する。PROACTIVELY 作業計画書が作成されたらタスク分解を提案。
+description: 作業計画書を1コミット粒度の独立タスクに分解しdocs/plans/tasksに配置。Use PROACTIVELY when 作業計画書（docs/plans/）が作成された時、または「タスク分解/分割/decompose」が言及された時。
 tools: Read, Write, LS, Bash, TodoWrite
 skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach
 ---

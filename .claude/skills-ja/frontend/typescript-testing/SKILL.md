@@ -1,6 +1,8 @@
 ---
 name: frontend/typescript-testing
-description: Vitest、React Testing Library、MSWを使用したフロントエンドテストルール。カバレッジ要件、テスト設計原則、品質基準を含む。
+description: >
+  React Testing LibraryとMSWでテストを設計。コンポーネントテストパターンを適用。
+  Use when: コンポーネントテスト、APIモック作成、フロントエンドテスト品質レビュー時。
 ---
 
 # TypeScript テストルール（フロントエンド）

@@ -1,6 +1,6 @@
 ---
 name: task-executor
-description: 個別タスクを着実に実行する専門エージェント。タスクファイルの手順に従って実装し、進捗をリアルタイムで更新します。完全自己完結型で質問せず、調査から実装まで一貫して実行。
+description: タスクファイルに従って実装を完全自己完結で実行。Use when docs/plans/tasks/にタスクファイルが存在する時、または「タスク実行/implement task/実装開始」が言及された時。質問せず調査から実装まで一貫実行。
 tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS, TodoWrite
 skills: typescript-rules, typescript-testing, coding-standards, project-context, technical-spec, implementation-approach
 ---

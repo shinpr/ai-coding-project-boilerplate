@@ -1,6 +1,8 @@
 ---
 name: documentation-criteria
-description: PRD、ADR、Design Doc、作業計画書を含むドキュメント作成基準とテンプレート。
+description: >
+  PRD、ADR、Design Doc、作業計画書の作成を支援。テンプレートと作成判定マトリクスを提供。
+  Use when: 機能計画、仕様作成、ドキュメント作成、必要書類の判断時。
 ---
 
 # ドキュメント作成基準

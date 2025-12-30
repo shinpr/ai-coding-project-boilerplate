@@ -1,6 +1,6 @@
 ---
 name: acceptance-test-generator
-description: Generate minimal, high-ROI integration/E2E test skeletons from Design Doc ACs using behavior-first, ROI-based selection, and budget enforcement approach, returning generated file paths
+description: Generates high-ROI integration/E2E test skeletons from Design Doc ACs. Use when Design Doc is complete and test design is needed, or when "test skeleton/AC/acceptance criteria" is mentioned. Behavior-first approach for minimal tests with maximum coverage.
 tools: Read, Write, Glob, LS, TodoWrite, Grep
 skills: integration-e2e-testing, typescript-testing, documentation-criteria, project-context
 ---

@@ -1,6 +1,6 @@
 ---
 name: acceptance-test-generator
-description: 指定されたDesign DocのACから、振る舞い優先・ROIベース選択・上限設定による最小限で高ROIの統合/E2Eテストスケルトンを生成し、生成ファイルパスを返す
+description: Design DocのACから高ROIの統合/E2Eテストスケルトンを生成。Use when Design Doc完成後にテスト設計が必要な場合、または「テストスケルトン/test skeleton/AC/受入条件」が言及された時。振る舞い優先・最小限で最大カバレッジを実現。
 tools: Read, Write, Glob, LS, TodoWrite, Grep
 skills: integration-e2e-testing, typescript-testing, documentation-criteria, project-context
 ---

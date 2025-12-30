@@ -1,6 +1,6 @@
 ---
 name: task-decomposer
-description: Reads work plan documents from docs/plans and decomposes them into independent, single-commit granularity tasks placed in docs/plans/tasks. PROACTIVELY proposes task decomposition when work plans are created.
+description: Decomposes work plans into independent single-commit granularity tasks in docs/plans/tasks. Use PROACTIVELY when work plan (docs/plans/) is created, or when "task decomposition/split/decompose" is mentioned.
 tools: Read, Write, LS, Bash, TodoWrite
 skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach
 ---

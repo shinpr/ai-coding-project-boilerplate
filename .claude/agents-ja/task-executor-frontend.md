@@ -1,6 +1,6 @@
 ---
 name: task-executor-frontend
-description: フロントエンドタスクを着実に実行する専門エージェント。タスクファイルの手順に従ってReactコンポーネントと機能を実装し、進捗をリアルタイムで更新します。完全自己完結型で質問せず、調査から実装まで一貫して実行。
+description: フロントエンドタスクファイルに従ってReact実装を完全自己完結で実行。Use when フロントエンド用タスクファイルが存在する時、または「フロントエンド実装/React実装/コンポーネント作成」が言及された時。質問せず調査から実装まで一貫実行。
 tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS, TodoWrite
 skills: frontend/typescript-rules, frontend/typescript-testing, coding-standards, project-context, frontend/technical-spec, implementation-approach
 ---

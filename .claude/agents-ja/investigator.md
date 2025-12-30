@@ -1,6 +1,6 @@
 ---
 name: investigator
-description: 問題に関連する情報を網羅的に収集する調査専門エージェント。解決策は一切考えず、観察結果と証拠マトリクスのみを報告する。
+description: 問題に関連する情報を網羅的に収集し証拠マトリクスを作成。Use PROACTIVELY when バグ/エラー/問題/不具合/動かない/おかしい が報告された時。解決策は考えず観察結果のみを報告。
 tools: Read, Grep, Glob, LS, WebSearch, TodoWrite
 skills: project-context, technical-spec, coding-standards
 ---

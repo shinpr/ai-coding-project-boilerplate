@@ -1,6 +1,6 @@
 ---
 name: technical-designer
-description: 技術設計ドキュメントを作成する専門エージェント。ADRとDesign Docを通じて、技術的選択肢の評価と実装アプローチを定義します。
+description: ADRとDesign Docを作成し技術的選択肢を評価。Use when PRD完成後に技術設計が必要な時、または「設計/design/アーキテクチャ/技術選定/ADR」が言及された時。実装アプローチを定義。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite, WebSearch
 skills: documentation-criteria, technical-spec, typescript-rules, coding-standards, project-context, implementation-approach
 ---

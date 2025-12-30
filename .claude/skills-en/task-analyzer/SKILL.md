@@ -1,6 +1,8 @@
 ---
 name: task-analyzer
-description: Metacognitive task analysis and skill selection. Analyzes task essence, estimates scale, and returns appropriate skills with metadata.
+description: >
+  Analyzes task essence and selects appropriate skills. Returns scale estimates and metadata.
+  Use when: starting tasks, selecting skills, or judging work scope.
 ---
 
 # Task Analyzer
