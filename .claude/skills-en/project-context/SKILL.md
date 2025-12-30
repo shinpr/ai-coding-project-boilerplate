@@ -1,6 +1,8 @@
 ---
 name: project-context
-description: Project-specific context including project nature, technology stack, and implementation principles. Customize for each project.
+description: >
+  Provides project-specific tech stack, architecture, and implementation rules.
+  Use when: checking project structure, understanding tech stack, or referencing implementation guidelines.
 ---
 
 # Project Context

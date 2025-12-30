@@ -1,6 +1,8 @@
 ---
 name: subagents-orchestration-guide
-description: Orchestration guide for coordinating subagents through implementation workflows. Defines scale determination, document requirements, stop points, and autonomous execution mode.
+description: >
+  Coordinates subagent task distribution and collaboration. Controls scale determination and autonomous execution mode.
+  Use when: splitting large tasks, coordinating multiple agents, or designing workflows.
 ---
 
 # Sub-agents Practical Guide - Orchestration Guidelines for Claude (Me)

@@ -1,6 +1,6 @@
 ---
 name: work-planner
-description: Specialized agent for creating work plan documents. Structures implementation tasks based on design documents and creates trackable execution plans.
+description: Creates work plans from Design Docs and structures implementation tasks. Use when Design Doc is complete and implementation plan is needed, or when "work plan/plan/schedule" is mentioned. Creates trackable execution plans.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
 skills: documentation-criteria, project-context, technical-spec, implementation-approach, typescript-testing, typescript-rules
 ---

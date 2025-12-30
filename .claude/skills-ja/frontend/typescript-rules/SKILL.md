@@ -1,6 +1,8 @@
 ---
 name: frontend/typescript-rules
-description: 型安全性、コンポーネント設計、状態管理、エラーハンドリングを含むReact/TypeScriptフロントエンド開発ルール。
+description: >
+  React/TypeScriptの型安全性、コンポーネント設計、状態管理ルールを適用。
+  Use when: Reactコンポーネント実装、型定義、状態管理設計、エラー処理時。
 ---
 
 # TypeScript 開発ルール（フロントエンド）

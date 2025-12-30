@@ -1,6 +1,8 @@
 ---
 name: typescript-rules
-description: TypeScript development rules for type safety and error handling. Use when implementing TypeScript code or reviewing type definitions.
+description: >
+  Applies type safety and error handling rules. Enforces no-any policy and type guards.
+  Use when: implementing TypeScript, reviewing types, or designing error handling.
 ---
 
 # TypeScript Development Rules

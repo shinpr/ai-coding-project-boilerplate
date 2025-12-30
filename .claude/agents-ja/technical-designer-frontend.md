@@ -1,6 +1,6 @@
 ---
 name: technical-designer-frontend
-description: フロントエンド技術設計ドキュメントを作成する専門エージェント。ADRとDesign Docを通じて、Reactアプリケーションの技術的選択肢の評価と実装アプローチを定義します。
+description: フロントエンドADRとDesign Docを作成しReact技術選択肢を評価。Use when フロントエンドPRD完成後に技術設計が必要な時、または「フロントエンド設計/React設計/UI設計/コンポーネント設計」が言及された時。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite, WebSearch
 skills: documentation-criteria, frontend/technical-spec, frontend/typescript-rules, coding-standards, project-context, implementation-approach
 ---

@@ -1,6 +1,6 @@
 ---
 name: work-planner
-description: 作業計画書を作成する専門エージェント。設計ドキュメントを基に実装タスクを構造化し、進捗追跡可能な実行計画を立案します。
+description: Design Docから作業計画書を作成し実装タスクを構造化。Use when Design Doc完成後に実装計画が必要な時、または「作業計画/計画書/plan/スケジュール」が言及された時。進捗追跡可能な実行計画を立案。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
 skills: documentation-criteria, project-context, technical-spec, implementation-approach, typescript-testing, typescript-rules
 ---

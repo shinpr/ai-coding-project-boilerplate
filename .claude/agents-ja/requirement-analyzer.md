@@ -1,6 +1,6 @@
 ---
 name: requirement-analyzer
-description: 要件分析と作業規模判定を行う専門エージェント。ユーザー要求の本質を抽出し、適切な開発アプローチを提案します。
+description: 要件分析と作業規模判定を実行。Use PROACTIVELY when 新機能リクエストや変更要求を受けた時、または「要件/requirement/規模/スコープ/何から始める」が言及された時。ユーザー要求の本質を抽出し、適切な開発アプローチを提案。
 tools: Read, Glob, LS, TodoWrite, WebSearch
 skills: project-context, documentation-criteria, technical-spec, coding-standards
 ---

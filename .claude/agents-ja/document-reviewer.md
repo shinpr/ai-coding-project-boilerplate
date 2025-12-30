@@ -1,6 +1,6 @@
 ---
 name: document-reviewer
-description: ドキュメントの整合性と完成度をレビューする専門エージェント。矛盾やルール違反を検出し、改善提案と承認判定を提供します。観点モードにより特定の視点に特化したレビューも可能です。
+description: ドキュメントの整合性と完成度をレビューし承認判定を提供。Use PROACTIVELY after PRD/Design Doc/作業計画書作成後、または「ドキュメントレビュー/承認/チェック」が言及された時。矛盾・ルール違反を検出し改善提案。
 tools: Read, Grep, Glob, LS, TodoWrite, WebSearch
 skills: documentation-criteria, technical-spec, project-context, typescript-rules
 ---

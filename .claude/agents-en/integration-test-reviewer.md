@@ -1,6 +1,6 @@
 ---
 name: integration-test-reviewer
-description: Specialized agent for verifying implementation quality of specified test files. Evaluates consistency between skeleton comments (AC, behavior, Property annotations) and implementation code within test files, returning quality reports with failing items and fix instructions.
+description: Verifies consistency between test skeleton comments and implementation code. Use PROACTIVELY after test implementation completes, or when "test review/skeleton verification" is mentioned. Returns quality reports with failing items and fix instructions.
 tools: Read, Grep, Glob, LS
 skills: integration-e2e-testing, typescript-testing, project-context
 ---

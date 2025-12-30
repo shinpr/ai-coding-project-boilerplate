@@ -1,6 +1,8 @@
 ---
 name: integration-e2e-testing
-description: 統合・E2Eテスト設計原則、ROI計算、テストスケルトン仕様、レビュー基準。
+description: >
+  統合テストとE2Eテストを設計。モック境界と振る舞い検証ルールを適用。
+  Use when: E2Eテスト、統合テスト、テストスケルトン作成、テスト品質レビュー時。
 ---
 
 # 統合テスト・E2Eテスト設計・実装ルール

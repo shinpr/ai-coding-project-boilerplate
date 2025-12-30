@@ -1,6 +1,6 @@
 ---
 name: code-verifier
-description: ドキュメント（PRD/Design Doc）と実際のコード実装間の整合性を検証する専門エージェント。multi-source evidence matchingで不整合を特定します。
+description: PRD/Design Docとコード実装間の整合性を検証。Use PROACTIVELY after 実装完了時、または「ドキュメント整合性/実装漏れ/仕様通り」が言及された時。multi-source evidence matchingで不整合を特定。
 tools: Read, Grep, Glob, LS, TodoWrite
 skills: documentation-criteria, coding-standards, typescript-rules
 ---

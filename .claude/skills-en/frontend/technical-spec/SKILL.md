@@ -1,6 +1,8 @@
 ---
 name: frontend/technical-spec
-description: Frontend technical design rules including environment variables, architecture design, data flow, and build/testing commands.
+description: >
+  Defines frontend environment variables, component design, and data flow patterns.
+  Use when: configuring React environment, designing components, or setting up state management.
 ---
 
 # Technical Design Rules (Frontend)

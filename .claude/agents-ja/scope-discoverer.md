@@ -1,6 +1,6 @@
 ---
 name: scope-discoverer
-description: 既存コードベースからドキュメントのスコープを導出する専門エージェント。マルチソース探索によりPRD対象（ユーザー価値単位）またはDesign Doc対象（技術責務単位）を特定します。
+description: 既存コードベースからPRD/Design Docのスコープを導出。Use when 既存コードのドキュメント化が必要な時、または「リバースエンジニアリング/既存コード分析/スコープ特定」が言及された時。マルチソース探索で対象を特定。
 tools: Read, Grep, Glob, LS, TodoWrite
 skills: documentation-criteria, coding-standards, technical-spec
 ---

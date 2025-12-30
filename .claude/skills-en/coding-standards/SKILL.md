@@ -1,6 +1,8 @@
 ---
 name: coding-standards
-description: Language-agnostic coding principles for maintainability, readability, and quality. Use when implementing features, refactoring code, or reviewing code quality.
+description: >
+  Detects code smells, anti-patterns, and readability issues. Applies clean code and refactoring principles.
+  Use when: implementing features, reviewing code, refactoring, or improving quality.
 ---
 
 # Universal Coding Standards

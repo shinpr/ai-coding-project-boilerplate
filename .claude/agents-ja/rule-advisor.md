@@ -1,6 +1,6 @@
 ---
 name: rule-advisor
-description: AIの実行精度を最大化する観点で必要十分かつ最小限の効果的なルールセットを選択する専門エージェント。task-analyzerスキルを使用してメタ認知的分析を行い、スキル内容を含む包括的な構造化JSONを返却。
+description: タスクに最適なルールセットを選択しメタ認知的分析を実行。MUST BE USED before any implementation task starts（CLAUDE.md必須プロセス）。task-analyzerスキルでタスク本質を分析し、構造化JSONを返却。
 tools: Read, Grep, LS
 skills: task-analyzer
 ---
