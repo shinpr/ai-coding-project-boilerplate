@@ -1,8 +1,6 @@
 ---
 name: frontend/technical-spec
-description: >
-  フロントエンドの環境変数、コンポーネント設計、データフローを定義。
-  Use when: React環境設定、コンポーネント設計、状態管理設計時。
+description: フロントエンドの環境変数、コンポーネント設計、データフローを定義。React環境設定時に使用。
 ---
 
 # 技術設計ルール（フロントエンド）

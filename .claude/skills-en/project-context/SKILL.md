@@ -1,8 +1,6 @@
 ---
 name: project-context
-description: >
-  Provides project-specific tech stack, architecture, and implementation rules.
-  Use when: checking project structure, understanding tech stack, or referencing implementation guidelines.
+description: Provides project-specific tech stack, architecture, and implementation rules. Use when checking project structure.
 ---
 
 # Project Context

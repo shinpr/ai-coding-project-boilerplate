@@ -1,8 +1,6 @@
 ---
 name: task-analyzer
-description: >
-  Analyzes task essence and selects appropriate skills. Returns scale estimates and metadata.
-  Use when: starting tasks, selecting skills, or judging work scope.
+description: Analyzes task essence and selects appropriate skills. Returns scale estimates and metadata. Use when starting tasks or selecting skills.
 ---
 
 # Task Analyzer

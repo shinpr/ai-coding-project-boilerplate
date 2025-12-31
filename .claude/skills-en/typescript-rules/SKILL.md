@@ -1,8 +1,6 @@
 ---
 name: typescript-rules
-description: >
-  Applies type safety and error handling rules. Enforces no-any policy and type guards.
-  Use when: implementing TypeScript, reviewing types, or designing error handling.
+description: Applies type safety and error handling rules. Enforces no-any policy and type guards. Use when implementing TypeScript or reviewing types.
 ---
 
 # TypeScript Development Rules
