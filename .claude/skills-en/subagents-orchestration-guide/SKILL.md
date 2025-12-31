@@ -1,8 +1,6 @@
 ---
 name: subagents-orchestration-guide
-description: >
-  Coordinates subagent task distribution and collaboration. Controls scale determination and autonomous execution mode.
-  Use when: splitting large tasks, coordinating multiple agents, or designing workflows.
+description: Coordinates subagent task distribution and collaboration. Controls scale determination and autonomous execution mode.
 ---
 
 # Sub-agents Practical Guide - Orchestration Guidelines for Claude (Me)

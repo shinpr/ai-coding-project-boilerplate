@@ -1,8 +1,6 @@
 ---
 name: frontend/typescript-testing
-description: >
-  Designs tests with React Testing Library and MSW. Applies component testing patterns.
-  Use when: writing component tests, mocking APIs, or reviewing frontend test quality.
+description: Designs tests with React Testing Library and MSW. Applies component testing patterns.
 ---
 
 # TypeScript Testing Rules (Frontend)

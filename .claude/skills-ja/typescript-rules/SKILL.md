@@ -1,8 +1,6 @@
 ---
 name: typescript-rules
-description: >
-  型安全性とエラーハンドリングルールを適用。any禁止、型ガード必須。
-  Use when: TypeScript実装、型定義レビュー、エラー処理設計時。
+description: 型安全性とエラーハンドリングルールを適用。any禁止、型ガード必須。TypeScript実装、型定義レビュー時に使用。
 ---
 
 # TypeScript 開発ルール

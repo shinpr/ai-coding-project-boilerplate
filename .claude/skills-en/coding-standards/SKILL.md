@@ -1,8 +1,6 @@
 ---
 name: coding-standards
-description: >
-  Detects code smells, anti-patterns, and readability issues. Applies clean code and refactoring principles.
-  Use when: implementing features, reviewing code, refactoring, or improving quality.
+description: Detects code smells, anti-patterns, and readability issues. Use when implementing features, reviewing code, or refactoring.
 ---
 
 # Universal Coding Standards

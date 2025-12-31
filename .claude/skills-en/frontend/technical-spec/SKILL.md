@@ -1,8 +1,6 @@
 ---
 name: frontend/technical-spec
-description: >
-  Defines frontend environment variables, component design, and data flow patterns.
-  Use when: configuring React environment, designing components, or setting up state management.
+description: Defines frontend environment variables, component design, and data flow patterns. Use when configuring React environment.
 ---
 
 # Technical Design Rules (Frontend)

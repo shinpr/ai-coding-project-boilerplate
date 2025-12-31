@@ -1,8 +1,6 @@
 ---
 name: frontend/typescript-testing
-description: >
-  React Testing LibraryとMSWでテストを設計。コンポーネントテストパターンを適用。
-  Use when: コンポーネントテスト、APIモック作成、フロントエンドテスト品質レビュー時。
+description: React Testing LibraryとMSWでテストを設計。コンポーネントテストパターンを適用。
 ---
 
 # TypeScript テストルール（フロントエンド）
