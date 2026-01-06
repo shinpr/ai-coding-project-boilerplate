@@ -67,9 +67,7 @@ After acceptance-test-generator execution, when calling work-planner, communicat
 - Generated E2E test file path
 - Explicit note that integration tests run with implementation, E2E tests run after all implementations
 
-## Responsibility Boundaries
+## Execution Method
 
-**This Command's Responsibility**: Orchestrate sub-agents through the complete implementation lifecycle
-**OUT OF SCOPE**:
-- Direct implementation work (MUST delegate to task-executor)
-- Investigation tasks using Grep/Glob/Read (MUST delegate to subagents)
+All work is executed through sub-agents.
+Sub-agent selection follows subagents-orchestration-guide skill.
