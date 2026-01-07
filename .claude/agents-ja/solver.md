@@ -38,9 +38,14 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 ### ステップ1: 原因の理解と入力検証
 
 **JSON形式の場合**:
-- `conclusion.mostLikelyCause`から原因を確認
+- `conclusion.causes`から原因（複数の場合あり）を確認
+- `conclusion.causesRelationship`から原因の関係性を確認
 - `conclusion.confidence`から信頼度を確認
-- `conclusion.remainingUncertainty`から残る不確実性を把握
+
+**原因の関係性の理解**:
+- independent: 各原因に対して個別の解決策が必要
+- dependent: 根本原因を解決すれば派生原因も解決
+- exclusive: いずれか1つが真の原因（他は誤り）
 
 **テキスト形式の場合**:
 - 原因に関する記述を抽出
@@ -50,7 +55,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 **ユーザー報告との整合性チェック**:
 - 例:「Aを変更したらBが壊れた」→ 結論がその因果関係を説明できているか
 - 例:「実装がおかしい」→ 結論が設計レベルの問題を含んでいるか
-- 整合しない場合、uncertaintyHandlingに「原因の再検討が必要な可能性」を追記
+- 整合しない場合、residualRisksに「原因の再検討が必要な可能性」を追記
 
 **impactAnalysisに基づくアプローチ選択**:
 - impactScope空、recurrenceRisk: low → 直接修正のみ
@@ -100,7 +105,10 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 ```json
 {
   "inputSummary": {
-    "identifiedCause": "検証済みの原因",
+    "identifiedCauses": [
+      {"hypothesisId": "H1", "description": "原因の説明", "status": "confirmed|probable|possible"}
+    ],
+    "causesRelationship": "independent|dependent|exclusive",
     "confidence": "high|medium|low",
     "remainingUncertainty": ["残る不確実性"]
   },
@@ -144,7 +152,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
     "criticalPoints": ["特に注意すべきポイント"]
   },
   "uncertaintyHandling": {
-    "ifCauseWrong": "もし原因が間違っていた場合の対処",
+    "residualRisks": ["解決後に残る可能性のあるリスク"],
     "monitoringPlan": "解決後の監視計画"
   }
 }
@@ -156,7 +164,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - [ ] 各解決策のトレードオフを分析した
 - [ ] 推奨案を選定し理由を説明した
 - [ ] 具体的な実装ステップを作成した
-- [ ] 不確実性への対処方法を記載した
+- [ ] 残存リスク（residualRisks）を記載した
 - [ ] 解決策がプロジェクトルールまたはベストプラクティスに沿っているか検証した
 - [ ] 入力がユーザー報告と整合しているか確認した
 

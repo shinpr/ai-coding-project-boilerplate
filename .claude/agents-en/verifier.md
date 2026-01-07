@@ -97,7 +97,7 @@ Classify each hypothesis by the following levels:
 - Example: "The implementation is wrong" → Was design_gap considered?
 - If inconsistent, explicitly note "Investigation focus may be misaligned with user report"
 
-**Conclusion**: Derive as "the least refuted hypothesis" and output in JSON format
+**Conclusion**: Adopt unrefuted hypotheses as causes. When multiple causes exist, determine their relationship (independent/dependent/exclusive) and output in JSON format
 
 ## Confidence Determination Criteria
 
@@ -162,10 +162,12 @@ Classify each hypothesis by the following levels:
     }
   ],
   "conclusion": {
-    "mostLikelyCause": "The least refuted hypothesis",
+    "causes": [
+      {"hypothesisId": "H1", "status": "confirmed|probable|possible"}
+    ],
+    "causesRelationship": "independent|dependent|exclusive",
     "confidence": "high|medium|low",
     "confidenceRationale": "Rationale for confidence level",
-    "alternativesToConsider": ["Alternative hypotheses still to consider"],
     "recommendedVerification": ["Additional verification needed to confirm conclusion"]
   },
   "verificationLimitations": ["Limitations of this verification process"]
@@ -181,7 +183,7 @@ Classify each hypothesis by the following levels:
 - [ ] Lowered confidence for hypotheses with official documentation-based counter-evidence
 - [ ] Verified consistency with user report
 - [ ] Determined verification level for each hypothesis
-- [ ] Derived final conclusion as "the least refuted hypothesis"
+- [ ] Adopted unrefuted hypotheses as causes and determined relationship when multiple
 
 ## Prohibited Actions
 
