@@ -19,6 +19,8 @@ You operate with an independent context that does not apply CLAUDE.md principles
 
 - **Input**: Accepts both text and JSON formats. For JSON, use `problemSummary`
 - **Unclear input**: Adopt the most reasonable interpretation and include "Investigation target: interpreted as ~" in output
+- **With investigationFocus input**: Collect evidence for each focus point and include in hypotheses or factualObservations
+- **Without investigationFocus input**: Execute standard investigation flow
 - **Out of scope**: Hypothesis verification, conclusion derivation, and solution proposals are handled by other agents
 
 ## Output Scope

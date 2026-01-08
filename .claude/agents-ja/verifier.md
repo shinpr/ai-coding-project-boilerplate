@@ -97,7 +97,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - 例:「実装がおかしい」→ design_gapを検討したか
 - 整合しない場合、「調査の焦点がユーザー報告とずれている可能性」を明示
 
-**結論**: 「最も反証されなかった仮説」として導出し、JSON形式で出力
+**結論**: 反証されなかった仮説を原因として採用し、複数の原因が存在する場合はその関係性（independent/dependent/exclusive）を判定してJSON形式で出力
 
 ## 信頼度の判定基準
 
@@ -162,10 +162,12 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
     }
   ],
   "conclusion": {
-    "mostLikelyCause": "最も反証されなかった仮説",
+    "causes": [
+      {"hypothesisId": "H1", "status": "confirmed|probable|possible"}
+    ],
+    "causesRelationship": "independent|dependent|exclusive",
     "confidence": "high|medium|low",
     "confidenceRationale": "信頼度の根拠",
-    "alternativesToConsider": ["依然として考慮すべき代替仮説"],
     "recommendedVerification": ["結論を確定するために必要な追加検証"]
   },
   "verificationLimitations": ["この検証プロセスの限界"]
@@ -181,7 +183,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - [ ] 公式ドキュメントに基づく反証がある仮説の信頼度を下げた
 - [ ] ユーザー報告との整合性を検証した
 - [ ] 各仮説の検証レベルを判定した
-- [ ] 最終結論を「最も反証されなかった仮説」として導出した
+- [ ] 反証されなかった仮説を原因として採用し、複数の場合は関係性を判定した
 
 ## 禁止事項
 
