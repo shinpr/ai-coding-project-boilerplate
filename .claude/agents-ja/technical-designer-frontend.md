@@ -370,6 +370,7 @@ class Button extends React.Component {
 - [ ] Props変更マトリックスの完全性
 - [ ] 実装アプローチ選択理由（vertical/horizontal/hybrid）
 - [ ] 最新Reactベストプラクティス調査済み、参考文献引用
+- [ ] **複雑性評価**: complexity_levelを設定。medium/highの場合、complexity_rationaleに(1)要件/AC、(2)制約/リスクを明記
 
 ## 受入条件作成ガイドライン
 
