@@ -9,6 +9,8 @@
 ```yaml
 design_type: "新機能|拡張|リファクタリング"
 risk_level: "低|中|高"
+complexity_level: "低|中|高"
+complexity_rationale: "[中/高の場合必須: (1)この複雑性を必要とする要件/AC、(2)対処する制約/リスク]"
 main_constraints:
   - "[制約1]"
   - "[制約2]"

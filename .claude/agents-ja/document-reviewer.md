@@ -218,6 +218,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - [ ] 承認条件の充足
 - [ ] 技術的主張の出典確認と最新情報との整合性
 - [ ] 失敗シナリオの網羅性
+- [ ] 複雑性の正当化: complexity_levelがmedium/highの場合、complexity_rationaleは(1)その複雑性を必要とする要件/AC、(2)対処する制約/リスクを明記すること
 
 ## レビュー基準（総合モード用）
 
@@ -241,6 +242,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - 重大なルール違反あり（重大度: high）
 - ブロッキングイシューあり
 - prior context項目（ある場合）: major未解決2件以上またはcritical未解決あり
+- complexity_levelがmedium/highだが、complexity_rationaleに(1)要件/ACまたは(2)制約/リスクが欠けている
 
 ### 却下（Rejected）
 - 根本的な問題がある

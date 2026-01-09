@@ -1,6 +1,6 @@
 {
   "name": "create-ai-project",
-  "version": "1.14.5",
+  "version": "1.14.6",
   "packageManager": "npm@10.8.2",
   "description": "TypeScript boilerplate with skills and sub-agents for Claude Code. Prevents context exhaustion through role-based task splitting.",
   "keywords": [
