@@ -4,6 +4,29 @@ description: Create work plan from design document and obtain plan approval
 
 **Command Context**: This command is dedicated to the planning phase.
 
+## Orchestrator Definition
+
+**Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
+
+**Execution Protocol**:
+1. **Delegate all work** to sub-agents (NEVER create plans yourself)
+2. **Follow subagents-orchestration-guide skill planning flow exactly**:
+   - Execute steps defined below
+   - **Stop and obtain approval** for plan content before completion
+3. **Scope**: Complete when work plan receives approval
+
+**CRITICAL**: NEVER skip acceptance-test-generator when user requests test generation.
+
+## Scope Boundaries
+
+**Included in this command**:
+- Design document selection
+- E2E test skeleton generation (optional, with user confirmation)
+- Work plan creation with work-planner
+- Plan approval obtainment
+
+**Responsibility Boundary**: This command completes with work plan approval.
+
 Follow subagents-orchestration-guide skill strictly and create work plan with the following process:
 
 ## Execution Process
@@ -25,9 +48,7 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
 
 **Think deeply** Create a work plan from the selected design document, clarifying specific implementation steps and risks.
 
-**Scope Boundary**:
-- IN SCOPE: Work plan creation and obtaining approval for plan content
-- OUT OF SCOPE: Task decomposition, implementation start
+**Scope**: Up to work plan creation and obtaining approval for plan content.
 
 ## Response at Completion
 ✅ **REQUIRED**: End with the following standard response after plan content approval
@@ -38,8 +59,3 @@ Planning phase completed.
 
 Please provide separate instructions for implementation.
 ```
-
-❌ **Avoid**: Additional processing after plan approval (task decomposition, implementation start, etc.)
-- Reason: Exceeds the scope of the planning phase
-
-**Responsibility Boundary**: This command completes with plan content approval. Implementation phase is out of scope. Wait for user instructions after plan approval.

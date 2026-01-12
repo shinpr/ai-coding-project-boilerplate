@@ -2,11 +2,23 @@
 description: Execute frontend implementation in autonomous execution mode
 ---
 
-**Command Context**: As orchestrator, autonomously completes frontend implementation in autonomous execution mode.
+## Orchestrator Definition
+
+**Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
+
+**Execution Method**:
+- Task decomposition → performed by task-decomposer
+- Frontend implementation → performed by task-executor-frontend
+- Quality checks and fixes → performed by quality-fixer-frontend
+- Commits → performed by orchestrator (Bash tool)
+
+Orchestrator invokes sub-agents and passes structured JSON between them.
+
+**CRITICAL**: Run quality-fixer-frontend before every commit. Obtain batch approval before autonomous mode.
 
 Work plan: $ARGUMENTS
 
-## 📋 Pre-execution Prerequisites
+## Pre-execution Prerequisites
 
 ### Task File Existence Check
 ```bash
@@ -27,7 +39,7 @@ Work plan: $ARGUMENTS
 | No tasks + plan exists | Plan exists but no task files | Confirm with user → run task-decomposer |
 | Neither exists | No plan or task files | Error: Prerequisites not met |
 
-## 🔄 Task Decomposition Phase (Conditional)
+## Task Decomposition Phase (Conditional)
 
 When task files don't exist:
 
@@ -53,12 +65,11 @@ Generate tasks from the work plan? (y/n):
 ! ls -la docs/plans/tasks/*.md | head -10
 ```
 
-✅ **Recommended**: After task generation, automatically proceed to autonomous execution
-❌ **Avoid**: Starting implementation without task generation
+✅ **Flow**: Task generation → Autonomous execution (in this order)
 
-## 🧠 Metacognition for Each Task - Frontend Specialized
+## Task Execution Cycle (4-Step Cycle) - Frontend Specialized
 
-**Required Execution Cycle**: `task-executor-frontend → quality-fixer-frontend → commit`
+**MANDATORY EXECUTION CYCLE**: `task-executor-frontend → escalation check → quality-fixer-frontend → commit`
 
 ### Sub-agent Invocation Method
 Use Task tool to invoke sub-agents:
@@ -73,21 +84,23 @@ Each sub-agent responds in JSON format:
 
 ### Execution Flow for Each Task
 
-Execute for EACH task:
+For EACH task, YOU MUST:
 
-1. **USE task-executor-frontend**: Execute frontend implementation
+1. **UPDATE TodoWrite**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity"
+2. **USE task-executor-frontend**: Execute frontend implementation
    - Invocation example: `subagent_type: "task-executor-frontend"`, `description: "Task execution"`, `prompt: "Task file: docs/plans/tasks/[filename].md Execute implementation"`
-2. **PROCESS structured responses**: When `readyForQualityCheck: true` is detected → Execute quality-fixer-frontend immediately
-3. **USE quality-fixer-frontend**: Execute all quality checks (Biome, TypeScript build, tests)
+3. **CHECK ESCALATION**: Check task-executor-frontend status → If `status: "escalation_needed"` → STOP and escalate to user
+4. **PROCESS structured responses**: When `readyForQualityCheck: true` is detected → EXECUTE quality-fixer-frontend IMMEDIATELY
+5. **USE quality-fixer-frontend**: Execute all quality checks (Biome, TypeScript build, tests)
    - Invocation example: `subagent_type: "quality-fixer-frontend"`, `description: "Quality check"`, `prompt: "Execute all frontend quality checks and fixes"`
-4. **EXECUTE commit**: After `approved: true` confirmation, execute git commit immediately
+6. **EXECUTE commit**: After `approved: true` confirmation, execute git commit IMMEDIATELY
 
 ### Quality Assurance During Autonomous Execution (Details)
-- task-executor-frontend execution → quality-fixer-frontend execution → **I (Main AI) execute commit** (using Bash tool)
-- After quality-fixer-frontend's `approved: true` confirmation, execute git commit immediately
-- Use changeSummary for commit message
+- task-executor-frontend execution → escalation check → quality-fixer-frontend execution → **orchestrator executes commit** (using Bash tool)
+- After quality-fixer-frontend's `approved: true` confirmation, execute git commit IMMEDIATELY
+- Use `changeSummary` for commit message
 
-**Think deeply**: Monitor all structured responses and ensure every quality gate is passed.
+**CRITICAL**: Monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
 
 ! ls -la docs/plans/*.md | head -10
 

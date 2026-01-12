@@ -2,11 +2,23 @@
 description: フロントエンド実装を自律実行モードで実行
 ---
 
-**コマンドコンテキスト**: オーケストレーターとして、フロントエンド実装の自律実行モードの完遂を自己完結します。
+## オーケストレーター定義
+
+**コアアイデンティティ**: 「私は作業者ではない。オーケストレーターである。」（subagents-orchestration-guideスキル参照）
+
+**実行方法**:
+- タスク分解 → task-decomposer
+- フロントエンド実装 → task-executor-frontend
+- 品質チェックと修正 → quality-fixer-frontend
+- コミット → オーケストレーター（Bashツール）
+
+オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡します。
+
+**重要**: 全てのコミット前にquality-fixer-frontendを実行。自律実行モード前にバッチ承認を取得。
 
 作業計画: $ARGUMENTS
 
-## 📋 実行前提条件
+## 実行前提条件
 
 ### タスクファイル存在チェック
 ```bash
@@ -19,7 +31,7 @@ description: フロントエンド実装を自律実行モードで実行
 
 ### タスク生成判定フロー
 
-**THINK DEEPLY AND SYSTEMATICALLY**: タスクファイルの存在状態を分析し、必要な正確なアクションを決定：
+**THINK DEEPLY AND SYSTEMATICALLY**: タスクファイルの存在状態を分析し、必要なアクションを決定：
 
 | 状態 | 基準 | 次のアクション |
 |------|------|--------------|
@@ -27,7 +39,7 @@ description: フロントエンド実装を自律実行モードで実行
 | タスクなし+計画あり | 計画書は存在するがタスクファイルなし | ユーザー確認 → task-decomposer実行 |
 | どちらもなし | 計画書もタスクファイルもなし | エラー: 前提条件未達成 |
 
-## 🔄 タスク分解フェーズ（条件付き）
+## タスク分解フェーズ（条件付き）
 
 タスクファイルが存在しない場合：
 
@@ -53,12 +65,11 @@ description: フロントエンド実装を自律実行モードで実行
 ! ls -la docs/plans/tasks/*.md | head -10
 ```
 
-✅ **必須**: タスク生成後、自動的に自律実行へ進む
-❌ **禁止**: タスク生成なしで実装開始
+✅ **フロー**: タスク生成 → 自律実行
 
-## 🧠 各タスクのメタ認知 - フロントエンド特化
+## タスク実行サイクル（4ステップサイクル） - フロントエンド特化
 
-**必須実行サイクル**: `task-executor-frontend → quality-fixer-frontend → commit`
+**必須実行サイクル**: `task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit`
 
 ### サブエージェント呼び出し方法
 Taskツールを使用してサブエージェントを呼び出す：
@@ -73,21 +84,23 @@ Taskツールを使用してサブエージェントを呼び出す：
 
 ### 各タスクの実行フロー
 
-各タスクで実行：
+各タスクで必須：
 
-1. **task-executor-frontend使用**: フロントエンド実装を実行
+1. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」
+2. **task-executor-frontend使用**: フロントエンド実装を実行
    - 呼び出し例: `subagent_type: "task-executor-frontend"`, `description: "タスク実行"`, `prompt: "タスクファイル: docs/plans/tasks/[ファイル名].md 実装を実行"`
-2. **構造化レスポンス処理**: `readyForQualityCheck: true` 検出時 → 即座にquality-fixer-frontend実行
-3. **quality-fixer-frontend使用**: 全品質チェック実行（Biome、TypeScriptビルド、テスト）
+3. **エスカレーションチェック**: task-executor-frontendのステータス確認 → `status: "escalation_needed"` の場合 → 停止してユーザーにエスカレーション
+4. **構造化レスポンス処理**: `readyForQualityCheck: true` 検出時 → 即座にquality-fixer-frontend実行
+5. **quality-fixer-frontend使用**: 全品質チェック実行（Biome、TypeScriptビルド、テスト）
    - 呼び出し例: `subagent_type: "quality-fixer-frontend"`, `description: "品質チェック"`, `prompt: "全てのフロントエンド品質チェックと修正を実行"`
-4. **コミット実行**: `approved: true`確認後、即座にgit commitを実行
+6. **コミット実行**: `approved: true`確認後、即座にgit commitを実行
 
 ### 自律実行中の品質保証（詳細）
-- task-executor-frontend実行 → quality-fixer-frontend実行 → **私（メインAI）がコミット実行**（Bashツール使用）
+- task-executor-frontend実行 → エスカレーションチェック → quality-fixer-frontend実行 → **オーケストレーターがコミット実行**（Bashツール使用）
 - quality-fixer-frontendの`approved: true`確認後、即座にgit commitを実行
-- changeSummaryをコミットメッセージに使用
+- `changeSummary`をコミットメッセージに使用
 
-**THINK DEEPLY**: 例外なく全ての構造化レスポンスを監視し、全ての品質ゲートが通過することを確保。
+**重要**: 例外なく全ての構造化レスポンスを監視し、全ての品質ゲートが通過することを確保。
 
 ! ls -la docs/plans/*.md | head -10
 
