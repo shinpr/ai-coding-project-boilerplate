@@ -51,5 +51,3 @@ Frontend planning phase completed.
 
 Please provide separate instructions for implementation.
 ```
-
-❌ **Avoid**: Additional processing after plan approval (task decomposition, implementation start, etc.)

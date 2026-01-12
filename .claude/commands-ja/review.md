@@ -4,6 +4,17 @@ description: Design Doc準拠検証と必要に応じた自動修正
 
 **コマンドコンテキスト**: 実装完了後の品質保証専用コマンド
 
+subagents-orchestration-guideスキルの指針に従い、**オーケストレーター**として振る舞います。
+
+**実行方法**:
+- Design Doc準拠検証 → code-reviewer
+- 修正の本質理解 → rule-advisor
+- 実装修正 → task-executor
+- 品質チェック → quality-fixer
+- 再検証 → code-reviewer
+
+オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡します。
+
 Design Doc（省略時は直近のもの）: $ARGUMENTS
 
 **Think deeply** 準拠検証の本質を理解し、以下のステップで実行：
@@ -45,7 +56,7 @@ Design Doc準拠率を検証：
 
 ユーザーが `y` を選択した場合:
 
-## 🧠 修正実行前のメタ認知
+## 修正実行前のメタ認知
 **必須**: `rule-advisor → TodoWrite → task-executor → quality-fixer`
 
 1. **rule-advisor実行**: 修正の本質を理解（表面的な対症療法 vs 根本解決）

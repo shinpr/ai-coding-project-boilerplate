@@ -4,7 +4,22 @@ description: 要件分析からフロントエンド設計ドキュメント作�
 
 **コマンドコンテキスト**: このコマンドはフロントエンド設計フェーズ専用です。
 
-**要件分析からフロントエンド設計ドキュメント作成・承認まで**を実行します。
+subagents-orchestration-guideスキルの指針に従い、**オーケストレーター**として振る舞います。
+
+**実行方法**:
+- 要件分析 → requirement-analyzer
+- 設計書作成 → technical-designer-frontend
+- ドキュメントレビュー → document-reviewer
+
+オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡します。
+
+**実行内容**:
+- requirement-analyzerによる要件分析
+- ADR作成（アーキテクチャ変更、データフロー変更がある場合）
+- technical-designer-frontendによるDesign Doc作成
+- document-reviewerによるドキュメントレビュー
+
+**責務境界**: このコマンドは設計書承認で責務完了。
 
 要件: $ARGUMENTS
 
