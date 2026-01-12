@@ -4,7 +4,29 @@ description: Execute from requirement analysis to design document creation
 
 **Command Context**: This command is dedicated to the design phase.
 
-Following the design flow described in subagents-orchestration-guide skill, execute **from requirement-analyzer to design document creation and approval**.
+## Orchestrator Definition
+
+**Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
+
+**Execution Method**:
+- Requirement analysis → performed by requirement-analyzer
+- Design document creation → performed by technical-designer
+- Document review → performed by document-reviewer
+- Consistency verification → performed by design-sync
+
+Orchestrator invokes sub-agents and passes structured JSON between them.
+
+**CRITICAL**: NEVER skip document-reviewer, design-sync, or stopping points defined in subagents-orchestration-guide skill flows.
+
+## Workflow Overview
+
+```
+Requirements → requirement-analyzer → [Stop: Scale determination]
+                                           ↓
+                                   technical-designer → document-reviewer
+                                           ↓
+                                      design-sync → [Stop: Design approval]
+```
 
 Requirements: $ARGUMENTS
 
@@ -17,9 +39,16 @@ Once requirements are moderately clarified, analyze with requirement-analyzer an
 
 Clearly present design alternatives and trade-offs.
 
-**Scope Boundary**:
-- IN SCOPE: Design document (ADR/Design Doc) approval + Design Doc consistency verification
-- OUT OF SCOPE: Work planning and implementation phases
+## Scope Boundaries
+
+**Included in this command**:
+- Requirement analysis with requirement-analyzer
+- ADR creation (if architecture changes, new technology, or data flow changes)
+- Design Doc creation with technical-designer
+- Document review with document-reviewer
+- Design Doc consistency verification with design-sync
+
+**Responsibility Boundary**: This command completes with design document approval.
 
 ## Execution Flow
 
@@ -30,6 +59,14 @@ Clearly present design alternatives and trade-offs.
 5. design-sync → Design Doc consistency verification
    - IF conflicts found → Report to user → Wait for fix instructions → Fix with technical-designer(update)
    - IF no conflicts → End
+
+## Completion Criteria
+
+- [ ] Executed requirement-analyzer and determined scale
+- [ ] Created appropriate design document (ADR or Design Doc) with technical-designer
+- [ ] Executed document-reviewer and addressed feedback
+- [ ] Executed design-sync for consistency verification
+- [ ] Obtained user approval for design document
 
 ## Output Example
 Design phase completed.
