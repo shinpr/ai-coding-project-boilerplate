@@ -8,13 +8,12 @@ description: Execute from requirement analysis to design document creation
 
 **Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
 
-**Execution Method**:
-- Requirement analysis → performed by requirement-analyzer
-- Design document creation → performed by technical-designer
-- Document review → performed by document-reviewer
-- Consistency verification → performed by design-sync
-
-Orchestrator invokes sub-agents and passes structured JSON between them.
+**Execution Protocol**:
+1. **Delegate all work** to sub-agents (NEVER investigate/analyze yourself)
+2. **Follow subagents-orchestration-guide skill design flow exactly**:
+   - Execute: requirement-analyzer → technical-designer → document-reviewer → design-sync
+   - **Stop at every `[Stop: ...]` marker** → Wait for user approval before proceeding
+3. **Scope**: Complete when design documents receive approval
 
 **CRITICAL**: NEVER skip document-reviewer, design-sync, or stopping points defined in subagents-orchestration-guide skill flows.
 

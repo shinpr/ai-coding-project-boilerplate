@@ -8,11 +8,14 @@ description: Create work plan from design document and obtain plan approval
 
 **Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
 
-**Execution Method**:
-- Work plan creation → performed by work-planner
-- Test skeleton generation → performed by acceptance-test-generator (optional)
+**Execution Protocol**:
+1. **Delegate all work** to sub-agents (NEVER create plans yourself)
+2. **Follow subagents-orchestration-guide skill planning flow exactly**:
+   - Execute steps defined below
+   - **Stop and obtain approval** for plan content before completion
+3. **Scope**: Complete when work plan receives approval
 
-Orchestrator invokes sub-agents and passes structured JSON between them.
+**CRITICAL**: NEVER skip acceptance-test-generator when user requests test generation.
 
 ## Scope Boundaries
 
@@ -45,9 +48,7 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
 
 **Think deeply** Create a work plan from the selected design document, clarifying specific implementation steps and risks.
 
-**Scope Boundary**:
-- IN SCOPE: Work plan creation and obtaining approval for plan content
-- OUT OF SCOPE: Task decomposition, implementation start
+**Scope**: Up to work plan creation and obtaining approval for plan content.
 
 ## Response at Completion
 ✅ **REQUIRED**: End with the following standard response after plan content approval

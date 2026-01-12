@@ -8,15 +8,14 @@ description: 要件分析から設計書作成まで実行
 
 **コアアイデンティティ**: 「私は作業者ではない。オーケストレーターである。」（subagents-orchestration-guideスキル参照）
 
-**実行方法**:
-- 要件分析 → requirement-analyzerが実行
-- 設計書作成 → technical-designerが実行
-- ドキュメントレビュー → document-reviewerが実行
-- 整合性検証 → design-syncが実行
+**実行プロトコル**:
+1. **全作業をサブエージェントに委譲**（自分で調査・分析しない）
+2. **subagents-orchestration-guideスキルの設計フローに厳密に従う**:
+   - 実行: requirement-analyzer → technical-designer → document-reviewer → design-sync
+   - **`[停止: ...]`マーカーで必ず停止** → 次に進む前にユーザー承認を待つ
+3. **スコープ**: 設計書が承認されたら完了
 
-オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡します。
-
-**重要**: document-reviewer、design-sync、またはsubagents-orchestration-guideスキルで定義された停止ポイントを絶対にスキップしない。
+**重要**: document-reviewer、design-sync、subagents-orchestration-guideスキルで定義された停止ポイントは必ず実行する。
 
 ## ワークフロー概要
 
@@ -41,14 +40,14 @@ description: 要件分析から設計書作成まで実行
 
 ## スコープ境界
 
-**このコマンドに含まれるもの**:
+**実行内容**:
 - requirement-analyzerによる要件分析
-- ADR作成（アーキテクチャ変更、新技術、データフロー変更がある場合）
+- ADR作成（アーキテクチャ変更、データフロー変更がある場合）
 - technical-designerによるDesign Doc作成
 - document-reviewerによるドキュメントレビュー
 - design-syncによるDesign Doc間整合性検証
 
-**責務境界**: このコマンドは設計書承認で完了。
+**責務境界**: このコマンドは設計書承認で責務完了。
 
 ## 実行フロー
 
