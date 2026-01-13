@@ -156,6 +156,7 @@ description: PRD、ADR、Design Doc、作業計画書の作成を支援。テン
 | ADR | `docs/adr/` | `ADR-[4桁]-[タイトル].md` | `adr-template.md` |
 | Design Doc | `docs/design/` | `[機能名]-design.md` | `design-template.md` |
 | 作業計画書 | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | `plan-template.md` |
+| タスクファイル | `docs/plans/tasks/` | `{plan-name}-task-{number}.md` | `task-template.md` |
 
 ※作業計画書は`.gitignore`で除外
 
@@ -191,3 +192,4 @@ description: PRD、ADR、Design Doc、作業計画書の作成を支援。テン
 - [PRDテンプレート](references/prd-template.md)
 - [作業計画書テンプレート](references/plan-template.md)
 - [ADRテンプレート](references/adr-template.md)
+- [タスクファイルテンプレート](references/task-template.md)

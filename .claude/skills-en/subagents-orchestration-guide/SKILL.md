@@ -143,24 +143,32 @@ After "batch approval for entire implementation phase" with work-planner, autono
 graph TD
     START[Batch approval for entire implementation phase] --> AUTO[Start autonomous execution mode]
     AUTO --> TD[task-decomposer: Task decomposition]
-    TD --> PHASE[Register phase management Todo]
-    PHASE --> PSTART[Phase start: Expand task Todo]
-    PSTART --> TE[task-executor: Implementation]
-    TE --> ESC{Escalation judgment}
-    ESC -->|No issue| FOLLOW[Follow-up processing]
-    ESC -->|Issue found| STOP[Escalate to user]
-    FOLLOW --> QF[quality-fixer: Quality check and fixes]
-    QF --> COMMIT[Execute git commit]
-    COMMIT --> TCHECK{Tasks remaining?}
-    TCHECK -->|Yes| TE
-    TCHECK -->|No| PCHECK{Phases remaining?}
-    PCHECK -->|Yes| PSTART
-    PCHECK -->|No| REPORT[Completion report]
+    TD --> LOOP[Task execution loop]
+    LOOP --> TE[task-executor: Implementation]
+    TE --> ESCJUDGE{Escalation judgment}
+    ESCJUDGE -->|escalation_needed/blocked| USERESC[Escalate to user]
+    ESCJUDGE -->|testsAdded has int/e2e| ITR[integration-test-reviewer]
+    ESCJUDGE -->|No issues| QF
+    ITR -->|needs_revision| TE
+    ITR -->|approved| QF
+    QF[quality-fixer: Quality check and fixes] --> COMMIT[Orchestrator: Execute git commit]
+    COMMIT --> CHECK{Any remaining tasks?}
+    CHECK -->|Yes| LOOP
+    CHECK -->|No| REPORT[Completion report]
 
-    TE --> INTERRUPT{User input?}
-    INTERRUPT -->|Requirement change| STOP2[Stop autonomous execution]
-    STOP2 --> RA[Re-analyze with requirement-analyzer]
+    LOOP --> INTERRUPT{User input?}
+    INTERRUPT -->|None| TE
+    INTERRUPT -->|Yes| REQCHECK{Requirement change check}
+    REQCHECK -->|No change| TE
+    REQCHECK -->|Change| STOP[Stop autonomous execution]
+    STOP --> RA[Re-analyze with requirement-analyzer]
 ```
+
+### Step 2 Execution Details
+- `status: escalation_needed` or `status: blocked` -> Escalate to user
+- `testsAdded` contains `*.int.test.ts` or `*.e2e.test.ts` -> Execute **integration-test-reviewer**
+  - If verdict is `needs_revision` -> Return to task-executor with `requiredFixes`
+  - If verdict is `approved` -> Proceed to quality-fixer
 
 ### Conditions for Stopping Autonomous Execution
 Stop autonomous execution and escalate to user in the following cases:

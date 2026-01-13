@@ -145,6 +145,7 @@ description: Guides PRD, ADR, Design Doc, and Work Plan creation with templates 
 | ADR | `docs/adr/` | `ADR-[4-digits]-[title].md` | See adr-template.md |
 | Design Doc | `docs/design/` | `[feature-name]-design.md` | See design-template.md |
 | Work Plan | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | See plan-template.md |
+| Task File | `docs/plans/tasks/` | `{plan-name}-task-{number}.md` | See task-template.md |
 
 *Note: Work plans are excluded by `.gitignore`
 
@@ -180,3 +181,4 @@ Templates are available in the `references/` directory:
 - [Product Requirements Document template](references/prd-template.md)
 - [Work Plan template](references/plan-template.md)
 - [Architecture Decision Record template](references/adr-template.md)
+- [Task File template](references/task-template.md)

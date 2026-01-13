@@ -136,6 +136,12 @@ graph TD
 - task-executor：実装権限（Edit/Write使用可）
 - quality-fixer：修正権限（品質エラー自動修正）
 
+### Step 2 実行詳細
+- `status: escalation_needed` または `status: blocked` → ユーザーにエスカレーション
+- `testsAdded` に `*.int.test.ts` または `*.e2e.test.ts` が含まれる → **integration-test-reviewer** を実行
+  - verdict が `needs_revision` → `requiredFixes` と共に task-executor に戻る
+  - verdict が `approved` → quality-fixer へ進む
+
 ### 自律実行の停止条件
 
 以下の場合に自律実行を停止し、ユーザーにエスカレーション：
