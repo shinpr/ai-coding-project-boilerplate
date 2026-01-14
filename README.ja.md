@@ -123,12 +123,15 @@ Claude Codeで利用できる主要なコマンド：
 | `/design` | 設計書の作成 | アーキテクチャの計画時（Backend） |
 | `/plan` | 設計書から作業計画書を作成 | 設計承認後（Backend） |
 | `/build` | 既存の計画から実行 | 作業の再開時（Backend） |
-| `/review` | コードの準拠性確認 | 実装完了後 |
+| `/review` | コードの準拠性確認 | 実装完了後（Backend） |
 | `/front-design` | フロントエンド設計書の作成 | React/Viteアーキテクチャ計画時 |
 | `/front-plan` | フロントエンド作業計画書を作成 | フロントエンド設計承認後 |
 | `/front-build` | フロントエンド実装の実行 | Reactコンポーネント開発 |
+| `/front-review` | フロントエンドコードの準拠性確認 | 実装完了後（Frontend） |
 | `/diagnose` | 根本原因分析ワークフロー | デバッグ、トラブルシューティング |
-| `/reverse-engineer` | コードからPRD/Design Docを生成 | 既存システムのドキュメント化 |
+| `/reverse-engineer` | コードからPRD/Design Docを生成 | 既存システムのドキュメント化（Backend） |
+| `/front-reverse-design` | フロントエンドDesign Docを生成 | 既存フロントエンドコードのドキュメント化 |
+| `/add-integration-tests` | 統合/E2Eテストの追加 | Design Doc存在時のテスト追加 |
 
 [コマンドの詳細はこちら →](docs/guides/ja/use-cases.md)
 

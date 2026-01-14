@@ -60,7 +60,7 @@ Design Doc準拠率を検証：
 **必須**: `rule-advisor → TodoWrite → task-executor → quality-fixer`
 
 1. **rule-advisor実行**: 修正の本質を理解（表面的な対症療法 vs 根本解決）
-2. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。修正タスクを構造化 → `docs/plans/tasks/review-fixes-YYYYMMDD.md`
+2. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレート（documentation-criteriaスキル参照）に従いタスクファイル作成 → `docs/plans/tasks/review-fixes-YYYYMMDD.md`
 3. **task-executor実行**: 自動修正を段階的実行（5ファイル超過で停止）
 4. **quality-fixer実行**: 品質ゲート通過を確認
 5. **再検証**: code-reviewerで改善度を測定

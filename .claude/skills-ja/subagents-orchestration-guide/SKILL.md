@@ -108,18 +108,20 @@ graph TD
 ## 作業計画時の基本フロー
 
 ### 大規模（6ファイル以上）
-1. requirement-analyzer → 要件分析 **[停止: 要件確認]**
+1. requirement-analyzer → 要件分析 + 既存PRD確認 **[停止: 要件確認/質問対応]**
 2. prd-creator → PRD作成 → document-reviewer **[停止: 要件確認]**
 3. technical-designer → ADR作成（必要な場合） → document-reviewer **[停止: 技術方針決定]**
 4. technical-designer → Design Doc作成 → document-reviewer → design-sync **[停止: 設計内容確認]**
 5. acceptance-test-generator → テストスケルトン生成
+   → メインAI: 生成を検証し、work-plannerに情報を渡す
 6. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
 7. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
 
 ### 中規模（3-5ファイル）
-1. requirement-analyzer → 要件分析 **[停止: 要件確認]**
+1. requirement-analyzer → 要件分析 **[停止: 要件確認/質問対応]**
 2. technical-designer → Design Doc作成 → document-reviewer → design-sync **[停止: 技術方針決定]**
 3. acceptance-test-generator → テストスケルトン生成
+   → メインAI: 生成を検証し、work-plannerに情報を渡す
 4. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
 5. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
 
@@ -135,6 +137,12 @@ graph TD
 - 実装フェーズ全体の一括承認により、サブエージェントに権限委譲
 - task-executor：実装権限（Edit/Write使用可）
 - quality-fixer：修正権限（品質エラー自動修正）
+
+### Step 2 実行詳細
+- `status: escalation_needed` または `status: blocked` → ユーザーにエスカレーション
+- `testsAdded` に `*.int.test.ts` または `*.e2e.test.ts` が含まれる → **integration-test-reviewer** を実行
+  - verdict が `needs_revision` → `requiredFixes` と共に task-executor に戻る
+  - verdict が `approved` → quality-fixer へ進む
 
 ### 自律実行の停止条件
 
@@ -155,35 +163,15 @@ graph TD
 4. **ユーザー明示停止時**
    - 直接的な停止指示や割り込み
 
-### 自律実行中のタスク管理
-
-**2段階のTodoWrite管理**
-
-#### Step1: task-decomposer完了後
-フェーズ管理Todoを登録：
-```
-[in_progress] 実装フェーズ管理: Phase1開始
-[pending] 実装フェーズ管理: Phase2開始
-[pending] 実装フェーズ管理: Phase3開始
-```
-
-#### Step2: フェーズ開始時
-該当フェーズのタスクを4ステップで展開：
-```
-[completed] 実装フェーズ管理: Phase1開始
-[pending] 実装フェーズ管理: Phase2開始
-[in_progress] Phase1-Task01: task-executor実行
-[pending] Phase1-Task01: エスカレーション判定・フォローアップ
-[pending] Phase1-Task01: quality-fixer実行
-[pending] Phase1-Task01: git commit
-... （同パターンで繰り返し）
-[pending] Phase1: 完了チェック
-```
-
 ## オーケストレーターの主な役割
 
 1. **状態管理**: 現在のフェーズ、各サブエージェントの状態、次のアクションを把握
 2. **情報の橋渡し**: サブエージェント間のデータ変換と伝達
+   - 各サブエージェントの出力を次のサブエージェントの入力形式に変換
+   - **前工程の成果物は必ず次のエージェントに渡す**
+   - 構造化レスポンスから必要な情報を抽出
+   - changeSummaryからコミットメッセージを作成 → **Bashでgit commit実行**
+   - 要件変更時は初期要件と追加要件を明示的に統合
 3. **品質保証とコミット実行**: approved=true確認後、即座にgit commit実行
 4. **自律実行モード管理**: 承認後の自律実行開始・停止・エスカレーション判断
 5. **ADRステータス管理**: ユーザー判断後のADRステータス更新（Accepted/Rejected）

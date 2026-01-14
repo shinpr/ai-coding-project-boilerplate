@@ -1,16 +1,17 @@
 ---
+name: front-review
 description: Design Doc compliance validation with optional auto-fixes
 ---
 
-**Command Context**: Post-implementation quality assurance command
+**Command Context**: Post-implementation quality assurance command for React/TypeScript frontend
 
 ## Execution Method
 
-- Compliance validation → performed by code-reviewer
-- Rule analysis → performed by rule-advisor
-- Fix implementation → performed by task-executor
-- Quality checks → performed by quality-fixer
-- Re-validation → performed by code-reviewer
+- Compliance validation -> performed by code-reviewer
+- Rule analysis -> performed by rule-advisor
+- Fix implementation -> performed by task-executor-frontend
+- Quality checks -> performed by quality-fixer-frontend
+- Re-validation -> performed by code-reviewer
 
 Orchestrator invokes sub-agents and passes structured JSON between them.
 
@@ -50,18 +51,18 @@ Validation Result: [X]% compliance
 Unfulfilled items:
 - [item list]
 
-Execute fixes? (y/n): 
+Execute fixes? (y/n):
 ```
 
 If user selects `y`:
 
 ## Pre-fix Metacognition
-**Required**: `rule-advisor → TodoWrite → task-executor → quality-fixer`
+**Required**: `rule-advisor -> TodoWrite -> task-executor-frontend -> quality-fixer-frontend`
 
 1. **Execute rule-advisor**: Understand fix essence (symptomatic treatment vs root solution)
 2. **Update TodoWrite**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file following task template (see documentation-criteria skill) -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
-3. **Execute task-executor**: Staged auto-fixes (stops at 5 files)
-4. **Execute quality-fixer**: Confirm quality gate passage
+3. **Execute task-executor-frontend**: Staged auto-fixes (stops at 5 files)
+4. **Execute quality-fixer-frontend**: Confirm quality gate passage
 5. **Re-validate**: Measure improvement with code-reviewer
 
 ### 4. Final Report
@@ -77,7 +78,7 @@ Remaining issues:
 ## Auto-fixable Items
 - Simple unimplemented acceptance criteria
 - Error handling additions
-- Type definition fixes
+- Contract definition fixes
 - Function splitting (length/complexity improvements)
 
 ## Non-fixable Items
