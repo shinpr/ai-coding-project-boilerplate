@@ -1,23 +1,23 @@
 ---
 name: front-review
-description: Design Doc準拠検証とオプションの自動修正
+description: Design Doc準拠検証と必要に応じた自動修正
 ---
 
 **コマンドコンテキスト**: React/TypeScriptフロントエンド向け実装後品質保証コマンド
 
 ## 実行方法
 
-- 準拠検証 -> code-reviewerが実行
-- ルール分析 -> rule-advisorが実行
-- 修正実装 -> task-executor-frontendが実行
-- 品質チェック -> quality-fixer-frontendが実行
-- 再検証 -> code-reviewerが実行
+- 準拠検証 → code-reviewerが実行
+- ルール分析 → rule-advisorが実行
+- 修正実装 → task-executor-frontendが実行
+- 品質チェック → quality-fixer-frontendが実行
+- 再検証 → code-reviewerが実行
 
 オーケストレーターがサブエージェントを呼び出し、構造化JSONを受け渡す。
 
-Design Doc（省略時は最新を使用）: $ARGUMENTS
+Design Doc（省略時は直近のもの）: $ARGUMENTS
 
-**深く考える** 準拠検証の本質を理解して実行:
+**Think deeply** 準拠検証の本質を理解し、以下のステップで実行:
 
 ## 実行フロー
 
@@ -32,9 +32,9 @@ git diff --name-only main...HEAD
 
 ### 2. code-reviewer実行
 Design Doc準拠を検証:
-- 受入条件の充足度
+- 受入条件の充足確認
 - コード品質チェック
-- 実装完成度評価
+- 実装完全性の評価
 
 ### 3. 判定と対応
 
@@ -45,9 +45,9 @@ Design Doc準拠を検証:
 
 **準拠率に基づく対応**:
 
-低準拠率の場合（本番で<90%）:
+準拠率が低い場合（本番で90%未満）:
 ```
-検証結果: [X]%準拠
+検証結果: 準拠率 [X]%
 未充足項目:
 - [項目リスト]
 
@@ -56,11 +56,11 @@ Design Doc準拠を検証:
 
 ユーザーが`y`を選択した場合:
 
-## 修正前メタ認知
-**必須**: `rule-advisor -> TodoWrite -> task-executor-frontend -> quality-fixer-frontend`
+## 修正実行前のメタ認知
+**必須**: `rule-advisor → TodoWrite → task-executor-frontend → quality-fixer-frontend`
 
-1. **rule-advisor実行**: 修正の本質を理解（対症療法vs根本解決）
-2. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレートに従ってタスクファイル作成（documentation-criteriaスキル参照） -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
+1. **rule-advisor実行**: 修正の本質を理解（表面的な対症療法 vs 根本解決）
+2. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレートに従ってタスクファイル作成（documentation-criteriaスキル参照） → `docs/plans/tasks/review-fixes-YYYYMMDD.md`
 3. **task-executor-frontend実行**: 段階的自動修正（5ファイルで停止）
 4. **quality-fixer-frontend実行**: 品質ゲート通過を確認
 5. **再検証**: code-reviewerで改善を測定

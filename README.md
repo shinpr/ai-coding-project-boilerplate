@@ -129,12 +129,15 @@ Essential commands for Claude Code:
 | `/design` | Create design docs only | Architecture planning (Backend) |
 | `/plan` | Create work plan from design | After design approval (Backend) |
 | `/build` | Execute from existing plan | Resume work (Backend) |
-| `/review` | Check code compliance | Post-implementation |
+| `/review` | Check code compliance | Post-implementation (Backend) |
 | `/front-design` | Create frontend design docs | React/Vite architecture planning |
 | `/front-plan` | Create frontend work plan | After frontend design approval |
 | `/front-build` | Execute frontend implementation | React component development |
+| `/front-review` | Check frontend code compliance | Post-implementation (Frontend) |
 | `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
-| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation |
+| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation (Backend) |
+| `/front-reverse-design` | Generate frontend Design Docs | Existing frontend code documentation |
+| `/add-integration-tests` | Add integration/E2E tests | When Design Doc exists but tests missing |
 
 [Full command reference →](docs/guides/en/use-cases.md)
 

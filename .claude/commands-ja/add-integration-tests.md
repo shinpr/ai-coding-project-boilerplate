@@ -9,17 +9,17 @@ description: Design Docを使用して既存バックエンドコードベース
 
 ## 実行方法
 
-- スケルトン生成 -> acceptance-test-generatorが実行
-- タスクファイル作成 -> タスクテンプレートに従う（documentation-criteriaスキル参照）
-- テスト実装 -> task-executorが実行
-- テストレビュー -> integration-test-reviewerが実行
-- 品質チェック -> quality-fixerが実行
+- スケルトン生成 → acceptance-test-generatorが実行
+- タスクファイル作成 → タスクテンプレートに従う（documentation-criteriaスキル参照）
+- テスト実装 → task-executorが実行
+- テストレビュー → integration-test-reviewerが実行
+- 品質チェック → quality-fixerが実行
 
 オーケストレーターがサブエージェントを呼び出し、構造化JSONを受け渡す。
 
 Design Docパス: $ARGUMENTS
 
-**深く考える** テスト追加の本質を理解して実行:
+**Think deeply** テスト追加の本質を理解して実行:
 
 ## 前提条件
 - Design Docが存在すること（手動またはreverse-engineerで作成）
@@ -55,8 +55,8 @@ Design Docからテストスケルトンを生成:
 テスト品質をレビュー:
 - スケルトン準拠を確認
 - テストカバレッジをチェック
-- `needs_revision`の場合 -> `requiredFixes`と共にステップ4に戻る
-- `approved`の場合 -> 品質チェックに進む
+- `needs_revision`の場合 → `requiredFixes`と共にステップ4に戻る
+- `approved`の場合 → 品質チェックに進む
 
 ### 6. quality-fixer実行
 最終品質保証:
