@@ -100,6 +100,15 @@ I repeat this cycle for each task to ensure quality.
 [^2]: Required when: architecture changes, new technology introduction, OR data flow changes
 [^3]: Create new PRD, update existing PRD, or create reverse PRD (when no existing PRD)
 
+## Structured Response Specifications
+
+Each subagent responds in JSON format:
+- **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
+- **integration-test-reviewer**: status, verdict (approved/needs_revision), requiredFixes
+- **quality-fixer**: status, checksPerformed, fixesApplied, approved
+- **document-reviewer**: status, reviewsPerformed, issues, recommendations, approvalReady
+- **design-sync**: sync_status, total_conflicts, conflicts (severity, type, source_file, target_file)
+
 ## My Basic Flow for Work Planning
 
 When receiving new features or change requests, I first request requirement analysis from requirement-analyzer.
@@ -135,34 +144,6 @@ According to scale determination:
 - Batch approval for entire implementation phase delegates authority to subagents
 - task-executor: Implementation authority (can use Edit/Write)
 - quality-fixer: Fix authority (automatic quality error fixes)
-
-### Definition of Autonomous Execution Mode
-After "batch approval for entire implementation phase" with work-planner, autonomously execute the following processes without human approval:
-
-```mermaid
-graph TD
-    START[Batch approval for entire implementation phase] --> AUTO[Start autonomous execution mode]
-    AUTO --> TD[task-decomposer: Task decomposition]
-    TD --> LOOP[Task execution loop]
-    LOOP --> TE[task-executor: Implementation]
-    TE --> ESCJUDGE{Escalation judgment}
-    ESCJUDGE -->|escalation_needed/blocked| USERESC[Escalate to user]
-    ESCJUDGE -->|testsAdded has int/e2e| ITR[integration-test-reviewer]
-    ESCJUDGE -->|No issues| QF
-    ITR -->|needs_revision| TE
-    ITR -->|approved| QF
-    QF[quality-fixer: Quality check and fixes] --> COMMIT[Orchestrator: Execute git commit]
-    COMMIT --> CHECK{Any remaining tasks?}
-    CHECK -->|Yes| LOOP
-    CHECK -->|No| REPORT[Completion report]
-
-    LOOP --> INTERRUPT{User input?}
-    INTERRUPT -->|None| TE
-    INTERRUPT -->|Yes| REQCHECK{Requirement change check}
-    REQCHECK -->|No change| TE
-    REQCHECK -->|Change| STOP[Stop autonomous execution]
-    STOP --> RA[Re-analyze with requirement-analyzer]
-```
 
 ### Step 2 Execution Details
 - `status: escalation_needed` or `status: blocked` -> Escalate to user
@@ -225,8 +206,3 @@ Stop autonomous execution and escalate to user in the following cases:
   - On user rejection: Main AI (me) updates Status to Rejected
 - **After Design Doc creation -> document-reviewer execution**: Confirm design content and consistency
 - **After work plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
-
-### Stop Points During Autonomous Execution
-- **When requirement change detected**: Match in requirement change checklist -> Return to requirement-analyzer
-- **When critical error occurs**: Report error content -> Wait for response instructions
-- **When user interrupts**: Explicit stop instruction -> Confirm situation
