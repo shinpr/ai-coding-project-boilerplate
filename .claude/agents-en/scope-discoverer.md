@@ -150,6 +150,8 @@ Document generation is out of scope for this agent.
 
 ## Output Format
 
+**JSON format is mandatory.**
+
 ### Essential Output
 
 ```json

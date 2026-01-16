@@ -109,6 +109,8 @@ Classify each hypothesis by the following levels:
 
 ## Output Format
 
+**JSON format is mandatory.**
+
 ```json
 {
   "investigationReview": {

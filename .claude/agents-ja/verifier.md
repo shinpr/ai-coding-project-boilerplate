@@ -109,6 +109,8 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 
 ## 出力フォーマット
 
+**JSONフォーマット必須**
+
 ```json
 {
   "investigationReview": {
