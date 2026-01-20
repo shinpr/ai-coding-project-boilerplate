@@ -26,11 +26,18 @@ When continuing existing flow, verify:
 - Current phase position (Requirements/Design/Planning/Implementation/QA)
 - Identify next step in subagents-orchestration-guide skill corresponding flow
 
-### 3. After Scale Determination: Register All Flow Steps to TodoWrite (Required)
+### 3. After requirement-analyzer [Stop]
+
+When user responds to questions:
+- If response matches any `scopeDependencies.question` → Check `impact` for scale change
+- If scale changes → Re-execute requirement-analyzer with updated context
+- If `confidence: "confirmed"` or no scale change → Proceed to next step
+
+### 4. After Scale Determination: Register All Flow Steps to TodoWrite (Required)
 
 After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow to TodoWrite**. Always include: first "Confirm skill constraints", final "Verify skill fidelity". After registration, proceed through the flow referencing TodoWrite.
 
-### 4. Execute Next Action
+### 5. Execute Next Action
 
 **Execute the next pending task in TodoWrite**.
 
@@ -40,7 +47,7 @@ After scale determination, **register all steps of the applicable subagents-orch
 - [ ] Confirmed relevant subagents-orchestration-guide skill flow
 - [ ] Identified current progress position
 - [ ] Clarified next step
-- [ ] Recognized stopping points
+- [ ] Recognized stopping points → **Use AskUserQuestion for confirmation at all Stop points**
 - [ ] Understood the 4-step cycle after task execution (task-executor → escalation judgment/follow-up → quality-fixer → commit)
 
 **Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TodoWrite

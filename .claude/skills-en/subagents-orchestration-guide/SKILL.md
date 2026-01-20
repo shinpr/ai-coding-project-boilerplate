@@ -23,7 +23,7 @@ This document provides practical behavioral guidelines for me (Claude) to effici
 - Saying "Let me first investigate" then starting work directly
 - Skipping or postponing requirement-analyzer
 
-**Execution Rule**: New tasks -> requirement-analyzer FIRST. After flow starts -> follow scale determination.
+**First Action Rule**: To accurately analyze user requirements, pass them directly to requirement-analyzer and determine the workflow based on its analysis results.
 
 ## Decision Flow When Receiving Tasks
 
@@ -102,39 +102,48 @@ I repeat this cycle for each task to ensure quality.
 
 ## Structured Response Specifications
 
-Each subagent responds in JSON format:
-- **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
-- **integration-test-reviewer**: status, verdict (approved/needs_revision), requiredFixes
-- **quality-fixer**: status, checksPerformed, fixesApplied, approved
-- **document-reviewer**: status, reviewsPerformed, issues, recommendations, approvalReady
-- **design-sync**: sync_status, total_conflicts, conflicts (severity, type, source_file, target_file)
+Subagents respond in JSON format. Key fields for orchestrator decisions:
+- **requirement-analyzer**: scale, confidence, adrRequired, scopeDependencies, questions
+- **task-executor**: status (escalation_needed/blocked/completed), testsAdded
+- **quality-fixer**: approved (true/false)
+- **document-reviewer**: approvalReady (true/false)
+- **design-sync**: sync_status (synced/conflicts_found)
+- **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
+- **acceptance-test-generator**: status, generatedFiles
 
 ## My Basic Flow for Work Planning
 
 When receiving new features or change requests, I first request requirement analysis from requirement-analyzer.
 According to scale determination:
 
-### Large Scale (6+ Files)
-1. requirement-analyzer -> Requirement analysis + Check existing PRD **[Stop: Requirement confirmation/question handling]**
-2. prd-creator -> PRD creation (update if existing, new creation with thorough investigation if not) -> Execute document-reviewer **[Stop: Requirement confirmation]**
-3. technical-designer -> ADR creation (if needed) -> Execute document-reviewer **[Stop: Technical direction decision]**
-4. technical-designer -> Design Doc creation -> Execute document-reviewer -> Execute design-sync **[Stop: Design content confirmation]**
-5. acceptance-test-generator -> Integration and E2E test skeleton generation
-   -> Main AI: Verify generation, then pass information to work-planner
-6. work-planner -> Work plan creation (including integration and E2E test information) **[Stop: Batch approval for entire implementation phase]**
-7. **Start autonomous execution mode**: task-decomposer -> Execute all tasks -> Completion report
+### Large Scale (6+ Files) - 11 Steps
 
-### Medium Scale (3-5 Files)
-1. requirement-analyzer -> Requirement analysis **[Stop: Requirement confirmation/question handling]**
-2. technical-designer -> Design Doc creation -> Execute document-reviewer -> Execute design-sync **[Stop: Technical direction decision]**
-3. acceptance-test-generator -> Integration and E2E test skeleton generation
-   -> Main AI: Verify generation, then pass information to work-planner
-4. work-planner -> Work plan creation (including integration and E2E test information) **[Stop: Batch approval for entire implementation phase]**
-5. **Start autonomous execution mode**: task-decomposer -> Execute all tasks -> Completion report
+1. requirement-analyzer → Requirement analysis + Check existing PRD **[Stop]**
+2. prd-creator → PRD creation
+3. document-reviewer → PRD review **[Stop: PRD Approval]**
+4. technical-designer → ADR creation (if architecture/technology/data flow changes)
+5. document-reviewer → ADR review (if ADR created) **[Stop: ADR Approval]**
+6. technical-designer → Design Doc creation
+7. document-reviewer → Design Doc review
+8. design-sync → Consistency verification **[Stop: Design Doc Approval]**
+9. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
+10. work-planner → Work plan creation **[Stop: Batch approval]**
+11. task-decomposer → Autonomous execution → Completion report
 
-### Small Scale (1-2 Files)
-1. Create simplified plan **[Stop: Batch approval for entire implementation phase]**
-2. **Start autonomous execution mode**: Direct implementation -> Completion report
+### Medium Scale (3-5 Files) - 7 Steps
+
+1. requirement-analyzer → Requirement analysis **[Stop]**
+2. technical-designer → Design Doc creation
+3. document-reviewer → Design Doc review
+4. design-sync → Consistency verification **[Stop: Design Doc Approval]**
+5. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
+6. work-planner → Work plan creation **[Stop: Batch approval]**
+7. task-decomposer → Autonomous execution → Completion report
+
+### Small Scale (1-2 Files) - 2 Steps
+
+1. Create simplified plan **[Stop: Batch approval]**
+2. Direct implementation → Completion report
 
 ## Autonomous Execution Mode
 
@@ -194,6 +203,7 @@ Stop autonomous execution and escalate to user in the following cases:
 
 ### Basic Principles
 - **Stopping is mandatory**: Always wait for human response at the following timings
+- **Use AskUserQuestion**: Present confirmations and questions at all Stop points
 - **Confirmation -> Agreement cycle**: After document generation, proceed to next step after agreement or fix instructions in update mode
 - **Specific questions**: Make decisions easy with options (A/B/C) or comparison tables
 - **Dialogue over efficiency**: Get confirmation at early stages to prevent rework
