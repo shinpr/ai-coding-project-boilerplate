@@ -26,11 +26,18 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 - 現在のフェーズ位置（要件/設計/計画/実装/品質保証）
 - subagents-orchestration-guideスキルの該当フローで次のステップを特定
 
-### 3. 規模判定後：TodoWriteにフロー全ステップを登録（必須）
+### 3. requirement-analyzer後に停止
+
+ユーザーが質問に回答した時：
+- 回答が`scopeDependencies.question`のいずれかに該当 → `impact`で規模変更をチェック
+- 規模が変更 → 更新されたコンテキストでrequirement-analyzerを再実行
+- `confidence: "confirmed"` または規模変更なし → 次のステップへ進む
+
+### 4. 規模判定後：TodoWriteにフロー全ステップを登録（必須）
 
 規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTodoWriteに登録**。最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を必ず含める。登録後、TodoWriteを参照してフローを進める。
 
-### 4. 次のアクション実行
+### 5. 次のアクション実行
 
 **TodoWriteの次のpendingタスクを実行**。
 
@@ -40,7 +47,7 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 - [ ] subagents-orchestration-guideスキルの該当フローを確認した
 - [ ] 現在の進捗位置を特定した
 - [ ] 次のステップを明確にした
-- [ ] 停止ポイントを認識した
+- [ ] 停止ポイントを認識した → **全ての停止ポイントでAskUserQuestionを使用**
 - [ ] タスク実行後の4ステップサイクル（task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit）を理解した
 
 **フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TodoWriteで4ステップを管理する

@@ -23,7 +23,7 @@ description: サブエージェントのタスク分担と連携を調整。規�
 - 「まず調べてみます」と言って作業を開始する
 - requirement-analyzerを後回しにする
 
-**タスク開始時は必ずrequirement-analyzer。フロー開始後は規模判定に従う。**
+**初動アクション規則**: ユーザー要件を正確に分析するため、requirement-analyzerに直接渡し、その分析結果に基づいてワークフローを決定する。
 
 ## タスク受領時の判断
 
@@ -98,36 +98,45 @@ graph TD
 
 ## 構造化レスポンス仕様
 
-各サブエージェントはJSON形式で応答：
-- **task-executor**: status, filesModified, testsAdded, readyForQualityCheck
-- **integration-test-reviewer**: status, verdict (approved/needs_revision), requiredFixes
-- **quality-fixer**: status, checksPerformed, fixesApplied, approved
-- **document-reviewer**: status, reviewsPerformed, issues, recommendations, approvalReady
-- **design-sync**: sync_status, total_conflicts, conflicts (severity, type, source_file, target_file)
+サブエージェントはJSON形式で応答。オーケストレーター判断に必要なフィールド：
+- **requirement-analyzer**: scale, confidence, adrRequired, scopeDependencies, questions
+- **task-executor**: status (escalation_needed/blocked/completed), testsAdded
+- **quality-fixer**: approved (true/false)
+- **document-reviewer**: approvalReady (true/false)
+- **design-sync**: sync_status (synced/conflicts_found)
+- **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
+- **acceptance-test-generator**: status, generatedFiles
 
 ## 作業計画時の基本フロー
 
-### 大規模（6ファイル以上）
-1. requirement-analyzer → 要件分析 + 既存PRD確認 **[停止: 要件確認/質問対応]**
-2. prd-creator → PRD作成 → document-reviewer **[停止: 要件確認]**
-3. technical-designer → ADR作成（必要な場合） → document-reviewer **[停止: 技術方針決定]**
-4. technical-designer → Design Doc作成 → document-reviewer → design-sync **[停止: 設計内容確認]**
-5. acceptance-test-generator → テストスケルトン生成
-   → メインAI: 生成を検証し、work-plannerに情報を渡す
-6. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
-7. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
+### 大規模（6ファイル以上） - 11ステップ
 
-### 中規模（3-5ファイル）
-1. requirement-analyzer → 要件分析 **[停止: 要件確認/質問対応]**
-2. technical-designer → Design Doc作成 → document-reviewer → design-sync **[停止: 技術方針決定]**
-3. acceptance-test-generator → テストスケルトン生成
-   → メインAI: 生成を検証し、work-plannerに情報を渡す
-4. work-planner → 作業計画書作成 **[停止: 実装フェーズ全体の一括承認]**
-5. **自律実行モード開始**: task-decomposer → 全タスク実行 → 完了報告
+1. requirement-analyzer → 要件分析 + 既存PRD確認 **[停止]**
+2. prd-creator → PRD作成
+3. document-reviewer → PRDレビュー **[停止: PRD承認]**
+4. technical-designer → ADR作成（アーキテクチャ/技術/データフロー変更がある場合）
+5. document-reviewer → ADRレビュー（ADR作成時） **[停止: ADR承認]**
+6. technical-designer → Design Doc作成
+7. document-reviewer → Design Docレビュー
+8. design-sync → 整合性検証 **[停止: Design Doc承認]**
+9. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
+10. work-planner → 作業計画書作成 **[停止: 一括承認]**
+11. task-decomposer → 自律実行 → 完了報告
 
-### 小規模（1-2ファイル）
-1. 簡易計画書作成 **[停止: 実装フェーズ全体の一括承認]**
-2. **自律実行モード開始**: 直接実装 → 完了報告
+### 中規模（3-5ファイル） - 7ステップ
+
+1. requirement-analyzer → 要件分析 **[停止]**
+2. technical-designer → Design Doc作成
+3. document-reviewer → Design Docレビュー
+4. design-sync → 整合性検証 **[停止: Design Doc承認]**
+5. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
+6. work-planner → 作業計画書作成 **[停止: 一括承認]**
+7. task-decomposer → 自律実行 → 完了報告
+
+### 小規模（1-2ファイル） - 2ステップ
+
+1. 簡易計画書作成 **[停止: 一括承認]**
+2. 直接実装 → 完了報告
 
 ## 自律実行モード
 
@@ -188,6 +197,7 @@ graph TD
 
 ### 基本原則
 - **停止は必須**: 以下のタイミングでは必ず人間の応答を待つ
+- **AskUserQuestionを使用**: 全ての停止ポイントで確認と質問を提示
 - **確認→合意のサイクル**: ドキュメント生成後は合意またはupdateモードでの修正指示を受けてから次へ進む
 - **具体的な質問**: 選択肢（A/B/C）や比較表を用いて判断しやすく
 - **効率より対話**: 手戻りを防ぐため、早い段階で確認を取る
