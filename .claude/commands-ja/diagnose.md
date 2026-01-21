@@ -6,14 +6,14 @@ description: 問題を調査し、検証を経て解決策を導出する
 
 対象問題: $ARGUMENTS
 
-subagents-orchestration-guideスキルの指針に従い、**オーケストレーター**として振る舞います。
+**Role**: オーケストレーター
 
 **実行方法**:
-- 調査 → investigator
-- 検証 → verifier
-- 解決策導出 → solver
+- 調査 → investigatorに委譲
+- 検証 → verifierに委譲
+- 解決策導出 → solverに委譲
 
-オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡します。
+オーケストレーターがサブエージェントを呼び出し、構造化JSONを受け渡します。
 
 **TodoWrite登録**: 実行ステップをTodoWriteに登録し、計画的にタスクを進める
 

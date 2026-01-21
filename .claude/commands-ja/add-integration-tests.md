@@ -7,19 +7,18 @@ description: Design Docを使用して既存バックエンドコードベース
 
 **スコープ**: バックエンドのみ（acceptance-test-generatorはバックエンドのみ対応）
 
-## 実行方法
+**Role**: オーケストレーター
 
-- スケルトン生成 → acceptance-test-generatorが実行
-- タスクファイル作成 → タスクテンプレートに従う（documentation-criteriaスキル参照）
-- テスト実装 → task-executorが実行
-- テストレビュー → integration-test-reviewerが実行
-- 品質チェック → quality-fixerが実行
-
-オーケストレーターがサブエージェントを呼び出し、構造化JSONを受け渡す。
+**実行方法**:
+- スケルトン生成 → acceptance-test-generatorに委譲
+- タスクファイル作成 → オーケストレーターが直接作成
+- テスト実装 → task-executorに委譲
+- テストレビュー → integration-test-reviewerに委譲
+- 品質チェック → quality-fixerに委譲
 
 Design Docパス: $ARGUMENTS
 
-**Think deeply** テスト追加の本質を理解して実行:
+**TodoWrite登録**: 各ステップを登録し、完了時に更新。
 
 ## 前提条件
 - Design Docが存在すること（手動またはreverse-engineerで作成）
@@ -27,48 +26,91 @@ Design Docパス: $ARGUMENTS
 
 ## 実行フロー
 
-### 1. Design Doc検証
+### 1. Design Doc検証（オーケストレーター）
 ```bash
 # Design Docの存在確認
 ls $ARGUMENTS || ls docs/design/*.md | grep -v template | tail -1
 ```
 
-### 2. acceptance-test-generator実行
-Design Docからテストスケルトンを生成:
-- 受入条件（AC）を抽出
-- 統合テストスケルトン生成（`*.int.test.ts`）
-- 該当する場合はE2Eテストスケルトン生成（`*.e2e.test.ts`）
+### 2. スケルトン生成
 
-### 3. タスクファイル作成
+**Taskツールでの呼び出し**:
+```
+subagent_type: acceptance-test-generator
+prompt: |
+  Design Docからテストスケルトンを生成。
+
+  Design Doc: [ステップ1のパス]
+
+  出力:
+  - 統合テストスケルトン (*.int.test.ts)
+  - 該当する場合はE2Eテストスケルトン (*.e2e.test.ts)
+```
+
+**期待される出力**: `generatedFiles`（統合テストとE2Eのパスを含む）
+
+### 3. タスクファイル作成（オーケストレーター）
+
 タスクテンプレートに従ってタスクファイルを作成（documentation-criteriaスキル参照）:
 - パス: `docs/plans/tasks/integration-tests-YYYYMMDD.md`
 - 内容: 生成されたスケルトンに基づくテスト実装タスク
-- 対象ファイルセクションにスケルトンファイルパスを含める
+- 対象ファイルセクションにステップ2の出力からスケルトンファイルパスを含める
 
-### 4. task-executor実行
-タスクファイルに従ってテストを実装:
-- TDD原則に従う（Red-Green-Refactor）
-- 各スケルトンテストケースを実装
-- テストを実行してパスを確認
+### 4. テスト実装
 
-### 5. integration-test-reviewer実行
-テスト品質をレビュー:
-- スケルトン準拠を確認
-- テストカバレッジをチェック
-- `needs_revision`の場合 → `requiredFixes`と共にステップ4に戻る
-- `approved`の場合 → 品質チェックに進む
+**Taskツールでの呼び出し**:
+```
+subagent_type: task-executor
+prompt: |
+  タスクファイルに従ってテストを実装。
 
-### 6. quality-fixer実行
-最終品質保証:
-- 全テストを実行
-- カバレッジが要件を満たすことを確認
-- 品質問題を修正
+  タスクファイル: docs/plans/tasks/integration-tests-YYYYMMDD.md
 
-### 7. コミット
-適切なメッセージでテストファイルをコミット。
+  要件:
+  - TDD原則に従う（Red-Green-Refactor）
+  - 各スケルトンテストケースを実装
+  - テストを実行してパスを確認
+```
 
-## 委譲先
-- acceptance-test-generator: スケルトン生成
-- task-executor: テスト実装
-- integration-test-reviewer: テスト品質レビュー
-- quality-fixer: 最終品質チェック
+**期待される出力**: `status`, `testsAdded`
+
+### 5. テストレビュー
+
+**Taskツールでの呼び出し**:
+```
+subagent_type: integration-test-reviewer
+prompt: |
+  テスト品質をレビュー。
+
+  テストファイル: [ステップ2のgeneratedFilesのパス]
+  スケルトンファイル: [元のスケルトンパス]
+```
+
+**期待される出力**: `status` (approved/needs_revision), `requiredFixes`
+
+**フロー制御**:
+- `status: needs_revision` → `requiredFixes`と共にステップ4に戻る
+- `status: approved` → ステップ6に進む
+
+### 6. 品質チェック
+
+**Taskツールでの呼び出し**:
+```
+subagent_type: quality-fixer
+prompt: |
+  テストファイルの最終品質保証。
+
+  スコープ: このワークフローで追加されたテストファイル
+
+  要件:
+  - 全テストを実行
+  - カバレッジが要件を満たすことを確認
+  - 品質問題を修正
+```
+
+**期待される出力**: `approved` (true/false)
+
+### 7. コミット（オーケストレーター）
+
+quality-fixerから`approved: true`の場合:
+- Bashで適切なメッセージを付けてテストファイルをコミット
