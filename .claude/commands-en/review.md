@@ -16,7 +16,7 @@ Orchestrator invokes sub-agents and passes structured JSON between them.
 
 Design Doc (uses most recent if omitted): $ARGUMENTS
 
-**Think deeply** Understand the essence of compliance validation and execute:
+Understand the essence of compliance validation and execute the following steps:
 
 ## Execution Flow
 

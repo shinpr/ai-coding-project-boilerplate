@@ -38,7 +38,7 @@ Invoke **work-planner** using Task tool:
 - `prompt: "Create work plan from Design Doc at [path]"`
 - Interact with user to complete plan and obtain approval for plan content
 
-**Think deeply** Create a work plan from the selected design document, clarifying specific implementation steps and risks.
+Create a work plan from the selected design document, clarifying specific implementation steps and risks.
 
 **Scope**: Up to work plan creation and obtaining approval for plan content.
 

@@ -30,7 +30,7 @@ Requirements: $ARGUMENTS
 ## Execution Flow
 
 ### 1. Requirement Analysis Phase
-**Think harder**: Considering the deep impact on design, first engage in dialogue to understand the background and purpose of requirements:
+Considering the deep impact on design, first engage in dialogue to understand the background and purpose of requirements:
 - What problems do you want to solve?
 - Expected outcomes and success criteria
 - Relationship with existing systems
