@@ -7,18 +7,22 @@ description: Design Docを使用して既存バックエンドコードベース
 
 **スコープ**: バックエンドのみ（acceptance-test-generatorはバックエンドのみ対応）
 
-**Role**: オーケストレーター
+## オーケストレーター定義
+
+**コアアイデンティティ**: 「私は作業者ではない。オーケストレーターである。」
+
+**初動アクション**: ステップ0-8をTodoWriteに登録してから実行を開始。
+
+**委譲理由**: オーケストレーターとして、レビュー・品質チェックを含む全てのステップを完遂させるために、必要なコンテキストを維持する必要がある。タスクファイルをコンテキスト境界とし、全ての作業をサブエージェントが担うことでこれを実現する。
 
 **実行方法**:
 - スケルトン生成 → acceptance-test-generatorに委譲
-- タスクファイル作成 → オーケストレーターが直接作成
+- タスクファイル作成 → オーケストレーターが作成（テスト、設計書の最小限情報のみ）
 - テスト実装 → task-executorに委譲
 - テストレビュー → integration-test-reviewerに委譲
 - 品質チェック → quality-fixerに委譲
 
 Design Docパス: $ARGUMENTS
-
-**TodoWrite登録**: 各ステップを登録し、完了時に更新。
 
 ## 前提条件
 - Design Docが存在すること（手動またはreverse-engineerで作成）
@@ -26,91 +30,100 @@ Design Docパス: $ARGUMENTS
 
 ## 実行フロー
 
-### 1. Design Doc検証（オーケストレーター）
+### ステップ0: スキル実行
+
+スキル実行: documentation-criteria（ステップ3のタスクファイルテンプレート用）
+
+### ステップ1: Design Doc検証
+
 ```bash
 # Design Docの存在確認
 ls $ARGUMENTS || ls docs/design/*.md | grep -v template | tail -1
 ```
 
-### 2. スケルトン生成
+### ステップ2: スケルトン生成
 
-**Taskツールでの呼び出し**:
-```
-subagent_type: acceptance-test-generator
-prompt: |
-  Design Docからテストスケルトンを生成。
-
-  Design Doc: [ステップ1のパス]
-
-  出力:
-  - 統合テストスケルトン (*.int.test.ts)
-  - 該当する場合はE2Eテストスケルトン (*.e2e.test.ts)
-```
+Taskツールでacceptance-test-generatorを呼び出す:
+- `subagent_type`: "acceptance-test-generator"
+- `description`: "テストスケルトン生成"
+- `prompt`: "[ステップ1のパス]のDesign Docからテストスケルトンを生成"
 
 **期待される出力**: `generatedFiles`（統合テストとE2Eのパスを含む）
 
-### 3. タスクファイル作成（オーケストレーター）
+### ステップ3: タスクファイル作成 [GATE]
 
-タスクテンプレートに従ってタスクファイルを作成（documentation-criteriaスキル参照）:
-- パス: `docs/plans/tasks/integration-tests-YYYYMMDD.md`
-- 内容: 生成されたスケルトンに基づくテスト実装タスク
-- 対象ファイルセクションにステップ2の出力からスケルトンファイルパスを含める
+タスクファイル作成先: `docs/plans/tasks/integration-tests-YYYYMMDD.md`
 
-### 4. テスト実装
+**テンプレート**:
+```markdown
+---
+name: [機能名]の統合テスト実装
+type: test-implementation
+---
 
-**Taskツールでの呼び出し**:
+## 目的
+
+スケルトンファイルに定義されたテストケースを実装する。
+
+## 対象ファイル
+
+- スケルトン: [ステップ2のgeneratedFilesのパス]
+- Design Doc: [ステップ1のパス]
+
+## タスク
+
+- [ ] スケルトンの各テストケースを実装
+- [ ] 全テストがパスすることを確認
+- [ ] カバレッジが要件を満たすことを確認
+
+## 受入条件
+
+- 全スケルトンテストケースが実装済み
+- 全テストがパス
+- 品質チェック全項目パス
 ```
-subagent_type: task-executor
-prompt: |
-  タスクファイルに従ってテストを実装。
 
-  タスクファイル: docs/plans/tasks/integration-tests-YYYYMMDD.md
+**出力**: "タスクファイルを[パス]に作成しました。ステップ4へ進む準備完了。"
 
-  要件:
-  - TDD原則に従う（Red-Green-Refactor）
-  - 各スケルトンテストケースを実装
-  - テストを実行してパスを確認
-```
+### ステップ4: テスト実装
+
+Taskツールでtask-executorを呼び出す:
+- `subagent_type`: "task-executor"
+- `description`: "統合テスト実装"
+- `prompt`: "タスクファイル: docs/plans/tasks/integration-tests-YYYYMMDD.md。タスクファイルに従ってテストを実装。"
 
 **期待される出力**: `status`, `testsAdded`
 
-### 5. テストレビュー
+### ステップ5: テストレビュー
 
-**Taskツールでの呼び出し**:
-```
-subagent_type: integration-test-reviewer
-prompt: |
-  テスト品質をレビュー。
-
-  テストファイル: [ステップ2のgeneratedFilesのパス]
-  スケルトンファイル: [元のスケルトンパス]
-```
+Taskツールでintegration-test-reviewerを呼び出す:
+- `subagent_type`: "integration-test-reviewer"
+- `description`: "テスト品質レビュー"
+- `prompt`: "テスト品質をレビュー。テストファイル: [ステップ4のtestsAdded]。スケルトンファイル: [ステップ2のgeneratedFiles]"
 
 **期待される出力**: `status` (approved/needs_revision), `requiredFixes`
 
-**フロー制御**:
-- `status: needs_revision` → `requiredFixes`と共にステップ4に戻る
-- `status: approved` → ステップ6に進む
+### ステップ6: レビュー修正の適用
 
-### 6. 品質チェック
+ステップ5の結果を確認:
+- `status: approved` → 完了としてマーク、ステップ7へ進む
+- `status: needs_revision` → requiredFixesでtask-executorを呼び出し、ステップ5に戻る
 
-**Taskツールでの呼び出し**:
-```
-subagent_type: quality-fixer
-prompt: |
-  テストファイルの最終品質保証。
+Taskツールでtask-executorを呼び出す:
+- `subagent_type`: "task-executor"
+- `description`: "レビュー指摘の修正"
+- `prompt`: "テストファイルの以下の問題を修正: [ステップ5のrequiredFixes]"
 
-  スコープ: このワークフローで追加されたテストファイル
+### ステップ7: 品質チェック
 
-  要件:
-  - 全テストを実行
-  - カバレッジが要件を満たすことを確認
-  - 品質問題を修正
-```
+Taskツールでquality-fixerを呼び出す:
+- `subagent_type`: "quality-fixer"
+- `description`: "最終品質保証"
+- `prompt`: "このワークフローで追加されたテストファイルの最終品質保証。全テストを実行しカバレッジを確認。"
 
 **期待される出力**: `approved` (true/false)
 
-### 7. コミット（オーケストレーター）
+### ステップ8: コミット
 
 quality-fixerから`approved: true`の場合:
 - Bashで適切なメッセージを付けてテストファイルをコミット

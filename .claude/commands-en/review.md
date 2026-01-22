@@ -7,7 +7,6 @@ description: Design Doc compliance validation with optional auto-fixes
 ## Execution Method
 
 - Compliance validation → performed by code-reviewer
-- Rule analysis → performed by rule-advisor
 - Fix implementation → performed by task-executor
 - Quality checks → performed by quality-fixer
 - Re-validation → performed by code-reviewer
@@ -55,14 +54,13 @@ Execute fixes? (y/n):
 
 If user selects `y`:
 
-## Pre-fix Metacognition
-**Required**: `rule-advisor → TodoWrite → task-executor → quality-fixer`
+#### Fix Execution Steps
+**Required**: `TodoWrite → task-executor → quality-fixer`
 
-1. **Execute rule-advisor**: Understand fix essence (symptomatic treatment vs root solution)
-2. **Update TodoWrite**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file following task template (see documentation-criteria skill) -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
-3. **Execute task-executor**: Staged auto-fixes (stops at 5 files)
-4. **Execute quality-fixer**: Confirm quality gate passage
-5. **Re-validate**: Measure improvement with code-reviewer
+1. **Update TodoWrite**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file following task template (see documentation-criteria skill) -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
+2. **Execute task-executor**: Staged auto-fixes (stops at 5 files)
+3. **Execute quality-fixer**: Confirm quality gate passage
+4. **Re-validate**: Measure improvement with code-reviewer
 
 ### 4. Final Report
 ```

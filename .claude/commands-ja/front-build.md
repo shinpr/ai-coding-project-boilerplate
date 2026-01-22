@@ -31,7 +31,7 @@ description: フロントエンド実装を自律実行モードで実行
 
 ### タスク生成判定フロー
 
-**THINK DEEPLY AND SYSTEMATICALLY**: タスクファイルの存在状態を分析し、必要なアクションを決定：
+タスクファイルの存在状態を分析し、必要なアクションを決定:
 
 | 状態 | 基準 | 次のアクション |
 |------|------|--------------|
@@ -52,12 +52,11 @@ description: フロントエンド実装を自律実行モードで実行
 ```
 
 ### 2. タスク分解（承認された場合）
-```
-@task-decomposer 作業計画を読み込み、アトミックなタスクに分解：
-- 入力: docs/plans/[plan-name].md
-- 出力: docs/plans/tasks/ 配下の個別タスクファイル
-- 粒度: 1タスク = 1コミット = 独立実行可能
-```
+
+Taskツールでtask-decomposerを呼び出す:
+- `subagent_type`: "task-decomposer"
+- `description`: "作業計画をタスクに分解"
+- `prompt`: "作業計画を読み込み、アトミックなタスクに分解。入力: docs/plans/[plan-name].md。出力: docs/plans/tasks/配下に個別タスクファイル。粒度: 1タスク = 1コミット = 独立実行可能"
 
 ### 3. 生成確認
 ```bash
