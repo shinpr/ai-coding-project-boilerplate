@@ -37,11 +37,10 @@ description: 問題を調査し、検証を経て解決策を導出する
 
 ### 0.3 問題の本質理解
 
-**Taskツールでrule-advisorを呼び出す**:
-```
-subagent_type: rule-advisor
-prompt: 以下の問題について、本質と必要なルールを特定してください: [ユーザーが報告した問題]
-```
+Taskツールでrule-advisorを呼び出す:
+- `subagent_type`: "rule-advisor"
+- `description`: "問題の本質特定"
+- `prompt`: "以下の問題について、本質と必要なルールを特定してください: [ユーザーが報告した問題]"
 
 rule-advisorの出力から以下を確認：
 - `taskAnalysis.mainFocus`: 問題の主要な焦点
@@ -79,13 +78,10 @@ rule-advisorの出力から以下を確認：
 
 ### ステップ1: 調査（investigator）
 
-**Taskツールでの呼び出し**:
-```
-subagent_type: investigator
-prompt: 以下の現象について、関連する情報を網羅的に収集してください。
-
-現象: [ユーザーが報告した問題]
-```
+Taskツールでinvestigatorを呼び出す:
+- `subagent_type`: "investigator"
+- `description`: "問題情報の収集"
+- `prompt`: "以下の現象について、関連する情報を網羅的に収集してください。現象: [ユーザーが報告した問題]"
 
 **期待される出力**: 証拠マトリクス、比較分析結果、因果追跡結果、未探索領域のリスト、調査の限界
 
@@ -115,13 +111,10 @@ investigatorの出力で`causeCategory: design_gap`または`recurrenceRisk: hig
 
 ### ステップ3: 検証（verifier）
 
-**Taskツールでの呼び出し**:
-```
-subagent_type: verifier
-prompt: 以下の調査結果を検証してください。
-
-調査結果: [調査のJSON出力]
-```
+Taskツールでverifierを呼び出す:
+- `subagent_type`: "verifier"
+- `description`: "調査結果の検証"
+- `prompt`: "以下の調査結果を検証してください。調査結果: [調査のJSON出力]"
 
 **期待される出力**: 代替仮説（最低3つ）、Devil's Advocate評価、最終結論、信頼度
 
@@ -132,15 +125,10 @@ prompt: 以下の調査結果を検証してください。
 
 ### ステップ4: 解決策導出（solver）
 
-**Taskツールでの呼び出し**:
-```
-subagent_type: solver
-prompt: 以下の検証済み結論に基づいて、解決策を導出してください。
-
-原因: [verifierのconclusion.causes]
-原因の関係性: [causesRelationship: independent/dependent/exclusive]
-信頼度: [high/medium/low]
-```
+Taskツールでsolverを呼び出す:
+- `subagent_type`: "solver"
+- `description`: "解決策の導出"
+- `prompt`: "以下の検証済み結論に基づいて、解決策を導出してください。原因: [verifierのconclusion.causes]。原因の関係性: [causesRelationship: independent/dependent/exclusive]。信頼度: [high/medium/low]"
 
 **期待される出力**: 複数の解決策（最低3つ）、トレードオフ分析、推奨案と実装ステップ、残存リスク
 

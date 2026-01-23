@@ -46,7 +46,7 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    - Utilize deliverables from previous process according to subagents-orchestration-guide skill coordination specification
    - Interact with user to complete plan and obtain approval for plan content
 
-**Think deeply** Create a work plan from the selected design document, clarifying specific implementation steps and risks.
+Create a work plan from the selected design document, clarifying specific implementation steps and risks.
 
 **Scope**: Up to work plan creation and obtaining approval for plan content.
 

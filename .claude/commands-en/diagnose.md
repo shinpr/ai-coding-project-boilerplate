@@ -37,11 +37,10 @@ If the following are unclear, **ask with AskUserQuestion** before proceeding:
 
 ### 0.3 Problem Essence Understanding
 
-**Invoke rule-advisor via Task tool**:
-```
-subagent_type: rule-advisor
-prompt: Identify the essence and required rules for this problem: [Problem reported by user]
-```
+Invoke rule-advisor using Task tool:
+- `subagent_type`: "rule-advisor"
+- `description`: "Identify problem essence"
+- `prompt`: "Identify the essence and required rules for this problem: [Problem reported by user]"
 
 Confirm from rule-advisor output:
 - `taskAnalysis.mainFocus`: Primary focus of the problem
@@ -79,13 +78,10 @@ Register the following in TodoWrite and execute:
 
 ### Step 1: Investigation (investigator)
 
-**Task tool invocation**:
-```
-subagent_type: investigator
-prompt: Comprehensively collect information related to the following phenomenon.
-
-Phenomenon: [Problem reported by user]
-```
+Invoke investigator using Task tool:
+- `subagent_type`: "investigator"
+- `description`: "Collect problem information"
+- `prompt`: "Comprehensively collect information related to the following phenomenon. Phenomenon: [Problem reported by user]"
 
 **Expected output**: Evidence matrix, comparison analysis results, causal tracking results, list of unexplored areas, investigation limitations
 
@@ -115,13 +111,10 @@ Proceed to verifier once quality is satisfied.
 
 ### Step 3: Verification (verifier)
 
-**Task tool invocation**:
-```
-subagent_type: verifier
-prompt: Verify the following investigation results.
-
-Investigation results: [Investigation JSON output]
-```
+Invoke verifier using Task tool:
+- `subagent_type`: "verifier"
+- `description`: "Verify investigation results"
+- `prompt`: "Verify the following investigation results. Investigation results: [Investigation JSON output]"
 
 **Expected output**: Alternative hypotheses (at least 3), Devil's Advocate evaluation, final conclusion, confidence
 
@@ -132,15 +125,10 @@ Investigation results: [Investigation JSON output]
 
 ### Step 4: Solution Derivation (solver)
 
-**Task tool invocation**:
-```
-subagent_type: solver
-prompt: Derive solutions based on the following verified conclusion.
-
-Causes: [verifier's conclusion.causes]
-Causes relationship: [causesRelationship: independent/dependent/exclusive]
-Confidence: [high/medium/low]
-```
+Invoke solver using Task tool:
+- `subagent_type`: "solver"
+- `description`: "Derive solutions"
+- `prompt`: "Derive solutions based on the following verified conclusion. Causes: [verifier's conclusion.causes]. Causes relationship: [causesRelationship: independent/dependent/exclusive]. Confidence: [high/medium/low]"
 
 **Expected output**: Multiple solutions (at least 3), tradeoff analysis, recommendation and implementation steps, residual risks
 

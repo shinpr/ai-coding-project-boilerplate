@@ -29,7 +29,7 @@ description: 要件分析から設計書作成まで実行
 
 要件: $ARGUMENTS
 
-**Think harder** 設計への影響を深く考慮し、まず要件の背景と目的を理解するため対話を行い：
+設計への影響を深く考慮し、まず要件の背景と目的を理解するため対話を行い:
 - どのような問題を解決したいか
 - 期待される成果と成功基準
 - 既存システムとの関係性
@@ -42,7 +42,7 @@ description: 要件分析から設計書作成まで実行
 
 **実行内容**:
 - requirement-analyzerによる要件分析
-- ADR作成（アーキテクチャ変更、データフロー変更がある場合）
+- ADR作成（アーキテクチャ変更、新技術、データフロー変更がある場合）
 - technical-designerによるDesign Doc作成
 - document-reviewerによるドキュメントレビュー
 - design-syncによるDesign Doc間整合性検証
@@ -54,7 +54,7 @@ description: 要件分析から設計書作成まで実行
 1. requirement-analyzer → 要件分析
 2. technical-designer → Design Doc作成
 3. document-reviewer → 単一ドキュメント品質チェック
-4. ユーザー承認
+4. ユーザー承認（承認を待つ）
 5. design-sync → Design Doc間整合性検証
    - 矛盾あり → ユーザーに報告 → 修正指示待ち → technical-designer(update)で修正
    - 矛盾なし → 終了
