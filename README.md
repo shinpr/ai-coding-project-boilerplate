@@ -162,7 +162,7 @@ Generate PRD and Design Docs from existing code:
 ```mermaid
 graph TB
     subgraph Phase1[Phase 1: PRD Generation]
-        CMD[/reverse-engineer] --> SD1[scope-discoverer]
+        CMD["/reverse-engineer"] --> SD1[scope-discoverer]
         SD1 --> PRD[prd-creator]
         PRD --> CV1[code-verifier]
         CV1 --> DR1[document-reviewer]
