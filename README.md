@@ -138,6 +138,7 @@ Essential commands for Claude Code:
 | `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation (Backend) |
 | `/front-reverse-design` | Generate frontend Design Docs | Existing frontend code documentation |
 | `/add-integration-tests` | Add integration/E2E tests | When Design Doc exists but tests missing |
+| `/update-doc` | Update existing design documents | Spec changes, review feedback |
 
 [Full command reference →](docs/guides/en/use-cases.md)
 

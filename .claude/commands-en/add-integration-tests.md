@@ -1,5 +1,4 @@
 ---
-name: add-integration-tests
 description: Add integration/E2E tests to existing backend codebase using Design Doc
 ---
 

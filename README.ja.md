@@ -132,6 +132,7 @@ Claude Codeで利用できる主要なコマンド：
 | `/reverse-engineer` | コードからPRD/Design Docを生成 | 既存システムのドキュメント化（Backend） |
 | `/front-reverse-design` | フロントエンドDesign Docを生成 | 既存フロントエンドコードのドキュメント化 |
 | `/add-integration-tests` | 統合/E2Eテストの追加 | Design Doc存在時のテスト追加 |
+| `/update-doc` | 既存設計ドキュメントの更新 | 仕様変更、レビューフィードバック対応 |
 
 [コマンドの詳細はこちら →](docs/guides/ja/use-cases.md)
 
