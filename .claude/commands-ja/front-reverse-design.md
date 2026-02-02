@@ -1,5 +1,4 @@
 ---
-name: front-reverse-design
 description: 既存PRDを使用して既存コードベースからフロントエンドDesign Docを生成
 ---
 

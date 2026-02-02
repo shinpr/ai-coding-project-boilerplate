@@ -1,5 +1,4 @@
 ---
-name: front-review
 description: Design Doc準拠検証と必要に応じた自動修正
 ---
 

@@ -1,5 +1,4 @@
 ---
-name: reverse-engineer
 description: 既存コードベースからPRDとDesign Docを生成するリバースエンジニアリングワークフロー
 ---
 

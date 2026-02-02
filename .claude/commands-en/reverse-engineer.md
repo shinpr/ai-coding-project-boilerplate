@@ -1,5 +1,4 @@
 ---
-name: reverse-engineer
 description: Generate PRD and Design Docs from existing codebase through discovery, generation, verification, and review workflow
 ---
 

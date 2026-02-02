@@ -1,5 +1,4 @@
 ---
-name: add-integration-tests
 description: Design Docを使用して既存バックエンドコードベースに統合/E2Eテストを追加
 ---
 
