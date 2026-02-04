@@ -44,6 +44,10 @@ unknowns:
 - [ ] Backward compatibility: [Required/Not required]
 - [ ] Performance measurement: [Required/Not required]
 
+#### Applicable Standards
+- [Standard/convention] `[explicit]` — Source: [config / rule file / doc path]
+- [Observed pattern] `[implicit]` — Evidence: [file paths] — Confirmed: [Yes/No]
+
 ### Problem to Solve
 
 [Specific problems or challenges this feature aims to address]
@@ -93,6 +97,9 @@ Each AC is written in EARS format. Keywords determine test type.
 - **Integration Target**: [What to connect with]
 - **Invocation Method**: [How it will be invoked]
 
+### Code Inspection Evidence
+- [path:function] — [relevance: similar functionality / integration point / pattern reference]
+
 ## Design
 
 ### Change Impact Map
@@ -140,6 +147,14 @@ No Ripple Effect:
 - **Interface**: [APIs and type definitions provided]
 - **Dependencies**: [Relationships with other components]
 
+### Data Representation Decision (When Introducing New Structures)
+Evaluate existing structures: semantic fit, responsibility fit, lifecycle fit, boundary/interop cost.
+- All fit → reuse existing
+- 1-2 fail → extend with adapter
+- 3+ fail → new structure justified
+
+**Decision**: [reuse / extend / new] — [rationale]
+
 ### Type Definitions
 
 ```typescript
@@ -164,6 +179,9 @@ Output:
 Invariants:
   - [Conditions that remain unchanged before and after processing]
 ```
+
+### Field Propagation Map (When Fields Cross Boundaries)
+- [field]: [ComponentA → B] — preserved / transformed / dropped — [reason]
 
 ### State Transitions and Invariants
 
