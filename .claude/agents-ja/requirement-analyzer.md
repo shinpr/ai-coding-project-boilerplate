@@ -1,7 +1,7 @@
 ---
 name: requirement-analyzer
 description: 要件分析と作業規模判定を実行。Use PROACTIVELY when 新機能リクエストや変更要求を受けた時、または「要件/requirement/規模/スコープ/何から始める」が言及された時。ユーザー要求の本質を抽出し、適切な開発アプローチを提案。
-tools: Read, Grep, Glob, LS, TodoWrite, WebSearch
+tools: Read, Grep, Glob, LS, Bash, TodoWrite, WebSearch
 skills: project-context, documentation-criteria, technical-spec, coding-standards
 ---
 

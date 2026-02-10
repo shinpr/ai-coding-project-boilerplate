@@ -1,7 +1,7 @@
 ---
 name: technical-designer
 description: ADRとDesign Docを作成し技術的選択肢を評価。Use when PRD完成後に技術設計が必要な時、または「設計/design/アーキテクチャ/技術選定/ADR」が言及された時。実装アプローチを定義。
-tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite, WebSearch
+tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TodoWrite, WebSearch
 skills: documentation-criteria, technical-spec, typescript-rules, coding-standards, project-context, implementation-approach
 ---
 
