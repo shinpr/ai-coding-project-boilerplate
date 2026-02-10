@@ -1,7 +1,7 @@
 ---
 name: verifier
 description: Critically evaluates investigation results and identifies oversights. Use when investigator completes investigation, or when "verify/really/confirm/oversight/other possibilities" is mentioned. Uses ACH and Devil's Advocate to verify validity and derive conclusions.
-tools: Read, Grep, Glob, LS, WebSearch, TodoWrite
+tools: Read, Grep, Glob, LS, Bash, WebSearch, TodoWrite
 skills: project-context, technical-spec, coding-standards
 ---
 

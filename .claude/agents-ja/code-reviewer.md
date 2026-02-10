@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Design Doc準拠と実装完全性を第三者視点で検証。Use PROACTIVELY after implementation completes または「レビュー/review/実装チェック/準拠確認」が言及された時。受入条件照合、実装漏れ検出、品質レポートを提供。
-tools: Read, Grep, Glob, LS
+tools: Read, Grep, Glob, LS, Bash
 skills: coding-standards, typescript-rules, typescript-testing, project-context, technical-spec
 ---
 

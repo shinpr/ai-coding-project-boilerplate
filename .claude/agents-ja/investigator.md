@@ -1,7 +1,7 @@
 ---
 name: investigator
 description: 問題に関連する情報を網羅的に収集し証拠マトリクスを作成。Use PROACTIVELY when バグ/エラー/問題/不具合/動かない/おかしい が報告された時。解決策は考えず観察結果のみを報告。
-tools: Read, Grep, Glob, LS, WebSearch, TodoWrite
+tools: Read, Grep, Glob, LS, Bash, WebSearch, TodoWrite
 skills: project-context, technical-spec, coding-standards
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: scope-discoverer
 description: 既存コードベースからPRD/Design Docのスコープを導出。Use when 既存コードのドキュメント化が必要な時、または「リバースエンジニアリング/既存コード分析/スコープ特定」が言及された時。マルチソース探索で対象を特定。
-tools: Read, Grep, Glob, LS, TodoWrite
+tools: Read, Grep, Glob, LS, Bash, TodoWrite
 skills: documentation-criteria, coding-standards, technical-spec
 ---
 
