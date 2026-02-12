@@ -184,6 +184,20 @@ async function setupProject() {
       execSync(`node ${postSetupScript}`, { stdio: 'inherit', cwd: targetRoot });
     }
 
+    // Create .create-ai-project.json manifest
+    const packageJson = JSON.parse(fs.readFileSync(path.join(sourceRoot, 'package.json'), 'utf8'));
+    const manifest = {
+      version: packageJson.version,
+      language,
+      ignored: [],
+      updatedAt: new Date().toISOString(),
+    };
+    fs.writeFileSync(
+      path.join(targetRoot, '.create-ai-project.json'),
+      JSON.stringify(manifest, null, 2) + '\n'
+    );
+    console.log('📋 Created .create-ai-project.json manifest.');
+
     console.log('✅ Project setup completed!');
   } catch (error) {
     console.error(`❌ Setup failed: ${error.message}`);
