@@ -20,19 +20,24 @@ const targetRoot = path.resolve(process.cwd(), projectName);
 const excludeList = [
   'node_modules',
   '.git',
+  '.github',
+  '.npmignore',
   'dist',
   'coverage',
   '.vitest-cache',
   'tmp',
   '.claudelang',
   'CLAUDE.md',
-  'docs/rules',
-  'docs/guides/sub-agents.md',
+  'CHANGELOG.md',
+  'LICENSE',
+  'package-lock.json',
   '.claude/commands',
   '.claude/agents',
   '.claude/skills',
-  'bin', // Exclude bin directory for production use
-  'templates' // Exclude templates directory for production use
+  'bin',
+  'templates',
+  'scripts/setup-project.js',
+  'scripts/update-project.js',
 ];
 
 // Files to process with template replacements
