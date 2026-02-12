@@ -15,16 +15,17 @@
 
 ## 📖 Table of Contents
 1. [Quick Start (3 Steps)](#-quick-start-3-steps)
-2. [Why Sub Agents?](#-why-sub-agents)
-3. [Skills System](#-skills-system)
-4. [Real Projects & Results](#-real-world-results)
-5. [Documentation & Guides](#-documentation--guides)
-6. [Slash Commands](#-slash-commands)
-7. [Development Workflow](#-claude-code-workflow)
-8. [Project Structure](#-project-structure)
-9. [Package Manager Configuration](#-package-manager-configuration)
-10. [Multilingual Support](#-multilingual-support)
-11. [FAQ](#-faq)
+2. [Updating Existing Projects](#-updating-existing-projects)
+3. [Why Sub Agents?](#-why-sub-agents)
+4. [Skills System](#-skills-system)
+5. [Real Projects & Results](#-real-world-results)
+6. [Documentation & Guides](#-documentation--guides)
+7. [Slash Commands](#-slash-commands)
+8. [Development Workflow](#-claude-code-workflow)
+9. [Project Structure](#-project-structure)
+10. [Package Manager Configuration](#-package-manager-configuration)
+11. [Multilingual Support](#-multilingual-support)
+12. [FAQ](#-faq)
 
 > **Which one should you use?**
 > - **Use this Boilerplate** if you want to **maximize precision** with **TypeScript × Sub-agent** setup optimized for **Claude Code**.
@@ -47,6 +48,60 @@ claude                    # Launch Claude Code
 ```
 
 > 💡 **First time?** Check the [Quick Start Guide](docs/guides/en/quickstart.md) for detailed setup instructions
+
+## 🔄 Updating Existing Projects
+
+Keep your project's agent definitions, commands, skills, and AI rules up to date. Run from your project's root directory:
+
+```bash
+# Preview changes without applying
+npx create-ai-project update --dry-run
+
+# Apply updates
+npx create-ai-project update
+```
+
+### How It Works
+
+When you run `npx create-ai-project update`, the CLI:
+
+1. Checks your project's `.create-ai-project.json` manifest for the current version
+2. Compares it with the latest package version
+3. Shows the CHANGELOG for review
+4. Replaces managed files with the latest versions
+5. Regenerates active directories for your language setting
+
+### What Gets Updated
+
+| Target | Path |
+|--------|------|
+| Agent definitions | `.claude/agents-{lang}/` |
+| Command definitions | `.claude/commands-{lang}/` |
+| Skill definitions | `.claude/skills-{lang}/` |
+| AI rules | `CLAUDE.{lang}.md` |
+
+Your source code (`src/`), `package.json`, and other project files are never touched.
+
+### Protecting Customized Files
+
+If you've customized a file and don't want it overwritten:
+
+```bash
+# Add to ignore list
+npx create-ai-project update --ignore skills project-context
+npx create-ai-project update --ignore agents task-executor
+npx create-ai-project update --ignore commands implement
+npx create-ai-project update --ignore CLAUDE.md
+
+# Remove from ignore list
+npx create-ai-project update --unignore skills project-context
+```
+
+Ignored files are preserved during updates. Note that ignoring files may cause version mismatch with other updated components.
+
+### First Run on Existing Projects
+
+If your project was created before the update feature, just run `npx create-ai-project update` from your project's root directory. It will automatically initialize the manifest by detecting your language from `.claudelang`.
 
 ## 🚀 Why Sub Agents?
 

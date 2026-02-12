@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { copyDirectory, removeDirectory, copyFile } = require('./utils');
 
 const SUPPORTED_LANGUAGES = ['ja', 'en'];
 const CONFIG_FILE = '.claudelang';
@@ -48,62 +49,6 @@ function loadConfig() {
  */
 function saveConfig(config) {
   fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
-}
-
-/**
- * Recursively copy directory
- */
-function copyDirectory(source, target) {
-  if (!fs.existsSync(source)) {
-    return false;
-  }
-
-  // Create target directory
-  if (!fs.existsSync(target)) {
-    fs.mkdirSync(target, { recursive: true });
-  }
-
-  const entries = fs.readdirSync(source, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const sourcePath = path.join(source, entry.name);
-    const targetPath = path.join(target, entry.name);
-
-    if (entry.isDirectory()) {
-      copyDirectory(sourcePath, targetPath);
-    } else {
-      fs.copyFileSync(sourcePath, targetPath);
-    }
-  }
-
-  return true;
-}
-
-/**
- * Remove directory
- */
-function removeDirectory(dirPath) {
-  if (fs.existsSync(dirPath)) {
-    fs.rmSync(dirPath, { recursive: true, force: true });
-  }
-}
-
-/**
- * Copy file
- */
-function copyFile(source, target) {
-  if (!fs.existsSync(source)) {
-    return false;
-  }
-
-  // Create target directory
-  const targetDir = path.dirname(target);
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-  }
-
-  fs.copyFileSync(source, target);
-  return true;
 }
 
 /**

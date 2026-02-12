@@ -7,22 +7,54 @@ const fs = require('fs');
 // Parse command line arguments
 const args = process.argv.slice(2);
 
+// Route to update subcommand
+if (args[0] === 'update') {
+  const updateScript = path.join(__dirname, '..', 'scripts', 'update-project.js');
+  const updateArgs = args.slice(1);
+  const updateProcess = spawn('node', [updateScript, ...updateArgs], {
+    stdio: 'inherit',
+    cwd: process.cwd()
+  });
+
+  updateProcess.on('close', (code) => {
+    process.exit(code || 0);
+  });
+
+  updateProcess.on('error', (err) => {
+    console.error(`\n❌ Failed to execute update script: ${err.message}`);
+    process.exit(1);
+  });
+
+  return;
+}
+
 if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
   console.log(`
 🚀 AI Coding Project Boilerplate
 
 Usage:
   npx create-ai-project <project-name> [options]
+  npx create-ai-project update [options]
   npm init ai-project <project-name> [options]
+
+Commands:
+  update             Update agent definitions in an existing project
 
 Options:
   --lang=<language>  Set the project language (ja or en, default: en)
   --help, -h         Show this help message
 
+Update Options:
+  --dry-run                    Preview changes without applying
+  --ignore <category> [name]   Add a resource to the ignore list
+  --unignore <category> [name] Remove a resource from the ignore list
+
 Examples:
   npx create-ai-project my-project
   npx create-ai-project my-project --lang=ja
-  npm init ai-project my-project --lang=ja
+  npx create-ai-project update
+  npx create-ai-project update --dry-run
+  npx create-ai-project update --ignore skills project-context
   `);
   process.exit(0);
 }

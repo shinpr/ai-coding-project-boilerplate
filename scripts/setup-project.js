@@ -20,19 +20,24 @@ const targetRoot = path.resolve(process.cwd(), projectName);
 const excludeList = [
   'node_modules',
   '.git',
+  '.github',
+  '.npmignore',
   'dist',
   'coverage',
   '.vitest-cache',
   'tmp',
   '.claudelang',
   'CLAUDE.md',
-  'docs/rules',
-  'docs/guides/sub-agents.md',
+  'CHANGELOG.md',
+  'LICENSE',
+  'package-lock.json',
   '.claude/commands',
   '.claude/agents',
   '.claude/skills',
-  'bin', // Exclude bin directory for production use
-  'templates' // Exclude templates directory for production use
+  'bin',
+  'templates',
+  'scripts/setup-project.js',
+  'scripts/update-project.js',
 ];
 
 // Files to process with template replacements
@@ -183,6 +188,20 @@ async function setupProject() {
     if (fs.existsSync(postSetupScript)) {
       execSync(`node ${postSetupScript}`, { stdio: 'inherit', cwd: targetRoot });
     }
+
+    // Create .create-ai-project.json manifest
+    const packageJson = JSON.parse(fs.readFileSync(path.join(sourceRoot, 'package.json'), 'utf8'));
+    const manifest = {
+      version: packageJson.version,
+      language,
+      ignored: [],
+      updatedAt: new Date().toISOString(),
+    };
+    fs.writeFileSync(
+      path.join(targetRoot, '.create-ai-project.json'),
+      JSON.stringify(manifest, null, 2) + '\n'
+    );
+    console.log('📋 Created .create-ai-project.json manifest.');
 
     console.log('✅ Project setup completed!');
   } catch (error) {
