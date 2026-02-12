@@ -88,10 +88,13 @@ npx create-ai-project update
 
 ```bash
 # ignoreリストに追加
-npx create-ai-project update --ignore .claude/skills-ja/project-context
+npx create-ai-project update --ignore skills project-context
+npx create-ai-project update --ignore agents task-executor
+npx create-ai-project update --ignore commands implement
+npx create-ai-project update --ignore CLAUDE.md
 
 # ignoreリストから削除
-npx create-ai-project update --unignore .claude/skills-ja/project-context
+npx create-ai-project update --unignore skills project-context
 ```
 
 ignoreされたファイルは更新時に保護されます。ただし、ignoreしたファイルと他の更新されたコンポーネント間でバージョンの不整合が発生する可能性があります。

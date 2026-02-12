@@ -9,6 +9,9 @@ const MANIFEST_FILE = '.create-ai-project.json';
 const CLAUDELANG_FILE = '.claudelang';
 const SUPPORTED_LANGUAGES = ['ja', 'en'];
 
+// Categories that can be ignored
+const VALID_CATEGORIES = ['agents', 'commands', 'skills'];
+
 // Directories and files managed by the boilerplate
 const MANAGED_DIRS = [
   (lang) => `.claude/agents-${lang}`,
@@ -41,6 +44,59 @@ function prompt(question) {
       resolve(answer.trim());
     });
   });
+}
+
+// ---------------------------------------------------------------------------
+// Ignore identifier resolution
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve a logical ignore identifier to actual file paths for all languages.
+ *
+ * Examples:
+ *   "agents task-executor" -> [".claude/agents-ja/task-executor.md", ".claude/agents-en/task-executor.md"]
+ *   "skills project-context" -> [".claude/skills-ja/project-context", ".claude/skills-en/project-context"]
+ *   "CLAUDE.md" -> ["CLAUDE.ja.md", "CLAUDE.en.md"]
+ */
+function resolveIgnorePaths(category, name) {
+  if (category === 'CLAUDE.md') {
+    return SUPPORTED_LANGUAGES.map((lang) => `CLAUDE.${lang}.md`);
+  }
+
+  if (!VALID_CATEGORIES.includes(category)) {
+    console.error(`  Error: unknown category "${category}". Valid: ${VALID_CATEGORIES.join(', ')}, CLAUDE.md`);
+    process.exit(1);
+  }
+
+  if (!name) {
+    console.error(`  Error: --ignore ${category} requires a resource name.`);
+    console.error(`  Example: --ignore ${category} my-resource`);
+    process.exit(1);
+  }
+
+  return SUPPORTED_LANGUAGES.map((lang) => {
+    const base = `.claude/${category}-${lang}/${name}`;
+    // agents and commands are .md files, skills are directories
+    return category === 'skills' ? base : `${base}.md`;
+  });
+}
+
+/**
+ * Format an ignore identifier for display and storage.
+ * Stored as "category/name" (e.g., "agents/task-executor") or "CLAUDE.md".
+ */
+function formatIgnoreId(category, name) {
+  if (category === 'CLAUDE.md') return 'CLAUDE.md';
+  return `${category}/${name}`;
+}
+
+/**
+ * Parse a stored ignore identifier back to category and name.
+ */
+function parseIgnoreId(id) {
+  if (id === 'CLAUDE.md') return { category: 'CLAUDE.md', name: null };
+  const [category, ...rest] = id.split('/');
+  return { category, name: rest.join('/') };
 }
 
 // ---------------------------------------------------------------------------
@@ -118,37 +174,55 @@ async function initManifest(projectRoot) {
 // Ignore management
 // ---------------------------------------------------------------------------
 
-function addIgnore(projectRoot, filePath) {
+function addIgnore(projectRoot, category, name) {
   const manifest = loadManifest(projectRoot);
   if (!manifest) {
     console.error(`  Error: ${MANIFEST_FILE} not found. Run "npx create-ai-project update" first.`);
     process.exit(1);
   }
-  const normalized = path.normalize(filePath);
-  if (manifest.ignored.includes(normalized)) {
-    console.log(`  Already ignored: ${normalized}`);
+
+  // Validate the identifier resolves to real paths
+  resolveIgnorePaths(category, name);
+
+  const id = formatIgnoreId(category, name);
+  if (manifest.ignored.includes(id)) {
+    console.log(`  Already ignored: ${id}`);
     return;
   }
-  manifest.ignored.push(normalized);
+  manifest.ignored.push(id);
   saveManifest(projectRoot, manifest);
-  console.log(`  Added to ignore list: ${normalized}`);
+  console.log(`  Added to ignore list: ${id}`);
 }
 
-function removeIgnore(projectRoot, filePath) {
+function removeIgnore(projectRoot, category, name) {
   const manifest = loadManifest(projectRoot);
   if (!manifest) {
     console.error(`  Error: ${MANIFEST_FILE} not found. Run "npx create-ai-project update" first.`);
     process.exit(1);
   }
-  const normalized = path.normalize(filePath);
-  const idx = manifest.ignored.indexOf(normalized);
+
+  const id = formatIgnoreId(category, name);
+  const idx = manifest.ignored.indexOf(id);
   if (idx === -1) {
-    console.log(`  Not in ignore list: ${normalized}`);
+    console.log(`  Not in ignore list: ${id}`);
     return;
   }
   manifest.ignored.splice(idx, 1);
   saveManifest(projectRoot, manifest);
-  console.log(`  Removed from ignore list: ${normalized}`);
+  console.log(`  Removed from ignore list: ${id}`);
+}
+
+// ---------------------------------------------------------------------------
+// Resolve all ignored identifiers to actual file paths
+// ---------------------------------------------------------------------------
+
+function resolveAllIgnoredPaths(ignoredIds) {
+  const paths = [];
+  for (const id of ignoredIds) {
+    const { category, name } = parseIgnoreId(id);
+    paths.push(...resolveIgnorePaths(category, name));
+  }
+  return paths;
 }
 
 // ---------------------------------------------------------------------------
@@ -236,57 +310,60 @@ function showChangelog(packageRoot) {
 
 function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
   const managed = getManagedPaths();
-  const ignored = manifest.ignored || [];
+  const ignoredIds = manifest.ignored || [];
+  const ignoredPaths = resolveAllIgnoredPaths(ignoredIds);
 
-  // Determine which ignored paths actually fall within managed dirs/files
-  const relevantIgnored = ignored.filter((ig) => {
-    return managed.dirs.some((d) => ig === d || ig.startsWith(d + path.sep)) ||
-           managed.files.includes(ig);
-  });
-
-  if (relevantIgnored.length > 0) {
-    console.log('  The following paths are ignored and will be preserved:');
-    for (const p of relevantIgnored) {
-      console.log(`    - ${p}`);
+  if (ignoredIds.length > 0) {
+    console.log('  The following are ignored and will be preserved:');
+    for (const id of ignoredIds) {
+      console.log(`    - ${id}`);
     }
-    console.log('  Warning: version mismatch may occur for ignored paths.\n');
+    console.log('  Warning: version mismatch may occur for ignored resources.\n');
   }
 
   if (dryRun) {
     console.log('  [dry-run] The following would be updated:\n');
     for (const dir of managed.dirs) {
-      const src = path.join(packageRoot, dir);
-      const exists = fs.existsSync(src);
-      console.log(`    ${exists ? 'UPDATE' : 'SKIP  '} ${dir}/`);
+      const dst = path.join(projectRoot, dir);
+      const dstExists = fs.existsSync(dst);
+      console.log(`    ${dstExists ? 'UPDATE' : 'SKIP  '} ${dir}/`);
     }
     for (const file of managed.files) {
-      const src = path.join(packageRoot, file);
-      const exists = fs.existsSync(src);
-      console.log(`    ${exists ? 'UPDATE' : 'SKIP  '} ${file}`);
+      const dst = path.join(projectRoot, file);
+      const dstExists = fs.existsSync(dst);
+      console.log(`    ${dstExists ? 'UPDATE' : 'SKIP  '} ${file}`);
     }
     console.log('\n  No changes were made (dry-run).');
     return;
   }
 
   // 1. Backup ignored paths
-  const backups = backupIgnored(projectRoot, relevantIgnored);
+  const backups = backupIgnored(projectRoot, ignoredPaths);
 
-  // 2. Replace managed directories
+  // 2. Replace managed directories (only if target directory exists)
   for (const dir of managed.dirs) {
     const src = path.join(packageRoot, dir);
     const dst = path.join(projectRoot, dir);
     if (!fs.existsSync(src)) continue;
+    if (!fs.existsSync(dst)) {
+      console.log(`  Skipped ${dir}/ (not present in project)`);
+      continue;
+    }
 
     removeDirectory(dst);
     copyDirectory(src, dst);
     console.log(`  Updated ${dir}/`);
   }
 
-  // 3. Replace managed files
+  // 3. Replace managed files (only if target file exists)
   for (const file of managed.files) {
     const src = path.join(packageRoot, file);
     const dst = path.join(projectRoot, file);
     if (!fs.existsSync(src)) continue;
+    if (!fs.existsSync(dst)) {
+      console.log(`  Skipped ${file} (not present in project)`);
+      continue;
+    }
 
     copyFile(src, dst);
     console.log(`  Updated ${file}`);
@@ -295,20 +372,18 @@ function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
   // 4. Restore ignored paths
   if (backups.length > 0) {
     restoreIgnored(projectRoot, backups);
-    console.log('  Restored ignored paths.');
+    console.log('  Restored ignored resources.');
   }
 
   // 5. Re-run set-language to regenerate active directories
+  // Use the package's set-language.js (not the project's) to ensure latest version
   const language = manifest.language;
-  const setLanguagePath = path.join(projectRoot, 'scripts', 'set-language.js');
-  if (fs.existsSync(setLanguagePath)) {
-    const { switchLanguage } = require(setLanguagePath);
-    const originalCwd = process.cwd();
-    process.chdir(projectRoot);
-    switchLanguage(language);
-    process.chdir(originalCwd);
-    console.log(`  Regenerated active directories for language: ${language}`);
-  }
+  const { switchLanguage } = require('./set-language');
+  const originalCwd = process.cwd();
+  process.chdir(projectRoot);
+  switchLanguage(language);
+  process.chdir(originalCwd);
+  console.log(`  Regenerated active directories for language: ${language}`);
 
   // 6. Update manifest
   const newVersion = getPackageVersion();
@@ -328,26 +403,37 @@ async function main() {
   const packageRoot = getPackageRoot();
   const packageVersion = getPackageVersion();
 
-  // Handle --ignore / --unignore flags
+  // Handle --ignore <category> [name]
   if (args.includes('--ignore')) {
     const idx = args.indexOf('--ignore');
-    const target = args[idx + 1];
-    if (!target) {
-      console.error('  Error: --ignore requires a path argument.');
+    const category = args[idx + 1];
+    const name = args[idx + 2]; // undefined for CLAUDE.md (no name needed)
+    if (!category) {
+      console.error('  Error: --ignore requires a category.');
+      console.error('  Usage: --ignore agents <name>');
+      console.error('         --ignore commands <name>');
+      console.error('         --ignore skills <name>');
+      console.error('         --ignore CLAUDE.md');
       process.exit(1);
     }
-    addIgnore(projectRoot, target);
+    addIgnore(projectRoot, category, name);
     return;
   }
 
+  // Handle --unignore <category> [name]
   if (args.includes('--unignore')) {
     const idx = args.indexOf('--unignore');
-    const target = args[idx + 1];
-    if (!target) {
-      console.error('  Error: --unignore requires a path argument.');
+    const category = args[idx + 1];
+    const name = args[idx + 2];
+    if (!category) {
+      console.error('  Error: --unignore requires a category.');
+      console.error('  Usage: --unignore agents <name>');
+      console.error('         --unignore commands <name>');
+      console.error('         --unignore skills <name>');
+      console.error('         --unignore CLAUDE.md');
       process.exit(1);
     }
-    removeIgnore(projectRoot, target);
+    removeIgnore(projectRoot, category, name);
     return;
   }
 

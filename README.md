@@ -88,10 +88,13 @@ If you've customized a file and don't want it overwritten:
 
 ```bash
 # Add to ignore list
-npx create-ai-project update --ignore .claude/skills-en/project-context
+npx create-ai-project update --ignore skills project-context
+npx create-ai-project update --ignore agents task-executor
+npx create-ai-project update --ignore commands implement
+npx create-ai-project update --ignore CLAUDE.md
 
 # Remove from ignore list
-npx create-ai-project update --unignore .claude/skills-en/project-context
+npx create-ai-project update --unignore skills project-context
 ```
 
 Ignored files are preserved during updates. Note that ignoring files may cause version mismatch with other updated components.

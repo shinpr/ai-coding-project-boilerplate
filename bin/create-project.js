@@ -45,15 +45,16 @@ Options:
   --help, -h         Show this help message
 
 Update Options:
-  --dry-run          Preview changes without applying
-  --ignore <path>    Add a path to the ignore list
-  --unignore <path>  Remove a path from the ignore list
+  --dry-run                    Preview changes without applying
+  --ignore <category> [name]   Add a resource to the ignore list
+  --unignore <category> [name] Remove a resource from the ignore list
 
 Examples:
   npx create-ai-project my-project
   npx create-ai-project my-project --lang=ja
   npx create-ai-project update
   npx create-ai-project update --dry-run
+  npx create-ai-project update --ignore skills project-context
   `);
   process.exit(0);
 }
