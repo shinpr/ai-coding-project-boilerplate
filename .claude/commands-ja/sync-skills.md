@@ -4,82 +4,65 @@ description: スキル修正後のメタデータ同期とrule-advisor精度最�
 
 **コマンドコンテキスト**: スキルファイル編集後のメンテナンス作業
 
-**Think deeply** rule-advisorの実行精度を最大化するための同期作業：
+## 本質的な目的
 
-## 実行フロー
+単なる整合性維持ではなく、rule-advisorの選択精度向上。スキル編集作業の仕上げとしてのメタデータ最適化。
 
-### 1. スキルファイルのスキャン
-```bash
-# 実行時のスキルディレクトリ
-SKILLS_DIR=".claude/skills"
-INDEX_FILE=".claude/skills/task-analyzer/references/skills-index.yaml"
+## 実行プロセス
 
-# 全スキルファイルを解析
-find "${SKILLS_DIR}" -name "SKILL.md" -type f | sort
+以下のステップをTodoWriteに登録し、順番に進行する。
+
+### Step 1: スキルファイルのスキャン
+
+- Glob: `.claude/skills/*/SKILL.md` で全スキルファイルを取得
+- Read: `.claude/skills/task-analyzer/references/skills-index.yaml` を読み込み
+
+### Step 2: メタデータ同期と最適化
+
+各スキルについて以下を検証：
+
+| メタデータ | 検証内容 |
+|-----------|---------|
+| sections | SKILL.mdの`## `セクションと100%一致するか |
+| tags | ファイル内容のキーワードと適切に一致するか |
+| typical-use | 具体的な利用場面を明示しているか |
+| key-references | 最新の手法を網羅しているか |
+
+### Step 3: 変更要否の判断
+
+**評価シーケンス**:
+- IF sections 100%同期済み → 「同期確認完了、更新不要」と報告して終了
+- IF 内容とタグのミスマッチがゼロ → 更新不要と判断して終了
+- IF AND ONLY IF 測定可能な改善が存在 → 具体的な修正提案（before/after値を含む）を生成
+
+**注意**: 変更を強制しない。改善が検出されない場合は「修正不要」と報告して終了。
+
+### Step 4: ユーザー承認と適用
+
+提案をユーザーに提示し、承認後に適用：
+
+```
+[1/N] typescript-rules
+  ✅ sections: 同期完了
+  💡 tags提案: +[functional-programming]
+  💡 typical-use: "旧記述" → "新記述"
 ```
 
-### 2. メタデータ同期と最適化
+## 完了条件
 
-#### セクション自動同期
-- 各SKILL.mdの`## `セクションを抽出
-- skills-index.yamlのsectionsを自動更新
+- [ ] 全スキルファイルをスキャンした
+- [ ] skills-index.yamlとの整合性を検証した
+- [ ] 変更要否を判断した（不要なら報告して終了）
+- [ ] 変更がある場合、ユーザー承認を取得した
+- [ ] 変更を適用した
 
-#### タグの最適化
-- ファイル内容からキーワードを分析
-- 適切なタグの追加提案
-- 不要なタグの削除提案
+## エラーハンドリング
 
-#### typical-useの更新
-- ファイルの変更内容から使用場面を推測
-- より具体的な利用シーンの記述を提案
-
-#### key-referencesの補完
-- 新しく追加された概念や手法を検出
-- 関連する参考文献の追加を提案
-
-### 3. rule-advisor向け最適化
-
-メタデータの質を向上させ、rule-advisorが正確にスキルを選択できるよう調整：
-
-```
-=== スキルメタデータ同期 ===
-対象: .claude/skills
-
-実行した更新:
-✅ sections同期
-  - typescript-testing: 2セクション追加
-  - coding-standards: 1セクション更新
-
-✅ tags最適化
-  - typescript-rules: [functional-programming]タグ追加を提案
-  - technical-spec: [deprecated]タグ削除を提案
-
-✅ typical-use改善
-  - 3スキルの説明をより具体的に更新
-
-最終結果: rule-advisor精度向上のための最適化完了
-```
-
-## 🧠 メタ認知ポイント
-
-**本質的な目的**:
-- 単なる整合性維持ではなく、rule-advisorの選択精度向上
-- スキル編集作業の仕上げとしてのメタデータ最適化
-
-**品質基準**:
-- sectionsは100%同期必須
-- tagsは内容を正確に反映
-- typical-useは具体的な利用場面を明示
-- key-referencesは最新の手法を網羅
-
-## 変更要否の判断
-
-以下の順序で評価：
-- sectionsが100%同期済み → 「同期確認完了、更新不要」と報告して終了
-- 内容とタグが適切に一致 → 更新不要と判断
-- 改善の余地がある場合のみ → 具体的な修正提案を提示
-
-**注意**: 毎回変更する必要はありません。変更不要な場合はその旨を明確に報告して終了してください。
+| エラー | アクション |
+|--------|-----------|
+| skills-index.yaml未発見 | パスを確認し、見つからない場合は報告して終了 |
+| SKILL.mdのパースエラー | 該当スキルをスキップし、他を継続 |
+| 大量の不整合検出 | 優先度の高いものから段階的に対応を提案 |
 
 ## 実行タイミング
 
@@ -87,30 +70,5 @@ find "${SKILLS_DIR}" -name "SKILL.md" -type f | sort
 - 新しいスキルファイル追加時
 - 大規模なスキル改訂後
 - rule-advisorの選択精度が低下したと感じた時
-
-## 出力例
-
-```
-=== スキルメタデータ同期開始 ===
-対象: .claude/skills (13スキル)
-
-[1/13] typescript-rules
-  ✅ sections: 7件同期完了
-  💡 tags提案: +[functional-programming, dependency-injection]
-  💡 typical-use: "TypeScript実装全般" → "型安全性重視の実装とモダンTypeScript機能活用"
-
-[2/13] typescript-testing
-  ✅ sections: 2件追加（テストの粒度、モックの型安全性）
-  ✅ tags: 変更なし
-  ✅ typical-use: 現状維持
-
-...
-
-=== 同期完了 ===
-更新: 3スキル
-提案: 5件（承認してください）
-
-rule-advisor精度向上: 推定15%改善
-```
 
 **スコープ**: スキル修正作業後のメタデータ同期とrule-advisor精度最適化。

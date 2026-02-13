@@ -7,7 +7,7 @@ New here? Start with the [Quick Start Guide](./quickstart.md). This page serves 
 | Command | Purpose | Example |
 |---------|---------|---------|
 | `/implement` | End-to-end feature implementation (from requirements to completion) | `/implement Add rate limiting to API` |
-| `/task` | Single task with rule-based precision | `/task Fix bug` |
+| `/task` | Single task with skill-based precision | `/task Fix bug` |
 | `/design` | Design docs only (no implementation) | `/design Design payment system` |
 | `/review` | Code review and auto-fix | `/review auth-system` |
 | `/build` | Execute implementation from plan | `/build` |
@@ -61,8 +61,8 @@ The LLM automatically detects scale, creates necessary documentation, and comple
 /task Fix email validation bug with "+" character
 ```
 
-Clarifies rules before fixing the issue.
-`/task` triggers a process of metacognition (self-reflection on reasoning). It helps the LLM clarify the situation, retrieve relevant rules, build task lists, and understand the work context—improving execution accuracy.
+Clarifies applicable skills before fixing the issue.
+`/task` triggers a process of metacognition (self-reflection on reasoning). It helps the LLM clarify the situation, retrieve relevant skills, build task lists, and understand the work context—improving execution accuracy.
 
 ## Want design only?
 
@@ -142,15 +142,15 @@ Helps clarify requirements and creates design documents. Creates work plans and 
 Aimed at completing Agentic Coding (LLMs autonomously making decisions and executing implementation tasks), performing automatic execution following the flow with minimal human intervention except for design clarification and handling issues beyond LLM judgment.
 
 ### /task
-**Purpose**: Rule-based high-precision task execution
+**Purpose**: Skill-based high-precision task execution
 **Args**: Task description
 **Process**:
-1. Clarify applicable rules
-2. Determine initial action
-3. Confirm restrictions
-4. Execute task
+1. Clarify task essence
+2. Determine applicable skills
+3. Determine initial action
+4. Confirm scope boundary
 
-Encourages metacognition (self-reflection on reasoning), understands task essence and applicable rules, then refines the specified task. Uses the `rule-advisor` sub-agent to retrieve and utilize appropriate skills from `.claude/skills/`.
+Encourages metacognition (self-reflection on reasoning), understands task essence and applicable skills, then refines the specified task. Uses the `rule-advisor` sub-agent to retrieve and utilize appropriate skills from `.claude/skills/`.
 
 ### /design
 **Purpose**: Design docs creation (no implementation)
@@ -298,7 +298,7 @@ Use the `/implement` or `/build` commands to resume work.
 
 ## Next Steps
 
-Once you understand the basics, start applying them in practice. As you gain experience and feel the need to improve, try customizing the rules.
+Once you understand the basics, start applying them in practice. As you gain experience and feel the need to improve, try customizing the skills.
 
 → **[Skills Editing Guide](./skills-editing-guide.md)** - How to understand LLM characteristics and create effective skills
 

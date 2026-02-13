@@ -174,7 +174,7 @@ Claude Codeで利用できる主要なコマンド：
 | コマンド | 目的 | 使用場面 |
 |---------|------|----------|
 | `/implement` | 要件から実装までの一貫した開発 | 新機能開発（Backend） |
-| `/task` | ルールに基づいた単一タスクの実行 | バグ修正、小規模な変更 |
+| `/task` | スキルに基づいた単一タスクの実行 | バグ修正、小規模な変更 |
 | `/design` | 設計書の作成 | アーキテクチャの計画時（Backend） |
 | `/plan` | 設計書から作業計画書を作成 | 設計承認後（Backend） |
 | `/build` | 既存の計画から実行 | 作業の再開時（Backend） |
@@ -288,7 +288,7 @@ ai-coding-project-boilerplate/
 }
 ```
 
-上記は代表例です。ルールやサブエージェント定義で言及されているスクリプトは以下の通りです。必要に応じて書き換えてください：
+上記は代表例です。スキルやサブエージェント定義で言及されているスクリプトは以下の通りです。必要に応じて書き換えてください：
 
 `build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 

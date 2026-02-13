@@ -4,75 +4,31 @@ description: Synchronize skill metadata and optimize rule-advisor precision afte
 
 **Command Context**: Post-editing maintenance workflow for skill files
 
-**Think deeply** Maximize rule-advisor execution precision through systematic synchronization:
+## Essential Purpose
 
-## Execution Flow
+Not mere consistency maintenance, but rule-advisor selection accuracy enhancement. Metadata optimization as the final step of skill editing workflow.
 
-### 1. Scan Skill Files
-```bash
-# Runtime skills directory
-SKILLS_DIR=".claude/skills"
-INDEX_FILE=".claude/skills/task-analyzer/references/skills-index.yaml"
+## Execution Process
 
-# Analyze all skill files
-find "${SKILLS_DIR}" -name "SKILL.md" -type f | sort
-```
+Register the following steps in TodoWrite and proceed systematically.
 
-### 2. Synchronize and Optimize Metadata
+### Step 1: Scan Skill Files
 
-#### Automatic Section Synchronization
-- Extract `## ` sections from each SKILL.md
-- Update sections in skills-index.yaml automatically
+- Glob: `.claude/skills/*/SKILL.md` to retrieve all skill files
+- Read: `.claude/skills/task-analyzer/references/skills-index.yaml`
 
-#### Tag Optimization
-- Analyze file content for relevant keywords
-- Propose addition of missing tags
-- Suggest removal of obsolete tags
+### Step 2: Synchronize and Optimize Metadata
 
-#### Typical-Use Enhancement
-- Infer usage scenarios from file changes
-- Propose more specific and actionable descriptions
+Verify the following for each skill:
 
-#### Key-References Completion
-- Detect newly introduced concepts or methodologies
-- Suggest relevant reference additions
+| Metadata | Verification |
+|----------|-------------|
+| sections | 100% match with `## ` sections in SKILL.md |
+| tags | Accurately reflect file content keywords |
+| typical-use | Specify concrete usage scenarios |
+| key-references | Cover current methodologies |
 
-### 3. Rule-Advisor Precision Optimization
-
-Enhance metadata quality to enable accurate skill selection by rule-advisor:
-
-```
-=== Skill Metadata Synchronization ===
-Target: .claude/skills
-
-Updates executed:
-✅ Sections synchronized
-  - typescript-testing: 2 sections added
-  - coding-standards: 1 section updated
-
-✅ Tags optimized
-  - typescript-rules: Suggest adding [functional-programming]
-  - technical-spec: Suggest removing [deprecated]
-
-✅ Typical-use improved
-  - 3 skills updated with more specific descriptions
-
-Final result: Rule-advisor precision optimization complete
-```
-
-## 🧠 Metacognitive Points
-
-**Essential Purpose**:
-- Not mere consistency maintenance, but rule-advisor selection accuracy enhancement
-- Metadata optimization as the final step of skill editing workflow
-
-**Quality Criteria**:
-- Sections must achieve 100% synchronization
-- Tags must accurately reflect content
-- Typical-use must specify concrete usage scenarios
-- Key-references must cover current methodologies
-
-## Change Necessity Evaluation
+### Step 3: Change Necessity Evaluation
 
 **EVALUATION SEQUENCE**:
 - IF sections achieve 100% synchronization → OUTPUT "Synchronization verified. No updates required." THEN TERMINATE
@@ -81,36 +37,38 @@ Final result: Rule-advisor precision optimization complete
 
 **NOTE**: You MUST NOT force changes. When no improvements are detected, you SHALL report "No modifications necessary" and STOP execution.
 
+### Step 4: User Approval and Application
+
+Present proposals to user and apply after approval:
+
+```
+[1/N] typescript-rules
+  ✅ sections: synchronized
+  💡 tags proposed: +[functional-programming]
+  💡 typical-use: "old description" → "new description"
+```
+
+## Completion Criteria
+
+- [ ] Scanned all skill files
+- [ ] Verified consistency with skills-index.yaml
+- [ ] Evaluated change necessity (if none needed, reported and terminated)
+- [ ] If changes exist, obtained user approval
+- [ ] Applied changes
+
+## Error Handling
+
+| Error | Action |
+|-------|--------|
+| skills-index.yaml not found | Verify path, report and terminate if not found |
+| SKILL.md parse error | Skip affected skill, continue with others |
+| Large number of inconsistencies detected | Propose staged approach starting from highest priority |
+
 ## Execution Timing
 
 - After skill file edits (mandatory)
 - When adding new skill files
 - After major skill revisions
 - When rule-advisor selection accuracy appears degraded
-
-## Example Output
-
-```
-=== Skill Metadata Synchronization Started ===
-Target: .claude/skills (13 skills)
-
-[1/13] typescript-rules
-  ✅ sections: 7 synchronized
-  💡 tags proposed: +[functional-programming, dependency-injection]
-  💡 typical-use: "General TypeScript implementation" → "Type-safe implementation with modern TypeScript features"
-
-[2/13] typescript-testing
-  ✅ sections: 2 added (Test Granularity Principles, Mock Type Safety Enforcement)
-  ✅ tags: No changes needed
-  ✅ typical-use: Maintained
-
-...
-
-=== Synchronization Complete ===
-Updated: 3 skills
-Proposals: 5 items (approval required)
-
-Rule-advisor precision improvement: Estimated 15% enhancement
-```
 
 **Scope**: Post-edit skill metadata synchronization and rule-advisor precision optimization.

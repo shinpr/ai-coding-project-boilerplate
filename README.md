@@ -180,7 +180,7 @@ Essential commands for Claude Code:
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
 | `/implement` | End-to-end feature development | New features (Backend) |
-| `/task` | Single task with rule precision | Bug fixes, small changes |
+| `/task` | Single task with skill-based precision | Bug fixes, small changes |
 | `/design` | Create design docs only | Architecture planning (Backend) |
 | `/plan` | Create work plan from design | After design approval (Backend) |
 | `/build` | Execute from existing plan | Resume work (Backend) |
@@ -293,7 +293,7 @@ When you change these, Claude Code will recognize them and execute with the appr
 }
 ```
 
-The above are representative examples. The following scripts are referenced in rules and sub-agent definitions. Update them as needed:
+The above are representative examples. The following scripts are referenced in skills and sub-agent definitions. Update them as needed:
 
 `build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
