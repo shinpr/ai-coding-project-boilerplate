@@ -268,7 +268,7 @@ Use the `/implement` or `/build` commands to resume work.
 | Repeating same error | `npm run check:all` | Check environment, fix with `/task` |
 | Code differs from design | `/review` | Check compliance, auto-fix |
 | Task stuck | `ls docs/plans/tasks/` | Identify blocker, check task file |
-| Command not recognized | `ls .claude/commands-en/` | Check typo |
+| Command not recognized | `ls .claude/commands/` | Check typo |
 
 ---
 
@@ -302,5 +302,5 @@ Once you understand the basics, start applying them in practice. As you gain exp
 
 → **[Skills Editing Guide](./skills-editing-guide.md)** - How to understand LLM characteristics and create effective skills
 
-See command definitions in `.claude/commands-en/` for details.
+See command definitions in `.claude/commands/` for details.
 Having issues? Check [GitHub Issues](https://github.com/shinpr/ai-coding-project-boilerplate/issues).

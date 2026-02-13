@@ -284,5 +284,5 @@ Claude Codeのモデルによっては、完了したタスクに自動でチェ
 
 → **[スキル編集ガイド](./skills-editing-guide.md)** - LLMの特性を理解して効果的なスキルを作成する方法
 
-詳細は各コマンドの定義ファイル（`.claude/commands-ja/`）を参照してください。
+詳細は各コマンドの定義ファイル（`.claude/commands/`）を参照してください。
 問題が解決しない場合は[Issues](https://github.com/shinpr/ai-coding-project-boilerplate/issues)を起票ください。
