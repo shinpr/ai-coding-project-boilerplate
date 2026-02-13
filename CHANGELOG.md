@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.1] - 2026-02-13
+
+### Changed
+- Restructure CLAUDE.md (en/ja) to linear step-based flow (Step 1-4), eliminating redundant rules
+- Remove all inline "Reason:" annotations to reduce context token consumption
+- Remove TypeScript-specific rules (already covered by typescript-rules skill)
+- Consolidate rule-advisor field references into a single location (Step 1)
+- Add Quality Standard and Session Initialization sections
+- Add quality-fixer and rule-advisor as explicit quality verification paths (Step 4)
+- Convert auto-stop triggers to table format for scannability
+- Specify concrete tool names (AskUserQuestion) for approval workflow
+- Clarify `./tmp/` as project-root-relative directory
+
 ## [1.15.0] - 2026-02-12
 
 ### Added
