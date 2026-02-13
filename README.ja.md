@@ -43,7 +43,7 @@ cd my-project && npm install
 
 # 3. Claude Codeを起動して設定
 claude                         # Claude Codeを起動
-/project-inject                # プロジェクトコンテキストを設定
+/project-inject                # プロジェクトの前提情報を設定（毎セッションAIが参照）
 /implement <あなたの作りたい機能> # 開発開始！
 ```
 
@@ -140,7 +140,7 @@ ignoreされたファイルは更新時に保護されます。ただし、ignor
 | `technical-spec` | アーキテクチャ、環境設定、ビルドコマンド |
 | `implementation-approach` | 戦略パターン、タスク分解 |
 | `integration-e2e-testing` | 統合/E2Eテスト設計、ROIベース選択 |
-| `project-context` | プロジェクト固有の設定（カスタマイズ可能） |
+| `project-context` | AIの実行精度のためのプロジェクト前提情報（`/project-inject`で設定） |
 
 **フロントエンド専用スキル**も`frontend/`配下で利用可能（例：`frontend/typescript-rules`）。
 
@@ -164,7 +164,7 @@ ignoreされたファイルは更新時に保護されます。ただし、ignor
 
 - **[クイックスタートガイド](docs/guides/ja/quickstart.md)** - 5分で動かす
 - **[ユースケース＆コマンド](docs/guides/ja/use-cases.md)** - 日常ワークフローのリファレンス
-- **[ルール編集ガイド](docs/guides/ja/rule-editing-guide.md)** - プロジェクトに合わせてカスタマイズ
+- **[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)** - プロジェクトに合わせてカスタマイズ
 - **[設計思想](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)** - なぜこれが機能するのか
 
 ## 📝 スラッシュコマンド
@@ -174,7 +174,7 @@ Claude Codeで利用できる主要なコマンド：
 | コマンド | 目的 | 使用場面 |
 |---------|------|----------|
 | `/implement` | 要件から実装までの一貫した開発 | 新機能開発（Backend） |
-| `/task` | ルールに基づいた単一タスクの実行 | バグ修正、小規模な変更 |
+| `/task` | スキルに基づいた単一タスクの実行 | バグ修正、小規模な変更 |
 | `/design` | 設計書の作成 | アーキテクチャの計画時（Backend） |
 | `/plan` | 設計書から作業計画書を作成 | 設計承認後（Backend） |
 | `/build` | 既存の計画から実行 | 作業の再開時（Backend） |
@@ -288,7 +288,7 @@ ai-coding-project-boilerplate/
 }
 ```
 
-上記は代表例です。ルールやサブエージェント定義で言及されているスクリプトは以下の通りです。必要に応じて書き換えてください：
+上記は代表例です。スキルやサブエージェント定義で言及されているスクリプトは以下の通りです。必要に応じて書き換えてください：
 
 `build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
@@ -312,10 +312,10 @@ A: `/implement`や`/task`コマンドを使用すると、タスクに応じて�
 **Q: エラーが発生した場合の対処法は？**  
 A: quality-fixerが多くの問題を自動的に検出・修正します。自動修正できない場合は、具体的な対処方法をご案内します。
 
-**Q: プロジェクトに合わせたカスタマイズは可能ですか？**  
-A: はい、可能です。`/project-inject`コマンドを実行して、プロジェクト固有の設定を行ってください。
+**Q: プロジェクトに合わせたカスタマイズは可能ですか？**
+A: はい、可能です。`/project-inject`を実行してプロジェクトの前提情報を設定してください。この情報は毎セッション開始時にAIが読み込み、実行精度の向上に使われます。
 
-**Q: 基本的な開発の流れを教えてください。**  
+**Q: 基本的な開発の流れを教えてください。**
 A: 初回は`/project-inject`でプロジェクト設定を行い、その後は`/implement`で機能開発、品質チェック、コミットという流れになります。
 
 **Q: GitHub CopilotやCursorとはどう違いますか？**  

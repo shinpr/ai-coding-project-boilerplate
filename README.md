@@ -43,7 +43,7 @@ cd my-project && npm install
 
 # 3. Launch Claude Code and configure
 claude                    # Launch Claude Code
-/project-inject          # Configure project context
+/project-inject          # Set up project prerequisites (read every session by AI)
 /implement <your feature> # Start building!
 ```
 
@@ -140,7 +140,7 @@ This boilerplate provides the principles used in agentic implementation workflow
 | `technical-spec` | Architecture, environment, build commands |
 | `implementation-approach` | Strategy patterns, task decomposition |
 | `integration-e2e-testing` | Integration/E2E test design, ROI-based selection |
-| `project-context` | Project-specific configuration (customizable) |
+| `project-context` | Project-specific prerequisites for AI accuracy (set via `/project-inject`) |
 
 **Frontend-specific skills** are also available under `frontend/` (e.g., `frontend/typescript-rules`).
 
@@ -170,7 +170,7 @@ This boilerplate provides the principles used in agentic implementation workflow
 
 - **[Quick Start Guide](docs/guides/en/quickstart.md)** - Get running in 5 minutes
 - **[Use Cases & Commands](docs/guides/en/use-cases.md)** - Daily workflow reference
-- **[Rule Editing Guide](docs/guides/en/rule-editing-guide.md)** - Customize for your project
+- **[Skills Editing Guide](docs/guides/en/skills-editing-guide.md)** - Customize for your project
 - **[Design Philosophy](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b)** - Why it works (770K tokens without exhaustion)
 
 ## 📝 Slash Commands
@@ -180,7 +180,7 @@ Essential commands for Claude Code:
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
 | `/implement` | End-to-end feature development | New features (Backend) |
-| `/task` | Single task with rule precision | Bug fixes, small changes |
+| `/task` | Single task with skill-based precision | Bug fixes, small changes |
 | `/design` | Create design docs only | Architecture planning (Backend) |
 | `/plan` | Create work plan from design | After design approval (Backend) |
 | `/build` | Execute from existing plan | Resume work (Backend) |
@@ -293,7 +293,7 @@ When you change these, Claude Code will recognize them and execute with the appr
 }
 ```
 
-The above are representative examples. The following scripts are referenced in rules and sub-agent definitions. Update them as needed:
+The above are representative examples. The following scripts are referenced in skills and sub-agent definitions. Update them as needed:
 
 `build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
@@ -317,10 +317,10 @@ A: Just use `/implement` or `/task`. The right agents activate automatically.
 **Q: What if there are errors?**  
 A: quality-fixer auto-fixes most issues. If not, it provides clear instructions.
 
-**Q: Can I customize for my project?**  
-A: Yes! Run `/project-inject` to configure project-specific context.
+**Q: Can I customize for my project?**
+A: Yes! Run `/project-inject` to set up project-specific prerequisites. This information is read by AI at the start of every session to improve execution accuracy.
 
-**Q: What's the typical workflow?**  
+**Q: What's the typical workflow?**
 A: `/project-inject` (once) → `/implement` (features) → auto quality checks → commit
 
 **Q: How is this different from Copilot/Cursor?**  

@@ -1,76 +1,86 @@
 ---
-description: Inject project-specific context into project-context.md
+description: Inject project-specific context into project-context skill
 ---
 
-**Command Context**: When using the boilerplate, collect project-specific context and update project-context.md.
+**Command Context**: Collect project-specific prerequisites that improve AI execution accuracy and update project-context SKILL.md.
+
+## Why This Matters
+
+CLAUDE.md's Session Initialization reads `project-context` skill at the start of every session. The information collected here directly affects AI decision-making accuracy across all tasks.
+
+**Collect only what improves AI execution accuracy.**
 
 ## Execution Process
 
-### 1. Current State Verification
-! ls -la .claude/skills/project-context/SKILL.md
-! cat package.json | grep -E '"name":|"description":'
+Register the following steps in TodoWrite and proceed systematically.
 
-### 2. Project Context Collection
+### Step 1: Understand Current State
 
-Interact with the user to collect the following information:
+Read the current project-context skill and package.json:
+- `.claude/skills/project-context/SKILL.md`
+- `package.json` (name, description)
 
-```
-【Core Project Information】
-1. What problem does your project solve?
-   Examples: "Manual time tracking is inefficient" "Inventory management is person-dependent"
+If project-context is already configured (no "Not configured" marker), confirm with user whether to overwrite or update.
 
-2. Who is the system for?
-   Examples: "50-member sales team" "E-commerce site operators"
+### Step 2: Collect Project Context
 
-3. In what situations will it be used?
-   Examples: "Field staff entering daily reports" "Month-end aggregation tasks"
+Use AskUserQuestion to collect information in stages.
 
-【Development Structure】
-- Individual development / Team development (number of members)
-- Development phase (Prototype / Production development / In operation)
+**Round 1: Project essence**
+- What does this project do? (1-2 sentences)
+- What domain does it belong to? (e.g., fintech, healthcare, developer tools, e-commerce)
 
-【Critical Business Constraints】(Maximum 3)
-Examples: "7-year audit log retention" "Mandatory approval workflow" "Real-time synchronization"
-```
+**Round 2: Domain constraints** (based on Round 1 answers)
+- Are there domain-specific rules that AI must follow? Adapt examples to the domain from Round 1 (e.g., for fintech: "all mutations require audit logs"; for healthcare: "log output uses anonymized patient IDs").
+- Maximum 3 constraints. Only include what would cause bugs or compliance issues if AI ignores them.
 
-**Think deeply** From the collected information, understand the project's essence and construct context focused on single responsibility.
+**Round 3: Development context**
+- Development phase: Prototype / Production / In operation
+- Are there directory conventions or file placement rules AI should follow? (skip if none)
 
-### 3. Generate project-context.md
+### Step 3: Generate and Write
 
-## AI Execution Accuracy Maximization Criteria
+From collected information, generate project-context SKILL.md following these principles:
 
-Generated project-context.md must follow these criteria:
+**Writing principles:**
+1. AI-decidable: Use only measurable and verifiable criteria ("fast" → "within 5 seconds")
+2. Eliminate ambiguity: Include specific numbers, conditions, examples
+3. Positive form: "do this" rather than "don't do that"
+4. Minimal: Only what affects AI execution accuracy
 
-### Principles of Description
-1. **Minimal yet maximally efficient**: Essential information only, eliminate redundancy
-2. **AI-decidable**: Use only measurable and verifiable criteria ("quickly" → "within 5 seconds")
-3. **Eliminate ambiguity**: Include specific numbers, conditions, and examples
-4. **Preferred format**: Describe in "do this" form rather than "don't do that"
+**Output targets** (update both):
+1. `.claude/skills/project-context/SKILL.md` (active, read by Claude)
+2. Corresponding `skills-{lang}/project-context/SKILL.md` (check `.claudelang` for current language)
 
-### Responsibility Boundaries
-project-context.md's single responsibility is "project-specific contextual information" only:
-- ✅ Include: Project objectives, target users, business constraints
-- ❌ Exclude: Tech stack (→technical-spec skill), implementation principles (→typescript-rules skill), architecture (→technical-spec skill)
-
-### Structure
+**Structure:**
 ```markdown
+---
+name: project-context
+description: Provides project-specific prerequisites for AI execution accuracy. Use when checking project structure.
+---
+
 # Project Context
 
 ## Project Overview
-- **Problem being solved**: [Specific challenge]
-- **Target users**: [Include number and attributes]
-- **Usage scenarios**: [Specific situations]
+- **What this project does**: [concise description]
+- **Domain**: [domain]
 
-## Development Structure
-- **Team composition**: [Number and roles]
-- **Development phase**: [Current stage]
-
-## Business Constraints
-1. [Measurable constraint]
+## Domain Constraints
+1. [Measurable constraint that affects AI decisions]
 2. [Verifiable requirement]
+
+## Development Phase
+- **Phase**: [current phase]
+
+## Directory Conventions
+[File placement rules, or "No specific conventions" if none]
 ```
 
-### 4. Update skills-index.yaml
-Update the typical-use in the project-context section to match the project.
+### Step 4: Verification
 
-**Scope**: Update project-context skill only. Technology choices are the responsibility of other skills.
+- [ ] Generated file contains no boilerplate placeholder text ("to be configured", etc.)
+- [ ] All domain constraints are measurable/verifiable (no vague statements)
+- [ ] No technology stack information included (that belongs in technical-spec skill)
+- [ ] No implementation principles included (that belongs in coding-standards skill)
+- [ ] Both output targets updated
+- [ ] Present result to user for confirmation

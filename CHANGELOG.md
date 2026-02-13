@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.1] - 2026-02-13
+
+### Changed
+
+#### CLAUDE.md
+- Restructure CLAUDE.md (en/ja) to linear step-based flow (Step 1-4), eliminating redundant sections
+- Remove all inline "Reason:" annotations to reduce context token consumption
+- Remove TypeScript-specific content (already covered by typescript-rules skill)
+- Consolidate rule-advisor field references into a single location (Step 1)
+- Add Quality Standard and Session Initialization sections
+- Add quality-fixer and rule-advisor as explicit quality verification paths (Step 4)
+- Convert auto-stop triggers to table format for scannability
+- Specify concrete tool names (AskUserQuestion) for approval workflow
+- Clarify `./tmp/` as project-root-relative directory
+
+#### Commands
+- Modernize refine-skill command (en/ja): Step-based structure, TodoWrite integration, completion criteria checklist, condensed 3-pass review (207→85 lines)
+- Modernize sync-skills command (en/ja): TodoWrite integration, IF-THEN evaluation sequence, error handling table, Glob-based scanning instead of bash find (117→75 lines)
+- Update task command (en/ja): add "Task Essence" as first metacognition item, rename rules→skills to align with CLAUDE.md
+- Fix diagnose command (en/ja): migrate `selectedRules` field references to `selectedSkills` matching task-analyzer output format
+- Modernize project-inject command (en/ja) with AskUserQuestion-based collection, dual output targets, and verification checklist
+
+#### Skills
+- Redesign project-context SKILL.md (en/ja) as AI-only prerequisite template, removing tech stack and implementation principles
+- Sync active .claude/skills/project-context/SKILL.md with language-specific template
+
+#### Documentation
+- Update README (en/ja): /task description (rule→skill), project-inject description, skills table, FAQ, script reference terminology
+- Rewrite quickstart guides (en/ja) to remove stale references (docs/rules/, /sync-rules, npx github:...)
+- Update use-cases guides (en/ja): /task process steps and description, /sync-rules→/sync-skills, /refine-rule→/refine-skill, docs/rules→.claude/skills/ paths, rules→skills customization terminology
+- Rename rule-editing-guide → skills-editing-guide (en/ja): full terminology migration from "rules" to "skills", add Skills Structure & Best Practices section with official docs links, Progressive Disclosure pattern, description/splitting guidelines, and common mistakes
+
 ## [1.15.0] - 2026-02-12
 
 ### Added

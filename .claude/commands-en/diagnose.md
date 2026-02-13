@@ -40,19 +40,19 @@ If the following are unclear, **ask with AskUserQuestion** before proceeding:
 Invoke rule-advisor using Task tool:
 - `subagent_type`: "rule-advisor"
 - `description`: "Identify problem essence"
-- `prompt`: "Identify the essence and required rules for this problem: [Problem reported by user]"
+- `prompt`: "Identify the essence and required skills for this problem: [Problem reported by user]"
 
 Confirm from rule-advisor output:
 - `taskAnalysis.mainFocus`: Primary focus of the problem
 - `mandatoryChecks.taskEssence`: Root problem beyond surface symptoms
-- `selectedRules`: Applicable rule sections
+- `selectedSkills`: Applicable skill sections
 - `warningPatterns`: Patterns to avoid
 
 ### 0.4 Reflecting in investigator Prompt
 
 **Include the following in investigator prompt**:
 1. Problem essence (taskEssence)
-2. Key applicable rules summary (from selectedRules)
+2. Key applicable skills summary (from selectedSkills)
 3. Investigation focus (investigationFocus): Convert warningPatterns to "points prone to confusion or oversight in this investigation"
 4. **For change failures, additionally include**:
    - Detailed analysis of the change content

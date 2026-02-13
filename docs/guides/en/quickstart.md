@@ -9,7 +9,7 @@ This guide walks you through setting up the AI Coding Project Boilerplate and im
 Open your terminal and run these commands. Feel free to change the project name to whatever you like.
 
 ```bash
-npx github:shinpr/ai-coding-project-boilerplate my-awesome-project
+npx create-ai-project my-awesome-project
 cd my-awesome-project
 npm install
 ```
@@ -18,30 +18,13 @@ That's it! You now have a `my-awesome-project` folder with all the necessary fil
 
 ### For Existing Projects
 
-If you already have a TypeScript project, you can copy the necessary files. First, download the boilerplate to a temporary location.
+If you already have a TypeScript project, run the setup from your project's root directory:
 
 ```bash
-# Download the boilerplate temporarily
-npx github:shinpr/ai-coding-project-boilerplate temp-boilerplate
+npx create-ai-project update
 ```
 
-Then copy the following files into the root directory of your existing project.
-
-```bash
-# Run in your existing project directory
-cp -r temp-boilerplate/.claude/agents .claude/agents
-cp -r temp-boilerplate/.claude/commands .claude/commands
-cp -r temp-boilerplate/docs/rules docs/rules
-cp -r temp-boilerplate/docs/adr docs/
-cp -r temp-boilerplate/docs/design docs/
-cp -r temp-boilerplate/docs/plans docs/
-cp -r temp-boilerplate/docs/prd docs/
-cp -r temp-boilerplate/docs/guides/en/sub-agents.md docs/guides/sub-agents.md
-cp temp-boilerplate/CLAUDE.md .
-```
-
-If you want to change the directory structure, you'll need to adjust paths starting with `@docs/rules/` in sub-agents and command definition files. Also update `docs/rules-index.yaml` accordingly.
-Because this can get complicated, we recommend sticking with the default structure unless you have specific needs.
+This will add agent definitions, commands, skills, and AI rules to your project. Your source code and `package.json` are never touched.
 
 ## Launch Claude Code and Initial Setup
 
@@ -51,7 +34,7 @@ Launch Claude Code in your project directory.
 claude
 ```
 
-Once launched, let's set up project-specific information. This is a crucial step for the AI to understand your project.
+Once launched, set up your project's prerequisites. This is crucial for AI execution accuracy — the information you provide here is read at the start of every AI session.
 
 Run the following custom slash command inside Claude Code.
 
@@ -59,14 +42,12 @@ Run the following custom slash command inside Claude Code.
 /project-inject
 ```
 
-You'll be guided through an interactive dialog to clarify your project information. Feel free to answer casually - you can change this information later.
-Once you finish answering, your project context will be saved to `docs/rules/project-context.md`. This enables the AI to understand your project's purpose and generate more appropriate code.
+You'll be guided through an interactive dialog to clarify your project information. The command collects:
+- What your project does and its domain
+- Domain-specific constraints that affect AI decisions
+- Development phase and directory conventions
 
-After reviewing the file and confirming it looks good, complete this step with the following command.
-
-```bash
-/sync-rules
-```
+Once complete, the project context is saved to `.claude/skills/project-context/SKILL.md`. You can re-run `/project-inject` anytime to update it.
 
 ## Let's Implement Your First Feature
 
@@ -97,7 +78,7 @@ Let me explain the thinking behind this boilerplate.
 
 To maximize throughput with AI assistance, it's crucial to minimize human intervention. However, achieving high execution accuracy with AI requires careful context management—providing the right information at the right time. Without proper systems, humans need to guide the implementation process, which prevents throughput maximization.
 
-This boilerplate solves this through systematic approaches: selecting appropriate context (rules, requirements, specifications) for each phase and limiting unnecessary information during task execution.
+This boilerplate solves this through systematic approaches: selecting appropriate context (skills, requirements, specifications) for each phase and limiting unnecessary information during task execution.
 
 The workflow is: create design documents, review them with users to align understanding, use those documents as context for planning and task creation. Tasks are executed by sub-agents with dedicated contexts, which removes unnecessary information and stabilizes implementation. This system helps maintain quality even for projects too large to fit within a single coding agent's context window (Claude Opus 4.1 supports 200K tokens, Sonnet 4 beta supports up to 1M tokens, but the basic limit is 200K tokens).
 

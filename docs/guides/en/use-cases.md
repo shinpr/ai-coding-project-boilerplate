@@ -7,7 +7,7 @@ New here? Start with the [Quick Start Guide](./quickstart.md). This page serves 
 | Command | Purpose | Example |
 |---------|---------|---------|
 | `/implement` | End-to-end feature implementation (from requirements to completion) | `/implement Add rate limiting to API` |
-| `/task` | Single task with rule-based precision | `/task Fix bug` |
+| `/task` | Single task with skill-based precision | `/task Fix bug` |
 | `/design` | Design docs only (no implementation) | `/design Design payment system` |
 | `/review` | Code review and auto-fix | `/review auth-system` |
 | `/build` | Execute implementation from plan | `/build` |
@@ -61,8 +61,8 @@ The LLM automatically detects scale, creates necessary documentation, and comple
 /task Fix email validation bug with "+" character
 ```
 
-Clarifies rules before fixing the issue.
-`/task` triggers a process of metacognition (self-reflection on reasoning). It helps the LLM clarify the situation, retrieve relevant rules, build task lists, and understand the work context—improving execution accuracy.
+Clarifies applicable skills before fixing the issue.
+`/task` triggers a process of metacognition (self-reflection on reasoning). It helps the LLM clarify the situation, retrieve relevant skills, build task lists, and understand the work context—improving execution accuracy.
 
 ## Want design only?
 
@@ -111,7 +111,7 @@ Fixes are created as task files under `docs/plans/tasks` and executed by sub-age
 
 ```bash
 /project-inject  # Set project context
-/sync-rules      # Sync metadata
+/sync-skills      # Sync skill metadata
 ```
 
 ---
@@ -142,15 +142,15 @@ Helps clarify requirements and creates design documents. Creates work plans and 
 Aimed at completing Agentic Coding (LLMs autonomously making decisions and executing implementation tasks), performing automatic execution following the flow with minimal human intervention except for design clarification and handling issues beyond LLM judgment.
 
 ### /task
-**Purpose**: Rule-based high-precision task execution
+**Purpose**: Skill-based high-precision task execution
 **Args**: Task description
 **Process**:
-1. Clarify applicable rules
-2. Determine initial action
-3. Confirm restrictions
-4. Execute task
+1. Clarify task essence
+2. Determine applicable skills
+3. Determine initial action
+4. Confirm scope boundary
 
-Encourages metacognition (self-reflection on reasoning), understands task essence and applicable rules, then refines the specified task. Uses the `rule-advisor` sub-agent to retrieve and utilize appropriate rules from rule files under `docs/rules`.
+Encourages metacognition (self-reflection on reasoning), understands task essence and applicable skills, then refines the specified task. Uses the `rule-advisor` sub-agent to retrieve and utilize appropriate skills from `.claude/skills/`.
 
 ### /design
 **Purpose**: Design docs creation (no implementation)
@@ -211,23 +211,23 @@ Unless specified otherwise, automatically executes until completing the implemen
 Conducts code review. Primarily reviews whether implementation complies with Design Doc and meets rule-based code quality standards, providing feedback. Creates task files and uses sub-agents like `task-executor` to fix issues upon user instruction.
 Use when not adopting the full design-to-implementation process via `/implement`.
 
-### /refine-rule
-**Purpose**: Rule improvement
+### /refine-skill
+**Purpose**: Skill improvement
 **Args**: What to change
 **Process**:
-1. Select rule file
+1. Select skill file
 2. Create change proposal
 3. 3-pass review process
 4. Apply
 
-Assists with rule file editing. Since rules must be optimized for LLMs to maintain execution accuracy, creating optimal rules with this command alone is difficult. Refer to the [Rule Editing Guide](./rule-editing-guide.md) and refine rules through command usage or direct dialogue with LLMs.
+Assists with skill file editing. Since skills must be optimized for LLMs to maintain execution accuracy, creating optimal skills with this command alone is difficult. Refer to the [Skills Editing Guide](./skills-editing-guide.md) and refine skills through command usage or direct dialogue with LLMs.
 
-### /sync-rules
-**Purpose**: Sync rule metadata
+### /sync-skills
+**Purpose**: Sync skill metadata
 **Args**: None
-**When**: After rule file edits
+**When**: After skill file edits
 
-Updates metadata files used by the `rule-advisor` sub-agent to find rules to reference. Must be executed after changing rules. Not needed if rules haven't changed.
+Updates metadata files used by the `rule-advisor` sub-agent to find skills to reference. Must be executed after changing skills. Not needed if skills haven't changed.
 
 Common behavior patterns:
 - "9 files checked, all synchronized, no updates needed" → This is normal
@@ -235,17 +235,15 @@ Common behavior patterns:
 - Forcing changes every time → This is inappropriate behavior, please report
 
 ### /project-inject
-**Purpose**: Set project context
+**Purpose**: Set project-specific prerequisites for AI execution accuracy
 **Args**: None
-**Process**: Interactive project information collection
+**Process**: Interactive collection via AskUserQuestion (3 rounds)
 
 **When to use**:
-- Initial setup (required)
-- When project direction changes significantly
-- When target users change
-- When business requirements change significantly
+- Initial setup (required — AI reads project-context every session)
+- When project domain or constraints change significantly
 
-This command sets project background information as rule files to maximize the probability of work being done with understanding of context. Therefore, it doesn't need to be run daily. Use only at initial setup and when fundamental project assumptions change.
+Collects project-specific prerequisites through interactive dialog and saves them to `.claude/skills/project-context/SKILL.md`. This context is loaded at the start of every AI session, directly affecting execution accuracy across all tasks.
 
 
 ---
@@ -270,7 +268,7 @@ Use the `/implement` or `/build` commands to resume work.
 | Repeating same error | `npm run check:all` | Check environment, fix with `/task` |
 | Code differs from design | `/review` | Check compliance, auto-fix |
 | Task stuck | `ls docs/plans/tasks/` | Identify blocker, check task file |
-| Command not recognized | `ls .claude/commands-en/` | Check typo |
+| Command not recognized | `ls .claude/commands/` | Check typo |
 
 ---
 
@@ -300,9 +298,9 @@ Use the `/implement` or `/build` commands to resume work.
 
 ## Next Steps
 
-Once you understand the basics, start applying them in practice. As you gain experience and feel the need to improve, try customizing the rules.
+Once you understand the basics, start applying them in practice. As you gain experience and feel the need to improve, try customizing the skills.
 
-→ **[Rule Editing Guide](./rule-editing-guide.md)** - How to understand LLM characteristics and create effective rules
+→ **[Skills Editing Guide](./skills-editing-guide.md)** - How to understand LLM characteristics and create effective skills
 
-See command definitions in `.claude/commands-en/` for details.
+See command definitions in `.claude/commands/` for details.
 Having issues? Check [GitHub Issues](https://github.com/shinpr/ai-coding-project-boilerplate/issues).

@@ -40,19 +40,19 @@ description: 問題を調査し、検証を経て解決策を導出する
 Taskツールでrule-advisorを呼び出す:
 - `subagent_type`: "rule-advisor"
 - `description`: "問題の本質特定"
-- `prompt`: "以下の問題について、本質と必要なルールを特定してください: [ユーザーが報告した問題]"
+- `prompt`: "以下の問題について、本質と必要なスキルを特定してください: [ユーザーが報告した問題]"
 
 rule-advisorの出力から以下を確認：
 - `taskAnalysis.mainFocus`: 問題の主要な焦点
 - `mandatoryChecks.taskEssence`: 表面的な症状でなく根本的な問題
-- `selectedRules`: 適用すべきルールセクション
+- `selectedSkills`: 適用すべきスキルセクション
 - `warningPatterns`: 回避すべきパターン
 
 ### 0.4 investigatorプロンプトへの反映
 
 **以下をinvestigatorプロンプトに含める**：
 1. 問題の本質（taskEssence）
-2. 適用すべきルールの要約（selectedRulesから重要なセクション）
+2. 適用すべきスキルの要約（selectedSkillsから重要なセクション）
 3. 調査観点（investigationFocus）: warningPatternsを「この問題の調査で混同・見落としやすいポイント」に変換したもの
 4. **変更失敗の場合、追加で以下を含める**：
    - 原因変更の内容を詳細に分析
