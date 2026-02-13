@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Convert auto-stop triggers to table format for scannability
 - Specify concrete tool names (AskUserQuestion) for approval workflow
 - Clarify `./tmp/` as project-root-relative directory
+- Redesign project-context SKILL.md (en/ja) as AI-only prerequisite template, removing tech stack and implementation principles
+- Modernize project-inject command (en/ja) with AskUserQuestion-based collection, dual output targets, and verification checklist
+- Update README (en/ja) project-inject description, skills table, and FAQ to reflect session initialization
+- Rewrite quickstart guides (en/ja) to remove stale references (docs/rules/, /sync-rules, npx github:...)
+- Update use-cases guides (en/ja): rename /sync-rules→/sync-skills, /refine-rule→/refine-skill, update docs/rules→.claude/skills/ paths, modernize /project-inject description
+- Update rule-editing-guide (en/ja): rename commands, update file path references from docs/rules/ to .claude/skills/, update skill mapping table
+- Sync active .claude/skills/project-context/SKILL.md with language-specific template
 
 ## [1.15.0] - 2026-02-12
 

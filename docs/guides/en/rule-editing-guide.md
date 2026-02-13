@@ -48,7 +48,7 @@ When is this rule needed?
 ## 9 Rule Principles for Maximizing LLM Execution Accuracy
 
 Here are 9 rule creation principles based on LLM characteristics and this boilerplate's design philosophy.
-While we provide a `/refine-rule` custom slash command to assist with rule modifications, we ultimately recommend interactive rule editing through dialogue rather than commands, as LLMs tend to have difficulty reaching issues without comparing output with thinking after generation.
+While we provide a `/refine-skill` custom slash command to assist with skill modifications, we ultimately recommend interactive editing through dialogue rather than commands, as LLMs tend to have difficulty reaching issues without comparing output with thinking after generation.
 
 ### 1. Achieve Maximum Accuracy with Minimum Description (Context Pressure vs. Execution Accuracy)
 
@@ -85,14 +85,14 @@ Repeating the same content across multiple files wastes context capacity. Consol
 
 ```markdown
 ❌ Same content in multiple locations
-# docs/rules/base.md
+# .claude/skills/error-handling/SKILL.md
 Standard error format: { success: false, error: string, code: number }
 
-# docs/rules/api.md
+# .claude/skills/api-design/SKILL.md
 Error responses follow standard error format `{ success: false, error: string, code: number }`
 
 ✅ Consolidated in one location
-# docs/rules/base.md
+# .claude/skills/error-handling/SKILL.md
 Standard error format: { success: false, error: string, code: number }
 ```
 
@@ -105,18 +105,18 @@ Consolidating related content in one file maintains single responsibility and pr
 
 ```markdown
 # Authentication consolidated in one file
-docs/rules/auth.md
+.claude/skills/auth/SKILL.md
 ├── JWT Specification
 ├── Authentication Flow
 ├── Error Handling
 └── Security Requirements
 
 # ❌ Dispersed responsibilities
-docs/rules/auth.md
+.claude/skills/auth/SKILL.md
 ├── JWT Specification
 ├── Error Handling
 └── Security Requirements
-docs/rules/flow.md
+.claude/skills/auth-flow/SKILL.md
 ├── User Registration Flow
 └── Authentication Flow
 ```
@@ -218,22 +218,22 @@ Explicitly stating what is and isn't covered prevents unnecessary processing and
 
 ## Reference: Efficient Rule Writing
 
-Rule files under `docs/rules` are created with these principles in mind.
-Each is written with no duplication, single responsibility, and minimal description, serving as references when adding or creating new rules.
+Skill files under `.claude/skills/` are created with these principles in mind.
+Each is written with no duplication, single responsibility, and minimal description, serving as references when adding or creating new skills.
 
-### Correspondence Between Rule Files and Applied Principles
+### Correspondence Between Skills and Applied Principles
 
-| Rule File | Main Content | Examples of Applied Principles |
-|-----------|-------------|--------------------------------|
-| **typescript.md** | TypeScript code creation/modification/refactoring, modern type features | **Principle 2**: Unified notation (consistent terms like "any type completely prohibited")<br>**Principle 5**: Measurable criteria (20 fields max, 3 nesting levels max) |
-| **typescript-testing.md** | Test creation, quality checks, development steps | **Principle 5**: Measurable criteria (coverage 70% or more)<br>**Principle 8**: Arrangement by importance (quality requirements at the top) |
-| **ai-development-guide.md** | Technical decision criteria, anti-pattern detection, best practices | **Principle 6**: Show NG patterns in recommended format (anti-pattern collection)<br>**Principle 3**: Eliminate duplication (Rule of Three for consolidation decisions) |
-| **technical-spec.md** | Technical design, environment setup, documentation process | **Principle 4**: Aggregate responsibilities (technical design in one file)<br>**Principle 7**: Verbalize implicit assumptions (security rules documented) |
-| **project-context.md** | Project-specific information, implementation principles | **Principle 7**: Verbalize implicit assumptions (project characteristics documented)<br>**Principle 1**: Maximum accuracy with minimum description (concise bullet format) |
-| **documentation-criteria.md** | Scale determination, document creation criteria | **Principle 5**: Measurable criteria (creation decision matrix)<br>**Principle 9**: Clarify scope boundaries (clearly state what's included/excluded) |
-| **implementation-approach.md** | Implementation strategy selection, task breakdown, large-scale change planning | **Principle 8**: Arrangement by importance (Phase-ordered structure)<br>**Principle 6**: Show NG patterns in recommended format (risk analysis) |
+| Skill | Main Content | Examples of Applied Principles |
+|-------|-------------|--------------------------------|
+| **typescript-rules** | TypeScript code creation/modification/refactoring, modern type features | **Principle 2**: Unified notation (consistent terms like "any type completely prohibited")<br>**Principle 5**: Measurable criteria (20 fields max, 3 nesting levels max) |
+| **typescript-testing** | Test creation, quality checks, development steps | **Principle 5**: Measurable criteria (coverage 70% or more)<br>**Principle 8**: Arrangement by importance (quality requirements at the top) |
+| **coding-standards** | Technical decision criteria, anti-pattern detection, best practices | **Principle 6**: Show NG patterns in recommended format (anti-pattern collection)<br>**Principle 3**: Eliminate duplication (Rule of Three for consolidation decisions) |
+| **technical-spec** | Technical design, environment setup, documentation process | **Principle 4**: Aggregate responsibilities (technical design in one file)<br>**Principle 7**: Verbalize implicit assumptions (security rules documented) |
+| **project-context** | Project-specific prerequisites for AI execution accuracy | **Principle 7**: Verbalize implicit assumptions (project characteristics documented)<br>**Principle 1**: Maximum accuracy with minimum description (concise bullet format) |
+| **documentation-criteria** | Scale determination, document creation criteria | **Principle 5**: Measurable criteria (creation decision matrix)<br>**Principle 9**: Clarify scope boundaries (clearly state what's included/excluded) |
+| **implementation-approach** | Implementation strategy selection, task breakdown, large-scale change planning | **Principle 8**: Arrangement by importance (Phase-ordered structure)<br>**Principle 6**: Show NG patterns in recommended format (risk analysis) |
 
-All 9 principles are practiced across these files, serving as practical references for rule creation.
+All 9 principles are practiced across these skills, serving as practical references for rule creation.
 
 ## Troubleshooting
 

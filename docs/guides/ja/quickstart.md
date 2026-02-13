@@ -9,7 +9,7 @@
 ターミナルを開いて、以下のコマンドを実行するだけです。プロジェクト名は好きなものに変えてください。
 
 ```bash
-npx github:shinpr/ai-coding-project-boilerplate my-awesome-project --lang=ja
+npx create-ai-project my-awesome-project --lang=ja
 cd my-awesome-project
 npm install
 ```
@@ -18,30 +18,13 @@ npm install
 
 ### 既存のプロジェクトに導入する場合
 
-すでにTypeScriptプロジェクトがある場合は、必要なファイルをコピーして使うこともできます。まず、ボイラープレートを別の場所にダウンロードします。
+すでにTypeScriptプロジェクトがある場合は、プロジェクトのルートディレクトリで以下を実行します：
 
 ```bash
-# 一時的にボイラープレートをダウンロード
-npx github:shinpr/ai-coding-project-boilerplate temp-boilerplate --lang=ja
+npx create-ai-project update
 ```
 
-次に、既存プロジェクトのルートディレクトリで以下のファイルをコピーします。
-
-```bash
-# 既存プロジェクトのディレクトリで実行
-cp -r temp-boilerplate/.claude/agents-ja .claude/agents
-cp -r temp-boilerplate/.claude/commands-ja .claude/commands
-cp -r temp-boilerplate/docs/rules-ja docs/rules
-cp -r temp-boilerplate/docs/adr docs/
-cp -r temp-boilerplate/docs/design docs/
-cp -r temp-boilerplate/docs/plans docs/
-cp -r temp-boilerplate/docs/prd docs/
-cp temp-boilerplate/docs/guides/ja/sub-agents.md docs/guides/sub-agents.md
-cp temp-boilerplate/CLAUDE.md .
-```
-
-もしディレクトリ構成を変更したい場合は、サブエージェント（Sub agents）やコマンド定義ファイル内の `@docs/rules/` で始まるパスを調整する必要があります。また、`docs/rules-index.yaml` も同様に修正してください。
-煩雑なため、特に事情がない場合はデフォルトの構成のまま使うことをお勧めします。
+エージェント定義、コマンド、スキル、AIルールがプロジェクトに追加されます。ソースコードや`package.json`は変更されません。
 
 ## Claude Codeを起動して最初の設定
 
@@ -51,7 +34,7 @@ cp temp-boilerplate/CLAUDE.md .
 claude
 ```
 
-起動したら、まずプロジェクト固有の情報を設定しましょう。これは、AIがあなたのプロジェクトを理解するための重要なステップです。
+起動したら、まずプロジェクトの前提情報を設定します。ここで設定した情報は毎セッション開始時にAIが読み込み、実行精度の向上に使われます。
 
 Claude Codeに以下のコマンド（カスタムスラッシュコマンド）を入力します。
 
@@ -59,14 +42,12 @@ Claude Codeに以下のコマンド（カスタムスラッシュコマンド）
 /project-inject
 ```
 
-対話的に、プロジェクトの情報を明らかにしていきます。この情報は後から変更できるので、気軽に回答をしてみてください。
-質問に答え終わると、プロジェクトの背景情報が `docs/rules/project-context.md` に保存されます。これで、AIはあなたのプロジェクトの目的を理解して、より適切なコードを生成できるようになります。
+対話的に、プロジェクトの情報を収集していきます。以下の内容が聞かれます：
+- プロジェクトが何をするか、どのドメインに属するか
+- AIの判断に影響するドメイン固有の制約
+- 開発フェーズやディレクトリ規約
 
-ファイルの内容を確認し、問題がなければ最後に以下のコマンドを入力し、このステップは完了です。
-
-```bash
-/sync-rules
-```
+収集した情報は `.claude/skills/project-context/SKILL.md` に保存されます。後から`/project-inject`を再実行して更新できます。
 
 ## 最初の機能を実装してみよう
 
@@ -98,7 +79,7 @@ AIは作業計画を1コミットの単位にタスク分解して、1タスク�
 AI活用によるスループットを最大化するためには、極力人間が介入する場面を減らすことが重要です。
 ですが、AIの実行精度を最大化しようとするとコンテキスト管理が非常に重要になるため、適切なタイミングで適切な情報を与えなくてはならず、仕組みを整えなければ人が付き添い実装を進める必要が生じます。そうなってはスループットは最大化できません。
 
-そこで、このボイラープレートでは、各フェーズに対して適切なコンテキスト（ルールや要件、仕様）が選択されること、タスクの実行には不要となる情報を制限すること、これらを仕組みで解決しようとしています。
+そこで、このボイラープレートでは、各フェーズに対して適切なコンテキスト（スキル、要件、仕様）が選択されること、タスクの実行には不要となる情報を制限すること、これらを仕組みで解決しようとしています。
 
 まずは設計書を作り、それをユーザーとレビューし、認識を揃える。その設計書をコンテキストとして作業を計画し、タスクを作る。タスクの実行は専用のコンテキストを持つサブエージェントが担うことで、タスクに不要な情報が入らず実装が安定する。このような仕組みにすることで、コーディングエージェント単体ではコンテキストウィンドウに収まらないような規模な開発でも品質を保ちながら進められるようになります（Claude Opus 4.1では200Kトークン、Sonnet 4ではベータ版で1Mトークンまで対応していますが、基本は200Kトークンという制限があります）。
 

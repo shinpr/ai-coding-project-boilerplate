@@ -1,42 +1,21 @@
 ---
 name: project-context
-description: Provides project-specific tech stack, architecture, and implementation rules. Use when checking project structure.
+description: Provides project-specific prerequisites for AI execution accuracy. Use when checking project structure.
 ---
 
 # Project Context
 
-## Basic Configuration
+> **Not configured.** Run `/project-inject` to set up project-specific context.
 
-### Project Nature
-- **Project Type**: Claude Code-specific TypeScript project template
-- **Usage Scope**: Configurable according to project requirements
-- **Implementation Policy**: LLM-driven implementation, quality-focused, strict YAGNI principle adherence
+## Project Overview
+- **What this project does**: (to be configured)
+- **Domain**: (to be configured)
 
-### Technology Stack
-- **Foundation Technologies**: TypeScript, Node.js
-- **Test Framework**: Vitest
-- **Quality Management**: Biome, TypeScript strict mode
+## Domain Constraints
+(Domain-specific rules that affect AI decision-making)
 
-## Implementation Principles
+## Development Phase
+- **Phase**: (Prototype / Production / In operation)
 
-### Implementation Policy Characteristics
-- **LLM-Driven Implementation**: Claude Code functions as the primary implementer
-- **Quality-First Culture**: Prioritize quality over speed
-- **YAGNI Principle**: Don't implement until necessary
-- **Systematic Design**: Design process through ADR/Design Doc/work plans
-
-## Customization Guide
-
-When using this template for new projects:
-
-1. **Add Project-Specific Information**
-   - Target user characteristics
-   - Business requirements and constraints
-   - Technical constraint conditions
-
-2. **Architecture Selection**
-   - Select appropriate patterns from architecture skills
-
-3. **Environment Configuration**
-   - Implement environment variable management methods suitable for the project
-   - Add project-specific configuration files
+## Directory Conventions
+(File placement rules, if any)

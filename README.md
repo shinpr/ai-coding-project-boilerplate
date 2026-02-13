@@ -43,7 +43,7 @@ cd my-project && npm install
 
 # 3. Launch Claude Code and configure
 claude                    # Launch Claude Code
-/project-inject          # Configure project context
+/project-inject          # Set up project prerequisites (read every session by AI)
 /implement <your feature> # Start building!
 ```
 
@@ -140,7 +140,7 @@ This boilerplate provides the principles used in agentic implementation workflow
 | `technical-spec` | Architecture, environment, build commands |
 | `implementation-approach` | Strategy patterns, task decomposition |
 | `integration-e2e-testing` | Integration/E2E test design, ROI-based selection |
-| `project-context` | Project-specific configuration (customizable) |
+| `project-context` | Project-specific prerequisites for AI accuracy (set via `/project-inject`) |
 
 **Frontend-specific skills** are also available under `frontend/` (e.g., `frontend/typescript-rules`).
 
@@ -317,10 +317,10 @@ A: Just use `/implement` or `/task`. The right agents activate automatically.
 **Q: What if there are errors?**  
 A: quality-fixer auto-fixes most issues. If not, it provides clear instructions.
 
-**Q: Can I customize for my project?**  
-A: Yes! Run `/project-inject` to configure project-specific context.
+**Q: Can I customize for my project?**
+A: Yes! Run `/project-inject` to set up project-specific prerequisites. This information is read by AI at the start of every session to improve execution accuracy.
 
-**Q: What's the typical workflow?**  
+**Q: What's the typical workflow?**
 A: `/project-inject` (once) → `/implement` (features) → auto quality checks → commit
 
 **Q: How is this different from Copilot/Cursor?**  
