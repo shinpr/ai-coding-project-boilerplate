@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update README (en/ja) project-inject description, skills table, and FAQ to reflect session initialization
 - Rewrite quickstart guides (en/ja) to remove stale references (docs/rules/, /sync-rules, npx github:...)
 - Update use-cases guides (en/ja): rename /sync-rules→/sync-skills, /refine-rule→/refine-skill, update docs/rules→.claude/skills/ paths, modernize /project-inject description
-- Update rule-editing-guide (en/ja): rename commands, update file path references from docs/rules/ to .claude/skills/, update skill mapping table
+- Rename rule-editing-guide → skills-editing-guide (en/ja): full terminology migration from "rules" to "skills", add Skills Structure & Best Practices section with official docs links, Progressive Disclosure pattern, description/splitting guidelines, and common mistakes
 - Sync active .claude/skills/project-context/SKILL.md with language-specific template
 
 ## [1.15.0] - 2026-02-12

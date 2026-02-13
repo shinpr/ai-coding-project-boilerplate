@@ -170,7 +170,7 @@ This boilerplate provides the principles used in agentic implementation workflow
 
 - **[Quick Start Guide](docs/guides/en/quickstart.md)** - Get running in 5 minutes
 - **[Use Cases & Commands](docs/guides/en/use-cases.md)** - Daily workflow reference
-- **[Rule Editing Guide](docs/guides/en/rule-editing-guide.md)** - Customize for your project
+- **[Skills Editing Guide](docs/guides/en/skills-editing-guide.md)** - Customize for your project
 - **[Design Philosophy](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b)** - Why it works (770K tokens without exhaustion)
 
 ## 📝 Slash Commands

@@ -164,7 +164,7 @@ ignoreされたファイルは更新時に保護されます。ただし、ignor
 
 - **[クイックスタートガイド](docs/guides/ja/quickstart.md)** - 5分で動かす
 - **[ユースケース＆コマンド](docs/guides/ja/use-cases.md)** - 日常ワークフローのリファレンス
-- **[ルール編集ガイド](docs/guides/ja/rule-editing-guide.md)** - プロジェクトに合わせてカスタマイズ
+- **[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)** - プロジェクトに合わせてカスタマイズ
 - **[設計思想](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)** - なぜこれが機能するのか
 
 ## 📝 スラッシュコマンド

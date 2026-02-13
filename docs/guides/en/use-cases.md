@@ -220,7 +220,7 @@ Use when not adopting the full design-to-implementation process via `/implement`
 3. 3-pass review process
 4. Apply
 
-Assists with skill file editing. Since skills must be optimized for LLMs to maintain execution accuracy, creating optimal skills with this command alone is difficult. Refer to the [Rule Editing Guide](./rule-editing-guide.md) and refine skills through command usage or direct dialogue with LLMs.
+Assists with skill file editing. Since skills must be optimized for LLMs to maintain execution accuracy, creating optimal skills with this command alone is difficult. Refer to the [Skills Editing Guide](./skills-editing-guide.md) and refine skills through command usage or direct dialogue with LLMs.
 
 ### /sync-skills
 **Purpose**: Sync skill metadata
@@ -300,7 +300,7 @@ Use the `/implement` or `/build` commands to resume work.
 
 Once you understand the basics, start applying them in practice. As you gain experience and feel the need to improve, try customizing the rules.
 
-→ **[Rule Editing Guide](./rule-editing-guide.md)** - How to understand LLM characteristics and create effective rules
+→ **[Skills Editing Guide](./skills-editing-guide.md)** - How to understand LLM characteristics and create effective skills
 
 See command definitions in `.claude/commands-en/` for details.
 Having issues? Check [GitHub Issues](https://github.com/shinpr/ai-coding-project-boilerplate/issues).

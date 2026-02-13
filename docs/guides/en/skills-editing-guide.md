@@ -1,8 +1,8 @@
-# Rule Editing Guide
+# Skills Editing Guide
 
-This guide explains the core concepts and best practices for writing effective rules that maximize LLM execution accuracy, based on how LLMs work.
+This guide covers the concepts and best practices for creating effective skills that maximize LLM execution accuracy, based on how LLMs work.
 
-## Project Philosophy and the Importance of Rule Files
+## Project Philosophy and the Importance of Skills
 
 This boilerplate is designed based on the concepts of "Agentic Coding" and "Context Engineering":
 - **Agentic Coding**: LLMs autonomously making decisions and carrying out implementation tasks
@@ -10,50 +10,98 @@ This boilerplate is designed based on the concepts of "Agentic Coding" and "Cont
 
 For details, see [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
 
-Proper rule management and [sub-agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) are crucial keys to realizing these concepts.
+Skills are written to maximize LLM execution accuracy as described below, and work together with [sub-agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) to achieve this.
 
-Rule files are written to maximize LLM execution accuracy as described below.
+Sub-agents have dedicated contexts separate from the main agent, loading only the skills necessary for their specific responsibilities. The main agent uses metacognition to understand task context, select necessary skills, and execute tasks. This approach maximizes execution accuracy by retrieving the right skills at the right time.
 
-Sub-agents have dedicated contexts separate from the main agent. They are designed to load only the necessary rule files to fulfill specific responsibilities.
-When the main agent executes tasks, it uses "metacognition" (reflecting on and analyzing its own reasoning process) to understand task context, select necessary rules from the rule file collection, and execute tasks.
-This approach maximizes execution accuracy by retrieving the right rules at the right time without excess or deficiency.
+While it's impossible to completely control LLM output, it is possible to maximize execution accuracy through proper systems. When results don't match expectations, consider improving your skills.
 
-While it's impossible to completely control LLM output, it is possible to maximize execution accuracy by establishing proper systems.
-Conversely, LLM execution accuracy can easily degrade depending on rule file content.
-
-With the premise that complete control is impossible, executing tasks, reflecting on issues that arise, and feeding back into the system enables maintaining and improving execution accuracy.
-When using this in actual projects and results don't match expectations, consider improving rule files.
-
-## Determining Where to Document Rules
+## Determining Where to Document
 
 ### File Roles and Scope
 
 | File | Scope | When Applied | Example Content |
 |------|-------|--------------|-----------------|
 | **CLAUDE.md** | All tasks | Always | Approval required before Edit/Write, stop at 5+ file changes |
-| **Rule files** | Specific technical domains | When using that technology | Use specific types, error handling required, functions under 30 lines |
+| **Skills** | Specific technical domains | When using that technology | Use specific types, error handling required, functions under 30 lines |
 | **Guidelines** | Specific workflows | When performing that workflow | Sub-agent selection strategies |
 | **Design Docs** | Specific features | When developing that feature | Feature requirements, API specifications, security constraints |
 
 ### Decision Flow
 
 ```
-When is this rule needed?
+When is this information needed?
 ├─ Always → CLAUDE.md
 ├─ Only for specific feature development → Design Doc
-├─ When using specific technology → Rule files
-└─ When performing specific workflow → Guidelines
+├─ When using specific technology → Skill
+└─ When performing specific workflow → Guideline
 ```
 
-## 9 Rule Principles for Maximizing LLM Execution Accuracy
+## Skills Structure and Best Practices
 
-Here are 9 rule creation principles based on LLM characteristics and this boilerplate's design philosophy.
-While we provide a `/refine-skill` custom slash command to assist with skill modifications, we ultimately recommend interactive editing through dialogue rather than commands, as LLMs tend to have difficulty reaching issues without comparing output with thinking after generation.
+For full details on the Claude Code skills system, see the [official documentation](https://code.claude.com/docs/en/skills).
+
+### SKILL.md Composition
+
+```
+my-skill/
+├── SKILL.md           # Main instructions (required)
+├── references/        # Detailed reference material (on-demand loading)
+├── scripts/           # Executable scripts
+└── examples/          # Example outputs
+```
+
+SKILL.md consists of YAML frontmatter and Markdown content.
+
+```yaml
+---
+name: skill-name
+description: Start with a verb. Use when: specify trigger conditions.
+---
+# Skill content
+```
+
+### Writing Effective Descriptions
+
+The description is the most critical field — it determines skill selection accuracy.
+
+1. **Start with a verb**: "Applies TDD process and inspects quality" not "Testing principles"
+2. **Use "Use when:" with concrete triggers**: 3-5 triggers using expressions users actually say
+3. **Over 200 characters signals a split**: The skill's responsibility may be too broad
+
+### Progressive Disclosure
+
+| Level | When Loaded | Content |
+|-------|------------|---------|
+| description | Always in context | Metadata only (used for skill selection) |
+| SKILL.md body | When skill is invoked | Main instructions |
+| Supporting files | On-demand when needed | Detailed references, scripts |
+
+This mechanism maintains token efficiency even with many skills defined. Reference supporting files from SKILL.md with `[reference.md](reference.md)` so Claude loads details only when needed.
+
+### When to Split
+
+- SKILL.md body exceeds **500 lines** → Extract to supporting files ([official recommendation](https://code.claude.com/docs/en/skills))
+- Description has **5+ "Use when:" triggers** → Responsibility too broad, split the skill
+- Language-specific details → Separate into `references/`
+
+### Common Mistakes
+
+| Mistake | Why It's a Problem | Solution |
+|---------|-------------------|----------|
+| Writing general practices LLM already knows | Context waste | Only write project-specific judgment criteria |
+| Putting always-applicable content in skills | Risk of not loading when needed | Place in CLAUDE.md instead |
+| Writing frequently-changing information in skills | Staleness risk | Manage in Design Docs or comments |
+
+## 9 Principles for Maximizing LLM Execution Accuracy
+
+Here are 9 skill creation principles based on LLM characteristics and this boilerplate's design philosophy.
+While we provide a `/refine-skill` command to assist with skill modifications, we ultimately recommend interactive editing through dialogue, as LLMs tend to have difficulty reaching issues without comparing output with thinking after generation.
 
 ### 1. Achieve Maximum Accuracy with Minimum Description (Context Pressure vs. Execution Accuracy)
 
 Context is a precious resource. Avoid redundant explanations and include only essential information.
-However, it's not just about being short - it must be the minimum description that doesn't cause decision hesitation.
+However, it's not just about being short — it must be the minimum description that doesn't cause decision hesitation.
 
 ```markdown
 ❌ Redundant description (22 words)
@@ -101,10 +149,10 @@ Eliminating duplication also reduces maintenance costs by preventing notation in
 
 ### 4. Appropriately Aggregate Responsibilities
 
-Consolidating related content in one file maintains single responsibility and prevents unnecessary context mixing in tasks.
+Consolidating related content in one skill maintains single responsibility and prevents unnecessary context mixing in tasks.
 
 ```markdown
-# Authentication consolidated in one file
+# Authentication consolidated in one skill
 .claude/skills/auth/SKILL.md
 ├── JWT Specification
 ├── Authentication Flow
@@ -121,7 +169,7 @@ Consolidating related content in one file maintains single responsibility and pr
 └── Authentication Flow
 ```
 
-However, if a file becomes too large, reading costs increase, so aim for logical division or rule selection around 250 lines (approximately 1,500 tokens).
+However, if a skill becomes too large, reading costs increase, so aim for logical division around 250 lines (approximately 1,500 tokens).
 
 ### 5. Set Measurable Decision Criteria
 
@@ -158,7 +206,7 @@ NG Example: window.globalState = { ... }
 - Don't save values to window object
 ```
 
-If prohibitions are needed, present them as background context rather than the main rule.
+If prohibitions are needed, present them as background context rather than the main instruction.
 
 ### 7. Verbalize Implicit Assumptions
 
@@ -174,14 +222,14 @@ Even things obvious to human developers must be explicitly stated for LLMs to un
 - Character encoding: UTF-8 only
 ```
 
-Use the `/project-inject` command at project start or when project assumptions change to document project context as rules.
+Use the `/project-inject` command at project start or when project assumptions change to document project context as a skill.
 
 ### 8. Arrange Descriptions by Importance
 
-LLMs pay more attention to information at the beginning. Place most important rules first, exceptional cases last.
+LLMs pay more attention to information at the beginning. Place most important items first, exceptional cases last.
 
 ```markdown
-# API Rules
+# API Specifications
 
 ## Critical Principles (Must follow)
 1. All APIs require JWT authentication
@@ -203,7 +251,7 @@ LLMs pay more attention to information at the beginning. Place most important ru
 Explicitly stating what is and isn't covered prevents unnecessary processing and misunderstandings.
 
 ```markdown
-## Scope of This Rule
+## Scope of This Skill
 
 ### Covered
 - REST APIs in general
@@ -216,12 +264,10 @@ Explicitly stating what is and isn't covered prevents unnecessary processing and
 - Metrics endpoint (/metrics)
 ```
 
-## Reference: Efficient Rule Writing
+## Reference: Skills and Applied Principles
 
 Skill files under `.claude/skills/` are created with these principles in mind.
 Each is written with no duplication, single responsibility, and minimal description, serving as references when adding or creating new skills.
-
-### Correspondence Between Skills and Applied Principles
 
 | Skill | Main Content | Examples of Applied Principles |
 |-------|-------------|--------------------------------|
@@ -233,17 +279,17 @@ Each is written with no duplication, single responsibility, and minimal descript
 | **documentation-criteria** | Scale determination, document creation criteria | **Principle 5**: Measurable criteria (creation decision matrix)<br>**Principle 9**: Clarify scope boundaries (clearly state what's included/excluded) |
 | **implementation-approach** | Implementation strategy selection, task breakdown, large-scale change planning | **Principle 8**: Arrangement by importance (Phase-ordered structure)<br>**Principle 6**: Show NG patterns in recommended format (risk analysis) |
 
-All 9 principles are practiced across these skills, serving as practical references for rule creation.
+All 9 principles are practiced across these skills, serving as practical references for skill creation.
 
 ## Troubleshooting
 
-### Problem: Rules are too long and overload the context window
+### Problem: Skills are too long and overload the context window
 
 **Solutions**
 1. Find and remove duplications
 2. Minimize examples
-3. Utilize reference format
-4. Move low-priority rules to separate files
+3. Extract to supporting files
+4. Move low-priority content to separate skills
 
 ### Problem: Inconsistent generation results
 
@@ -251,9 +297,9 @@ All 9 principles are practiced across these skills, serving as practical referen
 1. Unify terms and notation
 2. Quantify decision criteria
 3. Clarify priorities
-4. Eliminate contradicting rules
+4. Eliminate contradicting skills
 
-### Problem: Important rules are not followed
+### Problem: Important instructions are not followed
 
 **Solutions**
 1. Move to file beginning
@@ -263,4 +309,4 @@ All 9 principles are practiced across these skills, serving as practical referen
 
 ## Summary
 
-Well-written rules stabilize LLM output. By following the 9 principles and continuously refining your rules, you can maximize LLM capabilities. Build the optimal rule set for your project through regular implementation review and improvement.
+Well-written skills stabilize LLM output. By following the 9 principles and continuously refining your skills, you can maximize LLM capabilities. Build the optimal skill set for your project through regular implementation review and improvement.
