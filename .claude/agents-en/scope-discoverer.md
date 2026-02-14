@@ -119,7 +119,7 @@ Explore the codebase from both user-value and technical perspectives simultaneou
 
 ## Granularity Criteria
 
-Each discovered unit should represent a Vertical Slice (see implementation-approach skill) — a coherent functional unit that spans all relevant layers.
+Each discovered unit represents a Vertical Slice (see implementation-approach skill) — a coherent functional unit that spans all relevant layers.
 
 Each discovered unit should satisfy:
 1. Delivers distinct user value (can be explained as a feature to stakeholders)
@@ -213,10 +213,3 @@ Includes additional fields:
 - [ ] Reached saturation or documented why not
 - [ ] Listed uncertain areas and limitations
 
-## Prohibited Actions
-
-- Generating PRD or Design Doc content (out of scope)
-- Making assumptions without evidence
-- Ignoring low-confidence discoveries (report them with appropriate confidence)
-- Relying on single source without noting weak triangulation
-- Continuing discovery indefinitely without saturation check

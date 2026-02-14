@@ -26,18 +26,22 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 - 現在のフェーズ位置（要件/設計/計画/実装/品質保証）
 - subagents-orchestration-guideスキルの該当フローで次のステップを特定
 
-### 3. requirement-analyzer後に停止
+### 3. 設計フェーズ
+
+requirement-analyzerがレイヤー横断スコープ（backend + frontend）を検知した場合、subagents-orchestration-guideスキルのレイヤー横断オーケストレーションに従い、レイヤー別にDesign Docを作成する。
+
+### 4. requirement-analyzer後に停止
 
 ユーザーが質問に回答した時：
 - 回答が`scopeDependencies.question`のいずれかに該当 → `impact`で規模変更をチェック
 - 規模が変更 → 更新されたコンテキストでrequirement-analyzerを再実行
 - `confidence: "confirmed"` または規模変更なし → 次のステップへ進む
 
-### 4. 規模判定後：TodoWriteにフロー全ステップを登録（必須）
+### 5. 規模判定後：TodoWriteにフロー全ステップを登録（必須）
 
 規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTodoWriteに登録**。最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を必ず含める。登録後、TodoWriteを参照してフローを進める。
 
-### 5. 次のアクション実行
+### 6. 次のアクション実行
 
 **TodoWriteの次のpendingタスクを実行**。
 
@@ -63,9 +67,9 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 
 ### タスク実行フロー
 subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TodoWriteで以下の4ステップを管理：
-1. task-executor実行
+1. task-executor実行（レイヤー横断時: レイヤー別エージェントルーティングに従いファイル名パターンで振り分け）
 2. エスカレーション判定・フォローアップ
-3. quality-fixer実行
+3. quality-fixer実行（レイヤー横断時: レイヤー対応のquality-fixerを使用）
 4. git commit
 
 ### テスト情報の伝達

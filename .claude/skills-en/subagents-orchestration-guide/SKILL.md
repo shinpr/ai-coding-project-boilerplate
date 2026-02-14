@@ -147,6 +147,42 @@ According to scale determination:
 1. Create simplified plan **[Stop: Batch approval]**
 2. Direct implementation → Completion report
 
+## Cross-Layer Orchestration
+
+When requirement-analyzer determines the feature spans multiple layers (backend + frontend), the following extensions apply.
+
+### Design Phase Extensions
+
+Replace the standard Design Doc creation step with per-layer creation:
+
+| Step | Agent | Purpose |
+|------|-------|---------|
+| 6a | technical-designer | Backend Design Doc |
+| 6b | technical-designer-frontend | Frontend Design Doc |
+| 7 | document-reviewer ×2 | Review each Design Doc separately |
+| 8 | design-sync | Cross-layer consistency verification **[Stop]** |
+
+**Layer Context in Design Doc Creation**:
+- **Backend**: "Create a backend Design Doc from PRD at [path]. Focus on: API contracts, data layer, business logic, service architecture."
+- **Frontend**: "Create a frontend Design Doc from PRD at [path]. Reference backend Design Doc at [path] for API contracts and Integration Points. Focus on: component hierarchy, state management, UI interactions, data fetching."
+
+**design-sync**: Use frontend Design Doc as source. design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
+
+### Work Planning with Multiple Design Docs
+
+Pass all Design Docs to work-planner with vertical slicing instruction:
+- Provide all Design Doc paths explicitly
+- Instruct: "Compose phases as vertical feature slices — each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase."
+
+### Layer-Aware Agent Routing
+
+During autonomous execution, route agents by task filename pattern:
+
+| Filename Pattern | Executor | Quality Fixer |
+|---|---|---|
+| `*-backend-task-*` | task-executor | quality-fixer |
+| `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
+
 ## Autonomous Execution Mode
 
 ### Authority Delegation
@@ -219,39 +255,3 @@ Stop autonomous execution and escalate to user in the following cases:
 - **After Design Doc creation -> document-reviewer execution**: Confirm design content and consistency
 - **After work plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
 
-## Cross-Layer Orchestration
-
-When requirement-analyzer determines the feature spans multiple layers (backend + frontend), the following extensions apply.
-
-### Design Phase Extensions
-
-Replace the standard Design Doc creation step with per-layer creation:
-
-| Step | Agent | Purpose |
-|------|-------|---------|
-| 6a | technical-designer | Backend Design Doc |
-| 6b | technical-designer-frontend | Frontend Design Doc (references backend Integration Points) |
-| 7 | document-reviewer ×2 | Review each Design Doc separately |
-| 8 | design-sync | Cross-layer consistency (source: frontend Design Doc) **[Stop]** |
-
-**Layer Context in Design Doc Creation**:
-- **Backend**: "Create a backend Design Doc from PRD at [path]. Focus on: API contracts, data layer, business logic, service architecture."
-- **Frontend**: "Create a frontend Design Doc from PRD at [path]. Reference backend Design Doc at [path] for API contracts and Integration Points. Focus on: component hierarchy, state management, UI interactions, data fetching."
-
-**design-sync source**: Use frontend Design Doc as source (created last, referencing backend's Integration Points). design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
-
-### Work Planning with Multiple Design Docs
-
-Pass all Design Docs to work-planner with vertical slicing instruction:
-- Provide all Design Doc paths explicitly
-- Instruct: "Compose phases as vertical feature slices — each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase."
-
-### Layer-Aware Agent Routing
-
-During autonomous execution, route agents by task filename pattern:
-
-| Filename Pattern | Executor | Quality Fixer |
-|---|---|---|
-| `*-backend-task-*` | task-executor | quality-fixer |
-| `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
-| `*-task-*` (no layer prefix) | task-executor | quality-fixer |

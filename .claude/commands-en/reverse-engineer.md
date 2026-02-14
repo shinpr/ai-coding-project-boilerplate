@@ -18,7 +18,7 @@ Use AskUserQuestion to confirm:
 3. **Reference Architecture**: layered / mvc / clean / hexagonal / none
 4. **Human review**: Yes (recommended) / No (fully autonomous)
 5. **Fullstack design**: Yes / No
-   - Yes: For each functional unit, generate backend + frontend Design Docs
+   - Yes: Enable per-unit backend + frontend Design Doc generation
 
 ### 0.2 Output Configuration
 
@@ -36,7 +36,7 @@ Phase 1: PRD Generation
 Phase 2: Design Doc Generation (if requested)
   Step 6: Design Doc Scope Mapping (reuse Step 1 results, no re-discovery)
   Step 7-10: Per-unit loop (Generation → Verification → Review → Revision)
-  ※ fullstack=Yes: each unit produces backend + frontend Design Docs
+  ※ fullstack=Yes: units may produce backend + frontend Design Docs based on scope
 ```
 
 **Context Passing**: Pass structured JSON output between steps. Use `$STEP_N_OUTPUT` placeholder notation.
@@ -183,11 +183,7 @@ prompt: |
 
 ### Step 6: Design Doc Scope Mapping
 
-**No additional discovery required.** Use `$STEP_1_OUTPUT` (scope discovery results) directly.
-
-Each PRD unit from Phase 1 maps to Design Doc unit(s):
-- **Standard mode (fullstack=No)**: 1 PRD unit → 1 Design Doc (using technical-designer)
-- **Fullstack mode (fullstack=Yes)**: 1 PRD unit → 2 Design Docs (technical-designer + technical-designer-frontend)
+Use `$STEP_1_OUTPUT` (scope discovery results) directly. When fullstack=Yes, determine per unit whether backend / frontend / both Design Docs are needed based on the unit's related files and technicalProfile.
 
 Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
 - `technicalProfile.primaryModules` → Primary Files
@@ -203,7 +199,9 @@ Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
 
 #### Step 7: Design Doc Generation
 
-**Standard mode (fullstack=No)**:
+Generate Design Docs per unit based on `$STEP_6_OUTPUT` mapping.
+
+**Design Doc** (technical-designer):
 
 **Task invocation**:
 ```
@@ -221,38 +219,14 @@ prompt: |
 
   Parent PRD: $APPROVED_PRD_PATH
 
+  (fullstack: Focus on API contracts, data layer, business logic, service architecture.)
   Document current architecture. Do not propose changes.
 ```
 
 **Store output as**: `$STEP_7_OUTPUT`
 
-**Fullstack mode (fullstack=Yes)**:
+**Frontend Design Doc** (fullstack, units with frontend scope):
 
-For each unit, invoke BOTH:
-
-**7a. Backend Design Doc**:
-```
-subagent_type: technical-designer
-prompt: |
-  Create a backend Design Doc for the following feature based on existing code.
-
-  Operation Mode: create
-
-  Feature: $UNIT_NAME (from $STEP_6_OUTPUT)
-  Description: $UNIT_DESCRIPTION
-  Primary Files: $UNIT_PRIMARY_MODULES
-  Public Interfaces: $UNIT_PUBLIC_INTERFACES
-  Dependencies: $UNIT_DEPENDENCIES
-
-  Parent PRD: $APPROVED_PRD_PATH
-
-  Focus on: API contracts, data layer, business logic, service architecture.
-  Document current architecture. Do not propose changes.
-```
-
-**Store output as**: `$STEP_7a_OUTPUT`
-
-**7b. Frontend Design Doc**:
 ```
 subagent_type: technical-designer-frontend
 prompt: |
@@ -267,20 +241,18 @@ prompt: |
   Dependencies: $UNIT_DEPENDENCIES
 
   Parent PRD: $APPROVED_PRD_PATH
-  Backend Design Doc: $STEP_7a_OUTPUT
+  Backend Design Doc: $STEP_7_OUTPUT
 
   Reference backend Design Doc for API contracts.
   Focus on: component hierarchy, state management, UI interactions, data fetching.
   Document current architecture. Do not propose changes.
 ```
 
-**Store output as**: `$STEP_7b_OUTPUT`
+**Store output as**: `$STEP_7_FRONTEND_OUTPUT`
 
 #### Step 8: Code Verification
 
-**Standard mode**: Verify `$STEP_7_OUTPUT` against `$UNIT_PRIMARY_MODULES`.
-
-**Fullstack mode**: Verify each Design Doc separately.
+Verify each generated Design Doc separately.
 
 **Task invocation (per Design Doc)**:
 ```
@@ -289,7 +261,7 @@ prompt: |
   Verify consistency between Design Doc and code implementation.
 
   doc_type: design-doc
-  document_path: $STEP_7_OUTPUT (or $STEP_7a_OUTPUT / $STEP_7b_OUTPUT)
+  document_path: $STEP_7_OUTPUT or $STEP_7_FRONTEND_OUTPUT
   code_paths: $UNIT_PRIMARY_MODULES
   verbose: false
 ```
@@ -307,7 +279,7 @@ prompt: |
   Review the following Design Doc considering code verification findings.
 
   doc_type: DesignDoc
-  target: $STEP_7_OUTPUT (or $STEP_7a_OUTPUT / $STEP_7b_OUTPUT)
+  target: $STEP_7_OUTPUT or $STEP_7_FRONTEND_OUTPUT
   mode: composite
 
   ## Code Verification Results
@@ -326,7 +298,7 @@ prompt: |
 
 #### Step 10: Revision (conditional)
 
-Same logic as Step 5, using technical-designer (or technical-designer-frontend for frontend Design Docs) with update mode.
+Same logic as Step 5, using the corresponding technical-designer / technical-designer-frontend with update mode.
 
 #### Unit Completion
 

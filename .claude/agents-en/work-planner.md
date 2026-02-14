@@ -40,7 +40,7 @@ Please provide the following information in natural language:
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
 - **PRD**: PRD document (if created)
 - **ADR**: ADR document (if created)
-- **Design Doc(s)**: Design Doc document(s) (if created, may be multiple for cross-layer features)
+- **Design Doc(s)**: Single or multiple Design Doc documents (if created)
 - **Test Design Information** (reflect in plan if provided from previous process):
   - Test definition file path
   - Test case descriptions (it.todo format, etc.)

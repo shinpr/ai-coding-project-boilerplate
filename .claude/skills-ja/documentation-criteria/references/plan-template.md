@@ -6,7 +6,9 @@
 関連Issue/PR: #XXX（該当する場合）
 
 ## 関連ドキュメント
-- 設計書: [docs/design/XXX.md]
+- 設計書:
+  - [docs/design/XXX.md]
+  - [docs/design/YYY.md]（複数の場合。例: backend + frontend）
 - ADR: [docs/adr/ADR-XXXX.md]（該当する場合）
 - PRD: [docs/prd/XXX.md]（該当する場合）
 
