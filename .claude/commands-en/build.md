@@ -57,9 +57,9 @@ Invoke task-decomposer using Task tool:
 
 ## 🧠 Task Execution Flow
 Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage 4 steps with TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity":
-1. task-executor execution
+1. task-executor execution (cross-layer: see Layer-Aware Agent Routing)
 2. Escalation judgment and follow-up
-3. quality-fixer execution
+3. quality-fixer execution (cross-layer: see Layer-Aware Agent Routing)
 4. git commit
 
 After approval confirmation, start autonomous execution mode. Stop immediately when requirement changes detected.

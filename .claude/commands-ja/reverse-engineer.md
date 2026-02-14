@@ -17,6 +17,8 @@ AskUserQuestionで以下を確認:
 2. **深度**: PRDのみ、またはPRD + Design Doc
 3. **参照アーキテクチャ**: layered / mvc / clean / hexagonal / none
 4. **人間レビュー**: あり（推奨） / なし（自律実行）
+5. **フルスタック設計**: Yes / No
+   - Yes: ユニット毎にbackend + frontendのDesign Doc生成を有効化
 
 ### 0.2 出力設定
 
@@ -28,12 +30,13 @@ AskUserQuestionで以下を確認:
 
 ```
 フェーズ1: PRD生成
-  ステップ1: スコープ発見（全ユニット）
+  ステップ1: スコープ発見（統合、シングルパス）
   ステップ2-5: ユニット毎ループ（生成 → 検証 → レビュー → 修正）
 
 フェーズ2: Design Doc生成（要求された場合）
-  ステップ6: スコープ発見（PRD毎の全component）
-  ステップ7-10: component毎ループ（生成 → 検証 → レビュー → 修正）
+  ステップ6: Design Docスコープマッピング（ステップ1の結果を再利用）
+  ステップ7-10: ユニット毎ループ（生成 → 検証 → レビュー → 修正）
+  ※ fullstack=Yes: ユニットのスコープに応じてbackend + frontend Design Docを生成
 ```
 
 **コンテキスト伝達**: ステップ間で構造化JSON出力を受け渡す。`$STEP_N_OUTPUT`プレースホルダー記法を使用。
@@ -50,9 +53,8 @@ AskUserQuestionで以下を確認:
 ```
 subagent_type: scope-discoverer
 prompt: |
-  コードベースからPRD対象を発見する。
+  コードベースから機能スコープ対象を発見する。
 
-  scope_type: prd
   target_path: $USER_TARGET_PATH
   reference_architecture: $USER_RA_CHOICE
   focus_area: $USER_FOCUS_AREA (指定時)
@@ -61,7 +63,7 @@ prompt: |
 **出力を保存**: `$STEP_1_OUTPUT`
 
 **品質ゲート**:
-- 1つ以上のPRDユニットが発見された → 続行
+- 1つ以上のユニットが発見された → 続行
 - ユニットが発見されない → ユーザーにヒントを求める
 
 **人間レビューポイント**（有効時）: 発見されたユニットを確認用に提示。
@@ -176,50 +178,46 @@ prompt: |
 *ステップ0でDesign Docが要求された場合のみ実行*
 
 **TodoWrite登録**:
-- ステップ6: Design Docスコープ発見
-- component毎の処理（各componentに対してステップ7-10）
+- ステップ6: Design Docスコープマッピング
+- ユニット毎の処理（各ユニットに対してステップ7-10）
 
-### ステップ6: Design Docスコープ発見
+### ステップ6: Design Docスコープマッピング
 
-承認済みPRD毎に:
+`$STEP_1_OUTPUT`（スコープ発見結果）をそのまま使用する。fullstack=Yesの場合、ユニットの`relatedFiles`と`technicalProfile.primaryModules`のパスパターンからbackend / frontend / 両方のいずれが必要かをユニット毎に判定する（technical-specスキルのプロジェクト構造定義を参照）。
 
-**Task呼び出し**:
-```
-subagent_type: scope-discoverer
-prompt: |
-  PRDスコープ内でDesign Doc対象を発見する。
-
-  scope_type: design-doc
-  existing_prd: $APPROVED_PRD_PATH
-  target_path: $PRD_RELATED_PATHS
-  reference_architecture: $USER_RA_CHOICE
-```
+`$STEP_1_OUTPUT`のユニットから以下を引き継ぐ:
+- `technicalProfile.primaryModules` → 主要ファイル
+- `technicalProfile.publicInterfaces` → publicインターフェース
+- `dependencies` → 依存関係
+- `relatedFiles` → スコープ境界
 
 **出力を保存**: `$STEP_6_OUTPUT`
 
-**品質ゲート**:
-- 1つ以上のcomponentが発見された → 続行
-- componentなし → ユーザーにヒントを求める
+### ステップ7-10: ユニット毎の処理
 
-### ステップ7-10: component毎の処理
-
-**各componentについてステップ7→8→9→10を完了してから次のcomponentへ進む。**
+**各ユニットについてステップ7→8→9→10を完了してから次のユニットへ進む。**
 
 #### ステップ7: Design Doc生成
+
+`$STEP_6_OUTPUT`のマッピング結果に基づき、ユニット毎に必要なDesign Docを生成する。
+
+**Design Doc**（technical-designer）:
+
+fullstack=Yes時: promptに「対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」を追加する。
 
 **Task呼び出し**:
 ```
 subagent_type: technical-designer
 prompt: |
-  既存コードに基づき以下のcomponentのDesign Docを作成する。
+  既存コードに基づき以下の機能のDesign Docを作成する。
 
   動作モード: create
 
-  component: $COMPONENT_NAME ($STEP_6_OUTPUTより)
-  責務: $COMPONENT_RESPONSIBILITY
-  主要ファイル: $COMPONENT_PRIMARY_FILES
-  public interface: $COMPONENT_PUBLIC_INTERFACES
-  依存関係: $COMPONENT_DEPENDENCIES
+  機能: $UNIT_NAME ($STEP_6_OUTPUTより)
+  説明: $UNIT_DESCRIPTION
+  主要ファイル: $UNIT_PRIMARY_MODULES
+  publicインターフェース: $UNIT_PUBLIC_INTERFACES
+  依存関係: $UNIT_DEPENDENCIES
 
   親PRD: $APPROVED_PRD_PATH
 
@@ -228,17 +226,44 @@ prompt: |
 
 **出力を保存**: `$STEP_7_OUTPUT`
 
+**フロントエンドDesign Doc**（fullstack、フロントエンドスコープを含むユニット）:
+
+```
+subagent_type: technical-designer-frontend
+prompt: |
+  既存コードに基づき以下の機能のフロントエンドDesign Docを作成する。
+
+  動作モード: create
+
+  機能: $UNIT_NAME ($STEP_6_OUTPUTより)
+  説明: $UNIT_DESCRIPTION
+  主要ファイル: $UNIT_PRIMARY_MODULES
+  publicインターフェース: $UNIT_PUBLIC_INTERFACES
+  依存関係: $UNIT_DEPENDENCIES
+
+  親PRD: $APPROVED_PRD_PATH
+  バックエンドDesign Doc: $STEP_7_OUTPUT
+
+  バックエンドDesign DocのAPIコントラクトを参照。
+  対象: コンポーネント階層、状態管理、UI操作、データ取得。
+  現在のアーキテクチャをドキュメント化する。変更提案は行わない。
+```
+
+**出力を保存**: `$STEP_7_FRONTEND_OUTPUT`
+
 #### ステップ8: コード検証
 
-**Task呼び出し**:
+生成された各Design Docに対して個別に検証を実行する。
+
+**Task呼び出し（Design Doc毎）**:
 ```
 subagent_type: code-verifier
 prompt: |
   Design Docとコード実装の整合性を検証する。
 
   doc_type: design-doc
-  document_path: $STEP_7_OUTPUT
-  code_paths: $COMPONENT_PRIMARY_FILES
+  document_path: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
+  code_paths: $UNIT_PRIMARY_MODULES
   verbose: false
 ```
 
@@ -248,14 +273,14 @@ prompt: |
 
 **必須入力**: $STEP_8_OUTPUT（ステップ8からの検証JSON）
 
-**Task呼び出し**:
+**Task呼び出し（Design Doc毎）**:
 ```
 subagent_type: document-reviewer
 prompt: |
   コード検証結果を考慮してDesign Docをレビューする。
 
   doc_type: DesignDoc
-  target: $STEP_7_OUTPUT
+  target: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
   mode: composite
 
   ## コード検証結果
@@ -265,23 +290,23 @@ prompt: |
   $APPROVED_PRD_PATH
 
   ## 追加レビュー観点
-  - ドキュメント化されたinterfaceの技術的正確性
+  - ドキュメント化されたインターフェースの技術的正確性
   - 親PRDスコープとの整合性
-  - component境界定義の完全性
+  - ユニット境界定義の完全性
 ```
 
 **出力を保存**: `$STEP_9_OUTPUT`
 
 #### ステップ10: 修正（条件付き）
 
-ステップ5と同様のロジック。updateモードでtechnical-designerを使用。
+ステップ5と同様のロジック。updateモードで対応するtechnical-designer / technical-designer-frontendを使用。
 
-#### component完了
+#### ユニット完了
 
 - [ ] レビューステータスが「Approved」または「Approved with Conditions」
 - [ ] 人間レビュー通過（ステップ0で有効化時）
 
-**次へ**: 次のcomponentへ進む。全component完了後 → 最終レポート。
+**次へ**: 次のユニットへ進む。全ユニット完了後 → 最終レポート。
 
 ## 最終レポート
 

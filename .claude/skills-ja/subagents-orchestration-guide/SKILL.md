@@ -80,6 +80,8 @@ graph TD
 **基本サイクル**: `task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit` の4ステップサイクルを管理。
 各タスクごとにこのサイクルを繰り返し、品質を保証。
 
+**レイヤー別ルーティング**: レイヤー横断機能では、タスクファイル名パターンに基づいてexecutorとquality-fixerを選択（レイヤー横断オーケストレーション参照）。
+
 ## Sub-agent間の制約
 
 **重要**: Sub-agentから他のSub-agentを直接呼び出すことはできない。複数のSub-agentを連携させる場合は、メインAIがオーケストレーターとして動作。
@@ -99,7 +101,7 @@ graph TD
 ## 構造化レスポンス仕様
 
 サブエージェントはJSON形式で応答。オーケストレーター判断に必要なフィールド：
-- **requirement-analyzer**: scale, confidence, adrRequired, scopeDependencies, questions
+- **requirement-analyzer**: scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions
 - **task-executor**: status (escalation_needed/blocked/completed), testsAdded
 - **quality-fixer**: approved (true/false)
 - **document-reviewer**: approvalReady (true/false)
@@ -116,8 +118,8 @@ graph TD
 3. document-reviewer → PRDレビュー **[停止: PRD承認]**
 4. technical-designer → ADR作成（アーキテクチャ/技術/データフロー変更がある場合）
 5. document-reviewer → ADRレビュー（ADR作成時） **[停止: ADR承認]**
-6. technical-designer → Design Doc作成
-7. document-reviewer → Design Docレビュー
+6. technical-designer → Design Doc作成（レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
+7. document-reviewer → Design Docレビュー（レイヤー横断時: Design Doc毎に実行）
 8. design-sync → 整合性検証 **[停止: Design Doc承認]**
 9. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
 10. work-planner → 作業計画書作成 **[停止: 一括承認]**
@@ -126,8 +128,8 @@ graph TD
 ### 中規模（3-5ファイル） - 7ステップ
 
 1. requirement-analyzer → 要件分析 **[停止]**
-2. technical-designer → Design Doc作成
-3. document-reviewer → Design Docレビュー
+2. technical-designer → Design Doc作成（レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
+3. document-reviewer → Design Docレビュー（レイヤー横断時: Design Doc毎に実行）
 4. design-sync → 整合性検証 **[停止: Design Doc承認]**
 5. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
 6. work-planner → 作業計画書作成 **[停止: 一括承認]**
@@ -137,6 +139,42 @@ graph TD
 
 1. 簡易計画書作成 **[停止: 一括承認]**
 2. 直接実装 → 完了報告
+
+## レイヤー横断オーケストレーション
+
+requirement-analyzerが複数レイヤー（backend + frontend）にまたがる機能と判定した場合（`crossLayerScope`で判断）、以下の拡張を適用。ステップ番号は大規模フロー基準。中規模フローではDesign Doc作成がステップ2から始まるため、同じパターンをステップ2a/2b/3/4として適用する。
+
+### 設計フェーズの拡張
+
+標準のDesign Doc作成ステップをレイヤー別作成に置き換え:
+
+| ステップ | エージェント | 目的 |
+|---------|-----------|------|
+| 6a | technical-designer | バックエンドDesign Doc |
+| 6b | technical-designer-frontend | フロントエンドDesign Doc |
+| 7 | document-reviewer ×2 | 各Design Docを個別にレビュー |
+| 8 | design-sync | レイヤー間整合性検証 **[停止]** |
+
+**Design Doc作成時のレイヤーコンテキスト指定**:
+- **バックエンド**: 「[path]のPRDからバックエンドDesign Docを作成。対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」
+- **フロントエンド**: 「[path]のPRDからフロントエンドDesign Docを作成。[path]のバックエンドDesign DocのAPIコントラクトとIntegration Pointsを参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
+
+**design-sync**: フロントエンドDesign Docをソースとして使用。`docs/design/`内の他のDesign Docを自動検出して比較。
+
+### 複数Design Docでの作業計画
+
+全Design Docをwork-plannerに渡し、垂直スライスで構成を指示:
+- 全Design Docのパスを明示的に提供
+- 指示: 「フェーズを垂直な機能スライスで構成すること。各フェーズに同一機能領域のバックエンドとフロントエンド作業を含め、フェーズ毎の早期統合検証を可能にする。」
+
+### レイヤー別エージェントルーティング
+
+自律実行中、タスクファイル名パターンに基づいてエージェントを選択:
+
+| ファイル名パターン | Executor | Quality Fixer |
+|---|---|---|
+| `*-task-*` または `*-backend-task-*` | task-executor | quality-fixer |
+| `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
 
 ## 自律実行モード
 

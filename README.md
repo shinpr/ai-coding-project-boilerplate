@@ -190,8 +190,7 @@ Essential commands for Claude Code:
 | `/front-build` | Execute frontend implementation | React component development |
 | `/front-review` | Check frontend code compliance | Post-implementation (Frontend) |
 | `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
-| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation (Backend) |
-| `/front-reverse-design` | Generate frontend Design Docs | Existing frontend code documentation |
+| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation (fullstack option available) |
 | `/add-integration-tests` | Add integration/E2E tests | When Design Doc exists but tests missing |
 | `/update-doc` | Update existing design documents | Spec changes, review feedback |
 
@@ -218,20 +217,19 @@ Generate PRD and Design Docs from existing code:
 ```mermaid
 graph TB
     subgraph Phase1[Phase 1: PRD Generation]
-        CMD["/reverse-engineer"] --> SD1[scope-discoverer]
-        SD1 --> PRD[prd-creator]
+        CMD["/reverse-engineer"] --> SD[scope-discoverer unified]
+        SD --> PRD[prd-creator]
         PRD --> CV1[code-verifier]
         CV1 --> DR1[document-reviewer]
     end
 
     subgraph Phase2[Phase 2: Design Doc Generation]
-        SD2[scope-discoverer] --> DD[technical-designer]
-        DD --> CV2[code-verifier]
+        TD[technical-designer] --> CV2[code-verifier]
         CV2 --> DR2[document-reviewer]
         DR2 --> DONE[Complete]
     end
 
-    DR1 --> |All PRDs Approved| SD2
+    DR1 --> |"All PRDs Approved (reuse scope)"| TD
 ```
 
 ### How It Works
@@ -343,7 +341,7 @@ A: Those help write code. This manages entire development lifecycle with special
 | **investigator** | Problem investigation | `/diagnose` Step 1 |
 | **verifier** | Investigation verification | `/diagnose` Step 3 |
 | **solver** | Solution derivation | `/diagnose` Step 4 |
-| **scope-discoverer** | PRD/Design Doc scope discovery | `/reverse-engineer` Step 1 |
+| **scope-discoverer** | Functional scope discovery | `/reverse-engineer` Step 1 |
 | **code-verifier** | Document-code consistency | `/reverse-engineer` verification |
 
 [Full agent list →](.claude/agents-en/)

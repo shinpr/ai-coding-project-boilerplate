@@ -84,6 +84,8 @@ I understand each subagent's responsibilities and assign work appropriately:
 **Basic Cycle**: I manage the 4-step cycle of `task-executor -> escalation judgment/follow-up -> quality-fixer -> commit`.
 I repeat this cycle for each task to ensure quality.
 
+**Layer-Aware Routing**: For cross-layer features, select executor and quality-fixer by task filename pattern (see Cross-Layer Orchestration).
+
 ## Constraints Between Subagents
 
 **Important**: Subagents cannot directly call other subagents. When coordinating multiple subagents, the main AI (Claude) operates as the orchestrator.
@@ -103,7 +105,7 @@ I repeat this cycle for each task to ensure quality.
 ## Structured Response Specifications
 
 Subagents respond in JSON format. Key fields for orchestrator decisions:
-- **requirement-analyzer**: scale, confidence, adrRequired, scopeDependencies, questions
+- **requirement-analyzer**: scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions
 - **task-executor**: status (escalation_needed/blocked/completed), testsAdded
 - **quality-fixer**: approved (true/false)
 - **document-reviewer**: approvalReady (true/false)
@@ -123,8 +125,8 @@ According to scale determination:
 3. document-reviewer → PRD review **[Stop: PRD Approval]**
 4. technical-designer → ADR creation (if architecture/technology/data flow changes)
 5. document-reviewer → ADR review (if ADR created) **[Stop: ADR Approval]**
-6. technical-designer → Design Doc creation
-7. document-reviewer → Design Doc review
+6. technical-designer → Design Doc creation (cross-layer: per layer, see Cross-Layer Orchestration)
+7. document-reviewer → Design Doc review (cross-layer: per Design Doc)
 8. design-sync → Consistency verification **[Stop: Design Doc Approval]**
 9. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
 10. work-planner → Work plan creation **[Stop: Batch approval]**
@@ -133,8 +135,8 @@ According to scale determination:
 ### Medium Scale (3-5 Files) - 7 Steps
 
 1. requirement-analyzer → Requirement analysis **[Stop]**
-2. technical-designer → Design Doc creation
-3. document-reviewer → Design Doc review
+2. technical-designer → Design Doc creation (cross-layer: per layer, see Cross-Layer Orchestration)
+3. document-reviewer → Design Doc review (cross-layer: per Design Doc)
 4. design-sync → Consistency verification **[Stop: Design Doc Approval]**
 5. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
 6. work-planner → Work plan creation **[Stop: Batch approval]**
@@ -144,6 +146,42 @@ According to scale determination:
 
 1. Create simplified plan **[Stop: Batch approval]**
 2. Direct implementation → Completion report
+
+## Cross-Layer Orchestration
+
+When requirement-analyzer determines the feature spans multiple layers (backend + frontend) via `crossLayerScope`, the following extensions apply. Step numbers below follow the large-scale flow. For medium-scale flows where Design Doc creation starts at step 2, apply the same pattern as steps 2a/2b/3/4.
+
+### Design Phase Extensions
+
+Replace the standard Design Doc creation step with per-layer creation:
+
+| Step | Agent | Purpose |
+|------|-------|---------|
+| 6a | technical-designer | Backend Design Doc |
+| 6b | technical-designer-frontend | Frontend Design Doc |
+| 7 | document-reviewer ×2 | Review each Design Doc separately |
+| 8 | design-sync | Cross-layer consistency verification **[Stop]** |
+
+**Layer Context in Design Doc Creation**:
+- **Backend**: "Create a backend Design Doc from PRD at [path]. Focus on: API contracts, data layer, business logic, service architecture."
+- **Frontend**: "Create a frontend Design Doc from PRD at [path]. Reference backend Design Doc at [path] for API contracts and Integration Points. Focus on: component hierarchy, state management, UI interactions, data fetching."
+
+**design-sync**: Use frontend Design Doc as source. design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
+
+### Work Planning with Multiple Design Docs
+
+Pass all Design Docs to work-planner with vertical slicing instruction:
+- Provide all Design Doc paths explicitly
+- Instruct: "Compose phases as vertical feature slices — each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase."
+
+### Layer-Aware Agent Routing
+
+During autonomous execution, route agents by task filename pattern:
+
+| Filename Pattern | Executor | Quality Fixer |
+|---|---|---|
+| `*-task-*` or `*-backend-task-*` | task-executor | quality-fixer |
+| `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
 
 ## Autonomous Execution Mode
 
@@ -216,3 +254,4 @@ Stop autonomous execution and escalate to user in the following cases:
   - On user rejection: Main AI (me) updates Status to Rejected
 - **After Design Doc creation -> document-reviewer execution**: Confirm design content and consistency
 - **After work plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
+
