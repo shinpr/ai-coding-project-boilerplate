@@ -105,7 +105,7 @@ I repeat this cycle for each task to ensure quality.
 ## Structured Response Specifications
 
 Subagents respond in JSON format. Key fields for orchestrator decisions:
-- **requirement-analyzer**: scale, confidence, adrRequired, scopeDependencies, questions
+- **requirement-analyzer**: scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions
 - **task-executor**: status (escalation_needed/blocked/completed), testsAdded
 - **quality-fixer**: approved (true/false)
 - **document-reviewer**: approvalReady (true/false)
@@ -149,7 +149,7 @@ According to scale determination:
 
 ## Cross-Layer Orchestration
 
-When requirement-analyzer determines the feature spans multiple layers (backend + frontend), the following extensions apply.
+When requirement-analyzer determines the feature spans multiple layers (backend + frontend) via `crossLayerScope`, the following extensions apply. Step numbers below follow the large-scale flow. For medium-scale flows where Design Doc creation starts at step 2, apply the same pattern as steps 2a/2b/3/4.
 
 ### Design Phase Extensions
 
@@ -180,7 +180,7 @@ During autonomous execution, route agents by task filename pattern:
 
 | Filename Pattern | Executor | Quality Fixer |
 |---|---|---|
-| `*-backend-task-*` | task-executor | quality-fixer |
+| `*-task-*` or `*-backend-task-*` | task-executor | quality-fixer |
 | `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
 
 ## Autonomous Execution Mode

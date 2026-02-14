@@ -114,7 +114,7 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
    - 共有依存関係と横断的関心事を特定
 
 6. **飽和チェック**
-   - 連続3つの新規ソースで新規ユニットが発見されない場合に発見を停止
+   - 発見ソーステーブルの連続3種のソースタイプを探索しても新規ユニットが発見されない場合に発見を停止
    - 出力で発見が飽和したことをマーク
 
 ## 粒度基準
@@ -166,10 +166,10 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
       "relatedFiles": ["src/feature/*"],
       "dependencies": ["UNIT-002"],
       "technicalProfile": {
-        "primaryModules": ["src/auth/service.ts", "src/auth/controller.ts"],
-        "publicInterfaces": ["AuthService.login()", "AuthController.handleLogin()"],
-        "dataFlowSummary": "Request → Controller → Service → Repository → DB",
-        "infrastructureDeps": ["database", "redis-cache"]
+        "primaryModules": ["src/<feature>/module-a.ts", "src/<feature>/module-b.ts"],
+        "publicInterfaces": ["ServiceA.operation()", "ModuleB.handle()"],
+        "dataFlowSummary": "入力元 → 主要処理経路 → 出力先",
+        "infrastructureDeps": ["外部依存リスト"]
       }
     }
   ],
@@ -212,3 +212,9 @@ CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、�
 - [ ] ユニット間の関係性を文書化
 - [ ] 飽和に到達、または到達しなかった理由を文書化
 - [ ] 不確実な領域と制限事項を列挙
+
+## 制約
+
+- evidenceなしの仮定を行わない
+- 単一ソースに依存する場合は弱いtriangulationである旨を必ず注記する
+- 低信頼度の発見も適切な信頼度レベルで報告する（無視しない）

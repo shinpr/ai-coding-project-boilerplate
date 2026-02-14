@@ -114,7 +114,7 @@ Explore the codebase from both user-value and technical perspectives simultaneou
    - Identify shared dependencies and cross-cutting concerns
 
 6. **Saturation Check**
-   - Stop discovery when 3 consecutive new sources yield no new units
+   - Stop discovery when 3 consecutive source types from the Discovery Sources table yield no new units
    - Mark discovery as saturated in output
 
 ## Granularity Criteria
@@ -166,10 +166,10 @@ Each discovered unit should satisfy:
       "relatedFiles": ["src/feature/*"],
       "dependencies": ["UNIT-002"],
       "technicalProfile": {
-        "primaryModules": ["src/auth/service.ts", "src/auth/controller.ts"],
-        "publicInterfaces": ["AuthService.login()", "AuthController.handleLogin()"],
-        "dataFlowSummary": "Request → Controller → Service → Repository → DB",
-        "infrastructureDeps": ["database", "redis-cache"]
+        "primaryModules": ["src/<feature>/module-a.ts", "src/<feature>/module-b.ts"],
+        "publicInterfaces": ["ServiceA.operation()", "ModuleB.handle()"],
+        "dataFlowSummary": "Input source → core processing path → output destination",
+        "infrastructureDeps": ["external dependency list"]
       }
     }
   ],
@@ -212,4 +212,10 @@ Includes additional fields:
 - [ ] Documented relationships between units
 - [ ] Reached saturation or documented why not
 - [ ] Listed uncertain areas and limitations
+
+## Constraints
+
+- Do not make assumptions without evidence
+- When relying on a single source, always note weak triangulation
+- Report low-confidence discoveries with appropriate confidence level (do not ignore)
 

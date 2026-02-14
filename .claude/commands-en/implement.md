@@ -28,7 +28,7 @@ When continuing existing flow, verify:
 
 ### 3. Design Phase
 
-When requirement-analyzer identifies cross-layer scope (backend + frontend), follow the Cross-Layer Orchestration section in subagents-orchestration-guide skill for Design Doc creation per layer.
+When requirement-analyzer's `crossLayerScope` indicates cross-layer scope (backend + frontend), follow the Cross-Layer Orchestration section in subagents-orchestration-guide skill for Design Doc creation per layer.
 
 ### 4. After requirement-analyzer [Stop]
 
@@ -67,9 +67,9 @@ Include the following at the end of prompts when invoking sub-agents, as rule-ad
 
 ### Task Execution Flow
 Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these 4 steps with TodoWrite:
-1. task-executor execution (cross-layer: route by filename pattern per Layer-Aware Agent Routing)
+1. task-executor execution (cross-layer: see Layer-Aware Agent Routing)
 2. Escalation judgment and follow-up
-3. quality-fixer execution (cross-layer: layer-appropriate quality-fixer)
+3. quality-fixer execution (cross-layer: see Layer-Aware Agent Routing)
 4. git commit
 
 ### Test Information Communication

@@ -57,9 +57,9 @@ Taskツールでtask-decomposerを呼び出す:
 
 ## 🧠 タスク実行フロー
 subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TodoWriteで4ステップを管理。最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を必ず含める：
-1. task-executor実行（レイヤー横断時: subagents-orchestration-guideスキルのレイヤー別エージェントルーティングに従いファイル名パターンで振り分け）
+1. task-executor実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
 2. エスカレーション判定・フォローアップ
-3. quality-fixer実行（レイヤー横断時: レイヤー対応のquality-fixerを使用）
+3. quality-fixer実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
 4. git commit
 
 承認確認後、自律実行モードを開始。要件変更検知時は即座に停止。

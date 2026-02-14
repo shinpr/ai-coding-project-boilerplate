@@ -28,7 +28,7 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 
 ### 3. 設計フェーズ
 
-requirement-analyzerがレイヤー横断スコープ（backend + frontend）を検知した場合、subagents-orchestration-guideスキルのレイヤー横断オーケストレーションに従い、レイヤー別にDesign Docを作成する。
+requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + frontend）を示す場合、subagents-orchestration-guideスキルのレイヤー横断オーケストレーションに従い、レイヤー別にDesign Docを作成する。
 
 ### 4. requirement-analyzer後に停止
 
@@ -67,9 +67,9 @@ requirement-analyzerがレイヤー横断スコープ（backend + frontend）を
 
 ### タスク実行フロー
 subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TodoWriteで以下の4ステップを管理：
-1. task-executor実行（レイヤー横断時: レイヤー別エージェントルーティングに従いファイル名パターンで振り分け）
+1. task-executor実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
 2. エスカレーション判定・フォローアップ
-3. quality-fixer実行（レイヤー横断時: レイヤー対応のquality-fixerを使用）
+3. quality-fixer実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
 4. git commit
 
 ### テスト情報の伝達

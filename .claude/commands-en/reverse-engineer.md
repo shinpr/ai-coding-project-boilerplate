@@ -183,7 +183,7 @@ prompt: |
 
 ### Step 6: Design Doc Scope Mapping
 
-Use `$STEP_1_OUTPUT` (scope discovery results) directly. When fullstack=Yes, determine per unit whether backend / frontend / both Design Docs are needed based on the unit's related files and technicalProfile.
+Use `$STEP_1_OUTPUT` (scope discovery results) directly. When fullstack=Yes, determine per unit whether backend / frontend / both Design Docs are needed based on path patterns in the unit's `relatedFiles` and `technicalProfile.primaryModules` (refer to project structure defined in technical-spec skill).
 
 Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
 - `technicalProfile.primaryModules` → Primary Files
@@ -203,6 +203,8 @@ Generate Design Docs per unit based on `$STEP_6_OUTPUT` mapping.
 
 **Design Doc** (technical-designer):
 
+When fullstack=Yes: append "Focus on: API contracts, data layer, business logic, service architecture." to the prompt.
+
 **Task invocation**:
 ```
 subagent_type: technical-designer
@@ -219,7 +221,6 @@ prompt: |
 
   Parent PRD: $APPROVED_PRD_PATH
 
-  (fullstack: Focus on API contracts, data layer, business logic, service architecture.)
   Document current architecture. Do not propose changes.
 ```
 

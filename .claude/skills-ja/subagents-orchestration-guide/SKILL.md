@@ -101,7 +101,7 @@ graph TD
 ## 構造化レスポンス仕様
 
 サブエージェントはJSON形式で応答。オーケストレーター判断に必要なフィールド：
-- **requirement-analyzer**: scale, confidence, adrRequired, scopeDependencies, questions
+- **requirement-analyzer**: scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions
 - **task-executor**: status (escalation_needed/blocked/completed), testsAdded
 - **quality-fixer**: approved (true/false)
 - **document-reviewer**: approvalReady (true/false)
@@ -142,7 +142,7 @@ graph TD
 
 ## レイヤー横断オーケストレーション
 
-requirement-analyzerが複数レイヤー（backend + frontend）にまたがる機能と判定した場合、以下の拡張を適用。
+requirement-analyzerが複数レイヤー（backend + frontend）にまたがる機能と判定した場合（`crossLayerScope`で判断）、以下の拡張を適用。ステップ番号は大規模フロー基準。中規模フローではDesign Doc作成がステップ2から始まるため、同じパターンをステップ2a/2b/3/4として適用する。
 
 ### 設計フェーズの拡張
 
@@ -173,7 +173,7 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 
 | ファイル名パターン | Executor | Quality Fixer |
 |---|---|---|
-| `*-backend-task-*` | task-executor | quality-fixer |
+| `*-task-*` または `*-backend-task-*` | task-executor | quality-fixer |
 | `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
 
 ## 自律実行モード

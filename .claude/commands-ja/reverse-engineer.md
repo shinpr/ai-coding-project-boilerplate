@@ -183,7 +183,7 @@ prompt: |
 
 ### ステップ6: Design Docスコープマッピング
 
-`$STEP_1_OUTPUT`（スコープ発見結果）をそのまま使用する。fullstack=Yesの場合、ユニットの関連ファイルとtechnicalProfileからbackend / frontend / 両方のいずれが必要かをユニット毎に判定する。
+`$STEP_1_OUTPUT`（スコープ発見結果）をそのまま使用する。fullstack=Yesの場合、ユニットの`relatedFiles`と`technicalProfile.primaryModules`のパスパターンからbackend / frontend / 両方のいずれが必要かをユニット毎に判定する（technical-specスキルのプロジェクト構造定義を参照）。
 
 `$STEP_1_OUTPUT`のユニットから以下を引き継ぐ:
 - `technicalProfile.primaryModules` → 主要ファイル
@@ -203,6 +203,8 @@ prompt: |
 
 **Design Doc**（technical-designer）:
 
+fullstack=Yes時: promptに「対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」を追加する。
+
 **Task呼び出し**:
 ```
 subagent_type: technical-designer
@@ -219,7 +221,6 @@ prompt: |
 
   親PRD: $APPROVED_PRD_PATH
 
-  （fullstack時: 対象をAPIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャに限定。）
   現在のアーキテクチャをドキュメント化する。変更提案は行わない。
 ```
 
