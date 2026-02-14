@@ -26,18 +26,22 @@ When continuing existing flow, verify:
 - Current phase position (Requirements/Design/Planning/Implementation/QA)
 - Identify next step in subagents-orchestration-guide skill corresponding flow
 
-### 3. After requirement-analyzer [Stop]
+### 3. Design Phase
+
+When requirement-analyzer identifies cross-layer scope (backend + frontend), follow the Cross-Layer Orchestration section in subagents-orchestration-guide skill for Design Doc creation per layer.
+
+### 4. After requirement-analyzer [Stop]
 
 When user responds to questions:
 - If response matches any `scopeDependencies.question` → Check `impact` for scale change
 - If scale changes → Re-execute requirement-analyzer with updated context
 - If `confidence: "confirmed"` or no scale change → Proceed to next step
 
-### 4. After Scale Determination: Register All Flow Steps to TodoWrite (Required)
+### 5. After Scale Determination: Register All Flow Steps to TodoWrite (Required)
 
 After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow to TodoWrite**. Always include: first "Confirm skill constraints", final "Verify skill fidelity". After registration, proceed through the flow referencing TodoWrite.
 
-### 5. Execute Next Action
+### 6. Execute Next Action
 
 **Execute the next pending task in TodoWrite**.
 
@@ -63,9 +67,9 @@ Include the following at the end of prompts when invoking sub-agents, as rule-ad
 
 ### Task Execution Flow
 Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these 4 steps with TodoWrite:
-1. task-executor execution
+1. task-executor execution (cross-layer: route by filename pattern per Layer-Aware Agent Routing)
 2. Escalation judgment and follow-up
-3. quality-fixer execution
+3. quality-fixer execution (cross-layer: layer-appropriate quality-fixer)
 4. git commit
 
 ### Test Information Communication

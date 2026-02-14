@@ -84,6 +84,8 @@ I understand each subagent's responsibilities and assign work appropriately:
 **Basic Cycle**: I manage the 4-step cycle of `task-executor -> escalation judgment/follow-up -> quality-fixer -> commit`.
 I repeat this cycle for each task to ensure quality.
 
+**Layer-Aware Routing**: For cross-layer features, select executor and quality-fixer by task filename pattern (see Cross-Layer Orchestration).
+
 ## Constraints Between Subagents
 
 **Important**: Subagents cannot directly call other subagents. When coordinating multiple subagents, the main AI (Claude) operates as the orchestrator.
@@ -123,8 +125,8 @@ According to scale determination:
 3. document-reviewer → PRD review **[Stop: PRD Approval]**
 4. technical-designer → ADR creation (if architecture/technology/data flow changes)
 5. document-reviewer → ADR review (if ADR created) **[Stop: ADR Approval]**
-6. technical-designer → Design Doc creation
-7. document-reviewer → Design Doc review
+6. technical-designer → Design Doc creation (cross-layer: per layer, see Cross-Layer Orchestration)
+7. document-reviewer → Design Doc review (cross-layer: per Design Doc)
 8. design-sync → Consistency verification **[Stop: Design Doc Approval]**
 9. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
 10. work-planner → Work plan creation **[Stop: Batch approval]**
@@ -133,8 +135,8 @@ According to scale determination:
 ### Medium Scale (3-5 Files) - 7 Steps
 
 1. requirement-analyzer → Requirement analysis **[Stop]**
-2. technical-designer → Design Doc creation
-3. document-reviewer → Design Doc review
+2. technical-designer → Design Doc creation (cross-layer: per layer, see Cross-Layer Orchestration)
+3. document-reviewer → Design Doc review (cross-layer: per Design Doc)
 4. design-sync → Consistency verification **[Stop: Design Doc Approval]**
 5. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
 6. work-planner → Work plan creation **[Stop: Batch approval]**
@@ -216,3 +218,40 @@ Stop autonomous execution and escalate to user in the following cases:
   - On user rejection: Main AI (me) updates Status to Rejected
 - **After Design Doc creation -> document-reviewer execution**: Confirm design content and consistency
 - **After work plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
+
+## Cross-Layer Orchestration
+
+When requirement-analyzer determines the feature spans multiple layers (backend + frontend), the following extensions apply.
+
+### Design Phase Extensions
+
+Replace the standard Design Doc creation step with per-layer creation:
+
+| Step | Agent | Purpose |
+|------|-------|---------|
+| 6a | technical-designer | Backend Design Doc |
+| 6b | technical-designer-frontend | Frontend Design Doc (references backend Integration Points) |
+| 7 | document-reviewer ×2 | Review each Design Doc separately |
+| 8 | design-sync | Cross-layer consistency (source: frontend Design Doc) **[Stop]** |
+
+**Layer Context in Design Doc Creation**:
+- **Backend**: "Create a backend Design Doc from PRD at [path]. Focus on: API contracts, data layer, business logic, service architecture."
+- **Frontend**: "Create a frontend Design Doc from PRD at [path]. Reference backend Design Doc at [path] for API contracts and Integration Points. Focus on: component hierarchy, state management, UI interactions, data fetching."
+
+**design-sync source**: Use frontend Design Doc as source (created last, referencing backend's Integration Points). design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
+
+### Work Planning with Multiple Design Docs
+
+Pass all Design Docs to work-planner with vertical slicing instruction:
+- Provide all Design Doc paths explicitly
+- Instruct: "Compose phases as vertical feature slices — each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase."
+
+### Layer-Aware Agent Routing
+
+During autonomous execution, route agents by task filename pattern:
+
+| Filename Pattern | Executor | Quality Fixer |
+|---|---|---|
+| `*-backend-task-*` | task-executor | quality-fixer |
+| `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
+| `*-task-*` (no layer prefix) | task-executor | quality-fixer |
