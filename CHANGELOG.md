@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2026-02-14
+
+### Added
+
+#### Cross-Layer Orchestration
+- Add cross-layer orchestration section to subagents-orchestration-guide SKILL.md (en/ja): design phase extensions, layer context prompts, vertical slice work planning, layer-aware agent routing table
+- Add layer-aware task file naming convention to task-decomposer (en/ja): `*-backend-task-*` / `*-frontend-task-*` pattern for automatic agent routing
+- Add Design Phase section to implement command (en/ja) for cross-layer scope detection
+- Add layer-aware routing annotations to implement and build commands (en/ja)
+
+#### Fullstack Reverse Engineering
+- Add fullstack design option to reverse-engineer command (en/ja): per-unit backend + frontend Design Doc generation
+- Add `technicalProfile` field to scope-discoverer output: primaryModules, publicInterfaces, dataFlowSummary, infrastructureDeps
+
+### Changed
+
+#### scope-discoverer (en/ja) — Unified Single-Pass Discovery
+- Remove `scope_type` parameter (previously `prd` | `design-doc` dual mode)
+- Unify discovery sources into single table with Perspective column (user-value / technical / both)
+- Add Granularity Criteria section with split/merge signals based on vertical slice principles
+- Add `implementation-approach` to required skills
+- Remove Prohibited Actions section (all items already covered by positive statements elsewhere)
+
+#### reverse-engineer (en/ja) — Fullstack Integration
+- Step 6: Change from scope-discoverer re-invocation to scope mapping (reuse Step 1 results)
+- Step 7: Merge Standard/Fullstack mode split into unified per-unit flow
+- Unify `component` terminology to `unit` throughout
+
+#### Other Changes
+- Support multiple Design Docs in work-planner required info and quality checklist (en/ja)
+- Support multiple Design Docs in plan-template (en/ja)
+- Update README (en/ja): remove /front-reverse-design, update mermaid diagram for scope reuse, update scope-discoverer description
+
+### Removed
+- `/front-reverse-design` command (en/ja) — absorbed into `/reverse-engineer` with fullstack option
+
 ## [1.15.1] - 2026-02-13
 
 ### Changed
