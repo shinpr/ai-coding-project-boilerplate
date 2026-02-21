@@ -1,4 +1,4 @@
-# AI コーディングプロジェクト ボイラープレート 🤖
+# AI コーディングプロジェクト ボイラープレート — Claude Code対応 🤖
 
 *他の言語で読む: [English](README.md)*
 
@@ -8,17 +8,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
+> **Claude Code向けAgentic Codingスターターキット & ワークフローボイラープレート** — サブエージェントとContext Engineeringで、コンテキスト枯渇なしにプロダクション品質のTypeScriptプロジェクトを構築。
+
 ⚡ **このボイラープレートは以下のような開発者のためのツールです**
-- AIを活用して**プロダクション品質のTypeScriptプロジェクト**を開発したい
+- AIを活用して**TypeScriptプロジェクト**を効率的に開発したい
 - 長時間のAIコーディングで起きる**コンテキスト枯渇**を回避したい
 - **専門AIエージェント**で開発のワークフローを標準化したい
 
 ## 📖 目次
 1. [クイックスタート（3ステップ）](#-クイックスタート3ステップ)
 2. [既存プロジェクトの更新](#-既存プロジェクトの更新)
-3. [なぜサブエージェント？](#-なぜサブエージェント)
+3. [Vibe Codingの先へ：なぜサブエージェント？](#-vibe-codingの先へなぜサブエージェント)
 4. [スキルシステム](#-スキルシステム)
-5. [実プロジェクトの成果](#-実プロジェクトの成果)
+5. [このボイラープレートで作られたプロジェクト](#-このボイラープレートで作られたプロジェクト)
 6. [ドキュメント＆ガイド](#-ドキュメントガイド)
 7. [スラッシュコマンド](#-スラッシュコマンド)
 8. [開発ワークフロー](#-claude-code-ワークフロー)
@@ -27,15 +29,10 @@
 11. [多言語対応](#-多言語対応)
 12. [よくある質問](#-よくある質問)
 
-> **どれを使うべき？**
-> - **このボイラープレート**を使う → **Claude Code**で**TypeScript × サブエージェント**に最適化し、**精度を最大化**したい場合
-> - **[claude-code-workflows](https://github.com/shinpr/claude-code-workflows)**を使う → **Claude Code**で**どんなプロジェクトでも2コマンドで始められる**、**プログラミング言語非依存**のワークフロー
-> - **[Agentic Code](https://github.com/shinpr/agentic-code)**を使う → **設定不要**で**どんなツール**でも**プログラミング言語の指定なく**開発したい場合（Codex CLI/Cursor/Aider等）
-
 ## ⚡ クイックスタート（3ステップ）
 
 ```bash
-# 1. プロジェクト作成（30秒）
+# 1. プロジェクト作成
 npx create-ai-project my-project --lang=ja
 
 # 2. 依存関係インストール（自動）
@@ -51,7 +48,7 @@ claude                         # Claude Codeを起動
 
 ## 🔄 既存プロジェクトの更新
 
-プロジェクトのエージェント定義、コマンド、スキル、AIルールを最新の状態に保ちます。プロジェクトのルートディレクトリで実行してください：
+プロジェクトのエージェント定義、コマンド、スキル、AIルールを最新の状態に保ちます。プロジェクトのルートディレクトリで実行してください。
 
 ```bash
 # 変更内容をプレビュー（適用なし）
@@ -63,7 +60,7 @@ npx create-ai-project update
 
 ### 仕組み
 
-`npx create-ai-project update`を実行すると、CLIが以下を行います：
+`npx create-ai-project update`を実行すると、CLIが以下を行います。
 
 1. `.create-ai-project.json`マニフェストから現在のバージョンを確認
 2. 最新のパッケージバージョンと比較
@@ -84,7 +81,7 @@ npx create-ai-project update
 
 ### カスタマイズしたファイルの保護
 
-ファイルをカスタマイズしていて上書きされたくない場合：
+ファイルをカスタマイズしていて上書きされたくない場合
 
 ```bash
 # ignoreリストに追加
@@ -103,19 +100,21 @@ ignoreされたファイルは更新時に保護されます。ただし、ignor
 
 更新機能導入前に作成されたプロジェクトでも、プロジェクトのルートディレクトリで`npx create-ai-project update`を実行するだけで利用できます。`.claudelang`から言語設定を自動検出し、マニフェストを初期化します。
 
-## 🚀 なぜサブエージェント？
+## 🚀 Vibe Codingの先へ：なぜサブエージェント？
+
+Vibe Codingの先へ — **Agentic Coding**（構造化されたワークフローを専門AIエージェントに委任するアプローチ）がプロフェッショナルな開発の標準になりつつあります。このボイラープレートはClaude Codeのサブエージェントでそれを実現します。
 
 **従来のAIコーディングの問題**
 - ❌ 長時間のセッションでコンテキストを失う
 - ❌ 時間とともにコード品質が低下
 - ❌ 大規模タスクで頻繁なセッション再起動が必要
 
-**サブエージェントによる解決**
+**サブエージェントによるContext Engineering**
 - ✅ 専門的な単一の役割に分割（設計、実装、レビュー）
-- ✅ コンテキストを常に新鮮に保ち、品質を一定に維持
+- ✅ 各エージェントが新鮮で集中したコンテキストを持つ — 枯渇なし
 - ✅ 品質低下なしで規模感のあるタスクを処理
 
-各サブエージェントは1つのタスクに集中します。その結果、コンテキストは枯渇せず、品質も維持されます。
+これはClaude Codeのサブエージェント機構が、各エージェントを独立したコンテキストウィンドウで実行する仕組みに基づいています。親セッションがタスクを委任し、各サブエージェントはクリーンで集中したコンテキストで処理を開始します。品質チェック（lint、型チェック、テスト、ビルド）はCIではなくコミット前にローカルで実行されるため、フィードバックループが速く、pushする時点でコードは検証済みです。
 
 👉 [サブエージェントについて詳しく（Anthropic docs）](https://docs.anthropic.com/en/docs/claude-code/sub-agents)
 
@@ -123,7 +122,7 @@ ignoreされたファイルは更新時に保護されます。ただし、ignor
 
 ![Demo](./.github/assets/demo.gif)
 
-*サブエージェントが連携してプロダクション品質のTypeScriptプロジェクトを構築する様子*
+*サブエージェントが連携してTypeScriptプロジェクトを構築する様子*
 
 ## 🎨 スキルシステム
 
@@ -146,30 +145,34 @@ ignoreされたファイルは更新時に保護されます。ただし、ignor
 
 👉 [スキルの仕組みについて（Claude Code docs）](https://code.claude.com/docs/ja/skills)
 
-## 🎯 実プロジェクトの成果
+## 🎯 このボイラープレートで作られたプロジェクト
 
-### [Sub agents MCP Server](https://github.com/shinpr/sub-agents-mcp)
-**内容**: Claude Code/Cursor CLIをサブエージェント化するMCPサーバー  
-**時間**: 2日間 → **TypeScript 30ファイル、フルテストカバレッジ**  
-**結果**: プロダクション環境にデプロイ済み、3分でセットアップ可能
+### ⏱️ 時間比較
+- **ボイラープレートなし**: セットアップ + 基盤構築に約1週間
+- **ボイラープレートあり**: 約2日でプロダクション品質のアプリケーション
 
-### [MCP Image Generator](https://github.com/shinpr/mcp-image)
-**内容**: Gemini API経由のAI画像生成  
-**時間**: 1.5日間 → **高度な機能を持つクリエイティブツール**  
-**結果**: マルチ画像ブレンディング、キャラクター一貫性、ワンコマンド統合
+### 実績
 
-> 💡 **ポイント**: 適切なルール + サブエージェント = 素早くプロダクション品質のコードを生成できる
+**Sub Agents MCP Server** — Claude Code/Cursor CLIをサブエージェント化するMCPサーバー
+⏱️ 初期開発2日間 → テストコードがソースの約9割を占める構成でプロダクション稼働中
+
+**MCP Image Generator** — Gemini API経由のAI画像生成
+⏱️ 初期開発1.5日間 → マルチ画像ブレンディング、キャラクター一貫性を持つクリエイティブツール
+
+いずれもデフォルトの`/implement`ワークフローで構築。エージェントの手動オーケストレーションは不要でした。
+
+> プロジェクトを見る: [sub-agents-mcp](https://github.com/shinpr/sub-agents-mcp) ・ [mcp-image](https://github.com/shinpr/mcp-image)
 
 ## 📚 ドキュメント＆ガイド
 
 - **[クイックスタートガイド](docs/guides/ja/quickstart.md)** - 5分で動かす
 - **[ユースケース＆コマンド](docs/guides/ja/use-cases.md)** - 日常ワークフローのリファレンス
 - **[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)** - プロジェクトに合わせてカスタマイズ
-- **[設計思想](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)** - なぜこれが機能するのか
+- **[設計思想](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)** - このアプローチがなぜ有効か
 
 ## 📝 スラッシュコマンド
 
-Claude Codeで利用できる主要なコマンド：
+Claude Codeで利用できる主要なコマンド
 
 | コマンド | 目的 | 使用場面 |
 |---------|------|----------|
@@ -264,7 +267,7 @@ ai-coding-project-boilerplate/
 
 このボイラープレートはデフォルトでnpmを使用しますが、bunやpnpmなど好みのパッケージマネージャーに切り替えることができます。
 
-`package.json`には2つの環境依存設定があります：
+`package.json`には2つの環境依存設定があります。
 
 - **`packageManager`**: 使用するパッケージマネージャーとバージョン
 - **`scripts`**: 各スクリプトの実行コマンド
@@ -286,13 +289,13 @@ ai-coding-project-boilerplate/
 }
 ```
 
-上記は代表例です。スキルやサブエージェント定義で言及されているスクリプトは以下の通りです。必要に応じて書き換えてください：
+上記は代表例です。スキルやサブエージェント定義で言及されているスクリプトは以下の通りです。必要に応じて書き換えてください。
 
 `build`, `build:frontend`, `dev`, `preview`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
 
 ## 🌐 多言語対応
 
-日本語と英語に対応しています：
+日本語と英語に対応しています。
 
 ```bash
 npm run lang:ja         # 日本語に切り替え
@@ -316,8 +319,14 @@ A: はい、可能です。`/project-inject`を実行してプロジェクトの
 **Q: 基本的な開発の流れを教えてください。**
 A: 初回は`/project-inject`でプロジェクト設定を行い、その後は`/implement`で機能開発、品質チェック、コミットという流れになります。
 
-**Q: GitHub CopilotやCursorとはどう違いますか？**  
+**Q: GitHub CopilotやCursorとはどう違いますか？**
 A: これらのツールはコード記述の支援に特化していますが、本ボイラープレートは開発プロセス全体をサポートする仕組みを提供しています。
+
+**Q: Agentic Codingとは？このボイラープレートはどう関係しますか？**
+A: Agentic Codingは、会話的なプロンプティングではなく構造化されたワークフローを専門AIエージェントに委任するアプローチです。このボイラープレートは設定済みのサブエージェント、CLAUDE.mdルール、品質チェックを提供しているので、基盤を自分で組み立てることなくすぐに実践できます。
+
+**Q: コンテキスト枯渇はどう防いでいますか？**
+A: Context Engineeringにより防止しています。各サブエージェントは単一の責務に集中した独自のコンテキストウィンドウで実行されるため、セッションが長くなってもコンテキストは常に新鮮です。実際に770K+トークンのセッションで品質低下なく開発を完了しています — 詳細は[設計思想の記事](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)をご覧ください。
 
 ## 🤖 サブエージェント一覧
 
@@ -347,4 +356,4 @@ MIT License - 自由に使用・改変・配布可能
 
 ## 🎯 このプロジェクトについて
 
-AI Coding Project Boilerplateは、AIを活用した開発において、コード品質と開発効率のバランスを重視して設計されています。サブエージェントによる役割分担とコンテキスト管理により、TypeScriptプロジェクトの効率的な開発をサポートします。
+AI Coding Project Boilerplateは、Claude Codeに要件分析から品質チェックまでの構造化された開発ライフサイクルを与えるツールです。専門サブエージェントとContext Engineeringにより、各エージェントが独自のコンテキストウィンドウで集中したタスクを処理するため、長時間のセッションでも品質が安定します。設定済みのCLAUDE.mdルール、カスタムスキル、スラッシュコマンドが同梱されており、ツール基盤を自分で構築することなくAgentic CodingでTypeScriptプロジェクトを始められます。

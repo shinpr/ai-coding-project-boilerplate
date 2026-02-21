@@ -1,4 +1,4 @@
-# AI Coding Project Boilerplate 🤖
+# AI Coding Project Boilerplate for Claude Code 🤖
 
 *Read this in other languages: [日本語](README.ja.md)*
 
@@ -8,17 +8,19 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
+> **Agentic coding starter kit and workflow boilerplate for Claude Code** — Build production-ready TypeScript projects with sub-agents, context engineering, and zero context exhaustion.
+
 ⚡ **This boilerplate is for developers who want to:**
-- Build **production-ready TypeScript projects** faster with AI
+- Build **TypeScript projects** faster with AI-driven workflows
 - Avoid **context exhaustion** in long AI coding sessions
 - Standardize team workflows with **specialized AI agents**
 
 ## 📖 Table of Contents
 1. [Quick Start (3 Steps)](#-quick-start-3-steps)
 2. [Updating Existing Projects](#-updating-existing-projects)
-3. [Why Sub Agents?](#-why-sub-agents)
+3. [Beyond Vibe Coding: Why Sub Agents?](#-beyond-vibe-coding-why-sub-agents)
 4. [Skills System](#-skills-system)
-5. [Real Projects & Results](#-real-world-results)
+5. [Built with This Boilerplate](#-built-with-this-boilerplate)
 6. [Documentation & Guides](#-documentation--guides)
 7. [Slash Commands](#-slash-commands)
 8. [Development Workflow](#-claude-code-workflow)
@@ -27,15 +29,10 @@
 11. [Multilingual Support](#-multilingual-support)
 12. [FAQ](#-faq)
 
-> **Which one should you use?**
-> - **Use this Boilerplate** if you want to **maximize precision** with **TypeScript × Sub-agent** setup optimized for **Claude Code**.
-> - **Use [claude-code-workflows](https://github.com/shinpr/claude-code-workflows)** if you're on **Claude Code** and want to **start with any project** in **2 commands** and **language-agnostic** workflows.
-> - **Use [Agentic Code](https://github.com/shinpr/agentic-code)** if you want **zero-config**, **tool-agnostic** workflows **without language restrictions** (Codex CLI/Cursor/Aider etc.).
-
 ## ⚡ Quick Start (3 Steps)
 
 ```bash
-# 1. Create your project (30 seconds)
+# 1. Create your project
 npx create-ai-project my-project
 
 # 2. Install dependencies (automatic)
@@ -103,19 +100,21 @@ Ignored files are preserved during updates. Note that ignoring files may cause v
 
 If your project was created before the update feature, just run `npx create-ai-project update` from your project's root directory. It will automatically initialize the manifest by detecting your language from `.claudelang`.
 
-## 🚀 Why Sub Agents?
+## 🚀 Beyond Vibe Coding: Why Sub Agents?
+
+As teams move beyond vibe coding, **agentic coding** — delegating structured workflows to specialized AI agents — is becoming the professional standard. This boilerplate implements that approach with Claude Code sub-agents:
 
 **Traditional AI coding struggles with:**
 - ❌ Losing context in long sessions
-- ❌ Declining code quality over time  
+- ❌ Declining code quality over time
 - ❌ Frequent session restarts for large tasks
 
-**Sub agents solve this by:**
+**Sub agents solve this through context engineering:**
 - ✅ Splitting work into specialized roles (design, implementation, review)
-- ✅ Keeping context fresh and quality consistent
+- ✅ Each agent gets fresh, focused context — no exhaustion
 - ✅ Handling large projects without degradation
 
-Each agent focuses on one thing and does it well. No context exhaustion, no quality drop.
+This works because Claude Code's sub-agent mechanism runs each agent in its own context window. The parent session delegates tasks, and each sub-agent starts with a clean, focused context. Quality checks (lint, type check, test, build) run locally before each commit — not in CI. The feedback loop stays fast, and code is already verified when it's pushed.
 
 👉 [Learn more about Sub Agents (Anthropic docs)](https://docs.anthropic.com/en/docs/claude-code/sub-agents)
 
@@ -123,7 +122,7 @@ Each agent focuses on one thing and does it well. No context exhaustion, no qual
 
 ![Demo](./.github/assets/demo.gif)
 
-*Sub agents working together to build a production-ready TypeScript project*
+*Sub agents working together on a TypeScript project*
 
 ## 🎨 Skills System
 
@@ -146,7 +145,7 @@ This boilerplate provides the principles used in agentic implementation workflow
 
 👉 [Learn how Skills work (Claude Code docs)](https://code.claude.com/docs/en/skills)
 
-## 🎯 Real-World Results
+## 🎯 Built with This Boilerplate
 
 ### ⏱️ Time Comparison
 - **Without this boilerplate**: ~1 week for setup + infrastructure
@@ -154,24 +153,22 @@ This boilerplate provides the principles used in agentic implementation workflow
 
 ### Success Stories
 
-#### [Sub agents MCP Server](https://github.com/shinpr/sub-agents-mcp)
-**What**: MCP server enabling Claude Code/Cursor CLI as sub agents  
-**Time**: 2 days → **30 TypeScript files with full test coverage**  
-**Result**: Production-deployed, 3-minute setup
+**Sub Agents MCP Server** — MCP server enabling Claude Code/Cursor CLI as sub agents
+⏱️ Initial development in 2 days — test code makes up ~90% of the codebase, now in production
 
-#### [MCP Image Generator](https://github.com/shinpr/mcp-image)
-**What**: AI image generation via Gemini API  
-**Time**: 1.5 days → **Complete creative tool with advanced features**  
-**Result**: Multi-image blending, character consistency, one-command integration
+**MCP Image Generator** — AI image generation via Gemini API
+⏱️ Initial development in 1.5 days — complete creative tool with multi-image blending and character consistency
 
-> 💡 **Key Insight**: Proper rules + sub agents = production-quality code at AI speed
+Both were built using the default `/implement` workflow — no manual agent orchestration needed.
+
+> See these projects: [sub-agents-mcp](https://github.com/shinpr/sub-agents-mcp) ・ [mcp-image](https://github.com/shinpr/mcp-image)
 
 ## 📚 Documentation & Guides
 
 - **[Quick Start Guide](docs/guides/en/quickstart.md)** - Get running in 5 minutes
 - **[Use Cases & Commands](docs/guides/en/use-cases.md)** - Daily workflow reference
 - **[Skills Editing Guide](docs/guides/en/skills-editing-guide.md)** - Customize for your project
-- **[Design Philosophy](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b)** - Why it works (770K tokens without exhaustion)
+- **[Design Philosophy](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b)** - Why this approach works
 
 ## 📝 Slash Commands
 
@@ -321,8 +318,14 @@ A: Yes! Run `/project-inject` to set up project-specific prerequisites. This inf
 **Q: What's the typical workflow?**
 A: `/project-inject` (once) → `/implement` (features) → auto quality checks → commit
 
-**Q: How is this different from Copilot/Cursor?**  
+**Q: How is this different from Copilot/Cursor?**
 A: Those help write code. This manages entire development lifecycle with specialized agents.
+
+**Q: What is agentic coding and how does this boilerplate support it?**
+A: Agentic coding delegates structured workflows to specialized AI agents instead of relying on conversational prompting. This boilerplate provides pre-configured sub-agents, CLAUDE.md rules, and quality checks so you can adopt that approach without building the scaffolding yourself.
+
+**Q: How does this prevent context exhaustion?**
+A: Through context engineering. Each sub-agent runs in its own context window focused on a single responsibility, so context stays fresh regardless of session length. We've run 770K+ token sessions without quality degradation — details in the [design philosophy post](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
 
 ## 🤖 Complete Sub Agents Roster
 
@@ -352,7 +355,7 @@ MIT License - Free to use, modify, and distribute
 
 ## 🎯 About This Project
 
-The AI Coding Project Boilerplate is engineered to maximize AI coding productivity while maintaining human-level code quality. By leveraging specialized sub agents and context engineering, it enables teams to build production-ready TypeScript applications at unprecedented speed.
+AI Coding Project Boilerplate gives Claude Code a structured development lifecycle — from requirements analysis through automated quality checks — using specialized sub-agents and context engineering. Each agent handles a focused task in its own context window, which keeps quality consistent across long sessions. The boilerplate ships with pre-configured CLAUDE.md rules, custom skills, and slash commands, so you can start building TypeScript projects with agentic workflows without assembling the tooling yourself.
 
 ---
 
