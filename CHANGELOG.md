@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.1] - 2026-02-23
+
+### Added
+- `/create-skill` command (en/ja) for guided skill creation with interactive dialog and optimization
+- `skill-optimization` skill (en/ja) with BP-001~008 content patterns and 9 editing principles, split into SKILL.md + references/ for context isolation
+- `skill-creator` agent (en/ja) for optimized skill file generation
+- `skill-reviewer` agent (en/ja) for skill quality evaluation with A/B/C grading
+
+### Changed
+- `/refine-skill` command (en/ja): replace inline Three-Pass Review with `skill-reviewer` agent delegation
+
+### Fixed
+- skills-index.yaml (en/ja): sync sections with actual SKILL.md H2 headings across coding-standards, technical-spec, project-context, documentation-criteria, subagents-orchestration-guide, frontend/technical-spec, frontend/typescript-rules (ja), frontend/typescript-testing (ja)
+
 ## [1.16.0] - 2026-02-14
 
 ### Added

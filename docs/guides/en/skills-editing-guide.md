@@ -144,7 +144,7 @@ This mechanism maintains token efficiency even with many skills defined. Referen
 ## 9 Principles for Maximizing LLM Execution Accuracy
 
 Here are 9 skill creation principles based on LLM characteristics and this boilerplate's design philosophy.
-While we provide a `/refine-skill` command to assist with skill modifications, we ultimately recommend interactive editing through dialogue, as LLMs tend to have difficulty reaching issues without comparing output with thinking after generation.
+We provide `/create-skill` for creating new skills through interactive dialog, and `/refine-skill` for modifying existing skills with quality review. We ultimately recommend interactive editing through dialogue, as LLMs tend to have difficulty reaching issues without comparing output with thinking after generation.
 
 ### 1. Achieve Maximum Accuracy with Minimum Description (Context Pressure vs. Execution Accuracy)
 

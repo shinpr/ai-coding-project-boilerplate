@@ -91,7 +91,7 @@ Now that you're set up, here are common things you'll want to do and how to do t
 | "I want to..." | How |
 |---|---|
 | Have AI reference my library docs (llms.txt, API refs, etc.) | Add to an existing skill or [create a new one](./skills-editing-guide.md) — [see below](#example-where-to-put-library-documentation) |
-| Enforce my team's coding conventions | [Create a custom skill](./skills-editing-guide.md) with your rules |
+| Enforce my team's coding conventions | Use `/create-skill` or [create a custom skill manually](./skills-editing-guide.md) |
 | Set project-specific constraints and context | Run `/project-inject` |
 | Learn the full set of available commands | [Use Cases & Commands](./use-cases.md) |
 | Customize how agents behave | Edit skill files under `.claude/skills/` |
