@@ -61,13 +61,61 @@ description: 動詞で開始する説明文。Use when: トリガー条件を明
 # スキル本文
 ```
 
+### 命名規則
+
+一貫した命名パターンを使用する。[公式の推奨](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)は**動名詞形**（verb + -ing）。
+
+- **動名詞形（推奨）**: `processing-pdfs`, `managing-databases`, `testing-code`
+- **動作形（許容）**: `process-pdfs`, `analyze-spreadsheets`
+- **曖昧な名前は避ける**: `helper`, `utils`, `tools`, `documents`
+
+**制約**: 小文字・数字・ハイフンのみ。最大64文字。"anthropic"や"claude"は使用不可。
+
 ### descriptionの書き方
 
-descriptionはスキル選択の精度を左右する最重要フィールド。
+descriptionはスキル選択の精度を左右する最重要フィールド。起動時に全スキルのメタデータ（name, description）のみが読み込まれ、100以上のスキルから適切なものを選ぶ判断材料になる。[公式のベストプラクティス](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)によると、descriptionを最適化するだけでスキルが正しく選ばれる確率が20%台から90%以上まで上がる。
 
-1. **動詞で開始する**: 「テストの原則」ではなく「TDDプロセスを適用し品質基準を検査」
-2. **"Use when:"で具体的なトリガーを明示**: ユーザーが実際に使う表現で3-5個に絞る
-3. **200文字を超えたら分割を検討**: 責務が広すぎるシグナル
+**ルール**:
+
+1. **三人称で書く**: descriptionはシステムプロンプトに埋め込まれる。視点がブレると正しく選ばれにくくなる。
+   - Good: "Processes Excel files and generates reports"
+   - Avoid: "I can help you process Excel files"
+   - Avoid: "You can use this to process Excel files"
+2. **動詞で開始する**: 「テストの原則」ではなく「TDDプロセスを適用し品質基準を検査」
+3. **"Use when:"で具体的なトリガーを明示**: ユーザーが実際に使う表現で3-5個に絞る
+4. **具体的でキーワードを含む**: スキルが何をするか、いつ使うかの両方を含める
+5. **200文字を超えたら分割を検討**: 責務が広すぎるシグナル
+
+**制約**: 最大1024文字。XMLタグは使用不可。
+
+**良い例**:
+```yaml
+# 具体的、動詞始まり、トリガー付き
+description: Extracts text and tables from PDF files, fills forms, merges documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+
+description: Generates descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.
+```
+
+**悪い例**:
+```yaml
+# 曖昧すぎる — Claudeがいつ活性化すべきか判断できない
+description: Helps with documents
+description: Processes data
+description: Does stuff with files
+```
+
+### ファイル参照は1階層まで
+
+参照先のファイルからさらに別のファイルを参照している場合、Claudeが部分的にしか読み取れないことがある。SKILL.mdから直接参照する1階層に留める。
+
+```markdown
+# Good: SKILL.mdから1階層
+See [reference.md](reference.md) for API details
+See [examples.md](examples.md) for usage patterns
+
+# Bad: 入れ子の参照
+# SKILL.md → advanced.md → details.md（details.mdが完全に読まれない可能性）
+```
 
 ### Progressive Disclosure（段階的開示）
 
