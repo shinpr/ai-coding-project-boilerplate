@@ -328,7 +328,7 @@ A: Through context engineering. Each sub-agent runs in its own context window fo
 
 ## 🤖 Sub Agents
 
-15 specialized sub-agents covering the full development lifecycle: requirement analysis, design, planning, implementation, quality assurance, code review, debugging, and reverse engineering. Each agent runs in its own context window for focused execution.
+20+ specialized sub-agents covering the full development lifecycle: requirement analysis, design, planning, implementation, quality assurance, code review, debugging, and reverse engineering. Each agent runs in its own context window for focused execution.
 
 [Full agent list →](.claude/agents-en/)
 

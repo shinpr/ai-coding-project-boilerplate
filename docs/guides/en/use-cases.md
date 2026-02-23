@@ -120,13 +120,19 @@ Where to place library docs (like `llms.txt` URLs) depends on your project. Thin
 
 - If a related skill already exists (e.g., a frontend skill covering React), **add the URL there** to keep context together
 - If only needed during a specific phase (e.g., design), **add to that phase's skill or Design Doc**
-- If used broadly across the project, **create a dedicated skill** (e.g., `.claude/skills/my-library-docs/SKILL.md`)
+- If used broadly across the project, **create a dedicated skill** via `/create-skill` or manually (e.g., `.claude/skills/my-library-docs/SKILL.md`)
 
 After adding or creating a skill, run `/sync-skills` to register it. See the [Skills Editing Guide](./skills-editing-guide.md) for details on [where to document what](./skills-editing-guide.md#determining-where-to-document).
 
 ## Want to add team-specific rules?
 
-Create a custom skill with your conventions:
+Use `/create-skill` to create a custom skill through interactive dialog:
+
+```bash
+/create-skill team coding conventions and naming rules
+```
+
+Or create one manually:
 
 1. Create `.claude/skills/my-team-rules/SKILL.md`
 2. Define your coding standards, naming conventions, architectural constraints, etc.
@@ -236,11 +242,11 @@ Use when not adopting the full design-to-implementation process via `/implement`
 **Args**: What to change
 **Process**:
 1. Select skill file
-2. Create change proposal
-3. 3-pass review process
-4. Apply
+2. Create change proposal against skill-optimization editing principles
+3. Quality review by skill-reviewer agent (grade A/B to proceed)
+4. Apply after user approval
 
-Assists with skill file editing. Since skills must be optimized for LLMs to maintain execution accuracy, creating optimal skills with this command alone is difficult. Refer to the [Skills Editing Guide](./skills-editing-guide.md) and refine skills through command usage or direct dialogue with LLMs.
+Assists with skill file editing. Uses the skill-reviewer agent for quality evaluation. Since skills must be optimized for LLMs to maintain execution accuracy, creating optimal skills with this command alone is difficult. Refer to the [Skills Editing Guide](./skills-editing-guide.md) and refine skills through command usage or direct dialogue with LLMs.
 
 ### /sync-skills
 **Purpose**: Sync skill metadata

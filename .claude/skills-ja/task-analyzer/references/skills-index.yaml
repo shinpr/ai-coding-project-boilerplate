@@ -27,14 +27,11 @@ skills:
       - "デバッグ手法"
       - "型安全性の基礎"
       - "リファクタリング手法"
-      - "技術的判断が必要な場面"
-      - "継続的改善のマインドセット"
       - "実装作業の完全性担保"
+      - "影響範囲分析"
       - "Red-Green-Refactorプロセス（テストファースト開発）"
       - "テスト設計原則"
-      - "テストヘルパーの活用ルール"
       - "テストの粒度原則"
-      - "継続性テストの範囲"
 
   typescript-rules:
     skill: "typescript-rules"
@@ -76,7 +73,6 @@ skills:
       - "技術スタックの基本方針"
       - "環境変数管理とセキュリティ"
       - "アーキテクチャ設計"
-      - "パターン適用の一貫性"
       - "データフロー統一原則"
       - "ビルドとテスト"
 
@@ -88,9 +84,10 @@ skills:
     key-references:
       - "プロジェクト固有（経験則）"
     sections:
-      - "基本設定"
-      - "実装原則"
-      - "カスタマイズガイド"
+      - "プロジェクト概要"
+      - "ドメイン制約"
+      - "開発フェーズ"
+      - "ディレクトリ規約"
 
   documentation-criteria:
     skill: "documentation-criteria"
@@ -111,6 +108,7 @@ skills:
       - "AI自動化ルール"
       - "図表作成要件"
       - "共通ADRとの関係性"
+      - "テンプレート"
 
   implementation-approach:
     skill: "implementation-approach"
@@ -154,10 +152,33 @@ skills:
       - "ワークフロー調整パターン"
       - "エージェント連携パターン"
     sections:
-      - "規模判定"
-      - "ドキュメント要件"
-      - "停止ポイント"
+      - "最重要原則：オーケストレーターとして振る舞う"
+      - "タスク受領時の判断"
+      - "活用できるサブエージェント"
+      - "オーケストレーション原則"
+      - "Sub-agent間の制約"
+      - "規模判定とドキュメント要件"
+      - "構造化レスポンス仕様"
+      - "作業計画時の基本フロー"
+      - "レイヤー横断オーケストレーション"
       - "自律実行モード"
+      - "オーケストレーターの主な役割"
+      - "重要な制約"
+      - "人間との必須対話ポイント"
+
+  skill-optimization:
+    skill: "skill-optimization"
+    tags: [skill-creation, skill-editing, content-optimization, quality-evaluation, description-generation, metadata]
+    typical-use: "スキル新規作成、コンテンツ改善、品質監査、description生成"
+    size: medium
+    key-references:
+      - "BP-001〜008 コンテンツ最適化パターン"
+      - "9つの編集原則"
+    sections:
+      - "基本方針"
+      - "コンテンツ最適化パターン"
+      - "9つの編集原則"
+      - "References"
 
   # フロントエンド固有スキル
   frontend/typescript-rules:
@@ -169,11 +190,13 @@ skills:
       - "React公式ドキュメント - Function Components"
       - "Props-driven開発 - React Patterns"
     sections:
-      - "フロントエンド固有のアンチパターン"
-      - "Frontend実装における型安全性"
-      - "コーディング規約"
+      - "型システム"
+      - "Reactコンポーネント設計"
+      - "状態管理"
       - "エラーハンドリング"
-      - "パフォーマンス最適化"
+      - "イベントハンドリング"
+      - "コーディング規約"
+      - "アンチパターン"
 
   frontend/typescript-testing:
     skill: "frontend/typescript-testing"
@@ -190,6 +213,8 @@ skills:
       - "テストの実装規約"
       - "モックの型安全性の徹底"
       - "React Testing Libraryの基本例"
+      - "テスト品質基準"
+      - "アンチパターン"
 
   frontend/technical-spec:
     skill: "frontend/technical-spec"

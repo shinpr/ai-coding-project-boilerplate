@@ -25,14 +25,11 @@ skills:
       - "Debugging Techniques"
       - "Type Safety Fundamentals"
       - "Refactoring Techniques"
-      - "Situations Requiring Technical Decisions"
-      - "Continuous Improvement Mindset"
       - "Implementation Completeness Assurance"
+      - "Impact Analysis"
       - "Red-Green-Refactor Process (Test-First Development)"
       - "Test Design Principles"
-      - "Test Helper Utilization Rules"
       - "Test Granularity Principles"
-      - "Continuity Test Scope"
 
   typescript-rules:
     skill: "typescript-rules"
@@ -85,7 +82,6 @@ skills:
       - "Basic Technology Stack Policy"
       - "Environment Variable Management and Security"
       - "Architecture Design"
-      - "Architecture Patterns"
       - "Unified Data Flow Principles"
       - "Build and Testing"
 
@@ -97,9 +93,10 @@ skills:
     key-references:
       - "Project-specific (empirical)"
     sections:
-      - "Basic Configuration"
-      - "Implementation Principles"
-      - "Customization Guide"
+      - "Project Overview"
+      - "Domain Constraints"
+      - "Development Phase"
+      - "Directory Conventions"
 
   documentation-criteria:
     skill: "documentation-criteria"
@@ -120,6 +117,7 @@ skills:
       - "AI Automation Rules"
       - "Diagram Requirements"
       - "Common ADR Relationships"
+      - "Templates"
 
   implementation-approach:
     skill: "implementation-approach"
@@ -163,10 +161,33 @@ skills:
       - "Workflow Orchestration Patterns"
       - "Agent Coordination Patterns"
     sections:
-      - "Scale Determination"
-      - "Document Requirements"
-      - "Stop Points"
+      - "Core Principle: I Am an Orchestrator"
+      - "Decision Flow When Receiving Tasks"
+      - "Subagents I Can Utilize"
+      - "My Orchestration Principles"
+      - "Constraints Between Subagents"
+      - "Scale Determination and Document Requirements"
+      - "Structured Response Specifications"
+      - "My Basic Flow for Work Planning"
+      - "Cross-Layer Orchestration"
       - "Autonomous Execution Mode"
+      - "My Main Roles as Orchestrator"
+      - "Important Constraints"
+      - "Required Dialogue Points with Humans"
+
+  skill-optimization:
+    skill: "skill-optimization"
+    tags: [skill-creation, skill-editing, content-optimization, quality-evaluation, description-generation, metadata]
+    typical-use: "Creating new skills, refining skill content, evaluating skill quality, generating descriptions"
+    size: medium
+    key-references:
+      - "BP-001~008 Content Optimization Patterns"
+      - "9 Skill Editing Principles"
+    sections:
+      - "Core Philosophy"
+      - "Content Optimization Patterns"
+      - "9 Skill Editing Principles"
+      - "References"
 
   # Frontend-specific Skills
   frontend/typescript-rules:
@@ -220,6 +241,3 @@ skills:
       - "Architecture Design"
       - "Unified Data Flow Principles"
       - "Build and Testing"
-      - "Quality Check Requirements"
-      - "Coverage Requirements"
-      - "Non-functional Requirements"

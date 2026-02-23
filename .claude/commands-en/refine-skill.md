@@ -1,8 +1,8 @@
 ---
-description: Implement user skill change requests with maximum precision optimization
+description: Implement user skill change requests with optimization pattern evaluation
 ---
 
-**Command Context**: Workflow for understanding skill file change requests and implementing with maximum precision
+**Command Context**: Workflow for understanding skill file change requests and implementing with quality-assured optimization.
 
 Change request: $ARGUMENTS
 
@@ -38,37 +38,38 @@ Present before/after comparison of current state and proposed change:
 Proceed with this design? (y/n)
 ```
 
-**Design 9-Point Checklist**:
-1. Maximum accuracy with minimal description (context efficiency)
-2. Deduplication within and across skill files
-3. Group related content in single file (minimize read operations)
-4. Measurable decision criteria (if-then format)
-5. Transform NG examples to recommendation format (background: including NG examples)
-6. Consistent notation
-7. Make implicit prerequisites explicit
-8. Description order: most important first, exceptions last
-9. Clear scope boundaries: what's covered vs what's not
+**Design Checklist**: Evaluate proposal against the 9 editing principles defined in skill-optimization skill. Key focus areas:
+- Context efficiency: every added sentence must contribute to LLM decision-making
+- Measurability: all criteria use if-then format or concrete thresholds
+- Deduplication: verify no overlap with other skill files
+- Scope boundaries: confirm changes stay within this skill's responsibility
 
-### Step 3: Three-Pass Review Process
+### Step 3: Quality Review
 
-1. **Addition Mode**: Ambiguous expressions → measurable criteria, implicit prerequisites → explicit conditions, edge case definitions (minimum 5 additions)
-2. **Critical Modification Mode**: Consolidate duplicates, simplify excessive detail, replace overlap with other skills → references (record before/after diffs)
-3. **Restoration Decision Mode**: Deletions with accuracy risk → restore, valid deletions → keep
+Invoke skill-reviewer agent via Task tool:
+- Pass the modified SKILL.md content
+- Review mode: `modification`
 
-Final check: "Are necessary and sufficient conditions present for accurate implementation of user requirements?"
+**Review outcome handling:**
+- Grade A or B: proceed to Step 4
+- Grade C: revise changes based on reviewer's action items and re-review (max 2 iterations)
+- Reviewer identifies issues outside the change scope: report to user as separate improvement opportunities
 
 ### Step 4: Approval and Implementation
 
 1. Present before/after comparison to user and obtain approval
-2. Apply changes with appropriate tool
-3. Verify with git diff
-4. Suggest `/sync-skills` execution
+2. Include skill-reviewer's grade and any remaining action items
+3. Confirm user intent alignment: "Do the changes achieve what you originally requested?"
+4. Apply changes with appropriate tool
+4. Verify with git diff
+5. If reviewer flagged issues outside change scope, list them as optional follow-ups
+6. Suggest `/sync-skills` execution
 
 ## Completion Criteria
 
 - [ ] Identified target skill and understood current state
-- [ ] Reviewed design proposal against 9-point checklist
-- [ ] Completed three-pass review process
+- [ ] Reviewed design proposal against skill-optimization editing principles
+- [ ] skill-reviewer returned grade A or B
 - [ ] Obtained user approval
 - [ ] Applied changes and verified with git diff
 - [ ] Suggested /sync-skills execution
@@ -78,7 +79,9 @@ Final check: "Are necessary and sufficient conditions present for accurate imple
 | Error | Action |
 |-------|--------|
 | Skill not found | Display available skill list |
-| Large change detected (50%+) | Suggest phased implementation |
+| Large change detected (50%+ of file) | Suggest phased implementation |
 | Responsibility overlap with other skills | Confirm boundaries and defer to user judgment |
+| Grade C after 2 review iterations | Present changes with issues list, let user decide |
+| Reviewer identifies regression | Revert specific change causing regression, re-review |
 
-**Scope**: Understanding user change requests and implementing with maximum precision. Through /sync-skills coordination.
+**Scope**: Understanding user change requests and implementing with quality-assured optimization. Quality evaluation delegated to skill-reviewer agent. Metadata sync through /sync-skills.
