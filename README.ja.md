@@ -167,7 +167,7 @@ Vibe Codingの先へ — **Agentic Coding**（構造化されたワークフロ�
 
 - **[クイックスタートガイド](docs/guides/ja/quickstart.md)** - 5分で動かす
 - **[ユースケース＆コマンド](docs/guides/ja/use-cases.md)** - 日常ワークフローのリファレンス
-- **[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)** - プロジェクトに合わせてカスタマイズ
+- **[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)** - ライブラリドキュメント、チームルール、プロジェクト固有の知識をAIに追加
 - **[設計思想](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)** - このアプローチがなぜ有効か
 
 ## 📝 スラッシュコマンド
@@ -176,20 +176,16 @@ Claude Codeで利用できる主要なコマンド
 
 | コマンド | 目的 | 使用場面 |
 |---------|------|----------|
-| `/implement` | 要件から実装までの一貫した開発 | 新機能開発（Backend） |
+| `/implement` | 要件から実装までの一貫した開発 | 新機能開発 |
 | `/task` | スキルに基づいた単一タスクの実行 | バグ修正、小規模な変更 |
-| `/design` | 設計書の作成 | アーキテクチャの計画時（Backend） |
-| `/plan` | 設計書から作業計画書を作成 | 設計承認後（Backend） |
-| `/build` | 既存の計画から実行 | 作業の再開時（Backend） |
-| `/review` | コードの準拠性確認 | 実装完了後（Backend） |
-| `/front-design` | フロントエンド設計書の作成 | React/Viteアーキテクチャ計画時 |
-| `/front-plan` | フロントエンド作業計画書を作成 | フロントエンド設計承認後 |
-| `/front-build` | フロントエンド実装の実行 | Reactコンポーネント開発 |
-| `/front-review` | フロントエンドコードの準拠性確認 | 実装完了後（Frontend） |
+| `/design` | 設計書の作成 | アーキテクチャの計画時 |
+| `/plan` | 設計書から作業計画書を作成 | 設計承認後 |
+| `/build` | 既存の計画から実行 | 作業の再開時 |
+| `/review` | コードの準拠性確認 | 実装完了後 |
 | `/diagnose` | 根本原因分析ワークフロー | デバッグ、トラブルシューティング |
-| `/reverse-engineer` | コードからPRD/Design Docを生成 | 既存システムのドキュメント化（fullstackオプションあり） |
-| `/add-integration-tests` | 統合/E2Eテストの追加 | Design Doc存在時のテスト追加 |
-| `/update-doc` | 既存設計ドキュメントの更新 | 仕様変更、レビューフィードバック対応 |
+| `/reverse-engineer` | コードからPRD/Design Docを生成 | 既存システムのドキュメント化 |
+
+フロントエンド用（`/front-design`, `/front-build`, `/front-review`, `/front-plan`）やユーティリティコマンド（`/add-integration-tests`, `/update-doc`）も利用できます。
 
 [コマンドの詳細はこちら →](docs/guides/ja/use-cases.md)
 
@@ -316,6 +312,9 @@ A: quality-fixerが多くの問題を自動的に検出・修正します。自�
 **Q: プロジェクトに合わせたカスタマイズは可能ですか？**
 A: はい、可能です。`/project-inject`を実行してプロジェクトの前提情報を設定してください。この情報は毎セッション開始時にAIが読み込み、実行精度の向上に使われます。
 
+**Q: AIにライブラリのドキュメント（llms.txt、APIリファレンス等）を参照させることはできますか？**
+A: はい。`.claude/skills/`配下にカスタムスキルを作成し、関連するURLを記載してください。詳しくは[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)を参照してください。
+
 **Q: 基本的な開発の流れを教えてください。**
 A: 初回は`/project-inject`でプロジェクト設定を行い、その後は`/implement`で機能開発、品質チェック、コミットという流れになります。
 
@@ -328,25 +327,9 @@ A: Agentic Codingは、会話的なプロンプティングではなく構造化
 **Q: コンテキスト枯渇はどう防いでいますか？**
 A: Context Engineeringにより防止しています。各サブエージェントは単一の責務に集中した独自のコンテキストウィンドウで実行されるため、セッションが長くなってもコンテキストは常に新鮮です。実際に770K+トークンのセッションで品質低下なく開発を完了しています — 詳細は[設計思想の記事](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)をご覧ください。
 
-## 🤖 サブエージェント一覧
+## 🤖 サブエージェント
 
-| エージェント | 担当領域 | 使用されるタイミング |
-|------------|---------|------------------|
-| **requirement-analyzer** | タスク規模の判定 | `/implement`コマンド実行時 |
-| **technical-designer** | 設計ドキュメントの作成 | 中規模・大規模機能の開発時 |
-| **document-reviewer** | ドキュメント品質チェック | ドキュメント作成後 |
-| **design-sync** | Design Doc間の整合性検証 | Design Doc作成後 |
-| **acceptance-test-generator** | ACからテストスケルトン生成 | 設計承認後 |
-| **work-planner** | タスクの分解と計画 | 設計完了後 |
-| **task-executor** | 実装作業 | 開発フェーズ |
-| **quality-fixer** | 品質問題の修正 | エラーや警告の検出時 |
-| **code-reviewer** | コードレビュー | `/review`コマンド実行時 |
-| **integration-test-reviewer** | テスト実装品質の検証 | テスト実装後 |
-| **investigator** | 問題調査 | `/diagnose` ステップ1 |
-| **verifier** | 調査結果の検証 | `/diagnose` ステップ3 |
-| **solver** | 解決策の導出 | `/diagnose` ステップ4 |
-| **scope-discoverer** | 機能スコープ発見 | `/reverse-engineer` ステップ1 |
-| **code-verifier** | ドキュメントとコードの整合性検証 | `/reverse-engineer` ステップ3, 8 |
+要件分析、設計、計画、実装、品質保証、コードレビュー、デバッグ、リバースエンジニアリングをカバーする15の専門サブエージェントを搭載しています。各エージェントは独自のコンテキストウィンドウで実行されるため、集中した処理が可能です。
 
 [エージェントの詳細 →](.claude/agents-ja/)
 

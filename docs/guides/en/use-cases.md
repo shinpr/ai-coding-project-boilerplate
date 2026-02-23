@@ -114,6 +114,26 @@ Fixes are created as task files under `docs/plans/tasks` and executed by sub-age
 /sync-skills      # Sync skill metadata
 ```
 
+## Want AI to reference specific library docs?
+
+Where to place library docs (like `llms.txt` URLs) depends on your project. Think about **when AI needs the information** and **what it relates to**:
+
+- If a related skill already exists (e.g., a frontend skill covering React), **add the URL there** to keep context together
+- If only needed during a specific phase (e.g., design), **add to that phase's skill or Design Doc**
+- If used broadly across the project, **create a dedicated skill** (e.g., `.claude/skills/my-library-docs/SKILL.md`)
+
+After adding or creating a skill, run `/sync-skills` to register it. See the [Skills Editing Guide](./skills-editing-guide.md) for details on [where to document what](./skills-editing-guide.md#determining-where-to-document).
+
+## Want to add team-specific rules?
+
+Create a custom skill with your conventions:
+
+1. Create `.claude/skills/my-team-rules/SKILL.md`
+2. Define your coding standards, naming conventions, architectural constraints, etc.
+3. Run `/sync-skills` to register the new skill
+
+Any information you want AI to know about your project can be added as a skill.
+
 ---
 
 # Command Reference

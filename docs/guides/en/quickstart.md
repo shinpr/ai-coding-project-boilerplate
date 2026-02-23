@@ -84,6 +84,24 @@ The workflow is: create design documents, review them with users to align unders
 
 For detailed mechanics, see [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
 
+## What's Next?
+
+Now that you're set up, here are common things you'll want to do and how to do them.
+
+| "I want to..." | How |
+|---|---|
+| Have AI reference my library docs (llms.txt, API refs, etc.) | Add to an existing skill or [create a new one](./skills-editing-guide.md) — [see below](#example-where-to-put-library-documentation) |
+| Enforce my team's coding conventions | [Create a custom skill](./skills-editing-guide.md) with your rules |
+| Set project-specific constraints and context | Run `/project-inject` |
+| Learn the full set of available commands | [Use Cases & Commands](./use-cases.md) |
+| Customize how agents behave | Edit skill files under `.claude/skills/` |
+
+Skills are the primary way to give AI project-specific knowledge. See the [Skills Editing Guide](./skills-editing-guide.md) for how to create your own.
+
+### Example: Where to Put Library Documentation
+
+Where to place library docs depends on your project — there's no single right answer. Think about **when AI needs the information** and **what it relates to**: add to an existing skill, a phase-specific doc, or create a dedicated skill. See the [Use Cases guide](./use-cases.md#want-ai-to-reference-specific-library-docs) for concrete examples and the [Skills Editing Guide](./skills-editing-guide.md#determining-where-to-document) for details.
+
 ## Troubleshooting
 
 If things aren't working, check the following.

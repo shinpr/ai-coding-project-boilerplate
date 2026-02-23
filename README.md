@@ -167,7 +167,7 @@ Both were built using the default `/implement` workflow — no manual agent orch
 
 - **[Quick Start Guide](docs/guides/en/quickstart.md)** - Get running in 5 minutes
 - **[Use Cases & Commands](docs/guides/en/use-cases.md)** - Daily workflow reference
-- **[Skills Editing Guide](docs/guides/en/skills-editing-guide.md)** - Customize for your project
+- **[Skills Editing Guide](docs/guides/en/skills-editing-guide.md)** - Add library docs, team rules, and project-specific knowledge for AI
 - **[Design Philosophy](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b)** - Why this approach works
 
 ## 📝 Slash Commands
@@ -176,20 +176,16 @@ Essential commands for Claude Code:
 
 | Command | Purpose | When to Use |
 |---------|---------|-------------|
-| `/implement` | End-to-end feature development | New features (Backend) |
+| `/implement` | End-to-end feature development | New features |
 | `/task` | Single task with skill-based precision | Bug fixes, small changes |
-| `/design` | Create design docs only | Architecture planning (Backend) |
-| `/plan` | Create work plan from design | After design approval (Backend) |
-| `/build` | Execute from existing plan | Resume work (Backend) |
-| `/review` | Check code compliance | Post-implementation (Backend) |
-| `/front-design` | Create frontend design docs | React/Vite architecture planning |
-| `/front-plan` | Create frontend work plan | After frontend design approval |
-| `/front-build` | Execute frontend implementation | React component development |
-| `/front-review` | Check frontend code compliance | Post-implementation (Frontend) |
+| `/design` | Create design docs only | Architecture planning |
+| `/plan` | Create work plan from design | After design approval |
+| `/build` | Execute from existing plan | Resume work |
+| `/review` | Check code compliance | Post-implementation |
 | `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
-| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation (fullstack option available) |
-| `/add-integration-tests` | Add integration/E2E tests | When Design Doc exists but tests missing |
-| `/update-doc` | Update existing design documents | Spec changes, review feedback |
+| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation |
+
+Frontend equivalents (`/front-design`, `/front-build`, `/front-review`, `/front-plan`) and utility commands (`/add-integration-tests`, `/update-doc`) are also available.
 
 [Full command reference →](docs/guides/en/use-cases.md)
 
@@ -315,6 +311,9 @@ A: quality-fixer auto-fixes most issues. If not, it provides clear instructions.
 **Q: Can I customize for my project?**
 A: Yes! Run `/project-inject` to set up project-specific prerequisites. This information is read by AI at the start of every session to improve execution accuracy.
 
+**Q: Can I make AI reference my library documentation (llms.txt, API refs, etc.)?**
+A: Yes — create a custom skill under `.claude/skills/` with the relevant URLs. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for details.
+
 **Q: What's the typical workflow?**
 A: `/project-inject` (once) → `/implement` (features) → auto quality checks → commit
 
@@ -327,25 +326,9 @@ A: Agentic coding delegates structured workflows to specialized AI agents instea
 **Q: How does this prevent context exhaustion?**
 A: Through context engineering. Each sub-agent runs in its own context window focused on a single responsibility, so context stays fresh regardless of session length. We've run 770K+ token sessions without quality degradation — details in the [design philosophy post](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
 
-## 🤖 Complete Sub Agents Roster
+## 🤖 Sub Agents
 
-| Agent | Specialization | Activation |
-|-------|---------------|------------|
-| **requirement-analyzer** | Scale assessment | Start of `/implement` |
-| **technical-designer** | Design documentation | Medium/large features |
-| **document-reviewer** | Document quality check | After document creation |
-| **design-sync** | Design Doc consistency | After Design Doc creation |
-| **acceptance-test-generator** | Test skeleton from ACs | After design approval |
-| **work-planner** | Task breakdown | After design approval |
-| **task-executor** | Implementation | During build phase |
-| **quality-fixer** | Automated fixes | On any quality issue |
-| **code-reviewer** | Compliance check | `/review` command |
-| **integration-test-reviewer** | Test implementation quality | After test implementation |
-| **investigator** | Problem investigation | `/diagnose` Step 1 |
-| **verifier** | Investigation verification | `/diagnose` Step 3 |
-| **solver** | Solution derivation | `/diagnose` Step 4 |
-| **scope-discoverer** | Functional scope discovery | `/reverse-engineer` Step 1 |
-| **code-verifier** | Document-code consistency | `/reverse-engineer` verification |
+15 specialized sub-agents covering the full development lifecycle: requirement analysis, design, planning, implementation, quality assurance, code review, debugging, and reverse engineering. Each agent runs in its own context window for focused execution.
 
 [Full agent list →](.claude/agents-en/)
 

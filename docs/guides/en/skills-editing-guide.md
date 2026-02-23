@@ -61,13 +61,61 @@ description: Start with a verb. Use when: specify trigger conditions.
 # Skill content
 ```
 
+### Naming Conventions
+
+Use consistent naming patterns. The [official recommendation](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) suggests **gerund form** (verb + -ing) for clarity.
+
+- **Gerund form (recommended)**: `processing-pdfs`, `managing-databases`, `testing-code`
+- **Action-oriented (acceptable)**: `process-pdfs`, `analyze-spreadsheets`
+- **Avoid vague names**: `helper`, `utils`, `tools`, `documents`
+
+**Constraints**: lowercase letters, numbers, and hyphens only. Maximum 64 characters. Cannot contain "anthropic" or "claude".
+
 ### Writing Effective Descriptions
 
-The description is the most critical field — it determines skill selection accuracy.
+The description is the most critical field — it determines skill selection accuracy. At startup, only metadata (name and description) from all skills is loaded. Claude uses descriptions to decide which skill to activate from potentially 100+ available skills. [Research indicates](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) that well-optimized descriptions can improve activation rates from 20% to over 90%.
 
-1. **Start with a verb**: "Applies TDD process and inspects quality" not "Testing principles"
-2. **Use "Use when:" with concrete triggers**: 3-5 triggers using expressions users actually say
-3. **Over 200 characters signals a split**: The skill's responsibility may be too broad
+**Rules**:
+
+1. **Write in third person**: The description is injected into the system prompt. Inconsistent point-of-view causes discovery problems.
+   - Good: "Processes Excel files and generates reports"
+   - Avoid: "I can help you process Excel files"
+   - Avoid: "You can use this to process Excel files"
+2. **Start with a verb**: "Applies TDD process and inspects quality" not "Testing principles"
+3. **Use "Use when:" with concrete triggers**: 3-5 triggers using expressions users actually say
+4. **Be specific and include key terms**: Include both what the skill does and when to use it
+5. **Over 200 characters signals a split**: The skill's responsibility may be too broad
+
+**Constraints**: Maximum 1024 characters. Cannot contain XML tags.
+
+**Good examples**:
+```yaml
+# Specific, verb-first, with triggers
+description: Extracts text and tables from PDF files, fills forms, merges documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+
+description: Generates descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.
+```
+
+**Bad examples**:
+```yaml
+# Too vague — Claude can't determine when to activate
+description: Helps with documents
+description: Processes data
+description: Does stuff with files
+```
+
+### Keep File References One Level Deep
+
+Claude may partially read files when they're referenced from other referenced files. Keep all references directly from SKILL.md to ensure complete reads.
+
+```markdown
+# Good: One level deep from SKILL.md
+See [reference.md](reference.md) for API details
+See [examples.md](examples.md) for usage patterns
+
+# Bad: Nested references
+# SKILL.md → advanced.md → details.md (Claude may not fully read details.md)
+```
 
 ### Progressive Disclosure
 
