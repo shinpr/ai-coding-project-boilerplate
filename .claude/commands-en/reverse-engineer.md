@@ -6,6 +6,15 @@ description: Generate PRD and Design Docs from existing codebase through discove
 
 Target: $ARGUMENTS
 
+## Orchestrator Definition
+
+**Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
+
+**Execution Protocol**:
+1. **Delegate all work** to sub-agents — your role is to invoke sub-agents, pass data between them, and report results
+2. **Pass structured JSON** between steps using `$STEP_N_OUTPUT` placeholder notation
+3. **Never investigate code yourself** — all code reading is done by sub-agents
+
 **TodoWrite**: Register phases first, then steps within each phase as you enter it.
 
 ## Step 0: Initial Configuration
@@ -39,8 +48,6 @@ Phase 2: Design Doc Generation (if requested)
   ※ fullstack=Yes: units may produce backend + frontend Design Docs based on scope
 ```
 
-**Context Passing**: Pass structured JSON output between steps. Use `$STEP_N_OUTPUT` placeholder notation.
-
 ## Phase 1: PRD Generation
 
 **Register in TodoWrite**:
@@ -70,7 +77,7 @@ prompt: |
 
 ### Step 2-5: Per-Unit Processing
 
-**Complete Steps 2→3→4→5 for each unit before proceeding to the next unit.**
+**FOR** each unit in `$STEP_1_OUTPUT.discoveredUnits` **(sequential, one unit at a time):**
 
 #### Step 2: PRD Generation
 
@@ -95,6 +102,8 @@ prompt: |
 **Store output as**: `$STEP_2_OUTPUT` (PRD path)
 
 #### Step 3: Code Verification
+
+**Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
 **Task invocation**:
 ```
@@ -158,10 +167,13 @@ prompt: |
   ## Review Feedback
   $STEP_4_OUTPUT
 
-  ## Discrepancies to Address
-  (Extract critical and major discrepancies from $STEP_3_OUTPUT)
+  ## Code Verification Results
+  $STEP_3_OUTPUT
 
-  Apply corrections and improvements.
+  Address each issue by severity:
+  - critical: Must fix — incorrect or missing core behavior
+  - important: Should fix — improves accuracy or completeness
+  - recommended: May fix — stylistic or minor improvements
 ```
 
 **Loop Control**: Maximum 2 revision cycles. After 2 cycles, flag for human review regardless of status.
@@ -195,13 +207,15 @@ Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
 
 ### Step 7-10: Per-Unit Processing
 
-**Complete Steps 7→8→9→10 for each unit before proceeding to the next unit.**
+**FOR** each unit in `$STEP_6_OUTPUT.designDocTargets` **(sequential, one unit at a time):**
 
 #### Step 7: Design Doc Generation
 
 Generate Design Docs per unit based on `$STEP_6_OUTPUT` mapping.
 
-**Design Doc** (technical-designer):
+When fullstack=Yes, invoke 7a then 7b sequentially (7b depends on 7a output).
+
+**7a.** Backend Design Doc (technical-designer):
 
 When fullstack=Yes: append "Focus on: API contracts, data layer, business logic, service architecture." to the prompt.
 
@@ -226,7 +240,7 @@ prompt: |
 
 **Store output as**: `$STEP_7_OUTPUT`
 
-**Frontend Design Doc** (fullstack, units with frontend scope):
+**7b.** Frontend Design Doc (fullstack, units with frontend scope):
 
 ```
 subagent_type: technical-designer-frontend
@@ -299,7 +313,54 @@ prompt: |
 
 #### Step 10: Revision (conditional)
 
-Same logic as Step 5, using the corresponding technical-designer / technical-designer-frontend with update mode.
+**Trigger Conditions** (any one of the following):
+- Review status is "Needs Revision" or "Rejected"
+- Critical discrepancies exist in `$STEP_8_OUTPUT`
+- consistencyScore < 70
+
+**Backend Design Doc revision** (technical-designer):
+```
+subagent_type: technical-designer
+prompt: |
+  Update Design Doc based on review feedback.
+
+  Operation Mode: update
+  Existing Document: $STEP_7_OUTPUT
+
+  ## Review Feedback
+  $STEP_9_OUTPUT
+
+  ## Code Verification Results
+  $STEP_8_OUTPUT
+
+  Address each issue by severity:
+  - critical: Must fix — incorrect or missing core behavior
+  - important: Should fix — improves accuracy or completeness
+  - recommended: May fix — stylistic or minor improvements
+```
+
+**Frontend Design Doc revision** (fullstack, technical-designer-frontend):
+```
+subagent_type: technical-designer-frontend
+prompt: |
+  Update frontend Design Doc based on review feedback.
+
+  Operation Mode: update
+  Existing Document: $STEP_7_FRONTEND_OUTPUT
+
+  ## Review Feedback
+  $STEP_9_OUTPUT
+
+  ## Code Verification Results
+  $STEP_8_OUTPUT
+
+  Address each issue by severity:
+  - critical: Must fix — incorrect or missing core behavior
+  - important: Should fix — improves accuracy or completeness
+  - recommended: May fix — stylistic or minor improvements
+```
+
+**Loop Control**: Maximum 2 revision cycles. After 2 cycles, flag for human review regardless of status.
 
 #### Unit Completion
 

@@ -2,7 +2,7 @@
 description: 分解済みタスクを自律実行モードで実装
 ---
 
-subagents-orchestration-guideスキルの指針に従い、**オーケストレーター**として振る舞います。
+subagents-orchestration-guideスキルの指針に従い、**オーケストレーター**として振る舞います — 役割はサブエージェントの呼び出し、データの受け渡し、結果の報告。
 
 作業計画書: $ARGUMENTS
 

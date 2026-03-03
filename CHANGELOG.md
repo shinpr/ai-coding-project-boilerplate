@@ -5,6 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.2] - 2026-03-03
+
+### Changed
+
+#### Orchestrator Role Clarity (en/ja)
+- Replace prohibition-style delegation ("NEVER investigate yourself") with positive role definition across build, design, implement, plan, update-doc commands: "your role is to invoke sub-agents, pass data between them, and report results"
+
+#### reverse-engineer (en/ja) — Execution Accuracy
+- Add Orchestrator Definition section with structured JSON passing and code-reading delegation
+- Replace prose loop headers with explicit `FOR ... (sequential, one unit at a time)` notation (Steps 2-5, 7-10)
+- Add prerequisite annotation to Step 3 (dependency on Step 2 output)
+- Expand Step 5 revision prompt: replace vague "apply corrections" with severity-based handling (critical/important/recommended)
+- Expand Step 10 from single-line reference to full backend + frontend revision prompts with severity-based handling
+- Add `7a.`/`7b.` labels and sequential execution note for fullstack Design Doc generation
+- Remove redundant "Context Passing" line (moved to Orchestrator Definition)
+
+#### review (en/ja)
+- Add `$STEP_2_OUTPUT` storage for code-reviewer results
+- Replace vague re-validation ("measure improvement") with prior-issue-tracking re-validation using `$STEP_2_OUTPUT`
+
+#### update-doc (en/ja)
+- Add `$STEP_5_OUTPUT` storage for document-reviewer results
+- Expand revision loop: replace single-line description with full sub-agent prompt including severity-based handling and `$STEP_5_OUTPUT` reference
+
+#### Agents — Reverse Engineering Accuracy (en/ja)
+- document-reviewer: add as-is implementation document review rule — verify code-observable behaviors are stated as facts, flag speculative language on deterministic behavior
+- prd-creator: add Language Standard rule — code as SSoT, definitive form for observable behavior, "Undetermined Items" only for genuinely undeterminable claims
+- prd-creator: add Inferred verification rule — attempt code reading before classifying claims as Inferred
+
 ## [1.16.1] - 2026-02-23
 
 ### Added

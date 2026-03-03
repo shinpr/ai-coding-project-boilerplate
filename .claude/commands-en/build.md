@@ -2,7 +2,7 @@
 description: Execute decomposed tasks in autonomous execution mode
 ---
 
-Follow subagents-orchestration-guide skill strictly and act as the **orchestrator**.
+Follow subagents-orchestration-guide skill strictly and act as the **orchestrator** — your role is to invoke sub-agents, pass data between them, and report results.
 
 Work plan: $ARGUMENTS
 
