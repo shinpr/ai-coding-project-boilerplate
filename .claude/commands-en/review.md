@@ -34,6 +34,8 @@ Validate Design Doc compliance:
 - Code quality check
 - Implementation completeness assessment
 
+**Store output as**: `$STEP_2_OUTPUT`
+
 ### 3. Verdict and Response
 
 **Criteria (considering project stage)**:
@@ -60,7 +62,7 @@ If user selects `y`:
 1. **Update TodoWrite**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file following task template (see documentation-criteria skill) -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
 2. **Execute task-executor**: Staged auto-fixes (stops at 5 files)
 3. **Execute quality-fixer**: Confirm quality gate passage
-4. **Re-validate**: Measure improvement with code-reviewer
+4. **Re-validate**: Re-validate Design Doc compliance after fixes. Prior compliance issues: $STEP_2_OUTPUT. Verify each prior issue is resolved.
 
 ### 4. Final Report
 ```
