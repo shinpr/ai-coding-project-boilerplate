@@ -6,6 +6,15 @@ description: 既存コードベースからPRDとDesign Docを生成するリバ
 
 対象: $ARGUMENTS
 
+## オーケストレーター定義
+
+**コアアイデンティティ**: 「私は作業者ではない。オーケストレーターである。」（subagents-orchestration-guideスキル参照）
+
+**実行プロトコル**:
+1. **全作業をサブエージェントに委譲** — 役割はサブエージェントの呼び出し、データの受け渡し、結果の報告
+2. **ステップ間で構造化JSONを受け渡す** — `$STEP_N_OUTPUT`プレースホルダー記法を使用
+3. **コード読解はすべてサブエージェントが実施**
+
 **TodoWrite登録**: まずフェーズをTodoWriteに登録し、各フェーズ開始時に詳細ステップを追加登録する。
 
 ## ステップ0: 初期設定
@@ -39,8 +48,6 @@ AskUserQuestionで以下を確認:
   ※ fullstack=Yes: ユニットのスコープに応じてbackend + frontend Design Docを生成
 ```
 
-**コンテキスト伝達**: ステップ間で構造化JSON出力を受け渡す。`$STEP_N_OUTPUT`プレースホルダー記法を使用。
-
 ## フェーズ1: PRD生成
 
 **TodoWrite登録**:
@@ -70,7 +77,7 @@ prompt: |
 
 ### ステップ2-5: ユニット毎の処理
 
-**各ユニットについてステップ2→3→4→5を完了してから次のユニットへ進む。**
+**FOR** `$STEP_1_OUTPUT.discoveredUnits`の各ユニット **（逐次実行、1ユニットずつ）**:
 
 #### ステップ2: PRD生成
 
@@ -95,6 +102,8 @@ prompt: |
 **出力を保存**: `$STEP_2_OUTPUT`（PRDパス）
 
 #### ステップ3: コード検証
+
+**前提条件**: $STEP_2_OUTPUT（ステップ2のPRDパス）
 
 **Task呼び出し**:
 ```
@@ -158,10 +167,13 @@ prompt: |
   ## レビューフィードバック
   $STEP_4_OUTPUT
 
-  ## 対処すべき不整合
-  （$STEP_3_OUTPUTからcriticalとmajorの不整合を抽出）
+  ## コード検証結果
+  $STEP_3_OUTPUT
 
-  修正と改善を適用する。
+  severity別に対処する:
+  - critical: 必須修正 — 中核的な振る舞いの誤りまたは欠落
+  - important: 推奨修正 — 正確性や完全性の向上
+  - recommended: 任意修正 — 文体や軽微な改善
 ```
 
 **ループ制御**: 最大2回の修正サイクル。2サイクル後はステータスに関わらず人間レビュー用にフラグ。
@@ -195,13 +207,15 @@ prompt: |
 
 ### ステップ7-10: ユニット毎の処理
 
-**各ユニットについてステップ7→8→9→10を完了してから次のユニットへ進む。**
+**FOR** `$STEP_6_OUTPUT.designDocTargets`の各ユニット **（逐次実行、1ユニットずつ）**:
 
 #### ステップ7: Design Doc生成
 
 `$STEP_6_OUTPUT`のマッピング結果に基づき、ユニット毎に必要なDesign Docを生成する。
 
-**Design Doc**（technical-designer）:
+fullstack=Yesの場合、7aの後に7bを逐次実行する（7bは7aの出力に依存）。
+
+**7a.** バックエンドDesign Doc（technical-designer）:
 
 fullstack=Yes時: promptに「対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」を追加する。
 
@@ -226,7 +240,7 @@ prompt: |
 
 **出力を保存**: `$STEP_7_OUTPUT`
 
-**フロントエンドDesign Doc**（fullstack、フロントエンドスコープを含むユニット）:
+**7b.** フロントエンドDesign Doc（fullstack、フロントエンドスコープを含むユニット）:
 
 ```
 subagent_type: technical-designer-frontend
@@ -299,7 +313,54 @@ prompt: |
 
 #### ステップ10: 修正（条件付き）
 
-ステップ5と同様のロジック。updateモードで対応するtechnical-designer / technical-designer-frontendを使用。
+**トリガー条件**（以下のいずれか）:
+- レビューステータスが「Needs Revision」または「Rejected」
+- `$STEP_8_OUTPUT`にクリティカルな不整合が存在
+- consistencyScore < 70
+
+**バックエンドDesign Doc修正**（technical-designer）:
+```
+subagent_type: technical-designer
+prompt: |
+  レビューフィードバックに基づきDesign Docを更新する。
+
+  動作モード: update
+  既存ドキュメント: $STEP_7_OUTPUT
+
+  ## レビューフィードバック
+  $STEP_9_OUTPUT
+
+  ## コード検証結果
+  $STEP_8_OUTPUT
+
+  severity別に対処する:
+  - critical: 必須修正 — 中核的な振る舞いの誤りまたは欠落
+  - important: 推奨修正 — 正確性や完全性の向上
+  - recommended: 任意修正 — 文体や軽微な改善
+```
+
+**フロントエンドDesign Doc修正**（fullstack、technical-designer-frontend）:
+```
+subagent_type: technical-designer-frontend
+prompt: |
+  レビューフィードバックに基づきフロントエンドDesign Docを更新する。
+
+  動作モード: update
+  既存ドキュメント: $STEP_7_FRONTEND_OUTPUT
+
+  ## レビューフィードバック
+  $STEP_9_OUTPUT
+
+  ## コード検証結果
+  $STEP_8_OUTPUT
+
+  severity別に対処する:
+  - critical: 必須修正 — 中核的な振る舞いの誤りまたは欠落
+  - important: 推奨修正 — 正確性や完全性の向上
+  - recommended: 任意修正 — 文体や軽微な改善
+```
+
+**ループ制御**: 最大2回の修正サイクル。2サイクル後はステータスに関わらず人間レビュー用にフラグ。
 
 #### ユニット完了
 

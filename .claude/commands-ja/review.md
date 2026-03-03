@@ -34,6 +34,8 @@ Design Doc準拠率を検証:
 - コード品質チェック
 - 実装完全性の評価
 
+**出力を保存**: `$STEP_2_OUTPUT`
+
 ### 3. 判定と対応
 
 **判定基準（プロジェクト段階を考慮）**:
@@ -60,7 +62,7 @@ Design Doc準拠率を検証:
 1. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレート（documentation-criteriaスキル参照）に従いタスクファイル作成 → `docs/plans/tasks/review-fixes-YYYYMMDD.md`
 2. **task-executor実行**: 自動修正を段階的実行（5ファイル超過で停止）
 3. **quality-fixer実行**: 品質ゲート通過を確認
-4. **再検証**: code-reviewerで改善度を測定
+4. **再検証**: 修正後のDesign Doc準拠率を再検証する。前回の準拠問題: $STEP_2_OUTPUT。各問題が解決されたことを確認する。
 
 ### 4. 最終レポート
 ```
