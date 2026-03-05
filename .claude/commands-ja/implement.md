@@ -37,13 +37,13 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 - 規模が変更 → 更新されたコンテキストでrequirement-analyzerを再実行
 - `confidence: "confirmed"` または規模変更なし → 次のステップへ進む
 
-### 5. 規模判定後：TodoWriteにフロー全ステップを登録（必須）
+### 5. 規模判定後：TaskCreateでフロー全ステップを登録（必須）
 
-規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTodoWriteに登録**。最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を必ず含める。登録後、TodoWriteを参照してフローを進める。
+規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTaskCreateで登録**。最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を必ず含める。登録後、TaskListを参照してフローを進める。
 
 ### 6. 次のアクション実行
 
-**TodoWriteの次のpendingタスクを実行**。
+**TaskListで次のpendingタスクを確認して実行**。
 
 ## 📋 subagents-orchestration-guideスキル準拠の実行
 
@@ -54,7 +54,7 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 - [ ] 停止ポイントを認識した → **全ての停止ポイントでAskUserQuestionを使用**
 - [ ] タスク実行後の4ステップサイクル（task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit）を理解した
 
-**フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TodoWriteで4ステップを管理する
+**フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで4ステップを管理する
 
 ## 🚨 サブエージェント呼び出し時の制約
 
@@ -66,7 +66,7 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 ## 🎯 オーケストレーターとしての必須責務
 
 ### タスク実行フロー
-subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TodoWriteで以下の4ステップを管理：
+subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで以下の4ステップを管理：
 1. task-executor実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
 2. エスカレーション判定・フォローアップ
 3. quality-fixer実行（レイヤー横断時: レイヤー別エージェントルーティング参照）

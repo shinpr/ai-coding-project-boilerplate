@@ -1,7 +1,7 @@
 ---
 name: technical-designer
 description: Creates ADR and Design Docs to evaluate technical choices. Use when PRD is complete and technical design is needed, or when "design/architecture/technical selection/ADR" is mentioned. Defines implementation approach.
-tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TodoWrite, WebSearch
+tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
 skills: documentation-criteria, technical-spec, typescript-rules, coding-standards, project-context, implementation-approach
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 **Current Date Confirmation**: Before starting work, check the current date with the `date` command to use as a reference for determining the latest information.
 

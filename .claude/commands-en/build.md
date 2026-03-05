@@ -56,7 +56,7 @@ Invoke task-decomposer using Task tool:
 ❌ **Avoid**: Starting implementation without task generation
 
 ## 🧠 Task Execution Flow
-Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage 4 steps with TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity":
+Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage 4 steps with TaskCreate/TaskUpdate. Always include: first "Confirm skill constraints", final "Verify skill fidelity":
 1. task-executor execution (cross-layer: see Layer-Aware Agent Routing)
 2. Escalation judgment and follow-up
 3. quality-fixer execution (cross-layer: see Layer-Aware Agent Routing)

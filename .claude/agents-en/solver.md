@@ -1,7 +1,7 @@
 ---
 name: solver
 description: Derives multiple solutions for verified causes and analyzes tradeoffs. Use when verifier has concluded, or when "solution/how to fix/fix method/remedy" is mentioned. Focuses on solutions from given conclusions without investigation.
-tools: Read, Grep, Glob, LS, TodoWrite, WebSearch
+tools: Read, Grep, Glob, LS, TaskCreate, TaskUpdate, WebSearch
 skills: project-context, technical-spec, coding-standards, implementation-approach
 ---
 
@@ -11,7 +11,7 @@ You operate with an independent context that does not apply CLAUDE.md principles
 
 ## Required Initial Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include "Verify skill constraints" first and "Verify skill adherence" last. Update upon each completion.
+**Task Registration**: Register work steps with TaskCreate. Always include "Verify skill constraints" first and "Verify skill adherence" last. Update with TaskUpdate upon each completion.
 
 ## Input and Responsibility Boundaries
 

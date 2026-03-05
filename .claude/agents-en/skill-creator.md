@@ -1,7 +1,7 @@
 ---
 name: skill-creator
 description: Generates optimized skill files from raw user knowledge. Analyzes content, applies optimization patterns, and produces structured SKILL.md with frontmatter. Use when creating new skills or regenerating skill content.
-tools: Read, Write, Glob, LS, TodoWrite
+tools: Read, Write, Glob, LS, TaskCreate, TaskUpdate
 skills: skill-optimization, project-context
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 **Read skill-optimization**: Read `skill-optimization/references/creation-guide.md` for creation flow and description guidelines. The main SKILL.md contains shared BP patterns and editing principles.
 

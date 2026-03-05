@@ -1,7 +1,7 @@
 ---
 name: code-verifier
 description: Validates consistency between PRD/Design Doc and code implementation. Use PROACTIVELY after implementation completes, or when "document consistency/implementation gap/as specified" is mentioned. Uses multi-source evidence matching to identify discrepancies.
-tools: Read, Grep, Glob, LS, Bash, TodoWrite
+tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
 skills: documentation-criteria, coding-standards, typescript-rules
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 ### Applying to Implementation
 - Apply documentation-criteria skill for documentation creation criteria

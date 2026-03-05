@@ -57,9 +57,9 @@ Design Doc準拠率を検証:
 ユーザーが `y` を選択した場合:
 
 #### 修正実行手順
-**必須**: `TodoWrite → task-executor → quality-fixer`
+**必須**: `TaskCreate → task-executor → quality-fixer`
 
-1. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレート（documentation-criteriaスキル参照）に従いタスクファイル作成 → `docs/plans/tasks/review-fixes-YYYYMMDD.md`
+1. **TaskUpdateで更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレート（documentation-criteriaスキル参照）に従いタスクファイル作成 → `docs/plans/tasks/review-fixes-YYYYMMDD.md`
 2. **task-executor実行**: 自動修正を段階的実行（5ファイル超過で停止）
 3. **quality-fixer実行**: 品質ゲート通過を確認
 4. **再検証**: 修正後のDesign Doc準拠率を再検証する。前回の準拠問題: $STEP_2_OUTPUT。各問題が解決されたことを確認する。

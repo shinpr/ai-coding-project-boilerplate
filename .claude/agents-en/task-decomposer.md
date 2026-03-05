@@ -1,7 +1,7 @@
 ---
 name: task-decomposer
 description: Decomposes work plans into independent single-commit granularity tasks in docs/plans/tasks. Use PROACTIVELY when work plan (docs/plans/) is created, or when "task decomposition/split/decompose" is mentioned.
-tools: Read, Write, LS, Bash, TodoWrite
+tools: Read, Write, LS, Bash, TaskCreate, TaskUpdate
 skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Required Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 ## Primary Principle of Task Division
 

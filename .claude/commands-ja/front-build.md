@@ -85,7 +85,7 @@ Taskツールを使用してサブエージェントを呼び出す：
 
 各タスクで必須：
 
-1. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」
+1. **TaskUpdateで更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」
 2. **task-executor-frontend使用**: フロントエンド実装を実行
    - 呼び出し例: `subagent_type: "task-executor-frontend"`, `description: "タスク実行"`, `prompt: "タスクファイル: docs/plans/tasks/[ファイル名].md 実装を実行"`
 3. **エスカレーションチェック**: task-executor-frontendのステータス確認 → `status: "escalation_needed"` の場合 → 停止してユーザーにエスカレーション

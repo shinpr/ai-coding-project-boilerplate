@@ -12,7 +12,7 @@ CLAUDE.mdのセッション初期化で`project-context`スキルが毎セッシ
 
 ## 実行プロセス
 
-以下のステップをTodoWriteに登録し、順番に進行する。
+以下のステップをTaskCreateで登録し、順番に進行する。
 
 ### Step 1: 現状把握
 

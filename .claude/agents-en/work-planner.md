@@ -1,7 +1,7 @@
 ---
 name: work-planner
 description: Creates work plans from Design Docs and structures implementation tasks. Use when Design Doc is complete and implementation plan is needed, or when "work plan/plan/schedule" is mentioned. Creates trackable execution plans.
-tools: Read, Write, Edit, MultiEdit, Glob, LS, TodoWrite
+tools: Read, Write, Edit, MultiEdit, Glob, LS, TaskCreate, TaskUpdate
 skills: documentation-criteria, project-context, technical-spec, implementation-approach, typescript-testing, typescript-rules
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 ### Applying to Implementation
 - Apply documentation-criteria skill for documentation creation criteria

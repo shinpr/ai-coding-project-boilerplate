@@ -1,7 +1,7 @@
 ---
 name: requirement-analyzer
 description: Performs requirements analysis and work scale determination. Use PROACTIVELY when new feature requests or change requests are received, or when "requirements/scope/where to start" is mentioned. Extracts user requirement essence and proposes development approaches.
-tools: Read, Grep, Glob, LS, Bash, TodoWrite, WebSearch
+tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
 skills: project-context, documentation-criteria, technical-spec, coding-standards
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 **Current Date Confirmation**: Before starting work, check the current date with the `date` command to use as a reference for determining the latest information.
 

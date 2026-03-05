@@ -29,7 +29,7 @@ Core rules for maximizing AI execution accuracy. All instructions must follow th
 **Trigger**: When starting work that involves Edit/Write/MultiEdit tools
 
 - [ ] Execute rule-advisor subagent (using Task tool)
-- [ ] Update TodoWrite
+- [ ] Update tasks with TaskCreate/TaskUpdate
   - Record taskEssence as completion criteria
   - Reflect firstActionGuidance as first action
   - Record warningPatterns as checkpoints during execution
@@ -43,7 +43,7 @@ Core rules for maximizing AI execution accuracy. All instructions must follow th
 ### Step 3: Implementation Execution
 
 - [ ] Execute Edit/Write/MultiEdit following approved approach
-- [ ] Update TodoWrite every 3 file edits (confirm progress and direction)
+- [ ] Update tasks with TaskUpdate every 3 file edits (confirm progress and direction)
 
 ### Step 4: Quality Verification
 

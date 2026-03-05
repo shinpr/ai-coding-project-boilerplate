@@ -10,7 +10,7 @@ Not mere consistency maintenance, but rule-advisor selection accuracy enhancemen
 
 ## Execution Process
 
-Register the following steps in TodoWrite and proceed systematically.
+Register the following steps with TaskCreate and proceed systematically.
 
 ### Step 1: Scan Skill Files
 

@@ -1,7 +1,7 @@
 ---
 name: prd-creator
 description: Creates PRD and structures business requirements. Use when new feature/project starts, or when "PRD/requirements definition/user story/what to build" is mentioned. Defines user value and success metrics.
-tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TodoWrite, WebSearch
+tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
 skills: documentation-criteria, project-context, technical-spec
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 **Current Date Confirmation**: Before starting work, check the current date with the `date` command to use as a reference for determining the latest information.
 
