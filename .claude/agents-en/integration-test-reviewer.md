@@ -1,7 +1,7 @@
 ---
 name: integration-test-reviewer
 description: Verifies consistency between test skeleton comments and implementation code. Use PROACTIVELY after test implementation completes, or when "test review/skeleton verification" is mentioned. Returns quality reports with failing items and fix instructions.
-tools: Read, Grep, Glob, LS, Bash
+tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
 skills: integration-e2e-testing, typescript-testing, project-context
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Required Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 ### Applying to Implementation
 - Apply integration-e2e-testing skill for integration/E2E test review criteria (most important)

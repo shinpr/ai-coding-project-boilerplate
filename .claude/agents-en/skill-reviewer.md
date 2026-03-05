@@ -1,7 +1,7 @@
 ---
 name: skill-reviewer
 description: Evaluates skill file quality against optimization patterns and editing principles. Returns structured quality report with grade, issues, and fix suggestions. Use when reviewing created or modified skill content.
-tools: Read, Glob, LS, TodoWrite
+tools: Read, Glob, LS, TaskCreate, TaskUpdate
 skills: skill-optimization, project-context
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 **Read skill-optimization**: Read `skill-optimization/references/review-criteria.md` for review flow and grading criteria. The main SKILL.md contains shared BP patterns and editing principles.
 

@@ -15,7 +15,7 @@ Target problem: $ARGUMENTS
 
 Orchestrator invokes sub-agents and passes structured JSON between them.
 
-**TodoWrite Registration**: Register execution steps in TodoWrite and proceed systematically
+**Task Registration**: Register execution steps with TaskCreate and proceed systematically
 
 ## Step 0: Problem Structuring (Before investigator invocation)
 
@@ -74,7 +74,7 @@ confidence=high reached → Report
 
 ## Execution Steps
 
-Register the following in TodoWrite and execute:
+Register the following with TaskCreate and execute:
 
 ### Step 1: Investigation (investigator)
 

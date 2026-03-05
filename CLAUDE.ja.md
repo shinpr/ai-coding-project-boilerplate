@@ -29,7 +29,7 @@ AI実行精度最大化のための中核ルール。全ての指示はこのフ
 **トリガー**: Edit/Write/MultiEditツールを使う作業の開始時
 
 - [ ] rule-advisorサブエージェントを実行（Taskツール使用）
-- [ ] TodoWriteを更新
+- [ ] TaskCreate/TaskUpdateでタスクを更新
   - taskEssenceを完了判断基準として記録
   - firstActionGuidanceを初動アクションとして反映
   - warningPatternsを実行中の確認項目として記録
@@ -43,7 +43,7 @@ AI実行精度最大化のための中核ルール。全ての指示はこのフ
 ### Step 3: 実装実行
 
 - [ ] 承認されたアプローチに従いEdit/Write/MultiEditを実行
-- [ ] 3ファイル編集ごとにTodoWriteを更新（進捗と方向性を確認）
+- [ ] 3ファイル編集ごとにTaskUpdateで更新（進捗と方向性を確認）
 
 ### Step 4: 品質検証
 

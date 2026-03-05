@@ -57,9 +57,9 @@ Execute fixes? (y/n):
 If user selects `y`:
 
 #### Fix Execution Steps
-**Required**: `TodoWrite → task-executor → quality-fixer`
+**Required**: `TaskCreate → task-executor → quality-fixer`
 
-1. **Update TodoWrite**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file following task template (see documentation-criteria skill) -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
+1. **Update with TaskUpdate**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file following task template (see documentation-criteria skill) -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
 2. **Execute task-executor**: Staged auto-fixes (stops at 5 files)
 3. **Execute quality-fixer**: Confirm quality gate passage
 4. **Re-validate**: Re-validate Design Doc compliance after fixes. Prior compliance issues: $STEP_2_OUTPUT. Verify each prior issue is resolved.

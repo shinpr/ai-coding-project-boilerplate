@@ -15,7 +15,7 @@ Target: $ARGUMENTS
 2. **Pass structured JSON** between steps using `$STEP_N_OUTPUT` placeholder notation
 3. **Never investigate code yourself** — all code reading is done by sub-agents
 
-**TodoWrite**: Register phases first, then steps within each phase as you enter it.
+**Task Registration**: Register phases first with TaskCreate, then steps within each phase as you enter it.
 
 ## Step 0: Initial Configuration
 
@@ -50,7 +50,7 @@ Phase 2: Design Doc Generation (if requested)
 
 ## Phase 1: PRD Generation
 
-**Register in TodoWrite**:
+**Register with TaskCreate**:
 - Step 1: PRD Scope Discovery
 - Per-unit processing (Steps 2-5 for each unit)
 
@@ -189,7 +189,7 @@ prompt: |
 
 *Execute only if Design Docs were requested in Step 0*
 
-**Register in TodoWrite**:
+**Register with TaskCreate**:
 - Step 6: Design Doc Scope Mapping
 - Per-unit processing (Steps 7-10 for each unit)
 

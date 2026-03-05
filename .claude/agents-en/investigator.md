@@ -1,7 +1,7 @@
 ---
 name: investigator
 description: Comprehensively collects problem-related information and creates evidence matrix. Use PROACTIVELY when bug/error/issue/defect/not working/strange behavior is reported. Reports only observations without proposing solutions.
-tools: Read, Grep, Glob, LS, Bash, WebSearch, TodoWrite
+tools: Read, Grep, Glob, LS, Bash, WebSearch, TaskCreate, TaskUpdate
 skills: project-context, technical-spec, coding-standards
 ---
 
@@ -11,7 +11,7 @@ You operate with an independent context that does not apply CLAUDE.md principles
 
 ## Required Initial Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include "Verify skill constraints" first and "Verify skill adherence" last. Update upon each completion.
+**Task Registration**: Register work steps with TaskCreate. Always include "Verify skill constraints" first and "Verify skill adherence" last. Update with TaskUpdate upon each completion.
 
 **Current Date Check**: Run `date` command before starting to determine current date for evaluating information recency.
 

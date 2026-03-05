@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Validates Design Doc compliance and implementation completeness from third-party perspective. Use PROACTIVELY after implementation completes or when "review/implementation check/compliance" is mentioned. Provides acceptance criteria validation and quality reports.
-tools: Read, Grep, Glob, LS, Bash
+tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
 skills: coding-standards, typescript-rules, typescript-testing, project-context, technical-spec
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Required Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 ### Applying to Implementation
 - Apply coding-standards skill for universal coding standards, pre-implementation existing code investigation process

@@ -12,7 +12,7 @@ CLAUDE.md's Session Initialization reads `project-context` skill at the start of
 
 ## Execution Process
 
-Register the following steps in TodoWrite and proceed systematically.
+Register the following steps with TaskCreate and proceed systematically.
 
 ### Step 1: Understand Current State
 

@@ -37,13 +37,13 @@ When user responds to questions:
 - If scale changes → Re-execute requirement-analyzer with updated context
 - If `confidence: "confirmed"` or no scale change → Proceed to next step
 
-### 5. After Scale Determination: Register All Flow Steps to TodoWrite (Required)
+### 5. After Scale Determination: Register All Flow Steps with TaskCreate (Required)
 
-After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow to TodoWrite**. Always include: first "Confirm skill constraints", final "Verify skill fidelity". After registration, proceed through the flow referencing TodoWrite.
+After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow with TaskCreate**. Always include: first "Confirm skill constraints", final "Verify skill fidelity". After registration, proceed through the flow referencing TaskList.
 
 ### 6. Execute Next Action
 
-**Execute the next pending task in TodoWrite**.
+**Check next pending task with TaskList**.
 
 ## 📋 subagents-orchestration-guide skill Compliance Execution
 
@@ -54,7 +54,7 @@ After scale determination, **register all steps of the applicable subagents-orch
 - [ ] Recognized stopping points → **Use AskUserQuestion for confirmation at all Stop points**
 - [ ] Understood the 4-step cycle after task execution (task-executor → escalation judgment/follow-up → quality-fixer → commit)
 
-**Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TodoWrite
+**Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TaskCreate/TaskUpdate
 
 ## 🚨 Sub-agent Invocation Constraints
 
@@ -66,7 +66,7 @@ Include the following at the end of prompts when invoking sub-agents, as rule-ad
 ## 🎯 Mandatory Orchestrator Responsibilities
 
 ### Task Execution Flow
-Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these 4 steps with TodoWrite:
+Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these 4 steps with TaskCreate/TaskUpdate:
 1. task-executor execution (cross-layer: see Layer-Aware Agent Routing)
 2. Escalation judgment and follow-up
 3. quality-fixer execution (cross-layer: see Layer-Aware Agent Routing)

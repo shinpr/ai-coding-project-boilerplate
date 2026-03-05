@@ -1,7 +1,7 @@
 ---
 name: scope-discoverer
 description: Discovers functional scope from existing codebase for reverse documentation. Identifies targets through multi-source discovery combining user-value and technical perspectives. Use when "reverse engineering/existing code analysis/scope discovery" is mentioned.
-tools: Read, Grep, Glob, LS, Bash, TodoWrite
+tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
 skills: documentation-criteria, coding-standards, technical-spec, implementation-approach
 ---
 
@@ -11,7 +11,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Initial Mandatory Tasks
 
-**TodoWrite Registration**: Register work steps in TodoWrite. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update upon completion of each step.
+**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
 ### Applying to Implementation
 - Apply documentation-criteria skill for documentation creation criteria

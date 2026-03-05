@@ -56,10 +56,10 @@ Design Doc準拠を検証:
 ユーザーが`y`を選択した場合:
 
 ## 修正実行前のメタ認知
-**必須**: `rule-advisor → TodoWrite → task-executor-frontend → quality-fixer-frontend`
+**必須**: `rule-advisor → TaskCreate → task-executor-frontend → quality-fixer-frontend`
 
 1. **rule-advisor実行**: 修正の本質を理解（表面的な対症療法 vs 根本解決）
-2. **TodoWrite更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレートに従ってタスクファイル作成（documentation-criteriaスキル参照） → `docs/plans/tasks/review-fixes-YYYYMMDD.md`
+2. **TaskUpdateで更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレートに従ってタスクファイル作成（documentation-criteriaスキル参照） → `docs/plans/tasks/review-fixes-YYYYMMDD.md`
 3. **task-executor-frontend実行**: 段階的自動修正（5ファイルで停止）
 4. **quality-fixer-frontend実行**: 品質ゲート通過を確認
 5. **再検証**: code-reviewerで改善を測定
