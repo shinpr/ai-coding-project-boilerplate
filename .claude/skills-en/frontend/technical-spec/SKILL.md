@@ -109,10 +109,10 @@ async function fetchUser(id: string): Promise<User> {
 Use the appropriate run command based on the `packageManager` field in package.json.
 
 ### Build Commands
-- `dev` - Development server
-- `build` - Production build
-- `preview` - Preview production build
-- `type-check` - Type check (no emit)
+- Auto-detect and execute the following from package.json scripts:
+  - Development server
+  - Production build
+  - Type check (no emit)
 
 ### Testing Commands
 - `test` - Run tests

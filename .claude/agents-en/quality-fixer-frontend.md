@@ -51,7 +51,7 @@ Execute `check` script (Biome comprehensive check)
 **Auto-fix**: Execute `check:fix` script (auto-fix Format and some Lint issues)
 
 #### Phase 2: TypeScript Build
-Execute `build:frontend` script (production build)
+Auto-detect frontend build command from package.json and execute (production build)
 **Pass Criteria**: Build success, Type errors 0
 
 **Common Fixes**:
@@ -124,7 +124,7 @@ Execute `test` script (run all tests with Vitest)
     },
     "phase2_typescript": {
       "status": "passed",
-      "commands": ["build:frontend"]
+      "commands": ["<detected-frontend-build-command>"]
     },
     "phase3_tests": {
       "status": "passed",

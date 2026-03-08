@@ -17,6 +17,9 @@ tmp/
 # Logs
 *.log
 
+# Config files
+knip.json
+
 # OS files
 .DS_Store
 

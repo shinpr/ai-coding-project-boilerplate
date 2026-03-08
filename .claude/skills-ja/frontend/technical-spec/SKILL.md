@@ -109,10 +109,10 @@ async function fetchUser(id: string): Promise<User> {
 package.jsonの`packageManager`フィールドに応じた実行コマンドを使用すること。
 
 ### ビルドコマンド
-- `dev` - 開発サーバー
-- `build` - 本番ビルド
-- `preview` - 本番ビルドのプレビュー
-- `type-check` - 型チェック（出力なし）
+- package.jsonから以下に該当するスクリプトを自動検出して実行:
+  - 開発サーバー
+  - 本番ビルド
+  - 型チェック（出力なし）
 
 ### テストコマンド
 - `test` - テスト実行
