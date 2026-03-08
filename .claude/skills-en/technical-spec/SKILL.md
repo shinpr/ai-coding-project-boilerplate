@@ -59,10 +59,11 @@ Use the appropriate run command based on the `packageManager` field in package.j
 Quality checks are mandatory upon implementation completion:
 
 **Phase 1-3: Code Quality Checks**
-- `check` - Biome (lint + format)
-- `check:unused` - Detect unused exports
-- `check:deps` - Detect circular dependencies
-- `build` - TypeScript build
+- Auto-detect and execute the following from package.json scripts:
+  - lint + format check
+  - Detect unused exports
+  - Detect circular dependencies
+  - TypeScript build
 
 **Phase 4: Tests**
 - `test` - Test execution

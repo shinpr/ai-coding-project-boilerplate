@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+#### Dependencies Modernization
+- Remove 11 unused devDependencies: react, react-dom, @types/react, @types/react-dom, @vitejs/plugin-react, @testing-library/react, @testing-library/jest-dom, jsdom, c8, ts-node, ts-prune
+- Remove 4 unused scripts: `build:frontend`, `dev:frontend`, `preview`, `check:unused:all`
+- Migrate ts-prune → knip for unused export detection (`check:unused` now runs `knip --include exports`)
+- Upgrade Biome v1 → v2 (schema migration: `organizeImports` → `assist.actions.source`, `include`/`ignore` → `includes` with `!` prefix)
+- Upgrade vitest v3 → v4, @vitest/coverage-v8 v3 → v4, @vitest/ui v3 → v4
+- Upgrade vite v5 → v6, @types/node v20 → v22
+- Add `knip.json` configuration
+
+#### ESM Migration
+- Migrate project from CommonJS to ES Modules (`"type": "module"` in package.json)
+- Update tsconfig.json: `target` ES2020 → ES2022, `module` commonjs → Node16
+- Convert all scripts/ and bin/ files from CJS (`require`/`module.exports`) to ESM (`import`/`export`)
+- Add `node:` protocol to all Node.js builtin imports
+
+#### Agent/Skill Environment Independence (en/ja)
+- quality-fixer: replace `ts-prune` reference with generic "unused export detection tool"
+- quality-fixer-frontend: replace hardcoded `build:frontend` with auto-detect pattern from package.json
+- technical-spec skill: replace hardcoded script names with environment-independent descriptions
+- frontend/technical-spec skill: replace hardcoded build commands with auto-detect pattern
+
+#### Documentation
+- Remove `build:frontend` and `preview` from README script lists (en/ja)
+
+### Removed
+
+- `.tsprunerc` configuration file
+- `scripts/check-unused-exports.js` (replaced by knip)
+
 ## [1.16.3] - 2026-03-05
 
 ### Fixed
