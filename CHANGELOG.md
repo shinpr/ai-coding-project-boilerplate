@@ -5,9 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.17.0] - 2026-03-08
+
+### Added
+
+#### UI Spec Support
+- New `ui-spec-designer` agent (EN/JA) for creating UI Specifications from PRD and optional prototype code
+- UI Spec template in documentation-criteria references
+- UI Spec document type recognized by `document-reviewer`
+- UI Spec integration steps in `technical-designer-frontend`
+- UI Spec phase added to `front-design` command and orchestration flows
+
+#### Playwright E2E Testing
+- E2E test implementation guide (`references/e2e.md`) in frontend-typescript-testing skill
+- E2E test design guide (`references/e2e-design.md`) in integration-e2e-testing skill
+- E2E test support in `quality-fixer-frontend` and `acceptance-test-generator`
+
+#### Autonomous Execution Enhancements
+- 4-step task execution cycle (`task-executor → escalation check → quality-fixer → commit`) in `build` and `front-build` commands
+- `integration-test-reviewer` integration for test skeleton compliance validation
+- Structured response specs and sub-agent invocation constraints
+- `acceptance-test-generator → work-planner` information passing section in orchestration guide
 
 ### Changed
+
+#### Frontend Workflow Enhancements
+- Orchestration flow step counts updated: large scale 11→13, medium scale 7→9 (frontend/fullstack)
+- `front-plan` command restructured with test skeleton generation step
+- `implement` command task execution section renamed and enhanced
+- `documentation-criteria` skill updated with UI Spec in creation matrix, storage paths, diagram requirements, and templates
+- `skills-index.yaml` updated with playwright/e2e tags and new references
 
 #### Dependencies Modernization
 - Remove 11 unused devDependencies: react, react-dom, @types/react, @types/react-dom, @vitejs/plugin-react, @testing-library/react, @testing-library/jest-dom, jsdom, c8, ts-node, ts-prune

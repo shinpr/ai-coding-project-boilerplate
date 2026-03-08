@@ -5,6 +5,10 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 
 # Integration Test & E2E Test Design/Implementation Rules
 
+## References
+
+- **[references/e2e-design.md](references/e2e-design.md)** - E2E test design principles with Playwright (candidate sources, selection criteria, UI Spec mapping)
+
 ## Test Types and Limits
 
 | Type | Purpose | File Format | Limit |

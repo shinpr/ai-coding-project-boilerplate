@@ -91,7 +91,7 @@ skills:
 
   documentation-criteria:
     skill: "documentation-criteria"
-    tags: [documentation, decision-making, adr, prd, design-doc, planning, process]
+    tags: [documentation, decision-making, adr, prd, ui-spec, design-doc, planning, process]
     typical-use: "実装開始時の規模判定、ドキュメント作成判定、ADR/PRD/Design Doc/作業計画書の作成基準"
     size: medium
     key-references:
@@ -129,14 +129,16 @@ skills:
 
   integration-e2e-testing:
     skill: "integration-e2e-testing"
-    tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality]
-    typical-use: "統合テスト・E2Eテストのスケルトン生成、テスト実装、テストレビュー、Property-Based Test実装"
+    tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality, playwright]
+    typical-use: "統合テスト・E2Eテストのスケルトン生成、テスト実装、テストレビュー、Property-Based Test実装、E2Eテスト設計"
     size: small
     key-references:
       - "fast-check - Property-based testing for TypeScript"
       - "Node.js Testing Best Practices - Yoni Goldberg"
       - "Property-Based Testing - 2025 Practices"
+      - "references/e2e-design.md - E2Eテスト設計原則"
     sections:
+      - "References"
       - "テスト種別と上限"
       - "振る舞い優先の原則"
       - "スケルトン仕様"
@@ -181,8 +183,8 @@ skills:
       - "References"
 
   # フロントエンド固有スキル
-  frontend/typescript-rules:
-    skill: "frontend/typescript-rules"
+  frontend-typescript-rules:
+    skill: "frontend-typescript-rules"
     tags: [frontend, react, implementation, type-safety, props-driven, hooks, component-design, vite, error-boundary]
     typical-use: "React/Viteでのフロントエンド開発、コンポーネント設計、Props設計、環境変数管理"
     size: small
@@ -198,16 +200,18 @@ skills:
       - "コーディング規約"
       - "アンチパターン"
 
-  frontend/typescript-testing:
-    skill: "frontend/typescript-testing"
-    tags: [frontend, react, quality, testing, coverage, vitest, react-testing-library, msw, component-testing, implementation]
-    typical-use: "Reactコンポーネントのテスト作成、React Testing Library、MSW、60%カバレッジ要件、Co-location"
+  frontend-typescript-testing:
+    skill: "frontend-typescript-testing"
+    tags: [frontend, react, quality, testing, coverage, vitest, react-testing-library, msw, component-testing, implementation, playwright, e2e]
+    typical-use: "Reactコンポーネントのテスト作成、React Testing Library、MSW、60%カバレッジ要件、Co-location、Playwright E2Eテスト"
     size: small
     key-references:
       - "React Testing Library - Kent C. Dodds"
       - "MSW (Mock Service Worker) - API Mocking"
       - "ADR-0002 Co-location原則"
+      - "references/e2e.md - Playwright E2Eパターン"
     sections:
+      - "References"
       - "テストフレームワーク"
       - "テストの基本方針"
       - "テストの実装規約"
@@ -216,8 +220,8 @@ skills:
       - "テスト品質基準"
       - "アンチパターン"
 
-  frontend/technical-spec:
-    skill: "frontend/technical-spec"
+  frontend-technical-spec:
+    skill: "frontend-technical-spec"
     tags: [frontend, react, architecture, design, documentation, environment, data-flow, implementation, vite, security, client-side, state-management, context-api, hooks, lighthouse, bundle-size, non-functional-requirements]
     typical-use: "フロントエンド技術設計、環境変数管理（Vite）、セキュリティ制約、アーキテクチャ設計、状態管理パターン、実装方針決定、非機能要件の確認"
     size: medium

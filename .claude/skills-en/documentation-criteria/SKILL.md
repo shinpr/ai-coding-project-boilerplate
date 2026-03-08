@@ -9,7 +9,8 @@ description: Guides PRD, ADR, Design Doc, and Work Plan creation with templates 
 
 | Condition | Required Documents | Creation Order |
 |-----------|-------------------|----------------|
-| New Feature Addition | PRD -> [ADR] -> Design Doc -> Work Plan | After PRD approval |
+| New Feature Addition (backend) | PRD -> [ADR] -> Design Doc -> Work Plan | After PRD approval |
+| New Feature Addition (frontend/fullstack) | PRD -> **UI Spec** -> [ADR] -> Design Doc -> Work Plan | UI Spec before Design Doc |
 | ADR Conditions Met (see below) | ADR -> Design Doc -> Work Plan | Start immediately |
 | 6+ Files | ADR -> Design Doc -> Work Plan (Required) | Start immediately |
 | 3-5 Files | Design Doc -> Work Plan (Recommended) | Start immediately |
@@ -78,6 +79,37 @@ description: Guides PRD, ADR, Design Doc, and Work Plan creation with templates 
 - Detailed implementation procedures (->Design Doc)
 - Specific code examples (->Design Doc)
 - Resource assignments (->Work Plan)
+
+### UI Specification
+
+**Purpose**: Define UI structure, screen transitions, component decomposition, and interaction design for frontend features
+
+**Includes**:
+- Screen list and transition conditions
+- Component decomposition with state x display matrix (default/loading/empty/error/partial)
+- Interaction definitions linked to PRD acceptance criteria (EARS format)
+- Prototype management (code-based prototypes as attachments, not source of truth)
+- AC traceability from PRD to screens/components
+- Existing component reuse map and design tokens
+- Visual acceptance criteria (golden states, layout constraints)
+- Accessibility requirements (keyboard, screen reader, contrast)
+
+**Excludes**:
+- Technical implementation details (-> Design Doc)
+- API contracts and data layer design (-> Design Doc)
+- Test implementation (-> Test Strategy in Design Doc)
+- Implementation schedule (-> Work Plan)
+
+**Required Structural Elements**:
+- At least one component with state x display matrix and interaction table
+- AC traceability table mapping PRD ACs to screens/states
+- Screen list with transition conditions
+- Existing component reuse map (reuse/extend/new decisions)
+
+**Prototype Code Handling**:
+- Prototype code provided by user is placed in `docs/ui-spec/assets/{feature-name}/`
+- Prototype is an attachment to UI Spec, never the source of truth
+- UI Spec + Design Doc are the canonical specifications
 
 ### Design Document
 
@@ -148,6 +180,8 @@ description: Guides PRD, ADR, Design Doc, and Work Plan creation with templates 
 |----------|------|------------------|----------|
 | PRD | `docs/prd/` | `[feature-name]-prd.md` | See prd-template.md |
 | ADR | `docs/adr/` | `ADR-[4-digits]-[title].md` | See adr-template.md |
+| UI Spec | `docs/ui-spec/` | `[feature-name]-ui-spec.md` | See ui-spec-template.md |
+| UI Spec Assets | `docs/ui-spec/assets/{feature-name}/` | Prototype code files | - |
 | Design Doc | `docs/design/` | `[feature-name]-design.md` | See design-template.md |
 | Work Plan | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | See plan-template.md |
 | Task File | `docs/plans/tasks/` | `{plan-name}-task-{number}.md` | See task-template.md |
@@ -170,6 +204,7 @@ Required diagrams for each document (using mermaid notation):
 |----------|------------------|---------|
 | PRD | User journey diagram, Scope boundary diagram | Clarify user experience and scope |
 | ADR | Option comparison diagram (when needed) | Visualize trade-offs |
+| UI Spec | Screen transition diagram, Component tree diagram | Clarify screen flow and component structure |
 | Design Doc | Architecture diagram, Data flow diagram | Understand technical structure |
 | Work Plan | Phase structure diagram, Task dependency diagram | Clarify implementation order |
 
@@ -184,6 +219,7 @@ Required diagrams for each document (using mermaid notation):
 Templates are available in the `references/` directory:
 - [Design Document template](references/design-template.md)
 - [Product Requirements Document template](references/prd-template.md)
+- [UI Specification template](references/ui-spec-template.md)
 - [Work Plan template](references/plan-template.md)
 - [Architecture Decision Record template](references/adr-template.md)
 - [Task File template](references/task-template.md)

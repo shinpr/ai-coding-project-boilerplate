@@ -65,12 +65,17 @@ Include the following at the end of prompts when invoking sub-agents, as rule-ad
 
 ## 🎯 Mandatory Orchestrator Responsibilities
 
-### Task Execution Flow
-Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these 4 steps with TaskCreate/TaskUpdate:
-1. task-executor execution (cross-layer: see Layer-Aware Agent Routing)
-2. Escalation judgment and follow-up
-3. quality-fixer execution (cross-layer: see Layer-Aware Agent Routing)
-4. git commit
+### Task Execution Quality Cycle
+Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these steps with TaskCreate/TaskUpdate:
+1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing)
+2. **CHECK task-executor response**:
+   - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
+   - `testsAdded` contains `*.int.test.ts` or `*.e2e.test.ts` → Execute **integration-test-reviewer**
+     - `needs_revision` → Return to step 1 with `requiredFixes`
+     - `approved` → Proceed to step 3
+   - Otherwise → Proceed to step 3
+3. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing)
+4. **COMMIT on approval**: After `approved: true` → Execute git commit
 
 ### Test Information Communication
 After acceptance-test-generator execution, when calling work-planner, communicate:

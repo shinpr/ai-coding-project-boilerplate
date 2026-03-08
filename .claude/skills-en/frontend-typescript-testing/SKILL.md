@@ -1,9 +1,16 @@
 ---
-name: frontend/typescript-testing
-description: Designs tests with React Testing Library and MSW. Applies component testing patterns.
+name: frontend-typescript-testing
+description: Designs tests with React Testing Library, MSW, and Playwright E2E. Applies component testing and E2E testing patterns.
 ---
 
 # TypeScript Testing Rules (Frontend)
+
+## References
+
+| Test Type | Reference | When to Use |
+|-----------|-----------|-------------|
+| **Unit / Integration** | This document | Implementing React component tests with RTL + Vitest + MSW |
+| **E2E** | [references/e2e.md](references/e2e.md) | Implementing browser-level E2E tests with Playwright |
 
 ## Test Framework
 - **Vitest**: This project uses Vitest

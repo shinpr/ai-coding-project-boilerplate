@@ -1,5 +1,5 @@
 ---
-name: frontend/technical-spec
+name: frontend-technical-spec
 description: フロントエンドの環境変数、コンポーネント設計、データフローを定義。React環境設定時に使用。
 ---
 

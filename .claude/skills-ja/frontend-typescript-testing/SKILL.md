@@ -1,6 +1,6 @@
 ---
-name: frontend/typescript-testing
-description: React Testing LibraryとMSWでテストを設計。コンポーネントテストパターンを適用。
+name: frontend-typescript-testing
+description: React Testing Library、MSW、Playwright E2Eでテストを設計。コンポーネントテストとE2Eテストパターンを適用。
 ---
 
 # TypeScript テストルール（フロントエンド）

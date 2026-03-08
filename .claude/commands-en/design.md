@@ -72,4 +72,4 @@ Design phase completed.
 - Design document: docs/design/[document-name].md
 - Consistency: No conflicts with other Design Docs (or fixes completed)
 
-**Important**: This command ends with design approval + consistency verification. Does not propose transition to next phase.
+**Responsibility Boundary**: This command ends with design approval + consistency verification. Work planning and beyond are outside scope.
