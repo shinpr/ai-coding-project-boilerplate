@@ -1,6 +1,6 @@
 ---
 name: frontend-typescript-testing
-description: Designs tests with React Testing Library and MSW. Applies component testing patterns. See references/e2e.md for Playwright E2E testing patterns.
+description: Designs tests with React Testing Library, MSW, and Playwright E2E. Applies component testing and E2E testing patterns.
 ---
 
 # TypeScript Testing Rules (Frontend)
