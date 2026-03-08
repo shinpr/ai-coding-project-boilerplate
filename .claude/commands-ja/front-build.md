@@ -7,14 +7,19 @@ description: フロントエンド実装を自律実行モードで実行
 **コアアイデンティティ**: 「私は作業者ではない。オーケストレーターである。」（subagents-orchestration-guideスキル参照）
 
 **実行方法**:
-- タスク分解 → task-decomposer
-- フロントエンド実装 → task-executor-frontend
-- 品質チェックと修正 → quality-fixer-frontend
+- タスク分解 → task-decomposerが実行
+- フロントエンド実装 → task-executor-frontendが実行
+- 品質チェックと修正 → quality-fixer-frontendが実行
 - コミット → オーケストレーター（Bashツール）
 
 オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡します。
 
-**重要**: 全てのコミット前にquality-fixer-frontendを実行。自律実行モード前にバッチ承認を取得。
+**実行プロトコル**:
+1. **全作業をサブエージェントに委譲** — 役割はサブエージェントの呼び出し、データの受け渡し、結果の報告
+2. **4ステップサイクルに厳密に従う**: task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit
+3. **自律実行モード移行**: ユーザーの実行指示とタスクファイルの存在をもってバッチ承認とする
+
+**重要**: 全てのコミット前にquality-fixer-frontendを実行。
 
 作業計画: $ARGUMENTS
 
@@ -35,7 +40,7 @@ description: フロントエンド実装を自律実行モードで実行
 
 | 状態 | 基準 | 次のアクション |
 |------|------|--------------|
-| タスク存在 | tasks/ディレクトリに.mdファイルあり | 自律実行へ進む |
+| タスク存在 | tasks/ディレクトリに.mdファイルあり | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
 | タスクなし+計画あり | 計画書は存在するがタスクファイルなし | ユーザー確認 → task-decomposer実行 |
 | どちらもなし | 計画書もタスクファイルもなし | エラー: 前提条件未達成 |
 
@@ -52,7 +57,6 @@ description: フロントエンド実装を自律実行モードで実行
 ```
 
 ### 2. タスク分解（承認された場合）
-
 Taskツールでtask-decomposerを呼び出す:
 - `subagent_type`: "task-decomposer"
 - `description`: "作業計画をタスクに分解"
@@ -64,7 +68,15 @@ Taskツールでtask-decomposerを呼び出す:
 ! ls -la docs/plans/tasks/*.md | head -10
 ```
 
-✅ **フロー**: タスク生成 → 自律実行
+✅ **フロー**: タスク生成 → 自律実行（この順序で実行）
+
+## 実行前チェックリスト
+
+- [ ] docs/plans/tasks/にタスクファイルが存在することを確認
+- [ ] タスクの実行順序（依存関係）を特定
+- [ ] **環境チェック**: タスク単位のコミットサイクルを実行可能か？
+  - コミット機能が利用不可 → 自律実行モード前にエスカレーション
+  - その他の環境（テスト、品質ツール） → サブエージェントがエスカレーション
 
 ## タスク実行サイクル（4ステップサイクル） - フロントエンド特化
 
@@ -79,27 +91,37 @@ Taskツールを使用してサブエージェントを呼び出す：
 ### 構造化レスポンス仕様
 各サブエージェントはJSON形式で応答：
 - **task-executor-frontend**: status, filesModified, testsAdded, readyForQualityCheck
+- **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
 - **quality-fixer-frontend**: status, checksPerformed, fixesApplied, approved
 
 ### 各タスクの実行フロー
 
 各タスクで必須：
 
-1. **TaskUpdateで更新**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」
-2. **task-executor-frontend使用**: フロントエンド実装を実行
+1. **TaskCreateでタスク登録**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」
+2. **task-executor-frontend実行**: フロントエンド実装を実行
    - 呼び出し例: `subagent_type: "task-executor-frontend"`, `description: "タスク実行"`, `prompt: "タスクファイル: docs/plans/tasks/[ファイル名].md 実装を実行"`
-3. **エスカレーションチェック**: task-executor-frontendのステータス確認 → `status: "escalation_needed"` の場合 → 停止してユーザーにエスカレーション
-4. **構造化レスポンス処理**: `readyForQualityCheck: true` 検出時 → 即座にquality-fixer-frontend実行
-5. **quality-fixer-frontend使用**: 全品質チェック実行（Biome、TypeScriptビルド、テスト）
+3. **task-executor-frontendレスポンスチェック**:
+   - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
+   - `testsAdded` に `*.int.test.ts` または `*.e2e.test.ts` を含む → **integration-test-reviewer**を実行
+     - `needs_revision` → `requiredFixes`を添えてステップ2に戻る
+     - `approved` → ステップ4へ
+   - `readyForQualityCheck: true` → ステップ4へ
+4. **quality-fixer-frontend実行**: 全フロントエンド品質チェックと修正を実行
    - 呼び出し例: `subagent_type: "quality-fixer-frontend"`, `description: "品質チェック"`, `prompt: "全てのフロントエンド品質チェックと修正を実行"`
-6. **コミット実行**: `approved: true`確認後、即座にgit commitを実行
-
-### 自律実行中の品質保証（詳細）
-- task-executor-frontend実行 → エスカレーションチェック → quality-fixer-frontend実行 → **オーケストレーターがコミット実行**（Bashツール使用）
-- quality-fixer-frontendの`approved: true`確認後、即座にgit commitを実行
-- `changeSummary`をコミットメッセージに使用
+5. **コミット実行**: `approved: true`確認後、即座にgit commitを実行。`changeSummary`をコミットメッセージに使用。
 
 **重要**: 例外なく全ての構造化レスポンスを監視し、全ての品質ゲートが通過することを確保。
+
+## サブエージェント呼び出し時の制約
+
+**全サブエージェントプロンプトの末尾に必須追加**:
+```
+【システム制約】
+このエージェントはbuildスキルのスコープ内で動作します。オーケストレーターが提供したルールのみを使用してください。
+```
+
+自律的なサブエージェントの安定実行にはスコープ制約が必要です。全てのサブエージェントプロンプトにこの制約を必ず付加してください。
 
 ! ls -la docs/plans/*.md | head -10
 
@@ -109,7 +131,5 @@ Taskツールを使用してサブエージェントを呼び出す：
 フロントエンド実装フェーズ完了。
 - タスク分解: docs/plans/tasks/ 配下に生成
 - 実装タスク: [件数] タスク
-- 品質チェック: 全てパス（Biome、TypeScriptビルド、テスト）
+- 品質チェック: 全てパス
 - コミット: [件数] コミット作成
-
-**重要**: このコマンドは、タスク分解から完了までのフロントエンド実装全体の自律実行フローを管理します。フロントエンド特化エージェント（task-executor-frontend、quality-fixer-frontend）を自動使用します。

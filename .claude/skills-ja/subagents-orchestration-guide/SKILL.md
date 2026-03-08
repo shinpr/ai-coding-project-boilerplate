@@ -54,11 +54,12 @@ graph TD
 ### ドキュメント作成エージェント
 5. **requirement-analyzer**: 要件分析と作業規模判定（WebSearch対応、最新技術情報の調査）
 6. **prd-creator**: Product Requirements Document作成（WebSearch対応、市場動向調査）
-7. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
-8. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
-9. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
-10. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
-11. **acceptance-test-generator**: Design DocのACから統合テストとE2Eテストのスケルトン生成
+7. **ui-spec-designer**: PRDとプロトタイプコード（任意）からUI Spec作成（フロントエンド/フルスタック機能）
+8. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
+9. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
+10. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
+11. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
+12. **acceptance-test-generator**: Design DocのACとUI Spec（任意）から統合テストとE2Eテストのスケルトン生成
 
 ## オーケストレーション原則
 
@@ -111,29 +112,33 @@ graph TD
 
 ## 作業計画時の基本フロー
 
-### 大規模（6ファイル以上） - 11ステップ
+### 大規模（6ファイル以上） - 11ステップ（バックエンド） / 13ステップ（フロントエンド/フルスタック）
 
 1. requirement-analyzer → 要件分析 + 既存PRD確認 **[停止]**
 2. prd-creator → PRD作成
 3. document-reviewer → PRDレビュー **[停止: PRD承認]**
-4. technical-designer → ADR作成（アーキテクチャ/技術/データフロー変更がある場合）
-5. document-reviewer → ADRレビュー（ADR作成時） **[停止: ADR承認]**
-6. technical-designer → Design Doc作成（レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
-7. document-reviewer → Design Docレビュー（レイヤー横断時: Design Doc毎に実行）
-8. design-sync → 整合性検証 **[停止: Design Doc承認]**
-9. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
-10. work-planner → 作業計画書作成 **[停止: 一括承認]**
-11. task-decomposer → 自律実行 → 完了報告
+4. **（フロントエンド/フルスタックのみ）** プロトタイプコードの有無を確認 → ui-spec-designer → UI Spec作成
+5. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
+6. technical-designer → ADR作成（アーキテクチャ/技術/データフロー変更がある場合）
+7. document-reviewer → ADRレビュー（ADR作成時） **[停止: ADR承認]**
+8. technical-designer → Design Doc作成（レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
+9. document-reviewer → Design Docレビュー（レイヤー横断時: Design Doc毎に実行）
+10. design-sync → 整合性検証 **[停止: Design Doc承認]**
+11. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
+12. work-planner → 作業計画書作成 **[停止: 一括承認]**
+13. task-decomposer → 自律実行 → 完了報告
 
-### 中規模（3-5ファイル） - 7ステップ
+### 中規模（3-5ファイル） - 7ステップ（バックエンド） / 9ステップ（フロントエンド/フルスタック）
 
 1. requirement-analyzer → 要件分析 **[停止]**
-2. technical-designer → Design Doc作成（レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
-3. document-reviewer → Design Docレビュー（レイヤー横断時: Design Doc毎に実行）
-4. design-sync → 整合性検証 **[停止: Design Doc承認]**
-5. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
-6. work-planner → 作業計画書作成 **[停止: 一括承認]**
-7. task-decomposer → 自律実行 → 完了報告
+2. **（フロントエンド/フルスタックのみ）** プロトタイプコードの有無を確認 → ui-spec-designer → UI Spec作成
+3. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
+4. technical-designer → Design Doc作成（レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
+5. document-reviewer → Design Docレビュー（レイヤー横断時: Design Doc毎に実行）
+6. design-sync → 整合性検証 **[停止: Design Doc承認]**
+7. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
+8. work-planner → 作業計画書作成 **[停止: 一括承認]**
+9. task-decomposer → 自律実行 → 完了報告
 
 ### 小規模（1-2ファイル） - 2ステップ
 
@@ -219,6 +224,22 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
    - 構造化レスポンスから必要な情報を抽出
    - changeSummaryからコミットメッセージを作成 → **Bashでgit commit実行**
    - 要件変更時は初期要件と追加要件を明示的に統合
+
+   #### *1 acceptance-test-generator → work-planner
+
+   **acceptance-test-generatorへの入力**:
+   - Design Doc: [パス]
+   - UI Spec: [パス]（存在する場合）
+
+   **オーケストレーター確認項目**:
+   - 統合テストファイルパスの取得と存在確認
+   - E2Eテストファイルパスの取得と存在確認
+
+   **work-plannerへの入力**:
+   - 統合テストファイル: [パス]（各フェーズの実装と同時に作成・実行）
+   - E2Eテストファイル: [パス]（最終フェーズでのみ実行）
+
+   **エラー時**: ファイルが生成されない場合はユーザーにエスカレーション
 3. **品質保証とコミット実行**: approved=true確認後、即座にgit commit実行
 4. **自律実行モード管理**: 承認後の自律実行開始・停止・エスカレーション判断
 5. **ADRステータス管理**: ユーザー判断後のADRステータス更新（Accepted/Rejected）
@@ -243,6 +264,7 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 ### 主要な停止ポイント
 - **requirement-analyzer完了後**: 要件分析結果と質問事項の確認
 - **PRD作成→document-reviewer実行後**: 要件理解と整合性の確認
+- **UI Spec作成→document-reviewer実行後**（フロントエンド/フルスタック）: UI仕様の完全性と整合性の確認
 - **ADR作成→document-reviewer実行後**: 技術方針と整合性の確認
 - **Design Doc作成→document-reviewer実行後**: 設計内容と整合性の確認
 - **計画書作成後**: 実装フェーズ全体の一括承認

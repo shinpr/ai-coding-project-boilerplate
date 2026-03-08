@@ -144,3 +144,9 @@ it('AC2-property: モデル名は常にgemini-3-pro-image-preview', () => {
 | 独立性 | テスト間で状態共有、実行順序依存 |
 | 再現性 | 日時・乱数に依存し結果が変動 |
 | 可読性 | テスト名と検証内容が一致しない |
+
+## References
+
+| テスト種別 | リファレンス | 使用タイミング |
+|----------|-----------|-------------|
+| **E2Eテスト設計** | [references/e2e-design.md](references/e2e-design.md) | E2Eテスト候補の選定とUI Specからのマッピング |

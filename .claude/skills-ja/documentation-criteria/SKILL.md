@@ -9,7 +9,8 @@ description: PRD、ADR、Design Doc、作業計画書の作成を支援。テン
 
 | 条件 | 必要ドキュメント | 作成順序 |
 |-----|--------------|---------|
-| 新機能追加 | PRD → [ADR] → Design Doc → 作業計画書 | PRD承認後 |
+| 新機能追加（バックエンド） | PRD → [ADR] → Design Doc → 作業計画書 | PRD承認後 |
+| 新機能追加（フロントエンド/フルスタック） | PRD → **UI Spec** → [ADR] → Design Doc → 作業計画書 | Design Doc前にUI Spec |
 | ADR条件該当（下記参照） | ADR → Design Doc → 作業計画書 | 即座に開始 |
 | 6ファイル以上 | ADR → Design Doc → 作業計画書（必須） | 即座に開始 |
 | 3-5ファイル | Design Doc → 作業計画書（推奨） | 即座に開始 |
@@ -78,6 +79,37 @@ description: PRD、ADR、Design Doc、作業計画書の作成を支援。テン
 - 実装手順の詳細（→Design Doc）
 - 具体的なコード例（→Design Doc）
 - 担当者の割り当て（→作業計画書）
+
+### UI Spec
+
+**目的**: フロントエンド機能のUI構造、画面遷移、コンポーネント分解、インタラクション設計を定義
+
+**含むもの**:
+- 画面リストと遷移条件
+- 状態×表示マトリクスを含むコンポーネント分解（default/loading/empty/error/partial）
+- PRD受入条件にリンクしたインタラクション定義（EARS形式）
+- プロトタイプ管理（コードベースのプロトタイプは添付扱い、正式な仕様ではない）
+- PRDから画面/コンポーネントへのACトレーサビリティ
+- 既存コンポーネント再利用マップとデザイントークン
+- ビジュアル受入条件(AC)（ゴールデンステート、レイアウト制約）
+- アクセシビリティ要件（キーボード、スクリーンリーダー、コントラスト）
+
+**含まないもの**:
+- 技術実装詳細（→ Design Doc）
+- APIコントラクトとデータレイヤー設計（→ Design Doc）
+- テスト実装（→ Design Docのテスト戦略）
+- 実装スケジュール（→ 作業計画書）
+
+**必須構造要素**:
+- 状態×表示マトリクスとインタラクション表を含むコンポーネントが1つ以上
+- PRD ACを画面/状態にマッピングするACトレーサビリティ表
+- 遷移条件付きの画面リスト
+- 既存コンポーネント再利用マップ（再利用/拡張/新規の判定）
+
+**プロトタイプコードの取り扱い**:
+- ユーザー提供のプロトタイプコードは`docs/ui-spec/assets/{feature-name}/`に配置
+- プロトタイプはUI Specの添付であり、正式な仕様ではない
+- UI Spec + Design Docが正式な仕様
 
 ### Design Document
 
@@ -159,6 +191,8 @@ description: PRD、ADR、Design Doc、作業計画書の作成を支援。テン
 |------------|-----|---------|------------|
 | PRD | `docs/prd/` | `[機能名]-prd.md` | `prd-template.md` |
 | ADR | `docs/adr/` | `ADR-[4桁]-[タイトル].md` | `adr-template.md` |
+| UI Spec | `docs/ui-spec/` | `[機能名]-ui-spec.md` | `ui-spec-template.md` |
+| UI Specアセット | `docs/ui-spec/assets/{feature-name}/` | プロトタイプコードファイル | - |
 | Design Doc | `docs/design/` | `[機能名]-design.md` | `design-template.md` |
 | 作業計画書 | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | `plan-template.md` |
 | タスクファイル | `docs/plans/tasks/` | `{plan-name}-task-{number}.md` | `task-template.md` |
@@ -181,6 +215,7 @@ description: PRD、ADR、Design Doc、作業計画書の作成を支援。テン
 |------------|---------|-----|
 | PRD | ユーザージャーニー図、スコープ境界図 | ユーザー体験と範囲の明確化 |
 | ADR | 選択肢比較図（必要時） | トレードオフの視覚化 |
+| UI Spec | 画面遷移図、コンポーネントツリー図 | 画面フローとコンポーネント構造の明確化 |
 | Design Doc | アーキテクチャ図、データフロー図 | 技術構造の理解 |
 | 作業計画書 | フェーズ構成図、タスク依存関係図 | 実装順序の明確化 |
 
@@ -198,3 +233,4 @@ description: PRD、ADR、Design Doc、作業計画書の作成を支援。テン
 - [作業計画書テンプレート](references/plan-template.md)
 - [ADRテンプレート](references/adr-template.md)
 - [タスクファイルテンプレート](references/task-template.md)
+- [UI Specテンプレート](references/ui-spec-template.md)

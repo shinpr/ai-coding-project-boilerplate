@@ -65,12 +65,17 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 
 ## 🎯 オーケストレーターとしての必須責務
 
-### タスク実行フロー
-subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで以下の4ステップを管理：
-1. task-executor実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
-2. エスカレーション判定・フォローアップ
-3. quality-fixer実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
-4. git commit
+### タスク実行品質サイクル
+subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで以下のステップを管理：
+1. **task-executor実行**: 実装を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
+2. **task-executorレスポンスチェック**:
+   - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
+   - `testsAdded` に `*.int.test.ts` または `*.e2e.test.ts` を含む → **integration-test-reviewer**を実行
+     - `needs_revision` → `requiredFixes`を添えてステップ1に戻る
+     - `approved` → ステップ3へ
+   - それ以外 → ステップ3へ
+3. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
+4. **承認後コミット**: `approved: true`確認後 → git commitを実行
 
 ### テスト情報の伝達
 acceptance-test-generator実行後、work-planner呼び出し時には以下を伝達：
