@@ -1,5 +1,5 @@
 ---
-name: frontend/typescript-rules
+name: frontend-typescript-rules
 description: React/TypeScriptの型安全性、コンポーネント設計、状態管理ルールを適用。Reactコンポーネント実装時に使用。
 ---
 

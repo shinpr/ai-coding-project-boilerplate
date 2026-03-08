@@ -14,7 +14,12 @@ description: Execute frontend implementation in autonomous execution mode
 
 Orchestrator invokes sub-agents and passes structured JSON between them.
 
-**CRITICAL**: Run quality-fixer-frontend before every commit. Obtain batch approval before autonomous mode.
+**Execution Protocol**:
+1. **Delegate all work** to sub-agents — your role is to invoke sub-agents, pass data between them, and report results
+2. **Follow the 4-step task cycle exactly**: task-executor-frontend → escalation check → quality-fixer-frontend → commit
+3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
+
+**CRITICAL**: Run quality-fixer-frontend before every commit.
 
 Work plan: $ARGUMENTS
 
@@ -31,11 +36,11 @@ Work plan: $ARGUMENTS
 
 ### Task Generation Decision Flow
 
-Analyze task file existence state and determine the appropriate action:
+Analyze task file existence state and determine the action required:
 
 | State | Criteria | Next Action |
 |-------|----------|-------------|
-| Tasks exist | .md files in tasks/ directory | Proceed to autonomous execution |
+| Tasks exist | .md files in tasks/ directory | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
 | No tasks + plan exists | Plan exists but no task files | Confirm with user → run task-decomposer |
 | Neither exists | No plan or task files | Error: Prerequisites not met |
 
@@ -52,11 +57,10 @@ Generate tasks from the work plan? (y/n):
 ```
 
 ### 2. Task Decomposition (if approved)
-
 Invoke task-decomposer using Task tool:
 - `subagent_type`: "task-decomposer"
-- `description`: "Decompose work plan into tasks"
-- `prompt`: "Read work plan and decompose into atomic tasks. Input: docs/plans/[plan-name].md. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable"
+- `description`: "Decompose work plan"
+- `prompt`: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable"
 
 ### 3. Verify Generation
 ```bash
@@ -65,6 +69,14 @@ Invoke task-decomposer using Task tool:
 ```
 
 ✅ **Flow**: Task generation → Autonomous execution (in this order)
+
+## Pre-execution Checklist
+
+- [ ] Confirmed task files exist in docs/plans/tasks/
+- [ ] Identified task execution order (dependencies)
+- [ ] **Environment check**: Can I execute per-task commit cycle?
+  - If commit capability unavailable → Escalate before autonomous mode
+  - Other environments (tests, quality tools) → Subagents will escalate
 
 ## Task Execution Cycle (4-Step Cycle) - Frontend Specialized
 
@@ -79,37 +91,45 @@ Use Task tool to invoke sub-agents:
 ### Structured Response Specification
 Each sub-agent responds in JSON format:
 - **task-executor-frontend**: status, filesModified, testsAdded, readyForQualityCheck
+- **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
 - **quality-fixer-frontend**: status, checksPerformed, fixesApplied, approved
 
 ### Execution Flow for Each Task
 
 For EACH task, YOU MUST:
 
-1. **UPDATE with TaskUpdate**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity"
+1. **Register tasks using TaskCreate**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity"
 2. **USE task-executor-frontend**: Execute frontend implementation
    - Invocation example: `subagent_type: "task-executor-frontend"`, `description: "Task execution"`, `prompt: "Task file: docs/plans/tasks/[filename].md Execute implementation"`
-3. **CHECK ESCALATION**: Check task-executor-frontend status → If `status: "escalation_needed"` → STOP and escalate to user
-4. **PROCESS structured responses**: When `readyForQualityCheck: true` is detected → EXECUTE quality-fixer-frontend IMMEDIATELY
-5. **USE quality-fixer-frontend**: Execute all quality checks (Biome, TypeScript build, tests)
+3. **CHECK task-executor-frontend response**:
+   - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
+   - `testsAdded` contains `*.int.test.ts` or `*.e2e.test.ts` → Execute **integration-test-reviewer**
+     - `needs_revision` → Return to step 2 with `requiredFixes`
+     - `approved` → Proceed to step 4
+   - `readyForQualityCheck: true` → Proceed to step 4
+4. **USE quality-fixer-frontend**: Execute all quality checks and fixes
    - Invocation example: `subagent_type: "quality-fixer-frontend"`, `description: "Quality check"`, `prompt: "Execute all frontend quality checks and fixes"`
-6. **EXECUTE commit**: After `approved: true` confirmation, execute git commit IMMEDIATELY
-
-### Quality Assurance During Autonomous Execution (Details)
-- task-executor-frontend execution → escalation check → quality-fixer-frontend execution → **orchestrator executes commit** (using Bash tool)
-- After quality-fixer-frontend's `approved: true` confirmation, execute git commit IMMEDIATELY
-- Use `changeSummary` for commit message
+5. **EXECUTE commit**: After `approved: true` confirmation, execute git commit IMMEDIATELY. Use `changeSummary` for commit message.
 
 **CRITICAL**: Monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
 
+## Sub-agent Invocation Constraints
+
+**MANDATORY suffix for ALL sub-agent prompts**:
+```
+[SYSTEM CONSTRAINT]
+This agent operates within build skill scope. Use orchestrator-provided rules only.
+```
+
+Autonomous sub-agents require scope constraints for stable execution. ALWAYS append this constraint to every sub-agent prompt.
+
 ! ls -la docs/plans/*.md | head -10
 
-Verify approval status before proceeding. Once confirmed, initiate autonomous execution mode. Stop immediately upon detecting any requirement changes.
+VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
 
 ## Output Example
 Frontend implementation phase completed.
 - Task decomposition: Generated under docs/plans/tasks/
 - Implemented tasks: [number] tasks
-- Quality checks: All passed (Biome, TypeScript build, tests)
+- Quality checks: All passed
 - Commits: [number] commits created
-
-**Important**: This command manages the entire autonomous execution flow for frontend implementation from task decomposition to completion. Automatically uses frontend-specialized agents (task-executor-frontend, quality-fixer-frontend).

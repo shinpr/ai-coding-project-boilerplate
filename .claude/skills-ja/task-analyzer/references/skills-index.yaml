@@ -181,8 +181,8 @@ skills:
       - "References"
 
   # フロントエンド固有スキル
-  frontend/typescript-rules:
-    skill: "frontend/typescript-rules"
+  frontend-typescript-rules:
+    skill: "frontend-typescript-rules"
     tags: [frontend, react, implementation, type-safety, props-driven, hooks, component-design, vite, error-boundary]
     typical-use: "React/Viteでのフロントエンド開発、コンポーネント設計、Props設計、環境変数管理"
     size: small
@@ -198,8 +198,8 @@ skills:
       - "コーディング規約"
       - "アンチパターン"
 
-  frontend/typescript-testing:
-    skill: "frontend/typescript-testing"
+  frontend-typescript-testing:
+    skill: "frontend-typescript-testing"
     tags: [frontend, react, quality, testing, coverage, vitest, react-testing-library, msw, component-testing, implementation]
     typical-use: "Reactコンポーネントのテスト作成、React Testing Library、MSW、60%カバレッジ要件、Co-location"
     size: small
@@ -216,8 +216,8 @@ skills:
       - "テスト品質基準"
       - "アンチパターン"
 
-  frontend/technical-spec:
-    skill: "frontend/technical-spec"
+  frontend-technical-spec:
+    skill: "frontend-technical-spec"
     tags: [frontend, react, architecture, design, documentation, environment, data-flow, implementation, vite, security, client-side, state-management, context-api, hooks, lighthouse, bundle-size, non-functional-requirements]
     typical-use: "フロントエンド技術設計、環境変数管理（Vite）、セキュリティ制約、アーキテクチャ設計、状態管理パターン、実装方針決定、非機能要件の確認"
     size: medium

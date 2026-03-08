@@ -100,7 +100,7 @@ skills:
 
   documentation-criteria:
     skill: "documentation-criteria"
-    tags: [documentation, adr, prd, design-doc, work-plan, decision-matrix]
+    tags: [documentation, adr, prd, ui-spec, design-doc, work-plan, decision-matrix]
     typical-use: "Implementation start scale assessment, document creation decisions, ADR/PRD/Design Doc/work plan creation criteria"
     size: medium
     key-references:
@@ -138,14 +138,16 @@ skills:
 
   integration-e2e-testing:
     skill: "integration-e2e-testing"
-    tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality]
-    typical-use: "Integration and E2E test skeleton generation, test implementation, test review, Property-Based Test implementation"
+    tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality, playwright]
+    typical-use: "Integration and E2E test skeleton generation, test implementation, test review, Property-Based Test implementation, E2E test design"
     size: small
     key-references:
       - "fast-check - Property-based testing for TypeScript"
       - "Node.js Testing Best Practices - Yoni Goldberg"
       - "Property-Based Testing - 2025 Practices"
+      - "references/e2e-design.md - E2E test design principles"
     sections:
+      - "References"
       - "Test Types and Limits"
       - "Behavior-First Principle"
       - "Skeleton Specification"
@@ -190,8 +192,8 @@ skills:
       - "References"
 
   # Frontend-specific Skills
-  frontend/typescript-rules:
-    skill: "frontend/typescript-rules"
+  frontend-typescript-rules:
+    skill: "frontend-typescript-rules"
     tags: [frontend, react, implementation, type-safety, function-components, props-driven, async, refactoring, coding-style]
     typical-use: "React component creation, Props type definitions, frontend TypeScript development"
     size: small
@@ -208,10 +210,10 @@ skills:
       - "Error Handling"
       - "Performance Optimization"
 
-  frontend/typescript-testing:
-    skill: "frontend/typescript-testing"
-    tags: [frontend, react, quality, testing, tdd, coverage, vitest, react-testing-library, msw, implementation]
-    typical-use: "React component testing, React Testing Library tests, MSW API mocking, frontend test creation"
+  frontend-typescript-testing:
+    skill: "frontend-typescript-testing"
+    tags: [frontend, react, quality, testing, tdd, coverage, vitest, react-testing-library, msw, implementation, playwright, e2e]
+    typical-use: "React component testing, React Testing Library tests, MSW API mocking, frontend test creation, Playwright E2E testing"
     size: small
     key-references:
       - "React Testing Library - Kent C. Dodds"
@@ -219,15 +221,17 @@ skills:
       - "Test-Driven Development - Kent Beck"
       - "Red-Green-Refactor - Kent Beck"
       - "User-Observable Behavior Testing - Testing Library"
+      - "references/e2e.md - Playwright E2E patterns"
     sections:
+      - "References"
       - "Test Framework"
       - "Basic Testing Policy"
       - "Test Implementation Conventions"
       - "Mock Type Safety Enforcement"
       - "Basic React Testing Library Example"
 
-  frontend/technical-spec:
-    skill: "frontend/technical-spec"
+  frontend-technical-spec:
+    skill: "frontend-technical-spec"
     tags: [frontend, react, vite, architecture, design, environment, data-flow, implementation, performance]
     typical-use: "React technical design, Vite configuration, frontend environment setup, component architecture decisions"
     size: medium

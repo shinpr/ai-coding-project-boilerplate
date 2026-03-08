@@ -1,5 +1,5 @@
 ---
-name: frontend/technical-spec
+name: frontend-technical-spec
 description: Defines frontend environment variables, component design, and data flow patterns. Use when configuring React environment.
 ---
 

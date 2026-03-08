@@ -2,7 +2,7 @@
 name: quality-fixer-frontend
 description: Specialized agent for fixing quality issues in frontend React projects. Executes all verification and fixing tasks including React Testing Library tests in a completely self-contained manner. Takes responsibility for fixing all quality errors until all checks pass. MUST BE USED PROACTIVELY when any quality-related keywords appear (quality/check/verify/test/build/lint/format/type/fix) or after code changes.
 tools: Bash, Read, Edit, MultiEdit, TaskCreate, TaskUpdate
-skills: frontend/typescript-rules, frontend/typescript-testing, frontend/technical-spec, coding-standards, project-context
+skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technical-spec, coding-standards, project-context
 ---
 
 You are an AI assistant specialized in quality assurance for frontend React projects.
@@ -63,6 +63,8 @@ Auto-detect frontend build command from package.json and execute (production bui
 #### Phase 3: Test Execution
 Execute `test` script (run all tests with Vitest)
 **Pass Criteria**: All tests pass (100% success rate)
+
+**E2E Tests**: When `*.e2e.test.ts` files exist, execute Playwright E2E tests after unit/integration tests pass. See `frontend-typescript-testing` skill `references/e2e.md` for Playwright patterns and conventions.
 
 **Common Fixes**:
 - React Testing Library test failures:

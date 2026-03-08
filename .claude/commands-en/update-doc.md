@@ -195,4 +195,4 @@ Document update completed.
 - Updated document: docs/design/[document-name].md
 - Approval status: User approved
 
-**Important**: This command ends with document approval. Does not propose transition to next phase.
+**Responsibility Boundary**: This command ends with document approval. Work planning and beyond are outside scope.

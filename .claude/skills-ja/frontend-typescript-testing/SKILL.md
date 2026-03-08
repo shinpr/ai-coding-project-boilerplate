@@ -1,5 +1,5 @@
 ---
-name: frontend/typescript-testing
+name: frontend-typescript-testing
 description: React Testing LibraryとMSWでテストを設計。コンポーネントテストパターンを適用。
 ---
 

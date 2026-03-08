@@ -139,9 +139,10 @@ This boilerplate provides the principles used in agentic implementation workflow
 | `technical-spec` | Architecture, environment, build commands |
 | `implementation-approach` | Strategy patterns, task decomposition |
 | `integration-e2e-testing` | Integration/E2E test design, ROI-based selection |
+| `frontend-typescript-rules` | React component design, Props-driven patterns |
+| `frontend-typescript-testing` | React Testing Library, MSW, Playwright E2E |
+| `frontend-technical-spec` | React architecture, environment, data flow |
 | `project-context` | Project-specific prerequisites for AI accuracy (set via `/project-inject`) |
-
-**Frontend-specific skills** are also available under `frontend/` (e.g., `frontend/typescript-rules`).
 
 👉 [Learn how Skills work (Claude Code docs)](https://code.claude.com/docs/en/skills)
 
@@ -185,7 +186,7 @@ Essential commands for Claude Code:
 | `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
 | `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation |
 
-Frontend equivalents (`/front-design`, `/front-build`, `/front-review`, `/front-plan`) and utility commands (`/add-integration-tests`, `/update-doc`) are also available.
+Frontend equivalents (`/front-design` for UI Spec + Design Doc, `/front-build`, `/front-review`, `/front-plan`) and utility commands (`/add-integration-tests`, `/update-doc`) are also available.
 
 [Full command reference →](docs/guides/en/use-cases.md)
 
@@ -228,7 +229,7 @@ graph TB
 ### How It Works
 
 1. **Requirement Analysis**: `/implement` command analyzes task scale
-2. **Document Generation**: Creates necessary docs (PRD, Design Doc, Work Plan)
+2. **Document Generation**: Creates necessary docs (PRD, UI Spec, Design Doc, Work Plan)
 3. **Task Execution**: Specialized agents handle each phase
 4. **Quality Assurance**: Automatic testing, type checking, and fixes
 5. **Commit & Continue**: Clean commits for each completed task
@@ -247,7 +248,9 @@ ai-coding-project-boilerplate/
 │       ├── documentation-criteria/
 │       ├── technical-spec/
 │       ├── project-context/
-│       └── frontend/     # Frontend-specific skills
+│       ├── frontend-typescript-rules/
+│       ├── frontend-typescript-testing/
+│       └── frontend-technical-spec/
 ├── docs/
 │   ├── guides/           # User documentation
 │   ├── adr/              # Architecture decisions
@@ -328,7 +331,7 @@ A: Through context engineering. Each sub-agent runs in its own context window fo
 
 ## 🤖 Sub Agents
 
-20+ specialized sub-agents covering the full development lifecycle: requirement analysis, design, planning, implementation, quality assurance, code review, debugging, and reverse engineering. Each agent runs in its own context window for focused execution.
+20+ specialized sub-agents covering the full development lifecycle: requirement analysis, UI specification, design, planning, implementation, quality assurance, code review, debugging, and reverse engineering. Each agent runs in its own context window for focused execution.
 
 [Full agent list →](.claude/agents-en/)
 

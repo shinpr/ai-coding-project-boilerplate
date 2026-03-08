@@ -56,11 +56,12 @@ graph TD
 ### Document Creation Agents
 5. **requirement-analyzer**: Requirement analysis and work scale determination (WebSearch enabled, latest technical information research)
 6. **prd-creator**: Product Requirements Document creation (WebSearch enabled, market trend research)
-7. **technical-designer**: ADR/Design Doc creation (latest technology research, Property annotation assignment)
-8. **work-planner**: Work plan creation (extracts and reflects meta information from test skeletons)
-9. **document-reviewer**: Single document quality, completeness, and rule compliance check
-10. **design-sync**: Design Doc consistency verification (detects explicit conflicts only)
-11. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs (EARS format, Property annotations, fast-check support)
+7. **ui-spec-designer**: UI Specification creation from PRD and optional prototype code (frontend/fullstack features)
+8. **technical-designer**: ADR/Design Doc creation (latest technology research, Property annotation assignment)
+9. **work-planner**: Work plan creation from Design Doc and test skeletons
+10. **document-reviewer**: Single document quality, completeness, and rule compliance check
+11. **design-sync**: Design Doc consistency verification (detects explicit conflicts only)
+12. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs and optional UI Spec
 
 ## My Orchestration Principles
 
@@ -118,29 +119,33 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 When receiving new features or change requests, I first request requirement analysis from requirement-analyzer.
 According to scale determination:
 
-### Large Scale (6+ Files) - 11 Steps
+### Large Scale (6+ Files) - 11 Steps (backend) / 13 Steps (frontend/fullstack)
 
 1. requirement-analyzer → Requirement analysis + Check existing PRD **[Stop]**
 2. prd-creator → PRD creation
 3. document-reviewer → PRD review **[Stop: PRD Approval]**
-4. technical-designer → ADR creation (if architecture/technology/data flow changes)
-5. document-reviewer → ADR review (if ADR created) **[Stop: ADR Approval]**
-6. technical-designer → Design Doc creation (cross-layer: per layer, see Cross-Layer Orchestration)
-7. document-reviewer → Design Doc review (cross-layer: per Design Doc)
-8. design-sync → Consistency verification **[Stop: Design Doc Approval]**
-9. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
-10. work-planner → Work plan creation **[Stop: Batch approval]**
-11. task-decomposer → Autonomous execution → Completion report
+4. **(frontend/fullstack only)** Ask user for prototype code → ui-spec-designer → UI Spec creation
+5. **(frontend/fullstack only)** document-reviewer → UI Spec review **[Stop: UI Spec Approval]**
+6. technical-designer → ADR creation (if architecture/technology/data flow changes)
+7. document-reviewer → ADR review (if ADR created) **[Stop: ADR Approval]**
+8. technical-designer → Design Doc creation (cross-layer: per layer, see Cross-Layer Orchestration)
+9. document-reviewer → Design Doc review (cross-layer: per Design Doc)
+10. design-sync → Consistency verification **[Stop: Design Doc Approval]**
+11. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
+12. work-planner → Work plan creation **[Stop: Batch approval]**
+13. task-decomposer → Autonomous execution → Completion report
 
-### Medium Scale (3-5 Files) - 7 Steps
+### Medium Scale (3-5 Files) - 7 Steps (backend) / 9 Steps (frontend/fullstack)
 
 1. requirement-analyzer → Requirement analysis **[Stop]**
-2. technical-designer → Design Doc creation (cross-layer: per layer, see Cross-Layer Orchestration)
-3. document-reviewer → Design Doc review (cross-layer: per Design Doc)
-4. design-sync → Consistency verification **[Stop: Design Doc Approval]**
-5. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
-6. work-planner → Work plan creation **[Stop: Batch approval]**
-7. task-decomposer → Autonomous execution → Completion report
+2. **(frontend/fullstack only)** Ask user for prototype code → ui-spec-designer → UI Spec creation
+3. **(frontend/fullstack only)** document-reviewer → UI Spec review **[Stop: UI Spec Approval]**
+4. technical-designer → Design Doc creation (cross-layer: per layer, see Cross-Layer Orchestration)
+5. document-reviewer → Design Doc review (cross-layer: per Design Doc)
+6. design-sync → Consistency verification **[Stop: Design Doc Approval]**
+7. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
+8. work-planner → Work plan creation **[Stop: Batch approval]**
+9. task-decomposer → Autonomous execution → Completion report
 
 ### Small Scale (1-2 Files) - 2 Steps
 
@@ -225,6 +230,22 @@ Stop autonomous execution and escalate to user in the following cases:
    - Extract necessary information from structured responses
    - Compose commit messages from changeSummary -> **Execute git commit with Bash**
    - Explicitly integrate initial and additional requirements when requirements change
+
+   #### *1 acceptance-test-generator → work-planner
+
+   **Pass to acceptance-test-generator**:
+   - Design Doc: [path]
+   - UI Spec: [path] (if exists)
+
+   **Orchestrator verification items**:
+   - Verify integration test file path retrieval and existence
+   - Verify E2E test file path retrieval and existence
+
+   **Pass to work-planner**:
+   - Integration test file: [path] (create and execute simultaneously with each phase implementation)
+   - E2E test file: [path] (execute only in final phase)
+
+   **On error**: Escalate to user if files are not generated
 3. **Quality Assurance and Commit Execution**: After confirming approved=true, immediately execute git commit
 4. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval, escalation decisions
 5. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
@@ -249,6 +270,7 @@ Stop autonomous execution and escalate to user in the following cases:
 ### Main Stop Points
 - **After requirement-analyzer completion**: Confirm requirement analysis results and questions
 - **After PRD creation -> document-reviewer execution**: Confirm requirement understanding and consistency (confirm with question list)
+- **After UI Spec creation -> document-reviewer execution** (frontend/fullstack): Confirm UI specification completeness and consistency
 - **After ADR creation -> document-reviewer execution**: Confirm technical direction and consistency (present multiple options with comparison table)
   - On user approval: Main AI (me) updates Status to Accepted
   - On user rejection: Main AI (me) updates Status to Rejected

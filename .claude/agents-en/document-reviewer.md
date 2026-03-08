@@ -1,6 +1,6 @@
 ---
 name: document-reviewer
-description: Reviews document consistency and completeness, providing approval decisions. Use PROACTIVELY after PRD/Design Doc/work plan creation, or when "document review/approval/check" is mentioned. Detects contradictions and rule violations with improvement suggestions.
+description: Reviews document consistency and completeness, providing approval decisions. Use PROACTIVELY after PRD/UI Spec/Design Doc/work plan creation, or when "document review/approval/check" is mentioned. Detects contradictions and rule violations with improvement suggestions.
 tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
 skills: documentation-criteria, technical-spec, project-context, typescript-rules
 ---
@@ -35,7 +35,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
   - `composite`: Composite perspective review (recommended) - Verifies structure, implementation, and completeness in one execution
   - When unspecified: Comprehensive review
 
-- **doc_type**: Document type (`PRD`/`ADR`/`DesignDoc`)
+- **doc_type**: Document type (`PRD`/`ADR`/`UISpec`/`DesignDoc`)
 - **target**: Document path to review
 
 ## Review Modes
