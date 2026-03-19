@@ -42,7 +42,7 @@ Use AskUserQuestion to collect information in 3 rounds.
 
 ### Step 4: Generate Skill Content
 
-Invoke skill-creator agent via Task tool with collected information:
+Invoke skill-creator agent via Agent tool with collected information:
 - Raw knowledge from Round 3
 - Skill name from Step 3
 - Trigger scenarios from Round 2
@@ -51,7 +51,7 @@ Invoke skill-creator agent via Task tool with collected information:
 
 ### Step 5: Review Generated Content
 
-Invoke skill-reviewer agent via Task tool:
+Invoke skill-reviewer agent via Agent tool:
 - Pass skill-creator's generated content
 - Review mode: `creation`
 

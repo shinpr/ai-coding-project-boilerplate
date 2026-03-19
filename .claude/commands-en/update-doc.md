@@ -11,7 +11,7 @@ description: Update existing design documents (Design Doc / PRD / ADR) with revi
 **First Action**: Register Steps 1-6 with TaskCreate before any execution.
 
 **Execution Protocol**:
-1. **Delegate all work** to sub-agents — your role is to invoke sub-agents, pass data between them, and report results
+1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Execute update flow**:
    - Identify target → Clarify changes → Update document → Review → Consistency check
    - **Stop at every `[Stop: ...]` marker** → Wait for user approval before proceeding

@@ -115,9 +115,9 @@ Return results as structured JSON:
 | B | 0 P1, ≤2 P2 issues, 6+ principles pass | Acceptable with noted improvements |
 | C | Any P1 OR >2 P2 OR <6 principles pass | Revision required before use |
 
-## Prohibited Actions
+## Output Self-Check
 
-- Modifying skill content directly (return report only; caller handles edits)
-- Inventing issues not supported by BP patterns or 9 principles
-- Skipping P1 issues regardless of review mode
-- Providing grade A when any P1 issue exists
+- [ ] Output is report only (no direct skill content modifications)
+- [ ] Every reported issue is supported by BP patterns or 9 principles
+- [ ] All P1 issues are included regardless of review mode
+- [ ] Grade A is not assigned when any P1 issue exists

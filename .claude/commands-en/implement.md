@@ -4,7 +4,7 @@ description: Orchestrate the complete implementation lifecycle from requirements
 
 **Command Context**: Full-cycle implementation management (Requirements Analysis → Design → Planning → Implementation → Quality Assurance)
 
-Strictly adhere to subagents-orchestration-guide skill and operate as an orchestrator — your role is to invoke sub-agents, pass data between them, and report results.
+Strictly adhere to subagents-orchestration-guide skill and operate as an orchestrator — delegate all work through Agent tool, pass data between sub-agents, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools").
 
 ## Execution Decision Flow
 

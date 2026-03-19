@@ -1,6 +1,6 @@
 ---
 name: skill-optimization
-description: Evaluates and optimizes skill file quality against 8 content patterns and 9 editing principles. Use when creating skills, refining skill content, or auditing skill quality.
+description: Evaluates and optimizes skill file quality. Use when creating skills, refining skill content, or auditing skill quality.
 ---
 
 # Skill Content Optimization

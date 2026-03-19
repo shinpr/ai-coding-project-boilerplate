@@ -46,7 +46,7 @@ Proceed with this design? (y/n)
 
 ### Step 3: Quality Review
 
-Invoke skill-reviewer agent via Task tool:
+Invoke skill-reviewer agent via Agent tool:
 - Pass the modified SKILL.md content
 - Review mode: `modification`
 

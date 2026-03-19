@@ -124,9 +124,9 @@ Return results as structured JSON:
 - [ ] All domain terms defined or linked to prerequisites
 - [ ] Line count within size target
 
-## Prohibited Actions
+## Output Self-Check
 
-- Inventing domain knowledge not present in raw input
-- Removing user-provided examples without replacement
-- Creating skills that overlap with existing skill responsibilities
-- Writing files directly (return JSON; the calling command handles file I/O)
+- [ ] All domain knowledge originates from raw input (nothing invented)
+- [ ] User-provided examples are preserved or replaced with equivalent alternatives
+- [ ] Skill scope does not overlap with existing skill responsibilities
+- [ ] Output is JSON only (no direct file writing; calling command handles I/O)

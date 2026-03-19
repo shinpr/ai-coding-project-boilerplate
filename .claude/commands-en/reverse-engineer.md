@@ -11,9 +11,9 @@ Target: $ARGUMENTS
 **Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
 
 **Execution Protocol**:
-1. **Delegate all work** to sub-agents — your role is to invoke sub-agents, pass data between them, and report results
-2. **Pass structured JSON** between steps using `$STEP_N_OUTPUT` placeholder notation
-3. **Never investigate code yourself** — all code reading is done by sub-agents
+1. **Delegate all work through Agent tool** — invoke sub-agents, pass deliverable paths between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
+2. **Process one step at a time**: Execute steps sequentially within each unit (2 → 3 → 4 → 5). Each step's output is the required input for the next step. Complete all steps for one unit before starting the next
+3. **Pass `$STEP_N_OUTPUT` as-is** to sub-agents — the orchestrator bridges data without processing or filtering it
 
 **Task Registration**: Register phases first with TaskCreate, then steps within each phase as you enter it.
 
