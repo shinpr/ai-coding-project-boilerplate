@@ -1,6 +1,6 @@
 ---
 name: documentation-criteria
-description: PRD、ADR、Design Doc、作業計画書の作成を支援。テンプレートと作成判定マトリクスを提供。
+description: PRD、ADR、Design Doc、作業計画書の作成を支援。技術ドキュメントの作成・レビュー時に使用。
 ---
 
 # ドキュメント作成基準

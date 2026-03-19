@@ -42,7 +42,7 @@ ls $ARGUMENTS || ls docs/design/*.md | grep -v template | tail -1
 
 ### ステップ2: スケルトン生成
 
-Taskツールでacceptance-test-generatorを呼び出す:
+Agentツールでacceptance-test-generatorを呼び出す:
 - `subagent_type`: "acceptance-test-generator"
 - `description`: "テストスケルトン生成"
 - `prompt`: "[ステップ1のパス]のDesign Docからテストスケルトンを生成"
@@ -86,7 +86,7 @@ type: test-implementation
 
 ### ステップ4: テスト実装
 
-Taskツールでtask-executorを呼び出す:
+Agentツールでtask-executorを呼び出す:
 - `subagent_type`: "task-executor"
 - `description`: "統合テスト実装"
 - `prompt`: "タスクファイル: docs/plans/tasks/integration-tests-YYYYMMDD.md。タスクファイルに従ってテストを実装。"
@@ -95,7 +95,7 @@ Taskツールでtask-executorを呼び出す:
 
 ### ステップ5: テストレビュー
 
-Taskツールでintegration-test-reviewerを呼び出す:
+Agentツールでintegration-test-reviewerを呼び出す:
 - `subagent_type`: "integration-test-reviewer"
 - `description`: "テスト品質レビュー"
 - `prompt`: "テスト品質をレビュー。テストファイル: [ステップ4のtestsAdded]。スケルトンファイル: [ステップ2のgeneratedFiles]"
@@ -108,14 +108,14 @@ Taskツールでintegration-test-reviewerを呼び出す:
 - `status: approved` → 完了としてマーク、ステップ7へ進む
 - `status: needs_revision` → requiredFixesでtask-executorを呼び出し、ステップ5に戻る
 
-Taskツールでtask-executorを呼び出す:
+Agentツールでtask-executorを呼び出す:
 - `subagent_type`: "task-executor"
 - `description`: "レビュー指摘の修正"
 - `prompt`: "テストファイルの以下の問題を修正: [ステップ5のrequiredFixes]"
 
 ### ステップ7: 品質チェック
 
-Taskツールでquality-fixerを呼び出す:
+Agentツールでquality-fixerを呼び出す:
 - `subagent_type`: "quality-fixer"
 - `description`: "最終品質保証"
 - `prompt`: "このワークフローで追加されたテストファイルの最終品質保証。全テストを実行しカバレッジを確認。"
