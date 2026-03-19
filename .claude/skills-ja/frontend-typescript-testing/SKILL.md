@@ -199,7 +199,7 @@ it('submits form with valid data', async () => {
 ## テスト設計パターン
 
 ```typescript
-// 正しい: ユーザーが見る結果をテスト
+// Correct: test user-visible results
 it('increments count when clicked', async () => {
   const user = userEvent.setup()
   render(<Counter />)
@@ -207,7 +207,7 @@ it('increments count when clicked', async () => {
   expect(screen.getByText('Count: 1')).toBeInTheDocument()
 })
 
-// 避ける: 実装詳細のテスト
+// Avoid: testing implementation details
 it('calls setState', () => {
   const setState = vi.spyOn(React, 'useState')
   render(<Counter />)
