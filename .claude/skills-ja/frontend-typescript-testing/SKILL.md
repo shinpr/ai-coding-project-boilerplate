@@ -196,21 +196,21 @@ it('submits form with valid data', async () => {
 })
 ```
 
-## アンチパターン
+## テスト設計パターン
 
 ```typescript
-// 悪い: 実装詳細のテスト
-it('calls setState', () => {
-  const setState = vi.spyOn(React, 'useState')
-  render(<Counter />)
-  // ...
-})
-
-// 良い: ユーザーが見る結果をテスト
+// 正しい: ユーザーが見る結果をテスト
 it('increments count when clicked', async () => {
   const user = userEvent.setup()
   render(<Counter />)
   await user.click(screen.getByRole('button', { name: '+' }))
   expect(screen.getByText('Count: 1')).toBeInTheDocument()
+})
+
+// 避ける: 実装詳細のテスト
+it('calls setState', () => {
+  const setState = vi.spyOn(React, 'useState')
+  render(<Counter />)
+  // ...
 })
 ```
