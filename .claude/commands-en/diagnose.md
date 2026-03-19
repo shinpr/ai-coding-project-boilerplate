@@ -37,7 +37,7 @@ If the following are unclear, **ask with AskUserQuestion** before proceeding:
 
 ### 0.3 Problem Essence Understanding
 
-Invoke rule-advisor using Task tool:
+Invoke rule-advisor using Agent tool:
 - `subagent_type`: "rule-advisor"
 - `description`: "Identify problem essence"
 - `prompt`: "Identify the essence and required skills for this problem: [Problem reported by user]"
@@ -78,7 +78,7 @@ Register the following with TaskCreate and execute:
 
 ### Step 1: Investigation (investigator)
 
-Invoke investigator using Task tool:
+Invoke investigator using Agent tool:
 - `subagent_type`: "investigator"
 - `description`: "Collect problem information"
 - `prompt`: "Comprehensively collect information related to the following phenomenon. Phenomenon: [Problem reported by user]"
@@ -111,7 +111,7 @@ Proceed to verifier once quality is satisfied.
 
 ### Step 3: Verification (verifier)
 
-Invoke verifier using Task tool:
+Invoke verifier using Agent tool:
 - `subagent_type`: "verifier"
 - `description`: "Verify investigation results"
 - `prompt`: "Verify the following investigation results. Investigation results: [Investigation JSON output]"
@@ -125,7 +125,7 @@ Invoke verifier using Task tool:
 
 ### Step 4: Solution Derivation (solver)
 
-Invoke solver using Task tool:
+Invoke solver using Agent tool:
 - `subagent_type`: "solver"
 - `description`: "Derive solutions"
 - `prompt`: "Derive solutions based on the following verified conclusion. Causes: [verifier's conclusion.causes]. Causes relationship: [causesRelationship: independent/dependent/exclusive]. Confidence: [high/medium/low]"

@@ -111,6 +111,7 @@ Please provide the following information in natural language:
   "scale": "small|medium|large",
   "confidence": "confirmed|provisional",
   "affectedFiles": ["path/to/file1.ts", "path/to/file2.ts"],
+  "affectedLayers": ["backend", "frontend"],
   "fileCount": 3,
   "adrRequired": true,
   "adrReason": "specific condition met, or null if not required",

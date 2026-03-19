@@ -17,7 +17,8 @@ description: Designs tests with React Testing Library, MSW, and Playwright E2E. 
 - **React Testing Library**: For component testing
 - **MSW (Mock Service Worker)**: For API mocking
 - Test imports: `import { describe, it, expect, beforeEach, vi } from 'vitest'`
-- Component test imports: `import { render, screen, fireEvent } from '@testing-library/react'`
+- Component test imports: `import { render, screen } from '@testing-library/react'`
+- User interaction: `import userEvent from '@testing-library/user-event'`
 - Mock creation: Use `vi.mock()`
 
 ## Basic Testing Policy
@@ -96,12 +97,12 @@ src/
 
 ### MSW (Mock Service Worker) Setup
 ```typescript
-// Type-safe MSW handler
-import { rest } from 'msw'
+// Type-safe MSW handler (MSW v2)
+import { http, HttpResponse } from 'msw'
 
 const handlers = [
-  rest.get('/api/users/:id', (req, res, ctx) => {
-    return res(ctx.json({ id: '1', name: 'John' } satisfies User))
+  http.get('/api/users/:id', () => {
+    return HttpResponse.json({ id: '1', name: 'John' } satisfies User)
   })
 ]
 ```
@@ -122,15 +123,36 @@ const mockRouter = {
 
 ```typescript
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { Button } from './Button'
 
 describe('Button', () => {
-  it('should call onClick when clicked', () => {
+  it('should call onClick when clicked', async () => {
+    const user = userEvent.setup()
     const onClick = vi.fn()
     render(<Button label="Click me" onClick={onClick} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Click me' }))
+    await user.click(screen.getByRole('button', { name: 'Click me' }))
     expect(onClick).toHaveBeenCalledOnce()
   })
+})
+```
+
+## Test Design Patterns
+
+```typescript
+// Correct: test user-visible results
+it('increments count when clicked', async () => {
+  const user = userEvent.setup()
+  render(<Counter />)
+  await user.click(screen.getByRole('button', { name: '+' }))
+  expect(screen.getByText('Count: 1')).toBeInTheDocument()
+})
+
+// Avoid: testing implementation details
+it('calls setState', () => {
+  const setState = vi.spyOn(React, 'useState')
+  render(<Counter />)
+  // ...
 })
 ```

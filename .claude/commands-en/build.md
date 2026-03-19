@@ -7,7 +7,7 @@ description: Execute decomposed tasks in autonomous execution mode
 **Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
 
 **Execution Protocol**:
-1. **Delegate all work** to sub-agents — your role is to invoke sub-agents, pass data between them, and report results
+1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Follow the 4-step task cycle exactly**: task-executor → escalation check → quality-fixer → commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
 4. **Scope**: Complete when all tasks are committed or escalation occurs
@@ -50,7 +50,7 @@ Generate tasks from the work plan? (y/n):
 ```
 
 ### 2. Task Decomposition (if approved)
-Invoke task-decomposer using Task tool:
+Invoke task-decomposer using Agent tool:
 - `subagent_type`: "task-decomposer"
 - `description`: "Decompose work plan"
 - `prompt`: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable"

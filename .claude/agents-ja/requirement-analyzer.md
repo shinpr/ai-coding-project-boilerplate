@@ -105,6 +105,7 @@ ADR作成条件の詳細はdocumentation-criteriaスキルに準拠。
   "scale": "small|medium|large",
   "confidence": "confirmed|provisional",
   "affectedFiles": ["path/to/file1.ts", "path/to/file2.ts"],
+  "affectedLayers": ["backend", "frontend"],
   "fileCount": 3,
   "adrRequired": true,
   "adrReason": "該当する条件、または不要な場合はnull",

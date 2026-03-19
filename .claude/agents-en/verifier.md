@@ -187,7 +187,7 @@ Classify each hypothesis by the following levels:
 - [ ] Determined verification level for each hypothesis
 - [ ] Adopted unrefuted hypotheses as causes and determined relationship when multiple
 
-## Prohibited Actions
+## Output Self-Check
 
-- Maintaining conclusion without lowering confidence despite discovering official documentation-based counter-evidence
-- Focusing only on technical analysis while ignoring the user's causal relationship hints
+- [ ] Confidence levels reflect all discovered evidence, including official documentation
+- [ ] User's causal relationship hints are incorporated into the verification

@@ -15,7 +15,7 @@ description: Execute frontend implementation in autonomous execution mode
 Orchestrator invokes sub-agents and passes structured JSON between them.
 
 **Execution Protocol**:
-1. **Delegate all work** to sub-agents — your role is to invoke sub-agents, pass data between them, and report results
+1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Follow the 4-step task cycle exactly**: task-executor-frontend → escalation check → quality-fixer-frontend → commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
 
@@ -57,7 +57,7 @@ Generate tasks from the work plan? (y/n):
 ```
 
 ### 2. Task Decomposition (if approved)
-Invoke task-decomposer using Task tool:
+Invoke task-decomposer using Agent tool:
 - `subagent_type`: "task-decomposer"
 - `description`: "Decompose work plan"
 - `prompt`: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable"
@@ -83,7 +83,7 @@ Invoke task-decomposer using Task tool:
 **MANDATORY EXECUTION CYCLE**: `task-executor-frontend → escalation check → quality-fixer-frontend → commit`
 
 ### Sub-agent Invocation Method
-Use Task tool to invoke sub-agents:
+Use Agent tool to invoke sub-agents:
 - `subagent_type`: Agent name
 - `description`: Brief task description (3-5 words)
 - `prompt`: Specific instructions

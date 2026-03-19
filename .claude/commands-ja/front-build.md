@@ -15,7 +15,7 @@ description: フロントエンド実装を自律実行モードで実行
 オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡します。
 
 **実行プロトコル**:
-1. **全作業をサブエージェントに委譲** — 役割はサブエージェントの呼び出し、データの受け渡し、結果の報告
+1. **全作業をAgentツールでサブエージェントに委譲** — サブエージェントの呼び出し、データの受け渡し、結果の報告（許可ツール: subagents-orchestration-guideスキル「オーケストレーターの許可ツール」参照）
 2. **4ステップサイクルに厳密に従う**: task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit
 3. **自律実行モード移行**: ユーザーの実行指示とタスクファイルの存在をもってバッチ承認とする
 
@@ -57,7 +57,7 @@ description: フロントエンド実装を自律実行モードで実行
 ```
 
 ### 2. タスク分解（承認された場合）
-Taskツールでtask-decomposerを呼び出す:
+Agentツールでtask-decomposerを呼び出す:
 - `subagent_type`: "task-decomposer"
 - `description`: "作業計画をタスクに分解"
 - `prompt`: "作業計画を読み込み、アトミックなタスクに分解。入力: docs/plans/[plan-name].md。出力: docs/plans/tasks/配下に個別タスクファイル。粒度: 1タスク = 1コミット = 独立実行可能"
@@ -83,7 +83,7 @@ Taskツールでtask-decomposerを呼び出す:
 **必須実行サイクル**: `task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit`
 
 ### サブエージェント呼び出し方法
-Taskツールを使用してサブエージェントを呼び出す：
+Agentツールを使用してサブエージェントを呼び出す：
 - `subagent_type`: エージェント名
 - `description`: タスクの簡潔な説明（3-5語）
 - `prompt`: 具体的な指示内容

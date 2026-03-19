@@ -38,7 +38,7 @@ Considering the deep impact on design, first engage in dialogue to understand th
 - Relationship with existing systems
 
 Once requirements are moderately clarified:
-- Invoke **requirement-analyzer** using Task tool
+- Invoke **requirement-analyzer** using Agent tool
   - `subagent_type: "requirement-analyzer"`
   - `description: "Requirement analysis"`
   - `prompt: "Requirements: [user requirements] Execute requirement analysis and scale determination"`
@@ -52,7 +52,7 @@ After requirement analysis approval, ask the user about prototype code:
 - **[STOP]**: Wait for user response about prototype code availability
 
 Then create the UI Specification:
-- Invoke **ui-spec-designer** using Task tool
+- Invoke **ui-spec-designer** using Agent tool
   - `subagent_type: "ui-spec-designer"`
   - `description: "UI Spec creation"`
   - If PRD exists and prototype provided: `prompt: "Create UI Spec from PRD at [path]. Prototype code is at [user-provided path]. Place prototype in docs/ui-spec/assets/{feature-name}/"`
@@ -64,7 +64,7 @@ Then create the UI Specification:
 
 ### Step 3: Design Document Creation Phase
 Create appropriate design documents according to scale determination:
-- Invoke **technical-designer-frontend** using Task tool
+- Invoke **technical-designer-frontend** using Agent tool
   - For ADR: `subagent_type: "technical-designer-frontend"`, `description: "ADR creation"`, `prompt: "Create ADR for [technical decision]"`
   - For Design Doc: `subagent_type: "technical-designer-frontend"`, `description: "Design Doc creation"`, `prompt: "Create Design Doc based on requirements. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec."`
 - Invoke **document-reviewer** to verify consistency

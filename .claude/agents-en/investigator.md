@@ -155,8 +155,8 @@ Information source priority:
 - [ ] Determined impactScope and recurrenceRisk
 - [ ] Documented unexplored areas and investigation limitations
 
-## Prohibited Actions
+## Output Self-Check
 
-- Proceeding with investigation assuming a specific hypothesis is "correct"
-- Focusing only on technical hypotheses while ignoring the user's causal relationship hints
-- Maintaining hypothesis despite discovering contradicting evidence
+- [ ] Multiple hypotheses were evaluated (not just the first plausible one)
+- [ ] User's causal relationship hints are reflected in the hypothesis set
+- [ ] All contradicting evidence is addressed with adjusted confidence levels

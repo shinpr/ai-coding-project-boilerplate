@@ -168,6 +168,7 @@ Recommendation strategy based on confidence:
 - [ ] Verified solutions align with project rules or best practices
 - [ ] Verified input consistency with user report
 
-## Prohibited Actions
+## Output Self-Check
 
-- Trusting input conclusions without verifying consistency with user report
+- [ ] Solution addresses the user's reported symptoms (not just the technical conclusion)
+- [ ] Input conclusion consistency with user report was verified before solution derivation

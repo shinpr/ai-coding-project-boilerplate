@@ -42,7 +42,7 @@ AskUserQuestionで3ラウンドに分けて情報を収集する。
 
 ### Step 4: スキルコンテンツの生成
 
-収集した情報を渡してskill-creatorエージェントをTask toolで起動:
+収集した情報を渡してskill-creatorエージェントをAgentツールで起動:
 - ラウンド3の生の知識
 - Step 3のスキル名
 - ラウンド2の使用場面
@@ -51,7 +51,7 @@ AskUserQuestionで3ラウンドに分けて情報を収集する。
 
 ### Step 5: 生成コンテンツのレビュー
 
-skill-reviewerエージェントをTask toolで起動:
+skill-reviewerエージェントをAgentツールで起動:
 - skill-creatorの生成コンテンツを渡す
 - レビューモード: `creation`
 
