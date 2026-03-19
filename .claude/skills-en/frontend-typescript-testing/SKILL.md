@@ -137,3 +137,22 @@ describe('Button', () => {
   })
 })
 ```
+
+## Anti-patterns
+
+```typescript
+// Bad: testing implementation details
+it('calls setState', () => {
+  const setState = vi.spyOn(React, 'useState')
+  render(<Counter />)
+  // ...
+})
+
+// Good: testing user-visible results
+it('increments count when clicked', async () => {
+  const user = userEvent.setup()
+  render(<Counter />)
+  await user.click(screen.getByRole('button', { name: '+' }))
+  expect(screen.getByText('Count: 1')).toBeInTheDocument()
+})
+```
