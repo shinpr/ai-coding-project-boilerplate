@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.1] - 2026-03-19
+
+### Fixed
+
+- Fix incorrect tool name: "Task tool" → "Agent tool" in all command files (EN/JA)
+- Update deprecated MSW v1 API (`rest`/`res`/`ctx`) to v2 (`http`/`HttpResponse`) in frontend-typescript-testing skill
+- Update deprecated `fireEvent` to `userEvent.setup()` pattern per RTL best practices
+- Convert "Prohibited Actions" to "Output Self-Check" checklists in 6 agents for more effective LLM guidance
+- Clarify orchestrator delegation protocol with explicit Agent tool reference and permitted tools whitelist
+- Add sequential execution ordering and as-is data bridging rules to reverse-engineer orchestrator protocol
+- Remove internal implementation details from skill descriptions (skill-optimization, documentation-criteria)
+- Reorder test design pattern examples good-first to avoid LLM pattern imprinting
+
+### Added
+
+- `affectedLayers` field in requirement-analyzer output for fullstack workflow support
+- Test design patterns section (good/bad examples) in EN frontend-typescript-testing skill (previously JA-only)
+
 ## [1.17.0] - 2026-03-08
 
 ### Added
