@@ -52,16 +52,17 @@ graph TD
 2. **task-decomposer**: Appropriate task decomposition of work plans
 3. **task-executor**: Individual task execution and structured response
 4. **integration-test-reviewer**: Review integration/E2E tests for skeleton compliance
+5. **security-reviewer**: Security compliance review against Design Doc and coding-standards after all tasks complete
 
 ### Document Creation Agents
-5. **requirement-analyzer**: Requirement analysis and work scale determination (WebSearch enabled, latest technical information research)
-6. **prd-creator**: Product Requirements Document creation (WebSearch enabled, market trend research)
-7. **ui-spec-designer**: UI Specification creation from PRD and optional prototype code (frontend/fullstack features)
-8. **technical-designer**: ADR/Design Doc creation (latest technology research, Property annotation assignment)
-9. **work-planner**: Work plan creation from Design Doc and test skeletons
-10. **document-reviewer**: Single document quality, completeness, and rule compliance check
-11. **design-sync**: Design Doc consistency verification (detects explicit conflicts only)
-12. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs and optional UI Spec
+6. **requirement-analyzer**: Requirement analysis and work scale determination (WebSearch enabled, latest technical information research)
+7. **prd-creator**: Product Requirements Document creation (WebSearch enabled, market trend research)
+8. **ui-spec-designer**: UI Specification creation from PRD and optional prototype code (frontend/fullstack features)
+9. **technical-designer**: ADR/Design Doc creation (latest technology research, Property annotation assignment)
+10. **work-planner**: Work plan creation from Design Doc and test skeletons
+11. **document-reviewer**: Single document quality, completeness, and rule compliance check
+12. **design-sync**: Design Doc consistency verification (detects explicit conflicts only)
+13. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs and optional UI Spec
 
 ## My Orchestration Principles
 
@@ -107,11 +108,12 @@ I repeat this cycle for each task to ensure quality.
 
 Subagents respond in JSON format. Key fields for orchestrator decisions:
 - **requirement-analyzer**: scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions
-- **task-executor**: status (escalation_needed/blocked/completed), testsAdded
+- **task-executor**: status (escalation_needed/blocked/completed), testsAdded, requiresTestReview
 - **quality-fixer**: approved (true/false)
 - **document-reviewer**: approvalReady (true/false)
 - **design-sync**: sync_status (synced/conflicts_found)
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
+- **security-reviewer**: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes
 - **acceptance-test-generator**: status, generatedFiles
 
 ## My Basic Flow for Work Planning
@@ -199,7 +201,7 @@ During autonomous execution, route agents by task filename pattern:
 
 ### Step 2 Execution Details
 - `status: escalation_needed` or `status: blocked` -> Escalate to user
-- `testsAdded` contains `*.int.test.ts` or `*.e2e.test.ts` -> Execute **integration-test-reviewer**
+- `requiresTestReview` is `true` -> Execute **integration-test-reviewer**
   - If verdict is `needs_revision` -> Return to task-executor with `requiredFixes`
   - If verdict is `approved` -> Proceed to quality-fixer
 
@@ -220,6 +222,13 @@ Stop autonomous execution and escalate to user in the following cases:
 
 4. **When user explicitly stops**
    - Direct stop instruction or interruption
+
+### Prompt Construction Rule
+Every subagent prompt must include:
+1. Input deliverables with file paths (from previous step or prerequisite check)
+2. Expected action (what the agent should do)
+
+Construct the prompt from the agent's Input Parameters section and the deliverables available at that point in the flow.
 
 ## My Main Roles as Orchestrator
 

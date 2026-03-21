@@ -1,5 +1,5 @@
 ---
-description: Design Doc compliance validation with optional auto-fixes
+description: Design Doc compliance and security validation with optional auto-fixes
 ---
 
 **Command Context**: Post-implementation quality assurance command
@@ -7,9 +7,10 @@ description: Design Doc compliance validation with optional auto-fixes
 ## Execution Method
 
 - Compliance validation → performed by code-reviewer
+- Security validation → performed by security-reviewer
 - Fix implementation → performed by task-executor
 - Quality checks → performed by quality-fixer
-- Re-validation → performed by code-reviewer
+- Re-validation → performed by code-reviewer / security-reviewer
 
 Orchestrator invokes sub-agents and passes structured JSON between them.
 
@@ -29,46 +30,104 @@ git diff --name-only main...HEAD
 ```
 
 ### 2. Execute code-reviewer
-Validate Design Doc compliance:
-- Acceptance criteria fulfillment
-- Code quality check
-- Implementation completeness assessment
+Invoke code-reviewer using Agent tool:
+- `subagent_type`: "code-reviewer"
+- `description`: "Code compliance review"
+- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Validate Design Doc compliance and return structured JSON report with complianceRate, verdict, acceptanceCriteria, and qualityIssues."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
-### 3. Verdict and Response
+### 3. Execute security-reviewer
+Invoke security-reviewer using Agent tool:
+- `subagent_type`: "security-reviewer"
+- `description`: "Security review"
+- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review security compliance."
 
-**Criteria (considering project stage)**:
+**Store output as**: `$STEP_3_OUTPUT`
+
+### 4. Verdict and Response
+
+**If security-reviewer returned `blocked`**: Stop immediately. Report the blocked finding and escalate to user. Do not proceed to fix steps.
+
+**Code compliance criteria (considering project stage)**:
 - Prototype: Pass at 70%+
 - Production: 90%+ recommended
-- Critical items (security, etc.): Required regardless of rate
 
-**Compliance-based response**:
+**Security criteria**:
+- `approved` or `approved_with_notes` → Pass
+- `needs_revision` → Fail
 
-For low compliance (production <90%):
+**Report both results independently using subagent output fields only** (do not add fields that are not in the subagent response):
+
 ```
-Validation Result: [X]% compliance
-Unfulfilled items:
-- [item list]
+Code Compliance: [complianceRate from code-reviewer]
+  Verdict: [verdict from code-reviewer]
+  Acceptance Criteria:
+  - [fulfilled] [item]
+  - [partially_fulfilled] [item]: [gap] — [suggestion]
+  - [unfulfilled] [item]: [gap] — [suggestion]
 
-Execute fixes? (y/n): 
+Security Review: [status from security-reviewer]
+  Findings by category:
+  - [confirmed_risk] [location]: [description] — [rationale]
+  - [defense_gap] [location]: [description] — [rationale]
+  - [hardening] [location]: [description] — [rationale]
+  - [policy] [location]: [description] — [rationale]
+  Notes: [notes from security-reviewer, if present]
+
+Execute fixes? (y/n):
 ```
 
-If user selects `y`:
+If both pass and user selects `n`: Skip Steps 5-10, proceed to Step 11.
 
-#### Fix Execution Steps
-**Required**: `TaskCreate → task-executor → quality-fixer`
+### 5. Execute Skill
 
-1. **Update with TaskUpdate**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Create task file following task template (see documentation-criteria skill) -> `docs/plans/tasks/review-fixes-YYYYMMDD.md`
-2. **Execute task-executor**: Staged auto-fixes (stops at 5 files)
-3. **Execute quality-fixer**: Confirm quality gate passage
-4. **Re-validate**: Re-validate Design Doc compliance after fixes. Prior compliance issues: $STEP_2_OUTPUT. Verify each prior issue is resolved.
+Execute Skill: documentation-criteria (for task file template)
 
-### 4. Final Report
+### 6. Create Task File
+
+Create task file at `docs/plans/tasks/review-fixes-YYYYMMDD.md`
+Include both code compliance issues and security requiredFixes.
+
+### 7. Execute Fixes
+
+Invoke task-executor using Agent tool:
+- `subagent_type`: "task-executor"
+- `description`: "Execute review fixes"
+- `prompt`: "Task file: docs/plans/tasks/review-fixes-YYYYMMDD.md. Apply staged fixes (stops at 5 files)."
+
+### 8. Quality Check
+
+Invoke quality-fixer using Agent tool:
+- `subagent_type`: "quality-fixer"
+- `description`: "Quality gate check"
+- `prompt`: "Confirm quality gate passage for fixed files."
+
+### 9. Re-validate code-reviewer
+
+Invoke code-reviewer using Agent tool:
+- `subagent_type`: "code-reviewer"
+- `description`: "Re-validate compliance"
+- `prompt`: "Re-validate Design Doc compliance after fixes. Prior compliance issues: $STEP_2_OUTPUT. Verify each prior issue is resolved."
+
+### 10. Re-validate security-reviewer
+
+Invoke security-reviewer using Agent tool (only if security fixes were applied):
+- `subagent_type`: "security-reviewer"
+- `description`: "Re-validate security"
+- `prompt`: "Re-validate security after fixes. Prior findings: $STEP_3_OUTPUT. Design Doc: [path]. Implementation files: [file list]."
+
+### 11. Final Report
+
 ```
-Initial compliance: [X]%
-Final compliance: [Y]% (if fixes executed)
-Improvement: [Y-X]%
+Code Compliance:
+  Initial: [X]%
+  Final: [Y]% (if fixes executed)
+
+Security Review:
+  Initial: [status]
+  Final: [status] (if fixes executed)
+  Notes: [notes from approved_with_notes, if any]
 
 Remaining issues:
 - [items requiring manual intervention]
@@ -79,10 +138,12 @@ Remaining issues:
 - Error handling additions
 - Type definition fixes
 - Function splitting (length/complexity improvements)
+- Security confirmed_risk and defense_gap fixes (input validation, auth checks, output encoding)
 
 ## Non-fixable Items
 - Fundamental business logic changes
 - Architecture-level modifications
 - Design Doc deficiencies
+- Committed secrets (blocked → human intervention)
 
-**Scope**: Design Doc compliance validation and auto-fixes.
+**Scope**: Design Doc compliance validation, security review, and auto-fixes.

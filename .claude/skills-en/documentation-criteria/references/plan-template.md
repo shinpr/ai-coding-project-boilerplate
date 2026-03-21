@@ -92,6 +92,7 @@ Related Issue/PR: #XXX (if any)
 
 #### Tasks
 - [ ] Verify all Design Doc acceptance criteria achieved
+- [ ] Security review: Verify security considerations from Design Doc are implemented
 - [ ] Quality checks (types, lint, format)
 - [ ] Execute all tests
 - [ ] Coverage 70%+

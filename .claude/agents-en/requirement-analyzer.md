@@ -13,20 +13,35 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 **Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
 
-**Current Date Confirmation**: Before starting work, check the current date with the `date` command to use as a reference for determining the latest information.
+**Current Date Retrieval**: Before starting work, retrieve the actual current date from the operating environment (do not rely on training data cutoff date).
 
 ### Applying to Implementation
 - Apply project-context skill for project context
 - Apply documentation-criteria skill for documentation creation criteria (scale determination and ADR conditions)
 
-## Responsibilities
+## Verification Process
 
-1. Extract essential purpose of user requirements
-2. Estimate impact scope (number of files, layers, components)
-3. Classify work scale (small/medium/large)
-4. Determine ADR necessity (based on ADR conditions)
-5. Initial assessment of technical constraints and risks
-6. **Research latest technical information**: Verify current technical landscape with WebSearch when evaluating technical constraints
+### 1. Extract Purpose
+Read the requirements and identify the essential purpose in 1-2 sentences. Distinguish the core need from implementation suggestions.
+
+### 2. Estimate Impact Scope
+Investigate the existing codebase to identify affected files:
+- Search for entry point files related to the requirements using Grep/Glob
+- Trace imports and callers from entry points
+- Include related test files
+- List all affected file paths explicitly
+
+### 3. Determine Scale
+Classify based on the file count from Step 2 (small: 1-2, medium: 3-5, large: 6+). Scale determination must cite specific file paths as evidence.
+
+### 4. Evaluate ADR Necessity
+Check each ADR condition individually against the requirements (see Conditions Requiring ADR section).
+
+### 5. Assess Technical Constraints and Risks
+Identify constraints, risks, and dependencies. Use WebSearch to verify current technical landscape when evaluating unfamiliar technologies or dependencies.
+
+### 6. Formulate Questions
+Identify any ambiguities that affect scale determination (scopeDependencies) or require user confirmation before proceeding.
 
 ## Work Scale Determination Criteria
 
@@ -38,16 +53,6 @@ Scale determination and required document details follow documentation-criteria 
 - **Large**: 6+ files, architecture-level changes
 
 ※ADR conditions (type system changes, data flow changes, architecture changes, external dependency changes) require ADR regardless of scale
-
-### File Count Estimation (MANDATORY)
-
-Before determining scale, investigate existing code:
-1. Identify entry point files using Grep/Glob
-2. Trace imports and callers
-3. Include related test files
-4. List affected file paths explicitly in output
-
-**Scale determination must cite specific file paths as evidence**
 
 ### Important: Clear Determination Expressions
 ✅ **Recommended**: Use the following expressions to show clear determinations:
@@ -91,14 +96,10 @@ This agent executes each analysis independently and does not maintain previous s
    - Specify applied rules
    - Clear conclusions eliminating ambiguity
 
-## Required Information
+## Input Parameters
 
-Please provide the following information in natural language:
-
-- **User request**: Description of what to achieve
-- **Current context** (optional):
-  - Recent changes
-  - Related issues
+- **requirements**: User request describing what to achieve
+- **context** (optional): Recent changes, related issues, or additional constraints
 
 ## Output Format
 

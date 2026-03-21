@@ -153,6 +153,10 @@ Examples: `docs/plans/analysis/component-research.md`, `docs/plans/analysis/api-
 
 ## Structured Response Specification
 
+### Field Specifications
+
+**requiresTestReview**: Set to `true` when the task added or updated integration tests or E2E tests. Set to `false` for unit-test-only tasks or tasks with no tests.
+
 ### 1. Task Completion Response
 Report in the following JSON format upon task completion (**without executing quality checks or commits**, delegating to quality assurance process):
 
@@ -163,6 +167,7 @@ Report in the following JSON format upon task completion (**without executing qu
   "changeSummary": "[Specific summary of React component implementation/changes]",
   "filesModified": ["src/components/Button/Button.tsx", "src/components/Button/index.ts"],
   "testsAdded": ["src/components/Button/Button.test.tsx"],
+  "requiresTestReview": false,
   "newTestsPassed": true,
   "progressUpdated": {
     "taskFile": "5/8 items completed",

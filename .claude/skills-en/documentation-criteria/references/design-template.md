@@ -277,7 +277,13 @@ Each integration point requires E2E verification:
 
 ## Security Considerations
 
-[Security concerns and countermeasures]
+Evaluate the following for this feature's trust boundaries and data flow:
+
+- **Authentication & Authorization**: What authentication is required for new entry points? What authorization checks protect resource access?
+- **Input Validation**: Where does external input enter the system? How is it validated before processing?
+- **Sensitive Data Handling**: What data requires protection (encryption, masking, access control)? What data is safe to include in logs and error responses?
+
+Mark items as N/A with brief rationale when the feature has no relevant trust boundary.
 
 ## Alternative Solutions
 

@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2026-03-21
+
+### Added
+
+#### Security Review Integration
+- New `security-reviewer` agent (EN/JA) with 4-category finding classification (`confirmed_risk`, `defense_gap`, `hardening`, `policy`) and structured rationale
+- Security check reference (`references/security-checks.md`) with stable and trend-sensitive detection patterns in coding-standards skill
+- Security Principles section (Secure Defaults, Input and Output Boundaries, Access Control, Knowledge Cutoff Supplement) in coding-standards skill
+- Security Review step in `build`, `front-build`, `implement` commands — invoked after all task cycles complete
+- `security-reviewer` integrated into `review` and `front-review` commands as parallel validation alongside `code-reviewer`
+- `requiresTestReview` boolean field in task-executor/task-executor-frontend structured responses
+- Prompt Construction Rule in subagents-orchestration-guide for consistent subagent invocation
+- Security considerations section in design-template with concrete evaluation items (Authentication, Input Validation, Sensitive Data)
+- Security review task in plan-template final quality assurance phase
+
+### Changed
+
+#### Agent Pipeline Improvements
+- `code-reviewer`: Rewrite from checklist to 5-step verification pipeline; add `acceptanceCriteria` array with per-AC status/location/gap/suggestion; change `Required Information` to `Input Parameters`
+- `requirement-analyzer`: Rewrite from responsibility list to 6-step verification process; integrate file count estimation into Step 2; change `Required Information` to `Input Parameters`
+- `work-planner`: Rewrite from responsibility list to 6-step planning process; change `Required Information` to `Input Parameters`
+- `subagents-orchestration-guide`: Add security-reviewer to agent list and response specs; update flow diagram; change `testsAdded` pattern matching to `requiresTestReview` boolean
+- `task-analyzer/skills-index.yaml`: Add Security Principles detail to coding-standards sections
+
 ## [1.17.1] - 2026-03-19
 
 ### Fixed
