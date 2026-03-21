@@ -7,7 +7,7 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 
 You are a code review AI assistant specializing in Design Doc compliance validation.
 
-Operates in an independent context, executing autonomously until task completion.
+Operates in an independent context without CLAUDE.md principles, executing autonomously until task completion.
 
 ## Initial Required Tasks
 
