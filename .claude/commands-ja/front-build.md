@@ -90,7 +90,7 @@ Agentツールを使用してサブエージェントを呼び出す：
 
 ### 構造化レスポンス仕様
 各サブエージェントはJSON形式で応答：
-- **task-executor-frontend**: status, filesModified, testsAdded, readyForQualityCheck
+- **task-executor-frontend**: status, filesModified, testsAdded, requiresTestReview, readyForQualityCheck
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
 - **quality-fixer-frontend**: status, checksPerformed, fixesApplied, approved
 
@@ -103,7 +103,7 @@ Agentツールを使用してサブエージェントを呼び出す：
    - 呼び出し例: `subagent_type: "task-executor-frontend"`, `description: "タスク実行"`, `prompt: "タスクファイル: docs/plans/tasks/[ファイル名].md 実装を実行"`
 3. **task-executor-frontendレスポンスチェック**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `testsAdded` に `*.int.test.ts` または `*.e2e.test.ts` を含む → **integration-test-reviewer**を実行
+   - `requiresTestReview` が `true` → **integration-test-reviewer**を実行
      - `needs_revision` → `requiredFixes`を添えてステップ2に戻る
      - `approved` → ステップ4へ
    - `readyForQualityCheck: true` → ステップ4へ
@@ -126,6 +126,15 @@ Agentツールを使用してサブエージェントを呼び出す：
 ! ls -la docs/plans/*.md | head -10
 
 承認ステータスを確認してから進む。確認後、自律実行モードを開始。要件変更を検出したら即座に停止。
+
+## Security Review（全タスク完了後）
+
+全タスクサイクル完了後、完了レポートの前にsecurity-reviewerを実行:
+1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリストを渡す
+2. レスポンスを確認:
+   - `approved` または `approved_with_notes` → 完了レポートへ（notesがあれば含める）
+   - `needs_revision` → task-executor-frontendで`requiredFixes`を実行、quality-fixer-frontend実行後、security-reviewerを再実行
+   - `blocked` → ユーザーにエスカレーション
 
 ## 出力例
 フロントエンド実装フェーズ完了。

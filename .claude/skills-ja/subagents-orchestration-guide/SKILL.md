@@ -50,16 +50,17 @@ graph TD
 2. **task-decomposer**: 作業計画書の適切なタスク分解
 3. **task-executor**: 個別タスクの実行と構造化レスポンス
 4. **integration-test-reviewer**: 統合テスト/E2Eテストのスケルトン準拠レビュー
+5. **security-reviewer**: 全タスク完了後のDesign Docおよびcoding-standardsに対するセキュリティ準拠レビュー
 
 ### ドキュメント作成エージェント
-5. **requirement-analyzer**: 要件分析と作業規模判定（WebSearch対応、最新技術情報の調査）
-6. **prd-creator**: Product Requirements Document作成（WebSearch対応、市場動向調査）
-7. **ui-spec-designer**: PRDとプロトタイプコード（任意）からUI Spec作成（フロントエンド/フルスタック機能）
-8. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
-9. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
-10. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
-11. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
-12. **acceptance-test-generator**: Design DocのACとUI Spec（任意）から統合テストとE2Eテストのスケルトン生成
+6. **requirement-analyzer**: 要件分析と作業規模判定（WebSearch対応、最新技術情報の調査）
+7. **prd-creator**: Product Requirements Document作成（WebSearch対応、市場動向調査）
+8. **ui-spec-designer**: PRDとプロトタイプコード（任意）からUI Spec作成（フロントエンド/フルスタック機能）
+9. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
+10. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
+11. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
+12. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
+13. **acceptance-test-generator**: Design DocのACとUI Spec（任意）から統合テストとE2Eテストのスケルトン生成
 
 ## オーケストレーション原則
 
@@ -103,11 +104,12 @@ graph TD
 
 サブエージェントはJSON形式で応答。オーケストレーター判断に必要なフィールド：
 - **requirement-analyzer**: scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions
-- **task-executor**: status (escalation_needed/blocked/completed), testsAdded
+- **task-executor**: status (escalation_needed/blocked/completed), testsAdded, requiresTestReview
 - **quality-fixer**: approved (true/false)
 - **document-reviewer**: approvalReady (true/false)
 - **design-sync**: sync_status (synced/conflicts_found)
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
+- **security-reviewer**: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes
 - **acceptance-test-generator**: status, generatedFiles
 
 ## 作業計画時の基本フロー
@@ -192,7 +194,7 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 
 ### Step 2 実行詳細
 - `status: escalation_needed` または `status: blocked` → ユーザーにエスカレーション
-- `testsAdded` に `*.int.test.ts` または `*.e2e.test.ts` が含まれる → **integration-test-reviewer** を実行
+- `requiresTestReview` が `true` → **integration-test-reviewer** を実行
   - verdict が `needs_revision` → `requiredFixes` と共に task-executor に戻る
   - verdict が `approved` → quality-fixer へ進む
 
@@ -214,6 +216,13 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 
 4. **ユーザー明示停止時**
    - 直接的な停止指示や割り込み
+
+### Prompt Construction Rule
+すべてのサブエージェントプロンプトに以下を含める:
+1. ファイルパス付きの入力成果物（前ステップまたは前提確認から）
+2. 期待するアクション（エージェントが行うべきこと）
+
+エージェントのInput Parametersセクションと、フロー内のその時点で利用可能な成果物からプロンプトを構成する。
 
 ## オーケストレーターの主な役割
 

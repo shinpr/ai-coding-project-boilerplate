@@ -70,12 +70,21 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
 1. **task-executor実行**: 実装を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
 2. **task-executorレスポンスチェック**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `testsAdded` に `*.int.test.ts` または `*.e2e.test.ts` を含む → **integration-test-reviewer**を実行
+   - `requiresTestReview` が `true` → **integration-test-reviewer**を実行
      - `needs_revision` → `requiredFixes`を添えてステップ1に戻る
      - `approved` → ステップ3へ
    - それ以外 → ステップ3へ
 3. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
 4. **承認後コミット**: `approved: true`確認後 → git commitを実行
+
+### Security Review（全タスク完了後）
+
+全タスクサイクル完了後、完了レポートの前にsecurity-reviewerを実行:
+1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリストを渡す
+2. レスポンスを確認:
+   - `approved` または `approved_with_notes` → 完了レポートへ（notesがあれば含める）
+   - `needs_revision` → task-executorで`requiredFixes`を実行、quality-fixer実行後、security-reviewerを再実行
+   - `blocked` → ユーザーにエスカレーション
 
 ### テスト情報の伝達
 acceptance-test-generator実行後、work-planner呼び出し時には以下を伝達：

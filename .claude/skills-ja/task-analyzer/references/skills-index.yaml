@@ -32,6 +32,7 @@ skills:
       - "Red-Green-Refactorプロセス（テストファースト開発）"
       - "テスト設計原則"
       - "テストの粒度原則"
+      - "Security Principles (Secure Defaults, Input and Output Boundaries, Access Control, Knowledge Cutoff Supplement)"
 
   typescript-rules:
     skill: "typescript-rules"

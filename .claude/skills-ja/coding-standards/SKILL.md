@@ -244,3 +244,28 @@ Grep -n "targetData\|SetData\|UpdateData" -o content
 ### 原則：観測可能な振る舞いのみ
 **テスト対象**：公開API、戻り値、例外、外部呼び出し、永続化された状態
 **テスト対象外**：privateメソッド、内部状態、アルゴリズム詳細
+
+## Security Principles
+
+### Secure Defaults
+- 認証情報とシークレットは環境変数または専用のシークレットマネージャーで管理
+- すべてのデータベースアクセスにパラメータ化クエリ（プリペアドステートメント）を使用
+- 言語またはフレームワークが提供する確立された暗号ライブラリを使用
+- セキュリティ上重要な値（トークン、ID、nonce）は暗号学的に安全な乱数生成器で生成
+- 機密データは標準プロトコルを使用して保存時・転送時に暗号化
+
+### Input and Output Boundaries
+- システムのエントリポイントで、期待される形式・型・長さについてすべての外部入力を検証
+- 出力をレンダリングコンテキスト（HTML、SQL、シェル、URL）に応じて適切にエンコード
+- エラーレスポンスには呼び出し元に必要な情報のみを返却し、詳細な診断情報はサーバーサイドでログに記録
+
+### Access Control
+- ユーザーデータを扱うまたは状態変更をトリガーするすべてのエントリポイントに認証を適用
+- エントリポイントだけでなく、各リソースアクセスで認可を検証
+- 操作に必要な権限のみを付与（ファイル、データベース接続、APIスコープ）
+
+### Knowledge Cutoff Supplement (2026-03)
+- OWASP Top 10:2025は症状から根本原因にシフトし、「Software Supply Chain Failures」(A03)と「Mishandling of Exceptional Conditions」(A10)が追加
+- 最近の研究でAI生成コードがAccess Controlの欠落を高い発生率で示す — 認証と認可を高優先度のレビュー対象として扱う
+- OpenSSFが「Security-Focused Guide for AI Code Assistant Instructions」を公開 — 汎用的なアドバイスより言語固有のアクション可能な制約を推奨
+- 詳細な検出パターンは`references/security-checks.md`を参照
