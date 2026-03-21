@@ -30,6 +30,7 @@ skills:
       - "Red-Green-Refactor Process (Test-First Development)"
       - "Test Design Principles"
       - "Test Granularity Principles"
+      - "Security Principles (Secure Defaults, Input and Output Boundaries, Access Control, Knowledge Cutoff Supplement)"
 
   typescript-rules:
     skill: "typescript-rules"

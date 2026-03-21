@@ -244,3 +244,28 @@ Target: Code, documentation, configuration files
 ### Core Principle: Observable Behavior Only
 **MUST Test**: Public APIs, return values, exceptions, external calls, persisted state
 **MUST NOT Test**: Private methods, internal state, algorithm implementation details
+
+## Security Principles
+
+### Secure Defaults
+- Store credentials and secrets through environment variables or dedicated secret managers
+- Use parameterized queries (prepared statements) for all database access
+- Use established cryptographic libraries provided by the language or framework
+- Generate security-critical values (tokens, IDs, nonces) with cryptographically secure random generators
+- Encrypt sensitive data at rest and in transit using standard protocols
+
+### Input and Output Boundaries
+- Validate all external input at system entry points for expected format, type, and length
+- Encode output appropriately for its rendering context (HTML, SQL, shell, URL)
+- Return only information necessary for the caller in error responses; log detailed diagnostics server-side
+
+### Access Control
+- Apply authentication to all entry points that handle user data or trigger state changes
+- Verify authorization for each resource access, not only at the entry point
+- Grant only the permissions required for the operation (files, database connections, API scopes)
+
+### Knowledge Cutoff Supplement (2026-03)
+- OWASP Top 10:2025 shifted from symptoms to root causes; added "Software Supply Chain Failures" (A03) and "Mishandling of Exceptional Conditions" (A10)
+- Recent research indicates AI-generated code shows elevated rates of access control gaps — treat authentication and authorization as high-priority review targets
+- OpenSSF published "Security-Focused Guide for AI Code Assistant Instructions" — recommends language-specific, actionable constraints over generic advice
+- For detailed detection patterns, see `references/security-checks.md`

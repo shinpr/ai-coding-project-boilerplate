@@ -79,7 +79,7 @@ For EACH task, YOU MUST:
 2. **INVOKE task-executor**: Execute the task implementation (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)
 3. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
-   - `testsAdded` contains `*.int.test.ts` or `*.e2e.test.ts` → Execute **integration-test-reviewer**
+   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**
      - `needs_revision` → Return to step 2 with `requiredFixes`
      - `approved` → Proceed to step 4
    - `readyForQualityCheck: true` → Proceed to step 4
@@ -99,6 +99,15 @@ This agent operates within build skill scope. Use orchestrator-provided rules on
 Autonomous sub-agents require scope constraints for stable execution. ALWAYS append this constraint to every sub-agent prompt.
 
 After approval confirmation, start autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
+
+## Security Review (After All Tasks Complete)
+
+After all task cycles finish, invoke security-reviewer before the completion report:
+1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path and implementation file list
+2. Check response:
+   - `approved` or `approved_with_notes` → Proceed to completion report (include notes if present)
+   - `needs_revision` → Execute task-executor with `requiredFixes`, then quality-fixer, then re-invoke security-reviewer
+   - `blocked` → Escalate to user
 
 ## Output Example
 Implementation phase completed.
