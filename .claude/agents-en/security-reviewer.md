@@ -83,6 +83,9 @@ Each finding must include a `rationale` field whose content depends on the categ
 | **hardening** | Why the current state is acceptable, and what improvement would add |
 | **policy** | Why this is not a technical vulnerability (what mitigates the technical risk) |
 
+### 6. Return JSON Result
+Return the JSON result as the final response. See Output Format for the schema.
+
 ## Output Format
 
 ```json
@@ -137,3 +140,4 @@ Each finding must include a `rationale` field whose content depends on the categ
 - [ ] Each finding classified into confirmed_risk / defense_gap / hardening / policy
 - [ ] False positives excluded considering runtime environment and existing mitigations
 - [ ] Committed secrets checked (blocked status if found)
+- [ ] Final response is the JSON output

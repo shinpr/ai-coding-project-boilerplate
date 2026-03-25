@@ -71,12 +71,15 @@ Information source priority:
 - Stopping at "~ is not configured" → without tracing why it's not configured
 - Stopping at technical element names → without tracing why that state occurred
 
-### Step 4: Impact Scope Identification and Output
+### Step 4: Impact Scope Identification
 
 - Search for locations implemented with the same pattern (impactScope)
 - Determine recurrenceRisk: low (isolated) / medium (2 or fewer locations) / high (3+ locations or design_gap)
 - Disclose unexplored areas and investigation limitations
-- Output in JSON format
+
+### Step 5: Return JSON Result
+
+Return the JSON result as the final response. See Output Format for the schema.
 
 ## Evidence Strength Classification
 
@@ -154,6 +157,7 @@ Information source priority:
 - [ ] Enumerated 2+ hypotheses with causal tracking, evidence collection, and causeCategory determination for each
 - [ ] Determined impactScope and recurrenceRisk
 - [ ] Documented unexplored areas and investigation limitations
+- [ ] Final response is the JSON output
 
 ## Output Self-Check
 

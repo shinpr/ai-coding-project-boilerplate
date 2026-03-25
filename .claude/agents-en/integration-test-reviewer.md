@@ -74,6 +74,9 @@ Verify the following for each test case:
 | Internal Components | Use actual | Unnecessary mocking |
 | Log Output Verification | Use vi.fn() | Mock without verification |
 
+### 4. Return JSON Result
+Return the JSON result as the final response. See Output Format for the schema.
+
 ## Output Format
 
 ### Structured Response
@@ -194,3 +197,10 @@ When needs_revision decision, output fix instructions usable in subsequent proce
 - IF `@dependency: full-system` → mock usage is FAILURE
 - Verify execution timing: AFTER all components are implemented
 - Verify critical user journey coverage is COMPLETE
+
+## Completion Criteria
+
+- [ ] All skeleton comments verified against implementation
+- [ ] Implementation quality evaluated
+- [ ] Mock boundaries verified (integration tests)
+- [ ] Final response is the JSON output

@@ -39,7 +39,13 @@ Use the appropriate run command based on the `packageManager` field in package.j
 2. Error found → Execute fix immediately
 3. After fix → Re-execute relevant phase
 4. Repeat until all phases complete
-5. Approved only when all Phases pass
+5. All pass → proceed to Step 5
+6. Cannot determine spec → proceed to Step 5 with `blocked` status
+
+**Step 5: Return JSON Result**
+Return one of the following as the final response (see Output Format for schemas):
+- `status: "approved"` — all quality checks pass
+- `status: "blocked"` — specification unclear, business judgment required
 
 ### Phase Details
 
@@ -159,11 +165,9 @@ Refer to the "Quality Check Requirements" section in technical-spec skill for de
 }
 ```
 
-### User Report (Mandatory)
+## Intermediate Progress Report
 
-Summarize quality check results in an understandable way for users
-
-### Phase-by-phase Report (Detailed Information)
+During execution, report progress between tool calls using this format:
 
 ```markdown
 📋 Phase [Number]: [Phase Name]
@@ -180,6 +184,12 @@ Issues requiring fixes:
 [After Fix Implementation]
 ✅ Phase [Number] Complete! Proceeding to next phase.
 ```
+
+This is intermediate output only. The final response must be the JSON result (Step 5).
+
+## Completion Criteria
+
+- [ ] Final response is a single JSON with status `approved` or `blocked`
 
 ## Important Principles
 

@@ -97,7 +97,11 @@ Classify each hypothesis by the following levels:
 - Example: "The implementation is wrong" → Was design_gap considered?
 - If inconsistent, explicitly note "Investigation focus may be misaligned with user report"
 
-**Conclusion**: Adopt unrefuted hypotheses as causes. When multiple causes exist, determine their relationship (independent/dependent/exclusive) and output in JSON format
+**Conclusion**: Adopt unrefuted hypotheses as causes. When multiple causes exist, determine their relationship (independent/dependent/exclusive)
+
+### Step 7: Return JSON Result
+
+Return the JSON result as the final response. See Output Format for the schema.
 
 ## Confidence Determination Criteria
 
@@ -186,6 +190,7 @@ Classify each hypothesis by the following levels:
 - [ ] Verified consistency with user report
 - [ ] Determined verification level for each hypothesis
 - [ ] Adopted unrefuted hypotheses as causes and determined relationship when multiple
+- [ ] Final response is the JSON output
 
 ## Output Self-Check
 

@@ -119,6 +119,10 @@ For each claim with collected evidence:
 2. **Implementation Coverage**: What percentage of specs are implemented?
 3. List undocumented features and unimplemented specs
 
+### Step 6: Return JSON Result
+
+Return the JSON result as the final response. See Output Format for the schema.
+
 ## Output Format
 
 **JSON format is mandatory.**
@@ -184,7 +188,7 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 - [ ] Identified undocumented features in code
 - [ ] Identified unimplemented specifications
 - [ ] Calculated consistency score
-- [ ] Output in specified format
+- [ ] Final response is the JSON output
 
 ## Output Self-Check
 

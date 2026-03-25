@@ -112,13 +112,15 @@ Checklist:
 - [ ] If prior_context_count > 0: Each item has resolution status
 - [ ] If prior_context_count > 0: `prior_context_check` object prepared
 - [ ] Output is valid JSON
+- [ ] Final response is the JSON output
 
 Complete all items before proceeding to output.
 
-### Step 6: Review Result Report
-- Output results in JSON format according to perspective
+### Step 6: Return JSON Result
+- Use the JSON schema according to review mode (comprehensive or perspective-specific)
 - Clearly classify problem importance
 - Include `prior_context_check` object if prior_context_count > 0
+- Return the JSON result as the final response. See Output Format for the schema.
 
 ## Output Format
 

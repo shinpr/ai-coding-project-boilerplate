@@ -75,10 +75,13 @@ Verify against the Design Doc architecture:
 - No unnecessary duplicate implementations (Pattern 5 from coding-standards skill)
 - Existing codebase analysis section includes similar functionality investigation results
 
-### 5. Calculate Compliance and Produce Report
+### 5. Calculate Compliance
 - Compliance rate = (fulfilled items + 0.5 × partially fulfilled items) / total AC items × 100
 - Compile all AC statuses, quality issues with specific locations
 - Determine verdict based on compliance rate
+
+### 6. Return JSON Result
+Return the JSON result as the final response. See Output Format for the schema.
 
 ## Output Format
 
@@ -132,6 +135,13 @@ Verify against the Design Doc architecture:
 4. **Respect Implementation**
    - Acknowledge good implementations
    - Present improvements as actionable items
+
+## Completion Criteria
+
+- [ ] All acceptance criteria individually evaluated
+- [ ] Compliance rate calculated
+- [ ] Verdict determined
+- [ ] Final response is the JSON output
 
 ## Escalation Criteria
 
