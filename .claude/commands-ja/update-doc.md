@@ -24,7 +24,7 @@ description: 既存設計ドキュメント（Design Doc / PRD / ADR）をレビ
 ```
 対象ドキュメント → [停止: 変更内容確認]
                         ↓
-              technical-designer / prd-creator（updateモード）
+              technical-designer / technical-designer-frontend / prd-creator（updateモード）
                         ↓
               document-reviewer → [停止: レビュー承認]
                         ↓（Design Docのみ）
@@ -66,15 +66,20 @@ ls docs/design/*.md docs/prd/*.md docs/adr/*.md 2>/dev/null | grep -v template
 | 複数の候補が見つかった | AskUserQuestionで選択肢を提示 |
 | ドキュメントが見つからない | 報告して終了（代わりに/designを推奨） |
 
-### ステップ2: ドキュメントタイプの判定
+### ステップ2: ドキュメントタイプとレイヤーの判定
 
-ドキュメントパスからタイプを判定:
+ドキュメントパスからタイプを判定し、適切な更新エージェントを選択するためにレイヤーを判定する:
 
 | パスパターン | タイプ | 更新エージェント | 備考 |
 |-------------|--------|-----------------|------|
-| `docs/design/*.md` | Design Doc | technical-designer | - |
+| `docs/design/*.md` | Design Doc | technical-designerまたはtechnical-designer-frontend | 下記レイヤー判定を参照 |
 | `docs/prd/*.md` | PRD | prd-creator | - |
-| `docs/adr/*.md` | ADR | technical-designer | 軽微な変更: 既存ファイルを更新、大きな変更: 元を置き換える新ADRを作成 |
+| `docs/adr/*.md` | ADR | technical-designerまたはtechnical-designer-frontend | 下記レイヤー判定を参照 |
+
+**レイヤー判定**（Design DocとADRの場合）:
+ドキュメントの内容からレイヤーを判定する:
+- **フロントエンド**（→ technical-designer-frontend）: タイトルやスコープにReact、コンポーネント、UI、フロントエンドの記載がある。またはコンポーネント階層、状態管理、UIインタラクションを含む
+- **バックエンド**（→ technical-designer）: 上記以外（API、データ層、ビジネスロジック、インフラストラクチャ）
 
 **ADR更新ガイダンス**:
 - **軽微な変更**（明確化、誤字修正、小規模なスコープ調整）: 既存ADRファイルを更新

@@ -93,12 +93,15 @@ Recommendation strategy based on confidence:
 - medium: Staged approach, verify with low-impact fixes before full implementation
 - low: Start with conservative mitigation, prioritize solutions that address multiple possible causes
 
-### Step 5: Implementation Steps Creation and Output
+### Step 5: Implementation Steps Creation
 - Each step independently verifiable
 - Explicitly state dependencies between steps
 - Define completion conditions for each step
 - Include rollback procedures
-- Output structured report in JSON format
+
+### Step 6: Return JSON Result
+
+Return the JSON result as the final response. See Output Format for the schema.
 
 ## Output Format
 
@@ -167,6 +170,7 @@ Recommendation strategy based on confidence:
 - [ ] Documented residual risks
 - [ ] Verified solutions align with project rules or best practices
 - [ ] Verified input consistency with user report
+- [ ] Final response is the JSON output
 
 ## Output Self-Check
 

@@ -146,6 +146,11 @@ Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have u
 Task complete when all checkbox items completed and operation verification complete.
 For research tasks, includes creating deliverable files specified in metadata "Provides" section.
 
+### 5. Return JSON Result
+Return one of the following as the final response (see Structured Response Specification for schemas):
+- `status: "completed"` — task fully implemented
+- `status: "escalation_needed"` — design deviation or similar component discovered
+
 ## Research Task Deliverables
 
 Research/analysis tasks create deliverable files specified in metadata "Provides".
@@ -246,6 +251,10 @@ When discovering similar components/hooks during existing code investigation, es
   "claude_recommendation": "[Recommended approach based on existing component analysis]"
 }
 ```
+
+## Completion Criteria
+
+- [ ] Final response is a single JSON with status `completed` or `escalation_needed`
 
 ## Execution Principles
 

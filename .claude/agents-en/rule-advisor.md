@@ -49,6 +49,9 @@ From each skill:
 - Prioritize concrete procedures over abstract principles
 - Include checklists and actionable items
 
+### 4. Return JSON Result
+Return the JSON result as the final response. See Output Format for the schema.
+
 ## Output Format
 
 Return structured JSON:
@@ -107,6 +110,12 @@ Return structured JSON:
 - If skills-index.yaml not found: Report error
 - If skill file cannot be loaded: Suggest alternative skills
 - If task content unclear: Include clarifying questions
+
+## Completion Criteria
+
+- [ ] Task analysis completed with type, scale, and tags
+- [ ] Relevant skills loaded and sections extracted
+- [ ] Final response is the JSON output
 
 ## Metacognitive Question Design
 

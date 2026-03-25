@@ -39,7 +39,7 @@ Use AskUserQuestion to confirm:
 
 ```
 Phase 1: PRD Generation
-  Step 1: Scope Discovery (unified, single pass)
+  Step 1: Scope Discovery (unified, single pass → group into PRD units → human review)
   Step 2-5: Per-unit loop (Generation → Verification → Review → Revision)
 
 Phase 2: Design Doc Generation (if requested)
@@ -72,12 +72,14 @@ prompt: |
 **Quality Gate**:
 - At least one unit discovered → proceed
 - No units discovered → ask user for hints
+- `$STEP_1_OUTPUT.prdUnits` exists
+- All `sourceUnits` across `prdUnits` (flattened, deduplicated) match the set of `discoveredUnits` IDs — no unit missing, no unit duplicated
 
-**Human Review Point** (if enabled): Present discovered units for confirmation.
+**Human Review Point** (if enabled): Present `$STEP_1_OUTPUT.prdUnits` with their source unit mapping. The user confirms, adjusts grouping, or excludes units from scope. This is the most important review point — incorrect grouping cascades into all downstream documents.
 
 ### Step 2-5: Per-Unit Processing
 
-**FOR** each unit in `$STEP_1_OUTPUT.discoveredUnits` **(sequential, one unit at a time):**
+**FOR** each unit in `$STEP_1_OUTPUT.prdUnits` **(sequential, one unit at a time):**
 
 #### Step 2: PRD Generation
 
@@ -90,10 +92,10 @@ prompt: |
   Operation Mode: reverse-engineer
   External Scope Provided: true
 
-  Feature: $UNIT_NAME (from $STEP_1_OUTPUT)
-  Description: $UNIT_DESCRIPTION
-  Related Files: $UNIT_RELATED_FILES
-  Entry Points: $UNIT_ENTRY_POINTS
+  Feature: $PRD_UNIT_NAME (from $STEP_1_OUTPUT)
+  Description: $PRD_UNIT_DESCRIPTION
+  Related Files: $PRD_UNIT_COMBINED_RELATED_FILES
+  Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS
 
   Skip independent scope discovery. Use provided scope data.
   Create final version PRD based on code investigation within specified scope.
@@ -113,7 +115,7 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  code_paths: $UNIT_RELATED_FILES (from $STEP_1_OUTPUT)
+  code_paths: $PRD_UNIT_COMBINED_RELATED_FILES (from $STEP_1_OUTPUT)
   verbose: false
 ```
 
@@ -195,7 +197,9 @@ prompt: |
 
 ### Step 6: Design Doc Scope Mapping
 
-Use `$STEP_1_OUTPUT` (scope discovery results) directly. When fullstack=Yes, determine per unit whether backend / frontend / both Design Docs are needed based on path patterns in the unit's `relatedFiles` and `technicalProfile.primaryModules` (refer to project structure defined in technical-spec skill).
+**No additional discovery required.** Use `$STEP_1_OUTPUT.discoveredUnits` (implementation-granularity units) for technical profiles. Use `$STEP_1_OUTPUT.prdUnits[].sourceUnits` to trace which discovered units belong to each PRD unit.
+
+When fullstack=Yes, determine per unit whether backend / frontend / both Design Docs are needed based on path patterns in the unit's `relatedFiles` and `technicalProfile.primaryModules` (refer to project structure defined in technical-spec skill).
 
 Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
 - `technicalProfile.primaryModules` → Primary Files

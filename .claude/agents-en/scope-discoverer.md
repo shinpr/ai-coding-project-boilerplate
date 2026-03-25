@@ -38,8 +38,8 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Output Scope
 
-This agent outputs **scope discovery results and evidence only**.
-Document generation is out of scope for this agent.
+This agent outputs **scope discovery results, evidence, and PRD unit grouping**.
+Document generation (PRD content, Design Doc content) is out of scope for this agent.
 
 ## Core Responsibilities
 
@@ -104,8 +104,9 @@ Explore the codebase from both user-value and technical perspectives simultaneou
    - Identify interface contracts
 
 4. **Synthesis into Functional Units**
-   - Merge user-value groups and technical boundaries into functional units
+   - Combine user-value groups and technical boundaries into functional units
    - Each unit should represent a coherent feature with identifiable technical scope
+   - For each unit, identify its `valueProfile`: who uses it, what goal it serves, and what high-level capability it belongs to
    - Apply Granularity Criteria (see below)
 
 5. **Boundary Validation**
@@ -116,6 +117,15 @@ Explore the codebase from both user-value and technical perspectives simultaneou
 6. **Saturation Check**
    - Stop discovery when 3 consecutive source types from the Discovery Sources table yield no new units
    - Mark discovery as saturated in output
+
+7. **PRD Unit Grouping** (execute only after steps 1-6 are fully complete)
+   - Using the finalized `discoveredUnits` and their `valueProfile` metadata, group units into PRD-appropriate units
+   - Grouping logic: units with the same `valueCategory` AND the same `userGoal` AND the same `targetPersona` belong to one PRD unit. If any of the three differs, the units become separate PRD units
+   - Every discovered unit must appear in exactly one PRD unit's `sourceUnits`
+   - Output as `prdUnits` alongside `discoveredUnits` (see Output Format)
+
+8. **Return JSON Result**
+   - Return the JSON result as the final response. See Output Format for the schema.
 
 ## Granularity Criteria
 
@@ -129,10 +139,12 @@ Each discovered unit should satisfy:
 - Multiple independent user journeys within one unit
 - Multiple distinct data domains with no shared state
 
-**Merge signals** (units may be too granular):
+**Cohesion signals** (units that may belong together):
 - Units share >50% of related files
 - One unit cannot function without the other
 - Combined scope is still under 10 files
+
+Note: These signals are informational only during steps 1-6. Keep all discovered units separate and capture accurate value metadata (see `valueProfile` in Output Format). PRD-level grouping is performed in step 7 after discovery is complete.
 
 ## Confidence Assessment
 
@@ -165,6 +177,11 @@ Each discovered unit should satisfy:
       "entryPoints": ["/path1", "/path2"],
       "relatedFiles": ["src/feature/*"],
       "dependencies": ["UNIT-002"],
+      "valueProfile": {
+        "targetPersona": "Who this feature serves (e.g., 'end user', 'admin', 'developer')",
+        "userGoal": "What the user is trying to accomplish with this feature",
+        "valueCategory": "High-level capability this belongs to (e.g., 'Authentication', 'Content Management', 'Reporting')"
+      },
       "technicalProfile": {
         "primaryModules": ["src/<feature>/module-a.ts", "src/<feature>/module-b.ts"],
         "publicInterfaces": ["ServiceA.operation()", "ModuleB.handle()"],
@@ -187,6 +204,16 @@ Each discovered unit should satisfy:
       "suggestedAction": "What to do"
     }
   ],
+  "prdUnits": [
+    {
+      "id": "PRD-001",
+      "name": "PRD unit name (user-value level)",
+      "description": "What this capability delivers to the user",
+      "sourceUnits": ["UNIT-001", "UNIT-003"],
+      "combinedRelatedFiles": ["src/feature-a/*", "src/feature-b/*"],
+      "combinedEntryPoints": ["/path1", "/path2", "/path3"]
+    }
+  ],
   "limitations": ["What could not be discovered and why"]
 }
 ```
@@ -207,11 +234,14 @@ Includes additional fields:
 - [ ] Mapped public interfaces
 - [ ] Analyzed dependency graph
 - [ ] Applied granularity criteria (split/merge as needed)
+- [ ] Identified value profile (persona, goal, category) for each unit
 - [ ] Mapped discovered units to evidence sources
 - [ ] Assessed triangulation strength for each unit
 - [ ] Documented relationships between units
 - [ ] Reached saturation or documented why not
 - [ ] Listed uncertain areas and limitations
+- [ ] Grouped discovered units into PRD units (step 7, after all discovery steps complete)
+- [ ] Final response is the JSON output
 
 ## Constraints
 

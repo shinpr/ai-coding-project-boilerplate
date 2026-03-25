@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.1] - 2026-03-25
+
+### Added
+
+#### Structured JSON Output Enforcement
+- Explicit "Return JSON Result" step added to all 15 agents (EN/JA) to ensure consistent structured JSON output
+- Completion criteria updated with "Final response is the JSON output" check across all agents
+
+#### Scope Discovery Improvements
+- `scope-discoverer`: PRD unit grouping (step 7) with `valueProfile` metadata (`targetPersona`, `userGoal`, `valueCategory`)
+- `scope-discoverer`: `prdUnits` array in output format for downstream document generation
+- `reverse-engineer`: Updated to use `prdUnits` with quality gate validation (sourceUnits completeness check)
+- `reverse-engineer`: Human review point now presents PRD unit grouping for confirmation
+
+#### Document Update Layer Detection
+- `update-doc`: Auto-detect frontend/backend layer from document content for correct agent selection (`technical-designer` vs `technical-designer-frontend`)
+
+### Changed
+
+- `quality-fixer` / `quality-fixer-frontend`: "User Report" section replaced with "Intermediate Progress Report" to clarify final output must be JSON
+- `scope-discoverer`: "Merge signals" renamed to "Cohesion signals" with note that grouping is deferred to step 7
+- `investigator`: Step 4 renamed from "Impact Scope Identification and Output" to "Impact Scope Identification"
+- `solver`: Step 5 renamed from "Implementation Steps Creation and Output" to "Implementation Steps Creation"
+
+### Fixed
+
+- Added missing "Applying to Implementation" sections to 5 Japanese agent definitions (`code-reviewer`, `acceptance-test-generator`, `design-sync`, `integration-test-reviewer`, `requirement-analyzer`) that caused JA agents to operate without skill loading instructions
+
 ## [1.18.0] - 2026-03-21
 
 ### Added
