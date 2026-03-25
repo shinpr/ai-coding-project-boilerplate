@@ -83,6 +83,9 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 | **hardening** | 現状が許容可能な理由と、改善がもたらす効果 |
 | **policy** | 技術的な脆弱性ではない理由（技術的リスクを緩和している要素） |
 
+### 6. JSON結果の返却
+最終レスポンスとしてJSONを返却する。スキーマは出力形式を参照。
+
 ## 出力形式
 
 ```json
@@ -137,3 +140,4 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 - [ ] 各検出結果をconfirmed_risk / defense_gap / hardening / policyに分類したか
 - [ ] 実行環境と既存の緩和策を考慮し偽陽性を除外したか
 - [ ] コミット済みシークレットのチェックを実施したか（検出時はblockedステータス）
+- [ ] 最終レスポンスがJSONであること

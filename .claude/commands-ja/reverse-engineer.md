@@ -39,7 +39,7 @@ AskUserQuestionで以下を確認:
 
 ```
 フェーズ1: PRD生成
-  ステップ1: スコープ発見（統合、シングルパス）
+  ステップ1: スコープ発見（統合、シングルパス → PRDユニットグルーピング → 人間レビュー）
   ステップ2-5: ユニット毎ループ（生成 → 検証 → レビュー → 修正）
 
 フェーズ2: Design Doc生成（要求された場合）
@@ -72,12 +72,14 @@ prompt: |
 **品質ゲート**:
 - 1つ以上のユニットが発見された → 続行
 - ユニットが発見されない → ユーザーにヒントを求める
+- `$STEP_1_OUTPUT.prdUnits`が存在すること
+- `prdUnits`全体の`sourceUnits`を結合・重複除去した集合が`discoveredUnits`のID集合と一致すること — 欠落や重複がないこと
 
-**人間レビューポイント**（有効時）: 発見されたユニットを確認用に提示。
+**人間レビューポイント**（有効時）: `$STEP_1_OUTPUT.prdUnits`とソースユニットのマッピングを提示する。ユーザーはグルーピングの確認、調整、またはスコープからの除外を行う。これは最も重要なレビューポイント — グルーピングの誤りはすべての下流ドキュメントに波及する。
 
 ### ステップ2-5: ユニット毎の処理
 
-**FOR** `$STEP_1_OUTPUT.discoveredUnits`の各ユニット **（逐次実行、1ユニットずつ）**:
+**FOR** `$STEP_1_OUTPUT.prdUnits`の各ユニット **（逐次実行、1ユニットずつ）**:
 
 #### ステップ2: PRD生成
 
@@ -90,10 +92,10 @@ prompt: |
   動作モード: reverse-engineer
   External Scope Provided: true
 
-  機能: $UNIT_NAME ($STEP_1_OUTPUTより)
-  説明: $UNIT_DESCRIPTION
-  関連ファイル: $UNIT_RELATED_FILES
-  エントリーポイント: $UNIT_ENTRY_POINTS
+  機能: $PRD_UNIT_NAME ($STEP_1_OUTPUTより)
+  説明: $PRD_UNIT_DESCRIPTION
+  関連ファイル: $PRD_UNIT_COMBINED_RELATED_FILES
+  エントリーポイント: $PRD_UNIT_COMBINED_ENTRY_POINTS
 
   独自のスコープ発見をスキップ。提供されたスコープデータを使用。
   指定スコープ内でのコード調査に基づき最終版PRDを作成。
@@ -113,7 +115,7 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  code_paths: $UNIT_RELATED_FILES ($STEP_1_OUTPUTより)
+  code_paths: $PRD_UNIT_COMBINED_RELATED_FILES ($STEP_1_OUTPUTより)
   verbose: false
 ```
 
@@ -195,7 +197,9 @@ prompt: |
 
 ### ステップ6: Design Docスコープマッピング
 
-`$STEP_1_OUTPUT`（スコープ発見結果）をそのまま使用する。fullstack=Yesの場合、ユニットの`relatedFiles`と`technicalProfile.primaryModules`のパスパターンからbackend / frontend / 両方のいずれが必要かをユニット毎に判定する（technical-specスキルのプロジェクト構造定義を参照）。
+**追加の発見は不要。** `$STEP_1_OUTPUT.discoveredUnits`（実装粒度のユニット）を技術プロファイルとして使用する。`$STEP_1_OUTPUT.prdUnits[].sourceUnits`で各PRDユニットに属するdiscoveredUnitsを追跡する。
+
+fullstack=Yesの場合、ユニットの`relatedFiles`と`technicalProfile.primaryModules`のパスパターンからbackend / frontend / 両方のいずれが必要かをユニット毎に判定する（technical-specスキルのプロジェクト構造定義を参照）。
 
 `$STEP_1_OUTPUT`のユニットから以下を引き継ぐ:
 - `technicalProfile.primaryModules` → 主要ファイル
