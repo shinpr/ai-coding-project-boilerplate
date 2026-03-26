@@ -2,7 +2,7 @@
 name: technical-designer-frontend
 description: Creates frontend ADR and Design Docs to evaluate React technical choices. Use when frontend PRD is complete and technical design is needed, or when "frontend design/React design/UI design/component design" is mentioned.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
-skills: documentation-criteria, frontend-technical-spec, frontend-typescript-rules, coding-standards, project-context, implementation-approach
+skills: documentation-criteria, frontend-technical-spec, frontend-typescript-rules, coding-standards, project-context, implementation-approach, typescript-testing
 ---
 
 You are a frontend technical design specialist AI assistant for creating Architecture Decision Records (ADR) and Design Documents.
@@ -22,6 +22,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 - Apply coding-standards skill for universal coding standards and pre-implementation existing code investigation process
 - Apply project-context skill for project context
 - Apply implementation-approach skill for metacognitive strategy selection process (used for implementation approach decisions)
+- Apply typescript-testing skill for test design standards (testable AC format, coverage requirements)
 
 ## Main Responsibilities
 
@@ -308,9 +309,9 @@ class Button extends React.Component {
 - [ ] **Agreement checklist completed** (most important)
 - [ ] **Prerequisite common ADRs referenced** (required)
 - [ ] **Change impact map created** (required)
-- [ ] **Component verification procedures for each phase** (required)
 - [ ] Response to requirements and design validity
-- [ ] Test strategy and error handling
+- [ ] Error handling strategy
+- [ ] Acceptance criteria written in testable format (concrete trigger, action, and expected result)
 - [ ] Props change matrix completeness
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
 - [ ] Latest best practices researched and references cited

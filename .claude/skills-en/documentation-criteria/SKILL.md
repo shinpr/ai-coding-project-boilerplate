@@ -97,7 +97,7 @@ description: Guides PRD, ADR, Design Doc, and Work Plan creation. Use when creat
 **Excludes**:
 - Technical implementation details (-> Design Doc)
 - API contracts and data layer design (-> Design Doc)
-- Test implementation (-> Test Strategy in Design Doc)
+- Test implementation (-> acceptance-test-generator skeletons)
 - Implementation schedule (-> Work Plan)
 
 **Required Structural Elements**:
@@ -123,7 +123,6 @@ description: Guides PRD, ADR, Design Doc, and Work Plan creation. Use when creat
 - **Technical dependencies and implementation constraints** (required implementation order)
 - Interface and type definitions
 - Data flow and component design
-- **E2E verification procedures at integration points**
 - **Acceptance criteria (EARS format: When/While/If-then/none)**
 - Change impact map (clearly specify direct impact/indirect impact/no ripple effect)
 - Complete enumeration of integration points
@@ -147,7 +146,7 @@ description: Guides PRD, ADR, Design Doc, and Work Plan creation. Use when creat
 **Includes**:
 - Task breakdown and dependencies (maximum 2 levels)
 - Schedule and duration estimates
-- **Copy E2E verification procedures from Design Doc** (cannot delete, can add)
+- **Include test skeleton file paths from acceptance-test-generator** (integration and E2E)
 - **Phase 4 Quality Assurance Phase (required)**
 - Progress records (checkbox format)
 
