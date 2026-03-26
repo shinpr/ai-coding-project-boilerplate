@@ -85,7 +85,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - **Phase Completion Task Auto-generation (Required)**:
      - Based on "Phase X" notation in work plan, generate after each phase's final task
      - Filename: `{plan-name}-phase{number}-completion.md`
-     - Content: Copy E2E verification procedures from Design Doc, all task completion checklist
+     - Content: All task completion checklist, list test skeleton file paths for verification
      - Criteria: Always generate if the plan contains the string "Phase"
 
 5. **Task Structuring**

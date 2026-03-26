@@ -25,7 +25,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 Read the Design Doc(s), UI Spec, PRD, and ADR (if provided). Extract:
 - Acceptance criteria and implementation approach
 - Technical dependencies and implementation order
-- Integration points requiring E2E verification
+- Integration points and their contracts
 
 ### 2. Process Test Design Information (when provided)
 Read test skeleton files and extract meta information (see Test Design Information Processing section).
@@ -36,7 +36,8 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 ### 4. Compose Phases
 Structure phases based on technical dependencies from Design Doc:
 - Place tasks with lowest dependencies in earlier phases
-- Include operational verification at integration points
+- When test skeletons are provided, place integration test implementation in corresponding phases and E2E test execution in the final phase
+- When test skeletons are not provided, include test implementation tasks based on Design Doc acceptance criteria
 - Include quality assurance in final phase
 
 ### 5. Define Tasks with Completion Criteria
@@ -180,8 +181,8 @@ Decompose tasks based on implementation approach and technical dependencies deci
 Compose phases based on technical dependencies and implementation approach from Design Doc.
 Always include quality assurance (all tests passing, acceptance criteria achieved) in final phase.
 
-### Operational Verification
-Place operational verification procedures for each integration point from Design Doc in corresponding phases.
+### Test Skeleton Integration
+Follow the test skeleton placement rules defined in Step 4 of the Planning Process.
 
 ### Task Dependencies
 - Clearly define dependencies
@@ -198,7 +199,7 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 - [ ] Phase composition based on technical dependencies
 - [ ] All requirements converted to tasks
 - [ ] Quality assurance exists in final phase
-- [ ] E2E verification procedures placed at integration points
+- [ ] Test skeleton file paths listed in corresponding phases (when provided)
 - [ ] Test design information reflected (only when provided)
   - [ ] Setup tasks placed in first phase
   - [ ] Risk level-based prioritization applied

@@ -48,11 +48,6 @@ Related Issue/PR: #XXX (if any)
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
 
-#### Operational Verification Procedures
-1. [Operation verification steps]
-2. [Expected result verification]
-3. [Performance verification (when applicable)]
-
 ### Phase 2: [Phase Name] (Estimated commits: X)
 **Purpose**: [What this phase aims to achieve]
 
@@ -65,11 +60,6 @@ Related Issue/PR: #XXX (if any)
 #### Phase Completion Criteria
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
-
-#### Operational Verification Procedures
-1. [Operation verification steps]
-2. [Expected result verification]
-3. [Performance verification (when applicable)]
 
 ### Phase 3: [Phase Name] (Estimated commits: X)
 **Purpose**: [What this phase aims to achieve]
@@ -84,9 +74,6 @@ Related Issue/PR: #XXX (if any)
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
 
-#### Operational Verification Procedures
-[Copy relevant integration point E2E verification from Design Doc]
-
 ### Final Phase: Quality Assurance (Required) (Estimated commits: 1)
 **Purpose**: Overall quality assurance and Design Doc consistency verification
 
@@ -94,12 +81,9 @@ Related Issue/PR: #XXX (if any)
 - [ ] Verify all Design Doc acceptance criteria achieved
 - [ ] Security review: Verify security considerations from Design Doc are implemented
 - [ ] Quality checks (types, lint, format)
-- [ ] Execute all tests
+- [ ] Execute all tests (including integration/E2E from test skeletons, when provided)
 - [ ] Coverage 70%+
 - [ ] Document updates
-
-#### Operational Verification Procedures
-[Copy E2E verification procedures from Design Doc]
 
 ### Quality Assurance
 - [ ] Implement staged quality checks (details: refer to technical-spec skill)
@@ -111,7 +95,7 @@ Related Issue/PR: #XXX (if any)
 
 ## Completion Criteria
 - [ ] All phases completed
-- [ ] Each phase's operational verification procedures executed
+- [ ] All integration/E2E tests passing (when test skeletons provided)
 - [ ] Design Doc acceptance criteria satisfied
 - [ ] Staged quality checks completed (zero errors)
 - [ ] All tests pass

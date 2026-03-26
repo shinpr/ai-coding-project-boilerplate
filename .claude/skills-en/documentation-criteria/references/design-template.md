@@ -247,33 +247,14 @@ Invariants:
    - Prerequisites: [Required pre-implementations]
 
 ### Integration Points
-Each integration point requires E2E verification:
 
 **Integration Point 1: [Name]**
 - Components: [Component A] -> [Component B]
-- Verification: [How to verify integration works]
+- Contract: [Interface/API contract between components]
 
 ### Migration Strategy
 
 [Technical migration approach, ensuring backward compatibility]
-
-## Test Strategy
-
-### Unit Tests
-
-[Unit testing policy and coverage goals]
-- Verify individual elements of functional acceptance criteria
-
-### Integration Tests
-
-[Integration testing policy and important test cases]
-- Verify combined operations of functional acceptance criteria
-
-### E2E Tests
-
-[E2E testing policy]
-- Verify entire scenarios of acceptance criteria
-- Confirm functional operation from user perspective
 
 ## Security Considerations
 
