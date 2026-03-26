@@ -34,20 +34,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Document Creation Criteria
 
-Details of documentation creation criteria follow documentation-criteria skill.
-
-### Overview
-- ADR: Type system changes, data flow changes, architecture changes, external dependency changes
-- Design Doc: Required for 3+ file changes
-- Also required regardless of scale for:
-  - Complex implementation logic
-    - Criteria: Managing 3+ states, or coordinating 5+ asynchronous processes
-    - Example: Complex Redux state management, Promise chains with 5+ links
-  - Introduction of new algorithms or patterns
-    - Example: New caching strategies, custom routing implementation
-
-### Important: Assessment Consistency
-- If assessments conflict, include and report the discrepancy in output
+Follow documentation-criteria skill for ADR/Design Doc creation thresholds. If assessments conflict, include and report the discrepancy in output.
 
 ## Mandatory Process Before Design Doc Creation
 
@@ -82,7 +69,7 @@ Must be performed before Design Doc creation:
    - Search existing code for keywords related to planned functionality
    - Look for implementations with same domain, responsibilities, or configuration patterns
    - Decision and action:
-     - Similar functionality found → Use that implementation (do not create new implementation)
+     - Similar functionality found → Use existing implementation
      - Similar functionality is technical debt → Create ADR improvement proposal before implementation
      - No similar functionality → Proceed with new implementation
 
@@ -108,28 +95,21 @@ When the design introduces or significantly modifies data structures:
    - 3+ criteria fail → New structure justified
    - Record decision and rationale in Design Doc
 
-### Integration Point Analysis【Important】
-Clarify integration points with existing systems when adding new features or modifying existing ones:
+### Integration Points【Important】
+Document all integration points with existing systems in "## Integration Point Map" section:
 
-1. **Identify and Document Integration Points**
-   ```yaml
-   ## Integration Point Map
-   Integration Point 1:
-     Existing Component: [Service Name/Method Name]
-     Integration Method: [Hook Addition/Call Addition/Data Reference/etc]
-     Impact Level: High (Process Flow Change) / Medium (Data Usage) / Low (Read-Only)
-     Required Test Coverage: [Continuity Verification of Existing Features]
-   ```
+For each integration point, record:
+- Existing component and method
+- Integration method (hook/call/data reference)
+- Impact level: High (process flow change) / Medium (data usage) / Low (read-only)
+- Required test coverage
 
-2. **Classification by Impact Level**
-   - **High**: Modifying or extending existing process flows
-   - **Medium**: Using or updating existing data
-   - **Low**: Read-only operations, log additions, etc.
+For each integration boundary, define the contract:
+- Input: what is received
+- Output: what is returned (specify sync/async)
+- On Error: how errors are handled at this boundary
 
-3. **Reflection in Design Doc**
-   - Create "## Integration Point Map" section
-   - Clarify responsibilities and boundaries at each integration point
-   - Define error behavior at design phase
+Confirm and document conflicts with existing systems (priority, naming conventions) at each integration point.
 
 ### Agreement Checklist【Most Important】
 Must be performed at the beginning of Design Doc creation:
@@ -198,32 +178,18 @@ Perform before Design Doc creation:
 
 Common ADR needed when: Technical decisions common to multiple components
 
-### Integration Point Specification
-Document integration points with existing system (location, old implementation, new implementation, switching method).
-
 ### Data Contracts
 Define input/output between components (types, preconditions, guarantees, error behavior).
 
 ### State Transitions (When Applicable)
 Document state definitions and transitions for stateful components.
 
-### Integration Boundary Contracts【Required】
-Define input/output, sync/async, and error handling at component boundaries in language-agnostic manner.
-
-```yaml
-Boundary Name: [Connection Point]
-  Input: [What is received]
-  Output: [What is returned (specify sync/async)]
-  On Error: [How to handle]
-```
-
-Confirm and document conflicts with existing systems (priority, naming conventions, etc.) to prevent integration inconsistencies.
-
 ## Required Information
 
 - **Operation Mode**:
   - `create`: New creation (default)
   - `update`: Update existing document
+  - `reverse-engineer`: Document existing architecture as-is (see Reverse-Engineer Mode section)
 
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
 - **PRD**: PRD document (if exists)
@@ -244,38 +210,7 @@ Confirm and document conflicts with existing systems (priority, naming conventio
 
 ## Document Output Format
 
-### ADR Creation (Multiple Option Comparison Mode)
-
-**Basic Structure**:
-```markdown
-# ADR-XXXX: [Title]
-Status: Proposed
-
-## Background
-[Technical challenges and constraints in 1-2 sentences]
-
-## Options
-### Option A: [Approach Name]
-- Overview: [Explain in one sentence]
-- Benefits: [2-3 items]
-- Drawbacks: [2-3 items]
-- Effort: X days
-
-### Option B/C: [Document similarly]
-
-## Comparison
-| Evaluation Axis | Option A | Option B | Option C |
-|-----------------|----------|----------|----------|
-| Implementation Effort | 3 days | 5 days | 2 days |
-| Maintainability | High | Medium | Low |
-
-## Decision
-Option [X] selected. Reason: [2-3 sentences including trade-offs]
-```
-
-See `docs/adr/template-en.md` for details.
-
-### Normal Document Creation
+### Document Creation
 - **ADR**: `docs/adr/ADR-[4-digit number]-[title].md` (e.g., ADR-0001)
 - **Design Doc**: `docs/design/[feature-name]-design.md`
 - Follow respective templates (`template-en.md`)
@@ -286,7 +221,7 @@ See `docs/adr/template-en.md` for details.
 Include in ADR: Decisions, rationale, principled guidelines
 Exclude from ADR: Schedules, implementation procedures, specific code
 
-Implementation guidelines should only include principles (e.g., "Use dependency injection" ✓, "Implement in Phase 1" ✗)
+Implementation guidelines should only include principles (e.g., "Use dependency injection"), not schedules or procedures.
 
 ## Output Policy
 Execute file output immediately (considered approved at execution).
@@ -322,31 +257,40 @@ Implementation sample creation checklist:
 ### ADR Checklist
 - [ ] Problem background and evaluation of multiple options (minimum 3 options)
 - [ ] Clear trade-offs and decision rationale
-- [ ] Principled guidelines for implementation (no specific procedures)
+- [ ] Principled guidelines for implementation
 - [ ] Consistency with existing architecture
 - [ ] Latest technology research conducted and references cited
 - [ ] **Common ADR relationships specified** (when applicable)
 - [ ] Comparison matrix completeness
 
 ### Design Doc Checklist
+
+**All modes**:
+- [ ] **Standards identification gate completed** (required)
+- [ ] **Code inspection evidence recorded** (required)
+- [ ] **Integration points enumerated with contracts** (required)
+- [ ] **Data contracts clarified** (required)
+- [ ] Architecture and data flow clearly expressed in diagrams
+
+**Create/update mode only** (skip in reverse-engineer mode):
 - [ ] **Agreement checklist completed** (most important)
 - [ ] **Prerequisite common ADRs referenced** (required)
 - [ ] **Change impact map created** (required)
-- [ ] **Integration boundary contracts defined** (required)
-- [ ] **Integration points completely enumerated** (required)
-- [ ] **Data contracts clarified** (required)
 - [ ] **E2E verification procedures for each phase** (required)
 - [ ] Response to requirements and design validity
 - [ ] Test strategy and error handling
-- [ ] Architecture and data flow clearly expressed in diagrams
 - [ ] Interface change matrix completeness
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
 - [ ] Latest best practices researched and references cited
 - [ ] **Complexity assessment**: complexity_level set; if medium/high, complexity_rationale specifies (1) requirements/ACs, (2) constraints/risks
-- [ ] **Standards identification gate completed** (required)
-- [ ] **Code inspection evidence recorded** (required)
 - [ ] **Data representation decision documented** (when new structures introduced)
 - [ ] **Field propagation map included** (when fields cross boundaries)
+
+**Reverse-engineer mode only**:
+- [ ] Every architectural claim cites file:line as evidence
+- [ ] Identifiers transcribed exactly from code
+- [ ] Test existence confirmed by Glob
+- [ ] All items from Unit Inventory (if provided) accounted for
 
 
 ## Acceptance Criteria Creation Guidelines
@@ -386,27 +330,44 @@ When AC outputs contain any of the following, assign a Property annotation:
 
 Refer to the template for notation.
 
-## Latest Information Research Guidelines
+## Latest Information Research
 
-**Required Research Timing**: New technology introduction, performance optimization, security design, major version upgrades
-**Recommended Research**: Before implementing complex algorithms, when considering improvements to existing patterns
+**When** (create/update mode): New technology/library introduction, performance optimization, security design, major version upgrades.
 
-**Search Pattern Examples**:
-To get latest information, always check current year before searching:
-```bash
-date +%Y  # e.g., 2025
-```
-Include this year in search queries:
-- `React Server Components best practices {current_year}` (new feature research)
-- `PostgreSQL vs MongoDB performance comparison {current_year}` (technology selection)
-- `[framework name] official documentation` (official docs don't need year)
+Check current year with `date +%Y` and include in search queries:
+- `[technology] [feature] best practices {current_year}`
+- `[tech A] vs [tech B] comparison {current_year}`
+- `[framework] breaking changes migration guide`
 
-**Citation**: Add "## References" section at end of ADR/Design Doc
-```markdown
-## References
-- [Title](URL) - Brief description of referenced content
-```
+Cite sources in "## References" section at end of ADR/Design Doc with URLs.
+
+**Reverse-engineer mode**: Skip. Research is for forward design decisions.
 
 ## Update Mode Operation
 - **ADR**: Update existing file for minor changes, create new file for major changes
 - **Design Doc**: Add revision section and record change history
+
+## Reverse-Engineer Mode (As-Is Documentation)
+
+Mode for documenting existing architecture as-is. Used when creating Design Docs from existing implementation (e.g., in reverse-engineering workflows).
+
+### What to Skip in Reverse-Engineer Mode
+- ADR creation (no decisions to record — decisions were already made)
+- Option comparison (no alternatives to evaluate)
+- Change Impact Map (no changes being proposed)
+- Field Propagation Map (no new fields being introduced)
+- Implementation Approach Decision (no implementation strategy to select)
+- Latest Information Research (documenting what exists, not designing something new)
+
+### Reverse-Engineer Mode Execution Steps
+
+1. **Read & Inventory**: Read every Primary File. Record public interfaces per file. If Unit Inventory is provided, use it as a completeness baseline — all listed routes, exports, and test files should be accounted for in the Design Doc
+2. **Trace Data Flow**: For each entry point, follow calls through services/helpers/data layer. Read each. Record actual flow and error handling as implemented
+3. **Record Contracts**: For each public API/handler, record: parameters, response shape, status codes, middleware/guards — as written in code. For external dependencies: record what is called and returned. Use exact identifiers from source
+4. **Document Data Model**: Read schema/type definitions. Record: field names, types, nullable markers, defaults. For enums: list ALL values
+5. **Identify Test Coverage**: Glob for test files. Record which interfaces have tests. Confirm test existence with Glob before reporting
+
+### Reverse-Engineer Mode Quality Standard
+- Every claim cites file:line as evidence
+- Identifiers transcribed exactly from code
+- Test existence confirmed by Glob, not assumed

@@ -94,7 +94,7 @@ Output in the following structured format:
 ### For Final Version
 Storage location and naming convention follow documentation-criteria skill.
 
-**Handling Undetermined Items**: When information is insufficient, do not speculate. Instead, list questions in an "Undetermined Items" section.
+**Handling Undetermined Items**: When a claim cannot be confirmed directly from code, tests, or configuration, list it as a question in an "Undetermined Items" section.
 
 ## Output Policy
 Execute file output immediately (considered approved at execution).
@@ -104,16 +104,15 @@ Execute file output immediately (considered approved at execution).
 - Understand and describe intent of each section
 - Limit questions to 3-5 in interactive mode
 
-## PRD Boundaries: Do Not Include Implementation Phases
+## PRD Boundaries
 
-**Important**: Do not include implementation phases (Phase 1, 2, etc.) or task decomposition in PRDs.
-These are outside the scope of this document. PRDs should focus solely on "what to build."
+PRDs focus solely on "what to build." Implementation phases and task decomposition belong in work plans.
 
 ## PRD Creation Best Practices
 
 ### 1. User-Centric Description
 - Prioritize value users gain over technical details
-- Avoid jargon, use business terminology
+- Use business terminology accessible to all stakeholders
 - Include specific use cases
 
 ### 2. Clear Prioritization
@@ -166,24 +165,23 @@ Mode for extracting specifications from existing implementation to create PRD. U
 **Important**: Reverse PRD creates PRD for entire product feature, not just technical improvements.
 
 - **Target Unit**: Entire product feature (e.g., entire "search feature")
-- **Scope**: Don't create PRD for technical improvements alone
+- **Scope**: PRD covers the full product feature including user-facing behavior, data flow, and integration points
 
 ### External Scope Handling
 
 When `External Scope Provided: true` is specified:
-- Skip independent scope discovery (Step 1)
-- Use provided scope data: Feature, Description, Related Files, Entry Points
-- Focus investigation within the provided scope boundaries
+- Use provided scope data as **investigation starting point** (independent scope discovery is not needed): Feature, Description, Related Files, Entry Points
+- If entry point tracing reveals files/routes outside provided scope that are directly called from entry points, **include them** and report as scope expansion in output
 
 When external scope is NOT provided:
 - Execute full scope discovery independently
 
 ### Reverse PRD Execution Policy
 **Create high-quality PRD through thorough investigation**
-- Investigate until code implementation is fully understood
-- Comprehensively confirm related files, tests, and configurations
-- Write specifications with confidence (minimize speculation and assumptions)
-- **Language Standard**: Code is the single source of truth. Describe observable behavior in definitive form. When uncertain about a behavior, investigate the code further to confirm — move the claim to "Undetermined Items" only when the behavior genuinely cannot be determined from code alone (e.g., business intent behind a design choice).
+
+**Language Standard**: Code is the single source of truth. Describe observable behavior in definitive form. When uncertain about a behavior, investigate the code further to confirm — move the claim to "Undetermined Items" only when the behavior genuinely cannot be determined from code alone (e.g., business intent behind a design choice).
+
+**Literal Transcription Rule**: Identifiers, URLs, parameter names, field names, component names, and string literals MUST be copied exactly as written in code. If code contains a typo, write the actual identifier in the specification and note the typo separately in Known Issues.
 
 ### Confidence Gating
 
@@ -191,34 +189,62 @@ Before documenting any claim, assess confidence level:
 
 | Confidence | Evidence | Output Format |
 |------------|----------|---------------|
-| Verified | Direct code observation, test confirmation | State as fact |
+| Verified | Direct code observation via Read/Grep, test confirmation | State as fact |
 | Inferred | Indirect evidence, pattern matching | Mark with context |
 | Unverified | No direct evidence, speculation | Add to "Undetermined Items" section |
 
 **Rules**:
-- Never document Unverified claims as facts
+- Unverified claims go to "Undetermined Items" only
 - Inferred claims require explicit rationale
 - Prioritize Verified claims in core requirements
 - Before classifying as Inferred, attempt to verify by reading the relevant code — classify as Inferred only after confirming the code is inaccessible or ambiguous
 
-### Reverse PRD Process
-1. **Investigation Phase** (skip if External Scope Provided)
-   - Analyze all files of target feature
-   - Understand expected behavior from test cases
-   - Collect related documentation and comments
-   - Fully grasp data flow and processing logic
+### Reverse PRD Investigation Protocol
 
-2. **Specification Documentation**
-   - Apply Confidence Gating to each claim
-   - Accurately document specifications extracted from current implementation
-   - Only describe specifications clearly readable from code
+**Step 1: Route & Entry Point Enumeration** (even when External Scope Provided)
+- Grep for all route/endpoint definitions in the provided Related Files
+- Record EACH route: HTTP method, path, handler, middleware — as written in code
+- This becomes the authoritative route list for the PRD
 
-3. **Minimal Confirmation Items**
-   - Only ask about truly undecidable important matters (maximum 3)
-   - Only parts related to business decisions, not implementation details
+**Step 2: Entry Point Tracing**
+For each entry point / handler identified in Step 1:
+1. Read the handler/controller file
+2. For each function/service called from the handler:
+   - Read the function **implementation** (not just the call site)
+   - Record: function name, file path, key behavior, parameters
+3. For each helper/utility function called within services:
+   - Read the helper implementation
+   - Record: actual behavior based on code reading
+
+**Step 3: Data Model Investigation**
+For each data type/schema referenced in the traced code:
+1. Read the type definition / schema / migration file
+2. Record: field names, types, nullable markers, validation rules — AS WRITTEN IN CODE
+3. For enum/constant definitions: record ALL values (count them explicitly)
+
+**Step 4: Test File Discovery**
+- Glob for test files matching the feature area (common conventions: `*test*`, `*spec*`, `*Test*`)
+- For each test file found: Read it and record test case names and what behavior they verify
+- For handlers/services with no test files found via Glob: record as "no tests found"
+
+**Step 5: Role & Permission Discovery**
+- Grep for middleware, guard, role-check patterns in routes and handlers
+- Record ALL roles/permissions that can access the feature (not just the primary ones)
+
+**Step 6: Specification Documentation**
+- Apply Confidence Gating to each claim
+- Accurately document specifications extracted from current implementation
+- Only describe specifications clearly readable from code
+- Reference the route list, data model, and test inventory from Steps 1-5
+
+**Step 7: Minimal Confirmation Items**
+- Only ask about truly undecidable important matters (maximum 3)
+- Only parts related to business decisions, not implementation details
 
 ### Quality Standards
 - Verified content: 80%+ of core requirements
 - Inferred content: 15% maximum with rationale
 - Unverified content: Listed in "Undetermined Items" only
 - Specification document with implementable specificity
+- All routes from Step 1 are accounted for in the PRD
+- All data model fields from Step 3 match the PRD's data model section

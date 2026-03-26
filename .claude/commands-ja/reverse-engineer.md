@@ -74,6 +74,7 @@ prompt: |
 - ユニットが発見されない → ユーザーにヒントを求める
 - `$STEP_1_OUTPUT.prdUnits`が存在すること
 - `prdUnits`全体の`sourceUnits`を結合・重複除去した集合が`discoveredUnits`のID集合と一致すること — 欠落や重複がないこと
+- 各discoveredUnitの`unitInventory`に少なくとも1つの非空カテゴリ（routes、testFiles、publicExports）があること。3つすべてが空のユニットは発見が不完全 — そのユニットのrelatedFilesにフォーカスしてscope-discovererを再実行する
 
 **人間レビューポイント**（有効時）: `$STEP_1_OUTPUT.prdUnits`とソースユニットのマッピングを提示する。ユーザーはグルーピングの確認、調整、またはスコープからの除外を行う。これは最も重要なレビューポイント — グルーピングの誤りはすべての下流ドキュメントに波及する。
 
@@ -97,8 +98,9 @@ prompt: |
   関連ファイル: $PRD_UNIT_COMBINED_RELATED_FILES
   エントリーポイント: $PRD_UNIT_COMBINED_ENTRY_POINTS
 
-  独自のスコープ発見をスキップ。提供されたスコープデータを使用。
-  指定スコープ内でのコード調査に基づき最終版PRDを作成。
+  提供されたスコープを調査の起点として使用。
+  エントリーポイントの追跡でスコープ外のファイルが判明した場合は含める。
+  徹底的なコード調査に基づき最終版PRDを作成。
 ```
 
 **出力を保存**: `$STEP_2_OUTPUT`（PRDパス）
@@ -115,14 +117,16 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  code_paths: $PRD_UNIT_COMBINED_RELATED_FILES ($STEP_1_OUTPUTより)
   verbose: false
 ```
+
+注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見することで、scope-discovererの出力に制約されない独立した検証を実現する。
 
 **出力を保存**: `$STEP_3_OUTPUT`
 
 **品質ゲート**:
-- consistencyScore >= 70 → レビューへ進む
+- consistencyScore >= 70 かつ verifiableClaimCount >= 20 → レビューへ進む
+- consistencyScore >= 70 だが verifiableClaimCount < 20 → 検証が浅い、code-verifierを再実行
 - consistencyScore < 70 → 詳細レビュー用にフラグ
 
 #### ステップ4: レビュー
@@ -206,6 +210,7 @@ fullstack=Yesの場合、ユニットの`relatedFiles`と`technicalProfile.prima
 - `technicalProfile.publicInterfaces` → publicインターフェース
 - `dependencies` → 依存関係
 - `relatedFiles` → スコープ境界
+- `unitInventory` → ユニットインベントリ（ルート、テストファイル、publicエクスポート）
 
 **出力を保存**: `$STEP_6_OUTPUT`
 
@@ -229,17 +234,18 @@ subagent_type: technical-designer
 prompt: |
   既存コードに基づき以下の機能のDesign Docを作成する。
 
-  動作モード: create
+  動作モード: reverse-engineer
 
   機能: $UNIT_NAME ($STEP_6_OUTPUTより)
   説明: $UNIT_DESCRIPTION
   主要ファイル: $UNIT_PRIMARY_MODULES
   publicインターフェース: $UNIT_PUBLIC_INTERFACES
   依存関係: $UNIT_DEPENDENCIES
+  ユニットインベントリ: $UNIT_INVENTORY（スコープ発見で得たルート、テストファイル、publicエクスポート）
 
   親PRD: $APPROVED_PRD_PATH
 
-  現在のアーキテクチャをドキュメント化する。変更提案は行わない。
+  現在のアーキテクチャを現状のままドキュメント化する。ユニットインベントリを網羅性の検証基準として使用する — すべてのルートとエクスポートがDesign Docに反映されていること。
 ```
 
 **出力を保存**: `$STEP_7_OUTPUT`
@@ -251,20 +257,21 @@ subagent_type: technical-designer-frontend
 prompt: |
   既存コードに基づき以下の機能のフロントエンドDesign Docを作成する。
 
-  動作モード: create
+  動作モード: reverse-engineer
 
   機能: $UNIT_NAME ($STEP_6_OUTPUTより)
   説明: $UNIT_DESCRIPTION
   主要ファイル: $UNIT_PRIMARY_MODULES
   publicインターフェース: $UNIT_PUBLIC_INTERFACES
   依存関係: $UNIT_DEPENDENCIES
+  ユニットインベントリ: $UNIT_INVENTORY
 
   親PRD: $APPROVED_PRD_PATH
   バックエンドDesign Doc: $STEP_7_OUTPUT
 
   バックエンドDesign DocのAPIコントラクトを参照。
   対象: コンポーネント階層、状態管理、UI操作、データ取得。
-  現在のアーキテクチャをドキュメント化する。変更提案は行わない。
+  現在のアーキテクチャを現状のままドキュメント化する。ユニットインベントリを網羅性の検証基準として使用する。
 ```
 
 **出力を保存**: `$STEP_7_FRONTEND_OUTPUT`
@@ -281,9 +288,10 @@ prompt: |
 
   doc_type: design-doc
   document_path: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
-  code_paths: $UNIT_PRIMARY_MODULES
   verbose: false
 ```
+
+注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見する。
 
 **出力を保存**: `$STEP_8_OUTPUT`
 

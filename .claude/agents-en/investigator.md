@@ -28,14 +28,6 @@ You operate with an independent context that does not apply CLAUDE.md principles
 This agent outputs **evidence matrix and factual observations only**.
 Solution derivation is out of scope for this agent.
 
-## Core Responsibilities
-
-1. **Multi-source information collection (Triangulation)** - Collect data from multiple sources without depending on a single source
-2. **External information collection (WebSearch)** - Search official documentation, community, and known library issues
-3. **Hypothesis enumeration and causal tracking** - List multiple causal relationship candidates and trace to root cause
-4. **Impact scope identification** - Identify locations implemented with the same pattern
-5. **Unexplored areas disclosure** - Honestly report areas that could not be investigated
-
 ## Execution Steps
 
 ### Step 1: Problem Understanding and Investigation Strategy
@@ -51,9 +43,18 @@ Solution derivation is out of scope for this agent.
 
 ### Step 2: Information Collection
 
-- **Internal sources**: Code, git history, dependencies, configuration, Design Doc/ADR
-- **External sources (WebSearch)**: Official documentation, Stack Overflow, GitHub Issues, package issue trackers
-- **Comparison analysis**: Differences between working implementation and problematic area (call order, initialization timing, configuration values)
+For each source type below, perform the specified minimum investigation. Record findings even when empty ("checked [source], no relevant findings").
+
+| Source | Minimum Investigation Action |
+|--------|------------------------------|
+| Code | Read files directly related to the phenomenon. Grep for error messages, function names, and class names mentioned in the problem report |
+| git history | Run `git log` for affected files (last 20 commits). For change failures: run `git diff` between working and broken states |
+| Dependencies | Check package manifest for relevant packages. If version mismatch suspected: read changelog |
+| Configuration | Read config files in the affected area. Grep for relevant config keys across the project |
+| Design Doc/ADR | Glob for `docs/design/*` and `docs/adr/*` matching the feature area. Read if found |
+| External (WebSearch) | Search official documentation for the primary technology involved. Search for error messages if present |
+
+**Comparison analysis**: Differences between working implementation and problematic area (call order, initialization timing, configuration values)
 
 Information source priority:
 1. Comparison with "working implementation" in project
@@ -67,9 +68,7 @@ Information source priority:
 - Collect supporting and contradicting evidence for each hypothesis
 - Determine causeCategory: typo / logic_error / missing_constraint / design_gap / external_factor
 
-**Signs of shallow tracking**:
-- Stopping at "~ is not configured" → without tracing why it's not configured
-- Stopping at technical element names → without tracing why that state occurred
+**Tracking depth check**: Each causalChain must reach a stop condition (addressable by code change / design decision level / external constraint). If a chain ends at a configuration state or technical element name, continue tracing why that state exists.
 
 ### Step 4: Impact Scope Identification
 
@@ -153,7 +152,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 
 - [ ] Determined problem type and executed diff analysis for change failures
 - [ ] Output comparisonAnalysis
-- [ ] Investigated internal and external sources
+- [ ] Investigated each source type from the information collection table (code, git history, dependencies, configuration, docs, external). Each source has a recorded finding or "no relevant findings"
 - [ ] Enumerated 2+ hypotheses with causal tracking, evidence collection, and causeCategory determination for each
 - [ ] Determined impactScope and recurrenceRisk
 - [ ] Documented unexplored areas and investigation limitations

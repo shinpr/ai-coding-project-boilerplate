@@ -34,20 +34,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ## Document Creation Criteria
 
-Details of documentation creation criteria follow documentation-criteria skill.
-
-### Overview
-- ADR: Component architecture changes, state management changes, React patterns changes, external library changes
-- Design Doc: Required for 3+ component/file changes
-- Also required regardless of scale for:
-  - Complex state management logic
-    - Criteria: Managing 3+ state variables, or coordinating 5+ async operations (API calls)
-    - Example: Complex form state management, multiple API call orchestration
-  - Introduction of new React patterns or custom hooks
-    - Example: New context patterns, custom hook libraries
-
-### Important: Assessment Consistency
-- If assessments conflict, include and report the discrepancy in output
+Follow documentation-criteria skill for ADR/Design Doc creation thresholds. If assessments conflict, include and report the discrepancy in output.
 
 ## Mandatory Process Before Design Doc Creation
 
@@ -77,27 +64,20 @@ Must be performed before Design Doc creation:
    - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
 
 ### Integration Point Analysis【Important】
-Clarify integration points with existing components when adding new features or modifying existing ones:
+Document all integration points with existing components in "## Integration Point Map" section:
 
-1. **Identify and Document Integration Points**
-   ```yaml
-   ## Integration Point Map
-   Integration Point 1:
-     Existing Component: [Component Name/Hook Name]
-     Integration Method: [Props passing/Context sharing/Custom Hook usage/etc]
-     Impact Level: High (Data Flow Change) / Medium (Props Usage) / Low (Read-Only)
-     Required Test Coverage: [Continuity Verification of Existing Components]
-   ```
+For each integration point, record:
+- Existing component/hook name
+- Integration method (props/context/hook/event)
+- Impact level: High (data flow change) / Medium (state usage) / Low (read-only)
+- Required test coverage
 
-2. **Classification by Impact Level**
-   - **High**: Modifying or extending existing data flow or state management
-   - **Medium**: Using or updating existing component state/context
-   - **Low**: Read-only operations, rendering additions, etc.
+For each integration boundary, define the contract:
+- Input (Props): prop types and required/optional
+- Output (Events): event handler signatures
+- On Error: error boundary, error state, or fallback UI handling
 
-3. **Reflection in Design Doc**
-   - Create "## Integration Point Map" section
-   - Clarify responsibilities and boundaries at each integration point
-   - Define error behavior and loading states at design phase
+Confirm and document conflicts with existing components (naming conventions, prop patterns) at each integration point.
 
 ### Agreement Checklist【Most Important】
 Must be performed at the beginning of Design Doc creation:
@@ -160,32 +140,11 @@ Perform before Design Doc creation:
 
 Common ADR needed when: Technical decisions common to multiple components
 
-### Integration Point Specification
-Document integration points with existing components (location, old Props, new Props, switching method).
-
 ### Data Contracts
 Define Props types and state management contracts between components (types, preconditions, guarantees, error behavior).
 
 ### State Transitions (When Applicable)
 Document state definitions and transitions for stateful components (loading, error, success states).
-
-### Integration Boundary Contracts【Required】
-Define Props types, event handlers, and error handling at component boundaries.
-
-```yaml
-Boundary Name: [Component Integration Point]
-  Input (Props): [Props type definition]
-  Output (Events): [Event handler signatures]
-  On Error: [How to handle errors (Error Boundary, error state, etc.)]
-```
-
-**Integration Boundaries:**
-- React → DOM: Component rendering to browser DOM
-- Build Tool → Browser: Build output to static files served by browser
-- API → Frontend: External API responses handled by frontend
-- Context → Component: Context values consumed by components
-
-Confirm and document conflicts with existing components (naming conventions, Props patterns, etc.) to prevent integration inconsistencies.
 
 ## UI Spec Integration
 
@@ -202,6 +161,7 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 - **Operation Mode**:
   - `create`: New creation (default)
   - `update`: Update existing document
+  - `reverse-engineer`: Document existing frontend architecture as-is (see Reverse-Engineer Mode section)
 
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
 - **PRD**: PRD document (if exists)
@@ -223,39 +183,7 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 
 ## Document Output Format
 
-### ADR Creation (Multiple Option Comparison Mode)
-
-**Basic Structure**:
-```markdown
-# ADR-XXXX: [Title]
-Status: Proposed
-
-## Background
-[Frontend technical challenges and constraints in 1-2 sentences]
-
-## Options
-### Option A: [Approach Name]
-- Overview: [Explain in one sentence]
-- Benefits: [2-3 items]
-- Drawbacks: [2-3 items]
-- Effort: X days
-
-### Option B/C: [Document similarly]
-
-## Comparison
-| Evaluation Axis | Option A | Option B | Option C |
-|-----------------|----------|----------|----------|
-| Implementation Effort | 3 days | 5 days | 2 days |
-| Maintainability | High | Medium | Low |
-| Performance Impact | Low | High | Medium |
-
-## Decision
-Option [X] selected. Reason: [2-3 sentences including trade-offs]
-```
-
-See `docs/adr/template-en.md` for details.
-
-### Normal Document Creation
+### Document Creation
 - **ADR**: `docs/adr/ADR-[4-digit number]-[title].md` (e.g., ADR-0001)
 - **Design Doc**: `docs/design/[feature-name]-design.md`
 - Follow respective templates (`template-en.md`)
@@ -368,20 +296,31 @@ class Button extends React.Component {
 - [ ] Comparison matrix completeness (including performance impact)
 
 ### Design Doc Checklist
+
+**All modes**:
+- [ ] **Standards identification gate completed** (required)
+- [ ] **Code inspection evidence recorded** (required)
+- [ ] **Integration points enumerated with contracts** (required)
+- [ ] **Props type contracts clarified** (required)
+- [ ] Component hierarchy and data flow clearly expressed in diagrams
+
+**Create/update mode only** (skip in reverse-engineer mode):
 - [ ] **Agreement checklist completed** (most important)
 - [ ] **Prerequisite common ADRs referenced** (required)
 - [ ] **Change impact map created** (required)
-- [ ] **Integration boundary contracts defined** (required)
-- [ ] **Integration points completely enumerated** (required)
-- [ ] **Props type contracts clarified** (required)
 - [ ] **Component verification procedures for each phase** (required)
 - [ ] Response to requirements and design validity
-- [ ] Test strategy (React Testing Library) and error handling (Error Boundary)
-- [ ] Component hierarchy and data flow clearly expressed in diagrams
+- [ ] Test strategy and error handling
 - [ ] Props change matrix completeness
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
-- [ ] Latest React best practices researched and references cited
+- [ ] Latest best practices researched and references cited
 - [ ] **Complexity assessment**: complexity_level set; if medium/high, complexity_rationale specifies (1) requirements/ACs, (2) constraints/risks
+
+**Reverse-engineer mode only**:
+- [ ] Every architectural claim cites file:line as evidence
+- [ ] Identifiers transcribed exactly from code
+- [ ] Test existence confirmed by Glob
+- [ ] All items from Unit Inventory (if provided) accounted for
 
 ## Acceptance Criteria Creation Guidelines
 
@@ -411,45 +350,40 @@ class Button extends React.Component {
 
 **Principle**: AC = User-observable behavior in browser verifiable in isolated CI environment
 
-## Latest Information Research Guidelines
+## Latest Information Research
 
-### Research Timing
-1. **Mandatory Research**:
-   - When considering new React library/UI framework introduction
-   - When designing performance optimization (code splitting, lazy loading)
-   - When designing accessibility implementation (WCAG compliance)
-   - When React major version upgrades (e.g., React 18 → 19)
+**When** (create/update mode): New library/framework introduction, performance optimization, accessibility design, major version upgrades.
 
-2. **Recommended Research**:
-   - Before implementing complex custom hooks
-   - When considering improvements to existing component patterns
+Check current year with `date +%Y` and include in search queries:
+- `[library] best practices {current_year}`
+- `[lib A] vs [lib B] comparison {current_year}`
+- `[framework] breaking changes migration guide`
+- `[framework] accessibility best practices`
 
-### Research Method
+Cite sources in "## References" section at end of ADR/Design Doc with URLs.
 
-**Required Research Timing**: New library introduction, performance optimization, accessibility design, React version upgrades
-
-**Specific Search Pattern Examples**:
-- `React new features best practices 2025` (new feature research)
-- `Zustand vs Redux Toolkit comparison 2025` (state management selection)
-- `React Server Components patterns` (design patterns)
-- `React breaking changes migration guide` (version upgrade)
-- `Tailwind CSS accessibility best practices` (accessibility research)
-- `[library name] official documentation` (official information)
-
-**Citation**: Add "## References" section at end of ADR/Design Doc with URLs and descriptions
-
-### Citation Format
-
-Add at the end of ADR/Design Doc in the following format:
-
-```markdown
-## References
-
-- [Title](URL) - Brief description of referenced content
-- [React Official Documentation](URL) - Related design principles and features
-- [Frontend Blog Article](URL) - Implementation patterns and best practices
-```
+**Reverse-engineer mode**: Skip. Research is for forward design decisions.
 
 ## Update Mode Operation
 - **ADR**: Update existing file for minor changes, create new file for major changes
 - **Design Doc**: Add revision section and record change history
+
+## Reverse-Engineer Mode (As-Is Frontend Documentation)
+
+Mode for documenting existing frontend architecture as-is. Used when creating Design Docs from existing implementation.
+
+### What to Skip in Reverse-Engineer Mode
+- ADR creation, option comparison, change impact analysis, latest information research, implementation approach decision
+
+### Reverse-Engineer Mode Execution Steps
+
+1. **Read & Inventory**: Read every Primary File. Record component hierarchy, exported components, hooks, utilities. If Unit Inventory is provided, use it as a completeness baseline — all listed routes, exports, and test files should be accounted for in the Design Doc
+2. **Trace Component Tree**: For each page/screen, read implementation and child components. Record: props, state management, data fetching, conditional rendering — as implemented
+3. **Document Data Flow**: For each data fetching call: record endpoint, params, response shape. For state management: record state shape, update mechanisms, consumers
+4. **Record Contracts**: For each component's interface, record prop names, types, required/optional — as written in code. Use exact identifiers from source
+5. **Identify Test Coverage**: Glob for test files. Record which components have tests. Confirm test existence with Glob before reporting
+
+### Reverse-Engineer Mode Quality Standard
+- Every claim cites file:line as evidence
+- Identifiers transcribed exactly from code
+- Test existence confirmed by Glob, not assumed

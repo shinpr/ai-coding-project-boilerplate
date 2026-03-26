@@ -81,7 +81,18 @@ Register the following with TaskCreate and execute:
 Invoke investigator using Agent tool:
 - `subagent_type`: "investigator"
 - `description`: "Collect problem information"
-- `prompt`: "Comprehensively collect information related to the following phenomenon. Phenomenon: [Problem reported by user]"
+- `prompt`: |
+    Comprehensively collect information related to the following phenomenon.
+
+    Phenomenon: [Problem reported by user]
+
+    Problem essence: [taskEssence from Step 0.3]
+    Investigation focus: [investigationFocus from Step 0.4]
+
+    [For change failures, additionally include:]
+    Change details: [What was changed]
+    Affected area: [What broke]
+    Shared components: [Commonalities between cause and effect]
 
 **Expected output**: Evidence matrix, comparison analysis results, causal tracking results, list of unexplored areas, investigation limitations
 
@@ -90,12 +101,20 @@ Invoke investigator using Agent tool:
 Review investigation output:
 
 **Quality Check** (verify JSON output contains the following):
-- [ ] comparisonAnalysis
-- [ ] causalChain for each hypothesis (reaching stop condition)
-- [ ] causeCategory for each hypothesis
-- [ ] Investigation covering investigationFocus items (when provided)
+- [ ] `comparisonAnalysis` is present and `normalImplementation` is not null (comparison target found) OR explicitly recorded as "no working implementation found"
+- [ ] `causalChain` for each hypothesis reaches a stop condition (code change / design decision / external constraint)
+- [ ] `causeCategory` for each hypothesis is one of: typo / logic_error / missing_constraint / design_gap / external_factor
+- [ ] `investigationSources` covers at least 3 distinct source types (code, history, dependency, config, document, external)
+- [ ] Investigation covers `investigationFocus` items (when provided in Step 0.4)
+- [ ] Each hypothesis has at least 1 entry in `supportingEvidence` with a `source` field citing a specific file or location
 
-**If quality insufficient**: Re-run investigator specifying missing items
+**If quality insufficient**: Re-run investigator specifying missing items explicitly:
+- `prompt`: |
+    Re-investigate with focus on the following gaps:
+    - Missing: [list specific missing items from quality check]
+
+    Previous investigation results (for context, do not re-investigate covered areas):
+    [Previous investigation JSON]
 
 **design_gap Escalation**:
 
