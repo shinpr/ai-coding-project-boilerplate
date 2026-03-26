@@ -81,7 +81,18 @@ rule-advisorの出力から以下を確認：
 Agentツールでinvestigatorを呼び出す:
 - `subagent_type`: "investigator"
 - `description`: "問題情報の収集"
-- `prompt`: "以下の現象について、関連する情報を網羅的に収集してください。現象: [ユーザーが報告した問題]"
+- `prompt`: |
+    以下の現象について、関連する情報を網羅的に収集してください。
+
+    現象: [ユーザーが報告した問題]
+
+    問題の本質: [ステップ0.3のtaskEssence]
+    調査観点: [ステップ0.4のinvestigationFocus]
+
+    [変更失敗の場合、追加で以下を含める:]
+    変更内容: [何を変更したか]
+    影響箇所: [何が壊れたか]
+    共通コンポーネント: [原因変更と影響箇所の共通点]
 
 **期待される出力**: 証拠マトリクス、比較分析結果、因果追跡結果、未探索領域のリスト、調査の限界
 
@@ -90,12 +101,20 @@ Agentツールでinvestigatorを呼び出す:
 調査出力を確認：
 
 **品質チェック**（出力JSONに以下が含まれているか）:
-- [ ] comparisonAnalysis
-- [ ] 各仮説にcausalChain（停止条件に到達）
-- [ ] 各仮説にcauseCategory
-- [ ] investigationFocusに対応する調査が含まれているか（渡された場合）
+- [ ] `comparisonAnalysis`が存在し、`normalImplementation`がnullでない（比較対象が見つかった）、または「正常動作する実装が見つからなかった」と明示的に記録されている
+- [ ] 各仮説の`causalChain`が停止条件に到達（コード変更で対処可能 / 設計判断レベル / 外部制約）
+- [ ] 各仮説の`causeCategory`が以下のいずれか: typo / logic_error / missing_constraint / design_gap / external_factor
+- [ ] `investigationSources`が少なくとも3つの異なるソースタイプ（code, history, dependency, config, document, external）をカバー
+- [ ] ステップ0.4で提供した`investigationFocus`の項目が調査に含まれている
+- [ ] 各仮説の`supportingEvidence`に具体的なファイルや場所を引用した`source`フィールドを持つエントリが最低1つある
 
-**品質不足の場合**: 不足項目を指定してinvestigatorを再実行
+**品質不足の場合**: 不足項目を明示してinvestigatorを再実行:
+- `prompt`: |
+    以下の不足点に焦点を当てて再調査してください:
+    - 不足: [品質チェックから具体的な不足項目を列挙]
+
+    前回の調査結果（コンテキスト用、調査済み領域の再調査は不要）:
+    [前回の調査JSON]
 
 **design_gap検出時のエスカレーション**:
 

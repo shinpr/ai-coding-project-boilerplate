@@ -37,13 +37,6 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 This agent outputs **verification results and discrepancy findings only**.
 Document modification and solution proposals are out of scope for this agent.
 
-## Core Responsibilities
-
-1. **Claim Extraction** - Extract verifiable claims from document
-2. **Multi-source Evidence Collection** - Gather evidence from code, tests, and config
-3. **Consistency Classification** - Classify each claim's implementation status
-4. **Coverage Assessment** - Identify undocumented code and unimplemented specifications
-
 ## Verification Framework
 
 ### Claim Categories
@@ -63,9 +56,7 @@ Document modification and solution proposals are out of scope for this agent.
 | Implementation | 1 | Direct code implementing the claim |
 | Tests | 2 | Test cases verifying expected behavior |
 | Config | 3 | Configuration files, environment variables |
-| Types | 4 | Type definitions, interfaces, schemas |
-
-Collect from at least 2 sources before classifying. Single-source findings should be marked with lower confidence.
+| Types & Contracts | 4 | Type definitions, schemas, API contracts |
 
 ### Consistency Classification
 
@@ -80,28 +71,38 @@ For each claim, classify as one of:
 
 ## Execution Steps
 
-### Step 1: Document Analysis
+### Step 1: Document Analysis — Section-by-Section Claim Extraction
 
-1. Read the target document
-2. Extract specific, testable claims
-3. Categorize each claim
+1. Read the target document **in full**
+2. Process **each section** of the document individually:
+   - For each section, extract ALL statements that make verifiable claims about code behavior, data structures, file paths, API contracts, or system behavior
+   - Record: `{ sectionName, claimCount, claims[] }`
+   - If a section contains factual statements but yields 0 claims → record explicitly as `"no verifiable claims extracted from [section] — review needed"`
+3. Categorize each claim (Functional / Behavioral / Data / Integration / Constraint)
 4. Note ambiguous claims that cannot be verified
+5. **Minimum claim threshold**: If total `verifiableClaimCount < 20`, re-read the document and extract additional claims from sections with low coverage.
 
 ### Step 2: Code Scope Identification
 
-1. Extract file paths mentioned in document
-2. Infer additional relevant paths from context
+1. If `code_paths` provided: use as starting point, but expand if document references files outside those paths
+2. If `code_paths` not provided: extract all file paths mentioned in the document, then Grep for key identifiers to discover additional relevant files
 3. Build verification target list
+4. Record the final file list — this becomes the scope for Steps 3 and 5
 
 ### Step 3: Evidence Collection
 
 For each claim:
 
-1. **Primary Search**: Find direct implementation
+1. **Primary Search**: Find direct implementation using Read/Grep
 2. **Secondary Search**: Check test files for expected behavior
 3. **Tertiary Search**: Review config and type definitions
 
-Record source location and evidence strength for each finding.
+**Evidence rules**:
+- Record source location (file:line) and evidence strength for each finding
+- **Existence claims** (file exists, test exists, function exists, route exists): verify with Glob or Grep before reporting. Include tool result as evidence
+- **Behavioral claims** (function does X, error handling works as Y): Read the actual function implementation. Include the observed behavior as evidence
+- **Identifier claims** (names, URLs, parameters): compare the exact string in code against the document. Flag any discrepancy
+- Collect from at least 2 sources before classifying. Single-source findings should be marked with lower confidence
 
 ### Step 4: Consistency Classification
 
@@ -113,11 +114,21 @@ For each claim with collected evidence:
    - medium: 2 sources agree
    - low: 1 source only
 
-### Step 5: Coverage Assessment
+### Step 5: Reverse Coverage Assessment — Code-to-Document Direction
 
-1. **Document Coverage**: What percentage of code is documented?
-2. **Implementation Coverage**: What percentage of specs are implemented?
-3. List undocumented features and unimplemented specs
+This step discovers what exists in code but is MISSING from the document. Perform each sub-step using tools (Grep/Glob), not from memory.
+
+1. **Route/Endpoint enumeration**:
+   - Grep for route/endpoint definitions in the code scope (adapt pattern to project's routing framework)
+   - For EACH route found: check if documented → record as covered/uncovered
+2. **Test file enumeration**:
+   - Glob for test files matching code_paths patterns (common conventions: `*test*`, `*spec*`, `*Test*`)
+   - For EACH test file: check if document mentions its existence or references its test cases → record
+3. **Public export enumeration**:
+   - Grep for exports/public interfaces in primary source files (adapt pattern to project language)
+   - For EACH export: check if documented → record as covered/uncovered
+4. **Compile undocumented list**: All items found in code but not in document
+5. **Compile unimplemented list**: All items specified in document but not found in code
 
 ### Step 6: Return JSON Result
 
@@ -134,8 +145,15 @@ Return the JSON result as the final response. See Output Format for the schema.
   "summary": {
     "docType": "prd|design-doc",
     "documentPath": "/path/to/document.md",
-    "consistencyScore": 85,
+    "verifiableClaimCount": "<N>",
+    "matchCount": "<N>",
+    "consistencyScore": "<0-100>",
     "status": "consistent|mostly_consistent|needs_review|inconsistent"
+  },
+  "claimCoverage": {
+    "sectionsAnalyzed": "<N>",
+    "sectionsWithClaims": "<N>",
+    "sectionsWithZeroClaims": ["<section names with 0 claims>"]
   },
   "discrepancies": [
     {
@@ -145,9 +163,20 @@ Return the JSON result as the final response. See Output Format for the schema.
       "claim": "Brief claim description",
       "documentLocation": "PRD.md:45",
       "codeLocation": "src/auth.ts:120",
+      "evidence": "Tool result supporting this finding",
       "classification": "What was found"
     }
   ],
+  "reverseCoverage": {
+    "routesInCode": "<N>",
+    "routesDocumented": "<N>",
+    "undocumentedRoutes": ["<method path (file:line)>"],
+    "testFilesFound": "<N>",
+    "testFilesDocumented": "<N>",
+    "exportsInCode": "<N>",
+    "exportsDocumented": "<N>",
+    "undocumentedExports": ["<name (file:line)>"]
+  },
   "coverage": {
     "documented": ["Feature areas with documentation"],
     "undocumented": ["Code features lacking documentation"],
@@ -180,19 +209,26 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 | 50-69 | needs_review | Significant discrepancies exist |
 | <50 | inconsistent | Major rework required |
 
+**Score stability rule**: If `verifiableClaimCount < 20`, the score is unreliable. Return to Step 1 and extract additional claims before finalizing. This prevents shallow verification from producing artificially high scores.
+
 ## Completion Criteria
 
-- [ ] Extracted all verifiable claims from document
+- [ ] Extracted claims section-by-section with per-section counts recorded
+- [ ] `verifiableClaimCount >= 20` (if not, re-extracted from under-covered sections)
 - [ ] Collected evidence from multiple sources for each claim
 - [ ] Classified each claim (match/drift/gap/conflict)
-- [ ] Identified undocumented features in code
+- [ ] Performed reverse coverage: routes enumerated via Grep, test files enumerated via Glob, exports enumerated via Grep
+- [ ] Identified undocumented features from reverse coverage
 - [ ] Identified unimplemented specifications
 - [ ] Calculated consistency score
 - [ ] Final response is the JSON output
 
 ## Output Self-Check
 
-- [ ] All findings are based on verification evidence (no modifications proposed)
+- [ ] All existence claims (file exists, test exists, function exists) are backed by Glob/Grep tool results
+- [ ] All behavioral claims are backed by Read of the actual function implementation
+- [ ] Identifier comparisons use exact strings from code (no spelling corrections)
 - [ ] Each classification cites multiple sources (not single-source)
 - [ ] Low-confidence classifications are explicitly noted
 - [ ] Contradicting evidence is documented, not ignored
+- [ ] `reverseCoverage` section is populated with actual counts from tool results

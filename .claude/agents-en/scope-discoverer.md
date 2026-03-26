@@ -41,32 +41,14 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 This agent outputs **scope discovery results, evidence, and PRD unit grouping**.
 Document generation (PRD content, Design Doc content) is out of scope for this agent.
 
-## Core Responsibilities
-
-1. **Multi-source Discovery** - Collect evidence from routing, tests, directory structure, docs, modules, interfaces
-2. **Boundary Identification** - Identify logical boundaries between functional units
-3. **Relationship Mapping** - Map dependencies and relationships between discovered units
-4. **Confidence Assessment** - Assess confidence level with triangulation strength
-
-## Discovery Approach
-
-### When reference_architecture is provided (Top-Down)
-
-1. Apply RA layer definitions as initial classification framework
-2. Map code directories to RA layers
-3. Discover units within each layer
-4. Validate boundaries against RA expectations
-
-### When reference_architecture is none (Bottom-Up)
-
-1. Scan all discovery sources
-2. Identify natural boundaries from code structure
-3. Group related components into units
-4. Validate through cross-source confirmation
-
 ## Unified Scope Discovery
 
 Explore the codebase from both user-value and technical perspectives simultaneously, then synthesize results into functional units.
+
+When `reference_architecture` is provided:
+- Use its layer definitions to classify discovered code into layers (e.g., presentation/business/data for layered)
+- Validate unit boundaries against RA expectations (units should align with layer boundaries)
+- Note deviations from RA as findings in `uncertainAreas`
 
 ### Discovery Sources
 
@@ -109,22 +91,30 @@ Explore the codebase from both user-value and technical perspectives simultaneou
    - For each unit, identify its `valueProfile`: who uses it, what goal it serves, and what high-level capability it belongs to
    - Apply Granularity Criteria (see below)
 
-5. **Boundary Validation**
+5. **Unit Inventory Enumeration**
+   For each discovered unit, enumerate its internal details using Grep/Glob:
+   - **Routes**: Grep for route/endpoint definitions within the unit's relatedFiles. Record: method, path, handler, middleware — as found in code
+   - **Test files**: Glob for test files (common conventions: `*test*`, `*spec*`, `*Test*`) matching the unit's source area. Record: file path, exists=true
+   - **Public exports**: Grep for exports/public interfaces in primary modules. Record: name, type (class/function/const), file path
+
+   Store results in `unitInventory` field per unit (see Output Format). This inventory is used by downstream agents to verify completeness.
+
+6. **Boundary Validation**
    - Verify each unit delivers distinct user value
    - Check for minimal overlap between units
    - Identify shared dependencies and cross-cutting concerns
 
-6. **Saturation Check**
+7. **Saturation Check**
    - Stop discovery when 3 consecutive source types from the Discovery Sources table yield no new units
    - Mark discovery as saturated in output
 
-7. **PRD Unit Grouping** (execute only after steps 1-6 are fully complete)
+8. **PRD Unit Grouping** (execute only after steps 1-7 are fully complete)
    - Using the finalized `discoveredUnits` and their `valueProfile` metadata, group units into PRD-appropriate units
    - Grouping logic: units with the same `valueCategory` AND the same `userGoal` AND the same `targetPersona` belong to one PRD unit. If any of the three differs, the units become separate PRD units
    - Every discovered unit must appear in exactly one PRD unit's `sourceUnits`
    - Output as `prdUnits` alongside `discoveredUnits` (see Output Format)
 
-8. **Return JSON Result**
+9. **Return JSON Result**
    - Return the JSON result as the final response. See Output Format for the schema.
 
 ## Granularity Criteria
@@ -144,7 +134,7 @@ Each discovered unit should satisfy:
 - One unit cannot function without the other
 - Combined scope is still under 10 files
 
-Note: These signals are informational only during steps 1-6. Keep all discovered units separate and capture accurate value metadata (see `valueProfile` in Output Format). PRD-level grouping is performed in step 7 after discovery is complete.
+Note: These signals are informational only during steps 1-7. Keep all discovered units separate and capture accurate value metadata (see `valueProfile` in Output Format). PRD-level grouping is performed in step 8 after discovery is complete.
 
 ## Confidence Assessment
 
@@ -187,6 +177,17 @@ Note: These signals are informational only during steps 1-6. Keep all discovered
         "publicInterfaces": ["ServiceA.operation()", "ModuleB.handle()"],
         "dataFlowSummary": "Input source → core processing path → output destination",
         "infrastructureDeps": ["external dependency list"]
+      },
+      "unitInventory": {
+        "routes": [
+          {"method": "POST", "path": "/api/auth/login", "handler": "AuthController.handleLogin", "file": "routes:15"}
+        ],
+        "testFiles": [
+          {"path": "src/auth/tests/auth-service-test", "exists": true}
+        ],
+        "publicExports": [
+          {"name": "AuthService", "type": "module", "file": "src/auth/service"}
+        ]
       }
     }
   ],
@@ -232,6 +233,7 @@ Includes additional fields:
 - [ ] Reviewed test structure for feature organization
 - [ ] Detected module/service boundaries
 - [ ] Mapped public interfaces
+- [ ] Enumerated unit inventory (routes, test files, public exports) for each unit using Grep/Glob
 - [ ] Analyzed dependency graph
 - [ ] Applied granularity criteria (split/merge as needed)
 - [ ] Identified value profile (persona, goal, category) for each unit
@@ -240,7 +242,7 @@ Includes additional fields:
 - [ ] Documented relationships between units
 - [ ] Reached saturation or documented why not
 - [ ] Listed uncertain areas and limitations
-- [ ] Grouped discovered units into PRD units (step 7, after all discovery steps complete)
+- [ ] Grouped discovered units into PRD units (step 8, after all discovery steps complete)
 - [ ] Final response is the JSON output
 
 ## Constraints

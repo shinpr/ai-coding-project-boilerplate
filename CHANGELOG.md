@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.2] - 2026-03-26
+
+### Changed
+
+#### Investigation Depth Consistency
+- `code-verifier`: Section-by-section claim extraction with minimum 20 claims threshold and score stability constraint
+- `code-verifier`: Tool-backed evidence rules requiring Glob/Grep confirmation for existence, behavioral, and identifier claims
+- `code-verifier`: Reverse coverage assessment (code-to-document direction) enumerating routes, test files, and public exports
+- `investigator`: Structured source table with minimum investigation actions per source type, replacing vague bullet list
+- `investigator`: Tracking depth check replacing "shallow tracking signs" with explicit stop condition requirement
+- `verifier`: Structured triangulation supplementation with source type gap analysis
+
+#### Reverse-Engineer Workflow Accuracy
+- `prd-creator`: 7-step reverse investigation protocol (route enumeration → entry point tracing → data model → tests → roles → spec → confirmation)
+- `prd-creator`: Exact code transcription requirement for identifiers, URLs, and parameter names
+- `prd-creator`: Scope expansion from entry points when external scope is provided
+- `scope-discoverer`: Unit inventory enumeration (routes, test files, public exports) per discovered unit, propagated to downstream agents
+- `scope-discoverer`: Step renumbering (4.5 → 5, subsequent steps shifted to 6-9)
+- `technical-designer` / `technical-designer-frontend`: Reverse-engineer operation mode with mode-separated checklists
+- `reverse-engineer`: Independent verifier scope discovery (code_paths intentionally omitted)
+- `reverse-engineer`: verifiableClaimCount ≥ 20 quality gate
+- `reverse-engineer`: unitInventory propagation to Design Doc generation
+
+#### Diagnostic Workflow
+- `diagnose`: Structured investigator prompts passing taskEssence and investigationFocus
+- `diagnose`: Expanded quality checks with 6 specific criteria and re-run prompt template
+
+#### Agent Structure
+- Removed redundant "Core Responsibilities" sections from 5 agents (code-verifier, investigator, scope-discoverer, verifier) — content preserved in execution steps
+- `technical-designer` / `technical-designer-frontend`: Consolidated integration point contracts, removed ADR template duplication
+- `technical-designer` / `technical-designer-frontend`: Research guidelines condensed with reverse-engineer mode skip rule
+
 ## [1.18.1] - 2026-03-25
 
 ### Added
