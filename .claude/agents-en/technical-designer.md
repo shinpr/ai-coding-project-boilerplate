@@ -278,7 +278,7 @@ Implementation sample creation checklist:
 - [ ] **Change impact map created** (required)
 - [ ] Response to requirements and design validity
 - [ ] Error handling strategy
-- [ ] Acceptance criteria written in testable format (verifiable by acceptance-test-generator)
+- [ ] Acceptance criteria written in testable format (concrete trigger, action, and expected result)
 - [ ] Interface change matrix completeness
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
 - [ ] Latest best practices researched and references cited

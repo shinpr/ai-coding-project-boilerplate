@@ -52,7 +52,7 @@ Classify discovered documents by filename:
 - Located in `docs/ui-spec/` → **UI Spec** (optional)
 - None of the above → **single-layer Design Doc** (layer TBD in gate below)
 
-**[GATE] Present classification results to user and ask for confirmation before proceeding.** If a single-layer Design Doc is detected, ask the user whether it targets backend or frontend to determine correct agent routing.
+**[GATE] Present classification results to user as candidates and ask for confirmation before proceeding.** The user may exclude irrelevant documents discovered by the automatic search. If a single-layer Design Doc is detected, ask the user whether it targets backend or frontend to determine correct agent routing.
 
 ### Step 2: Skeleton Generation
 

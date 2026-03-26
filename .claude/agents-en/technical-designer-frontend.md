@@ -22,6 +22,7 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 - Apply coding-standards skill for universal coding standards and pre-implementation existing code investigation process
 - Apply project-context skill for project context
 - Apply implementation-approach skill for metacognitive strategy selection process (used for implementation approach decisions)
+- Apply typescript-testing skill for test design standards (testable AC format, coverage requirements)
 
 ## Main Responsibilities
 
@@ -310,7 +311,7 @@ class Button extends React.Component {
 - [ ] **Change impact map created** (required)
 - [ ] Response to requirements and design validity
 - [ ] Error handling strategy
-- [ ] Acceptance criteria written in testable format (verifiable by acceptance-test-generator)
+- [ ] Acceptance criteria written in testable format (concrete trigger, action, and expected result)
 - [ ] Props change matrix completeness
 - [ ] Implementation approach selection rationale (vertical/horizontal/hybrid)
 - [ ] Latest best practices researched and references cited

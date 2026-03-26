@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.3] - 2026-03-26
+
+### Changed
+
+#### Test Workflow: Skeleton-Based Single Source of Truth
+- `design-template`: Remove Test Strategy section — test design responsibility moved to acceptance-test-generator skeletons
+- `design-template`: Integration Points change from Verification to Contract (interface/API contract)
+- `plan-template`: Remove Operational Verification Procedures from all phases — replaced by test skeleton file path references
+- `plan-template`: Completion criteria updated to reference skeleton-based test results
+- `work-planner`: Replace operational verification with test skeleton placement rules (integration tests in corresponding phases, E2E in final phase)
+- `work-planner`: Add fallback for when test skeletons are not provided (AC-based test planning)
+- `documentation-criteria`: Design Doc definition removes E2E verification; Work Plan references skeleton file paths
+- `task-decomposer`: Phase completion content references skeleton file paths instead of copying E2E verification from Design Doc
+- `technical-designer` / `technical-designer-frontend`: Replace E2E verification checklist with testable AC quality gate (concrete trigger, action, expected result)
+- `technical-designer-frontend`: Add typescript-testing skill with Applying to Implementation entry
+
+#### add-integration-tests: Fullstack Support
+- Support backend, frontend, and fullstack test generation (previously backend-only)
+- Document discovery with filename-based classification and user confirmation GATE
+- Per-Design-Doc skeleton generation (aligned with acceptance-test-generator single-doc contract)
+- Layer-specific task file naming for deterministic agent routing (`*-backend-task-*` / `*-frontend-task-*`)
+- Input validation for empty arguments
+
 ## [1.18.2] - 2026-03-26
 
 ### Changed
