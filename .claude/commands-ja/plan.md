@@ -42,8 +42,15 @@ description: 設計書から作業計画書を作成し計画承認を取得
    - 生成結果を subagents-orchestration-guideスキル の連携仕様に従って次工程に引き継ぐ
 
 3. **作業計画書の作成**
-   - work-planner で作業計画書を作成
-   - 前工程の成果物を subagents-orchestration-guideスキル の連携仕様に従って活用
+   Agentツールでwork-plannerを呼び出す:
+   - `subagent_type`: "work-planner"
+   - `description`: "作業計画書作成"
+   - ステップ2でテストスケルトンを生成した場合:
+     `prompt`: "[パス]のDesign Docから作業計画を作成。統合テストファイル: [ステップ2の統合テストパス]。E2Eテストファイル: [ステップ2のE2Eテストパス]。統合テストは各フェーズ実装と同時に作成、E2Eテストは最終フェーズでのみ実行。"
+   - テストスケルトンを生成しなかった場合:
+     `prompt`: "[パス]のDesign Docから作業計画を作成。"
+
+   - subagents-orchestration-guideのプロンプト構成ルールに従い追加パラメータを設定
    - ユーザーと対話して計画を完成させ、計画内容の承認を得る
 
 選択された設計書から作業計画書を作成し、実装の具体的なステップとリスクを明確にします。

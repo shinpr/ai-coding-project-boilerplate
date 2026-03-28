@@ -42,7 +42,8 @@ Analyze task file existence state and determine the action required:
 |-------|----------|-------------|
 | Tasks exist | .md files in tasks/ directory | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
 | No tasks + plan exists | Plan exists but no task files | Confirm with user → run task-decomposer |
-| Neither exists | No plan or task files | Error: Prerequisites not met |
+| Neither exists + Design Doc exists | No plan or task files, but docs/design/*.md exists | Invoke work-planner to create work plan from Design Doc, then proceed to task decomposition |
+| Neither exists | No plan, no task files, no Design Doc | Report missing prerequisites to user and stop |
 
 ## Task Decomposition Phase (Conditional)
 

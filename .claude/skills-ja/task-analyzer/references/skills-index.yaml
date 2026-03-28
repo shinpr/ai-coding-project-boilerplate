@@ -212,14 +212,13 @@ skills:
       - "ADR-0002 Co-location原則"
       - "references/e2e.md - Playwright E2Eパターン"
     sections:
-      - "References"
       - "テストフレームワーク"
       - "テストの基本方針"
       - "テストの実装規約"
       - "モックの型安全性の徹底"
       - "React Testing Libraryの基本例"
       - "テスト品質基準"
-      - "アンチパターン"
+      - "テスト設計パターン"
 
   frontend-technical-spec:
     skill: "frontend-technical-spec"
