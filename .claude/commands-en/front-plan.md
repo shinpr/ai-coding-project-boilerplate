@@ -44,7 +44,7 @@ Invoke acceptance-test-generator using Agent tool:
 Invoke work-planner using Agent tool:
 - `subagent_type`: "work-planner"
 - `description`: "Work plan creation"
-- `prompt`: "Create work plan from Design Doc at [path]. Integration test file: [path from step 2]. E2E test file: [path from step 2]. Integration tests are created simultaneously with each phase implementation, E2E tests are executed only in final phase."
+- `prompt`: "Create work plan from Design Doc at [path]. Integration test file: [integration test path from step 2]. E2E test file: [E2E test path from step 2]. Integration tests are created simultaneously with each phase implementation, E2E tests are executed only in final phase."
 
 Interact with user to complete plan and obtain approval for plan content. Clarify specific implementation steps and risks.
 

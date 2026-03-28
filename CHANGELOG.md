@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.4] - 2026-03-28
+
+### Fixed
+
+#### Work-Planner Invocation Clarity
+- `subagents-orchestration-guide`: Small Scale flow now explicitly names work-planner agent
+- `plan` command: Step 3 rewritten with explicit `subagent_type` and conditional prompt branching (with/without test skeletons)
+- `front-plan` command: Differentiate placeholder names (`[integration test path]` / `[E2E test path]` instead of identical `[path from step 2]`)
+- `build` / `front-build` commands: Split "Neither exists" state into Design Doc present (invoke work-planner) vs absent (report and stop)
+- `implement` command: Add explicit `subagent_type: "work-planner"` to test information communication section
+
+#### Skills Index Sync
+- `skills-index.yaml` (en): Remove stale parenthetical from coding-standards Security Principles section name
+- `skills-index.yaml` (en): Add missing `Test Design Patterns` section to frontend-typescript-testing
+- `skills-index.yaml` (ja): Remove stale `References` and `アンチパターン` sections from frontend-typescript-testing, add missing `テスト設計パターン`
+
 ## [1.18.3] - 2026-03-26
 
 ### Changed

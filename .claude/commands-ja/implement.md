@@ -87,7 +87,7 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
    - `blocked` → ユーザーにエスカレーション
 
 ### テスト情報の伝達
-acceptance-test-generator実行後、work-planner呼び出し時には以下を伝達：
+acceptance-test-generator実行後、work-planner（subagent_type: "work-planner"）呼び出し時には以下を伝達：
 - 生成された統合テストファイルパス
 - 生成されたE2Eテストファイルパス
 - 統合テストは実装と同時、E2Eは全実装後に実行する旨の明示
