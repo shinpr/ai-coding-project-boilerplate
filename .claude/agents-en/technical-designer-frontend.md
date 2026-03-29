@@ -59,9 +59,17 @@ Must be performed before Design Doc creation:
      - Similar component is technical debt → Create ADR improvement proposal before implementation
      - No similar component → Proceed with new implementation
 
-4. **Include in Design Doc**
+4. **Dependency Existence Verification**
+   - For each component the design assumes already exists, search for its definition in the codebase using Grep/Glob
+   - Typical targets include: components, custom hooks, Context definitions, store/state definitions, API endpoints, type definitions, utility functions
+   - If found in codebase: record file path and definition location
+   - If found outside codebase (external API, separate repository, generated artifact): record the authoritative source and mark as "external dependency"
+   - If not found anywhere: mark as "requires new creation" in the Design Doc and reflect in implementation order dependencies
+
+5. **Include in Design Doc**
    - Always include investigation results in "## Existing Codebase Analysis" section
    - Clearly document similar component search results (found components or "none")
+   - Include dependency existence verification results (verified existing / requires new creation)
    - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
 
 ### Integration Point Analysis【Important】

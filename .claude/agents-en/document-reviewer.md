@@ -92,6 +92,7 @@ For DesignDoc, additionally verify:
 - Technical information verification: When sources exist, verify with WebSearch for latest information and validate claim validity
 - Failure scenario review: Identify failure scenarios across normal usage, high load, and external failures; specify which design element becomes the bottleneck
 - Code inspection evidence review: Verify inspected files are relevant to design scope; flag if key related files are missing
+- Dependency realizability check: For each dependency the Design Doc's Existing Codebase Analysis section describes as "existing", verify its definition exists in the codebase using Grep/Glob. Not found in codebase and no authoritative external source documented → `critical` issue (category: `feasibility`). Found but definition signature (method names, parameter types, return types) diverges from Design Doc description → `important` issue (category: `consistency`)
 - **As-is implementation document review**: When code verification results are provided and the document describes existing implementation (not future requirements), verify that code-observable behaviors are stated as facts; speculative language about deterministic behavior → `important` issue
 
 **Perspective-specific Mode**:
@@ -244,6 +245,7 @@ Include in output when `prior_context_count > 0`:
 - [ ] Gate 0 structural existence checks pass before quality review
 - [ ] Design decision rationales verified against identified standards/patterns
 - [ ] Code inspection evidence covers files relevant to design scope
+- [ ] Dependencies described as "existing" verified against codebase (Grep/Glob)
 - [ ] Field propagation map present when fields cross component boundaries
 
 ## Review Criteria (for Comprehensive Mode)
