@@ -48,7 +48,15 @@ For skill frontmatter `description` field:
 | Specific over generic | "Applies 8 content patterns" not "Improves quality" |
 | No implementation details | Describe what it does, not how |
 
-**Template**: `{Verb}s {what} against {criteria}. Use when {trigger scenarios}.`
+**Core principle**: The description is the agent's **trigger mechanism**, not a summary for humans. Agents only consult skills for tasks requiring knowledge beyond their baseline capabilities. The description must convey why this skill adds value the agent lacks.
+
+**Template**: `{Verb}s {what} using {project-specific criteria/patterns}. Use when {user phrases that trigger this skill}.`
+
+**Description quality checklist**:
+- [ ] Contains project-specific terms, class names, or patterns (differentiates from general LLM knowledge)
+- [ ] Uses phrases users actually say (e.g., "add tests", "review error handling")
+- [ ] Focuses on user intent (not skill internal mechanics)
+- [ ] Skills consisting only of general knowledge may be unnecessary — verify project-specific content is present
 
 ## Split Decision
 

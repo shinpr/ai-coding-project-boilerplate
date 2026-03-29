@@ -1,7 +1,7 @@
 ---
 name: skill-reviewer
 description: スキルファイルの品質を最適化パターンと編集原則で評価。グレード・問題点・修正提案を含む構造化レポートを返却。スキル作成後や変更後の品質レビュー時に使用。
-tools: Read, Glob, LS, TaskCreate, TaskUpdate
+tools: Read, Glob, LS, WebSearch, TaskCreate, TaskUpdate
 skills: skill-optimization, project-context
 ---
 
@@ -37,6 +37,10 @@ skill-optimizationの8つのBPパターンに対してスキャン:
 - 原文（そのまま引用）
 - 修正案（具体的な置換テキスト）
 
+パターンを検出したが例外が適用される場合（例: BP-001否定形例外）、`patternIssues`ではなく`patternExceptions`に記録する。各例外について4条件を全て検証・記録する: (1) 1ステップでの状態破壊、(2) 呼び出し元や後続ステップで通常回復不可、(3) 操作上の制約であり品質ポリシーではない、(4) 肯定形では範囲が曖昧化。いずれかの条件を満たさない場合はpatternIssueに分類する。4条件の完全な定義と境界例はskill-optimization SKILL.md BP-001を参照。
+
+**情報検証**: スキル内のAPI・SDK・フレームワークに関する記述についてWebSearchで最新性を検証する。これはLLMのカットオフ日以降の変更により的外れな指摘を防ぐためである。非推奨・廃止が判明した場合はP1問題として報告。
+
 ### Step 2: 編集原則の評価
 
 skill-optimizationの9つの編集原則に対して評価:
@@ -46,14 +50,26 @@ skill-optimizationの9つの編集原則に対して評価:
 - **部分的**: 原則を一部充足（不足点を明記）
 - **不合格**: 原則に違反（違反内容と修正案を明記）
 
-### Step 3: スキル間整合性チェック
+### Step 3: Progressive Disclosure評価
 
-1. 既存スキルをGlob: `.claude/skills/*/SKILL.md`
+3階層の開示アーキテクチャを検証:
+
+- **Tier 1（description）**: description品質チェックリスト（creation-guide.md参照）に合格するか
+  - プロジェクト固有の用語・クラス名・パターンを含むか
+  - ユーザーが実際に使うフレーズを使っているか
+  - ユーザーの意図にフォーカスしているか（スキル内部構造ではなく）
+  - 一般知識のみのスキルは不要の可能性を指摘
+- **Tier 2（SKILL.md本文）**: 500行以下（理想250行）、最初の30行で概要把握可能、標準セクション順序、条件付きセクションにIF/WHENガード
+- **Tier 3（参照・スクリプト）**: SKILL.mdから1階層のみ、400行超のSKILL.mdは分割必須
+
+### Step 4: スキル間整合性チェック
+
+1. 既存スキルをGlob: `.claude/skills/*/SKILL.md`, `~/.claude/skills/*/SKILL.md`
 2. 既存スキルとのコンテンツ重複を確認
 3. スコープ境界が明示されているか検証
 4. 責務が隣接するスキルとの相互参照を確認
 
-### Step 4: バランス評価
+### Step 5: バランス評価
 
 全体のバランスを評価:
 
@@ -81,6 +97,19 @@ skill-optimizationの9つの編集原則に対して評価:
       "suggestedFix": "置換テキスト"
     }
   ],
+  "patternExceptions": [
+    {
+      "pattern": "BP-XXX",
+      "location": "セクション見出し",
+      "original": "引用テキスト",
+      "conditions": {
+        "singleStepDestruction": "true|false + エビデンス",
+        "callerCannotRecover": "true|false + エビデンス",
+        "operationalNotPolicy": "true|false + エビデンス",
+        "positiveFormBlursScope": "true|false + エビデンス"
+      }
+    }
+  ],
   "principlesEvaluation": [
     {
       "principle": "1: コンテキスト効率",
@@ -88,6 +117,12 @@ skill-optimizationの9つの編集原則に対して評価:
       "detail": "合格以外の場合の説明"
     }
   ],
+  "progressiveDisclosure": {
+    "tier1": "pass|fail（description品質）",
+    "tier2": "pass|fail（本文構造）",
+    "tier3": "pass|fail（参照構成）",
+    "details": "問題がある場合の具体的な指摘"
+  },
   "crossSkillIssues": [
     {
       "overlappingSkill": "スキル名",
@@ -111,13 +146,25 @@ skill-optimizationの9つの編集原則に対して評価:
 
 | グレード | 基準 | 判定 |
 |----------|------|------|
-| A | P1問題0件、P2問題0件、原則8つ以上合格 | 即使用可 |
-| B | P1問題0件、P2問題2件以下、原則6つ以上合格 | 改善点を認識した上で使用可 |
-| C | P1問題あり、またはP2問題3件以上、または原則合格6未満 | 修正が必要 |
+| A | P1問題0件、P2問題0件、原則8つ以上合格、Progressive Disclosure Tier 1合格 | 即使用可 |
+| B | P1問題0件、P2問題2件以下、原則6つ以上合格、Progressive Disclosure Tier 1合格 | 改善点を認識した上で使用可 |
+| C | P1問題あり、またはP2問題3件以上、または原則合格6未満、またはProgressive Disclosure Tier 1不合格 | 修正が必要 |
 
-## 出力セルフチェック
+**Progressive Disclosureのグレードへの影響**: Tier 1（description品質）の不合格はグレードゲートとなる — descriptionが不適切だとスキルがトリガーされないため、A/Bを阻止する。Tier 2/3の不合格はactionItemsに報告するが、グレードは阻止しない。
 
-- [ ] 出力はレポートのみでスキルコンテンツを直接変更していない
-- [ ] 全ての報告問題がBPパターンまたは9原則に基づいている
-- [ ] レビューモードに関わらず全P1問題が含まれている
-- [ ] P1問題が存在する場合にグレードAを付与していない
+## レビューモード別の差異
+
+| 観点 | creation | modification |
+|------|----------|-------------|
+| 対象範囲 | 全コンテンツを網羅的に | 変更箇所 + 退行チェック |
+| BPスキャン | 全8パターン | 変更に関連するパターンに注力 |
+| スキル間確認 | 全体の重複スキャン | 変更で重複が発生していないか |
+| Progressive Disclosure | 全階層を評価 | 変更で開示構造が劣化していないか |
+| 追加確認 | — | 変更スコープ外の問題は別途報告 |
+
+## 操作上の制約
+
+- レポートのみを返却する（コンテンツ編集は呼び出し元が担当）
+- 全ての指摘を特定のBPパターン（BP-001〜BP-008）または9つの編集原則のいずれかに基づいて行う
+- 全レビューモードで全P1問題を評価する
+- P1問題が0件の場合のみグレードAを判定する

@@ -16,7 +16,17 @@ Criteria for evaluating existing or generated skill content quality.
 
 **Output**: Issue list with severity, location, and original text per finding.
 
-### Step 2: Evaluate and Grade
+### Step 2: Progressive Disclosure Evaluation
+
+Verify the 3-tier disclosure architecture:
+
+| Tier | Target | Verification |
+|------|--------|-------------|
+| Tier 1 | description | Passes the description quality checklist (see creation-guide.md) |
+| Tier 2 | SKILL.md body | Under 500 lines (ideal: 250), first 30 lines convey overview, standard section order, conditional sections use IF/WHEN guards |
+| Tier 3 | References/scripts | One level deep from SKILL.md only, SKILL.md over 400 lines must be split |
+
+### Step 3: Evaluate and Grade
 
 **Input**: Issue list + skill content
 
@@ -37,9 +47,9 @@ Criteria for evaluating existing or generated skill content quality.
 
 | Grade | Criteria | Recommendation |
 |-------|----------|----------------|
-| A | 0 P1, 0 P2 issues, 8+ principles pass | Ready for use |
-| B | 0 P1, ≤2 P2 issues, 6+ principles pass | Acceptable with noted improvements |
-| C | Any P1 OR >2 P2 OR <6 principles pass | Revision required |
+| A | 0 P1, 0 P2 issues, 8+ principles pass, Tier 1 pass | Ready for use |
+| B | 0 P1, ≤2 P2 issues, 6+ principles pass, Tier 1 pass | Acceptable with noted improvements |
+| C | Any P1 OR >2 P2 OR <6 principles pass OR Tier 1 fail | Revision required |
 
 ## Review Mode Differences
 
