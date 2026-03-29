@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.6] - 2026-03-29
+
+### Fixed
+
+#### Skill Optimization Workflow Precision
+
+The skill creation and review workflow had several precision gaps: descriptions lacked project-specific trigger alignment, quality gates were observational rather than enforcing, BP-001 exceptions were vague enough to allow misuse, and the creator agent had no modification mode for targeted edits.
+
+**Description as trigger mechanism**
+- `skill-creator`: Description generation now requires **user phrases** and **project-specific value** as mandatory inputs, wired into the template `{Verb}s {what} using {project-specific criteria}. Use when {user phrases}.`
+- `creation-guide`: Add core principle — description is an agent's trigger mechanism, not a human summary
+- `creation-guide`: Add 4-item description quality checklist (project-specific terms, user phrases, user intent focus, general-knowledge-only warning)
+
+**Progressive Disclosure as quality gate**
+- `skill-reviewer`: Tier 1 (description quality) failure now blocks grade A/B — previously reported but did not affect grading
+- `review-criteria`: Grading table updated with Tier 1 pass as explicit condition for A/B
+
+**BP-001 exception tightening**
+- `skill-optimization SKILL.md`: Replace vague "safety-critical/destructive" exception with strict 4-condition AND test: (1) single-step state destruction, (2) caller cannot normally recover, (3) operational constraint not quality policy, (4) positive form would blur scope
+- Add concrete boundary examples (permitted vs must-rewrite negative instructions)
+- `skill-reviewer`: Add `patternExceptions` output with per-condition evidence fields for auditable exception judgments
+
+**Operational Constraints (BP-001 self-application)**
+- `skill-creator`, `skill-reviewer`: Convert "Prohibited Actions" sections to positive-form "Operational Constraints" — the agents' own prohibition lists violated BP-001
+
+**Modification mode**
+- `skill-creator`: Add dual-mode operation (creation/modification) — modification mode applies targeted section-level changes while preserving unaffected content verbatim, with `changesSummary` output
+- `refine-skill`: Route changes through skill-creator modification mode instead of direct editing
+
+**Knowledge cutoff protection**
+- `skill-creator`, `skill-reviewer`: Add WebSearch for verifying time-sensitive domain knowledge (API changes, deprecations, SDK versions) to prevent outdated suggestions caused by the LLM's knowledge cutoff date
+- `skill-creator`: Add `researchFindings` output recording adopted/rejected findings with rationale
+
+**Knowledge collection improvements**
+- `create-skill`: Add Round 2 (project-specific value validation) — warns when skill contains only general knowledge unlikely to trigger at runtime
+- `create-skill`: Add trigger phrase classification (skill-dependent vs pattern-copyable) in Round 3 with minimum 1 skill-dependent phrase requirement
+- `create-skill`: Add practical artifacts collection in Round 4 (existing files, past failures, PRs)
+
+**Cross-skill discovery**
+- `skill-creator`, `skill-reviewer`, `create-skill`, `refine-skill`: Extend Glob paths to include `~/.claude/skills/*/SKILL.md` for detecting overlap with user-level skills
+
 ## [1.18.5] - 2026-03-29
 
 ### Fixed

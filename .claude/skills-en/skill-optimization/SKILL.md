@@ -1,6 +1,6 @@
 ---
 name: skill-optimization
-description: Evaluates and optimizes skill file quality. Use when creating skills, refining skill content, or auditing skill quality.
+description: Evaluates and optimizes skill file quality using 8 content patterns and 9 editing principles. Use when creating skills, refining skill content, or auditing skill quality.
 ---
 
 # Skill Content Optimization
@@ -21,7 +21,13 @@ Issues that directly reduce LLM execution accuracy when consuming the skill.
 
 | Detection | Transform |
 |-----------|-----------|
-| "don't", "do not", "never", "avoid" in skill instructions | Reframe as positive directive with equivalent constraint |
+| "don't", "do not", "never", "avoid" in skill instructions | Reframe as positive directive with equivalent constraint. **Exception**: Negative form is permitted only when ALL 4 conditions are met: (1) violation destroys state in a single step, (2) caller or subsequent steps cannot normally recover, (3) the constraint is operational/procedural, not a quality policy or role boundary, (4) positive rewording would expand or blur the target scope. If any condition is not met, rewrite in positive form. |
+
+**Exception boundary examples**:
+- Permitted: "Do not modify the command", "Do not add flags", "Do not execute destructive operations"
+- Rewrite in positive form: "Do not invent issues" → "Base every issue on BP patterns or 9 principles", "Do not skip P1 issues" → "Evaluate all P1 issues in every review mode", "Do not give grade A when P1 exists" → "Assign grade A only when P1 count is zero"
+
+Quality policies, role boundaries, scoring criteria, and general work rules always use positive form. Outputs that the caller validates, overwrites, or discards are never irreversible.
 
 **Skill example:**
 - Before: "Don't use generic variable names"
