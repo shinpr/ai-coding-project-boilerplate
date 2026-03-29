@@ -73,12 +73,20 @@ Must be performed before Design Doc creation:
      - Similar functionality is technical debt → Create ADR improvement proposal before implementation
      - No similar functionality → Proceed with new implementation
 
-4. **Include in Design Doc**
+4. **Dependency Existence Verification**
+   - For each component the design assumes already exists, search for its definition in the codebase using Grep/Glob
+   - Typical targets include: interfaces, classes, repositories, service methods, API endpoints, DB tables/columns, configuration keys, enum values, type definitions
+   - If found in codebase: record file path and definition location
+   - If found outside codebase (external API, separate repository, generated artifact): record the authoritative source and mark as "external dependency"
+   - If not found anywhere: mark as "requires new creation" in the Design Doc and reflect in implementation order dependencies
+
+5. **Include in Design Doc**
    - Always include investigation results in "## Existing Codebase Analysis" section
    - Clearly document similar functionality search results (found implementations or "none")
+   - Include dependency existence verification results (verified existing / requires new creation)
    - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
 
-5. **Code Inspection Evidence**
+6. **Code Inspection Evidence**
    - Record all inspected files and key functions in "Code Inspection Evidence" section of Design Doc
    - Each entry must state relevance (similar functionality / integration point / pattern reference)
 

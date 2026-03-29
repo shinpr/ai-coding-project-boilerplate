@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.5] - 2026-03-29
+
+### Fixed
+
+#### Dependency Existence Verification in Design Workflow
+Design documents could describe components as "existing" without verification, causing implementation failures when those dependencies turned out to be missing or mismatched.
+
+- `technical-designer` / `technical-designer-frontend`: Add **Dependency Existence Verification** step to Existing Code Investigation — each assumed dependency is now verified via Grep/Glob before design proceeds, with three-way classification (found in codebase / external dependency / requires new creation)
+- `document-reviewer`: Add **dependency realizability check** to Gate 1 — cross-checks claimed "existing" dependencies against the codebase during review. Missing dependency with no external source → `critical` (feasibility). Signature mismatch (method names, parameter types, return types) → `important` (consistency)
+
 ## [1.18.4] - 2026-03-28
 
 ### Fixed
