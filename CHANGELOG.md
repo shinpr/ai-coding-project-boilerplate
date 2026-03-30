@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.7] - 2026-03-30
+
+### Fixed
+
+#### Skill Review False Positives from LLM-Consumer Unawareness
+
+skill-reviewer was applying BP patterns as if skills were human-facing documents, causing false positives that blocked valid skill content.
+
+- **BP-002**: Expressions resolvable from input context (e.g., "where the user left gaps" when the user's prompt is available) were flagged as vague. Added skill exception — deterministic operations derived from available input are not vague.
+- **BP-005**: Standard technical terms already in the LLM's baseline knowledge were flagged as undefined. Added skill exception — only project-specific terms, internal naming conventions, and domain jargon outside the LLM's general knowledge require explicit definition.
+- **Principle 2 (Deduplication)**: Mentions of the same concept at different structural roles (e.g., classification framework vs execution detail) were flagged as duplicates. Refined criteria — re-mentions at different structural roles are permitted when they add new constraints or criteria.
+
 ## [1.18.6] - 2026-03-29
 
 ### Fixed

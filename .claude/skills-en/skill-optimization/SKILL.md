@@ -39,7 +39,7 @@ Quality policies, role boundaries, scoring criteria, and general work rules alwa
 
 | Detection | Transform |
 |-----------|-----------|
-| "appropriate", "good", "proper", "best", "should be clear" | Replace with measurable if-then criteria or concrete thresholds |
+| "appropriate", "good", "proper", "best", "should be clear" | Replace with measurable if-then criteria or concrete thresholds. **Skill exception**: Expressions that the LLM can resolve unambiguously from input context (e.g., "where the user left gaps" when the user's prompt is available for comparison) are not vague — they describe a deterministic operation, not a subjective judgment. |
 | Missing output format, scope, or success criteria | Add explicit constraints |
 
 **Skill example:**
@@ -87,7 +87,7 @@ Issues that reduce skill effectiveness when addressed.
 | Detection | Transform |
 |-----------|-----------|
 | Skill assumes knowledge not stated | Add Prerequisites section listing required context |
-| Domain terms used without definition | Add definitions inline or in a glossary table |
+| Domain terms used without definition | Add definitions inline or in a glossary table. **Skill exception**: Terms within the LLM's baseline knowledge (widely-used technical terminology, standard domain vocabulary) require no definition. Only project-specific terms, internal naming conventions, or domain jargon outside common LLM training data need explicit definition. |
 | No "when to use" guidance | Add trigger conditions with concrete scenarios |
 
 **Skill example:**
@@ -136,7 +136,7 @@ Measurable quality criteria for skill content. Each principle includes a pass/fa
 | # | Principle | Pass Criteria | Fail Example |
 |---|-----------|---------------|--------------|
 | 1 | Context efficiency | Every sentence contributes to LLM decision-making. No filler. | "This is an important skill that helps with..." |
-| 2 | Deduplication | No concept explained twice within the skill or across skills | Same error handling rules in both coding-standards and typescript-rules |
+| 2 | Deduplication | No concept explained twice at the same abstraction level within the skill or across skills. Mentions at different structural roles (e.g., classification framework vs execution detail) are not duplicates, provided the re-mention adds new constraints or criteria | Same error handling rules in both coding-standards and typescript-rules |
 | 3 | Grouping | Related criteria in single section (minimize read operations) | Scattered error handling rules across 4 sections |
 | 4 | Measurability | All criteria use if-then format or concrete thresholds | "Write clean code" without definition of clean |
 | 5 | Positive form | Instructions state what to do (BP-001 applied) | "Don't use any" instead of "Use only X" |
