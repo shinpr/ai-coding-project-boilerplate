@@ -1,6 +1,6 @@
 {
   "name": "create-ai-project",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "packageManager": "npm@10.8.2",
   "description": "TypeScript boilerplate with skills and sub-agents for Claude Code. Prevents context exhaustion through role-based task splitting.",
   "keywords": [
@@ -50,8 +50,7 @@
     "check": "biome check src",
     "check:fix": "biome check --write src",
     "check:unused": "knip --include exports",
-    "check:deps": "madge --circular --extensions ts src",
-    "check:deps:graph": "madge --extensions ts --image graph.svg src",
+    "check:deps": "dpdm --no-warning --no-tree --exit-code circular:1 --ext .ts --exclude \"__tests__|.test.ts$|.spec.ts$\" --tsconfig ./tsconfig.json -T \"src/**/*.ts\"",
     "check:code": "npm run check && npm run check:unused && npm run check:deps && npm run build",
     "check:all": "npm run check:code && npm run test",
     "cleanup:processes": "bash ./scripts/cleanup-test-processes.sh",
@@ -71,7 +70,7 @@
     "husky": "^9.1.7",
     "knip": "^5.0.0",
     "lint-staged": "^16.1.0",
-    "madge": "^8.0.0",
+    "dpdm": "^4.0.0",
     "tsc-alias": "^1.8.7",
     "tsx": "^4.19.4",
     "typescript": "^5.0.0",
