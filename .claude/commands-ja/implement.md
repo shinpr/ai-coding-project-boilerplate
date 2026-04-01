@@ -52,6 +52,8 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 - [ ] 現在の進捗位置を特定した
 - [ ] 次のステップを明確にした
 - [ ] 停止ポイントを認識した → **全ての停止ポイントでAskUserQuestionを使用**
+- [ ] 各Design Doc作成前にcodebase-analyzerを含めた
+- [ ] 各Design DocレビューでDesign Doc前にcode-verifierを含めた
 - [ ] タスク実行後の4ステップサイクル（task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit）を理解した
 
 **フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで4ステップを管理する

@@ -20,9 +20,11 @@ Orchestrator invokes sub-agents and passes structured JSON between them.
 
 **Included in this command**:
 - Requirement analysis with requirement-analyzer
+- Codebase analysis with codebase-analyzer (before Design Doc creation)
 - UI Specification creation with ui-spec-designer (prototype code inquiry included)
 - ADR creation (if architecture changes, new technology, or data flow changes)
 - Design Doc creation with technical-designer-frontend
+- Design Doc verification with code-verifier (before document review)
 - Document review with document-reviewer
 
 **Responsibility Boundary**: This command completes with frontend design document (UI Spec/ADR/Design Doc) approval. Work planning and beyond are outside scope.
@@ -63,12 +65,18 @@ Then create the UI Specification:
 - **[STOP]**: Present UI Spec for user approval
 
 ### Step 3: Design Document Creation Phase
+First, analyze the existing codebase:
+- Invoke **codebase-analyzer** using Agent tool
+  - `subagent_type: "codebase-analyzer"`, `description: "Codebase analysis"`, `prompt: "requirement_analysis: [JSON from Step 1]. requirements: [user requirements]. Analyze existing codebase for frontend design guidance."`
+
 Create appropriate design documents according to scale determination:
 - Invoke **technical-designer-frontend** using Agent tool
   - For ADR: `subagent_type: "technical-designer-frontend"`, `description: "ADR creation"`, `prompt: "Create ADR for [technical decision]"`
-  - For Design Doc: `subagent_type: "technical-designer-frontend"`, `description: "Design Doc creation"`, `prompt: "Create Design Doc based on requirements. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec."`
-- Invoke **document-reviewer** to verify consistency
-  - `subagent_type: "document-reviewer"`, `description: "Document review"`, `prompt: "Review [document path] for consistency and completeness"`
+  - For Design Doc: `subagent_type: "technical-designer-frontend"`, `description: "Design Doc creation"`, `prompt: "Create Design Doc based on requirements. Codebase analysis: [JSON from codebase-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec."`
+- **(Design Doc only)** Invoke **code-verifier** to verify Design Doc against existing code. Skip for ADR.
+  - `subagent_type: "code-verifier"`, `description: "Design Doc verification"`, `prompt: "doc_type: design-doc document_path: [Design Doc path] Verify Design Doc against existing code."`
+- Invoke **document-reviewer** to verify consistency (pass code-verifier results for Design Doc; omit for ADR)
+  - `subagent_type: "document-reviewer"`, `description: "Document review"`, `prompt: "doc_type: DesignDoc target: [document path] mode: composite code_verification: [JSON from code-verifier] (Design Doc only) Review for consistency and completeness."`
 - **[STOP]**: Present design alternatives and trade-offs, obtain user approval
 
 ## Output Example

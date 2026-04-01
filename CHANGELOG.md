@@ -5,6 +5,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0] - 2026-04-01
+
+### Added
+
+#### Evidence-Based Design Pipeline
+
+Design Docs are now based on explicit codebase evidence before implementation starts, with structured verification before review.
+
+- **codebase-analyzer agent** (new): Analyzes existing codebase before Design Doc creation, producing structured JSON guidance (existing elements, data models, constraints, focus areas) for technical-designer
+- **code-verifier in design flow**: Inserted before document-reviewer so review uses structured verification evidence instead of relying solely on the designer's investigation
+- **Design Doc template: Test Boundaries section**: Mock boundary decisions, data layer testing strategy, and integration verification points — gives downstream test generation explicit mock/real scope
+- **Design flow updated** (all orchestration paths): requirement-analyzer → codebase-analyzer → technical-designer → code-verifier → document-reviewer → design-sync. ADR-only flows skip codebase-analyzer and code-verifier. Step counts updated (Large: 11→13 backend, Medium: 7→9 backend)
+- **Cross-layer orchestration**: codebase-analyzer ×2 and code-verifier ×2 steps added for per-layer analysis in fullstack flows
+
+#### Investigation Targets for Task Execution
+
+Task executors now read and record observations from specified files before implementing, reducing implementations that contradict actual system behavior.
+
+- **task-decomposer**: Generates Investigation Targets per task based on task nature (existing code modification, new feature, test implementation, E2E setup, bug fix)
+- **task-executor / task-executor-frontend**: Phase Entry Gate (4 checkboxes, BLOCKING) and Completion Gate (4 checkboxes, BLOCKING) enforce investigation before implementation. New `investigation_target_not_found` escalation type
+- **Task template**: Investigation Targets section added with observation recording step in Red phase
+
+#### E2E Environment Prerequisites
+
+- **work-planner**: Extracts environment prerequisites from E2E skeletons (2-stage: detect precondition patterns → generate Phase 0 setup tasks for seed data, auth fixtures, service mocks, environment config)
+- **quality-fixer / quality-fixer-frontend**: New `missing_prerequisites` blocked type distinguishes environment failures from specification conflicts, with structured `missingPrerequisites[]` response including concrete resolution steps
+- **E2E environment prerequisites reference** (new): Seed data strategy, authentication fixture patterns, environment checklist
+
+### Changed
+
+- **quality-fixer success contract**: Unified on `status: "approved"` as the primary success indicator. Removed legacy `approved: true` field from JSON examples
+- **quality-fixer blocked contract**: Split into two response formats — `specification conflict` and `missing prerequisites` — discriminated by `reason` field
+- **Annotation syntax**: Made language-agnostic across work-planner, integration-test-reviewer, integration-e2e-testing skill (removed hardcoded `//` prefix from annotation pattern definitions while keeping TypeScript code examples unchanged)
+- **@real-dependency annotation**: Added to skeleton spec (integration-e2e-testing) and work-planner annotation patterns, completing the producer→consumer chain from acceptance-test-generator
+- **document-reviewer**: Added `code_verification` input parameter, data design completeness check (co-occurrence rule for data keywords), and code-verifier integration rules
+- **technical-designer / technical-designer-frontend**: Added Codebase Analysis input parameter for consuming codebase-analyzer output
+- **code-verifier**: Added data layer element enumeration in reverse coverage (dataOperationsInCode, testBoundariesSectionPresent)
+- **orchestration guide**: Updated escalation_type list to include `similar_component_found` (frontend executor alignment). Added Call Examples for codebase-analyzer and code-verifier. Information bridging sections for codebase-analyzer→technical-designer and code-verifier→document-reviewer
+- **typescript-testing skill**: Added Data Layer Testing section (mock limitations, when mocks are appropriate/insufficient, real database testing options, AI schema hallucination awareness)
+- **skills-index.yaml**: Added `Data Layer Testing` section to typescript-testing, added e2e-environment-prerequisites reference to integration-e2e-testing
+- **commands**: design, front-design, implement, reverse-engineer, update-doc updated to include codebase-analyzer and code-verifier in their flows
+
 ## [1.19.1] - 2026-03-30
 
 ### Changed

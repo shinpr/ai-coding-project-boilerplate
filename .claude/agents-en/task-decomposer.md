@@ -87,18 +87,38 @@ Decompose tasks based on implementation strategy patterns determined in implemen
      - Filename: `{plan-name}-phase{number}-completion.md`
      - Content: All task completion checklist, list test skeleton file paths for verification
      - Criteria: Always generate if the plan contains the string "Phase"
+     - **Phase 0 (environment setup)**: When the work plan contains a Phase 0 with `@category: e2e-setup` tasks, these are environment setup tasks (seed data, auth fixtures, service mocks) — not standard implementation tasks. Decompose them with setup-oriented Investigation Targets (existing config files, environment scripts, fixture patterns) rather than implementation-oriented targets
 
 5. **Task Structuring**
    Include the following in each task file:
    - Task overview
    - Target files
+   - **Investigation Targets** (what the executor must read and understand before implementing)
    - Concrete implementation steps
    - Completion criteria
 
-6. **Implementation Pattern Consistency**
+6. **Investigation Targets Determination**
+   For each task, determine what the executor needs to read based on the task's nature:
+
+   | Task Nature | Investigation Targets |
+   |---|---|
+   | Existing code modification | The existing implementation files being modified, their tests, related Design Doc sections |
+   | New component/feature | Adjacent implementations in the same layer/domain, Design Doc interface contracts |
+   | Test implementation | Test skeleton comments/annotations, the target code being tested, actual API/auth flows |
+   | E2E environment setup | Current environment config (startup scripts, docker-compose or equivalent), seed scripts, existing fixture patterns, application auth flow |
+   | Bug fix / refactor | The affected code paths, related test coverage, error reproduction context |
+
+   **Principles**:
+   - Every task must have at least one Investigation Target (even if just the Design Doc)
+   - Investigation Targets are **file paths** that the executor will Read — not actions to take
+   - Be specific with file paths: `src/orders/checkout`, `docs/design/payment.md` — not "the order module" or "related code"
+   - When the target is a section within a file, write the file path and add a search hint: `docs/design/payment.md (§ Payment Flow)` or `src/orders/checkout (processOrder function)`
+   - When test skeletons exist for the task, always include them as Investigation Targets
+
+7. **Implementation Pattern Consistency**
    When including implementation samples, MUST ensure strict compliance with the Design Doc implementation approach that forms the basis of the work plan
 
-7. **Utilizing Test Information**
+8. **Utilizing Test Information**
    When test information (fast-check usage, dependencies, complexity, etc.) is documented in work plans, reflect that information in task files.
 
 ## Task File Template
@@ -236,6 +256,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Clear completion criteria setting
 - [ ] Overall design document creation
 - [ ] Implementation efficiency and rework prevention (pre-identification of common processing, clarification of impact scope)
+- [ ] Investigation Targets specified for every task (specific file paths, not vague categories)
 
 ## Task Design Principles
 

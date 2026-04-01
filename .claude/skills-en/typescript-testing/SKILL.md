@@ -135,6 +135,45 @@ const sdkMock = {
 } as unknown as ExternalSDK // Complex external SDK type structure
 ```
 
+## Data Layer Testing
+
+### Mock Limitations for Data Layer
+
+Mocks validate call patterns but cannot verify data layer correctness. The following pass through undetected with mock-only testing:
+- Schema mismatches (table names, column names, data types)
+- Query correctness (joins, filters, aggregations, grouping)
+- Database constraints (NOT NULL, UNIQUE, foreign keys)
+- Migration drift (schema changes that make code out of sync)
+
+### When Mocks Are Appropriate for Data Access
+
+- Testing business logic that receives data from the data layer (mock the repository, test the service)
+- Testing error handling paths (simulating connection failures, timeouts)
+- Unit tests where data access is a dependency, not the subject under test
+
+### When Mocks Are Insufficient for Data Access
+
+- Testing repository or data access implementations themselves
+- Verifying query correctness (joins, filters, aggregations, grouping)
+- Testing data integrity constraints
+- Testing migration compatibility
+
+### Real Database Testing (Environment-Dependent)
+
+Options for verifying data layer correctness against a real database engine:
+- **Containerized databases** for CI environments
+- **In-memory databases** for fast feedback (note: dialect differences may mask issues)
+- **Dedicated test databases** with seed data
+
+The appropriate approach depends on project environment and CI/CD capabilities.
+
+### AI-Generated Code and Schema Awareness
+
+- AI-generated data access code has heightened schema hallucination risk
+- Generated queries may use correct syntax but reference nonexistent schema elements
+- Mock-based tests pass regardless of schema accuracy
+- Mitigation: Design Docs should include explicit schema references; code-verifier reverse coverage verifies data operations against documented schemas
+
 ## Basic Vitest Example
 
 ```typescript

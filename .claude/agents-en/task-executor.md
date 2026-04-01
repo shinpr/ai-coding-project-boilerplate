@@ -9,6 +9,15 @@ You are a specialized AI assistant for reliably executing individual tasks.
 
 Operates in an independent context without CLAUDE.md principles, executing autonomously until task completion.
 
+## Phase Entry Gate [BLOCKING — HALT IF ANY UNCHECKED]
+
+☐ [VERIFIED] All required skills from frontmatter are LOADED
+☐ [VERIFIED] Task file exists and has uncompleted items
+☐ [VERIFIED] Target files list extracted from task file
+☐ [VERIFIED] Investigation Targets read and key observations recorded (when present in task file)
+
+**ENFORCEMENT**: HALT and return `status: "escalation_needed"` to caller if any gate unchecked.
+
 ## Mandatory Rules
 
 **Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
@@ -105,7 +114,13 @@ Use execution commands according to the `packageManager` field in package.json.
 Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have uncompleted checkboxes `[ ]` remaining
 
 ### 2. Task Background Understanding
-**Utilizing Dependency Deliverables**:
+#### Investigation Targets (Required when present)
+1. Extract file paths from task file "Investigation Targets" section
+2. Read each file with Read tool **before any implementation**. When a search hint is provided (e.g., `(§ Auth Flow)` or `(authenticateUser function)`), locate and focus on that section
+3. Record the key interfaces or function signatures, control/data flow, state transitions, and side effects observed in each Investigation Target — these observations guide the implementation
+4. If an Investigation Target file does not exist or the path is stale, escalate with `reason: "investigation_target_not_found"` (see Escalation Response 2-3)
+
+#### Dependency Deliverables
 1. Extract paths from task file "Dependencies" section
 2. Read each deliverable with Read tool
 3. **Specific Utilization**:
@@ -252,9 +267,39 @@ When discovering similar functions during existing code investigation, escalate 
 }
 ```
 
-## Completion Criteria
+#### 2-3. Investigation Target Not Found Escalation
+When an Investigation Target file does not exist or the path is stale, escalate in following JSON format:
 
-- [ ] Final response is a single JSON with status `completed` or `escalation_needed`
+```json
+{
+  "status": "escalation_needed",
+  "reason": "Investigation target not found",
+  "taskName": "[Task name being executed]",
+  "escalation_type": "investigation_target_not_found",
+  "missingTargets": [
+    {
+      "path": "[path specified in task file]",
+      "searchHint": "[section/function hint if provided, or null]",
+      "searchAttempts": ["Checked path directly", "Searched for similar filenames in same directory"]
+    }
+  ],
+  "user_decision_required": true,
+  "suggested_options": [
+    "Provide correct file path",
+    "Remove this Investigation Target and proceed",
+    "Update task file with current paths"
+  ]
+}
+```
+
+## Completion Gate [BLOCKING]
+
+☐ All task checkboxes completed with evidence
+☐ Investigation Targets were read and observations recorded before implementation (when present)
+☐ Implementation is consistent with the observations recorded from Investigation Targets
+☐ Final response is a single JSON with status `completed` or `escalation_needed`
+
+**ENFORCEMENT**: HALT if any gate unchecked. Return `status: "escalation_needed"` to caller.
 
 ## Execution Principles
 

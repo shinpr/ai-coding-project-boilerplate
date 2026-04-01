@@ -25,8 +25,8 @@ description: 既存設計ドキュメント（Design Doc / PRD / ADR）をレビ
 対象ドキュメント → [停止: 変更内容確認]
                         ↓
               technical-designer / technical-designer-frontend / prd-creator（updateモード）
-                        ↓
-              document-reviewer → [停止: レビュー承認]
+                        ↓（Design Docのみ）
+              code-verifier → document-reviewer → [停止: レビュー承認]
                         ↓（Design Docのみ）
               design-sync → [停止: 最終承認]
 ```
@@ -113,6 +113,18 @@ prompt: |
 
 ### ステップ5: ドキュメントレビュー [停止]
 
+**Design Doc更新時のみ**: document-reviewerの前にcode-verifierを呼び出す:
+```
+subagent_type: code-verifier
+description: "更新されたDesign Docを検証"
+prompt: |
+  doc_type: design-doc
+  document_path: [ステップ1のパス]
+  更新されたDesign Docを現在のコードベースに対して検証する。
+```
+
+**出力を保存**: `$CODE_VERIFICATION_OUTPUT`
+
 document-reviewerを呼び出す:
 ```
 subagent_type: document-reviewer
@@ -123,6 +135,7 @@ prompt: |
   doc_type: [Design Doc / PRD / ADR]
   target: [ステップ1のパス]
   mode: standard
+  code_verification: $CODE_VERIFICATION_OUTPUT（Design Docのみ、PRD/ADRでは省略）
 
   注力ポイント:
   - 更新セクションとドキュメント全体の整合性
@@ -191,6 +204,7 @@ prompt: |
 - [ ] 対象ドキュメントを特定した
 - [ ] ユーザーと変更内容を確認した
 - [ ] 適切なエージェントでドキュメントを更新した（updateモード）
+- [ ] code-verifierをdocument-reviewerの前に実行した（Design Docのみ）
 - [ ] document-reviewerを実行しフィードバックに対応した
 - [ ] design-syncで整合性検証を実行した（Design Docのみ）
 - [ ] 更新されたドキュメントのユーザー承認を取得した
