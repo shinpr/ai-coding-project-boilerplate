@@ -38,9 +38,8 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 
 ### Required Comment Format
 
-Each test MUST include the following annotations. Use the project's comment syntax to wrap these annotations.
+Each test MUST include the following annotations.
 
-**TypeScript/JavaScript** (`//`):
 ```typescript
 // AC: "[Acceptance criteria original text]"
 // ROI: [0-100] | Business Value: [0-10] | Frequency: [0-10]
@@ -51,21 +50,12 @@ Each test MUST include the following annotations. Use the project's comment synt
 // @real-dependency: [component name] (optional, when Test Boundaries specify non-mock setup)
 ```
 
-**Python/Ruby** (`#`):
-```python
-# AC: "[Acceptance criteria original text]"
-# @category: core-functionality | integration | edge-case | ux | e2e
-# (same annotation keys as above)
-```
-
 ### Property Annotations
 
 ```typescript
 // Property: `[Verification expression]`
 // fast-check: fc.property(fc.[arbitrary], (input) => [invariant])
 ```
-
-Adapt comment syntax to project language.
 
 ### ROI Calculation
 
