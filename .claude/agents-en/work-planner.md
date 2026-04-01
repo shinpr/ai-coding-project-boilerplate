@@ -116,30 +116,50 @@ Gradually ensure quality based on Design Doc acceptance criteria.
 
 Read test skeleton files (integration tests, E2E tests) with the Read tool and extract meta information from comments.
 
-**Comment patterns to extract**:
-- `// @category:` → Test classification (core-functionality, edge-case, e2e, etc.)
-- `// @dependency:` → Dependent components (material for phase placement decisions)
-- `// @complexity:` → Complexity (high/medium/low, material for effort estimation)
-- `// fast-check:` → Property-Based Test implementation pattern (**Important**: Tests with this comment should clearly state "use fast-check library" in work plan)
-- `// ROI:` → Priority determination
+**Comment annotation patterns to extract** (comment syntax varies by project language):
+- `@category:` → Test classification (core-functionality, edge-case, e2e, etc.)
+- `@dependency:` → Dependent components (material for phase placement decisions)
+- `@complexity:` → Complexity (high/medium/low, material for effort estimation)
+- `@real-dependency:` → Component requiring real (non-mock) setup; place in phase after environment setup is available
+- `fast-check:` → Property-Based Test implementation pattern (**Important**: Tests with this comment should clearly state "use fast-check library" in work plan)
+- `ROI:` → Priority determination
 
 #### Step 2: Reflect Meta Information in Work Plan
 
 1. **Explicit Documentation of Property-Based Tests (fast-check)**
-   - Tests with `// fast-check:` comments → Add the following to the task's implementation steps:
+   - Tests with `fast-check:` comments → Add the following to the task's implementation steps:
      - "Implement property-based test using fast-check library"
      - Include the pattern in the comment (`fc.property(...)`) as sample code
 
 2. **Phase Placement Based on Dependencies**
-   - `// @dependency: none` → Place in early phases
-   - `// @dependency: [component name]` → Place in phase after dependent component implementation
-   - `// @dependency: full-system` → Place in final phase
+   - `@dependency: none` → Place in early phases
+   - `@dependency: [component name]` → Place in phase after dependent component implementation
+   - `@dependency: full-system` → Place in final phase
 
 3. **Effort Estimation Based on Complexity**
-   - `// @complexity: high` → Split task into subtasks, or estimate higher effort
-   - `// @complexity: low` → Consider combining multiple tests into one task
+   - `@complexity: high` → Split task into subtasks, or estimate higher effort
+   - `@complexity: low` → Consider combining multiple tests into one task
 
-#### Step 3: Structure Analysis and Classification of it.todo
+#### Step 3: Extract Environment Prerequisites from E2E Skeletons
+
+When E2E test skeletons are provided, scan for environment prerequisites in two stages:
+
+**Stage 1: Detect precondition patterns** — scan all E2E skeletons and list every detected precondition:
+- `Preconditions:` or `Arrange:` comment annotations mentioning seed data, test users, subscriptions, or specific DB state
+- `@dependency: full-system` combined with auth/login setup code
+- References to environment variables (`E2E_*`, `TEST_*`)
+- External service references requiring HTTP mock/intercept patterns in test code
+
+**Stage 2: Generate setup tasks** — for each detected precondition, create a corresponding Phase 0 task. Common categories include:
+- **Seed data** → "Create E2E seed data script (test users, required records)"
+- **Auth fixture** → "Implement E2E auth fixture using application's login flow"
+- **External service mocks** → "Configure external service mocks for E2E tests"
+- **Environment configuration** → "Define E2E environment variables and document setup"
+- **Other detected preconditions** → Create a setup task matching the detected category
+
+Place all environment setup tasks in Phase 0 (before any implementation tasks). Mark with `@category: e2e-setup` for traceability.
+
+#### Step 4: Structure Analysis and Classification of it.todo
 
 1. **it.todo Structure Analysis and Classification**
    - Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
@@ -182,7 +202,7 @@ Compose phases based on technical dependencies and implementation approach from 
 Always include quality assurance (all tests passing, acceptance criteria achieved) in final phase.
 
 ### Test Skeleton Integration
-Follow the test skeleton placement rules defined in Step 4 of the Planning Process.
+Follow the test skeleton placement rules defined in the Planning Process (Compose Phases step).
 
 ### Task Dependencies
 - Clearly define dependencies
@@ -200,6 +220,9 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 - [ ] All requirements converted to tasks
 - [ ] Quality assurance exists in final phase
 - [ ] Test skeleton file paths listed in corresponding phases (when provided)
+- [ ] E2E environment prerequisites addressed (when E2E skeletons provided)
+  - [ ] Seed data, auth fixture, and external service mock tasks generated
+  - [ ] Environment setup tasks placed in Phase 0
 - [ ] Test design information reflected (only when provided)
   - [ ] Setup tasks placed in first phase
   - [ ] Risk level-based prioritization applied

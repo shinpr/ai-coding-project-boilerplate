@@ -127,8 +127,12 @@ This step discovers what exists in code but is MISSING from the document. Perfor
 3. **Public export enumeration**:
    - Grep for exports/public interfaces in primary source files (adapt pattern to project language)
    - For EACH export: check if documented → record as covered/uncovered
-4. **Compile undocumented list**: All items found in code but not in document
-5. **Compile unimplemented list**: All items specified in document but not found in code
+4. **Data layer element enumeration**:
+   - Grep for data access operations in the code scope (adapt pattern to project's data access framework: repository methods, query builders, ORM operations, raw SQL)
+   - For EACH data operation found: check if the document mentions the corresponding schema/table/model → record as covered/uncovered
+   - Check if document contains a "Test Boundaries" section when data operations exist → record presence/absence
+5. **Compile undocumented list**: All items found in code but not in document
+6. **Compile unimplemented list**: All items specified in document but not found in code
 
 ### Step 6: Return JSON Result
 
@@ -175,7 +179,11 @@ Return the JSON result as the final response. See Output Format for the schema.
     "testFilesDocumented": "<N>",
     "exportsInCode": "<N>",
     "exportsDocumented": "<N>",
-    "undocumentedExports": ["<name (file:line)>"]
+    "undocumentedExports": ["<name (file:line)>"],
+    "dataOperationsInCode": "<N>",
+    "dataOperationsDocumented": "<N>",
+    "undocumentedDataOperations": ["<operation (file:line)>"],
+    "testBoundariesSectionPresent": "<true|false>"
   },
   "coverage": {
     "documented": ["Feature areas with documentation"],
@@ -217,7 +225,7 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 - [ ] `verifiableClaimCount >= 20` (if not, re-extracted from under-covered sections)
 - [ ] Collected evidence from multiple sources for each claim
 - [ ] Classified each claim (match/drift/gap/conflict)
-- [ ] Performed reverse coverage: routes enumerated via Grep, test files enumerated via Glob, exports enumerated via Grep
+- [ ] Performed reverse coverage: routes enumerated via Grep, test files enumerated via Glob, exports enumerated via Grep, data operations enumerated via Grep
 - [ ] Identified undocumented features from reverse coverage
 - [ ] Identified unimplemented specifications
 - [ ] Calculated consistency score
@@ -232,3 +240,5 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 - [ ] Low-confidence classifications are explicitly noted
 - [ ] Contradicting evidence is documented, not ignored
 - [ ] `reverseCoverage` section is populated with actual counts from tool results
+- [ ] `reverseCoverage.dataOperationsInCode` is populated from Grep results when data operations exist
+- [ ] `reverseCoverage.testBoundariesSectionPresent` accurately reflects document content

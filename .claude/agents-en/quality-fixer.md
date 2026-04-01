@@ -59,7 +59,7 @@ Refer to the "Quality Check Requirements" section in technical-spec skill for de
 - Type check succeeds
 - Lint/Format succeeds
 
-### blocked (Cannot determine due to unclear specifications)
+### blocked (Specification unclear or execution prerequisites not met)
 
 **Specification Confirmation Process** (execute in order BEFORE setting blocked):
 1. Check Design Doc and PRD for specification
@@ -74,8 +74,14 @@ Refer to the "Quality Check Requirements" section in technical-spec skill for de
 | Test vs Implementation conflict | Test expects 500 error, implementation returns 400 error | Both technically valid, business requirement unclear |
 | External system ambiguity | API accepts multiple response formats | Cannot determine expected format after all checks |
 | Business logic ambiguity | Tax calculation: pre-tax vs post-tax discount | Different business values, cannot determine correct logic |
+| Execution prerequisites not met | Missing test database, seed data, required libraries, environment variables, external service access | Cannot run tests without prerequisites — not a code fix |
 
-**Decision Rule**: Fix ALL technically solvable problems. blocked ONLY when business judgment required.
+**Determination**: Fix all technically solvable problems. Block only when business judgment required or execution prerequisites are missing.
+
+**Execution prerequisites escalation**: When tests fail due to missing environment, report the specific missing prerequisites with concrete resolution steps. Include:
+- What is missing (library, seed data, environment variable, running service, etc.)
+- What tests are affected
+- What would be needed to resolve (concrete steps, not vague descriptions)
 
 ## Output Format
 
@@ -132,10 +138,10 @@ Refer to the "Quality Check Requirements" section in technical-spec skill for de
     "totalWarnings": 0,
     "executionTime": "2m 15s"
   },
-  "approved": true,
   "nextActions": "Ready to commit"
 }
 ```
+
 
 **Processing Rules** (internal, not included in response):
 - Error found → Execute fix IMMEDIATELY
@@ -144,7 +150,7 @@ Refer to the "Quality Check Requirements" section in technical-spec skill for de
 - blocked status ONLY when: multiple valid fixes exist AND correct specification cannot be determined
 - DEFAULT behavior: Continue fixing until approved
 
-**blocked response format**:
+**blocked response format (specification conflict)**:
 ```json
 {
   "status": "blocked",
@@ -162,6 +168,27 @@ Refer to the "Quality Check Requirements" section in technical-spec skill for de
     "Fix attempt 3: Tried inferring specification from related documentation"
   ],
   "needsUserDecision": "Please confirm the correct error code"
+}
+```
+
+**blocked response format (missing prerequisites)**:
+
+`missingPrerequisites[].type` valid values: `seed_data`, `library`, `environment_variable`, `running_service`, `other`
+
+```json
+{
+  "status": "blocked",
+  "reason": "Execution prerequisites not met",
+  "missingPrerequisites": [
+    {
+      "type": "seed_data",
+      "description": "E2E test database has no test player with active subscription",
+      "affectedTests": ["training-e2e-tests"],
+      "resolutionSteps": ["Create seed script for E2E test player", "Add subscription record to seed"]
+    }
+  ],
+  "testsSkipped": 3,
+  "testsPassedWithoutPrerequisites": 47
 }
 ```
 
@@ -287,4 +314,4 @@ Return blocked status ONLY when ALL of these conditions are met:
 2. Business/specification judgment is REQUIRED to choose between them
 3. ALL specification confirmation methods have been EXHAUSTED
 
-**Decision Rule**: Fix ALL technically solvable problems. Set blocked ONLY when business judgment is required.
+**Decision Rule**: Fix ALL technically solvable problems. Set blocked ONLY when business judgment is required or execution prerequisites are missing.

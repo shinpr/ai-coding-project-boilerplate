@@ -173,6 +173,13 @@ Design Doc作成前に実施：
   - `reverse-engineer`: 既存フロントエンドアーキテクチャの現状ドキュメント化（reverse-engineerモードセクション参照）
 
 - **要件分析結果**: 要件分析の結果（規模判定、技術要件等）
+- **コードベース分析**（任意、コードベース分析エージェントから提供）:
+  - 提供された場合、「既存コードベース分析」セクションの主要ソースとして使用
+  - `existingElements` → Implementation Path MappingとCode Inspection Evidenceに反映
+  - `dataModel` → データ関連セクション（スキーマ参照、データ契約）に反映
+  - `focusAreas` → フラグされた領域の調査深度を優先
+  - `constraints` → 設計上の制約と前提条件に組み込む
+  - 分析でカバーされていない領域、または`limitations`でフラグされた領域についてのみ追加調査を実施
 - **PRD**: PRDドキュメント（存在する場合）
 - **UI Spec**: UI Specパス（存在する場合、コンポーネント構造と状態設計を継承）
 - **作成対象ドキュメント**: ADR、Design Doc、または両方

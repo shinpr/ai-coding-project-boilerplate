@@ -266,6 +266,26 @@ Evaluate the following for this feature's trust boundaries and data flow:
 
 Mark items as N/A with brief rationale when the feature has no relevant trust boundary.
 
+## Test Boundaries
+
+### Mock Boundary Decisions
+
+| Component/Dependency | Mock? | Rationale |
+|---------------------|-------|-----------|
+| [External API / DB / File system / etc.] | [Yes/No] | [Why this boundary was chosen] |
+
+### Data Layer Testing Strategy
+
+- **Schema dependencies**: [List tables/models this feature reads from or writes to, with paths to their definitions]
+- **Test data approach**: [How test data is provided — fixtures, factories, seed scripts, or real database]
+- **Mock limitations acknowledged**: [What cannot be reliably tested with mocks alone for this feature]
+
+Mark as N/A with brief rationale when the feature has no data layer dependencies.
+
+### Integration Verification Points
+
+- [List critical integration points that require testing beyond unit-level mocks]
+
 ## Alternative Solutions
 
 ### Alternative 1

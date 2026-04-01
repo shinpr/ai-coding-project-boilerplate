@@ -8,6 +8,7 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 ## References
 
 - **[references/e2e-design.md](references/e2e-design.md)** - E2E test design principles with Playwright (candidate sources, selection criteria, UI Spec mapping)
+- **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** - E2E environment prerequisites (seed data, auth fixtures, environment checklist)
 
 ## Test Types and Limits
 
@@ -37,6 +38,8 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 
 ### Required Comment Format
 
+Each test MUST include the following annotations.
+
 ```typescript
 // AC: "[Acceptance criteria original text]"
 // ROI: [0-100] | Business Value: [0-10] | Frequency: [0-10]
@@ -44,7 +47,7 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 // @category: core-functionality | integration | edge-case | ux | e2e
 // @dependency: none | [component name] | full-system
 // @complexity: low | medium | high
-it.todo('[AC number]: [Test name]')
+// @real-dependency: [component name] (optional, when Test Boundaries specify non-mock setup)
 ```
 
 ### Property Annotations
@@ -52,7 +55,6 @@ it.todo('[AC number]: [Test name]')
 ```typescript
 // Property: `[Verification expression]`
 // fast-check: fc.property(fc.[arbitrary], (input) => [invariant])
-it.todo('[AC number]-property: [Invariant description]')
 ```
 
 ### ROI Calculation

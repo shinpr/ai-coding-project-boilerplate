@@ -11,7 +11,8 @@ description: Execute from requirement analysis to design document creation
 **Execution Protocol**:
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Follow subagents-orchestration-guide skill design flow exactly**:
-   - Execute: requirement-analyzer → technical-designer → document-reviewer → design-sync
+   - Execute: requirement-analyzer → codebase-analyzer → technical-designer → code-verifier → document-reviewer → design-sync
+   - **ADR-only**: Skip codebase-analyzer and code-verifier (these apply to Design Doc only)
    - **Stop at every `[Stop: ...]` marker** → Wait for user approval before proceeding
 3. **Scope**: Complete when design documents receive approval
 
@@ -22,7 +23,9 @@ description: Execute from requirement analysis to design document creation
 ```
 Requirements → requirement-analyzer → [Stop: Scale determination]
                                            ↓
-                                   technical-designer → document-reviewer
+                                   codebase-analyzer → technical-designer
+                                           ↓
+                                   code-verifier → document-reviewer
                                            ↓
                                       design-sync → [Stop: Design approval]
 ```
@@ -38,12 +41,16 @@ Once requirements are moderately clarified, analyze with requirement-analyzer an
 
 Clearly present design alternatives and trade-offs.
 
+Execute the process below within design scope. Follow subagents-orchestration-guide Call Examples for codebase-analyzer and code-verifier invocations.
+
 ## Scope Boundaries
 
 **Included in this command**:
 - Requirement analysis with requirement-analyzer
+- Codebase analysis with codebase-analyzer (before technical design)
 - ADR creation (if architecture changes, new technology, or data flow changes)
 - Design Doc creation with technical-designer
+- Design Doc verification with code-verifier (before document review)
 - Document review with document-reviewer
 - Design Doc consistency verification with design-sync
 
@@ -52,17 +59,21 @@ Clearly present design alternatives and trade-offs.
 ## Execution Flow
 
 1. requirement-analyzer → Requirement analysis
-2. technical-designer → Design Doc creation
-3. document-reviewer → Single document quality check
-4. User approval (WAIT for approval)
-5. design-sync → Design Doc consistency verification
+2. codebase-analyzer → Codebase analysis (pass requirement-analyzer output)
+3. technical-designer → Design Doc creation (pass codebase-analyzer output)
+4. code-verifier → Verify Design Doc against existing code
+5. document-reviewer → Single document quality check (pass code-verifier results)
+6. User approval (WAIT for approval)
+7. design-sync → Design Doc consistency verification
    - IF conflicts found → Report to user → Wait for fix instructions → Fix with technical-designer(update)
    - IF no conflicts → End
 
 ## Completion Criteria
 
 - [ ] Executed requirement-analyzer and determined scale
+- [ ] Executed codebase-analyzer and passed results to technical-designer
 - [ ] Created appropriate design document (ADR or Design Doc) with technical-designer
+- [ ] Executed code-verifier on Design Doc and passed results to document-reviewer (skip for ADR-only)
 - [ ] Executed document-reviewer and addressed feedback
 - [ ] Executed design-sync for consistency verification
 - [ ] Obtained user approval for design document

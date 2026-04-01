@@ -60,6 +60,7 @@ skills:
       - "テストの実装規約"
       - "テスト品質基準"
       - "モックの型安全性"
+      - "データ層テスト"
       - "Vitestの基本例"
 
   technical-spec:
@@ -138,6 +139,7 @@ skills:
       - "Node.js Testing Best Practices - Yoni Goldberg"
       - "Property-Based Testing - 2025 Practices"
       - "references/e2e-design.md - E2Eテスト設計原則"
+      - "references/e2e-environment-prerequisites.md - E2E環境前提条件"
     sections:
       - "References"
       - "テスト種別と上限"

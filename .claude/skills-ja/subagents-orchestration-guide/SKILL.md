@@ -54,13 +54,15 @@ graph TD
 
 ### ドキュメント作成エージェント
 6. **requirement-analyzer**: 要件分析と作業規模判定（WebSearch対応、最新技術情報の調査）
-7. **prd-creator**: Product Requirements Document作成（WebSearch対応、市場動向調査）
-8. **ui-spec-designer**: PRDとプロトタイプコード（任意）からUI Spec作成（フロントエンド/フルスタック機能）
-9. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
-10. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
-11. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
-12. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
-13. **acceptance-test-generator**: Design DocのACとUI Spec（任意）から統合テストとE2Eテストのスケルトン生成
+7. **codebase-analyzer**: 既存コードベースを分析し技術設計への重点的なガイダンスを生成
+8. **prd-creator**: Product Requirements Document作成（WebSearch対応、市場動向調査）
+9. **ui-spec-designer**: PRDとプロトタイプコード（任意）からUI Spec作成（フロントエンド/フルスタック機能）
+10. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
+11. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
+12. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
+13. **code-verifier**: Design Docの主張を既存コードベースに対して検証（設計フローでレビュー前に使用）
+14. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
+15. **acceptance-test-generator**: Design DocのACとUI Spec（任意）から統合テストとE2Eテストのスケルトン生成
 
 ## オーケストレーション原則
 
@@ -104,8 +106,10 @@ graph TD
 
 サブエージェントはJSON形式で応答。オーケストレーター判断に必要なフィールド：
 - **requirement-analyzer**: scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions
-- **task-executor**: status (escalation_needed/blocked/completed), testsAdded, requiresTestReview
-- **quality-fixer**: approved (true/false)
+- **codebase-analyzer**: analysisScope.categoriesDetected, dataModel.detected, focusAreas[], existingElements count, limitations
+- **code-verifier**:（設計フロー時）consistencyScore, discrepancies[], reverseCoverage（dataOperationsInCode, testBoundariesSectionPresent含む）
+- **task-executor**: status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file), testsAdded, requiresTestReview
+- **quality-fixer**: status (approved/blocked)。blockedタイプは`reason`フィールドで判別: `"Cannot determine due to unclear specification"` → `blockingIssues[]`で仕様詳細を参照; `"Execution prerequisites not met"` → `missingPrerequisites[]`の`resolutionSteps`を参照し、ユーザーにアクション可能なステップとして提示
 - **document-reviewer**: approvalReady (true/false)
 - **design-sync**: sync_status (synced/conflicts_found)
 - **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
@@ -114,7 +118,7 @@ graph TD
 
 ## 作業計画時の基本フロー
 
-### 大規模（6ファイル以上） - 11ステップ（バックエンド） / 13ステップ（フロントエンド/フルスタック）
+### 大規模（6ファイル以上） - 13ステップ（バックエンド） / 15ステップ（フロントエンド/フルスタック）
 
 1. requirement-analyzer → 要件分析 + 既存PRD確認 **[停止]**
 2. prd-creator → PRD作成
@@ -123,24 +127,28 @@ graph TD
 5. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
 6. technical-designer → ADR作成（アーキテクチャ/技術/データフロー変更がある場合）
 7. document-reviewer → ADRレビュー（ADR作成時） **[停止: ADR承認]**
-8. technical-designer → Design Doc作成（レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
-9. document-reviewer → Design Docレビュー（レイヤー横断時: Design Doc毎に実行）
-10. design-sync → 整合性検証 **[停止: Design Doc承認]**
-11. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
-12. work-planner → 作業計画書作成 **[停止: 一括承認]**
-13. task-decomposer → 自律実行 → 完了報告
+8. codebase-analyzer → コードベース分析（要件分析結果 + PRDパスを入力）
+9. technical-designer → Design Doc作成（codebase-analyzer出力を追加コンテキストとして入力。レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
+10. code-verifier → Design Docを既存コードに対して検証（doc_type: design-doc）
+11. document-reviewer → Design Docレビュー（code-verifier結果をcode_verificationとして入力。レイヤー横断時: Design Doc毎に実行）
+12. design-sync → 整合性検証 **[停止: Design Doc承認]**
+13. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
+14. work-planner → 作業計画書作成 **[停止: 一括承認]**
+15. task-decomposer → 自律実行 → 完了報告
 
-### 中規模（3-5ファイル） - 7ステップ（バックエンド） / 9ステップ（フロントエンド/フルスタック）
+### 中規模（3-5ファイル） - 9ステップ（バックエンド） / 11ステップ（フロントエンド/フルスタック）
 
 1. requirement-analyzer → 要件分析 **[停止]**
-2. **（フロントエンド/フルスタックのみ）** プロトタイプコードの有無を確認 → ui-spec-designer → UI Spec作成
-3. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
-4. technical-designer → Design Doc作成（レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
-5. document-reviewer → Design Docレビュー（レイヤー横断時: Design Doc毎に実行）
-6. design-sync → 整合性検証 **[停止: Design Doc承認]**
-7. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
-8. work-planner → 作業計画書作成 **[停止: 一括承認]**
-9. task-decomposer → 自律実行 → 完了報告
+2. codebase-analyzer → コードベース分析（要件分析結果を入力）
+3. **（フロントエンド/フルスタックのみ）** プロトタイプコードの有無を確認 → ui-spec-designer → UI Spec作成
+4. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
+5. technical-designer → Design Doc作成（codebase-analyzer出力を追加コンテキストとして入力。レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
+6. code-verifier → Design Docを既存コードに対して検証（doc_type: design-doc）
+7. document-reviewer → Design Docレビュー（code-verifier結果をcode_verificationとして入力。レイヤー横断時: Design Doc毎に実行）
+8. design-sync → 整合性検証 **[停止: Design Doc承認]**
+9. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
+10. work-planner → 作業計画書作成 **[停止: 一括承認]**
+11. task-decomposer → 自律実行 → 完了報告
 
 ### 小規模（1-2ファイル） - 2ステップ
 
@@ -157,14 +165,18 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 
 | ステップ | エージェント | 目的 |
 |---------|-----------|------|
-| 6a | technical-designer | バックエンドDesign Doc |
-| 6b | technical-designer-frontend | フロントエンドDesign Doc |
-| 7 | document-reviewer ×2 | 各Design Docを個別にレビュー |
-| 8 | design-sync | レイヤー間整合性検証 **[停止]** |
+| 8 | codebase-analyzer ×2 | レイヤー別コードベース分析（要件分析結果をレイヤーでフィルタして入力） |
+| 9a | technical-designer | バックエンドDesign Doc（バックエンドcodebase-analyzerコンテキスト付き） |
+| 9b | technical-designer-frontend | フロントエンドDesign Doc（フロントエンドcodebase-analyzerコンテキスト + バックエンドIntegration Points付き） |
+| 10 | code-verifier ×2 | 各Design Docを既存コードに対して検証 |
+| 11 | document-reviewer ×2 | 各Design Docをレビュー（code-verifier結果をcode_verificationとして入力） |
+| 12 | design-sync | レイヤー間整合性検証 **[停止]** |
+
+×2のステップはレイヤー毎に1回ずつ呼び出す。各呼び出しは独立しており、オーケストレーターが並列Agent呼び出しをサポートする場合は並列実行可能。
 
 **Design Doc作成時のレイヤーコンテキスト指定**:
-- **バックエンド**: 「[path]のPRDからバックエンドDesign Docを作成。対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」
-- **フロントエンド**: 「[path]のPRDからフロントエンドDesign Docを作成。[path]のバックエンドDesign DocのAPIコントラクトとIntegration Pointsを参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
+- **バックエンド**: 「PRD [パス] からバックエンドDesign Docを作成。コードベース分析: [バックエンドレイヤー用codebase-analyzerのJSON]。対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」
+- **フロントエンド**: 「PRD [パス] からフロントエンドDesign Docを作成。コードベース分析: [フロントエンドレイヤー用codebase-analyzerのJSON]。バックエンドDesign Doc [パス] のAPIコントラクトとIntegration Pointsを参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
 
 **design-sync**: フロントエンドDesign Docをソースとして使用。`docs/design/`内の他のDesign Docを自動検出して比較。
 
@@ -224,6 +236,16 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 
 エージェントのInput Parametersセクションと、フロー内のその時点で利用可能な成果物からプロンプトを構成する。
 
+### Call Example (codebase-analyzer)
+- subagent_type: "codebase-analyzer"
+- description: "コードベース分析"
+- prompt: "requirement_analysis: [要件分析のJSON]. prd_path: [存在する場合はパス]. requirements: [元のユーザー要件]. 既存コードベースを分析し設計ガイダンスを生成してください。"
+
+### Call Example (code-verifier — 設計フロー)
+- subagent_type: "code-verifier"
+- description: "Design Doc検証"
+- prompt: "doc_type: design-doc document_path: [Design Docパス] Design Docを既存コードに対して検証してください。"
+
 ## オーケストレーターの主な役割
 
 1. **状態管理**: 現在のフェーズ、各サブエージェントの状態、次のアクションを把握
@@ -233,6 +255,16 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
    - 構造化レスポンスから必要な情報を抽出
    - changeSummaryからコミットメッセージを作成 → **Bashでgit commit実行**
    - 要件変更時は初期要件と追加要件を明示的に統合
+
+   #### codebase-analyzer → technical-designer
+
+   **codebase-analyzerへの入力**: 要件分析JSON出力、PRDパス（存在する場合）、元のユーザー要件
+   **technical-designerへの入力**: codebase-analyzerのJSON出力をDesign Doc作成プロンプトの追加コンテキストとして渡す。designerは`focusAreas`と`dataModel`を「既存コードベース分析」セクションに反映する。
+
+   #### code-verifier → document-reviewer（Design Docレビュー）
+
+   **code-verifierへの入力**: Design Docパス（doc_type: design-doc）。`code_paths`は意図的に未指定 — verifierがドキュメントからコードスコープを独自に発見する。
+   **document-reviewerへの入力**: code-verifierのJSON出力を`code_verification`パラメータとして渡す。
 
    #### *1 acceptance-test-generator → work-planner
 
@@ -249,7 +281,7 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
    - E2Eテストファイル: [パス]（最終フェーズでのみ実行）
 
    **エラー時**: ファイルが生成されない場合はユーザーにエスカレーション
-3. **品質保証とコミット実行**: approved=true確認後、即座にgit commit実行
+3. **品質保証とコミット実行**: `status: "approved"`確認後、即座にgit commit実行
 4. **自律実行モード管理**: 承認後の自律実行開始・停止・エスカレーション判断
 5. **ADRステータス管理**: ユーザー判断後のADRステータス更新（Accepted/Rejected）
 

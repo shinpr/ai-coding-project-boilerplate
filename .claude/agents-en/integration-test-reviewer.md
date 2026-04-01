@@ -43,8 +43,8 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 
 ### 1. Skeleton Comment Extraction
 
-Extract the following skeleton comments from the specified `testFile`:
-- `// AC:`, `// ROI:`, `// Behavior:`, `// Property:`, `// Verification items:`, `// @category:`, `// @dependency:`, `// @complexity:`
+Extract the following annotation patterns from the specified `testFile` (comment syntax varies by project language):
+- `AC:`, `ROI:`, `Behavior:`, `Property:`, `Verification items:`, `@category:`, `@dependency:`, `@complexity:`
 
 ### 2. Skeleton Consistency Check
 

@@ -13,8 +13,13 @@ Metadata:
 - [ ] [Implementation file path]
 - [ ] [Test file path]
 
+## Investigation Targets
+Files to read before starting implementation (file path, with optional search hint):
+- [e.g., src/orders/checkout (processOrder function) — determined by task-decomposer based on task nature]
+
 ## Implementation Steps (TDD: Red-Green-Refactor)
 ### 1. Red Phase
+- [ ] Read all Investigation Targets and record key observations
 - [ ] Review dependency deliverables (if any)
 - [ ] Verify/create contract definitions
 - [ ] Write failing tests

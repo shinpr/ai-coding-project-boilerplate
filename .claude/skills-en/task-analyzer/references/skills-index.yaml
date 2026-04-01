@@ -69,6 +69,7 @@ skills:
       - "Test Implementation Conventions"
       - "Test Quality Criteria"
       - "Mock Type Safety Enforcement"
+      - "Data Layer Testing"
       - "Basic Vitest Example"
 
   technical-spec:
@@ -147,6 +148,7 @@ skills:
       - "Node.js Testing Best Practices - Yoni Goldberg"
       - "Property-Based Testing - 2025 Practices"
       - "references/e2e-design.md - E2E test design principles"
+      - "references/e2e-environment-prerequisites.md - E2E environment prerequisites"
     sections:
       - "References"
       - "Test Types and Limits"

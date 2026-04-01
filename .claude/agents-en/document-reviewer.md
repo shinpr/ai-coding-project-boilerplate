@@ -38,6 +38,10 @@ Operates in an independent context without CLAUDE.md principles, executing auton
 - **doc_type**: Document type (`PRD`/`ADR`/`UISpec`/`DesignDoc`)
 - **target**: Document path to review
 
+- **code_verification**: Code-verifier results JSON (optional)
+  - When provided, incorporate as pre-verified evidence in Gate 1 quality assessment
+  - Discrepancies and reverse coverage gaps inform consistency and completeness checks
+
 ## Review Modes
 
 ### Composite Perspective Review (composite) - Recommended
@@ -94,6 +98,8 @@ For DesignDoc, additionally verify:
 - Code inspection evidence review: Verify inspected files are relevant to design scope; flag if key related files are missing
 - Dependency realizability check: For each dependency the Design Doc's Existing Codebase Analysis section describes as "existing", verify its definition exists in the codebase using Grep/Glob. Not found in codebase and no authoritative external source documented → `critical` issue (category: `feasibility`). Found but definition signature (method names, parameter types, return types) diverges from Design Doc description → `important` issue (category: `consistency`)
 - **As-is implementation document review**: When code verification results are provided and the document describes existing implementation (not future requirements), verify that code-observable behaviors are stated as facts; speculative language about deterministic behavior → `important` issue
+- **Data design completeness check**: When document contains data-storage keywords (database, persistence, storage, migration) or data-access keywords (repository, query, ORM, SQL) or data-schema keywords (table, schema, column) but lacks data design content (no schema references, no "Test Boundaries" section with data layer strategy, no data model documentation) → `important` issue (category: `completeness`). Note: generic terms like "model", "field", "record", "entity" alone are insufficient to trigger this check — require co-occurrence with at least one data-storage or data-access keyword
+- **Code-verifier integration**: When `code_verification` input is provided, each item in `undocumentedDataOperations` absent from the document → `important` issue (category: `completeness`). Each discrepancy from code-verifier with severity `critical` or `major` → incorporate as pre-verified evidence in the corresponding review check
 
 **Perspective-specific Mode**:
 - Implement review based on specified mode and focus
@@ -247,6 +253,8 @@ Include in output when `prior_context_count > 0`:
 - [ ] Code inspection evidence covers files relevant to design scope
 - [ ] Dependencies described as "existing" verified against codebase (Grep/Glob)
 - [ ] Field propagation map present when fields cross component boundaries
+- [ ] Data-related keywords present → data design content exists (schema references, Test Boundaries, or data model documentation; or explicitly marked N/A)
+- [ ] Code-verifier results (if provided) reconciled with document content
 
 ## Review Criteria (for Comprehensive Mode)
 

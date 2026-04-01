@@ -173,6 +173,13 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
   - `reverse-engineer`: Document existing frontend architecture as-is (see Reverse-Engineer Mode section)
 
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
+- **Codebase Analysis** (optional, from codebase-analyzer):
+  - When provided, use as the primary source for the "Existing Codebase Analysis" section
+  - `existingElements` → populate Implementation Path Mapping and Code Inspection Evidence
+  - `dataModel` → populate data-related sections (schema references, data contracts)
+  - `focusAreas` → prioritize investigation depth on flagged areas
+  - `constraints` → incorporate into design constraints and assumptions
+  - Conduct additional investigation only for areas not covered by the analysis or flagged in `limitations`
 - **PRD**: PRD document (if exists)
 - **UI Spec**: UI Specification document (if exists, for frontend features)
 - **Documents to Create**: ADR, Design Doc, or both

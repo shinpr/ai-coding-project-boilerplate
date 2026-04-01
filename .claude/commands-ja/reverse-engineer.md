@@ -142,9 +142,7 @@ prompt: |
   doc_type: PRD
   target: $STEP_2_OUTPUT
   mode: composite
-
-  ## コード検証結果
-  $STEP_3_OUTPUT
+  code_verification: $STEP_3_OUTPUT
 
   ## 追加レビュー観点
   - PRD主張と検証evidenceの整合性
@@ -308,9 +306,7 @@ prompt: |
   doc_type: DesignDoc
   target: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
   mode: composite
-
-  ## コード検証結果
-  $STEP_8_OUTPUT
+  code_verification: $STEP_8_OUTPUT
 
   ## 親PRD
   $APPROVED_PRD_PATH

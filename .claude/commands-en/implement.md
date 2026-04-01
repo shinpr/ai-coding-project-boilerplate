@@ -52,6 +52,8 @@ After scale determination, **register all steps of the applicable subagents-orch
 - [ ] Identified current progress position
 - [ ] Clarified next step
 - [ ] Recognized stopping points → **Use AskUserQuestion for confirmation at all Stop points**
+- [ ] codebase-analyzer included before each Design Doc creation
+- [ ] code-verifier included before document-reviewer for each Design Doc
 - [ ] Understood the 4-step cycle after task execution (task-executor → escalation judgment/follow-up → quality-fixer → commit)
 
 **Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TaskCreate/TaskUpdate
