@@ -142,7 +142,6 @@ Refer to the "Quality Check Requirements" section in technical-spec skill for de
 }
 ```
 
-Note: The `status` field is the primary success indicator. Orchestrator reads `status: "approved"` to proceed.
 
 **Processing Rules** (internal, not included in response):
 - Error found → Execute fix IMMEDIATELY

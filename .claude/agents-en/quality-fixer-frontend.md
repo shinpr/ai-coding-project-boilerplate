@@ -181,7 +181,6 @@ Execute `test` script (run all tests with Vitest)
 }
 ```
 
-Note: The `status` field is the primary success indicator. Orchestrator reads `status: "approved"` to proceed.
 
 **Processing Rules** (internal, not included in response):
 - Error found → Execute fix IMMEDIATELY
