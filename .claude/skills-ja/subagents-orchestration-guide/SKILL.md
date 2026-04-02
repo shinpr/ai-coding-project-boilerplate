@@ -266,6 +266,10 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
    **code-verifierへの入力**: Design Docパス（doc_type: design-doc）。`code_paths`は意図的に未指定 — verifierがドキュメントからコードスコープを独自に発見する。
    **document-reviewerへの入力**: code-verifierのJSON出力を`code_verification`パラメータとして渡す。
 
+   #### technical-designer → work-planner
+
+   **work-plannerへの入力**: Design Docパス。work-plannerがDesign Docから検証戦略を抽出し、作業計画書ヘッダーに記載する。
+
    #### *1 acceptance-test-generator → work-planner
 
    **acceptance-test-generatorへの入力**:

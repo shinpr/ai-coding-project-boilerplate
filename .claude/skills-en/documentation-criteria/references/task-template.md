@@ -33,9 +33,16 @@ Files to read before starting implementation (file path, with optional search hi
 - [ ] Improve code (maintain passing tests)
 - [ ] Confirm added tests still pass
 
+## Operation Verification Methods
+(Derived from Verification Strategy in work plan)
+- **Verification method**: [What to verify and how — e.g., "compare new implementation output against existing implementation at src/legacy/order_calc", "run endpoint against test database and verify response matches contract"]
+- **Success criteria**: [Observable outcome that proves correctness — e.g., "output matches existing implementation for all input combinations", "API returns 200 with expected schema"]
+- **Failure response**: [What to do if verification fails — e.g., "reassess approach before proceeding", "escalate to user"]
+- **Verification level**: [L1/L2/L3, per implementation-approach skill]
+
 ## Completion Criteria
 - [ ] All added tests pass
-- [ ] Operation verified (select L1/L2/L3, per implementation-approach skill)
+- [ ] Operation verified per Operation Verification Methods above
 - [ ] Deliverables created (for research/design tasks)
 
 ## Notes

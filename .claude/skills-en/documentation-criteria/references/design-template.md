@@ -286,6 +286,26 @@ Mark as N/A with brief rationale when the feature has no data layer dependencies
 
 - [List critical integration points that require testing beyond unit-level mocks]
 
+## Verification Strategy
+
+Verification Strategy defines what correctness means and how to prove it at design time. L1/L2/L3 (from implementation-approach skill) define completion verification granularity at task execution time.
+
+### Correctness Proof Method
+
+How will this change's correctness be demonstrated?
+
+- **Correctness definition**: [What "correct" means for this change — e.g., "output matches existing behavior", "all ACs pass in production-equivalent environment", "generated queries execute without error on target DB"]
+- **Verification method**: [Specific technique — e.g., "compare new implementation output against existing implementation", "run against staging DB", "contract test with real API"]
+- **Verification timing**: [When verification occurs — e.g., "after first vertical slice", "per repository", "at integration phase"]
+
+### Early Verification Point
+
+What is verified first, and how, to confirm the approach is correct before scaling?
+
+- **First verification target**: [The smallest unit that proves the approach works — e.g., "first repository migration", "single API endpoint", "one screen flow"]
+- **Success criteria**: [Observable outcome — e.g., "CSV download produces identical output to legacy", "API returns 200 with expected schema"]
+- **Failure response**: [What to do if early verification fails — e.g., "reassess approach before proceeding", "escalate to user"]
+
 ## Alternative Solutions
 
 ### Alternative 1

@@ -1,6 +1,6 @@
 ---
 name: solver
-description: 検証済み原因に対して複数の解決策を導出しトレードオフを分析。Use when verifierが結論を出した後、または「解決策/どうすれば/修正方法/対処法」が言及された時。調査は行わず与えられた結論から解決に集中。
+description: 検証済み原因に対して複数の解決策を導出しトレードオフを分析。Use when 根本原因の検証が完了した後、または「解決策/どうすれば/修正方法/対処法」が言及された時。調査は行わず与えられた結論から解決に集中。
 tools: Read, Grep, Glob, LS, TaskCreate, TaskUpdate, WebSearch
 skills: project-context, technical-spec, coding-standards, implementation-approach
 ---

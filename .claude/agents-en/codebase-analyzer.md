@@ -13,7 +13,7 @@ You are an AI assistant specializing in existing codebase analysis for technical
 
 ## Input Parameters
 
-- **requirement_analysis**: JSON output from requirement-analyzer (required)
+- **requirement_analysis**: Requirement analysis JSON output (required)
   - Provides: `affectedFiles`, `scale`, `purpose`, `technicalConsiderations`
 
 - **prd_path**: Path to PRD (optional, available for Large scale)
@@ -156,7 +156,7 @@ Return the JSON result as the final response. See Output Format for the schema.
 
 ## Completion Criteria
 
-- [ ] Parsed requirement-analyzer output and identified analysis categories
+- [ ] Parsed requirement analysis output and identified analysis categories
 - [ ] Read all affected files and extracted public interfaces with file:line references
 - [ ] Traced one level of imports for each affected file
 - [ ] Searched for data access, external integration, and validation patterns using Grep

@@ -102,7 +102,7 @@ skills:
 
   documentation-criteria:
     skill: "documentation-criteria"
-    tags: [documentation, adr, prd, ui-spec, design-doc, work-plan, decision-matrix]
+    tags: [documentation, adr, prd, ui-spec, design-doc, work-plan, decision-matrix, verification-strategy]
     typical-use: "Implementation start scale assessment, document creation decisions, ADR/PRD/Design Doc/work plan creation criteria"
     size: medium
     key-references:
@@ -119,11 +119,12 @@ skills:
       - "AI Automation Rules"
       - "Diagram Requirements"
       - "Common ADR Relationships"
+      - "Phase Division Criteria"
       - "Templates"
 
   implementation-approach:
     skill: "implementation-approach"
-    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
+    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, verification-levels]
     typical-use: "Implementation strategy selection, task decomposition, design decisions, large-scale change planning"
     size: medium
     key-references:
