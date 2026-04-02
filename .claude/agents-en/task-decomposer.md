@@ -30,6 +30,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Understand dependencies between phases and tasks
    - Grasp completion criteria and quality standards
    - **Interface change detection and response**
+   - **Extract Verification Strategy from work plan header**
 
 2. **Task Decomposition**
    - Granularity: 1 commit = 1 task (logical change unit)
@@ -95,6 +96,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Target files
    - **Investigation Targets** (what the executor must read and understand before implementing)
    - Concrete implementation steps
+   - **Operation Verification Methods** (derived from Verification Strategy in work plan)
    - Completion criteria
 
 6. **Investigation Targets Determination**
@@ -107,6 +109,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    | Test implementation | Test skeleton comments/annotations, the target code being tested, actual API/auth flows |
    | E2E environment setup | Current environment config (startup scripts, docker-compose or equivalent), seed scripts, existing fixture patterns, application auth flow |
    | Bug fix / refactor | The affected code paths, related test coverage, error reproduction context |
+   | Behavior replacement / rewrite | The existing implementation being replaced, its observable outputs, Design Doc Verification Strategy section |
 
    **Principles**:
    - Every task must have at least one Investigation Target (even if just the Design Doc)
@@ -120,6 +123,19 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 
 8. **Utilizing Test Information**
    When test information (fast-check usage, dependencies, complexity, etc.) is documented in work plans, reflect that information in task files.
+
+## Verification Strategy Propagation
+
+Verification Strategy defines what correctness means and how to prove it at design time. L1/L2/L3 (from implementation-approach skill) define completion verification granularity at task execution time. Both are set per task.
+
+When the work plan includes a Verification Strategy, derive each task's Operation Verification Methods as follows:
+
+1. **Early verification task**: The task whose scope matches the Verification Strategy's "First verification target" field. Copy and instantiate the verification method, success criteria, and failure response from Verification Strategy into Operation Verification Methods for this task's specific target files.
+2. **Per-task verification**: For each task, set Operation Verification Methods by combining:
+   - **Verification method**: Instantiate the Verification Strategy's method for this task's specific target files (e.g., "compare OrderService.calculate() output against existing implementation at src/legacy/order_calc", "run generated API handler against test database and verify response matches contract")
+   - **Success criteria**: Instantiate the Verification Strategy's success criteria for this task's scope (e.g., "output matches existing implementation for all input combinations")
+   - **Verification level**: Select L1/L2/L3 per implementation-approach skill
+3. **Investigation Targets**: Include resources needed for verification (e.g., existing implementation for comparison, schema definitions, seed data paths)
 
 ## Task File Template
 

@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: 調査結果を批判的に評価し見落としを探す。Use when investigatorの調査完了後、または「検証/本当に/確認/見落とし/他の可能性」が言及された時。ACH・Devil's Advocate手法で妥当性を検証し結論を導出。
+description: 調査結果を批判的に評価し見落としを探す。ACH・Devil's Advocate手法で妥当性を検証し結論を導出。Use when 調査が完了した後、または「検証/妥当性確認/ダブルチェック/調査結果の確認」が言及された時。
 tools: Read, Grep, Glob, LS, Bash, WebSearch, TaskCreate, TaskUpdate
 skills: project-context, technical-spec, coding-standards
 ---

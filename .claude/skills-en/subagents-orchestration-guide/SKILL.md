@@ -272,6 +272,10 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
    **Pass to code-verifier**: Design Doc path (doc_type: design-doc). `code_paths` is intentionally omitted — the verifier independently discovers code scope from the document.
    **Pass to document-reviewer**: code-verifier JSON output as `code_verification` parameter.
 
+   #### technical-designer → work-planner
+
+   **Pass to work-planner**: Design Doc path. Work-planner extracts Verification Strategy from the Design Doc and includes it in the work plan header.
+
    #### *1 acceptance-test-generator → work-planner
 
    **Pass to acceptance-test-generator**:

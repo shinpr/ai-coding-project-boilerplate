@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.1] - 2026-04-02
+
+### Added
+
+- **Verification Strategy flow**: Design Doc → Work Plan → Task pipeline now propagates how correctness is proven. Design template includes Correctness Proof Method and Early Verification Point sections. Work Plan template carries the strategy summary. Task template includes Operation Verification Methods derived from the strategy.
+- **Adaptive Phase Division Criteria**: Work Plan phase structure now adapts to implementation approach — vertical slice produces value-unit phases, horizontal slice retains Foundation → Core → Integration → QA, hybrid uses vertical as base with horizontal foundation phases. Plan template provides Option A/B with explicit instruction to delete the unused option.
+- **Verification Strategy review gates**: document-reviewer Gate 0 checks existence; Gate 1 checks quality (measurability, risk coverage, early verification concreteness, timing alignment with approach)
+- **Verification Strategy propagation in task-decomposer**: New section derives per-task Operation Verification Methods from the work plan's strategy, with concrete instantiation rules for early verification and per-task verification
+- **technical-designer → work-planner bridging**: Orchestration guide documents Verification Strategy handoff between design and planning phases
+
+### Changed
+
+- **Agent cross-references removed**: Agent definitions no longer reference other agents by name. `requirement-analyzer` → `requirement analysis`, `code-verifier` → `code verification`, `codebase-analyzer` → `codebase analysis phase`, etc. Orchestration layers own routing decisions.
+- **Acceptance criteria format**: technical-designer and technical-designer-frontend checklist item updated from "concrete trigger, action, and expected result" to "user-observable behaviors, integration/E2E oriented, CI-isolatable"
+- **testSkeletons input contract**: work-planner now describes format expectations (comment-based skeletons, not implemented tests) instead of naming the producer agent
+- **Command self-references removed**: update-doc no longer redirects to other commands; out-of-scope items stated without naming alternatives
+- **Japanese terminology unified**: `確認レベル` (confirmation level) → `検証レベル` (verification level) across all agents, skills, and skills-index to match English `Verification Level Definitions`
+- **skills-index.yaml updated**: `confirmation-levels` tag → `verification-levels`; `verification-strategy` tag and `Phase Division Criteria` section added to documentation-criteria
+
 ## [1.20.0] - 2026-04-01
 
 ### Added

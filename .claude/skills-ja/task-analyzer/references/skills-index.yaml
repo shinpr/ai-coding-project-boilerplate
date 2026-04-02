@@ -93,7 +93,7 @@ skills:
 
   documentation-criteria:
     skill: "documentation-criteria"
-    tags: [documentation, decision-making, adr, prd, ui-spec, design-doc, planning, process]
+    tags: [documentation, decision-making, adr, prd, ui-spec, design-doc, planning, process, verification-strategy]
     typical-use: "実装開始時の規模判定、ドキュメント作成判定、ADR/PRD/Design Doc/作業計画書の作成基準"
     size: medium
     key-references:
@@ -110,11 +110,12 @@ skills:
       - "AI自動化ルール"
       - "図表作成要件"
       - "共通ADRとの関係性"
+      - "フェーズ分割基準"
       - "テンプレート"
 
   implementation-approach:
     skill: "implementation-approach"
-    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, confirmation-levels]
+    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, verification-levels]
     typical-use: "実装戦略の選択、タスク分解、設計判断、大規模変更の計画"
     size: medium
     key-references:
@@ -124,7 +125,7 @@ skills:
       - "Facade Pattern - Gang of Four"
     sections:
       - "メタ認知的戦略選択プロセス"
-      - "確認レベル定義"
+      - "検証レベル定義"
       - "統合ポイントの定義"
       - "アンチパターン"
       - "メタ認知的実行のための指針"
