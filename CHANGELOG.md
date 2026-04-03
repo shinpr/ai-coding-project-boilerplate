@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.2] - 2026-04-03
+
+### Added
+
+- **Delegation Boundary: What vs How** (subagents-orchestration-guide): Orchestrator lacked a definition of what granularity to pass to specialists vs what to let them decide autonomously. Added what/where/constraints vs how separation, Bad/Good comparison table, 4-tier decision precedence for conflict resolution, and escalation rule for undeterminable execution methods
+- **Scope granularity per agent type**: Executor agents receive task file paths by default (broader scope requires explicit user request); discovery/review agents receive directory or package scope with read-only access
+- **quality-fixer blocked handling subsection** (Structured Response Specifications): Moved quality-fixer's multi-branch decision logic from an overloaded table cell into a dedicated subsection for scannability
+
+### Changed
+
+- **Prohibited Actions → positive-form Required Actions**: Negative instructions ("don't investigate directly", "don't skip requirement-analyzer") caused Pink Elephant Problem. Converted to affirmative delegation instructions ("Delegate all investigation to requirement-analyzer or codebase-analyzer")
+- **Structured Response Specifications table format**: Bullet list with mixed-length entries replaced with Agent / Key Fields / Decision Logic table. Each agent's response-to-action mapping is now explicit
+- **Consistency verification constraint**: Vague "prioritize these guidelines" replaced with reference to Decision precedence in the Delegation Boundary section
+- **Remaining negative-form instructions cleaned**: "no modification" → "read-only access", "instead of guessing" removed, "higher-precedence source" → explicit "user instructions first, then design artifacts"
+- **Japanese version: missing operational line added**: "フロー実行中は規模判定表に従って次のサブエージェントを決定する" was present in English but missing in Japanese
+
 ## [1.20.1] - 2026-04-02
 
 ### Added
