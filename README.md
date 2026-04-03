@@ -19,15 +19,16 @@
 1. [Quick Start (3 Steps)](#-quick-start-3-steps)
 2. [Updating Existing Projects](#-updating-existing-projects)
 3. [Beyond Vibe Coding: Why Sub Agents?](#-beyond-vibe-coding-why-sub-agents)
-4. [Skills System](#-skills-system)
-5. [Built with This Boilerplate](#-built-with-this-boilerplate)
-6. [Documentation & Guides](#-documentation--guides)
-7. [Slash Commands](#-slash-commands)
-8. [Development Workflow](#-claude-code-workflow)
-9. [Project Structure](#-project-structure)
-10. [Package Manager Configuration](#-package-manager-configuration)
-11. [Multilingual Support](#-multilingual-support)
-12. [FAQ](#-faq)
+4. [Slash Commands](#-slash-commands)
+5. [Customizing Skills](#-customizing-skills)
+6. [Skills System](#-skills-system)
+7. [Built with This Boilerplate](#-built-with-this-boilerplate)
+8. [Documentation & Guides](#-documentation--guides)
+9. [Development Workflow](#-claude-code-workflow)
+10. [Project Structure](#-project-structure)
+11. [Package Manager Configuration](#-package-manager-configuration)
+12. [Multilingual Support](#-multilingual-support)
+13. [FAQ](#-faq)
 
 ## ⚡ Quick Start (3 Steps)
 
@@ -102,7 +103,7 @@ If your project was created before the update feature, just run `npx create-ai-p
 
 ## 🚀 Beyond Vibe Coding: Why Sub Agents?
 
-As teams move beyond vibe coding, **agentic coding** — delegating structured workflows to specialized AI agents — is becoming the professional standard. This boilerplate implements that approach with Claude Code sub-agents:
+As teams move beyond vibe coding, **agentic coding** — delegating structured workflows to specialized AI agents — is gaining traction as a practical approach. This boilerplate implements that approach with Claude Code sub-agents:
 
 **Traditional AI coding struggles with:**
 - ❌ Losing context in long sessions
@@ -123,6 +124,45 @@ This works because Claude Code's sub-agent mechanism runs each agent in its own 
 ![Demo](./.github/assets/demo.gif)
 
 *Sub agents working together on a TypeScript project*
+
+## 📝 Slash Commands
+
+Essential commands for Claude Code:
+
+| Command | Purpose | When to Use |
+|---------|---------|-------------|
+| `/implement` | End-to-end feature development | New features |
+| `/task` | Single task with skill-based precision | Bug fixes, small changes |
+| `/design` | Create design docs only | Architecture planning |
+| `/plan` | Create work plan from design | After design approval |
+| `/build` | Execute from existing plan | Resume work |
+| `/review` | Check code compliance | Post-implementation |
+| `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
+| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation |
+| `/create-skill` | Create a new skill through interactive dialog | Adding project-specific rules |
+| `/refine-skill` | Modify an existing skill with quality review | Improving skill accuracy |
+
+Frontend equivalents (`/front-design` for UI Spec + Design Doc, `/front-build`, `/front-review`, `/front-plan`) and utility commands (`/add-integration-tests`, `/update-doc`) are also available.
+
+[Full command reference →](docs/guides/en/use-cases.md)
+
+## 🌱 Customizing Skills
+
+This boilerplate ships with general-purpose skills that work out of the box. But skills reach their full potential when you tailor them to your project — your coding conventions, domain constraints, and team decisions.
+
+Think of the included skills as a baseline. The next step is making them yours:
+
+- **`/project-inject`** — Capture project-specific prerequisites (run once, referenced every session)
+- **`/create-skill`** — Create a new skill through interactive dialog
+- **`/refine-skill`** — Improve an existing skill with optimization review
+
+For principles and best practices on writing effective skills, see the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md).
+
+### Validating Skill Effectiveness
+
+Creating a skill is one thing — knowing whether it actually improves agent behavior is another. Skills interact with each other and with project context, so the only reliable way to know is to run with and without the skill and compare results.
+
+[rashomon](https://github.com/shinpr/rashomon) is a Claude Code plugin for this. Use it when you want evidence, not intuition, that a skill change made things better.
 
 ## 🎨 Skills System
 
@@ -171,25 +211,6 @@ Both were built using the default `/implement` workflow — no manual agent orch
 - **[Skills Editing Guide](docs/guides/en/skills-editing-guide.md)** - Add library docs, team rules, and project-specific knowledge for AI
 - **[Design Philosophy](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b)** - Why this approach works
 
-## 📝 Slash Commands
-
-Essential commands for Claude Code:
-
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `/implement` | End-to-end feature development | New features |
-| `/task` | Single task with skill-based precision | Bug fixes, small changes |
-| `/design` | Create design docs only | Architecture planning |
-| `/plan` | Create work plan from design | After design approval |
-| `/build` | Execute from existing plan | Resume work |
-| `/review` | Check code compliance | Post-implementation |
-| `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
-| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation |
-
-Frontend equivalents (`/front-design` for UI Spec + Design Doc, `/front-build`, `/front-review`, `/front-plan`) and utility commands (`/add-integration-tests`, `/update-doc`) are also available.
-
-[Full command reference →](docs/guides/en/use-cases.md)
-
 ## 🤖 Claude Code Workflow
 
 ```mermaid
@@ -211,19 +232,22 @@ Generate PRD and Design Docs from existing code:
 ```mermaid
 graph TB
     subgraph Phase1[Phase 1: PRD Generation]
-        CMD["/reverse-engineer"] --> SD[scope-discoverer unified]
-        SD --> PRD[prd-creator]
+        SD[scope-discoverer] --> PRD[prd-creator]
         PRD --> CV1[code-verifier]
         CV1 --> DR1[document-reviewer]
+        DR1 -->|Revision needed| PRD
+        DR1 -->|Approved| NEXT1[Next unit]
     end
 
     subgraph Phase2[Phase 2: Design Doc Generation]
         TD[technical-designer] --> CV2[code-verifier]
         CV2 --> DR2[document-reviewer]
-        DR2 --> DONE[Complete]
+        DR2 -->|Revision needed| TD
+        DR2 -->|Approved| NEXT2[Next unit]
     end
 
-    DR1 --> |"All PRDs Approved (reuse scope)"| TD
+    NEXT1 -->|"All PRDs Approved (reuse scope)"| TD
+    NEXT2 --> REPORT[Final report]
 ```
 
 ### How It Works
@@ -321,7 +345,7 @@ A: Yes — create a custom skill under `.claude/skills/` with the relevant URLs.
 A: `/project-inject` (once) → `/implement` (features) → auto quality checks → commit
 
 **Q: How is this different from Copilot/Cursor?**
-A: Those help write code. This manages entire development lifecycle with specialized agents.
+A: Those tools focus on code writing assistance. This boilerplate provides a structured development lifecycle managed by specialized agents.
 
 **Q: What is agentic coding and how does this boilerplate support it?**
 A: Agentic coding delegates structured workflows to specialized AI agents instead of relying on conversational prompting. This boilerplate provides pre-configured sub-agents, CLAUDE.md rules, and quality checks so you can adopt that approach without building the scaffolding yourself.

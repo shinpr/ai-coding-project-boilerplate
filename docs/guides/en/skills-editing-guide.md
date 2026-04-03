@@ -195,6 +195,8 @@ Standard error format: { success: false, error: string, code: number }
 Check for duplication between files and eliminate contradictions and redundancy.
 Eliminating duplication also reduces maintenance costs by preventing notation inconsistencies from update omissions.
 
+Note: there is a tradeoff between DRY and skill self-containment. If a skill requires context from another skill to be understood, the reader (both human and LLM) has to chase references. When a piece of information is central to a skill's decision-making, it may be worth repeating rather than forcing a cross-reference. Use judgment — eliminate *accidental* duplication, but don't sacrifice clarity for purity.
+
 ### 4. Appropriately Aggregate Responsibilities
 
 Consolidating related content in one skill maintains single responsibility and prevents unnecessary context mixing in tasks.
@@ -354,6 +356,14 @@ All 9 principles are practiced across these skills, serving as practical referen
 2. Add 【Required】【Important】 tags
 3. Add one specific example
 4. Convert negative form to positive form
+
+## Validating Skill Effectiveness
+
+The 9 principles and `/create-skill` / `/refine-skill` help you write better skills, but writing and validating are different problems. Skills interact with each other and with project context, so the only reliable way to know whether a change actually improved agent behavior is to run the task with and without the skill and compare results.
+
+[rashomon](https://github.com/shinpr/rashomon) is a Claude Code plugin for evidence-based skill validation. Its `/recipe-eval-skill` command runs your task in isolated environments and compares results to classify whether the difference is a real improvement or just variance.
+
+Use `/create-skill` and `/refine-skill` for quick iteration, and rashomon when you want proof that a skill change made things better.
 
 ## Summary
 
