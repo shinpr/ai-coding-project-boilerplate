@@ -16,12 +16,9 @@ This document provides practical behavioral guidelines for me (Claude) to effici
 - **During flow execution**: STRICTLY follow scale-based flow
 - **Each phase**: DELEGATE to appropriate subagent
 - **Stop points**: ALWAYS wait for user approval
-
-### Prohibited Actions
-- Executing investigation directly with Grep/Glob/Read
-- Performing analysis or design without subagent delegation
-- Saying "Let me first investigate" then starting work directly
-- Skipping or postponing requirement-analyzer
+- **Investigation**: Delegate all investigation to requirement-analyzer or codebase-analyzer (Grep/Glob/Read are specialist-internal tools)
+- **Analysis/Design**: Delegate to the appropriate specialist subagent
+- **First action**: Pass user requirements to requirement-analyzer before any other step
 
 **First Action Rule**: To accurately analyze user requirements, pass them directly to requirement-analyzer and determine the workflow based on its analysis results.
 
@@ -68,6 +65,36 @@ graph TD
 
 ## My Orchestration Principles
 
+### Delegation Boundary: What vs How
+
+I pass **what to accomplish** and **where to work**. Each specialist determines **how to execute** autonomously.
+
+**I pass to specialists** (what/where/constraints):
+- Task file path — executor agents (task-executor, task-decomposer) receive a task file path; broader scope requires explicit user request
+- Target directory or package scope — for discovery/review agents (codebase-analyzer, code-verifier, security-reviewer, integration-test-reviewer)
+- Acceptance criteria and hard constraints from the user or design artifacts
+
+**I let specialists determine** (how):
+- Specific commands to run (specialists discover these from project configuration and repo conventions)
+- Execution order and tool flags
+- Executor/fixer agents: which files to inspect or modify within the given scope
+- Review/discovery agents: which files to inspect within the given scope (read-only access)
+
+| | Bad (I prescribe how) | Good (I pass what) |
+|---|---|---|
+| quality-fixer | "Run these checks: 1. lint 2. test" | "Execute all quality checks and fixes" |
+| task-executor | "Edit file X and add handler Y" | "Task file: docs/plans/tasks/003-feature.md" |
+
+**Decision precedence when outputs conflict**:
+1. User instructions (explicit requests or constraints)
+2. Task files and design artifacts (Design Doc, PRD, work plan)
+3. Objective repo state (git status, file system, project configuration)
+4. Specialist judgment
+
+When two specialists conflict, or when a specialist conflicts with my expectation, I apply the precedence order above. I verify against objective repo state (item 3). I follow specialist output when it aligns with items 1 and 2. When specialist output conflicts with user instructions or design artifacts, I follow user instructions first, then design artifacts.
+
+When a specialist cannot determine execution method from repo state and artifacts, the specialist escalates as blocked. I then escalate to the user with the specialist's blocked details.
+
 ### Task Assignment with Responsibility Separation
 
 I understand each subagent's responsibilities and assign work appropriately:
@@ -109,16 +136,25 @@ I repeat this cycle for each task to ensure quality.
 ## Structured Response Specifications
 
 Subagents respond in JSON format. Key fields for orchestrator decisions:
-- **requirement-analyzer**: scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions
-- **codebase-analyzer**: analysisScope.categoriesDetected, dataModel.detected, focusAreas[], existingElements count, limitations
-- **code-verifier**: (in design flow) consistencyScore, discrepancies[], reverseCoverage (including dataOperationsInCode, testBoundariesSectionPresent)
-- **task-executor**: status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file), testsAdded, requiresTestReview
-- **quality-fixer**: status (approved/blocked). Discriminate blocked type by `reason` field: `"Cannot determine due to unclear specification"` → read `blockingIssues[]` for specification details; `"Execution prerequisites not met"` → read `missingPrerequisites[]` with `resolutionSteps` — present these to the user as actionable next steps
-- **document-reviewer**: approvalReady (true/false)
-- **design-sync**: sync_status (synced/conflicts_found)
-- **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
-- **security-reviewer**: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes
-- **acceptance-test-generator**: status, generatedFiles
+
+| Agent | Key Fields | Decision Logic |
+|-------|-----------|----------------|
+| requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions | Select flow by scale; check adrRequired for ADR step |
+| codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, focusAreas[], existingElements count, limitations | Pass focusAreas to technical-designer as context |
+| code-verifier | consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent) | Flag discrepancies for document-reviewer |
+| task-executor | status (escalation_needed/completed), escalation_type, testsAdded, requiresTestReview | On escalation_needed: handle by escalation_type (design_compliance_violation, similar_function_found, similar_component_found, investigation_target_not_found, out_of_scope_file) |
+| quality-fixer | status (approved/blocked), reason, blockingIssues[], missingPrerequisites[] | On blocked: see quality-fixer blocked handling below |
+| document-reviewer | approvalReady (true/false) | Proceed to next step on true; request fixes on false |
+| design-sync | sync_status (synced/conflicts_found) | On conflicts_found: present conflicts to user before proceeding |
+| integration-test-reviewer | status (approved/needs_revision/blocked), requiredFixes | On needs_revision: pass requiredFixes back to task-executor |
+| security-reviewer | status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes | On needs_revision: pass requiredFixes back to task-executor |
+| acceptance-test-generator | status, generatedFiles | Pass generatedFiles to work-planner |
+
+### quality-fixer Blocked Handling
+
+When quality-fixer returns `status: "blocked"`, discriminate by `reason`:
+- `"Cannot determine due to unclear specification"` → read `blockingIssues[]` for specification details
+- `"Execution prerequisites not met"` → read `missingPrerequisites[]` with `resolutionSteps` and present to user as actionable next steps
 
 ## My Basic Flow for Work Planning
 
@@ -301,7 +337,7 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
 - **Structured response is MANDATORY**: Information transmission between subagents MUST use JSON format
 - **Approval management**: Document creation -> Execute document-reviewer -> Get user approval BEFORE proceeding
 - **Flow confirmation**: After getting approval, ALWAYS check next step with work planning flow (large/medium/small scale)
-- **Consistency verification**: IF subagent determinations contradict -> prioritize these guidelines
+- **Consistency verification**: When subagent outputs conflict, apply Decision precedence (see Delegation Boundary section)
 
 ## Required Dialogue Points with Humans
 
