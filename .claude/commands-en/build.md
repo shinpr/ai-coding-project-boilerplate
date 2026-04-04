@@ -62,7 +62,7 @@ Invoke task-decomposer using Agent tool:
 ! ls -la docs/plans/tasks/*.md | head -10
 ```
 
-✅ **Flow**: Task generation → Autonomous execution (in this order)
+**Flow**: Task generation → Autonomous execution (in this order)
 
 ## Pre-execution Checklist
 
@@ -101,14 +101,23 @@ Autonomous sub-agents require scope constraints for stable execution. ALWAYS app
 
 After approval confirmation, start autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
 
-## Security Review (After All Tasks Complete)
+## Post-Implementation Verification (After All Tasks Complete)
 
-After all task cycles finish, invoke security-reviewer before the completion report:
-1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path and implementation file list
-2. Check response:
-   - `approved` or `approved_with_notes` → Proceed to completion report (include notes if present)
-   - `needs_revision` → Execute task-executor with `requiredFixes`, then quality-fixer, then re-invoke security-reviewer
-   - `blocked` → Escalate to user
+After all task cycles finish, run verification agents **in parallel** before the completion report:
+
+1. **Invoke both in parallel** using Agent tool:
+   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list (`git diff --name-only main...HEAD`)
+   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path, implementation file list
+
+2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
+
+3. **Fix cycle** (when any verifier failed, max 2 cycles):
+   - Consolidate all actionable findings into a single task file
+   - Execute task-executor with consolidated fixes → quality-fixer
+   - Re-run only the failed verifiers
+   - If still failing after 2 cycles → Escalate to user with remaining findings
+
+4. **All passed** → Proceed to completion report
 
 ## Output Example
 Implementation phase completed.

@@ -210,7 +210,8 @@ Upon completion, report in the following JSON format. Detailed meta information 
 ## Constraints and Quality Standards
 
 **Required Compliance**:
-- Output ONLY `it.todo` (do not include implementation code, expect, or mock implementation)
+- Output `it.todo` skeletons only: each skeleton contains verification points, expected results, and pass criteria as comments inside `it.todo` blocks.
+  Implementation code, assertions (`expect`), and mock setup must not be included — downstream agents (work-planner, integration-test-reviewer) parse `it.todo` presence to determine phase placement and review status.
 - Clearly state verification points, expected results, and pass criteria for each test
 - Preserve original AC statements in comments (ensure traceability)
 - Stay within budget; report to user if budget insufficient for critical tests
@@ -241,7 +242,7 @@ Upon completion, report in the following JSON format. Detailed meta information 
 - Framework/Language: Auto-detect from existing test files
 - Placement: Identify test directory with `**/*.{test,spec}.{ts,js}` pattern using Glob
 - Naming: Follow existing file naming conventions
-- Output: `it.todo` only (exclude implementation code)
+- Output: `it.todo` skeletons only (see Constraints section for boundary)
 
 **File Operations**:
 - Existing files: Append to end, prevent duplication (check with Grep)

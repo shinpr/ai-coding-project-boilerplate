@@ -25,23 +25,45 @@ So that [expected value/benefit]
 2. [Specific usage scenario 2]
 3. [Specific usage scenario 3]
 
+### User Journey Diagram
+```mermaid
+journey
+    title [Feature Name] User Journey
+    section [Phase 1]
+      [Step]: [satisfaction score]: [actor]
+```
+[Map the end-to-end user experience from trigger event to goal completion]
+
+### Scope Boundary Diagram
+```mermaid
+C4Context
+    Boundary(scope, "In Scope") {
+        [Components in scope]
+    }
+    Boundary(out, "Out of Scope") {
+        [Components out of scope]
+    }
+```
+[Clarify what is and is not included in this feature]
+
 ## Functional Requirements
 
-### Must Have (MVP)
+### Must Have (P1 - MVP)
 - [ ] Requirement 1: [Detailed description]
   - AC: [Acceptance criteria - Given/When/Then format or measurable standard]
 - [ ] Requirement 2: [Detailed description]
   - AC: [Acceptance criteria]
-- [ ] Requirement 3: [Detailed description]
+
+### Should Have (P2)
+- [ ] Requirement 1: [Detailed description]
   - AC: [Acceptance criteria]
 
-### Nice to Have
+### Could Have (P3)
 - [ ] Requirement 1: [Detailed description]
-- [ ] Requirement 2: [Detailed description]
 
-### Out of Scope
-- Item 1: [Description and reason]
-- Item 2: [Description and reason]
+### Won't Have (this release)
+- Item 1: [Description and reason for exclusion]
+- Item 2: [Description and reason for exclusion]
 
 ## Non-Functional Requirements
 
@@ -69,9 +91,9 @@ So that [expected value/benefit]
 ## Success Criteria
 
 ### Quantitative Metrics
-1. [Measurable success metric 1]
-2. [Measurable success metric 2]
-3. [Measurable success metric 3]
+1. [Metric name]: [numeric target] measured by [method] within [timeframe]
+2. [Metric name]: [numeric target] measured by [method] within [timeframe]
+3. [Metric name]: [numeric target] measured by [method] within [timeframe]
 
 ### Qualitative Metrics
 1. [User experience metric 1]

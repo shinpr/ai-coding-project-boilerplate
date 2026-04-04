@@ -20,18 +20,9 @@ This document provides practical behavioral guidelines for me (Claude) to effici
 - **Analysis/Design**: Delegate to the appropriate specialist subagent
 - **First action**: Pass user requirements to requirement-analyzer before any other step
 
-**First Action Rule**: To accurately analyze user requirements, pass them directly to requirement-analyzer and determine the workflow based on its analysis results.
+### First Action Rule
 
-## Decision Flow When Receiving Tasks
-
-```mermaid
-graph TD
-    Start[Receive New Task] --> RA[Analyze requirements with requirement-analyzer]
-    RA --> Scale[Scale assessment]
-    Scale --> Flow[Execute flow based on scale]
-```
-
-**During flow execution, determine next subagent according to scale determination table**
+When receiving a new task, pass user requirements directly to requirement-analyzer. Determine the workflow based on its scale assessment result.
 
 ### Requirement Change Detection During Flow
 
@@ -59,7 +50,7 @@ graph TD
 10. **technical-designer**: ADR/Design Doc creation (latest technology research, Property annotation assignment)
 11. **work-planner**: Work plan creation from Design Doc and test skeletons
 12. **document-reviewer**: Single document quality, completeness, and rule compliance check
-13. **code-verifier**: Verify Design Doc claims against existing codebase (used pre-review in design flow)
+13. **code-verifier**: Verify document-code consistency. Pre-implementation: Design Doc claims against existing codebase. Post-implementation: implementation against Design Doc
 14. **design-sync**: Design Doc consistency verification (detects explicit conflicts only)
 15. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs and optional UI Spec
 
@@ -141,7 +132,7 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 |-------|-----------|----------------|
 | requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions | Select flow by scale; check adrRequired for ADR step |
 | codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, focusAreas[], existingElements count, limitations | Pass focusAreas to technical-designer as context |
-| code-verifier | consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent) | Flag discrepancies for document-reviewer |
+| code-verifier | status (consistent/mostly_consistent/needs_review/inconsistent), consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). Pre-implementation: verifies Design Doc claims against existing codebase. Post-implementation: verifies implementation consistency against Design Doc (pass `code_paths` scoped to changed files) | Flag discrepancies for document-reviewer |
 | task-executor | status (escalation_needed/completed), escalation_type, testsAdded, requiresTestReview | On escalation_needed: handle by escalation_type (design_compliance_violation, similar_function_found, similar_component_found, investigation_target_not_found, out_of_scope_file) |
 | quality-fixer | status (approved/blocked), reason, blockingIssues[], missingPrerequisites[] | On blocked: see quality-fixer blocked handling below |
 | document-reviewer | approvalReady (true/false) | Proceed to next step on true; request fixes on false |
@@ -182,9 +173,9 @@ According to scale determination:
 ### Medium Scale (3-5 Files) - 9 Steps (backend) / 11 Steps (frontend/fullstack)
 
 1. requirement-analyzer → Requirement analysis **[Stop]**
-2. codebase-analyzer → Codebase analysis (pass requirement-analyzer output)
-3. **(frontend/fullstack only)** Ask user for prototype code → ui-spec-designer → UI Spec creation
-4. **(frontend/fullstack only)** document-reviewer → UI Spec review **[Stop: UI Spec Approval]**
+2. **(frontend/fullstack only)** Ask user for prototype code → ui-spec-designer → UI Spec creation (UI Spec informs component structure for technical design)
+3. **(frontend/fullstack only)** document-reviewer → UI Spec review **[Stop: UI Spec Approval]**
+4. codebase-analyzer → Codebase analysis (pass requirement-analyzer output)
 5. technical-designer → Design Doc creation (pass codebase-analyzer output as additional context; cross-layer: per layer, see Cross-Layer Orchestration)
 6. code-verifier → Verify Design Doc against existing code (doc_type: design-doc)
 7. document-reviewer → Design Doc review (pass code-verifier results as code_verification; cross-layer: per Design Doc)
@@ -327,9 +318,7 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
    - E2E test file: [path] (execute only in final phase)
 
    **On error**: Escalate to user if files are not generated
-3. **Quality Assurance and Commit Execution**: After confirming `status: "approved"`, immediately execute git commit
-4. **Autonomous Execution Mode Management**: Start/stop autonomous execution after approval, escalation decisions
-5. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
+3. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
 ## Important Constraints
 
@@ -339,22 +328,16 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
 - **Flow confirmation**: After getting approval, ALWAYS check next step with work planning flow (large/medium/small scale)
 - **Consistency verification**: When subagent outputs conflict, apply Decision precedence (see Delegation Boundary section)
 
-## Required Dialogue Points with Humans
+### Progress Tracking
 
-### Basic Principles
-- **Stopping is mandatory**: Always wait for human response at the following timings
-- **Use AskUserQuestion**: Present confirmations and questions at all Stop points
-- **Confirmation -> Agreement cycle**: After document generation, proceed to next step after agreement or fix instructions in update mode
-- **Specific questions**: Make decisions easy with options (A/B/C) or comparison tables
-- **Dialogue over efficiency**: Get confirmation at early stages to prevent rework
+Register overall phases using TaskCreate. Update each phase with TaskUpdate as it completes.
 
-### Main Stop Points
-- **After requirement-analyzer completion**: Confirm requirement analysis results and questions
-- **After PRD creation -> document-reviewer execution**: Confirm requirement understanding and consistency (confirm with question list)
-- **After UI Spec creation -> document-reviewer execution** (frontend/fullstack): Confirm UI specification completeness and consistency
-- **After ADR creation -> document-reviewer execution**: Confirm technical direction and consistency (present multiple options with comparison table)
-  - On user approval: Main AI (me) updates Status to Accepted
-  - On user rejection: Main AI (me) updates Status to Rejected
-- **After Design Doc creation -> document-reviewer execution**: Confirm design content and consistency
-- **After work plan creation**: Batch approval for entire implementation phase (confirm with plan summary)
+### Post-Implementation Verification Pass/Fail Criteria
+
+| Verifier | Pass | Fail | Blocked |
+|----------|------|------|---------|
+| code-verifier | `status` is `consistent` or `mostly_consistent` | `status` is `needs_review` or `inconsistent` | — |
+| security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` → Escalate to user |
+
+**Re-run rule**: After fix cycle, re-run only verifiers that returned **fail**. Verifiers that passed on the previous run are not re-run. Maximum 2 fix cycles — if still failing after 2 cycles, escalate to user with remaining findings.
 

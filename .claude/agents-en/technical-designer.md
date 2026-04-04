@@ -340,8 +340,8 @@ Implementation sample creation checklist:
 - UI presentation method (layout, styling) → Focus on information availability
 
 **Example**:
-- ❌ Implementation detail: "Data is stored using specific technology X"
-- ✅ Observable behavior: "Saved data can be retrieved after system restart"
+- Implementation detail (avoid): "Data is stored using specific technology X"
+- Observable behavior (preferred): "Saved data can be retrieved after system restart"
 
 *Note: Non-functional requirements (performance, reliability, scalability) are defined in "Non-functional Requirements" section*
 

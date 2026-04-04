@@ -259,7 +259,7 @@ This is intermediate output only. The final response must be the JSON result (St
 
 ## Important Principles
 
-✅ **Recommended**: Follow these principles to maintain high-quality React code:
+**Principles**: Follow these to maintain high-quality React code:
 - **Zero Error Principle**: Resolve all errors and warnings
 - **Type System Convention**: Follow React Props/State TypeScript type safety principles
 - **Test Fix Criteria**: Understand existing React Testing Library test intent and fix appropriately

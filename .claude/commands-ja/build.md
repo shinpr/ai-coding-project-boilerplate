@@ -62,7 +62,7 @@ Agentツールでtask-decomposerを呼び出す:
 ! ls -la docs/plans/tasks/*.md | head -10
 ```
 
-✅ **フロー**: タスク生成 → 自律実行（この順序で実行）
+**フロー**: タスク生成 → 自律実行（この順序で実行）
 
 ## 実行前チェックリスト
 
@@ -101,14 +101,23 @@ Agentツールでtask-decomposerを呼び出す:
 
 承認確認後、自律実行モードを開始。要件変更を検知した場合は即座に停止。
 
-## Security Review（全タスク完了後）
+## 実装後検証（全タスク完了後）
 
-全タスクサイクル完了後、完了レポートの前にsecurity-reviewerを実行:
-1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリストを渡す
-2. レスポンスを確認:
-   - `approved` または `approved_with_notes` → 完了レポートへ（notesがあれば含める）
-   - `needs_revision` → task-executorで`requiredFixes`を実行、quality-fixer実行後、security-reviewerを再実行
-   - `blocked` → ユーザーにエスカレーション
+全タスクサイクル完了後、完了レポートの前に検証エージェントを**並列実行**:
+
+1. **両方を並列で実行** (Agent tool):
+   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`、Design Docパス、`code_paths`: 実装ファイルリスト（`git diff --name-only main...HEAD`）
+   - security-reviewer (subagent_type: "security-reviewer") → Design Docパス、実装ファイルリスト
+
+2. **結果の統合** — 合格/不合格の基準はsubagents-orchestration-guideの実装後検証セクション参照。統合検証レポートをユーザーに提示。
+
+3. **修正サイクル**（いずれかの検証エージェントが不合格の場合、最大2回）:
+   - 全ての対応可能な検出事項を1つのタスクファイルに統合
+   - task-executorで統合修正を実行 → quality-fixer
+   - 不合格の検証エージェントのみ再実行
+   - 2回のサイクル後も不合格が残る場合 → 残存する検出事項とともにユーザーにエスカレーション
+
+4. **全て合格** → 完了レポートへ
 
 ## 出力例
 実装フェーズが完了しました。

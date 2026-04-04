@@ -4,20 +4,13 @@ description: Execute frontend implementation in autonomous execution mode
 
 ## Orchestrator Definition
 
-**Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
-
-**Execution Method**:
-- Task decomposition → performed by task-decomposer
-- Frontend implementation → performed by task-executor-frontend
-- Quality checks and fixes → performed by quality-fixer-frontend
-- Commits → performed by orchestrator (Bash tool)
-
-Orchestrator invokes sub-agents and passes structured JSON between them.
+**Core Identity**: "I am an orchestrator." (see subagents-orchestration-guide skill)
 
 **Execution Protocol**:
-1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
+1. **Delegate all work through Agent tool** — invoke sub-agents, pass deliverable paths between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Follow the 4-step task cycle exactly**: task-executor-frontend → escalation check → quality-fixer-frontend → commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
+4. **Scope**: Complete when all tasks are committed or escalation occurs
 
 **CRITICAL**: Run quality-fixer-frontend before every commit.
 
@@ -69,7 +62,7 @@ Invoke task-decomposer using Agent tool:
 ! ls -la docs/plans/tasks/*.md | head -10
 ```
 
-✅ **Flow**: Task generation → Autonomous execution (in this order)
+**Flow**: Task generation → Autonomous execution (in this order)
 
 ## Pre-execution Checklist
 
@@ -79,40 +72,22 @@ Invoke task-decomposer using Agent tool:
   - If commit capability unavailable → Escalate before autonomous mode
   - Other environments (tests, quality tools) → Subagents will escalate
 
-## Task Execution Cycle (4-Step Cycle) - Frontend Specialized
-
+## Task Execution Cycle (4-Step Cycle)
 **MANDATORY EXECUTION CYCLE**: `task-executor-frontend → escalation check → quality-fixer-frontend → commit`
 
-### Sub-agent Invocation Method
-Use Agent tool to invoke sub-agents:
-- `subagent_type`: Agent name
-- `description`: Brief task description (3-5 words)
-- `prompt`: Specific instructions
-
-### Structured Response Specification
-Each sub-agent responds in JSON format:
-- **task-executor-frontend**: status, filesModified, testsAdded, requiresTestReview, readyForQualityCheck
-- **integration-test-reviewer**: status (approved/needs_revision/blocked), requiredFixes
-- **quality-fixer-frontend**: status, checksPerformed, fixesApplied, approved
-
-### Execution Flow for Each Task
-
 For EACH task, YOU MUST:
-
 1. **Register tasks using TaskCreate**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity"
-2. **USE task-executor-frontend**: Execute frontend implementation
-   - Invocation example: `subagent_type: "task-executor-frontend"`, `description: "Task execution"`, `prompt: "Task file: docs/plans/tasks/[filename].md Execute implementation"`
+2. **Agent tool** (subagent_type: "task-executor-frontend") → Pass task file path in prompt, receive structured response
 3. **CHECK task-executor-frontend response**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**
      - `needs_revision` → Return to step 2 with `requiredFixes`
      - `approved` → Proceed to step 4
    - `readyForQualityCheck: true` → Proceed to step 4
-4. **USE quality-fixer-frontend**: Execute all quality checks and fixes
-   - Invocation example: `subagent_type: "quality-fixer-frontend"`, `description: "Quality check"`, `prompt: "Execute all frontend quality checks and fixes"`
-5. **EXECUTE commit**: After `approved: true` confirmation, execute git commit IMMEDIATELY. Use `changeSummary` for commit message.
+4. **INVOKE quality-fixer-frontend**: Execute all quality checks and fixes
+5. **COMMIT on approval**: After `approved: true` from quality-fixer-frontend → Execute git commit
 
-**CRITICAL**: Monitor ALL structured responses WITHOUT EXCEPTION and ENSURE every quality gate is passed.
+**CRITICAL**: Parse every sub-agent response for status fields. Execute the matching branch in the 4-step cycle. Proceed to next task only after quality-fixer-frontend returns `approved: true`.
 
 ## Sub-agent Invocation Constraints
 
@@ -128,14 +103,23 @@ Autonomous sub-agents require scope constraints for stable execution. ALWAYS app
 
 VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
 
-## Security Review (After All Tasks Complete)
+## Post-Implementation Verification (After All Tasks Complete)
 
-After all task cycles finish, invoke security-reviewer before the completion report:
-1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path and implementation file list
-2. Check response:
-   - `approved` or `approved_with_notes` → Proceed to completion report (include notes if present)
-   - `needs_revision` → Execute task-executor-frontend with `requiredFixes`, then quality-fixer-frontend, then re-invoke security-reviewer
-   - `blocked` → Escalate to user
+After all task cycles finish, run verification agents **in parallel** before the completion report:
+
+1. **Invoke both in parallel** using Agent tool:
+   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list (`git diff --name-only main...HEAD`)
+   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path, implementation file list
+
+2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
+
+3. **Fix cycle** (when any verifier failed, max 2 cycles):
+   - Consolidate all actionable findings into a single task file
+   - Execute task-executor-frontend with consolidated fixes → quality-fixer-frontend
+   - Re-run only the failed verifiers
+   - If still failing after 2 cycles → Escalate to user with remaining findings
+
+4. **All passed** → Proceed to completion report
 
 ## Output Example
 Frontend implementation phase completed.

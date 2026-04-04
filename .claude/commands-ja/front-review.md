@@ -4,24 +4,25 @@ description: Design Doc準拠検証とセキュリティ検証、必要に応じ
 
 **コマンドコンテキスト**: React/TypeScriptフロントエンド向け実装後品質保証コマンド
 
+## オーケストレーター定義
+
+**コアアイデンティティ**: 「私はオーケストレーターである。」（subagents-orchestration-guideスキル参照）
+
+**初回アクション**: 実行前にTaskCreateでStep 1-11を登録する。
+
 ## 実行方法
 
-- 準拠検証 -> code-reviewerが実行
-- セキュリティ検証 -> security-reviewerが実行
-- ルール分析 -> rule-advisorが実行
-- 修正実装 -> task-executor-frontendが実行
-- 品質チェック -> quality-fixer-frontendが実行
-- 再検証 -> code-reviewer / security-reviewerが実行
-
-オーケストレーターがサブエージェントを呼び出し、構造化JSONを受け渡す。
+- 準拠検証 → code-reviewerが実行
+- セキュリティ検証 → security-reviewerが実行
+- 修正実装 → task-executor-frontendが実行
+- 品質チェック → quality-fixer-frontendが実行
+- 再検証 → code-reviewer / security-reviewerが実行
 
 Design Doc（省略時は直近のもの）: $ARGUMENTS
 
-**Think deeply** 準拠検証の本質を理解し、以下のステップで実行:
-
 ## 実行フロー
 
-### 1. 前提条件チェック
+### Step 1: 前提条件チェック
 ```bash
 # Design Docを特定
 ls docs/design/*.md | grep -v template | tail -1
@@ -30,15 +31,15 @@ ls docs/design/*.md | grep -v template | tail -1
 git diff --name-only main...HEAD
 ```
 
-### 2. code-reviewer実行
+### Step 2: code-reviewer実行
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
 - `description`: "コード準拠レビュー"
-- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Design Doc準拠を検証し、complianceRate、verdict、acceptanceCriteria、qualityIssuesを含む構造化JSONレポートを返却。"
+- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Design Doc準拠を検証し、構造化JSONレポートを返却。"
 
 **出力を保存**: `$STEP_2_OUTPUT`
 
-### 3. security-reviewer実行
+### Step 3: security-reviewer実行
 Agent toolでsecurity-reviewerを呼び出す:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティレビュー"
@@ -46,7 +47,7 @@ Agent toolでsecurity-reviewerを呼び出す:
 
 **出力を保存**: `$STEP_3_OUTPUT`
 
-### 4. 判定と対応
+### Step 4: 判定と対応
 
 **security-reviewerが`blocked`を返した場合**: 即座に停止。blockedの検出結果を報告しユーザーにエスカレーション。修正ステップには進まない。
 
@@ -63,10 +64,15 @@ Agent toolでsecurity-reviewerを呼び出す:
 ```
 Code Compliance: [code-reviewerのcomplianceRate]
   Verdict: [code-reviewerのverdict]
+  Identifier Match Rate: [code-reviewerのidentifierMatchRate]
   Acceptance Criteria:
-  - [fulfilled] [item]
+  - [fulfilled] [item] (confidence: [high/medium/low])
   - [partially_fulfilled] [item]: [gap] — [suggestion]
   - [unfulfilled] [item]: [gap] — [suggestion]
+  Identifier Mismatches:
+  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location]
+  Quality Findings:
+  - [category] [location]: [description] — [rationale]
 
 Security Review: [security-reviewerのstatus]
   Findings by category:
@@ -79,46 +85,44 @@ Security Review: [security-reviewerのstatus]
 修正を実行しますか？ (y/n):
 ```
 
-両方合格でユーザーが`n`を選択: 修正ステップをスキップし、最終レポートへ。
+両方合格でユーザーが`n`を選択: Steps 5-10をスキップし、Step 11へ。
 
-ユーザーが`y`を選択した場合:
+### Step 5: タスクテンプレートの読み込み
 
-## 修正実行前のメタ認知
+documentation-criteriaスキルを読み込み、Step 6用のタスクファイルテンプレート（references/task-template.md）を取得。
 
-### 5. rule-advisor実行
-Agent toolでrule-advisorを呼び出す:
-- `subagent_type`: "rule-advisor"
-- `description`: "修正アプローチの分析"
-- `prompt`: "Task: レビュー検出結果の修正。Code issues: $STEP_2_OUTPUT. Security findings: $STEP_3_OUTPUT. 修正の本質を分析し適切なルールを選択。"
+### Step 6: タスクファイル作成
 
-### 6. タスクファイル作成
-TaskCreateで作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」。タスクテンプレートに従ってタスクファイル作成（documentation-criteriaスキル参照） → `docs/plans/tasks/review-fixes-YYYYMMDD.md`。コード準拠の問題とセキュリティのrequiredFixesの両方を含める。
+`docs/plans/tasks/review-fixes-YYYYMMDD.md` にタスクファイルを作成。
+コード準拠の問題とセキュリティのrequiredFixesの両方を含める。
 
-### 7. 修正実行
+### Step 7: 修正実行
 Agent toolでtask-executor-frontendを呼び出す:
 - `subagent_type`: "task-executor-frontend"
 - `description`: "レビュー修正の実行"
 - `prompt`: "Task file: docs/plans/tasks/review-fixes-YYYYMMDD.md. 段階的修正を適用（5ファイルで停止）。"
 
-### 8. 品質チェック
+### Step 8: 品質チェック
 Agent toolでquality-fixer-frontendを呼び出す:
 - `subagent_type`: "quality-fixer-frontend"
 - `description`: "品質ゲートチェック"
 - `prompt`: "修正ファイルの品質ゲート通過を確認。"
 
-### 9. code-reviewer再検証
+### Step 9: code-reviewer再検証
+
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
 - `description`: "準拠の再検証"
-- `prompt`: "修正後のDesign Doc準拠を再検証。前回の問題: $STEP_2_OUTPUT。Design Doc: [path]. Implementation files: [file list]。"
+- `prompt`: "修正後のDesign Doc準拠を再検証。Design Doc: [path]. Implementation files: [file list]. 前回の準拠問題: $STEP_2_OUTPUT。各問題が解決されたことを確認。"
 
-### 10. security-reviewer再検証（セキュリティ修正が実行された場合のみ）
-Agent toolでsecurity-reviewerを呼び出す:
+### Step 10: security-reviewer再検証
+
+Agent toolでsecurity-reviewerを呼び出す（セキュリティ修正が実行された場合のみ）:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティの再検証"
 - `prompt`: "修正後のセキュリティを再検証。前回の検出結果: $STEP_3_OUTPUT。Design Doc: [path]. Implementation files: [file list]。"
 
-### 最終レポート
+### Step 11: 最終レポート
 ```
 Code Compliance:
   初回: [X]%

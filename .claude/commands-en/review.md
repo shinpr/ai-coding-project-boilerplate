@@ -33,7 +33,7 @@ git diff --name-only main...HEAD
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
 - `description`: "Code compliance review"
-- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Validate Design Doc compliance and return structured JSON report with complianceRate, verdict, acceptanceCriteria, and qualityIssues."
+- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Validate Design Doc compliance and return structured JSON report."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
@@ -62,10 +62,15 @@ Invoke security-reviewer using Agent tool:
 ```
 Code Compliance: [complianceRate from code-reviewer]
   Verdict: [verdict from code-reviewer]
+  Identifier Match Rate: [identifierMatchRate from code-reviewer]
   Acceptance Criteria:
-  - [fulfilled] [item]
+  - [fulfilled] [item] (confidence: [high/medium/low])
   - [partially_fulfilled] [item]: [gap] — [suggestion]
   - [unfulfilled] [item]: [gap] — [suggestion]
+  Identifier Mismatches:
+  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location]
+  Quality Findings:
+  - [category] [location]: [description] — [rationale]
 
 Security Review: [status from security-reviewer]
   Findings by category:
@@ -80,9 +85,9 @@ Execute fixes? (y/n):
 
 If both pass and user selects `n`: Skip Steps 5-10, proceed to Step 11.
 
-### 5. Execute Skill
+### 5. Load Task Template
 
-Execute Skill: documentation-criteria (for task file template)
+Read documentation-criteria skill to obtain the task file template (references/task-template.md) for Step 6.
 
 ### 6. Create Task File
 
@@ -108,7 +113,7 @@ Invoke quality-fixer using Agent tool:
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
 - `description`: "Re-validate compliance"
-- `prompt`: "Re-validate Design Doc compliance after fixes. Prior compliance issues: $STEP_2_OUTPUT. Verify each prior issue is resolved."
+- `prompt`: "Re-validate Design Doc compliance after fixes. Design Doc: [path]. Implementation files: [file list]. Prior compliance issues: $STEP_2_OUTPUT. Verify each prior issue is resolved."
 
 ### 10. Re-validate security-reviewer
 

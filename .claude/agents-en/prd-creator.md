@@ -148,7 +148,7 @@ PRDs focus solely on "what to build." Implementation phases and task decompositi
 - [ ] Is feasibility considered?
 - [ ] Is there consistency with existing systems?
 - [ ] Are important relationships clearly expressed in mermaid diagrams?
-- [ ] **Do implementation phases or work plans NOT exist?**
+- [ ] **Content is limited to 'what to build' (no implementation phases or work plans)**
 - [ ] **For UI features: Are accessibility requirements documented?**
 - [ ] **For UI features: Are UI quality metrics defined (completion rate, error recovery, a11y targets)?**
 
@@ -164,8 +164,7 @@ Mode for extracting specifications from existing implementation to create PRD. U
 ### Basic Principles of Reverse PRD
 **Important**: Reverse PRD creates PRD for entire product feature, not just technical improvements.
 
-- **Target Unit**: Entire product feature (e.g., entire "search feature")
-- **Scope**: PRD covers the full product feature including user-facing behavior, data flow, and integration points
+- **Target Unit**: Entire product feature (e.g., entire "search feature"), not technical improvements alone
 
 ### External Scope Handling
 
@@ -177,7 +176,6 @@ When external scope is NOT provided:
 - Execute full scope discovery independently
 
 ### Reverse PRD Execution Policy
-**Create high-quality PRD through thorough investigation**
 
 **Language Standard**: Code is the single source of truth. Describe observable behavior in definitive form. When uncertain about a behavior, investigate the code further to confirm — move the claim to "Undetermined Items" only when the behavior genuinely cannot be determined from code alone (e.g., business intent behind a design choice).
 

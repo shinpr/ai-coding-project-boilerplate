@@ -222,11 +222,16 @@ Invariants:
 
 ### Error Handling
 
-[Types of errors and how to handle them]
+| Error Category | Example | Detection | Recovery Strategy | User Impact |
+|---------------|---------|-----------|-------------------|-------------|
+| [Validation / External / Infrastructure / Business logic] | [Specific error] | [How detected] | [Retry / Fallback / Propagate / Log-and-continue] | [User-facing message or silent handling] |
 
 ### Logging and Monitoring
 
-[What to record in logs and how to monitor]
+- **Log events**: [Key events to log: state transitions, external calls, error occurrences, performance thresholds]
+- **Log levels**: [Which events at DEBUG/INFO/WARN/ERROR]
+- **Sensitive data**: [Fields to mask or exclude — coordinate with Security Considerations]
+- **Monitoring**: [Metrics to track, alert thresholds, dashboard requirements]
 
 ## Implementation Plan
 
@@ -245,12 +250,6 @@ Invariants:
 2. **[Component/Feature B]**
    - Technical Reason: [Technical necessity to implement after A]
    - Prerequisites: [Required pre-implementations]
-
-### Integration Points
-
-**Integration Point 1: [Name]**
-- Components: [Component A] -> [Component B]
-- Contract: [Interface/API contract between components]
 
 ### Migration Strategy
 
