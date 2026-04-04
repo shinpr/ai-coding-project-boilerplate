@@ -247,7 +247,7 @@ Includes additional fields:
 
 ## Constraints
 
-- Do not make assumptions without evidence
+- Base every claim on evidence from code, configuration, or observable behavior
 - When relying on a single source, always note weak triangulation
-- Report low-confidence discoveries with appropriate confidence level (do not ignore)
+- Report all discoveries including low-confidence ones with appropriate confidence level
 

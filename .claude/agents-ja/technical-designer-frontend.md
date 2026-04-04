@@ -243,13 +243,13 @@ ADRに含めない: スケジュール、実装手順、具体的コード
 - **function components必須**（React標準、class componentsは非推奨）
 - **Props型定義必須**（全Propsに明示的な型注釈）
 - **カスタムフック推奨**（ロジック再利用とテスト可能性のため）
-- 型安全性戦略（any禁止、外部APIレスポンスにunknown+型ガード）
+- 型安全性戦略（厳密な型を使用: 外部APIレスポンスにunknown+型ガード）
 - エラーハンドリングアプローチ（Error Boundary、error state管理）
-- 環境変数（クライアントサイドに秘密情報なし）
+- 環境変数（秘密情報はサーバーサイドのみに保持）
 
 **実装サンプル例**:
 ```typescript
-// ✅ 準拠: Props型定義付きfunction component
+// 準拠: Props型定義付きfunction component
 type ButtonProps = {
   label: string
   onClick: () => void
@@ -264,7 +264,7 @@ export function Button({ label, onClick, disabled = false }: ButtonProps) {
   )
 }
 
-// ✅ 準拠: 型安全性を備えたカスタムフック
+// 準拠: 型安全性を備えたカスタムフック
 function useUserData(userId: string) {
   const [user, setUser] = useState<User | null>(null)
   const [error, setError] = useState<Error | null>(null)
@@ -291,7 +291,7 @@ function useUserData(userId: string) {
   return { user, error }
 }
 
-// ❌ 非準拠: class component（Reactで非推奨）
+// 非準拠: class component（Reactで非推奨）
 class Button extends React.Component {
   render() { return <button>...</button> }
 }

@@ -33,7 +33,7 @@ git diff --name-only main...HEAD
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
 - `description`: "コード準拠レビュー"
-- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Design Doc準拠を検証し、complianceRate、verdict、acceptanceCriteria、qualityIssuesを含む構造化JSONレポートを返却。"
+- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Design Doc準拠を検証し、構造化JSONレポートを返却。"
 
 **出力を保存**: `$STEP_2_OUTPUT`
 
@@ -62,10 +62,15 @@ Agent toolでsecurity-reviewerを呼び出す:
 ```
 Code Compliance: [code-reviewerのcomplianceRate]
   Verdict: [code-reviewerのverdict]
+  Identifier Match Rate: [code-reviewerのidentifierMatchRate]
   Acceptance Criteria:
-  - [fulfilled] [item]
+  - [fulfilled] [item] (confidence: [high/medium/low])
   - [partially_fulfilled] [item]: [gap] — [suggestion]
   - [unfulfilled] [item]: [gap] — [suggestion]
+  Identifier Mismatches:
+  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location]
+  Quality Findings:
+  - [category] [location]: [description] — [rationale]
 
 Security Review: [security-reviewerのstatus]
   Findings by category:
@@ -80,9 +85,9 @@ Security Review: [security-reviewerのstatus]
 
 両方合格でユーザーが`n`を選択: Steps 5-10をスキップし、Step 11へ。
 
-### 5. Skill実行
+### 5. タスクテンプレートの読み込み
 
-Skill: documentation-criteria を実行（タスクファイルテンプレート用）
+documentation-criteriaスキルを読み込み、Step 6用のタスクファイルテンプレート（references/task-template.md）を取得。
 
 ### 6. タスクファイル作成
 
@@ -108,7 +113,7 @@ Agent toolでquality-fixerを呼び出す:
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
 - `description`: "準拠の再検証"
-- `prompt`: "修正後のDesign Doc準拠を再検証。前回の準拠問題: $STEP_2_OUTPUT。各問題が解決されたことを確認。"
+- `prompt`: "修正後のDesign Doc準拠を再検証。Design Doc: [path]. Implementation files: [file list]. 前回の準拠問題: $STEP_2_OUTPUT。各問題が解決されたことを確認。"
 
 ### 10. security-reviewer再検証
 

@@ -104,7 +104,7 @@ Execute file output immediately (considered approved at execution).
 - [ ] If prototype provided: AC traceability table is complete with adoption decisions
 - [ ] If prototype provided: prototype is placed in `docs/ui-spec/assets/`
 - [ ] All TBDs in Open Items have owner and deadline
-- [ ] No contradiction with PRD requirements
+- [ ] All UI Spec requirements align with PRD requirements
 
 ## Important Design Principles
 

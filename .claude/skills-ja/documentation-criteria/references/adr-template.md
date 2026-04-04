@@ -2,7 +2,7 @@
 
 ## ステータス
 
-[Proposed | Accepted | Deprecated | Superseded]
+[Proposed | Accepted | Deprecated | Superseded | Rejected]
 
 ## 経緯
 
@@ -53,6 +53,10 @@
 ### 中立的な影響
 
 - [良くも悪くもない変化をリストアップ]
+
+## アーキテクチャへの影響
+
+[この決定が既存アーキテクチャにどう影響するか: (1) 変更されるコンポーネント、(2) 新たに導入される依存関係、(3) 追加または撤廃されるアーキテクチャ制約]
 
 ## 実装指針
 

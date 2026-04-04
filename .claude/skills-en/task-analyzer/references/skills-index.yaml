@@ -168,7 +168,6 @@ skills:
       - "Agent Coordination Patterns"
     sections:
       - "Core Principle: I Am an Orchestrator"
-      - "Decision Flow When Receiving Tasks"
       - "Subagents I Can Utilize"
       - "My Orchestration Principles"
       - "Constraints Between Subagents"
@@ -179,7 +178,6 @@ skills:
       - "Autonomous Execution Mode"
       - "My Main Roles as Orchestrator"
       - "Important Constraints"
-      - "Required Dialogue Points with Humans"
 
   skill-optimization:
     skill: "skill-optimization"

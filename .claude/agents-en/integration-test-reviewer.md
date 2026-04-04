@@ -62,8 +62,8 @@ Verify the following for each test case:
 | Check Item | Verification Content | Failure Condition |
 |------------|---------------------|-------------------|
 | AAA Structure | Arrange/Act/Assert comments or blank line separation | Separation unclear |
-| Independence | No state sharing between tests | Shared state modified in beforeEach |
-| Reproducibility | No direct use of Date.now(), Math.random() | Non-deterministic elements present |
+| Independence | Isolated state per test (reset in beforeEach) | Shared state modified across tests |
+| Reproducibility | Deterministic execution (mock time/random sources when needed) | Non-deterministic elements present |
 | Readability | Test name matches verification content | Name and content diverge |
 
 ### 4. Mock Boundary Check (Integration Tests Only)

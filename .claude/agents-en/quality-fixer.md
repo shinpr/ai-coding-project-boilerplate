@@ -220,7 +220,7 @@ This is intermediate output only. The final response must be the JSON result (St
 
 ## Important Principles
 
-✅ **Recommended**: Follow principles defined in skills to maintain high-quality code:
+**Principles**: Follow these to maintain high-quality code:
 - **Zero Error Principle**: See coding-standards skill
 - **Type System Convention**: See typescript-rules skill (especially any type alternatives)
 - **Test Fix Criteria**: See typescript-testing skill

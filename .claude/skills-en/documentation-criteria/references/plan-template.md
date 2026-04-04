@@ -47,7 +47,8 @@ Related Issue/PR: #XXX (if any)
 
 Select ONE phase structure based on implementation approach from Design Doc.
 See documentation-criteria skill for detailed Phase Division Criteria.
-**Delete the unused Option entirely from the final plan.** For hybrid approach, use Option A as the base and add horizontal foundation phases where needed.
+All quality checks follow Quality Check Workflow from coding-standards skill.
+**Delete the unused Option entirely from the final plan.** For hybrid approach, use Option C.
 
 ### Option A: Vertical Slice Phase Structure
 
@@ -60,7 +61,7 @@ Use when implementation approach is Vertical Slice. Each phase = one value unit 
 ##### Tasks
 - [ ] Task 1: Implementation
 - [ ] Task 2: Verification per Verification Strategy
-- [ ] Quality check: Implement staged quality checks (refer to technical-spec skill)
+- [ ] Quality check (staged)
 
 ##### Phase Completion Criteria
 - [ ] Early verification point passed
@@ -89,7 +90,7 @@ Use when implementation approach is Horizontal Slice. Phases follow Foundation â
 ##### Tasks
 - [ ] Task 1: Specific work content
 - [ ] Task 2: Specific work content
-- [ ] Quality check: Implement staged quality checks (refer to technical-spec skill)
+- [ ] Quality check (staged)
 - [ ] Unit tests: All related tests pass
 
 ##### Phase Completion Criteria
@@ -102,7 +103,7 @@ Use when implementation approach is Horizontal Slice. Phases follow Foundation â
 ##### Tasks
 - [ ] Task 1: Specific work content
 - [ ] Task 2: Specific work content
-- [ ] Quality check
+- [ ] Quality check (staged)
 - [ ] Integration tests: Verify overall feature functionality
 
 ##### Phase Completion Criteria
@@ -115,12 +116,16 @@ Use when implementation approach is Horizontal Slice. Phases follow Foundation â
 ##### Tasks
 - [ ] Task 1: Specific work content
 - [ ] Task 2: Specific work content
-- [ ] Quality check
+- [ ] Quality check (staged)
 - [ ] Integration tests: Verify component coordination
 
 ##### Phase Completion Criteria
 - [ ] [Functional completion criteria]
 - [ ] [Quality completion criteria]
+
+### Option C: Hybrid Phase Structure
+
+Use when implementation approach is Hybrid. Combine vertical and horizontal phases as defined in Design Doc implementation approach. Structure phases per Design Doc specification, ensuring each phase has Tasks, Verification, and Phase Completion Criteria sections matching the format above.
 
 ### Final Phase: Quality Assurance (Required) (Estimated commits: 1)
 
@@ -137,7 +142,7 @@ This phase is required for ALL implementation approaches.
 - [ ] Document updates
 
 ### Quality Assurance
-- [ ] Implement staged quality checks (details: refer to technical-spec skill)
+- [ ] Quality check (staged)
 
 ## Risks and Countermeasures
 | Risk | Countermeasure |

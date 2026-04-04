@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.3] - 2026-04-04
+
+### Added
+
+- **code-reviewer: Identifier Verification** — Extract identifier specifications (resource names, endpoint paths, config keys, schema names) from Design Doc and verify exact string match against implementation. Added `identifierMatchRate` and `identifierVerification[]` to output schema
+- **code-reviewer: Evidence-Based Confidence** — Multi-source evidence collection (primary: implementation, secondary: tests, tertiary: config/types) with high/medium/low confidence per AC. Added `evidence_source` field to track tool provenance per determination
+- **code-reviewer: Finding Classification** — Quality findings categorized as `dd_violation`/`maintainability`/`reliability`/`coverage_gap` with category-specific rationale requirements. Output Self-Check ensures every finding cites file:line and tool name
+- **Post-Implementation Verification** (commands, skills) — `build` and `front-build` now run code-verifier and security-reviewer in parallel after all tasks complete. Pass/fail criteria defined in orchestration guide with max 2 fix cycles before escalation
+- **front-design: Workflow Overview** — ASCII flow diagram showing the full design pipeline with stop points
+- **front-design: Completion Criteria** — Explicit checklist of required steps before design phase is complete
+- **front-design: design-sync step** — Added Step 4 for cross-document consistency verification before final approval
+- **ADR template: Architecture Impact section** — Documents how the decision affects existing components, dependencies, and constraints
+- **ADR template: Rejected status** — Added to status options alongside Proposed/Accepted/Deprecated/Superseded
+- **PRD template: User Journey and Scope Boundary diagrams** — Required mermaid diagrams added to template
+- **PRD template: MoSCoW prioritization** — Must Have(P1)/Should Have(P2)/Could Have(P3)/Won't Have structure replaces Must/Nice to Have/Out of Scope
+- **PRD template: Quantitative success metrics format** — Each metric specifies numeric target, measurement method, and timeframe
+- **Design template: Error Handling table** — Free-text placeholder replaced with structured table (Category, Example, Detection, Recovery, User Impact)
+- **Design template: Logging sub-categories** — Structured log events, levels, sensitive data handling, and monitoring requirements
+- **Plan template: Hybrid option** — Option C added for hybrid implementation approach alongside Vertical Slice and Horizontal Slice
+- **Security checks: Detection approach** — Added concrete detection methods for Access Control Gaps and Mishandling of Exceptional Conditions patterns
+
+### Changed
+
+- **BP-001 Negative → Positive form** (agents, 17 files) — Converted negative instructions to positive directives across all agent definitions. "Don't forget test creation" → "Include test creation in every task", "No contradiction with PRD" → "All requirements align with PRD", "any prohibited" → "use strict types", etc.
+- **BP-002 Vague → Concrete** (agents, skills) — Replaced ambiguous expressions with measurable criteria. "avoid excessive detail" → "include only information required for task execution and verification", "measurable format" → "each metric specifies a numeric target, measurement method, and timeframe"
+- **Emoji markers removed** (agents) — Removed ✅/❌ markers from instruction contexts (quality-fixer, requirement-analyzer, technical-designer-frontend, build, front-build). Retained only in user-facing output templates
+- **documentation-criteria: Excludes → Scope** (skills) — Separate Includes/Excludes blocks consolidated into single Scope statement per document type, reducing duplication
+- **documentation-criteria: QA phase unified** (skills) — Per-approach "Final Phase: Quality Assurance" entries consolidated into single "All approaches" statement
+- **orchestration-guide: First Action Rule simplified** (skills) — Mermaid diagram and duplicate text replaced with single-line rule
+- **orchestration-guide: Redundant sections removed** (skills) — Required Dialogue Points, Decision Flow diagram, duplicate orchestrator roles compressed
+- **orchestration-guide: Medium frontend flow reordered** (skills) — UI Spec creation moved before codebase analysis to match large-scale flow and front-design command — component structure informs technical design
+- **orchestration-guide: code-verifier description expanded** (skills) — Now documents both pre-implementation and post-implementation verification modes with status field values
+- **front-design: Execution Protocol** (commands) — Replaced role/method block with structured protocol referencing orchestration guide. Documents UI Spec → codebase-analyzer ordering rationale
+- **front-plan: Test skeleton mandatory** (commands) — Removed optional user confirmation — acceptance-test-generator always executes before work-planner per orchestration guide flow
+- **front-build: Streamlined** (commands) — Removed redundant Execution Method, Sub-agent Invocation Method, and Structured Response Specification sections. Scope line added to Execution Protocol
+- **front-review: Orchestrator identity** (commands) — Added Orchestrator Definition with TaskCreate-first action. Replaced rule-advisor with documentation-criteria in fix flow. Step numbering unified (Step 1-11)
+- **review/front-review: Re-validation context** (commands) — Re-validation prompts now include Design Doc path and implementation file list alongside prior issues
+- **review/front-review: Report template** (commands) — Added identifierMatchRate, confidence levels, identifier mismatches, and quality findings sections
+- **skills-index.yaml** (skills) — Removed deleted sections from orchestration-guide entry (Decision Flow, Required Dialogue Points)
+
 ## [1.20.2] - 2026-04-03
 
 ### Added

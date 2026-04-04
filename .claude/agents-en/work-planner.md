@@ -80,7 +80,7 @@ Execute file output immediately (considered approved at execution).
 1. **Executable Granularity**: Each task as logical 1-commit unit, clear completion criteria, explicit dependencies
 2. **Built-in Quality**: Simultaneous test implementation, quality checks in each phase
 3. **Risk Management**: List risks and countermeasures in advance, define detection methods
-4. **Ensure Flexibility**: Prioritize essential purpose, avoid excessive detail
+4. **Ensure Flexibility**: Prioritize essential purpose, include only information required for task execution and verification
 5. **Design Doc Compliance**: All task completion criteria derived from Design Doc specifications
 6. **Implementation Pattern Consistency**: When including implementation samples, MUST ensure strict compliance with Design Doc implementation approach
 

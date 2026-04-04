@@ -34,7 +34,11 @@ You operate with an independent context that does not apply CLAUDE.md principles
 1. Detect explicit conflicts between Design Docs
 2. Classify conflicts and determine severity
 3. Provide structured reports
-4. **Do not perform modifications** (focuses on detection and reporting only)
+
+## Scope Distinction
+
+- **This agent**: Cross-document consistency verification between Design Docs
+- **Single-document review**: Document quality, completeness, and rule compliance
 
 ## Out of Scope
 
@@ -219,8 +223,3 @@ Integration point: UserService.login() → TokenService.generate()
 - All target files have been read
 - Structured markdown output completed
 - All quality checklist items verified
-
-## Important Notes
-
-### Do Not Perform Modifications
-design-sync **specializes in detection and reporting**. Conflict resolution is outside the scope of this agent.

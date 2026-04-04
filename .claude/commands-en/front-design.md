@@ -6,26 +6,42 @@ description: Execute from requirement analysis to frontend design document creat
 
 ## Orchestrator Definition
 
-**Role**: Orchestrator
+**Core Identity**: "I am an orchestrator." (see subagents-orchestration-guide skill)
 
-**Execution Method**:
-- Requirement analysis → performed by requirement-analyzer
-- UI Specification creation → performed by ui-spec-designer
-- Design document creation → performed by technical-designer-frontend
-- Document review → performed by document-reviewer
+**Execution Protocol**:
+1. **Delegate all work** to sub-agents — your role is to invoke sub-agents, pass data between them, and report results
+2. **Follow the frontend design flow below** (this command covers medium/large frontend; UI Spec is created before codebase analysis so that component structure informs the technical design):
+   - Execute: requirement-analyzer → ui-spec-designer → codebase-analyzer → technical-designer-frontend → code-verifier → document-reviewer → design-sync
+   - **Stop at every `[Stop: ...]` marker** → Wait for user approval before proceeding
+3. **Scope**: Complete when design documents receive approval
 
-Orchestrator invokes sub-agents and passes structured JSON between them.
+**CRITICAL**: Execute document-reviewer, design-sync, and all stopping points defined in subagents-orchestration-guide skill flows — each serves as a quality gate. Skipping any step risks undetected inconsistencies.
+
+## Workflow Overview
+
+```
+Requirements → requirement-analyzer → [Stop: Scale determination]
+                                           ↓
+                                   ui-spec-designer → [Stop: UI Spec approval]
+                                           ↓
+                                   codebase-analyzer → technical-designer-frontend
+                                           ↓
+                                   code-verifier → document-reviewer
+                                           ↓
+                                      design-sync → [Stop: Design approval]
+```
 
 ## Scope Boundaries
 
 **Included in this command**:
 - Requirement analysis with requirement-analyzer
-- Codebase analysis with codebase-analyzer (before Design Doc creation)
+- Codebase analysis with codebase-analyzer (before technical design)
 - UI Specification creation with ui-spec-designer (prototype code inquiry included)
 - ADR creation (if architecture changes, new technology, or data flow changes)
 - Design Doc creation with technical-designer-frontend
 - Design Doc verification with code-verifier (before document review)
 - Document review with document-reviewer
+- Design Doc consistency verification with design-sync
 
 **Responsibility Boundary**: This command completes with frontend design document (UI Spec/ADR/Design Doc) approval. Work planning and beyond are outside scope.
 
@@ -39,7 +55,8 @@ Considering the deep impact on design, first engage in dialogue to understand th
 - Expected outcomes and success criteria
 - Relationship with existing systems
 
-Once requirements are moderately clarified:
+Once the user has answered the three dialogue questions above, execute the process below within design scope. Follow subagents-orchestration-guide Call Examples for codebase-analyzer and code-verifier invocations.
+
 - Invoke **requirement-analyzer** using Agent tool
   - `subagent_type: "requirement-analyzer"`
   - `description: "Requirement analysis"`
@@ -69,15 +86,30 @@ First, analyze the existing codebase:
 - Invoke **codebase-analyzer** using Agent tool
   - `subagent_type: "codebase-analyzer"`, `description: "Codebase analysis"`, `prompt: "requirement_analysis: [JSON from Step 1]. requirements: [user requirements]. Analyze existing codebase for frontend design guidance."`
 
-Create appropriate design documents according to scale determination:
+Create appropriate design documents according to scale determination. technical-designer-frontend presents at least two architecture alternatives (technology selection, data flow design) with trade-offs for each:
 - Invoke **technical-designer-frontend** using Agent tool
-  - For ADR: `subagent_type: "technical-designer-frontend"`, `description: "ADR creation"`, `prompt: "Create ADR for [technical decision]"`
-  - For Design Doc: `subagent_type: "technical-designer-frontend"`, `description: "Design Doc creation"`, `prompt: "Create Design Doc based on requirements. Codebase analysis: [JSON from codebase-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec."`
+  - For ADR: `subagent_type: "technical-designer-frontend"`, `description: "ADR creation"`, `prompt: "Create ADR for [technical decision]. Present at least two alternatives with trade-offs."`
+  - For Design Doc: `subagent_type: "technical-designer-frontend"`, `description: "Design Doc creation"`, `prompt: "Create Design Doc based on requirements. Codebase analysis: [JSON from codebase-analyzer]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec. Present at least two architecture alternatives with trade-offs."`
 - **(Design Doc only)** Invoke **code-verifier** to verify Design Doc against existing code. Skip for ADR.
-  - `subagent_type: "code-verifier"`, `description: "Design Doc verification"`, `prompt: "doc_type: design-doc document_path: [Design Doc path] Verify Design Doc against existing code."`
+  - `subagent_type: "code-verifier"`, `description: "Design Doc verification"`, `prompt: "doc_type: design-doc document_path: [Design Doc path] mode: pre-implementation (code_paths omitted — verifier discovers scope from document). Verify Design Doc against existing code."`
 - Invoke **document-reviewer** to verify consistency (pass code-verifier results for Design Doc; omit for ADR)
-  - `subagent_type: "document-reviewer"`, `description: "Document review"`, `prompt: "doc_type: DesignDoc target: [document path] mode: composite code_verification: [JSON from code-verifier] (Design Doc only) Review for consistency and completeness."`
-- **[STOP]**: Present design alternatives and trade-offs, obtain user approval
+  - `subagent_type: "document-reviewer"`, `description: "Document review"`, `prompt: "doc_type: DesignDoc target: [document path] mode: composite code_verification: [JSON from code-verifier] (Design Doc only). Review for consistency and completeness."`
+
+### Step 4: Design Consistency Verification
+- Invoke **design-sync** using Agent tool
+  - `subagent_type: "design-sync"`, `description: "Design consistency check"`, `prompt: "Check consistency across all Design Docs in docs/design/. Report conflicts and overlaps."`
+- **[STOP]**: Present design documents and design-sync results, obtain user approval
+
+## Completion Criteria
+
+- [ ] Executed requirement-analyzer and determined scale
+- [ ] Executed codebase-analyzer and passed results to technical-designer-frontend
+- [ ] Created UI Specification with ui-spec-designer (when applicable)
+- [ ] Created appropriate design document (ADR or Design Doc) with technical-designer-frontend
+- [ ] Executed code-verifier on Design Doc and passed results to document-reviewer (skip for ADR-only)
+- [ ] Executed document-reviewer and addressed feedback
+- [ ] Executed design-sync for consistency verification
+- [ ] Obtained user approval for design document
 
 ## Output Example
 Frontend design phase completed.

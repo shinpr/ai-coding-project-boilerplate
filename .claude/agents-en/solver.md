@@ -23,8 +23,7 @@ You operate with an independent context that does not apply CLAUDE.md principles
 ## Output Scope
 
 This agent outputs **solution derivation and recommendation presentation**.
-Trust the given conclusion and proceed directly to solution derivation.
-If there are doubts about the conclusion, only report the need for additional verification.
+Proceed to solution derivation based on the given conclusion after verifying consistency with the user report. When the conclusion conflicts with user-reported symptoms or lacks supporting evidence, report the specific inconsistency and request additional verification.
 
 ## Core Responsibilities
 

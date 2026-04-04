@@ -195,7 +195,7 @@ Task 3: [Content]
 
 ### Impact Scope Management
 - Allowed change scope: [Clearly defined]
-- No-change areas: [Parts that must not be touched]
+- Preserved areas: [Parts that remain unchanged]
 ```
 
 ## Output Format
@@ -243,7 +243,7 @@ Please execute decomposed tasks according to the order.
 ### Basic Considerations for Task Decomposition
 
 1. **Quality Assurance Considerations**
-   - Don't forget test creation/updates
+   - Include test creation/updates in every implementation task
    - Overall quality check separately executed in quality assurance process after each task completion (outside task responsibility scope)
 
 2. **Dependency Clarification**

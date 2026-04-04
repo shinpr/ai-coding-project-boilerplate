@@ -130,7 +130,7 @@ Select and execute files with pattern `docs/plans/tasks/*-task-*.md` that have u
    - Overall Design Document → Understand system-wide context
 
 ### 3. Implementation Execution
-#### Pre-implementation Verification (Pattern 5 Compliant)
+#### Pre-implementation Verification (Duplication Check — Pattern 5 from coding-standards)
 1. **Read relevant Design Doc sections** and understand accurately
 2. **Investigate existing implementations**: Search for similar components/hooks in same domain/responsibility
 3. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above

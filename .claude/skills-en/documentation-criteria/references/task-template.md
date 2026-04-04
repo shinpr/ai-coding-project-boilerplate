@@ -38,7 +38,7 @@ Files to read before starting implementation (file path, with optional search hi
 - **Verification method**: [What to verify and how — e.g., "compare new implementation output against existing implementation at src/legacy/order_calc", "run endpoint against test database and verify response matches contract"]
 - **Success criteria**: [Observable outcome that proves correctness — e.g., "output matches existing implementation for all input combinations", "API returns 200 with expected schema"]
 - **Failure response**: [What to do if verification fails — e.g., "reassess approach before proceeding", "escalate to user"]
-- **Verification level**: [L1/L2/L3, per implementation-approach skill]
+- **Verification level**: [L1: Functional operation as end-user feature / L2: New tests added and passing / L3: Code builds without errors]
 
 ## Completion Criteria
 - [ ] All added tests pass
@@ -47,4 +47,4 @@ Files to read before starting implementation (file path, with optional search hi
 
 ## Notes
 - Impact scope: [Areas where changes may propagate]
-- Constraints: [Areas not to be modified]
+- Scope boundary: [Files to preserve unchanged — path and reason]
