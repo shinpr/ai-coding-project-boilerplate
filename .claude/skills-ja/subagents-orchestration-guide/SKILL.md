@@ -288,7 +288,7 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
    #### codebase-analyzer → technical-designer
 
    **codebase-analyzerへの入力**: 要件分析JSON出力、PRDパス（存在する場合）、元のユーザー要件
-   **technical-designerへの入力**: codebase-analyzerのJSON出力をDesign Doc作成プロンプトの追加コンテキストとして渡す。designerは`focusAreas`と`dataModel`を「既存コードベース分析」セクションに反映する。
+   **technical-designerへの入力**: codebase-analyzerのJSON出力をDesign Doc作成プロンプトの追加コンテキストとして渡す。technical-designerは`focusAreas`、`dataModel`、`dataTransformationPipelines`を「既存コードベース分析」セクションおよび「検証戦略」セクションに反映する。
 
    #### code-verifier → document-reviewer（Design Docレビュー）
 

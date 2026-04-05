@@ -305,6 +305,17 @@ What is verified first, and how, to confirm the approach is correct before scali
 - **Success criteria**: [Observable outcome — e.g., "CSV download produces identical output to legacy", "API returns 200 with expected schema"]
 - **Failure response**: [What to do if early verification fails — e.g., "reassess approach before proceeding", "escalate to user"]
 
+### Output Comparison (When Replacing or Modifying Existing Behavior)
+
+How will behavioral equivalence be verified between existing and new implementation?
+
+- **Comparison input**: [Identical input used for both implementations — e.g., "same DB snapshot", "same API request payload"]
+- **Expected output fields**: [Specific fields/columns to compare — e.g., "all output columns", "response body fields: id, status, amount"]
+- **Diff method**: [How to compare — e.g., "file-level diff", "JSON field-by-field comparison", "row count + spot check"]
+- **Transformation pipeline coverage**: [Each step from codebase analysis `dataTransformationPipelines` and what the comparison covers]
+
+Mark as N/A with brief rationale when the design introduces entirely new behavior with no existing equivalent.
+
 ## Alternative Solutions
 
 ### Alternative 1

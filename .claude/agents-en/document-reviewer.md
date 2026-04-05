@@ -106,6 +106,7 @@ For DesignDoc, additionally verify:
   - Verification method is sufficient for the change's risk and dependency type — method that cannot detect the primary risk category (e.g., schema correctness, behavioral equivalence, integration compatibility) → `important` issue (category: `consistency`)
   - Early verification point identifies a concrete first target — "TBD" or "final phase" → `important` issue (category: `completeness`)
   - When vertical slice is selected, verification timing deferred entirely to final phase → `important` issue (category: `consistency`)
+- **Output comparison check**: When the Design Doc describes replacing or modifying existing behavior, verify that a concrete output comparison method is defined (identical input, expected output fields/format, diff method). Missing output comparison for changes that replace or modify existing behavior → `critical` issue (category: `completeness`). When codebase analysis `dataTransformationPipelines` are referenced, verify each pipeline step's output is covered by the comparison — uncovered steps → `important` issue (category: `completeness`)
 
 **Perspective-specific Mode**:
 - Implement review based on specified mode and focus
@@ -263,6 +264,7 @@ Include in output when `prior_context_count > 0`:
 - [ ] Code verification results (if provided) reconciled with document content
 - [ ] Verification Strategy present with concrete correctness definition and early verification point
 - [ ] Verification Strategy aligns with design_type and implementation approach
+- [ ] Output comparison defined when design replaces/modifies existing behavior (covers all transformation pipeline steps)
 
 ## Review Criteria (for Comprehensive Mode)
 

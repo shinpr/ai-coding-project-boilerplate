@@ -62,7 +62,7 @@ Must be performed before Design Doc creation:
    - Record and distinguish between existing implementation locations and planned new locations
 
 2. **Existing Interface Investigation** (Only when changing existing features)
-   - List major public methods of target service (about 5 important ones if over 10)
+   - List every public method of target service with full signatures
    - Identify call sites with `Grep: "ServiceName\." --type ts`
 
 3. **Similar Functionality Search and Decision** (Pattern 5 prevention from coding-standards skill)
@@ -153,7 +153,8 @@ Must be performed when creating Design Doc:
    - For new_feature: specify AC verification method beyond unit tests (e.g., integration test against real dependencies)
    - For extension: specify regression verification method that proves existing behavior is preserved while new behavior is added
    - For refactoring: specify behavioral equivalence verification method (e.g., output comparison with existing implementation)
-   - Define early verification point: what is the first thing to verify, and how, to confirm the approach is correct before scaling
+   - **Output comparison requirement** (all design_types that replace or modify existing behavior): Define concrete output comparison method — specify identical input, expected output fields/format, and how to diff. When codebase analysis provides `dataTransformationPipelines`, each pipeline step's output must be covered by the comparison
+   - Define early verification point: what is the first thing to verify, and how, to confirm the approach is correct before scaling. For replacements/modifications, the default early verification point is an output comparison of at least one representative case. Exception: when the primary risk is not behavioral equivalence (e.g., schema compatibility, integration contract) — in that case, specify the alternative verification target and document why output comparison is deferred
 
 ### Change Impact Map【Required】
 Must be included when creating Design Doc:
@@ -214,6 +215,7 @@ Document state definitions and transitions for stateful components.
   - `dataModel` → populate data-related sections (schema references, data contracts)
   - `focusAreas` → prioritize investigation depth on flagged areas
   - `constraints` → incorporate into design constraints and assumptions
+  - `dataTransformationPipelines` → populate Verification Strategy's Output Comparison section (each pipeline step must be covered by the comparison method)
   - Conduct additional investigation only for areas not covered by the analysis or flagged in `limitations`
 - **PRD**: PRD document (if exists)
 - **Documents to Create**: ADR, Design Doc, or both
@@ -309,6 +311,7 @@ Implementation sample creation checklist:
 - [ ] **Data representation decision documented** (when new structures introduced)
 - [ ] **Field propagation map included** (when fields cross boundaries)
 - [ ] **Verification Strategy defined** (correctness definition, verification method, timing, early verification point)
+- [ ] **Output comparison defined** when replacing/modifying existing behavior (input, expected output fields, diff method; covers all transformation pipeline steps from codebase analysis)
 
 **Reverse-engineer mode only**:
 - [ ] Every architectural claim cites file:line as evidence
