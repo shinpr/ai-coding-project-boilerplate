@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.4] - 2026-04-05
+
+### Added
+
+- **codebase-analyzer: Deep call chain tracing** (agents) — Replaced shallow public-interface-only extraction with full-depth analysis. All visibility levels (public, private, internal) are now extracted with recursive call chain tracing within modules. External dependencies are traced to public interface only. Chains exceeding 10 unique functions record the remainder in `limitations`
+- **codebase-analyzer: Data transformation pipeline detection** (agents) — New `dataTransformationPipelines` output field traces step-by-step input→output mapping for requirement-relevant entry points, including external resource lookups (master tables, config, constants) that modify output values
+- **codebase-analyzer: `visibility` field in output schema** (agents) — `existingElements` schema now includes `visibility` (public/private/internal) and `method` as a category option, matching the expanded extraction requirements
+- **technical-designer: Output comparison requirement** (agents) — Designs that replace or modify existing behavior must define a concrete output comparison method (identical input, expected output fields, diff method). When codebase analysis provides `dataTransformationPipelines`, each pipeline step must be covered
+- **technical-designer: Early verification exception clause** (agents) — Default early verification point for replacements/modifications is output comparison. Exception: when primary risk is not behavioral equivalence (e.g., schema compatibility, integration contract), specify alternative target and document why output comparison is deferred
+- **document-reviewer: Output comparison check** (agents) — Missing output comparison for changes that replace or modify existing behavior → `critical` issue. Uncovered `dataTransformationPipelines` steps → `important` issue
+- **design-template: Output Comparison section** (skills) — New section under Verification Strategy for behavioral equivalence verification: comparison input, expected output fields, diff method, and transformation pipeline coverage
+- **orchestration-guide: Pipeline bridge** (skills) — codebase-analyzer → technical-designer bridge now passes `dataTransformationPipelines` to inform Verification Strategy in addition to Existing Codebase Analysis
+
+### Changed
+
+- **technical-designer: Full method inventory** (agents) — Removed "about 5 important ones if over 10" limit. Now requires listing every public method with full signatures to prevent investigation shortcuts that lead to incomplete design documents
+
 ## [1.20.3] - 2026-04-04
 
 ### Added

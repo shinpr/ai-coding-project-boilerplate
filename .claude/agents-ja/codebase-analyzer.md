@@ -44,15 +44,19 @@ skills: coding-standards, project-context, technical-spec
 
 `affectedFiles`の各ファイルに対して:
 
-1. **ファイルを読み込み**、以下を抽出:
-   - publicインターフェース、型、関数シグネチャ、クラス定義
-   - コード上の正確な名前とシグネチャを記録
-2. **1階層の依存関係をトレース**: モジュールの依存宣言（import文、use宣言、includeディレクティブ — プロジェクト言語に適応）から直接依存先を特定。各インポートモジュールのpublicインターフェースを読み込み
-3. **パターン検出**（プロジェクト規約に合わせて検索語を適応）:
+1. **ファイルを全文読み込み**、全可視性レベル（public, private, internal — 用語はプロジェクト言語に適応）のインターフェース、型、関数シグネチャ、クラス定義、メソッド定義をすべて抽出する。コード上の正確な名前、可視性、シグネチャを記録
+2. **コールチェーンのトレース**（可視性の用語はプロジェクト言語に適応 — 例: public/private, exported/unexported, pub/pub(crate)）:
+   - 同一モジュール内の関数/メソッド: チェーンが終端するまで（return、外部への委譲、リーフ到達）すべての呼び出しを再帰的にたどる。チェーンが10個を超えるユニークな関数にまたがる場合、トレース済み部分を記録し残りを`limitations`に記載
+   - 外部依存（インポートされたモジュール、他パッケージ）: publicインターフェースのみ読み込み（シグネチャ、コントラクト）。統合ポイントとして記録するが、外部モジュール内部へのトレースは行わない
+3. **データ変換パイプラインの検出**: 要件に関連するエントリポイント（`affectedFiles`と`purpose`で特定されたもの）を優先する。モジュール外部から入力を受け取る各該当エントリポイント（APIハンドラー、他モジュールから呼び出されるエクスポート済みサービス関数、CLIエントリポイント）について、コールチェーンを通じて入力データがどう変換されるかをステップごとにトレースする。同じ出力パスや変換ロジックを共有する追加エントリポイントが発見された場合は含めるか、`limitations`に記録:
+   - 各変換ステップを記録（何が変わるか、どのようなフォーマット/値のマッピングが行われるか）
+   - 値を変更する外部リソース参照を記録（マスタテーブル参照、設定値の参照、定数の置換）
+   - 中間データフォーマットを記録（最終出力前に別の表現を経由する場合）
+4. **パターン検出**（プロジェクト規約に合わせて検索語を適応）:
    - データアクセス: データベース操作を示すパターンをGrep（query, select, insert, update, delete, find, save, create, repository, model, schema, migration, table, column, entity, record）
    - 外部統合: 外部呼び出しを示すパターンをGrep（http, fetch, client, api, endpoint, request, response）
    - バリデーション: 制約を示すパターンをGrep（validate, check, assert, constraint, rule, require, ensure）
-4. 発見した各要素をファイルパスと行番号付きで記録
+5. 発見した各要素をファイルパスと行番号付きで記録
 
 ### ステップ3: スキーマとデータモデルの発見
 
@@ -95,9 +99,10 @@ skills: coding-standards, project-context, technical-spec
   },
   "existingElements": [
     {
-      "category": "interface|type|function|class|constant|configuration",
+      "category": "interface|type|function|method|class|constant|configuration",
       "name": "要素名",
       "filePath": "path/to/file:行番号",
+      "visibility": "public|private|internal",
       "signature": "シグネチャまたは定義の概要",
       "usedBy": ["path/to/consumer1"]
     }
@@ -130,6 +135,23 @@ skills: coding-standards, project-context, technical-spec
     ],
     "migrationFiles": ["path/to/migration/files"]
   },
+  "dataTransformationPipelines": [
+    {
+      "entryPoint": "ClassName.methodName (file:line)",
+      "steps": [
+        {
+          "order": 1,
+          "method": "methodName (file:line)",
+          "input": "入力データ/フォーマットの説明",
+          "output": "出力データ/フォーマットの説明",
+          "externalLookups": ["MasterTable.getData() でコード変換"],
+          "transformation": "何が変わるか（例: 生値がルックアップテーブル経由で表示値にマッピング）"
+        }
+      ],
+      "intermediateFormats": ["中間データ表現の説明（該当する場合）"],
+      "finalOutput": "最終出力データ/フォーマットの説明"
+    }
+  ],
   "constraints": [
     {
       "type": "validation|business_rule|configuration|assumption",
@@ -157,8 +179,10 @@ skills: coding-standards, project-context, technical-spec
 ## 完了条件
 
 - [ ] 入力された要件分析結果を解析し分析カテゴリを特定した
-- [ ] 全影響ファイルを読み込み、file:line参照付きでpublicインターフェースを抽出した
-- [ ] 各影響ファイルの1階層のインポートをトレースした
+- [ ] 全影響ファイルを全文読み込み、file:line参照付きですべてのインターフェース、型、関数、メソッド、クラスを全可視性レベル（public, private, internal）で抽出した — または不完全なファイルを`limitations`に記録した
+- [ ] スコープルールに従いコールチェーンをトレースした（同一ファイル: 再帰的、外部: publicインターフェースのみ） — または不完全なトレースを`limitations`に記録した
+- [ ] 各publicエントリポイントについてステップごとの入力→出力マッピングでデータ変換パイプラインを特定した
+- [ ] 出力値を変更するすべての外部リソース参照（マスタテーブル、設定値、定数）を記録した
 - [ ] Grepでデータアクセス、外部統合、バリデーションパターンを検索した
 - [ ] データアクセス検出時: スキーマ定義をトレースしフィールドレベルの詳細を抽出した
 - [ ] file:lineエビデンス付きで制約を抽出した
@@ -173,4 +197,6 @@ skills: coding-standards, project-context, technical-spec
 - [ ] スキーマフィールド名が実際の定義と一致（類似テーブルからの推測ではない）
 - [ ] 各注目領域が具体的なファイルと具体的なリスクを引用
 - [ ] `dataModel.detected`がデータ操作の検出有無を正確に反映
+- [ ] `dataTransformationPipelines`がデータを変換するすべてのエントリポイントについて記録されている（変換が存在しない場合のみ空配列）
+- [ ] 各パイプラインステップの`externalLookups`が出力値を変更するすべてのマスタテーブル/設定値/定数参照を列挙
 - [ ] limitationsセクションが読み込めなかったファイルやトレースできなかったパターンを記録
