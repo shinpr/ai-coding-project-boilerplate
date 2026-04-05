@@ -120,6 +120,12 @@ No Ripple Effect:
   - [Explicitly specify unaffected features]
 ```
 
+### Interface Change Matrix
+
+| Existing | New | Conversion Required | Compatibility Method |
+|----------|-----|--------------------|--------------------|
+| [Function/method/operation name] | [Function/method/operation name] | [Yes/No] | [Approach: adapter, wrapper, deprecation, etc.] |
+
 ### Architecture Overview
 
 [How this feature is positioned within the overall system]
@@ -132,10 +138,10 @@ No Ripple Effect:
 
 ### Integration Points List
 
-| Integration Point | Location | Old Implementation | New Implementation | Switching Method |
-|-------------------|----------|-------------------|-------------------|------------------|
-| Integration Point 1 | [Class/Function] | [Existing Process] | [New Process] | [DI/Factory etc.] |
-| Integration Point 2 | [Another Location] | [Existing] | [New] | [Method] |
+| Integration Point | Location | Old Implementation | New Implementation | Switching Method | Verification Method |
+|-------------------|----------|-------------------|-------------------|------------------|-------------------|
+| Integration Point 1 | [Class/Function] | [Existing Process] | [New Process] | [DI/Factory etc.] | [How to verify this switching works] |
+| Integration Point 2 | [Another Location] | [Existing] | [New] | [Method] | [Verification approach] |
 
 ### Main Components
 
