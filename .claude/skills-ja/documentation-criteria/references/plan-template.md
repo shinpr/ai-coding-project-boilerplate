@@ -24,6 +24,19 @@
 - **成功基準**: [Design Docから抽出]
 - **失敗時の対応**: [Design Docから抽出]
 
+## 設計-計画トレーサビリティ
+
+Design Docの各技術要件をカバーするタスクへのマッピング。抽出した項目ごとに1行。各行には対応タスクが少なくとも1つ必要。タスクがない場合は明示的なギャップ理由が必要。
+
+| DDセクション | DD項目 | カテゴリ | カバーするタスク | ギャップステータス | 備考 |
+|---|---|---|---|---|---|
+| [DDのセクション名] | [具体的な項目] | impl-target / connection-switching / contract-change / verification / prerequisite | [Phase X タスクY] | covered | |
+| セキュリティ考慮事項 | APIの入力バリデーション | prerequisite | — | gap | ユーザー判断によりPhase 2に延期 |
+
+**カテゴリ値**: `impl-target`（実装対象）、`connection-switching`（接続/切替/登録）、`contract-change`（コントラクト変更と伝搬）、`verification`（検証要件）、`prerequisite`（前提作業）
+
+**ギャップステータス値**: `covered`（タスクあり）、`gap`（タスクなし — 備考に理由必須、計画承認前にユーザー確認が必要）
+
 ## 目的
 [なぜこの変更が必要か、何を解決するか]
 

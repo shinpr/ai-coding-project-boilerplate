@@ -24,6 +24,19 @@ Related Issue/PR: #XXX (if any)
 - **Success criteria**: [extracted from Design Doc]
 - **Failure response**: [extracted from Design Doc]
 
+## Design-to-Plan Traceability
+
+Maps each Design Doc technical requirement to the covering task(s). One row per extracted item. Every row must have at least one covering task, or an explicit gap justification.
+
+| DD Section | DD Item | Category | Covered By Task(s) | Gap Status | Notes |
+|---|---|---|---|---|---|
+| [Section name from DD] | [Specific item] | impl-target / connection-switching / contract-change / verification / prerequisite | [Phase X Task Y] | covered | |
+| Security Considerations | Input validation for API | prerequisite | — | gap | Deferred to Phase 2 per user decision |
+
+**Category values**: `impl-target` (implementation target), `connection-switching` (connection/switching/registration), `contract-change` (contract change and propagation), `verification` (verification requirement), `prerequisite` (prerequisite work)
+
+**Gap Status values**: `covered` (task exists), `gap` (no task — requires justification in Notes, user confirmation required before plan approval)
+
 ## Objective
 [Why this change is necessary, what problem it solves]
 

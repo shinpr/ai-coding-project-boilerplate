@@ -301,7 +301,13 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
 
    #### technical-designer → work-planner
 
-   **Pass to work-planner**: Design Doc path. Work-planner extracts Verification Strategy from the Design Doc and includes it in the work plan header.
+   **Pass to work-planner**: Design Doc path. Work-planner scans all DD sections and extracts technical requirements per its Step 5 categories (impl-target, connection-switching, contract-change, verification, prerequisite), then produces a Design-to-Plan Traceability table.
+
+   **Gap handling (orchestrator responsibility)**: If work-planner outputs a draft plan containing `gap` entries, the orchestrator MUST:
+   1. Present the gap entries to the user with justifications
+   2. Keep the plan in draft status until the user confirms each gap
+   3. Do NOT pass the plan to downstream agents (task-decomposer, etc.) until all gaps are resolved or confirmed
+   Unjustified gaps are errors — return to work-planner to add covering tasks or justification.
 
    #### *1 acceptance-test-generator → work-planner
 

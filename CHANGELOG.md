@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.5] - 2026-04-06
+
+### Added
+
+- **work-planner: Design-to-Plan Traceability** (agents) — New Step 5 scans all DD sections and extracts technical requirements into five categories (impl-target, connection-switching, contract-change, verification, prerequisite). Each item is mapped to a covering task in a Traceability table. Items without a covering task are marked as `gap` with mandatory justification; the plan remains in draft status until all gaps are user-confirmed
+- **plan-template: Design-to-Plan Traceability section** (skills) — Traceability table template with sample rows for both `covered` and `gap` entries, category value definitions, and gap status definitions
+- **design-template: Interface Change Matrix** (skills) — New section after Change Impact Map documenting existing-to-new interface mappings with conversion requirements and compatibility methods
+- **design-template: Verification Method column** (skills) — Integration Points List expanded with Verification Method column to explicitly capture how each switching point is verified
+- **orchestration-guide: Gap handling for work-planner handoff** (skills) — Orchestrator must present gap entries to user, keep plan in draft until confirmed, and block downstream agents (task-decomposer, etc.) until all gaps are resolved. Unjustified gaps are errors returned to work-planner
+
+### Changed
+
+- **work-planner: Output Policy gap exception** (agents) — Added explicit exception to the immediate-output policy: plans containing `gap` entries are output as draft and require user confirmation before finalizing
+- **work-planner: Category table simplified** (agents) — Removed Task Requirement column (redundant with Traceability table's Category column). Category values now use short codes (impl-target, etc.) matching the Traceability table directly
+- **orchestration-guide: technical-designer → work-planner handoff deduplicated** (skills) — Replaced inline category descriptions with reference to work-planner Step 5, establishing work-planner as single source of truth for category definitions
+
 ## [1.20.4] - 2026-04-05
 
 ### Added

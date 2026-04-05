@@ -297,7 +297,13 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 
    #### technical-designer → work-planner
 
-   **work-plannerへの入力**: Design Docパス。work-plannerがDesign Docから検証戦略を抽出し、作業計画書ヘッダーに記載する。
+   **work-plannerへの入力**: Design Docパス。work-plannerがDDの全セクションをスキャンし、Step 5のカテゴリ（impl-target, connection-switching, contract-change, verification, prerequisite）に沿って技術要件を抽出した上で、設計-計画トレーサビリティ表を作成する。
+
+   **ギャップ発生時の制御（オーケストレーターの責務）**: work-plannerが`gap`を含むドラフト計画書を出力した場合、オーケストレーターは以下を実行する:
+   1. ギャップ項目と理由をユーザーに提示する
+   2. ユーザーが各ギャップを確認するまで計画書をドラフト状態に保つ
+   3. 全ギャップの解消または確認が完了するまで、後続エージェント（task-decomposer等）に計画書を渡さない
+   理由なしのギャップはエラーとして扱い、work-plannerに差し戻してカバーするタスクの追加または理由の記載を求める。
 
    #### *1 acceptance-test-generator → work-planner
 

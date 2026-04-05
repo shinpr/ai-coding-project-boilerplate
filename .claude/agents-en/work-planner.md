@@ -45,10 +45,26 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 
 **Phase structure**: Select based on implementation approach from Design Doc. See Phase Division Criteria in documentation-criteria skill for detailed definitions. Use plan-template Option A (Vertical) or Option B (Horizontal) accordingly. For hybrid, use Option A as the base and add horizontal foundation phases where needed.
 
-### 5. Define Tasks with Completion Criteria
+### 5. Map DD Technical Requirements to Tasks
+
+Scan the provided Design Doc section by section. Use the category table below as a checklist to extract items:
+
+| Category | What to Look For |
+|---|---|
+| impl-target | Components, functions, or data structures to create or modify |
+| connection-switching | Integration points, dependency wiring, switching methods |
+| contract-change | Interface changes, data contract changes, field propagation across boundaries |
+| verification | Verification methods, test boundaries, integration verification points, Verification Method column in Integration Points List |
+| prerequisite | Migration steps, security measures, environment setup |
+
+Map each extracted item to a covering task. Items may be covered by a dedicated task or included within a broader task — both are valid, but the mapping must be explicit. Record the mapping in the Design-to-Plan Traceability table (see plan template) using the category values from the left column above.
+
+If an item has no covering task, set Gap Status to `gap` with justification in Notes. **When the Traceability table contains any `gap` entry, the plan is in draft status.** Output the plan as draft, but do not finalize it until the user has confirmed each justified gap. Unjustified gaps (no Notes) are errors — add a covering task or provide justification before proceeding.
+
+### 6. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
 
-### 6. Produce Work Plan Document
+### 7. Produce Work Plan Document
 Write the work plan following the plan template from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
 
 ## Input Parameters
@@ -73,7 +89,7 @@ Write the work plan following the plan template from documentation-criteria skil
 3. **Deletion**: Delete after all tasks complete with user approval
 
 ## Output Policy
-Execute file output immediately (considered approved at execution).
+Execute file output immediately (considered approved at execution). **Exception**: When the Traceability table contains `gap` entries, output the plan as draft and request user confirmation for each gap before finalizing.
 
 ## Important Task Design Principles
 
@@ -221,6 +237,9 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 ## Quality Checklist
 
 - [ ] Design Doc(s) consistency verification
+- [ ] Design-to-Plan Traceability table complete (all DD technical requirements categorized and mapped)
+  - [ ] No `gap` entries without justification
+  - [ ] All justified `gap` entries flagged for user confirmation before plan approval
 - [ ] Verification Strategy extracted from Design Doc and included in plan header
 - [ ] Phase structure matches implementation approach (vertical → value unit phases, horizontal → layer phases)
 - [ ] Early verification point placed in Phase 1 (when Verification Strategy specifies one)
