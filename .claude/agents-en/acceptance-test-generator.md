@@ -99,7 +99,8 @@ For each valid AC from Phase 1:
 3. **Push-Down Analysis**:
    ```
    Can this be unit-tested? → Remove from integration/E2E pool
-   Already integration-tested? → Don't create E2E version
+   Already integration-tested? → Keep as E2E candidate IF part of multi-step user journey (see definition in integration-e2e-testing skill)
+   Already integration-tested AND NOT part of multi-step journey? → Remove from E2E pool
    ```
 4. **Sort by ROI** (descending order)
 
@@ -109,14 +110,27 @@ For each valid AC from Phase 1:
 
 **Apply integration-e2e-testing skill "Test Types and Limits"**
 
+**Hard Limits per Feature**:
+- **Integration Tests**: MAX 3 tests
+- **E2E Tests**: MAX 1-2 tests total, composed of:
+  - 1 reserved slot (emitted regardless of ROI) when feature contains a **user-facing** multi-step user journey (see definition and classification in integration-e2e-testing skill)
+  - Up to 1 additional slot requiring ROI > 50
+
 **Selection Algorithm**:
 
 ```
-1. Sort candidates by ROI (descending)
-2. Select all property-based tests (excluded from budget calculation)
-3. Select top N within budget:
+1. Reserve must-keep E2E slot:
+   IF feature contains user-facing multi-step user journey (see definition in integration-e2e-testing skill)
+   THEN reserve 1 E2E slot for the highest-ROI journey candidate
+   (This reserved candidate is emitted regardless of ROI threshold)
+
+2. Sort remaining candidates by ROI (descending)
+
+3. Select all property-based tests (excluded from budget calculation)
+
+4. Select top N within budget:
    - Integration: Pick top 3 highest-ROI
-   - E2E: Pick top 1-2 IF ROI score > 50
+   - E2E (additional beyond reserved): Pick up to 1 more IF ROI score > 50
 ```
 
 **Output**: Final test set
@@ -136,17 +150,17 @@ The examples below use `//` comment syntax. Adapt to the project's language (e.g
 import { describe, it } from '[detected test framework]'
 
 describe('[Feature Name] Integration Test', () => {
-  // AC: "After successful payment, order is created and persisted"
-  // ROI: 85 | Business Value: 10 | Frequency: 9
-  // Behavior: User completes payment → Order created in DB → Payment recorded
+  // AC1: "After successful payment, order is created and persisted"
+  // ROI: 98 (BV:10 × Freq:9 + Legal:0 + Defect:8)
+  // Behavior: User completes payment → Order created in DB + Payment recorded
   // @category: core-functionality
   // @dependency: PaymentService, OrderRepository, Database
   // @complexity: high
   it.todo('AC1: Successful payment creates persisted order with correct status')
 
-  // AC: "Payment failure shows user-friendly error message"
-  // ROI: 72 | Business Value: 8 | Frequency: 2
-  // Behavior: Payment fails → User sees actionable error → Order not created
+  // AC1-error: "Payment failure shows user-friendly error message"
+  // ROI: 23 (BV:8 × Freq:2 + Legal:0 + Defect:7)
+  // Behavior: Payment fails → User sees actionable error + Order not created
   // @category: core-functionality
   // @dependency: PaymentService, ErrorHandler
   // @complexity: medium
@@ -166,8 +180,8 @@ import { describe, it } from '[detected test framework]'
 
 describe('[Feature Name] E2E Test', () => {
   // User Journey: Complete purchase flow (browse → add to cart → checkout → payment → confirmation)
-  // ROI: 95 | Business Value: 10 | Frequency: 10 | Legal: true
-  // Behavior: Product selection → Add to cart → Payment complete → Order confirmation screen displayed
+  // ROI: 119 (BV:10 × Freq:10 + Legal:10 + Defect:9) | reserved slot: multi-step journey
+  // Verification: End-to-end user experience from product selection to order confirmation
   // @category: e2e
   // @dependency: full-system
   // @complexity: high
@@ -192,20 +206,49 @@ it.todo('[AC#]-property: [invariant in natural language]')
 
 Upon completion, report in the following JSON format. Detailed meta information is included in comments within test skeleton files, extracted by downstream processes reading the files.
 
+**When E2E tests are emitted:**
 ```json
 {
   "status": "completed",
-  "feature": "[feature name]",
+  "feature": "payment",
   "generatedFiles": {
-    "integration": "[path]/[feature].int.test.ts",
-    "e2e": "[path]/[feature].e2e.test.ts"
+    "integration": "tests/payment.int.test.[ext]",
+    "e2e": "tests/payment.e2e.test.[ext]"
   },
-  "testCounts": {
-    "integration": 2,
-    "e2e": 1
-  }
+  "budgetUsage": { "integration": "2/3", "e2e": "1/2" },
+  "e2eAbsenceReason": null
 }
 ```
+
+**When no E2E tests are emitted:**
+```json
+{
+  "status": "completed",
+  "feature": "payment",
+  "generatedFiles": {
+    "integration": "tests/payment.int.test.[ext]",
+    "e2e": null
+  },
+  "budgetUsage": { "integration": "2/3", "e2e": "0/2" },
+  "e2eAbsenceReason": "no_multi_step_journey"
+}
+```
+
+**When no integration tests are emitted:**
+```json
+{
+  "status": "completed",
+  "feature": "config-update",
+  "generatedFiles": {
+    "integration": null,
+    "e2e": null
+  },
+  "budgetUsage": { "integration": "0/3", "e2e": "0/2" },
+  "e2eAbsenceReason": "no_multi_step_journey"
+}
+```
+
+**Contract**: Both `generatedFiles.integration` and `generatedFiles.e2e` are always present as keys. Value is a file path string when generated, `null` when not generated. `e2eAbsenceReason` is `null` when E2E was emitted, otherwise one of: `no_multi_step_journey`, `below_threshold_user_confirmed`.
 
 ## Constraints and Quality Standards
 
@@ -217,7 +260,7 @@ Upon completion, report in the following JSON format. Detailed meta information 
 - Stay within budget; report to user if budget insufficient for critical tests
 
 **Quality Standards**:
-- Generate tests for high-ROI ACs ONLY
+- Select tests by ROI ranking within budget (integration: top 3 by ROI; E2E: reserved slot for user-facing journeys + additional by ROI > 50)
 - Apply behavior-first filtering STRICTLY
 - Eliminate duplicate coverage (use Grep to check existing tests BEFORE generating)
 - Clarify dependencies EXPLICITLY
@@ -227,14 +270,16 @@ Upon completion, report in the following JSON format. Detailed meta information 
 
 ### Auto-processable
 - **Directory Absent**: Auto-create appropriate directory following detected test structure
-- **No High-ROI Tests**: Valid outcome - report "All ACs below ROI threshold or covered by existing tests"
+- **No High-ROI Integration Tests**: Valid outcome - report "All ACs below ROI threshold or covered by existing tests"
+- **No E2E Tests (no multi-step journey)**: Valid outcome - report "No multi-step user journey detected; E2E tests not applicable"
 - **Budget Exceeded by Critical Test**: Report to user
 
 ### Escalation Required
 1. **Critical**: AC absent, Design Doc absent → Error termination
-2. **High**: All ACs filtered out but feature is business-critical → User confirmation needed
-3. **Medium**: Budget insufficient for critical user journey (ROI > 90) → Present options
-4. **Low**: Multiple interpretations possible but minor impact → Adopt interpretation + note in report
+2. **High**: No E2E test emitted after budget enforcement, but feature contains user-facing multi-step user journey → Escalate with message: "Feature includes user-facing multi-step journey but no E2E test was emitted. Journey candidates evaluated: [list with ROI scores]. Confirm whether to proceed without E2E." (Note: this escalation fires only when the reserved slot in Phase 4 did not apply — e.g., no journey candidate passed Phase 1-3 filtering. When a reserved slot candidate exists, it is emitted and this escalation does not fire.)
+3. **High**: All ACs filtered out but feature is business-critical → User confirmation needed
+4. **Medium**: Budget insufficient for critical user journey (ROI > 90) → Present options
+5. **Low**: Multiple interpretations possible but minor impact → Adopt interpretation + note in report
 
 ## Technical Specifications
 

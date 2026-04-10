@@ -50,13 +50,14 @@ C4Context
 
 ### Must Have (P1 - MVP)
 - [ ] Requirement 1: [Detailed description]
-  - AC: [Acceptance criteria - Given/When/Then format or measurable standard]
+  - AC-001: [Acceptance criteria - Given/When/Then format or measurable standard]
+  - AC-002: [Acceptance criteria]
 - [ ] Requirement 2: [Detailed description]
-  - AC: [Acceptance criteria]
+  - AC-003: [Acceptance criteria]
 
 ### Should Have (P2)
 - [ ] Requirement 1: [Detailed description]
-  - AC: [Acceptance criteria]
+  - AC-004: [Acceptance criteria]
 
 ### Could Have (P3)
 - [ ] Requirement 1: [Detailed description]

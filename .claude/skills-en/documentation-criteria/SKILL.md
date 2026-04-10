@@ -1,6 +1,6 @@
 ---
 name: documentation-criteria
-description: Guides PRD, ADR, Design Doc, and Work Plan creation. Use when creating or reviewing technical documents.
+description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use when creating or reviewing technical documents, or when "UI spec/screen design/component decomposition" is mentioned.
 ---
 
 # Documentation Creation Criteria
@@ -53,6 +53,7 @@ description: Guides PRD, ADR, Design Doc, and Work Plan creation. Use when creat
 - Success metrics and KPIs (each metric specifies a numeric target, measurement method, and timeframe)
 - User stories and use cases
 - MoSCoW prioritization (Must/Should/Could/Won't)
+- Acceptance criteria with sequential IDs (AC-001, AC-002, ...) for downstream traceability
 - MVP and Future phase separation
 - User journey diagram (required)
 - Scope boundary diagram (required)

@@ -145,9 +145,14 @@ Invoke quality-fixer routed by task filename pattern:
 - `description`: "Final quality assurance"
 - `prompt`: "Final quality assurance for test files added in this workflow. Run all tests and verify coverage."
 
-**Expected output**: `approved` (true/false)
+**Expected output**: `status` (approved/stub_detected/blocked)
+
+Check quality-fixer response:
+- `stub_detected` → Return to Step 4 with `incompleteImplementations[]` details, then re-execute Steps 4→5→6→7
+- `blocked` → Escalate to user
+- `approved` → Proceed to Step 8
 
 ### Step 8: Commit
 
-On `approved: true` from quality-fixer:
+On `approved` from quality-fixer:
 - Commit test files with appropriate message using Bash

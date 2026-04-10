@@ -1,6 +1,6 @@
 ---
 name: documentation-criteria
-description: PRD、ADR、Design Doc、作業計画書の作成を支援。技術ドキュメントの作成・レビュー時に使用。
+description: PRD、ADR、Design Doc、UI Spec、作業計画書の作成を支援。技術ドキュメントの作成・レビュー時、または「UI Spec/画面設計/コンポーネント分解」が言及された時に使用。
 ---
 
 # ドキュメント作成基準
@@ -53,6 +53,7 @@ description: PRD、ADR、Design Doc、作業計画書の作成を支援。技術
 - 成功指標とKPI（各指標に数値目標、測定方法、期間を明記）
 - ユーザーストーリーとユースケース
 - MoSCoW法による優先順位（Must/Should/Could/Won't）
+- 受入基準に連番ID（AC-001, AC-002, ...）を付与し、下流でのトレーサビリティを確保
 - MVPとFutureフェーズの分離
 - ユーザージャーニー図（必須）
 - スコープ境界図（必須）

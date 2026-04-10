@@ -85,9 +85,13 @@ Agentツールでtask-decomposerを呼び出す:
      - `approved` → ステップ4へ
    - `readyForQualityCheck: true` → ステップ4へ
 4. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
-5. **承認後コミット**: quality-fixerの`approved: true`確認後 → git commitを実行
+5. **quality-fixerレスポンスチェック**:
+   - `stub_detected` → `incompleteImplementations[]`の詳細を添えてステップ2に戻す
+   - `blocked` → 停止してユーザーにエスカレーション
+   - `approved` → ステップ6へ
+6. **承認後コミット**: git commitを実行
 
-**重要**: 例外なく全ての構造化レスポンスを監視し、全ての品質ゲートが通過することを確保。
+**重要**: 例外なく全ての構造化レスポンスを監視し、全ての品質ゲートが通過することを確保。quality-fixerが`approved`を返すまで次のタスクに進まない。
 
 ## サブエージェント呼び出し時の制約
 

@@ -121,6 +121,9 @@ prompt: |
   doc_type: design-doc
   document_path: [ステップ1のパス]
   更新されたDesign Docを現在のコードベースに対して検証する。
+
+  検証の重点: 更新されたセクション内のリテラル識別子の参照整合性
+  （パス、エンドポイント、型名、設定キー）に特に注意して検証すること。
 ```
 
 **出力を保存**: `$CODE_VERIFICATION_OUTPUT`

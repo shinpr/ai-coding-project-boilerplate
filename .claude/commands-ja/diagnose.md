@@ -2,7 +2,7 @@
 description: 問題を調査し、検証を経て解決策を導出する
 ---
 
-**コマンドコンテキスト**: 問題の根本原因を特定し、解決策を提示するための診断フロー
+**コマンドコンテキスト**: 問題の障害点を特定し、解決策を提示するための診断フロー
 
 対象問題: $ARGUMENTS
 
@@ -64,10 +64,10 @@ rule-advisorの出力から以下を確認：
 ```
 問題 → investigator → verifier → solver ─┐
                  ↑                        │
-                 └── 信頼度high未達 ──────┘
+                 └── カバレッジ不十分 ────┘
                       (最大2回)
 
-信頼度high達成 → レポート
+カバレッジ十分 → レポート
 ```
 
 **コンテキスト分離**: 各ステップには構造化JSON出力のみを渡す。思考過程は引き継がない。
@@ -94,19 +94,20 @@ Agentツールでinvestigatorを呼び出す:
     影響箇所: [何が壊れたか]
     共通コンポーネント: [原因変更と影響箇所の共通点]
 
-**期待される出力**: 証拠マトリクス、比較分析結果、因果追跡結果、未探索領域のリスト、調査の限界
+**期待される出力**: pathMap（症状ごとの実行パス）、failurePoints（各ノードで発見された障害点）、障害点ごとのimpactAnalysis、未探索領域のリスト、調査の限界
 
 ### ステップ2: 調査品質判定
 
 調査出力を確認：
 
 **品質チェック**（出力JSONに以下が含まれているか）:
-- [ ] `comparisonAnalysis`が存在し、`normalImplementation`がnullでない（比較対象が見つかった）、または「正常動作する実装が見つからなかった」と明示的に記録されている
-- [ ] 各仮説の`causalChain`が停止条件に到達（コード変更で対処可能 / 設計判断レベル / 外部制約）
-- [ ] 各仮説の`causeCategory`が以下のいずれか: typo / logic_error / missing_constraint / design_gap / external_factor
+- [ ] `pathMap`が少なくとも1つの症状を含み、各症状に少なくとも1つのパスとノードが列挙されている
+- [ ] 各障害点に`location`、`upstreamDependency`、`symptomExplained`、`causalChain`（停止条件に到達）、`checkStatus`、具体的なファイルや場所を引用した`source`を持つ`evidence`が含まれている
+- [ ] 各障害点に`comparisonAnalysis`が含まれている（normalImplementationが見つかった、または明示的にnull）
+- [ ] 各障害点の`causeCategory`が以下のいずれか: typo / logic_error / missing_constraint / design_gap / external_factor
 - [ ] `investigationSources`が少なくとも3つの異なるソースタイプ（code, history, dependency, config, document, external）をカバー
 - [ ] ステップ0.4で提供した`investigationFocus`の項目が調査に含まれている
-- [ ] 各仮説の`supportingEvidence`に具体的なファイルや場所を引用した`source`フィールドを持つエントリが最低1つある
+- [ ] マッピングされたパス上の全ノードがチェック済み（最初の障害点発見後にパスが放棄されていない）
 
 **品質不足の場合**: 不足項目を明示してinvestigatorを再実行:
 - `prompt`: |
@@ -135,48 +136,59 @@ Agentツールでverifierを呼び出す:
 - `description`: "調査結果の検証"
 - `prompt`: "以下の調査結果を検証してください。調査結果: [調査のJSON出力]"
 
-**期待される出力**: 代替仮説（最低3つ）、Devil's Advocate評価、最終結論、信頼度
+**期待される出力**: カバレッジチェック（未探索パス、未チェックノード）、障害点ごとのDevil's Advocate評価、finalStatusを含む障害点評価、カバレッジ評価（`coverageAssessment`）
 
-**信頼度の判定基準**:
-- **high**: 解決策の選択・実装に影響する不確実性がない
-- **medium**: 不確実性があるが、追加調査で解消可能
-- **low**: 根本的な情報不足がある
+**カバレッジの判定基準**:
+- **十分（`sufficient`）**: 主要パスが追跡済み、全重要ノードがチェック済み、各障害点が個別に評価済み
+- **部分的（`partial`）**: 主要パスは追跡済みだが、一部ノードが未チェックまたは一部障害点がblocked/not_reached
+- **不十分（`insufficient`）**: 重要なパスが未追跡、または重要ノードが未調査
 
-### ステップ4: 解決策導出（solver）
+### ステップ4: カバレッジゲート
+
+verifierのカバレッジ評価（`coverageAssessment`）を確認:
+
+- **十分** → ステップ5（solver）へ進む
+- **部分的または不十分** → verifierが特定した未チェック領域を調査対象としてステップ1に戻る
+  - 追加調査は最大2回まで
+  - 2回の追加調査後もsufficientに到達しない場合、ユーザーに選択肢を提示：
+    - 追加調査を継続
+    - 現在のカバレッジレベルでsolverに進む（不完全な診断のリスクをユーザーが承認）
+
+### ステップ5: 解決策導出（solver）
+
+**前提**: カバレッジ評価が十分（`coverageAssessment=sufficient`）、または部分的/不十分でのユーザー承認
 
 Agentツールでsolverを呼び出す:
 - `subagent_type`: "solver"
 - `description`: "解決策の導出"
-- `prompt`: "以下の検証済み結論に基づいて、解決策を導出してください。原因: [verifierのconclusion.causes]。原因の関係性: [causesRelationship: independent/dependent/exclusive]。信頼度: [high/medium/low]"
+- `prompt`: |
+    以下の検証済み障害点に基づいて、解決策を導出してください。
+
+    確認済み障害点: [verifierのconclusion.confirmedFailurePoints]
+    反証済み障害点: [verifierのconclusion.refutedFailurePoints]
+    障害点の関係性: [verifierのconclusion.failurePointRelationships]
+    影響分析: [investigatorのimpactAnalysis]
+    カバレッジ評価: [sufficient/partial/insufficient]
 
 **期待される出力**: 複数の解決策（最低3つ）、トレードオフ分析、推奨案と実装ステップ、残存リスク
 
-**完了条件**: 信頼度がhigh
+### ステップ6: 最終レポート作成
 
-**未達の場合**:
-1. solverが特定した不確実性を調査対象としてステップ1に戻る
-2. 追加調査は最大2回まで
-3. 2回の追加調査後も未達の場合、ユーザーに選択肢を提示：
-   - 追加調査を継続
-   - 現在の信頼度で解決策を実行
-
-### ステップ5: 最終レポート作成
-
-**前提**: 信頼度highを達成している
+**前提**: solver完了（ステップ5）
 
 診断完了後、以下の形式でユーザーに報告：
 
 ```
 ## 診断結果サマリー
 
-### 特定された原因
-[検証結果の原因リスト]
-- 原因の関係性: [independent/dependent/exclusive]
+### 特定された障害点
+[検証結果の確認済み障害点]
+- 障害点ごと: location、symptomExplained、finalStatus
 
 ### 検証プロセス
-- 調査範囲: [調査で確認した範囲]
+- パスカバレッジ: [追跡したパスとチェックしたノード]
 - 追加調査回数: [0/1/2回]
-- 代替仮説数: [検証で生成した数]
+- カバレッジ評価: [sufficient/partial/insufficient]
 
 ### 推奨する解決策
 [解決策導出の推奨案]
@@ -201,9 +213,9 @@ Agentツールでsolverを呼び出す:
 
 ## 完了条件
 
-- [ ] investigatorを実行し、証拠マトリクス・比較分析・因果追跡を取得した
+- [ ] investigatorを実行し、pathMap・failurePoints・impactAnalysisを取得した
 - [ ] 調査品質チェックを行い、不足があれば再実行した
-- [ ] verifierを実行し、信頼度を取得した
+- [ ] verifierを実行し、coverageAssessmentを取得した
 - [ ] solverを実行した
-- [ ] 信頼度highを達成した（または2回の追加調査後にユーザー承認を得た）
+- [ ] coverageAssessment=sufficientを達成した（または2回の追加調査後にユーザー承認を得た）
 - [ ] 最終レポートをユーザーに提示した

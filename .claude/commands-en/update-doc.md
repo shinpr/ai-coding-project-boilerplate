@@ -121,6 +121,9 @@ prompt: |
   doc_type: design-doc
   document_path: [path from Step 1]
   Verify the updated Design Doc against current codebase.
+
+  Verification focus: Pay special attention to literal identifier referential
+  integrity in the updated sections (paths, endpoints, type names, config keys).
 ```
 
 **Store output as**: `$CODE_VERIFICATION_OUTPUT`

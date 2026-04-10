@@ -43,13 +43,19 @@ Agentツールでacceptance-test-generatorを呼び出す:
 - UI Specあり: `prompt: "[パス]のDesign Docからテストスケルトンを生成。UI Specは[ui-specパス]。"`
 - UI Specなし: `prompt: "[パス]のDesign Docからテストスケルトンを生成。"`
 
-統合テストファイルパスとE2Eテストファイルパスを、subagents-orchestration-guideの「acceptance-test-generator → work-planner」セクションに従いwork-plannerに渡す。
+統合テストファイルパス、E2Eテストファイルパス（またはnull）、およびe2eAbsenceReasonを、subagents-orchestration-guideの「acceptance-test-generator → work-planner」セクションに従いwork-plannerに渡す。
 
 ### Step 3: 作業計画書作成
 Agentツールでwork-plannerを呼び出す:
 - `subagent_type`: "work-planner"
 - `description`: "作業計画書作成"
-- `prompt`: "[パス]のDesign Docから作業計画を作成。統合テストファイル: [ステップ2の統合テストパス]。E2Eテストファイル: [ステップ2のE2Eテストパス]。統合テストは各フェーズ実装と同時に作成、E2Eテストは最終フェーズでのみ実行。"
+- ステップ2でテストスケルトンを生成した場合:
+  - `generatedFiles.e2e`がnullでない場合:
+    `prompt`: "[パス]のDesign Docから作業計画を作成。統合テストファイル: [ステップ2の統合テストパス]。E2Eテストファイル: [ステップ2のE2Eテストパス]。統合テストは各フェーズ実装と同時に作成、E2Eテストは最終フェーズでのみ実行。"
+  - `generatedFiles.e2e`がnullの場合:
+    `prompt`: "[パス]のDesign Docから作業計画を作成。統合テストファイル: [ステップ2の統合テストパス]。E2Eテストスケルトンは生成されませんでした（理由: [e2eAbsenceReason]）。統合テストは各フェーズ実装と同時に作成。"
+- テストスケルトンを生成しなかった場合:
+  `prompt`: "[パス]のDesign Docから作業計画を作成。"
 
 - subagents-orchestration-guideのPrompt Construction Ruleに従い追加パラメータを構成
 - 作業計画書をユーザーに提示しレビューを受ける。変更要望があればwork-plannerを修正パラメータで再実行

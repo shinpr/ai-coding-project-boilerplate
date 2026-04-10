@@ -393,6 +393,24 @@ class Button extends React.Component {
 - **ADR**: 軽微な変更は既存ファイル更新、大幅な変更は新規ファイル作成
 - **Design Doc**: 改訂版セクションを追加し変更履歴を記録
 
+### updateモード: 変更セクションの依存関係インベントリ【必須】
+
+ドキュメントを変更する前に、変更対象セクションが依存する外部定義をインベントリする:
+
+1. **更新スコープからリテラル識別子を抽出**: 更新対象セクション内のすべての具体的な識別子（パス、エンドポイント、コンポーネント名、hook名、型名、設定キー）を収集
+2. **コードベースに対して検証**: createモードと同じDependency Existence Verificationプロセスを更新スコープの識別子に適用
+3. **Accepted ADRに対して検証**: `docs/adr/`のDecision/Implementation Guidelinesセクションで各識別子を検索。同じ識別子に異なる値や定義がある場合はフラグする。（Design Doc間のクロスチェックは後続パイプラインのdesign-syncが担当）
+
+**出力形式**（識別子ごと）:
+```yaml
+- identifier: "[正確な文字列]"
+  source: "[codebase file:line | ADR file:section | not found]"
+  status: "verified | external (defined outside codebase) | requires_new_creation | conflict"
+  action: "[none | address in update | flag for user]"
+```
+
+**conflictの場合**: 矛盾する識別子を出力に記録する。矛盾をユーザーに提示する責任はオーケストレーターにある
+
 ## reverse-engineerモード（現状フロントエンドドキュメント化）
 
 既存フロントエンドアーキテクチャを現状のままドキュメント化するモード。リバースエンジニアリングワークフローで既存実装からDesign Docを作成する際に使用。
