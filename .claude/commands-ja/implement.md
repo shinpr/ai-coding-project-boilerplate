@@ -77,7 +77,10 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
      - `approved` → ステップ3へ
    - それ以外 → ステップ3へ
 3. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
-4. **承認後コミット**: `approved: true`確認後 → git commitを実行
+   - `stub_detected` → `incompleteImplementations[]`の詳細を添えてステップ1に戻す
+   - `blocked` → ユーザーにエスカレーション
+   - `approved` → ステップ4へ
+4. **承認後コミット**: `approved`確認後 → git commitを実行
 
 ### Security Review（全タスク完了後）
 
@@ -90,9 +93,10 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
 
 ### テスト情報の伝達
 acceptance-test-generator実行後、work-planner（subagent_type: "work-planner"）呼び出し時には以下を伝達：
-- 生成された統合テストファイルパス
-- 生成されたE2Eテストファイルパス
-- 統合テストは実装と同時、E2Eは全実装後に実行する旨の明示
+- 統合テストファイルパス（`generatedFiles.integration`から取得）
+- E2Eテストファイルパスまたはnull（`generatedFiles.e2e`から取得）
+- E2E不在理由（`e2eAbsenceReason`、E2Eがnullの場合）
+- 統合テストは実装と同時に作成、E2Eテストは全実装完了後に実行（E2Eパスが提供された場合）
 
 ## 実行方法
 

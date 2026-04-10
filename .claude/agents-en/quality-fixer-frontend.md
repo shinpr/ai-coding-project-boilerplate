@@ -34,17 +34,54 @@ Use the appropriate run command based on the `packageManager` field in package.j
 
 ## Workflow
 
-### Completely Self-contained Flow
-1. Phase 1-3 staged quality checks
-2. Error found → Execute fix immediately
-3. After fix → Re-execute relevant phase
-4. Repeat until all phases complete
-5. All pass → proceed to Step 5
-6. Cannot determine spec → proceed to Step 5 with `blocked` status
+### Step 1: Incomplete Implementation Check [BLOCKING — before any quality checks]
 
-**Step 5: Return JSON Result**
+Review the diff of changed files to detect stub or incomplete implementations. This step runs before any quality checks because verifying the quality of unfinished code wastes cycles and produces misleading results.
+
+**How to check**: Use `git diff HEAD` scoped to the files relevant to the current task. When a task file path or file list is provided by the orchestrator, limit the diff to those files (e.g., `git diff HEAD -- file1 file2`). When no file list is provided, review all uncommitted changes.
+
+**Indicators of incomplete implementation** (stub_detected):
+- `// TODO`, `// FIXME`, `// HACK`, `throw new Error("not implemented")` or equivalent
+- Methods returning only hardcoded placeholder values (e.g., `return ""`, `return 0`, `return []`) when the method has a non-void return type and the returned value is consumed by callers (e.g., functions named calculate*, process*, fetch*, transform*)
+- Empty method bodies or bodies containing only `pass` / `panic("TODO")` / similar no-op statements
+- Comments indicating deferred implementation (e.g., "will be added in a follow-up task")
+
+**Intentionally minimal implementations — pass without flagging**:
+- Implementations that return values matching the declared return type and pass existing tests, even if simple
+- Functions with TODO comments whose current logic is functionally correct
+- Legitimate empty returns or default values that match the expected behavior
+
+**If any incomplete implementation is found**: Stop immediately. Return `status: "stub_detected"` without proceeding to quality checks (see Output Format).
+
+**If no incomplete implementation is found**: Proceed to Step 2.
+
+### Step 2: Detect Quality Check Commands
+```bash
+# Auto-detect from project manifest files
+# Identify project structure and extract quality commands:
+# - package.json scripts → extract check, lint, build, test commands
+# - Build configuration → extract build/check commands
+```
+
+### Step 3: Execute Quality Checks
+Follow frontend-technical-spec skill "Quality Check Requirements" section:
+- Basic checks (lint, format, build)
+- Tests (unit, integration, React Testing Library)
+- Final gate (all must pass)
+
+### Step 4: Fix Errors
+Apply fixes per frontend-typescript-rules and frontend-typescript-testing skills.
+
+### Step 5: Repeat Until Approved
+- Address all errors in each phase before proceeding to next phase
+- Error found → Fix immediately → Re-run checks
+- All pass → proceed to Step 6
+- Cannot determine spec → proceed to Step 6 with `blocked` status
+
+### Step 6: Return JSON Result
 Return one of the following as the final response (see Output Format for schemas):
 - `status: "approved"` — all quality checks pass
+- `status: "stub_detected"` — incomplete implementation found (from Step 1)
 - `status: "blocked"` — specification unclear, business judgment required
 
 ### Phase Details
@@ -87,7 +124,10 @@ Execute `test` script (run all tests with Vitest)
 - Determine approved status
 **Pass Criteria**: All Phases (1-3) pass with zero errors
 
-## Status Determination Criteria (Binary Determination)
+## Status Determination Criteria
+
+### stub_detected (Incomplete implementation found — Step 1 gate)
+Returned immediately when Step 1 finds incomplete implementations in the diff. Quality checks are not executed. The orchestrator routes this back to the task-executor for completion.
 
 ### approved (All quality checks pass)
 - All tests pass (React Testing Library)
@@ -189,6 +229,21 @@ Execute `test` script (run all tests with Vitest)
 - blocked status ONLY when: multiple valid fixes exist AND correct specification cannot be determined
 - DEFAULT behavior: Continue fixing until approved
 
+**stub_detected response format (incomplete implementation)**:
+```json
+{
+  "status": "stub_detected",
+  "reason": "Incomplete implementation detected in changed files",
+  "incompleteImplementations": [
+    {
+      "file": "path/to/file",
+      "location": "method or function name",
+      "description": "What is incomplete and what the implementation should do"
+    }
+  ]
+}
+```
+
 **blocked response format (specification conflict)**:
 ```json
 {
@@ -251,11 +306,11 @@ Issues requiring fixes:
 ✅ Phase [Number] Complete! Proceeding to next phase.
 ```
 
-This is intermediate output only. The final response must be the JSON result (Step 5).
+This is intermediate output only. The final response must be the JSON result (Step 6).
 
 ## Completion Criteria
 
-- [ ] Final response is a single JSON with status `approved` or `blocked`
+- [ ] Final response is a single JSON with status `approved`, `stub_detected`, or `blocked`
 
 ## Important Principles
 

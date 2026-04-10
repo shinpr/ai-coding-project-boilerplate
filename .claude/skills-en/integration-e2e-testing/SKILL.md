@@ -57,16 +57,57 @@ Each test MUST include the following annotations.
 // fast-check: fc.property(fc.[arbitrary], (input) => [invariant])
 ```
 
+## Multi-Step User Journey Definition
+
+A feature qualifies as containing a **multi-step user journey** when ALL of the following are true:
+
+1. **2+ distinct interaction boundaries** are traversed in sequence to complete a user goal. What counts as a boundary depends on the system type:
+   - Web: distinct routes/pages
+   - Mobile native: distinct screens/views
+   - CLI: distinct command invocations or interactive prompts
+   - API: distinct API calls forming a transaction (e.g., create → confirm → finalize)
+2. **State carries across steps** — data produced or actions taken in one step affect what the next step accepts or displays
+3. **The journey has a completion point** — a final state the user or caller reaches (e.g., confirmation page, saved record, API success response, completed workflow)
+
+### User-Facing vs Service-Internal Journeys
+
+Multi-step journeys are further classified for E2E budget decisions:
+
+| Classification | Condition | E2E Reserved Slot | Example |
+|---|---|---|---|
+| **User-facing** | A human user directly triggers and observes the steps (via UI, CLI, or direct API interaction) | Eligible | Web checkout flow, CLI setup wizard, mobile onboarding |
+| **Service-internal** | Steps are triggered by backend services without direct user interaction | Not eligible for reserved slot | Async job pipeline, service-to-service saga, scheduled batch processing |
+
+**Scope of this classification**:
+- **Reserved E2E slot**: Only user-facing journeys qualify. Service-internal journeys are excluded from the reserved slot.
+- **Normal ROI > 50 path**: Both user-facing and service-internal journeys compete for the additional E2E slot (up to 1) on ROI merit alone. Classification does not affect this path.
+- **E2E Gap Check**: Only user-facing journeys trigger the gap warning. Service-internal journeys do not.
+
 ### ROI Calculation
 
+ROI is used to **rank candidates within the same test type** (integration candidates against each other, E2E candidates against each other). Cross-type comparison is unnecessary because integration and E2E budgets are selected independently.
+
 ```
-ROI = (Business Value x Frequency + Legal Requirement x 10 + Defect Detection) / Total Cost
+ROI Score = Business Value × User Frequency + Legal Requirement × 10 + Defect Detection
+              (range: 0–120)
 ```
 
-| Type | Total Cost | E2E Generation Condition |
-|------|------------|-------------------------|
-| Integration | 11 | - |
-| E2E | 38 | ROI > 50 |
+Higher ROI Score = higher priority within its test type. No normalization or capping is applied — the raw score is used directly for ranking. Deduplication is a separate step that removes candidates entirely; it does not modify scores.
+
+### ROI Threshold for E2E
+
+E2E tests have high ownership cost (creation, execution, and maintenance are each 3-10× higher than integration tests). To justify creation, an E2E candidate (beyond the must-keep reserved slot) requires **ROI Score > 50**.
+
+### ROI Calculation Examples
+
+| Scenario | BV | Freq | Legal | Defect | ROI Score | Test Type | Selection Outcome |
+|----------|----|------|-------|--------|-----------|-----------|-------------------|
+| Core checkout flow | 10 | 9 | true | 9 | 109 | E2E | Selected (reserved slot: user-facing multi-step journey) |
+| Payment error handling | 8 | 3 | false | 7 | 31 | E2E | Below threshold (31 < 50), not selected |
+| Profile save flow | 7 | 6 | false | 6 | 48 | E2E | Below threshold (48 < 50), not selected |
+| DB persistence check | 8 | 8 | false | 8 | 72 | Integration | Selected (rank 1 of 3) |
+| Error message display | 5 | 3 | false | 4 | 19 | Integration | Selected (rank 2 of 3) |
+| Optional filter toggle | 3 | 4 | false | 2 | 14 | Integration | Not selected (rank 4, budget full) |
 
 ## Implementation Rules
 

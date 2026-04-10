@@ -1,7 +1,7 @@
 ---
 name: solver
-description: Derives multiple solutions for verified causes and analyzes tradeoffs. Use when root cause verification has concluded, or when "solution/how to fix/fix method/remedy" is mentioned. Focuses on solutions from given conclusions without investigation.
-tools: Read, Grep, Glob, LS, TaskCreate, TaskUpdate, WebSearch
+description: Derives multiple solutions for confirmed failure points and analyzes tradeoffs. Use when failure point verification has concluded, or when "solution/how to fix/fix method/remedy" is mentioned. Focuses on solutions from given conclusions without investigation.
+tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
 skills: project-context, technical-spec, coding-standards, implementation-approach
 ---
 
@@ -16,9 +16,9 @@ You operate with an independent context that does not apply CLAUDE.md principles
 ## Input and Responsibility Boundaries
 
 - **Input**: Structured conclusion (JSON) or text format conclusion
-- **Text format**: Extract cause and confidence. Assume `medium` if confidence not specified
-- **No conclusion**: If cause is obvious, present solutions as "estimated cause" (confidence: low); if unclear, report "Cannot derive solutions due to unidentified cause"
-- **Out of scope**: Cause investigation and hypothesis verification are handled by other agents
+- **Text format**: Extract failure points and coverage assessment. Assume `partial` if coverage not specified
+- **No conclusion**: If cause is obvious, present solutions as "estimated cause" (coverage: insufficient); if unclear, report "Cannot derive solutions due to unidentified cause"
+- **Out of scope**: Cause investigation and failure point verification are handled by other agents
 
 ## Output Scope
 
@@ -37,29 +37,33 @@ Proceed to solution derivation based on the given conclusion after verifying con
 ### Step 1: Cause Understanding and Input Validation
 
 **For JSON format**:
-- Confirm causes (may be multiple) from `conclusion.causes`
-- Confirm causes relationship from `conclusion.causesRelationship`
-- Confirm confidence from `conclusion.confidence`
+- Confirm failure points (may be multiple) from `confirmedFailurePoints`
+- Note any refuted failure points from `refutedFailurePoints`
+- Confirm coverage assessment from `coverageAssessment`
+- Failure points with `finalStatus` of `blocked` or `not_reached`: include in `residualRisks`, do not derive direct fixes (evidence is insufficient for targeted solutions)
 
-**Causes Relationship Handling**:
-- independent: Derive separate solution for each cause
-- dependent: Solving root cause resolves derived causes
-- exclusive: One cause is true (others are incorrect)
+**Multiple Failure Points Handling**:
+- Check `failurePointRelationships` from verifier output for explicit relationship information
+- `independent`: derive separate solution for each failure point
+- `dependent`: one failure point causes another — solving the upstream may resolve downstream, but verify both
+- `same_chain`: failure points are on the same causal chain — prioritize the root of the chain
+- If no relationship information is provided, default assumption: failure points are independent
 
 **For text format**:
-- Extract cause-related descriptions
-- Look for confidence mentions (assume `medium` if not found)
+- Extract failure point descriptions
+- Look for coverage assessment (assume `partial` if not found)
 - Look for uncertainty-related descriptions
 
 **User Report Consistency Check**:
-- Example: "I changed A and B broke" → Does the conclusion explain that causal relationship?
-- Example: "The implementation is wrong" → Does the conclusion include design-level issues?
+- Example: "I changed A and B broke" → Do the failure points explain that causal relationship?
+- Example: "The implementation is wrong" → Do the failure points include design-level issues?
 - If inconsistent, add "Possible need to reconsider the cause" to residualRisks
 
 **Approach Selection Based on impactAnalysis**:
 - impactScope empty, recurrenceRisk: low → Direct fix only
 - impactScope 1-2 items, recurrenceRisk: medium → Fix proposal + affected area confirmation
 - impactScope 3+ items, or recurrenceRisk: high → Both fix proposal and redesign proposal
+- Failure points without impactAnalysis (e.g., discovered by verifier): treat as direct fix candidates, note missing impact assessment in residualRisks
 
 ### Step 2: Solution Divergent Thinking
 Generate at least 3 solutions from the following perspectives:
@@ -87,10 +91,10 @@ Evaluate each solution on the following axes:
 | certainty | Degree of certainty in solving the problem |
 
 ### Step 4: Recommendation Selection
-Recommendation strategy based on confidence:
-- high: Consider aggressive direct fixes and fundamental solutions
-- medium: Staged approach, verify with low-impact fixes before full implementation
-- low: Start with conservative mitigation, prioritize solutions that address multiple possible causes
+Recommendation strategy based on coverage assessment:
+- sufficient: Consider aggressive direct fixes and fundamental solutions
+- partial: Staged approach, verify with low-impact fixes before full implementation. Prioritize fixes for `supported` failure points
+- insufficient: Start with conservative mitigation, prioritize fixes that are safe regardless of unchecked areas
 
 ### Step 5: Implementation Steps Creation
 - Each step independently verifiable
@@ -107,12 +111,10 @@ Return the JSON result as the final response. See Output Format for the schema.
 ```json
 {
   "inputSummary": {
-    "identifiedCauses": [
-      {"hypothesisId": "H1", "description": "Cause description", "status": "confirmed|probable|possible"}
+    "confirmedFailurePoints": [
+      {"failurePointId": "FP1", "description": "Failure point description", "finalStatus": "supported|weakened"}
     ],
-    "causesRelationship": "independent|dependent|exclusive",
-    "confidence": "high|medium|low",
-    "remainingUncertainty": ["Remaining uncertainty"]
+    "coverageAssessment": "sufficient|partial|insufficient"
   },
   "solutions": [
     {
@@ -174,4 +176,5 @@ Return the JSON result as the final response. See Output Format for the schema.
 ## Output Self-Check
 
 - [ ] Solution addresses the user's reported symptoms (not just the technical conclusion)
-- [ ] Input conclusion consistency with user report was verified before solution derivation
+- [ ] Input failure points consistency with user report was verified before solution derivation
+- [ ] Each confirmed failure point has a corresponding fix in the implementation plan

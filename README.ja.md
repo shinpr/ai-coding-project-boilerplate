@@ -137,7 +137,7 @@ Claude Codeで利用できる主要なコマンド
 | `/plan` | 設計書から作業計画書を作成 | 設計承認後 |
 | `/build` | 既存の計画から実行 | 作業の再開時 |
 | `/review` | コードの準拠性確認 | 実装完了後 |
-| `/diagnose` | 根本原因分析ワークフロー | デバッグ、トラブルシューティング |
+| `/diagnose` | 問題診断ワークフロー | デバッグ、トラブルシューティング |
 | `/reverse-engineer` | コードからPRD/Design Docを生成 | 既存システムのドキュメント化 |
 | `/create-skill` | 対話形式で新しいスキルを作成 | プロジェクト固有のルールを追加 |
 | `/refine-skill` | 品質レビュー付きでスキルを修正 | スキルの精度改善 |
@@ -175,10 +175,10 @@ Claude Codeで利用できる主要なコマンド
 | `coding-standards` | 汎用コーディング原則、アンチパターン、デバッグ |
 | `typescript-rules` | TypeScript型安全性、非同期パターン、リファクタリング |
 | `typescript-testing` | Vitest、TDD、カバレッジ要件 |
-| `documentation-criteria` | PRD、ADR、Design Doc基準 |
+| `documentation-criteria` | PRD、ADR、Design Doc、UI Spec基準 |
 | `technical-spec` | アーキテクチャ、環境設定、ビルドコマンド |
 | `implementation-approach` | 戦略パターン、タスク分解 |
-| `integration-e2e-testing` | 統合/E2Eテスト設計、ROIベース選択 |
+| `integration-e2e-testing` | 統合/E2Eテスト設計、ROIベース選択、ジャーニー定義 |
 | `frontend-typescript-rules` | Reactコンポーネント設計、Props駆動パターン |
 | `frontend-typescript-testing` | React Testing Library、MSW、Playwright E2E |
 | `frontend-technical-spec` | Reactアーキテクチャ、環境設定、データフロー |

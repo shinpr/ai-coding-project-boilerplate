@@ -137,7 +137,7 @@ Essential commands for Claude Code:
 | `/plan` | Create work plan from design | After design approval |
 | `/build` | Execute from existing plan | Resume work |
 | `/review` | Check code compliance | Post-implementation |
-| `/diagnose` | Root cause analysis workflow | Debugging, troubleshooting |
+| `/diagnose` | Problem diagnosis workflow | Debugging, troubleshooting |
 | `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation |
 | `/create-skill` | Create a new skill through interactive dialog | Adding project-specific rules |
 | `/refine-skill` | Modify an existing skill with quality review | Improving skill accuracy |
@@ -175,10 +175,10 @@ This boilerplate provides the principles used in agentic implementation workflow
 | `coding-standards` | Universal coding principles, anti-patterns, debugging |
 | `typescript-rules` | TypeScript type safety, async patterns, refactoring |
 | `typescript-testing` | Vitest, TDD, coverage requirements |
-| `documentation-criteria` | PRD, ADR, Design Doc standards |
+| `documentation-criteria` | PRD, ADR, Design Doc, UI Spec standards |
 | `technical-spec` | Architecture, environment, build commands |
 | `implementation-approach` | Strategy patterns, task decomposition |
-| `integration-e2e-testing` | Integration/E2E test design, ROI-based selection |
+| `integration-e2e-testing` | Integration/E2E test design, ROI-based selection, journey definition |
 | `frontend-typescript-rules` | React component design, Props-driven patterns |
 | `frontend-typescript-testing` | React Testing Library, MSW, Playwright E2E |
 | `frontend-technical-spec` | React architecture, environment, data flow |

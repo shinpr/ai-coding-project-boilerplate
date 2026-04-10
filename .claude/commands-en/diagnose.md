@@ -2,7 +2,7 @@
 description: Investigate problem, verify findings, and derive solutions
 ---
 
-**Command Context**: Diagnosis flow to identify root cause and present solutions
+**Command Context**: Diagnosis flow to identify failure points and present solutions
 
 Target problem: $ARGUMENTS
 
@@ -64,10 +64,10 @@ Confirm from rule-advisor output:
 ```
 Problem → investigator → verifier → solver ─┐
                  ↑                          │
-                 └── confidence < high ─────┘
+                 └── coverage insufficient ─┘
                       (max 2 iterations)
 
-confidence=high reached → Report
+coverage sufficient → Report
 ```
 
 **Context Separation**: Pass only structured JSON output to each step. Each step starts fresh with the JSON data only.
@@ -94,19 +94,20 @@ Invoke investigator using Agent tool:
     Affected area: [What broke]
     Shared components: [Commonalities between cause and effect]
 
-**Expected output**: Evidence matrix, comparison analysis results, causal tracking results, list of unexplored areas, investigation limitations
+**Expected output**: pathMap (execution paths per symptom), failurePoints (faults found at each node), impactAnalysis per failure point, unexplored areas, investigation limitations
 
 ### Step 2: Investigation Quality Check
 
 Review investigation output:
 
 **Quality Check** (verify JSON output contains the following):
-- [ ] `comparisonAnalysis` is present and `normalImplementation` is not null (comparison target found) OR explicitly recorded as "no working implementation found"
-- [ ] `causalChain` for each hypothesis reaches a stop condition (code change / design decision / external constraint)
-- [ ] `causeCategory` for each hypothesis is one of: typo / logic_error / missing_constraint / design_gap / external_factor
+- [ ] `pathMap` exists with at least one symptom, and each symptom has at least one path with nodes listed
+- [ ] Each failure point has: `location`, `upstreamDependency`, `symptomExplained`, `causalChain` (reaching a stop condition), `checkStatus`, `evidence` with a `source` citing a specific file or location
+- [ ] Each failure point has `comparisonAnalysis` (normalImplementation found or explicitly null)
+- [ ] `causeCategory` for each failure point is one of: typo / logic_error / missing_constraint / design_gap / external_factor
 - [ ] `investigationSources` covers at least 3 distinct source types (code, history, dependency, config, document, external)
 - [ ] Investigation covers `investigationFocus` items (when provided in Step 0.4)
-- [ ] Each hypothesis has at least 1 entry in `supportingEvidence` with a `source` field citing a specific file or location
+- [ ] All nodes on mapped paths have been checked (no path was abandoned after finding the first fault)
 
 **If quality insufficient**: Re-run investigator specifying missing items explicitly:
 - `prompt`: |
@@ -135,48 +136,59 @@ Invoke verifier using Agent tool:
 - `description`: "Verify investigation results"
 - `prompt`: "Verify the following investigation results. Investigation results: [Investigation JSON output]"
 
-**Expected output**: Alternative hypotheses (at least 3), Devil's Advocate evaluation, final conclusion, confidence
+**Expected output**: Coverage check (missing paths, unchecked nodes), Devil's Advocate evaluation per failure point, failure point evaluation with finalStatus, coverage assessment
 
-**Confidence Criteria**:
-- **high**: No uncertainty affecting solution selection or implementation
-- **medium**: Uncertainty exists but resolvable with additional investigation
-- **low**: Fundamental information gap exists
+**Coverage Criteria**:
+- **sufficient**: Main paths traced, all critical nodes checked, each failure point individually evaluated
+- **partial**: Main paths traced, some nodes unchecked or some failure points at blocked/not_reached
+- **insufficient**: Significant paths untraced, or critical nodes not investigated
 
-### Step 4: Solution Derivation (solver)
+### Step 4: Coverage Gate
+
+Check verifier's `coverageAssessment`:
+
+- **sufficient** → Proceed to Step 5 (solver)
+- **partial or insufficient** → Return to Step 1 with unchecked areas identified by verifier as investigation targets
+  - Maximum 2 additional investigation iterations
+  - After 2 iterations without reaching sufficient, present user with options:
+    - Continue additional investigation
+    - Proceed to solver at current coverage level (user accepts risk of incomplete diagnosis)
+
+### Step 5: Solution Derivation (solver)
+
+**Prerequisite**: coverageAssessment=sufficient (or explicit user approval to proceed with partial/insufficient)
 
 Invoke solver using Agent tool:
 - `subagent_type`: "solver"
 - `description`: "Derive solutions"
-- `prompt`: "Derive solutions based on the following verified conclusion. Causes: [verifier's conclusion.causes]. Causes relationship: [causesRelationship: independent/dependent/exclusive]. Confidence: [high/medium/low]"
+- `prompt`: |
+    Derive solutions based on the following verified failure points.
+
+    Confirmed failure points: [verifier's conclusion.confirmedFailurePoints]
+    Refuted failure points: [verifier's conclusion.refutedFailurePoints]
+    Failure point relationships: [verifier's conclusion.failurePointRelationships]
+    Impact analysis: [investigator's impactAnalysis]
+    Coverage assessment: [sufficient/partial/insufficient]
 
 **Expected output**: Multiple solutions (at least 3), tradeoff analysis, recommendation and implementation steps, residual risks
 
-**Completion condition**: confidence=high
+### Step 6: Final Report Creation
 
-**When not reached**:
-1. Return to Step 1 with uncertainties identified by solver as investigation targets
-2. Maximum 2 additional investigation iterations
-3. After 2 iterations without reaching high, present user with options:
-   - Continue additional investigation
-   - Execute solution at current confidence level
-
-### Step 5: Final Report Creation
-
-**Prerequisite**: confidence=high achieved
+**Prerequisite**: solver completed (Step 5)
 
 After diagnosis completion, report to user in the following format:
 
 ```
 ## Diagnosis Result Summary
 
-### Identified Causes
-[Cause list from verification results]
-- Causes relationship: [independent/dependent/exclusive]
+### Identified Failure Points
+[Confirmed failure points from verification results]
+- Per failure point: location, symptom explained, finalStatus
 
 ### Verification Process
-- Investigation scope: [Scope confirmed in investigation]
+- Path coverage: [Paths traced and nodes checked]
 - Additional investigation iterations: [0/1/2]
-- Alternative hypotheses count: [Number generated in verification]
+- Coverage assessment: [sufficient/partial/insufficient]
 
 ### Recommended Solution
 [Solution derivation recommendation]
@@ -201,9 +213,9 @@ Rationale: [Selection rationale]
 
 ## Completion Criteria
 
-- [ ] Executed investigator and obtained evidence matrix, comparison analysis, and causal tracking
+- [ ] Executed investigator and obtained pathMap, failurePoints, and impactAnalysis
 - [ ] Performed investigation quality check and re-ran if insufficient
-- [ ] Executed verifier and obtained confidence level
+- [ ] Executed verifier and obtained coverage assessment
 - [ ] Executed solver
-- [ ] Achieved confidence=high (or obtained user approval after 2 additional iterations)
+- [ ] Achieved coverageAssessment=sufficient (or obtained user approval after 2 additional iterations)
 - [ ] Presented final report to user

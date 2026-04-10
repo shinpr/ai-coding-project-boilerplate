@@ -145,9 +145,14 @@ Agentツールでintegration-test-reviewerを呼び出す:
 - `description`: "最終品質保証"
 - `prompt`: "このワークフローで追加されたテストファイルの最終品質保証。全テストを実行しカバレッジを確認。"
 
-**期待される出力**: `approved` (true/false)
+**期待される出力**: `status` (approved/stub_detected/blocked)
+
+quality-fixerレスポンスチェック:
+- `stub_detected` → `incompleteImplementations[]`の詳細を添えてStep 4に戻し、Steps 4→5→6→7を再実行
+- `blocked` → ユーザーにエスカレーション
+- `approved` → Step 8へ
 
 ### ステップ8: コミット
 
-quality-fixerから`approved: true`の場合:
+quality-fixerから`approved`の場合:
 - Bashで適切なメッセージを付けてテストファイルをコミット

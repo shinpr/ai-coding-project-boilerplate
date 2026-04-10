@@ -77,7 +77,10 @@ Following "Autonomous Execution Task Management" in subagents-orchestration-guid
      - `approved` → Proceed to step 3
    - Otherwise → Proceed to step 3
 3. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing)
-4. **COMMIT on approval**: After `approved: true` → Execute git commit
+   - `stub_detected` → Return to step 1 with `incompleteImplementations[]` details
+   - `blocked` → Escalate to user
+   - `approved` → Proceed to step 4
+4. **COMMIT on approval**: Execute git commit
 
 ### Security Review (After All Tasks Complete)
 
@@ -90,9 +93,10 @@ After all task cycles finish, invoke security-reviewer before the completion rep
 
 ### Test Information Communication
 After acceptance-test-generator execution, when invoking work-planner (subagent_type: "work-planner"), communicate:
-- Generated integration test file path
-- Generated E2E test file path
-- Explicit note that integration tests run with implementation, E2E tests run after all implementations
+- Generated integration test file path (from `generatedFiles.integration`)
+- Generated E2E test file path or null (from `generatedFiles.e2e`)
+- E2E absence reason (from `e2eAbsenceReason`, when E2E is null)
+- Explicit note that integration tests are created simultaneously with implementation, E2E tests are executed after all implementations (when E2E path is provided)
 
 ## Execution Method
 

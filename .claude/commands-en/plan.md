@@ -46,7 +46,10 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    - `subagent_type`: "work-planner"
    - `description`: "Work plan creation"
    - If test skeletons were generated in Step 2:
-     `prompt`: "Create work plan from Design Doc at [path]. Integration test file: [integration test path from step 2]. E2E test file: [E2E test path from step 2]. Integration tests are created simultaneously with each phase implementation, E2E tests are executed only in final phase."
+     - When `generatedFiles.e2e` is not null:
+       `prompt`: "Create work plan from Design Doc at [path]. Integration test file: [integration test path]. E2E test file: [E2E test path]. Integration tests are created simultaneously with each phase implementation, E2E tests are executed only in final phase."
+     - When `generatedFiles.e2e` is null:
+       `prompt`: "Create work plan from Design Doc at [path]. Integration test file: [integration test path]. No E2E test skeletons were generated (reason: [e2eAbsenceReason]). Integration tests are created simultaneously with each phase implementation."
    - If test skeletons were not generated:
      `prompt`: "Create work plan from Design Doc at [path]."
 

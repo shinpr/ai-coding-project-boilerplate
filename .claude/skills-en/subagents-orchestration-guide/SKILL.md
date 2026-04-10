@@ -134,12 +134,12 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 | codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, focusAreas[], existingElements count, limitations | Pass focusAreas to technical-designer as context |
 | code-verifier | status (consistent/mostly_consistent/needs_review/inconsistent), consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). Pre-implementation: verifies Design Doc claims against existing codebase. Post-implementation: verifies implementation consistency against Design Doc (pass `code_paths` scoped to changed files) | Flag discrepancies for document-reviewer |
 | task-executor | status (escalation_needed/completed), escalation_type, testsAdded, requiresTestReview | On escalation_needed: handle by escalation_type (design_compliance_violation, similar_function_found, similar_component_found, investigation_target_not_found, out_of_scope_file) |
-| quality-fixer | status (approved/blocked), reason, blockingIssues[], missingPrerequisites[] | On blocked: see quality-fixer blocked handling below |
+| quality-fixer | status (approved/stub_detected/blocked). `stub_detected` → route back to task-executor with `incompleteImplementations[]` details for completion, then re-run quality-fixer. `blocked` → see quality-fixer blocked handling below | On stub_detected: re-invoke task-executor. On blocked: see handling below |
 | document-reviewer | approvalReady (true/false) | Proceed to next step on true; request fixes on false |
-| design-sync | sync_status (synced/conflicts_found) | On conflicts_found: present conflicts to user before proceeding |
+| design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | On CONFLICTS_FOUND: present conflicts to user before proceeding |
 | integration-test-reviewer | status (approved/needs_revision/blocked), requiredFixes | On needs_revision: pass requiredFixes back to task-executor |
 | security-reviewer | status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes | On needs_revision: pass requiredFixes back to task-executor |
-| acceptance-test-generator | status, generatedFiles | Pass generatedFiles to work-planner |
+| acceptance-test-generator | status, generatedFiles (integration: path\|null, e2e: path\|null), budgetUsage, e2eAbsenceReason (null when E2E emitted, otherwise: no_multi_step_journey\|below_threshold_user_confirmed) | Verify files exist, pass to work-planner with absence reason |
 
 ### quality-fixer Blocked Handling
 
@@ -316,14 +316,16 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
    - UI Spec: [path] (if exists)
 
    **Orchestrator verification items**:
-   - Verify integration test file path retrieval and existence
-   - Verify E2E test file path retrieval and existence
+   - Verify `generatedFiles.integration` is a valid path (when not null) and the file exists
+   - Verify `generatedFiles.e2e` is a valid path (when not null) and the file exists
+   - When `generatedFiles.e2e` is null, verify `e2eAbsenceReason` is present — this is intentional absence, not an error
 
    **Pass to work-planner**:
    - Integration test file: [path] (create and execute simultaneously with each phase implementation)
-   - E2E test file: [path] (execute only in final phase)
+   - E2E test file: [path] or null (execute only in final phase, when provided)
+   - E2E absence reason: [reason] (when E2E is null — pass this so work-planner can skip E2E Gap Check for intentional absence)
 
-   **On error**: Escalate to user if files are not generated
+   **On error**: Escalate to user if integration file generation failed unexpectedly (status != completed). E2E being null with a valid absence reason is not an error.
 3. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
 ## Important Constraints

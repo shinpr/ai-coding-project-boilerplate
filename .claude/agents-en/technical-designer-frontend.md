@@ -393,6 +393,24 @@ Cite sources in "## References" section at end of ADR/Design Doc with URLs.
 - **ADR**: Update existing file for minor changes, create new file for major changes
 - **Design Doc**: Add revision section and record change history
 
+### Update Mode: Dependency Inventory for Changed Sections【Required】
+
+Before modifying the document, inventory the external definitions that the changed sections depend on:
+
+1. **Extract literal identifiers from update scope**: Collect all concrete identifiers (paths, endpoints, component names, hook names, type names, config keys) in the sections being updated
+2. **Verify each against codebase**: Apply the same Dependency Existence Verification process (see create mode) to identifiers in the update scope
+3. **Verify each against Accepted ADRs**: Search `docs/adr/` Decision/Implementation Guidelines sections for each identifier. Flag if the same identifier has a different value or definition. (Design Doc cross-checks are handled by design-sync in the subsequent pipeline step)
+
+**Output format** (per identifier):
+```yaml
+- identifier: "[exact string]"
+  source: "[codebase file:line | ADR file:section | not found]"
+  status: "verified | external (defined outside codebase) | requires_new_creation | conflict"
+  action: "[none | address in update | flag for user]"
+```
+
+**On conflict**: Log conflicting identifiers in the output. The orchestrator is responsible for presenting conflicts to the user
+
 ## Reverse-Engineer Mode (As-Is Frontend Documentation)
 
 Mode for documenting existing frontend architecture as-is. Used when creating Design Docs from existing implementation.

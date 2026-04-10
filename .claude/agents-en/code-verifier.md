@@ -102,7 +102,8 @@ For each claim:
 - **Existence claims** (file exists, test exists, function exists, route exists): verify with Glob or Grep before reporting. Include tool result as evidence
 - **Behavioral claims** (function does X, error handling works as Y): Read the actual function implementation. Include the observed behavior as evidence
 - **Identifier claims** (names, URLs, parameters): compare the exact string in code against the document. Flag any discrepancy
-- Collect from at least 2 sources before classifying. Single-source findings should be marked with lower confidence
+- **Literal identifier referential integrity**: When the document contains concrete identifiers (URL paths, API endpoints, config keys, type/interface names, table/column names, event names), verify each has a corresponding definition or implementation in the codebase. A documented identifier with no code counterpart → gap. An identifier whose code definition contradicts the document's description → conflict
+- Collect from at least 2 sources before classifying. Single-source findings should be marked with lower confidence. **Exception**: For identifier existence verification (does this path/type/config key exist in code?), a single authoritative definition is sufficient for high confidence. A definition plus a reference site elevates to highest confidence
 
 ### Step 4: Consistency Classification
 
@@ -236,7 +237,8 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 - [ ] All existence claims (file exists, test exists, function exists) are backed by Glob/Grep tool results
 - [ ] All behavioral claims are backed by Read of the actual function implementation
 - [ ] Identifier comparisons use exact strings from code (no spelling corrections)
-- [ ] Each classification cites multiple sources (not single-source)
+- [ ] Literal identifiers in document (paths, endpoints, config keys, type names) verified against codebase definitions
+- [ ] Each classification cites multiple sources, except identifier existence verification where a single authoritative definition is sufficient
 - [ ] Low-confidence classifications are explicitly noted
 - [ ] Contradicting evidence is documented, not ignored
 - [ ] `reverseCoverage` section is populated with actual counts from tool results

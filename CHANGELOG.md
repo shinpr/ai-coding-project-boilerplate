@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.6] - 2026-04-10
+
+### Added
+
+- **quality-fixer: Incomplete implementation detection gate** (agents) — New blocking Step 1 reviews uncommitted diffs for stub/placeholder code (TODO markers, hardcoded returns, empty bodies) before any quality checks run. Returns `stub_detected` status with structured response; orchestrator routes back to task-executor for completion. Applied to both quality-fixer and quality-fixer-frontend
+- **quality-fixer: stub_detected branch handling** (commands/skills) — All consuming commands (build, front-build, implement, add-integration-tests) and orchestration guide updated with `stub_detected` routing in the 4-step task cycle
+- **design-sync: Match Basis Rules with confidence levels** (agents) — Replaced "Same Concept Criteria" with structured match rules. High confidence (exact_string, explicit_alias) produces confirmed conflicts; medium confidence (same_endpoint_role, same_integration_role, same_ac_slot) produces candidate conflicts with required structural evidence. Output split into CONFIRMED_CONFLICTS and CANDIDATE_CONFLICTS sections
+- **code-verifier: Literal identifier referential integrity** (agents) — New evidence rule verifies that concrete identifiers in documents (paths, endpoints, type names, config keys) have corresponding codebase definitions. Single authoritative definition sufficient for high confidence (exception to 2-source rule)
+- **technical-designer: Dependency Inventory for update mode** (agents) — Required step before document modification: extract literal identifiers from update scope, verify against codebase and Accepted ADRs, output structured inventory with conflict flags. Applied to both technical-designer and technical-designer-frontend
+- **investigator: Execution path mapping and node-by-node fault check** (agents) — Replaced hypothesis model with failure point model. New Step 3 traces execution paths per symptom (pathMap); new Step 4 checks each node for faults with explicit criteria and checkStatus (supported/weakened/blocked/not_reached). Multiple failure points preserved across layers
+- **verifier: Path coverage check and independent failure point evaluation** (agents) — Replaced ACH (alternative hypothesis generation + single-winner selection) with coverage-based verification. New Step 4 checks pathMap completeness; Step 6 evaluates each failure point independently with failurePointRelationships. Coverage assessment (sufficient/partial/insufficient) replaces confidence (high/medium/low)
+- **solver: Coverage-based recommendation strategy** (agents) — Accepts confirmedFailurePoints and coverageAssessment instead of causes and confidence. Failure points with blocked/not_reached status routed to residualRisks. Bash tool added
+- **diagnose: Coverage gate before solver** (commands) — New Step 4 blocks solver invocation until coverageAssessment=sufficient. Insufficient/partial loops back to investigator (max 2 iterations) before offering user choice to proceed
+- **acceptance-test-generator: Reserved E2E slot for user-facing journeys** (agents) — Multi-step user journey definition added with 3 conditions and user-facing vs service-internal classification. Budget enforcement reserves 1 E2E slot for user-facing journeys regardless of ROI threshold
+- **integration-e2e-testing: Multi-Step User Journey definition** (skills) — System-type-specific boundary definitions (Web/Mobile/CLI/API), classification scope for reserved slot vs normal ROI path vs E2E Gap Check
+- **work-planner: E2E Gap Check** (agents) — Warns when no E2E skeletons provided and Design Doc contains user-facing multi-step journey. Skipped when e2eAbsenceReason is provided from upstream
+- **documentation-criteria: UI Spec in skill description** (skills) — Added UI Spec to skill description trigger for improved routing precision
+
+### Changed
+
+- **acceptance-test-generator: ROI calculation fix** (agents) — Removed cost division from ROI formula (was mathematically broken — E2E could never reach threshold). Raw score (0-120) now used for same-type ranking. Push-down analysis preserves E2E candidates that are part of multi-step journeys
+- **acceptance-test-generator: Nullable E2E contract** (agents/commands/skills) — generatedFiles.e2e is now nullable with e2eAbsenceReason. Contract propagated through plan, front-plan, implement, and orchestration guide. 3 Generation Report patterns (e2e emitted / e2e null / both null)
+- **design-sync: sync_status contract alignment** (skills) — Orchestration guide updated from synced/conflicts_found to NO_CONFLICTS/CONFLICTS_FOUND matching design-sync actual output
+- **quality-fixer: blocked condition logic** (agents) — Fixed AND/OR logic inversion in Japanese version. All 3 conditions must be simultaneously met (multiple valid fixes AND business judgment required AND all confirmation methods exhausted)
+- **quality-fixer: Task-scoped stub detection** (agents) — git diff HEAD scoped to task-relevant files when orchestrator provides file list, preventing false positives from unrelated changes in multi-change branches
+- **PRD template: Sequential AC IDs** (skills) — AC format changed from flat `AC:` to sequential IDs (AC-001, AC-002, ...) for downstream traceability. Template shows 1-requirement-multiple-AC pattern
+- **UI Spec template: Semantic design tokens** (skills) — Flat token table replaced with semantic sub-sections (Color Roles, Typography Hierarchy, Spacing Scale, Elevation, Border Radius). Responsive Behavior table replaces flat breakpoint list. State x Display Matrix expanded with concrete component references
+
 ## [1.20.5] - 2026-04-06
 
 ### Added
