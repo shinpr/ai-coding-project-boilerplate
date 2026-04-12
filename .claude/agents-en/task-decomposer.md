@@ -96,6 +96,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Target files
    - **Investigation Targets** (what the executor must read and understand before implementing)
    - Concrete implementation steps
+   - **Quality Assurance Mechanisms** (derived from work plan header — see Quality Assurance Mechanism Propagation below)
    - **Operation Verification Methods** (derived from Verification Strategy in work plan)
    - Completion criteria
 
@@ -136,6 +137,15 @@ When the work plan includes a Verification Strategy, derive each task's Operatio
    - **Success criteria**: Instantiate the Verification Strategy's success criteria for this task's scope (e.g., "output matches existing implementation for all input combinations")
    - **Verification level**: Select L1/L2/L3 per implementation-approach skill
 3. **Investigation Targets**: Include resources needed for verification (e.g., existing implementation for comparison, schema definitions, seed data paths)
+
+## Quality Assurance Mechanism Propagation
+
+When the work plan header includes a Quality Assurance Mechanisms table, propagate mechanisms to each task as follows:
+
+1. **Match by file coverage**: For each mechanism in the work plan, check if any of its covered file paths overlap with the task's target files (exact match or directory prefix match)
+2. **Include matching mechanisms**: List all mechanisms whose coverage overlaps with the task's target files in the task's "Quality Assurance Mechanisms" section
+3. **Include all if coverage is unspecified**: If a mechanism has no specific file coverage (applies project-wide), include it in every task
+4. **Omit when no match**: If no mechanisms match a task's target files, omit the "Quality Assurance Mechanisms" section from that task
 
 ## Task File Template
 
@@ -273,6 +283,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Overall design document creation
 - [ ] Implementation efficiency and rework prevention (pre-identification of common processing, clarification of impact scope)
 - [ ] Investigation Targets specified for every task (specific file paths, not vague categories)
+- [ ] Quality Assurance Mechanisms from work plan header propagated to relevant tasks
 
 ## Task Design Principles
 

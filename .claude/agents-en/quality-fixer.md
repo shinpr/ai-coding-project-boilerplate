@@ -25,6 +25,10 @@ Executes quality checks and provides a state where all Phases complete with zero
    - Execute necessary fixes yourself and report completed state
    - Continue fixing until errors are resolved
 
+## Input Parameters
+
+- **task_file** (optional): Path to the task file being verified. When provided, read the "Quality Assurance Mechanisms" section and use listed mechanisms as supplementary hints for quality check discovery. This is a hint — primary detection remains code, manifest, and configuration-based.
+
 ## Initial Required Tasks
 
 **Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
@@ -56,12 +60,20 @@ Review the diff of changed files to detect stub or incomplete implementations. T
 **If no incomplete implementation is found**: Proceed to Step 2.
 
 ### Step 2: Detect Quality Check Commands
+
+**Primary detection** (always executed):
 ```bash
 # Auto-detect from project manifest files
 # Identify project structure and extract quality commands:
 # - package.json scripts → extract check, lint, build, test commands
 # - Build configuration → extract build/check commands
 ```
+
+**Supplementary detection** (when task_file provided):
+- Read the task file's "Quality Assurance Mechanisms" section
+- For each `executable_check`: verify the tool is available and the configuration exists, then add to the quality check command list
+- For each `passive_constraint`: do NOT add to the command list — instead, after all quality phases complete, verify the changed code does not violate the constraint (e.g., check naming conventions via Grep, verify length limits in changed files)
+- If a mechanism cannot be found or executed, note it in the output and continue to the next mechanism
 
 ### Step 3: Execute Quality Checks
 Follow technical-spec skill "Quality Check Requirements" section:
@@ -127,6 +139,21 @@ Returned immediately when Step 1 finds incomplete implementations in the diff. Q
 
 **Important**: JSON response is passed to subsequent processing and formatted for user presentation.
 
+### taskFileMechanisms Schema (included in all response types)
+```json
+"taskFileMechanisms": {
+  "provided": true,
+  "executed": ["mechanism names that were found and executed"],
+  "skipped": [
+    {
+      "mechanism": "mechanism name",
+      "reason": "tool not found | config not found | not executable"
+    }
+  ]
+}
+```
+When `task_file` was not provided, set `"provided": false` and omit `executed`/`skipped`.
+
 ### Internal Structured Response
 
 **When quality check succeeds**:
@@ -173,6 +200,7 @@ Returned immediately when Step 1 finds incomplete implementations in the diff. Q
       "filesCount": 2
     }
   ],
+  "taskFileMechanisms": "see taskFileMechanisms Schema above",
   "metrics": {
     "totalErrors": 0,
     "totalWarnings": 0,
@@ -222,6 +250,7 @@ Returned immediately when Step 1 finds incomplete implementations in the diff. Q
     "Fix attempt 2: Tried aligning implementation to test",
     "Fix attempt 3: Tried inferring specification from related documentation"
   ],
+  "taskFileMechanisms": "see taskFileMechanisms Schema above",
   "needsUserDecision": "Please confirm the correct error code"
 }
 ```
@@ -242,6 +271,7 @@ Returned immediately when Step 1 finds incomplete implementations in the diff. Q
       "resolutionSteps": ["Create seed script for E2E test player", "Add subscription record to seed"]
     }
   ],
+  "taskFileMechanisms": "see taskFileMechanisms Schema above",
   "testsSkipped": 3,
   "testsPassedWithoutPrerequisites": 47
 }

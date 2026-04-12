@@ -81,6 +81,11 @@ skills: coding-standards, project-context, technical-spec
 3. **設定依存**: 参照されている設定値、環境変数、フィーチャーフラグを特定
 4. **ハードコードされた前提**: マジックナンバー、ドメイン意味を持つ文字列リテラル、暗黙の依存関係を記録
 5. **既存テストカバレッジ**: 影響ファイルに対応するテストファイルをGlob。テストカバレッジのある要素を記録
+6. **品質保証メカニズム**: 影響領域で品質がどのように担保されているかを特定
+   - 影響ファイルをカバーするlinter設定ファイル、CIワークフロー定義、静的解析設定をGrepで検索
+   - 影響ファイルがドメイン固有ツール（スキーマバリデータ、API spec validator、設定ファイルリンター等）の対象かどうかをCIパイプラインやpre-commitフックを調べて確認
+   - 設定ファイル、CIチェック、ドキュメント化された基準からドメイン固有の制約（命名規約、文字数制限、フォーマット要件）を特定
+   - 各メカニズムについて記録: ツール/チェック名、検証内容、設定ファイルの場所、カバーする影響ファイル
 
 ### ステップ5: JSON結果の返却
 
@@ -160,6 +165,24 @@ skills: coding-standards, project-context, technical-spec
       "impact": "この制約に違反した場合の影響"
     }
   ],
+  "qualityAssurance": {
+    "mechanisms": [
+      {
+        "tool": "ツールまたはチェック名",
+        "enforces": "検証する品質項目",
+        "configLocation": "path/to/config:行番号",
+        "coveredFiles": ["このメカニズムでカバーされる影響ファイル"],
+        "type": "linter|static_analysis|schema_validator|domain_specific|ci_check"
+      }
+    ],
+    "domainConstraints": [
+      {
+        "constraint": "ドメイン固有の制約の説明",
+        "source": "path/to/config-or-ci:行番号",
+        "affectedFiles": ["この制約の対象ファイル"]
+      }
+    ]
+  },
   "focusAreas": [
     {
       "area": "領域名",
@@ -186,6 +209,8 @@ skills: coding-standards, project-context, technical-spec
 - [ ] Grepでデータアクセス、外部統合、バリデーションパターンを検索した
 - [ ] データアクセス検出時: スキーマ定義をトレースしフィールドレベルの詳細を抽出した
 - [ ] file:lineエビデンス付きで制約を抽出した
+- [ ] 影響ファイルをカバーする品質保証メカニズム（linter、CIチェック、ドメイン固有バリデータ）を特定した
+- [ ] 設定ファイルやCIからドメイン固有の制約（命名規約、文字数制限、フォーマット）を記録した
 - [ ] リスク記述付きの注目領域を生成した
 - [ ] 発見した要素のテストカバレッジを確認した
 - [ ] 最終レスポンスがJSON出力
@@ -199,4 +224,6 @@ skills: coding-standards, project-context, technical-spec
 - [ ] `dataModel.detected`がデータ操作の検出有無を正確に反映
 - [ ] `dataTransformationPipelines`がデータを変換するすべてのエントリポイントについて記録されている（変換が存在しない場合のみ空配列）
 - [ ] 各パイプラインステップの`externalLookups`が出力値を変更するすべてのマスタテーブル/設定値/定数参照を列挙
+- [ ] `qualityAssurance.mechanisms`がCIパイプライン、設定ファイル、pre-commitフックから記録されている（メカニズムが見つからない場合のみ空配列）
+- [ ] `qualityAssurance.domainConstraints`がドメイン固有の制約を設定やCIから記録している（該当する場合）
 - [ ] limitationsセクションが読み込めなかったファイルやトレースできなかったパターンを記録

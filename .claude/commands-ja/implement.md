@@ -76,7 +76,7 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
      - `needs_revision` → `requiredFixes`を添えてステップ1に戻る
      - `approved` → ステップ3へ
    - それ以外 → ステップ3へ
-3. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
+3. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）。**必ず**現在のタスクファイルパスを`task_file`として渡す
    - `stub_detected` → `incompleteImplementations[]`の詳細を添えてステップ1に戻す
    - `blocked` → ユーザーにエスカレーション
    - `approved` → ステップ4へ

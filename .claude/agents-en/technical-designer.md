@@ -45,11 +45,19 @@ Must be performed before any investigation:
    - Scan project configuration, rule files, and existing code patterns
    - Classify each: **Explicit** (documented) or **Implicit** (observed pattern only)
 
-2. **Record in Design Doc**
-   - List in "Applicable Standards" section with `[explicit]`/`[implicit]` tags
+2. **Identify Quality Assurance Mechanisms**
+   - When codebase-analyzer output is available: use its `qualityAssurance` section as the primary source
+   - When not available: scan CI pipelines, linter configs, pre-commit hooks, and project configuration for tools and checks that cover the change area
+   - Identify domain-specific constraints (naming conventions, length limits, format requirements) from configuration or CI
+   - Classify each mechanism: `executable_check` (tool can be invoked as a command — e.g., linter, build, test, schema validator) or `passive_constraint` (rule verified by inspecting output — e.g., naming convention checked via Grep, length limit checked manually)
+   - For each mechanism, decide: **adopted** (will be enforced during implementation) or **noted** (observed but not adopted — state reason, e.g., not relevant to this change area, superseded by another check)
+
+3. **Record in Design Doc**
+   - List standards in "Applicable Standards" section with `[explicit]`/`[implicit]` tags
+   - List quality assurance mechanisms in "Quality Assurance Mechanisms" section with `adopted`/`noted` status
    - Implicit standards require user confirmation before design proceeds
 
-3. **Alignment Rule**
+4. **Alignment Rule**
    - Design decisions must reference applicable standards
    - Deviations require documented rationale
 
@@ -292,6 +300,7 @@ Implementation sample creation checklist:
 
 **All modes**:
 - [ ] **Standards identification gate completed** (required)
+- [ ] **Quality assurance mechanisms identified with adopted/noted status** (required)
 - [ ] **Code inspection evidence recorded** (required)
 - [ ] **Integration points enumerated with contracts** (required)
 - [ ] **Data contracts clarified** (required)

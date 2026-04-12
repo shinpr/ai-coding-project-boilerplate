@@ -131,10 +131,10 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 | Agent | Key Fields | Decision Logic |
 |-------|-----------|----------------|
 | requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions | Select flow by scale; check adrRequired for ADR step |
-| codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, focusAreas[], existingElements count, limitations | Pass focusAreas to technical-designer as context |
+| codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, qualityAssurance (mechanisms[], domainConstraints[]), focusAreas[], existingElements count, limitations | Pass focusAreas to technical-designer as context |
 | code-verifier | status (consistent/mostly_consistent/needs_review/inconsistent), consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). Pre-implementation: verifies Design Doc claims against existing codebase. Post-implementation: verifies implementation consistency against Design Doc (pass `code_paths` scoped to changed files) | Flag discrepancies for document-reviewer |
-| task-executor | status (escalation_needed/completed), escalation_type, testsAdded, requiresTestReview | On escalation_needed: handle by escalation_type (design_compliance_violation, similar_function_found, similar_component_found, investigation_target_not_found, out_of_scope_file) |
-| quality-fixer | status (approved/stub_detected/blocked). `stub_detected` → route back to task-executor with `incompleteImplementations[]` details for completion, then re-run quality-fixer. `blocked` → see quality-fixer blocked handling below | On stub_detected: re-invoke task-executor. On blocked: see handling below |
+| task-executor | status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file/dependency_version_uncertain), testsAdded, requiresTestReview | On escalation_needed: handle by escalation_type |
+| quality-fixer | Input: `task_file` (path to current task file — always pass this in orchestrated flows). Status: approved/stub_detected/blocked. `stub_detected` → route back to task-executor with `incompleteImplementations[]` details for completion, then re-run quality-fixer. `blocked` → see quality-fixer blocked handling below | On stub_detected: re-invoke task-executor. On blocked: see handling below |
 | document-reviewer | approvalReady (true/false) | Proceed to next step on true; request fixes on false |
 | design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | On CONFLICTS_FOUND: present conflicts to user before proceeding |
 | integration-test-reviewer | status (approved/needs_revision/blocked), requiredFixes | On needs_revision: pass requiredFixes back to task-executor |
@@ -292,7 +292,7 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
    #### codebase-analyzer → technical-designer
 
    **Pass to codebase-analyzer**: requirement-analyzer JSON output, PRD path (if exists), original user requirements
-   **Pass to technical-designer**: codebase-analyzer JSON output as additional context in the Design Doc creation prompt. The designer uses `focusAreas`, `dataModel`, and `dataTransformationPipelines` to inform the Existing Codebase Analysis and Verification Strategy sections.
+   **Pass to technical-designer**: codebase-analyzer JSON output as additional context in the Design Doc creation prompt. The designer uses `focusAreas`, `dataModel`, `dataTransformationPipelines`, and `qualityAssurance` to inform the Existing Codebase Analysis, Verification Strategy, and Quality Assurance Mechanisms sections.
 
    #### code-verifier → document-reviewer (Design Doc review)
 

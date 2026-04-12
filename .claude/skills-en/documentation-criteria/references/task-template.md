@@ -33,6 +33,10 @@ Files to read before starting implementation (file path, with optional search hi
 - [ ] Improve code (maintain passing tests)
 - [ ] Confirm added tests still pass
 
+## Quality Assurance Mechanisms
+(From work plan header — mechanisms relevant to this task's target files)
+- [Tool/check name] — Enforces: [what] — Config/Source: [path] — Type: `executable_check` | `passive_constraint`
+
 ## Operation Verification Methods
 (Derived from Verification Strategy in work plan)
 - **Verification method**: [What to verify and how — e.g., "compare new implementation output against existing implementation at src/legacy/order_calc", "run endpoint against test database and verify response matches contract"]

@@ -54,6 +54,16 @@ Use the appropriate run command based on the `packageManager` field in package.j
 - `test:safe` - Safe test execution (with auto cleanup)
 - `cleanup:processes` - Cleanup Vitest processes
 
+### Quality Assurance Mechanism Awareness
+
+Before executing quality checks, identify what quality mechanisms exist for the change area:
+- Primary detection: inspect the change area's file types, project manifest, and configuration to identify applicable quality tools
+  - Check CI pipeline definitions for checks that cover the affected paths
+  - Check for domain-specific linter or validator configurations (e.g., schema validators, API spec validators, configuration file linters)
+  - Check for domain-specific constraints in project configuration (naming rules, length limits, format requirements)
+- Supplementary hint: IF task file specifies Quality Assurance Mechanisms → use them as additional hints for which domain-specific checks to look for
+- Include discovered domain-specific checks alongside standard quality phases below
+
 ### Quality Check Requirements
 
 Quality checks are mandatory upon implementation completion:
