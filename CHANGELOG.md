@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.7] - 2026-04-12
+
+### Added
+
+- **codebase-analyzer: Quality assurance mechanism discovery** (agents) — New Step 4 item identifies linters, CI checks, schema validators, and domain-specific constraints (naming conventions, length limits, format requirements) covering affected files. New `qualityAssurance` output section with `mechanisms[]` and `domainConstraints[]`
+- **technical-designer: QA mechanism identification in Standards Gate** (agents) — New step evaluates discovered mechanisms as `adopted` (enforced during implementation) or `noted` (observed, not adopted with reason). Recorded in Design Doc "Quality Assurance Mechanisms" section
+- **work-planner: QA mechanism extraction and propagation** (agents) — Extracts adopted mechanisms from Design Doc and includes them in work plan header for downstream task reference
+- **task-decomposer: File-coverage-based mechanism propagation** (agents) — Deterministic rule matches mechanisms to tasks by file path overlap (exact match or directory prefix). Project-wide mechanisms included in every task
+- **quality-fixer: Task file input and mechanism-aware detection** (agents) — New `task_file` optional input parameter. Supplementary detection reads task file QA mechanisms, splits by type: `executable_check` added to command list, `passive_constraint` verified via Grep/file inspection after quality phases. New `taskFileMechanisms` output field. Applied to both quality-fixer and quality-fixer-frontend
+- **task-executor: Reference Representativeness check** (agents) — Per-adoption verification with concrete thresholds (≥3 files across different directories = representative). New `dependency_version_uncertain` escalation type when repository-wide verification is insufficient
+- **coding-standards: Reference Representativeness section** (skills) — IF-THEN criteria for verifying patterns, APIs, and dependencies before adoption. Failure mode documented. Pattern 5 extended with representativeness check reference
+- **technical-spec: Quality Assurance Mechanism Awareness** (skills) — New section before Quality Check Requirements for identifying domain-specific quality mechanisms before executing standard phases
+- **Documentation templates: QA Mechanisms sections** (skills) — Design template, plan template, and task template extended with Quality Assurance Mechanisms sections. Mechanism type (`executable_check` / `passive_constraint`) explicitly distinguished
+- **Orchestration: task_file passing and updated response specs** (commands/skills) — build, front-build, implement commands always pass task file path to quality-fixer. Orchestration guide updated with `qualityAssurance` in codebase-analyzer handoff, `dependency_version_uncertain` escalation type, and `task_file` input documentation
+
 ## [1.20.6] - 2026-04-10
 
 ### Added

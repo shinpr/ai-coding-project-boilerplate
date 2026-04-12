@@ -84,7 +84,7 @@ For EACH task, YOU MUST:
      - `needs_revision` → Return to step 2 with `requiredFixes`
      - `approved` → Proceed to step 4
    - `readyForQualityCheck: true` → Proceed to step 4
-4. **INVOKE quality-fixer-frontend**: Execute all quality checks and fixes
+4. **INVOKE quality-fixer-frontend**: Execute all quality checks and fixes. **Always pass** the current task file path as `task_file`
 5. **CHECK quality-fixer-frontend response**:
    - `stub_detected` → Return to step 2 with `incompleteImplementations[]` details
    - `blocked` → STOP and escalate to user

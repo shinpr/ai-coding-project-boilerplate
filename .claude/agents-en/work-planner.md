@@ -27,6 +27,7 @@ Read the Design Doc(s), UI Spec, PRD, and ADR (if provided). Extract:
 - Technical dependencies and implementation order
 - Integration points and their contracts
 - **Verification Strategy**: Correctness Proof Method (correctness definition, verification method, verification timing) and Early Verification Point (first verification target, success criteria, failure response)
+- **Quality Assurance Mechanisms**: From Design Doc "Quality Assurance Mechanisms" section, extract all items with `adopted` status — these are the quality gates that must be enforced during implementation
 
 ### 2. Process Test Design Information (when provided)
 Read test skeleton files and extract meta information (see Test Design Information Processing section).
@@ -38,6 +39,7 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 
 **Common rules (all approaches)**:
 - **Include Verification Strategy summary in work plan header** for downstream task reference
+- **Include adopted Quality Assurance Mechanisms in work plan header** for downstream task reference — list each adopted mechanism with tool name, what it enforces, configuration path, and covered files (literal file paths or directory prefixes from Design Doc, or "project-wide" if not scoped to specific files)
 - Include verification tasks in the phase corresponding to Verification Strategy's verification timing
 - When test skeletons are provided, place integration test implementation in corresponding phases and E2E test execution in the final phase
 - When test skeletons are not provided, include test implementation tasks based on Design Doc acceptance criteria
@@ -259,6 +261,7 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
   - [ ] No `gap` entries without justification
   - [ ] All justified `gap` entries flagged for user confirmation before plan approval
 - [ ] Verification Strategy extracted from Design Doc and included in plan header
+- [ ] Adopted Quality Assurance Mechanisms extracted from Design Doc and included in plan header
 - [ ] Phase structure matches implementation approach (vertical → value unit phases, horizontal → layer phases)
 - [ ] Early verification point placed in Phase 1 (when Verification Strategy specifies one)
 - [ ] All requirements converted to tasks

@@ -52,6 +52,12 @@ unknowns:
 - [Standard/convention] `[explicit]` — Source: [config / rule file / doc path]
 - [Observed pattern] `[implicit]` — Evidence: [file paths] — Confirmed: [Yes/No]
 
+#### Quality Assurance Mechanisms
+How quality is enforced in the change area. Each item is either adopted (will be enforced during implementation) or noted (observed but not adopted, with reason).
+
+- [ ] [Tool/check name] — Enforces: [what] — Config: [path] — Covers: [literal file paths or directory prefixes, or "project-wide"] — Type: `executable_check` — Status: `adopted` / `noted (reason)`
+- [ ] [Domain-specific constraint] — Enforces: [what] — Source: [path] — Covers: [literal file paths or directory prefixes, or "project-wide"] — Type: `passive_constraint` — Status: `adopted` / `noted (reason)`
+
 ### Problem to Solve
 
 [Specific problems or challenges this feature aims to address]

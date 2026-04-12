@@ -68,6 +68,22 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 - Significant readability decrease from commonalization
 - Simple helpers in test code
 
+## Reference Representativeness
+
+**Failure mode**: Adopting patterns or dependency versions from the nearest 2-3 files without verifying repository-wide usage leads to outdated patterns, version mismatches, and architecture inconsistency.
+
+### Verifying References Before Adoption
+When adopting patterns, APIs, or dependencies from existing code:
+- **IF** referencing only 2-3 nearby files → **THEN** Grep the pattern across the repository; adopt only when ≥3 files across different directories use the same pattern
+- **IF** Grep returns 1-2 files outside the reference → **THEN** investigate whether those files are the canonical implementation or legacy outliers before adopting
+- **IF** Grep returns 0 files outside the reference → **THEN** treat the pattern as local convention; adopt only with explicit justification (e.g., consistency with surrounding code, avoiding breaking changes)
+- **IF** multiple approaches coexist in the repository → **THEN** identify the majority pattern (highest file count) and adopt it; state the reason when choosing a minority pattern
+- **IF** adopting an external dependency (library, plugin, SDK) → **THEN** verify repository-wide usage distribution for the same dependency; if the appropriate version cannot be determined from repository state alone, escalate
+- **IF** following an existing pattern → **THEN** state the reason for following it when an alternative exists (e.g., consistency with surrounding code, avoiding breaking changes, pending coordinated update)
+
+### Principle
+Nearby code is a starting point for investigation. Verify repository-wide usage (≥3 files across different directories) before adopting a pattern as representative.
+
 ## Common Failure Patterns and Avoidance Methods
 
 ### Pattern 1: Error Fix Chain
@@ -93,14 +109,15 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 - For low certainty cases, create minimal verification code first
 
 ### Pattern 5: Insufficient Existing Code Investigation
-**Symptom**: Duplicate implementations, architecture inconsistency, integration failures
-**Cause**: Insufficient understanding of existing code before implementation
+**Symptom**: Duplicate implementations, architecture inconsistency, integration failures, adopting outdated patterns
+**Cause**: Insufficient understanding of existing code before implementation; referencing only nearby files without verifying representativeness
 **Avoidance Methods**:
 - Before implementation, always search for similar functionality (using domain, responsibility, configuration patterns as keywords)
 - Similar functionality found -> Use that implementation (do not create new implementation)
 - Similar functionality is technical debt -> Create ADR improvement proposal before implementation
 - No similar functionality exists -> Implement new functionality following existing design philosophy
 - Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
+- **Reference representativeness check**: See "Reference Representativeness" section above for IF-THEN thresholds
 
 ## Debugging Techniques
 

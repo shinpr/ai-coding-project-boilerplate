@@ -84,7 +84,7 @@ Agentツールでtask-decomposerを呼び出す:
      - `needs_revision` → `requiredFixes`を添えてステップ2に戻る
      - `approved` → ステップ4へ
    - `readyForQualityCheck: true` → ステップ4へ
-4. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
+4. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）。**必ず**現在のタスクファイルパスを`task_file`として渡す
 5. **quality-fixerレスポンスチェック**:
    - `stub_detected` → `incompleteImplementations[]`の詳細を添えてステップ2に戻す
    - `blocked` → 停止してユーザーにエスカレーション

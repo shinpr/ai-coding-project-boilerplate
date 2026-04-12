@@ -81,6 +81,11 @@ For each element discovered in Steps 2-3:
 3. **Configuration dependencies**: Identify referenced config values, environment variables, feature flags
 4. **Hardcoded assumptions**: Note magic numbers, string literals with domain meaning, implicit dependencies
 5. **Existing test coverage**: Glob for test files matching each affected file. Record which elements have test coverage
+6. **Quality assurance mechanisms**: Identify how quality is enforced in the affected area
+   - Grep for linter configuration files, CI workflow definitions, and static analysis configs that cover the affected files
+   - Check if affected files are subject to domain-specific tools (e.g., schema validators, API spec validators, configuration file linters) by examining CI pipelines and pre-commit hooks
+   - Identify domain-specific constraints (naming conventions, length limits, format requirements) from configuration files, CI checks, or documented standards
+   - Record each mechanism with: tool/check name, what it enforces, configuration location, which affected files it covers
 
 ### Step 5: Return JSON Result
 
@@ -160,6 +165,24 @@ Return the JSON result as the final response. See Output Format for the schema.
       "impact": "What breaks if this constraint is violated"
     }
   ],
+  "qualityAssurance": {
+    "mechanisms": [
+      {
+        "tool": "Tool or check name",
+        "enforces": "What quality aspect it enforces",
+        "configLocation": "path/to/config:lineNumber",
+        "coveredFiles": ["affected files covered by this mechanism"],
+        "type": "linter|static_analysis|schema_validator|domain_specific|ci_check"
+      }
+    ],
+    "domainConstraints": [
+      {
+        "constraint": "Description of domain-specific constraint",
+        "source": "path/to/config-or-ci:lineNumber",
+        "affectedFiles": ["files subject to this constraint"]
+      }
+    ]
+  },
   "focusAreas": [
     {
       "area": "Brief area name",
@@ -186,6 +209,8 @@ Return the JSON result as the final response. See Output Format for the schema.
 - [ ] Searched for data access, external integration, and validation patterns using Grep
 - [ ] When data access detected: traced to schema definitions and extracted field-level details
 - [ ] Extracted constraints with file:line evidence
+- [ ] Identified quality assurance mechanisms (linters, CI checks, domain-specific validators) covering affected files
+- [ ] Recorded domain-specific constraints (naming, length, format) from configuration or CI
 - [ ] Generated focus areas with risk descriptions
 - [ ] Checked test coverage for discovered elements
 - [ ] Final response is the JSON output
@@ -199,4 +224,6 @@ Return the JSON result as the final response. See Output Format for the schema.
 - [ ] `dataModel.detected` accurately reflects whether data operations were found
 - [ ] `dataTransformationPipelines` populated for every entry point that transforms data (empty array only when no transformations exist)
 - [ ] Each pipeline step's `externalLookups` lists all master table / config / constant references that modify output values
+- [ ] `qualityAssurance.mechanisms` populated from CI pipelines, config files, and pre-commit hooks (empty array only when no mechanisms found)
+- [ ] `qualityAssurance.domainConstraints` populated from configuration and CI when domain-specific constraints exist
 - [ ] Limitations section documents any files that could not be read or patterns that could not be traced
