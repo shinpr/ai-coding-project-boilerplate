@@ -46,7 +46,7 @@ Must be performed before any investigation:
    - Classify each: **Explicit** (documented) or **Implicit** (observed pattern only)
 
 2. **Identify Quality Assurance Mechanisms**
-   - When codebase-analyzer output is available: use its `qualityAssurance` section as the primary source
+   - When the `Codebase Analysis` input is provided: use its `qualityAssurance` section as the primary source
    - When not available: scan CI pipelines, linter configs, pre-commit hooks, and project configuration for tools and checks that cover the change area
    - Identify domain-specific constraints (naming conventions, length limits, format requirements) from configuration or CI
    - Classify each mechanism: `executable_check` (tool can be invoked as a command — e.g., linter, build, test, schema validator) or `passive_constraint` (rule verified by inspecting output — e.g., naming convention checked via Grep, length limit checked manually)
@@ -97,6 +97,30 @@ Must be performed before Design Doc creation:
 6. **Code Inspection Evidence**
    - Record all inspected files and key functions in "Code Inspection Evidence" section of Design Doc
    - Each entry must state relevance (similar functionality / integration point / pattern reference)
+
+### Fact Disposition【Required when Codebase Analysis input is provided】
+
+For every entry in `Codebase Analysis.focusAreas`, produce one row in the Design Doc's "Fact Disposition Table" section:
+
+| Column | Content |
+|--------|---------|
+| Fact ID | The `fact_id` value from the Codebase Analysis input |
+| Focus Area | The `area` value from the Codebase Analysis input |
+| Disposition | One of: `preserve` / `transform` / `remove` / `out-of-scope` |
+| Rationale | See disposition-specific guidance below. Use `focusArea.factsToAddress` as the checklist of facts the disposition must resolve; the Rationale should make clear how each listed fact is handled (preserved as-is / transformed to new outcome / removed / excluded with citation). |
+| Evidence | The `evidence` value from the focusArea (carried through verbatim) |
+| Related Files | Comma-separated list of paths carried verbatim from `focusArea.relatedFiles` |
+
+**Disposition selection criteria and rationale content**:
+
+- `preserve`: the design retains the existing behavior unchanged. Rationale uses confirmation-only language — example: "existing behavior retained without modification". Rationale that asserts a behavior change (e.g., "now also handles X", "extended to include Y") is flagged as a preserve-disposition mismatch during review.
+- `transform`: the design modifies the observable behavior. Rationale states the new outcome in observable terms — example: "branch on `status === 'archived'` now returns 404 instead of 410; other branches unchanged". One or two sentences is typical. Rationale that asserts no change at all (e.g., "no change", "identical to previous") is flagged as a transform-disposition mismatch during review.
+- `remove`: the design deletes the existing behavior. Rationale states the reason (business driver when available, otherwise technical driver) — example: "legacy export path removed; users migrate to v2 API endpoint (PRD §3.2 deprecation)". Cite PRD section when the reason is policy/business. Rationale that asserts the behavior is retained in production code paths is flagged as a remove-disposition mismatch during review (retention in tests or migration scripts is acceptable when the rationale states so explicitly).
+- `out-of-scope`: the focus area falls outside this design's implementation boundary. Use only when the PRD context clarifies a boundary exclusion that the codebase analysis input did not carry. Rationale states which scope boundary excludes it and cites the PRD section — example: "authentication flow out-of-scope per PRD §1 scope definition (handled in separate ADR-042)". Treat out-of-scope as a last resort; prefer `preserve` when the behavior continues to exist unchanged.
+
+**Cross-Layer Assumptions**: When this Design Doc depends on contracts from a prior-layer Design Doc whose claims remain unverified (see Prior-Layer Verification input), list each such claim in a "## Cross-Layer Assumptions" section with justification (why the dependency is required) and propagate it as a verification target for downstream review. Use the format: `- [claim]: [justification]; verify at [step or artifact]`.
+
+The Fact Disposition Table is the primary mechanism that binds **structural existing-behavior facts** to the design. Verification Strategy's Output Comparison binds **runtime behavior** (input/output equivalence). Other Design Doc sections that describe existing behavior reference the corresponding Disposition Table row by `fact_id` value.
 
 ### Data Representation Decision【Required】
 When the design introduces or significantly modifies data structures:
@@ -219,12 +243,16 @@ Document state definitions and transitions for stateful components.
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
 - **Codebase Analysis** (optional, from codebase analysis phase):
   - When provided, use as the primary source for the "Existing Codebase Analysis" section
+  - `focusAreas` → produce the Fact Disposition Table (one row per focusArea, with fact_id + disposition + rationale + evidence)
   - `existingElements` → populate Implementation Path Mapping and Code Inspection Evidence
   - `dataModel` → populate data-related sections (schema references, data contracts)
-  - `focusAreas` → prioritize investigation depth on flagged areas
   - `constraints` → incorporate into design constraints and assumptions
   - `dataTransformationPipelines` → populate Verification Strategy's Output Comparison section (each pipeline step must be covered by the comparison method)
   - Conduct additional investigation only for areas not covered by the analysis or flagged in `limitations`
+
+- **Prior-Layer Verification** (optional, cross-layer flow only): When this Design Doc references contracts from a prior-layer Design Doc that has been through a verification step, the verification result JSON is provided. Use it as follows:
+  - `discrepancies[]` → treat as known issues to resolve in this Design Doc, or escalate when out of scope for this layer
+  - Limit verified-claim inference to what the `prior_layer_verification` output states explicitly; treat the prior-layer Design Doc as reference context, with its other claims remaining unverified unless the `prior_layer_verification` output confirms them
 - **PRD**: PRD document (if exists)
 - **Documents to Create**: ADR, Design Doc, or both
 - **Existing Architecture Information**: 
@@ -302,6 +330,7 @@ Implementation sample creation checklist:
 - [ ] **Standards identification gate completed** (required)
 - [ ] **Quality assurance mechanisms identified with adopted/noted status** (required)
 - [ ] **Code inspection evidence recorded** (required)
+- [ ] **Fact Disposition Table covers every Codebase Analysis focusArea, each row with fact_id + disposition + rationale + evidence** (required when Codebase Analysis input is provided)
 - [ ] **Integration points enumerated with contracts** (required)
 - [ ] **Data contracts clarified** (required)
 - [ ] Architecture and data flow clearly expressed in diagrams
@@ -389,7 +418,7 @@ Before modifying the document, inventory the external definitions that the chang
 
 1. **Extract literal identifiers from update scope**: Collect all concrete identifiers (paths, endpoints, type names, config keys, component names) in the sections being updated
 2. **Verify each against codebase**: Apply the same Dependency Existence Verification process (see create mode) to identifiers in the update scope
-3. **Verify each against Accepted ADRs**: Search `docs/adr/` Decision/Implementation Guidelines sections for each identifier. Flag if the same identifier has a different value or definition. (Design Doc cross-checks are handled by design-sync in the subsequent pipeline step)
+3. **Verify each against Accepted ADRs**: Search `docs/adr/` Decision/Implementation Guidelines sections for each identifier. Flag if the same identifier has a different value or definition. (Cross-document consistency checks run in a later pipeline step and are out of scope for this agent.)
 
 **Output format** (per identifier):
 ```yaml

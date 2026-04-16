@@ -43,7 +43,7 @@ The calling command or agent specifies the mode:
 
 - **Existing content**: Current full SKILL.md content (frontmatter + body)
 - **Modification request**: User's description of desired changes
-- **Current review** (optional): skill-reviewer output for the existing content
+- **Current review** (optional): prior review output for the existing content
 
 ## Creation Mode Process
 

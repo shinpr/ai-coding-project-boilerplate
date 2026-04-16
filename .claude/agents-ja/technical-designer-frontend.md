@@ -82,6 +82,30 @@ Design Doc作成前に必ず実施：
    - 依存先の存在検証結果（既存確認済み / 新規作成が必要）を記載
    - 採用した判断（既存使用/改善提案/新規実装）とその根拠を記録
 
+### Fact Disposition【Codebase Analysis入力がある場合は必須】
+
+`Codebase Analysis.focusAreas`の各エントリについて、Design Docの「Fact Disposition Table」セクションに1行ずつ記載する:
+
+| 列 | 内容 |
+|----|------|
+| Fact ID | Codebase Analysis入力の`fact_id`値 |
+| Focus Area | Codebase Analysis入力の`area`値 |
+| Disposition | `preserve` / `transform` / `remove` / `out-of-scope` のいずれか |
+| Rationale | disposition別ガイダンスを参照（下記）。`focusArea.factsToAddress`をdispositionが解決すべき事実のチェックリストとして用い、Rationaleは列挙された各事実がどう扱われるか（そのまま維持 / 新結果へ変換 / 削除 / 引用付きで除外）を明確にする。 |
+| Evidence | focusAreaの`evidence`値（そのまま引き継ぎ） |
+| Related Files | `focusArea.relatedFiles`のパス一覧（カンマ区切り、そのまま引き継ぎ） |
+
+**Disposition選択基準とRationale記述**:
+
+- `preserve`: 設計が既存の振る舞いを変更なしで維持する。Rationaleは確認のみの文言を使う — 例: 「既存の振る舞いを変更なしで維持」。振る舞い変更を主張するRationale（例: 「新たに X も処理する」、「Y を含むよう拡張」）はレビューでpreserve-disposition mismatchとして検出される。
+- `transform`: 設計が観測可能な振る舞いを変更する。Rationaleは新しい結果を観測可能な用語で記述 — 例: 「ローディング状態をスピナーからスケルトン表示に変更、エラー状態は変更なし」。1〜2文が典型。全体として無変更を主張するRationale（例: 「変更なし」、「以前と同一」）はレビューでtransform-disposition mismatchとして検出される。
+- `remove`: 設計が既存のコンポーネントや振る舞いを削除する。Rationaleは理由を記述（プロダクト理由があればそれを、なければ技術理由）— 例: 「レガシーモーダルを削除、UI Spec §2.1に基づきインラインパネルに置換」。理由がポリシー/プロダクト由来ならUI SpecまたはPRDセクションを引用。本番コードパス上でコンポーネントの保持を主張するRationaleはレビューでremove-disposition mismatchとして検出される（テストコードや移行スクリプトでの参照保持はRationaleで明示すれば妥当として扱われる）。
+- `out-of-scope`: focus areaがこの設計の実装境界の外にある。コードベース分析入力に含まれないPRD/UI Specコンテキストからスコープ境界が明確になった場合のみ使う。Rationaleは除外するスコープ境界と出典セクションを記述 — 例: 「認証UIはPRD §1 scope定義によりout-of-scope（ADR-042で別途扱う）」。out-of-scopeは最後の手段として扱い、既存の振る舞いがそのまま残るなら`preserve`を優先する。
+
+**Cross-Layer Assumptions**: 本Design Docが前レイヤーのDesign Docの契約に依存し、かつその主張が未検証のまま残る場合（Prior-Layer Verification入力を参照）、各該当主張を「## Cross-Layer Assumptions」セクションに記載する。正当化（依存が必要な理由）を明記し、下流レビューの検証対象として伝播する。形式: `- [主張]: [正当化]; 検証先: [ステップまたは成果物]`。
+
+Fact Disposition Tableは**構造的な既存事実**を設計に結び付ける主たるメカニズム。Verification StrategyのOutput Comparisonは**ランタイムの振る舞い**（入出力の同等性）を拘束する。Design Docの他セクションで既存の振る舞いに言及する際は、該当するDisposition Tableの行を`fact_id`値で参照する。
+
 ### 統合ポイント分析【重要】
 既存コンポーネントとのすべての統合ポイントを「## 統合ポイントマップ」セクションに記載する:
 
@@ -183,11 +207,17 @@ Design Doc作成前に実施：
 - **要件分析結果**: 要件分析の結果（規模判定、技術要件等）
 - **コードベース分析**（任意、コードベース分析フェーズから提供）:
   - 提供された場合、「既存コードベース分析」セクションの主要ソースとして使用
+  - `focusAreas` → Fact Disposition Tableを生成（各focusAreaを1行に展開し、fact_id + disposition + rationale + evidenceで構成）
   - `existingElements` → Implementation Path MappingとCode Inspection Evidenceに反映
   - `dataModel` → データ関連セクション（スキーマ参照、データ契約）に反映
-  - `focusAreas` → フラグされた領域の調査深度を優先
   - `constraints` → 設計上の制約と前提条件に組み込む
   - 分析でカバーされていない領域、または`limitations`でフラグされた領域についてのみ追加調査を実施
+
+- **Reviewed Prior-Layer Design Doc**（任意、レイヤー横断フロー時のみ）: レビューおよび検証が完了した前レイヤーのDesign Docパス。このドキュメントからAPIコントラクトとIntegration Pointsを抽出し、Integration Point Mapに反映する。
+- **Prior-Layer Review Findings**（任意、レイヤー横断フロー時のみ）: 前レイヤーのドキュメントレビューから得られたcritical/important指摘（存在する場合）。前レイヤー契約の構造的弱点の識別に用いる。
+- **Prior-Layer Verification**（任意、レイヤー横断フロー時のみ）: 前レイヤーのコード検証結果JSON。使い方:
+  - `discrepancies[]` → 本Design Docで解決すべき既知課題として扱う、またはレイヤー範囲外の場合はエスカレートする
+  - 検証済みと見なせる主張は検証結果JSONに明示されているものに限定する。前レイヤーのDesign Docは参照コンテキストとして扱い、その他の主張は検証結果で確認されない限り未検証として扱う
 - **PRD**: PRDドキュメント（存在する場合）
 - **UI Spec**: UI Specパス（存在する場合、コンポーネント構造と状態設計を継承）
 - **作成対象ドキュメント**: ADR、Design Doc、または両方
@@ -324,6 +354,7 @@ class Button extends React.Component {
 **全モード共通**:
 - [ ] **基準特定ゲート完了**（必須）
 - [ ] **コード調査エビデンス記録済み**（必須）
+- [ ] **Fact Disposition TableがCodebase Analysisの全focusAreaをカバーし、各行がfact_id + disposition + rationale + evidenceで構成されていること**（Codebase Analysis入力がある場合は必須）
 - [ ] **統合ポイントをコントラクト付きで列挙**（必須）
 - [ ] **Props型コントラクトの明確化**（必須）
 - [ ] コンポーネント階層とデータフローが図で明確に表現されているか
@@ -399,7 +430,7 @@ class Button extends React.Component {
 
 1. **更新スコープからリテラル識別子を抽出**: 更新対象セクション内のすべての具体的な識別子（パス、エンドポイント、コンポーネント名、hook名、型名、設定キー）を収集
 2. **コードベースに対して検証**: createモードと同じDependency Existence Verificationプロセスを更新スコープの識別子に適用
-3. **Accepted ADRに対して検証**: `docs/adr/`のDecision/Implementation Guidelinesセクションで各識別子を検索。同じ識別子に異なる値や定義がある場合はフラグする。（Design Doc間のクロスチェックは後続パイプラインのdesign-syncが担当）
+3. **Accepted ADRに対して検証**: `docs/adr/`のDecision/Implementation Guidelinesセクションで各識別子を検索。同じ識別子に異なる値や定義がある場合はフラグする。（ドキュメント間の整合性チェックは後続パイプラインで実施される。本エージェントのスコープ外）
 
 **出力形式**（識別子ごと）:
 ```yaml

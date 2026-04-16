@@ -138,7 +138,7 @@ Execute `test` script (run all tests with Vitest)
 ## Status Determination Criteria
 
 ### stub_detected (Incomplete implementation found — Step 1 gate)
-Returned immediately when Step 1 finds incomplete implementations in the diff. Quality checks are not executed. The orchestrator routes this back to the task-executor for completion.
+Returned immediately when Step 1 finds incomplete implementations in the diff. Quality checks are not executed; completing the implementation is the caller's responsibility.
 
 ### approved (All quality checks pass)
 - All tests pass (React Testing Library)

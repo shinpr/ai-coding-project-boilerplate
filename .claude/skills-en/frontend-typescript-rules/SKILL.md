@@ -7,7 +7,7 @@ description: Applies React/TypeScript type safety, component design, and state m
 
 ## Frontend-Specific Anti-patterns
 
-In addition to universal anti-patterns in coding-standards skill, watch for these Frontend-specific issues:
+In addition to universal anti-patterns, watch for these Frontend-specific issues:
 
 - **Prop drilling through 3+ levels** - Should use Context API or state management
 - **Massive components (300+ lines)** - Split into smaller components

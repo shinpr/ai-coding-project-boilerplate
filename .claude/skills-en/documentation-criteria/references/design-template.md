@@ -110,6 +110,20 @@ Each AC is written in EARS format. Keywords determine test type.
 ### Code Inspection Evidence
 - [path:function] — [relevance: similar functionality / integration point / pattern reference]
 
+### Fact Disposition Table
+
+One row per codebase analysis `focusAreas` entry. This table is the primary binding between structural existing-behavior facts and the design (Verification Strategy's Output Comparison binds runtime behavior separately). Other sections that describe existing behavior reference the row by `fact_id` value.
+
+| Fact ID | Focus Area | Disposition | Rationale | Evidence | Related Files |
+|---------|------------|-------------|-----------|----------|---------------|
+| [fact_id from focusAreas] | [area name from focusAreas] | preserve / transform / remove / out-of-scope | [preserve: confirmation-only language, e.g., "existing behavior retained without modification" — Rationale asserting a behavior change is flagged as preserve mismatch; transform: state new observable outcome, e.g., "branch X now returns 404 instead of 410" — Rationale asserting no change at all is flagged as transform mismatch; remove: state reason with PRD/UI Spec citation when policy-driven — Rationale asserting production-code retention is flagged as remove mismatch (test/migration retention stated explicitly is acceptable); out-of-scope: cite the scope-defining section and prefer preserve when behavior continues unchanged] | [evidence value carried verbatim from focusAreas] | [comma-separated path list carried verbatim from focusAreas.relatedFiles, e.g., `src/auth/createUser.ts, src/api/routes/users.ts`] |
+
+### Cross-Layer Assumptions (cross-layer flow only)
+
+When this Design Doc depends on unverified claims from a prior-layer Design Doc (see Prior-Layer Verification), list each with justification and downstream verification target:
+
+- [claim]: [justification]; verify at [step or artifact]
+
 ## Design
 
 ### Change Impact Map
@@ -299,7 +313,7 @@ Mark as N/A with brief rationale when the feature has no data layer dependencies
 
 ## Verification Strategy
 
-Verification Strategy defines what correctness means and how to prove it at design time. L1/L2/L3 (from implementation-approach skill) define completion verification granularity at task execution time.
+Verification Strategy defines what correctness means and how to prove it at design time. L1/L2/L3 (verification granularity tiers) define completion verification granularity at task execution time.
 
 ### Correctness Proof Method
 

@@ -69,7 +69,7 @@ Maps each Design Doc technical requirement to the covering task(s). One row per 
 
 Select ONE phase structure based on implementation approach from Design Doc.
 See documentation-criteria skill for detailed Phase Division Criteria.
-All quality checks follow Quality Check Workflow from coding-standards skill.
+All quality checks follow the project's standard Quality Check Workflow.
 **Delete the unused Option entirely from the final plan.** For hybrid approach, use Option C.
 
 ### Option A: Vertical Slice Phase Structure

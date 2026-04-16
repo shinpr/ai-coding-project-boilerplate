@@ -88,6 +88,7 @@ Read the Design Doc specified in arguments and extract:
 - **Path identifiers**: URL paths, route definitions, API endpoints, config keys, file paths
 - **Integration points**: References to components, endpoints, or resources defined in other documents (e.g., service method calls, shared type imports, referenced route destinations)
 - **Acceptance criteria**: Specific conditions for functional requirements
+- **Fact dispositions**: Rows from the "Fact Disposition Table" — extract `(fact_id, disposition)` pairs. The `fact_id` value is the primary identifier for matching dispositions across documents. Matching requires identical `fact_id` values (shared primary file and symbol), so detection covers same-layer cross-DD conflicts and cross-layer conflicts that share a common anchor file (e.g., shared schema or type definitions). `evidence` is supporting context only.
 
 **Extraction Output** (per item):
 ```yaml
@@ -115,6 +116,7 @@ Read the Design Doc specified in arguments and extract:
 |--------------|----------|----------|
 | **Type definition mismatch** | Same type/interface name, different properties or field types | critical |
 | **Path/integration point conflict** | Same or equivalent path/integration identifier, different target/method/handler | critical |
+| **Disposition conflict** | Same `fact_id` value across Fact Disposition Tables, different `disposition` value (e.g., one DD says `remove`, another says `preserve`) | critical |
 | **Numeric parameter mismatch** | Same config key, different value | high |
 | **Acceptance criteria conflict** | Same AC identifier or slot, different conditions or thresholds | high |
 | **Term definition mismatch** | Same term string, different definition text | medium |

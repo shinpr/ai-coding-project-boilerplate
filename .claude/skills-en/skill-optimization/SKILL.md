@@ -136,7 +136,7 @@ Measurable quality criteria for skill content. Each principle includes a pass/fa
 | # | Principle | Pass Criteria | Fail Example |
 |---|-----------|---------------|--------------|
 | 1 | Context efficiency | Every sentence contributes to LLM decision-making. No filler. | "This is an important skill that helps with..." |
-| 2 | Deduplication | No concept explained twice at the same abstraction level within the skill or across skills. Mentions at different structural roles (e.g., classification framework vs execution detail) are not duplicates, provided the re-mention adds new constraints or criteria | Same error handling rules in both coding-standards and typescript-rules |
+| 2 | Deduplication | No concept explained twice at the same abstraction level within the skill or across skills. Mentions at different structural roles (e.g., classification framework vs execution detail) are not duplicates, provided the re-mention adds new constraints or criteria | Same error handling rules restated at the same abstraction level in multiple related skills |
 | 3 | Grouping | Related criteria in single section (minimize read operations) | Scattered error handling rules across 4 sections |
 | 4 | Measurability | All criteria use if-then format or concrete thresholds | "Write clean code" without definition of clean |
 | 5 | Positive form | Instructions state what to do (BP-001 applied) | "Don't use any" instead of "Use only X" |

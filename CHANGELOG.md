@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.8] - 2026-04-17
+
+### Added
+
+- **codebase-analyzer: Fact Disposition targets in focusAreas** (agents) — Step 4 enumerates existing facts within change scope. Schema expanded with `fact_id` (format: `<primary-file-path>:<symbol>`), `evidence` (single-form reference string), `factsToAddress` (designer checklist), and `relatedFiles` fields. Cross-layer canonical anchor rule: shared types/schemas/APIs referenced from multiple layers anchor `fact_id` to the canonical source file so per-layer analysis runs produce matching identifiers for the same concept. Priority ordering (branching outcomes > external contracts > domain invariants) with cardinality target 5-15 and explicit overflow handling
+- **technical-designer: Fact Disposition Table section** (agents) — Required when Codebase Analysis input is provided. Six-column table (Fact ID / Focus Area / Disposition / Rationale / Evidence / Related Files) with one row per `focusArea`. Dispositions: `preserve` / `transform` / `remove` / `out-of-scope` with specific selection criteria and rationale content guidance per value. Applied to both technical-designer and technical-designer-frontend
+- **document-reviewer: Fact Disposition coverage and semantic alignment checks** (agents) — New `codebase_analysis` input parameter. Gate 0 verifies Fact Disposition Table section presence. Gate 1 verifies row-level coverage of every `focusArea`, verbatim carry-through of `fact_id` / `evidence` / `relatedFiles`, and rationale-disposition semantic alignment using whole-phrase judgment with valid/invalid example patterns per disposition
+- **design-sync: Disposition conflict detection** (agents) — New extraction target for Fact Disposition Table rows as `(fact_id, disposition)` pairs. Critical conflict type detects same `fact_id` across documents carrying different `disposition` values. Detection scope explicitly documented: same-layer cross-DD conflicts and cross-layer conflicts sharing a common anchor file
+- **code-reviewer: Step 4-1 disposition implementation verification** (agents) — Post-implementation verification per disposition row. `remove` rows: cited symbol absent from production code path. `transform` rows: observable behavior matches rationale. `preserve` rows: observable behavior unchanged from pre-change state. `out-of-scope` rows: cited files not modified in the implementation diff. Mismatches produce `dd_violation` findings with specific rationale
+- **Cross-Layer Orchestration: serial backend-first flow with symmetric review gates** (skills) — Sequence updated to Backend design → verify → review → Frontend design → verify → review → design-sync. Both document-reviewer invocations carry `[Stop on critical issues]` to block structural defect propagation to the next layer. Backend verification output passed to the frontend designer as `prior_layer_verification`
+- **technical-designer-frontend: formal cross-layer inputs** (agents) — Required Information section adds Reviewed Prior-Layer Design Doc, Prior-Layer Review Findings, and Prior-Layer Verification as optional cross-layer-only inputs with explicit usage guidance
+- **Cross-Layer Assumptions mechanism** (agents, skills) — Designers record prior-layer claims the design must depend on when those claims remain unverified. Format: `- [claim]: [justification]; verify at [target]`. document-reviewer validates presence (when prior-layer dependencies exist) and verification-target presence per entry. design-template section added
+- **Design Doc template: Fact Disposition Table** (skills) — Six-column template added between Code Inspection Evidence and Design sections. L1/L2/L3 inline definition ("verification granularity tiers") added for self-documenting terminology
+
+### Changed
+
+- **Rationale-disposition alignment: semantic judgment over substring matching** (agents) — document-reviewer evaluates rationale as whole phrases against disposition semantics with valid/invalid example patterns per disposition. Eliminates false-positive risk where valid preserve phrasing (e.g., "no change", "unchanged") would have triggered on substring matches. Writer-side guidance in technical-designer and design-template updated symmetrically across all four dispositions
+- **Agent-to-agent and skill-to-skill decoupling** (agents, skills) — Direct agent name references replaced with artifact names, passive voice, or parameter names across 52 agent files. Dead skill pointers (references to skills not loaded in the reading context) removed or neutralized across skill files. In-context references that aid precision are preserved (e.g., `task-analyzer` routing table)
+- **Scope clarifiers for delegated work** (agents) — Cross-document consistency checks in technical-designer update mode explicitly marked "out of scope for this agent" to remove ambiguity about delegation
+
 ## [1.20.7] - 2026-04-12
 
 ### Added

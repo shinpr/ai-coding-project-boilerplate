@@ -254,7 +254,7 @@ Upon completion, report in the following JSON format. Detailed meta information 
 
 **Required Compliance**:
 - Output `it.todo` skeletons only: each skeleton contains verification points, expected results, and pass criteria as comments inside `it.todo` blocks.
-  Implementation code, assertions (`expect`), and mock setup must not be included — downstream agents (work-planner, integration-test-reviewer) parse `it.todo` presence to determine phase placement and review status.
+  Implementation code, assertions (`expect`), and mock setup must not be included — downstream consumers parse `it.todo` presence to determine phase placement and review status.
 - Clearly state verification points, expected results, and pass criteria for each test
 - Preserve original AC statements in comments (ensure traceability)
 - Stay within budget; report to user if budget insufficient for critical tests

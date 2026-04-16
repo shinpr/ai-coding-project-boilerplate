@@ -53,6 +53,7 @@ Read the Design Doc **in full** and extract:
 - Identifier specifications (resource names, endpoint paths, configuration keys, error codes, schema/model names)
 - Error handling policy
 - Non-functional requirements
+- **Fact Disposition Table rows** (when the section exists): record each row as `{fact_id, disposition, rationale, evidence, relatedFiles}` — the Related Files column carries the paths the designer must verify; read each listed file during Step 4-1. These rows become verification targets in Step 2-4.
 
 ### 2. Map Implementation to Design Doc
 
@@ -130,6 +131,15 @@ Verify against the Design Doc architecture:
 - Data flow follows the documented path
 - Responsibilities are properly separated
 - No unnecessary duplicate implementations (Pattern 5 from coding-standards skill)
+
+#### 4-1. Fact Disposition Verification (when the Design Doc has a Fact Disposition Table)
+
+For each row extracted in Step 1:
+
+- `disposition: remove` — Grep/Glob the implementation for the cited symbol and file. The symbol must be absent from the production code path. Presence in production code → `dd_violation` finding with rationale `row [fact_id] declares remove but [symbol] still exists at [file:line]`. Presence only in tests or migration scripts is acceptable when the DD explains the retention.
+- `disposition: transform` — Locate the cited symbol. Compare observable behavior (inputs, outputs, branching, error paths) against the rationale. Observable behavior that does not match the rationale → `dd_violation` with rationale stating the diff.
+- `disposition: preserve` — Locate the cited symbol. Observable behavior must match the pre-change state. Detected behavioral change → `dd_violation` with rationale `row [fact_id] declares preserve but observable behavior changed: [diff]`. Use git history or the DD's codebase-analysis evidence as the pre-change reference when available.
+- `disposition: out-of-scope` — No verification required beyond confirming the cited symbol was not modified in the implementation diff. Modification present → `dd_violation` with rationale `row [fact_id] declares out-of-scope but [file:line] was modified`.
 
 ### 5. Calculate Compliance and Consolidate
 
