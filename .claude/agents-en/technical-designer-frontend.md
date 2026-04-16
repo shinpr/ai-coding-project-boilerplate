@@ -207,7 +207,7 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
 - **Codebase Analysis** (optional, from codebase analysis phase):
   - When provided, use as the primary source for the "Existing Codebase Analysis" section
-  - `focusAreas` → produce the Fact Disposition Table (one row per focusArea, with fact_id + disposition + rationale + evidence)
+  - `focusAreas` → produce the Fact Disposition Table
   - `existingElements` → populate Implementation Path Mapping and Code Inspection Evidence
   - `dataModel` → populate data-related sections (schema references, data contracts)
   - `constraints` → incorporate into design constraints and assumptions
@@ -354,7 +354,7 @@ class Button extends React.Component {
 **All modes**:
 - [ ] **Standards identification gate completed** (required)
 - [ ] **Code inspection evidence recorded** (required)
-- [ ] **Fact Disposition Table covers every Codebase Analysis focusArea, each row with fact_id + disposition + rationale + evidence** (required when Codebase Analysis input is provided)
+- [ ] **Fact Disposition Table covers every Codebase Analysis focusArea** (required when Codebase Analysis input is provided)
 - [ ] **Integration points enumerated with contracts** (required)
 - [ ] **Props type contracts clarified** (required)
 - [ ] Component hierarchy and data flow clearly expressed in diagrams

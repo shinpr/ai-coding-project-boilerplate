@@ -243,11 +243,11 @@ Document state definitions and transitions for stateful components.
 - **Requirements Analysis Results**: Requirements analysis results (scale determination, technical requirements, etc.)
 - **Codebase Analysis** (optional, from codebase analysis phase):
   - When provided, use as the primary source for the "Existing Codebase Analysis" section
-  - `focusAreas` → produce the Fact Disposition Table (one row per focusArea, with fact_id + disposition + rationale + evidence)
+  - `focusAreas` → produce the Fact Disposition Table
   - `existingElements` → populate Implementation Path Mapping and Code Inspection Evidence
   - `dataModel` → populate data-related sections (schema references, data contracts)
   - `constraints` → incorporate into design constraints and assumptions
-  - `dataTransformationPipelines` → populate Verification Strategy's Output Comparison section (each pipeline step must be covered by the comparison method)
+  - `dataTransformationPipelines` → populate Verification Strategy's Output Comparison section
   - Conduct additional investigation only for areas not covered by the analysis or flagged in `limitations`
 
 - **Prior-Layer Verification** (optional, cross-layer flow only): When this Design Doc references contracts from a prior-layer Design Doc that has been through a verification step, the verification result JSON is provided. Use it as follows:
@@ -330,7 +330,7 @@ Implementation sample creation checklist:
 - [ ] **Standards identification gate completed** (required)
 - [ ] **Quality assurance mechanisms identified with adopted/noted status** (required)
 - [ ] **Code inspection evidence recorded** (required)
-- [ ] **Fact Disposition Table covers every Codebase Analysis focusArea, each row with fact_id + disposition + rationale + evidence** (required when Codebase Analysis input is provided)
+- [ ] **Fact Disposition Table covers every Codebase Analysis focusArea** (required when Codebase Analysis input is provided)
 - [ ] **Integration points enumerated with contracts** (required)
 - [ ] **Data contracts clarified** (required)
 - [ ] Architecture and data flow clearly expressed in diagrams

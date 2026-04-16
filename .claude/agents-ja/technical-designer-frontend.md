@@ -207,7 +207,7 @@ Design Doc作成前に実施：
 - **要件分析結果**: 要件分析の結果（規模判定、技術要件等）
 - **コードベース分析**（任意、コードベース分析フェーズから提供）:
   - 提供された場合、「既存コードベース分析」セクションの主要ソースとして使用
-  - `focusAreas` → Fact Disposition Tableを生成（各focusAreaを1行に展開し、fact_id + disposition + rationale + evidenceで構成）
+  - `focusAreas` → Fact Disposition Tableを生成
   - `existingElements` → Implementation Path MappingとCode Inspection Evidenceに反映
   - `dataModel` → データ関連セクション（スキーマ参照、データ契約）に反映
   - `constraints` → 設計上の制約と前提条件に組み込む
@@ -354,7 +354,7 @@ class Button extends React.Component {
 **全モード共通**:
 - [ ] **基準特定ゲート完了**（必須）
 - [ ] **コード調査エビデンス記録済み**（必須）
-- [ ] **Fact Disposition TableがCodebase Analysisの全focusAreaをカバーし、各行がfact_id + disposition + rationale + evidenceで構成されていること**（Codebase Analysis入力がある場合は必須）
+- [ ] **Fact Disposition TableがCodebase Analysisの全focusAreaをカバーしていること**（Codebase Analysis入力がある場合は必須）
 - [ ] **統合ポイントをコントラクト付きで列挙**（必須）
 - [ ] **Props型コントラクトの明確化**（必須）
 - [ ] コンポーネント階層とデータフローが図で明確に表現されているか

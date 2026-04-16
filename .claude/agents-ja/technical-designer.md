@@ -243,11 +243,11 @@ Design Doc作成前に実施：
 - **要件分析結果**: 要件分析の結果（規模判定、技術要件等）
 - **コードベース分析**（任意、コードベース分析フェーズから提供）:
   - 提供された場合、「既存コードベース分析」セクションの主要ソースとして使用
-  - `focusAreas` → Fact Disposition Tableを生成（各focusAreaを1行に展開し、fact_id + disposition + rationale + evidenceで構成）
+  - `focusAreas` → Fact Disposition Tableを生成
   - `existingElements` → Implementation Path MappingとCode Inspection Evidenceに反映
   - `dataModel` → データ関連セクション（スキーマ参照、データ契約）に反映
   - `constraints` → 設計上の制約と前提条件に組み込む
-  - `dataTransformationPipelines` → 検証戦略の出力比較セクションに反映（各パイプラインステップが比較手法でカバーされていること）
+  - `dataTransformationPipelines` → 検証戦略の出力比較セクションに反映
   - 分析でカバーされていない領域、または`limitations`でフラグされた領域についてのみ追加調査を実施
 
 - **Prior-Layer Verification**（任意、レイヤー横断フロー時のみ）: 本Design Docが前レイヤーのDesign Docの契約を参照し、かつそのDDが検証ステップを通過している場合、検証結果のJSONが提供される。使い方:
@@ -329,7 +329,7 @@ ADRに含まない：スケジュール、実装手順、具体的コード
 - [ ] **基準特定ゲート完了**（必須）
 - [ ] **品質保証メカニズムをadopted/notedステータス付きで特定**（必須）
 - [ ] **コード調査エビデンス記録済み**（必須）
-- [ ] **Fact Disposition TableがCodebase Analysisの全focusAreaをカバーし、各行がfact_id + disposition + rationale + evidenceで構成されていること**（Codebase Analysis入力がある場合は必須）
+- [ ] **Fact Disposition TableがCodebase Analysisの全focusAreaをカバーしていること**（Codebase Analysis入力がある場合は必須）
 - [ ] **統合ポイントをコントラクト付きで列挙**（必須）
 - [ ] **データ契約の明確化**（必須）
 - [ ] アーキテクチャとデータフローが図で明確に表現されているか
