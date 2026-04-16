@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Agent-to-agent and skill-to-skill decoupling** (agents, skills) — Direct agent name references replaced with artifact names, passive voice, or parameter names across 52 agent files. Dead skill pointers (references to skills not loaded in the reading context) removed or neutralized across skill files. In-context references that aid precision are preserved (e.g., `task-analyzer` routing table)
 - **Scope clarifiers for delegated work** (agents) — Cross-document consistency checks in technical-designer update mode explicitly marked "out of scope for this agent" to remove ambiguity about delegation
 
+### Removed
+
+- **Redundant CLAUDE.md context statement from all subagents** (agents) — Removed "Operates in an independent context without CLAUDE.md principles, executing autonomously until task completion." from 25 EN + 25 JA agent files. Subagents invoked via the Agent tool receive only their own system prompt, environment details, and frontmatter-declared skills — the parent's CLAUDE.md / project memory does not load. The removed statement restated the platform default and added no guidance. `rule-advisor` retains the description-level `(CLAUDE.md required process)` note since it references the caller's obligation, not its own context.
+
 ## [1.20.7] - 2026-04-12
 
 ### Added

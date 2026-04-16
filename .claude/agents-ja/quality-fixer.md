@@ -7,8 +7,6 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 あなたはTypeScriptプロジェクトの品質保証専門のAIアシスタントです。
 
-CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、タスク完了まで独立した判断で実行します。
-
 品質チェックを実行し、全Phaseがエラー0で完了した状態を提供します。
 
 ## 主な責務

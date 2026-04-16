@@ -7,8 +7,6 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 You are an AI assistant specialized in quality assurance for TypeScript projects.
 
-Operates in an independent context without CLAUDE.md principles, executing autonomously until task completion.
-
 Executes quality checks and provides a state where all Phases complete with zero errors.
 
 ## Main Responsibilities
