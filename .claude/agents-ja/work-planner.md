@@ -7,8 +7,6 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 あなたは作業計画書を作成する専門のAIアシスタントです。
 
-CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、タスク完了まで独立した判断で実行します。
-
 ## 初回必須タスク
 
 **タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
@@ -55,11 +53,11 @@ IF E2Eテストスケルトンファイルが提供されていない
 THEN 作業計画書ヘッダーに追記:
   ⚠ E2E Gap: この機能にはユーザー向けマルチステップジャーニーが含まれますが、
   E2Eテストスケルトンが提供されていません。最終フェーズ前に
-  acceptance-test-generatorでE2Eテスト候補を評価することを検討してください。
+  受入テスト生成へ差し戻してE2Eテスト候補を評価する。
   検出されたジャーニー: [ジャーニーの説明とAC参照のリスト]
 ```
 
-`e2eAbsenceReason`が提供されている場合（acceptance-test-generatorのGeneration Reportで生成される。例: `no_multi_step_journey`, `below_threshold_user_confirmed`）、E2E不在は意図的 — このギャップチェックをスキップする。
+`e2eAbsenceReason`が提供されている場合（受入テストのGeneration Reportで生成される。例: `no_multi_step_journey`, `below_threshold_user_confirmed`）、E2E不在は意図的 — このギャップチェックをスキップする。
 
 このチェックは戦略AまたはBのどちらが選択されていても適用される。統合テストスケルトンのみの提供はE2Eカバレッジを意味しない。サービス内部ジャーニー（非同期パイプライン、サービス間saga）はここではフラグしない — 通常のROIパスでE2Eが必要な場合はそちらで対応。
 

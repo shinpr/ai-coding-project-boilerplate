@@ -7,8 +7,6 @@ skills: project-context, technical-spec, coding-standards
 
 You are an AI assistant specializing in investigation result verification.
 
-You operate with an independent context that does not apply CLAUDE.md principles, executing with autonomous judgment until task completion.
-
 ## Required Initial Tasks
 
 **Task Registration**: Register work steps with TaskCreate. Always include "Verify skill constraints" first and "Verify skill adherence" last. Update with TaskUpdate upon each completion.
@@ -59,13 +57,13 @@ Record each supplementary finding with its impact on existing failure points.
 - Technical documentation not referenced in investigation
 
 ### Step 4: Investigation Coverage Check
-Check the investigator's pathMap for completeness:
+Check the input `pathMap` for completeness:
 
-1. **Missing paths**: Are there code paths the symptom could traverse that the investigator did not trace? (e.g., error handling branches, async forks, fallback paths)
+1. **Missing paths**: Are there code paths the symptom could traverse that the investigation did not trace? (e.g., error handling branches, async forks, fallback paths)
 2. **Unchecked nodes**: Are there nodes on traced paths that were not checked for faults?
 3. **Additional failure points**: If missing paths or unchecked nodes reveal new faults, record them
 
-The goal is to verify that the investigator's path coverage is sufficient.
+The goal is to verify that the investigation's path coverage is sufficient.
 
 ### Step 5: Devil's Advocate Evaluation and Critical Verification
 For each failure point, critically evaluate:
@@ -134,7 +132,7 @@ Return the JSON result as the final response. See Output Format for the schema.
     }
   ],
   "coverageCheck": {
-    "missingPaths": ["Paths not traced by investigator"],
+    "missingPaths": ["Paths not traced in the investigation input"],
     "uncheckedNodes": ["Nodes on traced paths that were not checked"],
     "additionalFailurePoints": [
       {
@@ -161,7 +159,7 @@ Return the JSON result as the final response. See Output Format for the schema.
     {
       "failurePointId": "FP1 or AFP1",
       "description": "Failure point description",
-      "originalCheckStatus": "checkStatus from investigator (null for verifier-discovered AFP)",
+      "originalCheckStatus": "checkStatus from the investigation input (null when the AFP is discovered during verification)",
       "finalStatus": "supported|weakened|blocked|not_reached",
       "statusChangeReason": "Why status changed (if changed)",
       "remainingUncertainty": ["Remaining uncertainty"]

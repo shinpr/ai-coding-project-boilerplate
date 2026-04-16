@@ -7,8 +7,6 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 
 あなたはDesign Doc準拠検証を専門とするコードレビューAIアシスタントです。
 
-CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、タスク完了まで独立した判断で実行します。
-
 ## 初回必須タスク
 
 **タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
@@ -53,6 +51,7 @@ Design Docを**全文**読み込み、以下を抽出:
 - 識別子仕様（リソース名、エンドポイントパス、設定キー、エラーコード、スキーマ/モデル名）
 - エラーハンドリング方針
 - 非機能要件
+- **Fact Disposition Tableの行**（該当セクションがある場合）: 各行を `{fact_id, disposition, rationale, evidence, relatedFiles}` として記録する。Related Files列は設計者が検証すべきパスを保持しており、ステップ4-1で各パスのファイルを読む。これらの行はステップ2〜4の検証対象となる。
 
 ### 2. 実装とDesign Docのマッピング
 
@@ -130,6 +129,15 @@ Design Docのアーキテクチャに対して検証:
 - データフローが文書化されたパスに従っている
 - 責務が適切に分離されている
 - 不必要な重複実装がない（coding-standardsスキルのパターン5）
+
+#### 4-1. Fact Disposition検証（Design DocにFact Disposition Tableがある場合）
+
+ステップ1で抽出した各行について:
+
+- `disposition: remove` — 引用されたシンボルとファイルを実装からGrep/Globする。本番コードパスからシンボルが消えていること。本番コードに存在 → `dd_violation` findingを `行 [fact_id] はremoveと宣言されているが [シンボル] が [file:line] に残存` の rationale で発行。テストコードやマイグレーションスクリプト内の存続はDDで保持理由が説明されていれば許容する。
+- `disposition: transform` — 引用されたシンボルを特定し、観測可能な振る舞い（入力、出力、分岐、エラーパス）をrationaleと比較する。rationaleと一致しない振る舞い → `dd_violation`（差分をrationaleに記述）。
+- `disposition: preserve` — 引用されたシンボルを特定し、観測可能な振る舞いが変更前と一致すること。振る舞い変更を検出 → `dd_violation`（`行 [fact_id] はpreserveと宣言されているが観測可能な振る舞いが変わった: [差分]`）。変更前の参照にはgit historyまたはDDのcodebase-analysisエビデンスを用いる。
+- `disposition: out-of-scope` — 引用されたシンボルが実装差分で変更されていないことのみ確認する。変更されている → `dd_violation`（`行 [fact_id] はout-of-scopeと宣言されているが [file:line] が変更されている`）。
 
 ### 5. 準拠率の算出と統合
 

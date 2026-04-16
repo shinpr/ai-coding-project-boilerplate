@@ -110,6 +110,20 @@ unknowns:
 ### コード調査エビデンス
 - [パス:関数] — [関連性: 類似機能 / 統合点 / パターン参照]
 
+### Fact Disposition Table
+
+コードベース分析の`focusAreas`の各エントリに対して1行ずつ記載する。この表は**構造的な既存事実**と設計を結び付ける主たるテーブル（Verification StrategyのOutput Comparisonは**ランタイムの振る舞い**を別途拘束する）。既存の振る舞いに言及する他セクションはこの表の行を`fact_id`値で参照する。
+
+| Fact ID | Focus Area | Disposition | Rationale | Evidence | Related Files |
+|---------|------------|-------------|-----------|----------|---------------|
+| [focusAreasのfact_id] | [focusAreasのarea] | preserve / transform / remove / out-of-scope | [preserve: 確認のみの文言、例「既存の振る舞いを変更なしで維持」 — 振る舞い変更を主張するRationaleはレビューでpreserve mismatchとして検出される、transform: 新しい観測可能な結果を記述、例「分岐Xは410でなく404を返す」 — 全体として無変更を主張するRationaleはtransform mismatchとして検出される、remove: 理由を記述、ポリシー由来ならPRD/UI Specセクションを引用 — 本番コードパスでの保持を主張するRationaleはremove mismatchとして検出される（テスト/移行スクリプトでの保持を明示した場合は妥当）、out-of-scope: スコープ定義セクションを引用、既存の振る舞いがそのまま残るならpreserveを優先] | [focusAreasのevidence値をそのまま引き継ぎ] | [focusAreas.relatedFilesのパス一覧をそのまま引き継ぎ、カンマ区切り、例: `src/auth/createUser.ts, src/api/routes/users.ts`] |
+
+### Cross-Layer Assumptions（レイヤー横断フロー時のみ）
+
+本Design Docが前レイヤーのDesign Docの未検証主張に依存する場合（Prior-Layer Verification参照）、各主張に正当化と下流検証先を記載する:
+
+- [主張]: [正当化]; 検証先: [ステップまたは成果物]
+
 ## 設計
 
 ### 変更影響マップ
@@ -305,7 +319,7 @@ unknowns:
 
 ## 検証戦略
 
-設計時に「正しさとは何か」「どう証明するか」を定義する。L1/L2/L3（implementation-approachスキル）はタスク実行時の完了検証の粒度を定義する。
+設計時に「正しさとは何か」「どう証明するか」を定義する。L1/L2/L3（検証粒度の階層）はタスク実行時の完了検証の粒度を定義する。
 
 ### 正しさの証明方法
 

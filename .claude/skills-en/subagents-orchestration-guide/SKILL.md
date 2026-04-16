@@ -40,7 +40,7 @@ When receiving a new task, pass user requirements directly to requirement-analyz
 2. **task-decomposer**: Appropriate task decomposition of work plans
 3. **task-executor**: Individual task execution and structured response
 4. **integration-test-reviewer**: Review integration/E2E tests for skeleton compliance
-5. **security-reviewer**: Security compliance review against Design Doc and coding-standards after all tasks complete
+5. **security-reviewer**: Security compliance review against Design Doc and project coding standards after all tasks complete
 
 ### Document Creation Agents
 6. **requirement-analyzer**: Requirement analysis and work scale determination (WebSearch enabled, latest technical information research)
@@ -200,17 +200,19 @@ Replace the standard Design Doc creation step with per-layer creation:
 | Step | Agent | Purpose |
 |------|-------|---------|
 | 8 | codebase-analyzer ×2 | Codebase analysis per layer (pass req-analyzer output, filtered to layer) |
-| 9a | technical-designer | Backend Design Doc (with backend codebase-analyzer context) |
-| 9b | technical-designer-frontend | Frontend Design Doc (with frontend codebase-analyzer context + backend Integration Points) |
-| 10 | code-verifier ×2 | Verify each Design Doc against existing code |
-| 11 | document-reviewer ×2 | Review each Design Doc (with code-verifier results as code_verification) |
-| 12 | design-sync | Cross-layer consistency verification **[Stop]** |
+| 9 | technical-designer | Backend Design Doc (with backend codebase-analyzer context) |
+| 10 | code-verifier | Verify Backend Design Doc against existing code (its result JSON becomes `prior_layer_verification` for step 12) |
+| 11 | document-reviewer | Review Backend Design Doc (pass step-10 result as `code_verification` and backend codebase-analyzer JSON as `codebase_analysis`). **[Stop on critical issues]** — structural defects here block step 12. |
+| 12 | technical-designer-frontend | Frontend Design Doc (with frontend codebase-analyzer context + reviewed Backend Design Doc + `prior_layer_verification` from step 10 + UI Spec) |
+| 13 | code-verifier | Verify Frontend Design Doc against existing code |
+| 14 | document-reviewer | Review Frontend Design Doc (pass step-13 result as `code_verification` and frontend codebase-analyzer JSON as `codebase_analysis`). **[Stop on critical issues]** — structural defects here block step 15. |
+| 15 | design-sync | Cross-layer consistency verification **[Stop]** |
 
-Steps marked with ×2 invoke the agent once per layer. These invocations are independent and can run in parallel when the orchestrator supports concurrent Agent tool calls.
+The `codebase-analyzer ×2` invocations can run in parallel. The backend path (steps 9-11) runs sequentially before step 12 so that the frontend designer reads a backend Design Doc whose structural defects (AC gaps, Fact Disposition Table issues, Verification Strategy defects) have already been surfaced by document-reviewer, and whose code/doc discrepancies have already been enumerated by code-verifier. The frontend designer can then identify which backend contracts have known issues via `prior_layer_verification.discrepancies[]` and the step-11 review feedback, and design around those unstable surfaces (route integration points to stable contracts, or record the dependency in `## Cross-Layer Assumptions`).
 
 **Layer Context in Design Doc Creation**:
 - **Backend**: "Create a backend Design Doc from PRD at [path]. Codebase analysis: [JSON from codebase-analyzer for backend layer]. Focus on: API contracts, data layer, business logic, service architecture."
-- **Frontend**: "Create a frontend Design Doc from PRD at [path]. Codebase analysis: [JSON from codebase-analyzer for frontend layer]. Reference backend Design Doc at [path] for API contracts and Integration Points. Focus on: component hierarchy, state management, UI interactions, data fetching."
+- **Frontend**: "Create a frontend Design Doc from PRD at [path]. Codebase analysis: [JSON from codebase-analyzer for frontend layer]. Reviewed Backend Design Doc at [path] — extract API contracts and Integration Points from this document to populate the frontend Integration Point Map. Backend review findings: [critical/important issues from step-11 document-reviewer, if any]. prior_layer_verification: [JSON from code-verifier on backend Design Doc]. Identify unstable backend contracts via `prior_layer_verification.discrepancies[]` and the review findings; limit verified-claim inference to what the verifier output states explicitly. For contracts you must depend on that remain unverified, list them in the `## Cross-Layer Assumptions` section with justification and verification target. Reference UI Spec at [path] for component structure. Focus on: component hierarchy, state management, UI interactions, data fetching."
 
 **design-sync**: Use frontend Design Doc as source. design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
 
@@ -292,12 +294,18 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
    #### codebase-analyzer → technical-designer
 
    **Pass to codebase-analyzer**: requirement-analyzer JSON output, PRD path (if exists), original user requirements
-   **Pass to technical-designer**: codebase-analyzer JSON output as additional context in the Design Doc creation prompt. The designer uses `focusAreas`, `dataModel`, `dataTransformationPipelines`, and `qualityAssurance` to inform the Existing Codebase Analysis, Verification Strategy, and Quality Assurance Mechanisms sections.
+   **Pass to technical-designer**: codebase-analyzer JSON output as additional context in the Design Doc creation prompt. Required downstream uses:
+   - `focusAreas` → canonical disposition-target list for the Fact Disposition Table (one row per focusArea, carrying through `fact_id` and `evidence` verbatim)
+   - `dataModel`, `dataTransformationPipelines`, `qualityAssurance` → Existing Codebase Analysis, Verification Strategy, and Quality Assurance Mechanisms sections
 
    #### code-verifier → document-reviewer (Design Doc review)
 
-   **Pass to code-verifier**: Design Doc path (doc_type: design-doc). `code_paths` is intentionally omitted — the verifier independently discovers code scope from the document.
-   **Pass to document-reviewer**: code-verifier JSON output as `code_verification` parameter.
+   **Pass to code-verifier**: Design Doc path (doc_type: design-doc). Omit `code_paths`; the verifier independently discovers code scope from the document.
+   **Pass to document-reviewer**: code-verifier JSON output as `code_verification` parameter, **and** the same codebase-analyzer JSON previously given to the designer as `codebase_analysis`. The reviewer uses `codebase_analysis.focusAreas` to verify Fact Disposition Table coverage.
+
+   #### code-verifier + document-reviewer → next-layer technical-designer (cross-layer flow only)
+
+   **Pass to next-layer technical-designer**: reviewed prior-layer Design Doc path plus `prior_layer_verification` (the JSON from the prior-layer code-verifier). See Cross-Layer Orchestration section for sequencing. Use `prior_layer_verification.discrepancies[]` plus prior-layer review findings to identify unstable contracts. Limit verified-claim inference to what the verifier output states explicitly; when the design must depend on a claim not confirmed by the verifier, record it in the frontend Design Doc's `## Cross-Layer Assumptions` section with justification and a verification target (escalation uses the same section with `verify at: escalation to user` — choose escalation only when the dependency cannot be bounded by a downstream verification step).
 
    #### technical-designer → work-planner
 

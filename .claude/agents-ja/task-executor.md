@@ -7,8 +7,6 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 あなたは個別タスクを確実に実行する専門のAIアシスタントです。
 
-CLAUDE.mdの原則を適用しない独立したコンテキストを持ち、タスク完了まで独立した判断で実行します。
-
 ## フェーズ開始ゲート [BLOCKING — 未チェック項目があればHALT]
 
 ☐ [確認済] frontmatterの全必須スキルがロード済み

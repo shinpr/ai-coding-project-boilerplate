@@ -72,7 +72,7 @@ skills: coding-standards, project-context, technical-spec
    - 各要素のファイルパスと行番号
 4. **アクセスパターンとスキーマのマッピング**: ステップ2の各データアクセス操作について、対象スキーマと操作種別（read, write, aggregate, join）を特定
 
-### ステップ4: 制約と前提条件の抽出
+### ステップ4: 制約・Disposition Targets・前提条件の抽出
 
 ステップ2-3で発見した各要素について:
 
@@ -80,8 +80,22 @@ skills: coding-standards, project-context, technical-spec
 2. **ビジネスルール**: コードロジックに埋め込まれたルール（ドメイン不変条件を強制する条件分岐）を抽出
 3. **設定依存**: 参照されている設定値、環境変数、フィーチャーフラグを特定
 4. **ハードコードされた前提**: マジックナンバー、ドメイン意味を持つ文字列リテラル、暗黙の依存関係を記録
-5. **既存テストカバレッジ**: 影響ファイルに対応するテストファイルをGlob。テストカバレッジのある要素を記録
-6. **品質保証メカニズム**: 影響領域で品質がどのように担保されているかを特定
+5. **Disposition targets**（`focusAreas`に投入）: 変更スコープ内で設計が明示的に扱うべき既存事実を列挙する。関連する事実は1つのfocus areaにまとめる（例: 1つの関数とその呼び出し元、1つのデータ構造とその分岐/ケース、1つの外部依存とその使用箇所）。各focus areaは次を集約する: 入力フィールド、呼び出し元/消費側、観測可能な結果が異なる分岐ケース、データ形状、エラーパス、外部依存、運用ケース。
+
+   **カーディナリティ制約がある場合は次の優先順で選ぶ:**
+   1. 観測可能な結果を分岐させる事実（入力バリアントごとに出力が異なる）
+   2. 外部契約を束縛する事実（APIシェイプ、モジュール境界をまたぐスキーマフィールド、呼び出し元シグネチャ）
+   3. ドメイン不変条件を符号化する事実（バリデーションルール、ビジネス制約）
+
+   **目安カーディナリティ**: 典型的な変更で5-15件。候補が15件を超える場合、カテゴリ1と2のエントリは全て保持し、カテゴリ3は関連するカテゴリ1/2エントリの`factsToAddress`テキストにマージする。
+
+   **`fact_id`の生成**: `<repo相対の主ファイルパス>:<主シンボル名またはfocus areaラベル>` 形式で、事実集合を代表するファイルと、存在する場合は正確なシンボル名を用いる。シンボル名がないときは短く正規化したfocus areaラベルを使う。**レイヤー横断機能の場合**: 共有される型・スキーマ・API契約が複数レイヤーから参照されるとき、`fact_id`は**canonical source file**（定義箇所に最も近い共有モジュール、例: `packages/shared/schemas/user.ts:User`）をアンカーとする。これによりレイヤー別codebase-analyzerが同一概念に対して同じ`fact_id`を生成し、レイヤー横断のdisposition矛盾検出が成立する。
+
+   **`evidence`の記録**: 次のいずれかの形式で単一の参照文字列を記録する（該当する中で最も具体的なものを選ぶ）: `existingElements[name='<名前>']` / `constraints[location='<file>:<line>']` / `<file>:<line>`。1つのfocus areaにつき1形式のみを記録する。
+
+   **`relatedFiles`の記録**: 設計者がこのfocus areaに対処するために読む必要がある全ファイルパスを列挙する（関数中心の領域なら呼び出し元、データ形状中心の領域なら消費側、外部依存なら使用箇所）。`fact_id`の主ファイルも含める。
+6. **既存テストカバレッジ**: 影響ファイルに対応するテストファイルをGlob。テストカバレッジのある要素を記録
+7. **品質保証メカニズム**: 影響領域で品質がどのように担保されているかを特定
    - 影響ファイルをカバーするlinter設定ファイル、CIワークフロー定義、静的解析設定をGrepで検索
    - 影響ファイルがドメイン固有ツール（スキーマバリデータ、API spec validator、設定ファイルリンター等）の対象かどうかをCIパイプラインやpre-commitフックを調べて確認
    - 設定ファイル、CIチェック、ドキュメント化された基準からドメイン固有の制約（命名規約、文字数制限、フォーマット要件）を特定
@@ -185,10 +199,12 @@ skills: coding-standards, project-context, technical-spec
   },
   "focusAreas": [
     {
-      "area": "領域名",
-      "reason": "設計者がこの領域に注意すべき理由",
-      "relatedFiles": ["path/to/file1"],
-      "risk": "設計で見落とした場合に起こりうる問題"
+      "fact_id": "src/auth/createUser.ts:createUser",
+      "area": "領域名（既存事実の1つのまとまり）",
+      "evidence": "existingElements[name='createUser']",
+      "relatedFiles": ["src/auth/createUser.ts", "src/api/routes/users.ts", "src/services/notification.ts"],
+      "factsToAddress": "設計が扱うべき具体的事実（例: '関数Xは[a, b, c]から呼び出される'、'メソッドYは4つの結果ケースに分岐する: case1...case4'、'フィールドZは[v1, v2, v3]の値を受け付ける'）",
+      "risk": "これらの事実を設計が省略または矛盾させた場合に起こる問題"
     }
   ],
   "testCoverage": {
@@ -211,7 +227,7 @@ skills: coding-standards, project-context, technical-spec
 - [ ] file:lineエビデンス付きで制約を抽出した
 - [ ] 影響ファイルをカバーする品質保証メカニズム（linter、CIチェック、ドメイン固有バリデータ）を特定した
 - [ ] 設定ファイルやCIからドメイン固有の制約（命名規約、文字数制限、フォーマット）を記録した
-- [ ] リスク記述付きの注目領域を生成した
+- [ ] focus areasをdisposition targetsとして生成した（各エントリが設計が扱うべき既存事実のまとまりを集約し、カーディナリティは目安15件以下に統合されている）
 - [ ] 発見した要素のテストカバレッジを確認した
 - [ ] 最終レスポンスがJSON出力
 
@@ -220,7 +236,7 @@ skills: coding-standards, project-context, technical-spec
 - [ ] 全ファイルパスがGlob/Readで存在確認済み
 - [ ] 全シグネチャと名前がコードから正確に転記（正規化や修正なし）
 - [ ] スキーマフィールド名が実際の定義と一致（類似テーブルからの推測ではない）
-- [ ] 各注目領域が具体的なファイルと具体的なリスクを引用
+- [ ] 各focus areaが安定した`fact_id`（レイヤー横断の共有アンカーはcanonical source fileを指す）を持ち、`evidence`（file:lineまたは`existingElements`/`constraints`参照）を引用し、設計者が読むべき全ファイルを`relatedFiles`に列挙し、`factsToAddress`を記述し、省略時の`risk`を明示している
 - [ ] `dataModel.detected`がデータ操作の検出有無を正確に反映
 - [ ] `dataTransformationPipelines`がデータを変換するすべてのエントリポイントについて記録されている（変換が存在しない場合のみ空配列）
 - [ ] 各パイプラインステップの`externalLookups`が出力値を変更するすべてのマスタテーブル/設定値/定数参照を列挙

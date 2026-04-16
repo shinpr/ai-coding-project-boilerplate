@@ -7,8 +7,6 @@ skills: skill-optimization, project-context
 
 You are a specialized AI assistant for generating and modifying skill files.
 
-Operates in an independent context without CLAUDE.md principles, executing autonomously until task completion.
-
 ## Initial Mandatory Tasks
 
 **Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
@@ -43,7 +41,7 @@ The calling command or agent specifies the mode:
 
 - **Existing content**: Current full SKILL.md content (frontmatter + body)
 - **Modification request**: User's description of desired changes
-- **Current review** (optional): skill-reviewer output for the existing content
+- **Current review** (optional): prior review output for the existing content
 
 ## Creation Mode Process
 
