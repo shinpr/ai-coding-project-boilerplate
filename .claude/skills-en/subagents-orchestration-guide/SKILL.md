@@ -133,12 +133,12 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 | requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions | Select flow by scale; check adrRequired for ADR step |
 | codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, qualityAssurance (mechanisms[], domainConstraints[]), focusAreas[], existingElements count, limitations | Pass focusAreas to technical-designer as context |
 | code-verifier | status (consistent/mostly_consistent/needs_review/inconsistent), consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). Pre-implementation: verifies Design Doc claims against existing codebase. Post-implementation: verifies implementation consistency against Design Doc (pass `code_paths` scoped to changed files) | Flag discrepancies for document-reviewer |
-| task-executor | status (escalation_needed/completed), escalation_type (design_compliance_violation/similar_function_found/similar_component_found/investigation_target_not_found/out_of_scope_file/dependency_version_uncertain), testsAdded, requiresTestReview | On escalation_needed: handle by escalation_type |
-| quality-fixer | Input: `task_file` (path to current task file — always pass this in orchestrated flows). Status: approved/stub_detected/blocked. `stub_detected` → route back to task-executor with `incompleteImplementations[]` details for completion, then re-run quality-fixer. `blocked` → see quality-fixer blocked handling below | On stub_detected: re-invoke task-executor. On blocked: see handling below |
+| task-executor | Input: `task_file` (required in orchestrated flows); optional Fix Mode signals `requiredFixes` or `incompleteImplementations` — when either is non-empty, skip `task_already_completed` and extend allowed list with each item's `file_path` / `location` (parse `location` as `file[:line]`). Output: status (escalation_needed/completed), filesModified[], testsAdded, requiresTestReview, escalation_type ∈ {task_file_not_found, task_already_completed, target_files_missing, design_compliance_violation, similar_function_found, similar_component_found, investigation_target_not_found, out_of_scope_file, dependency_version_uncertain}. | On escalation_needed: handle by escalation_type |
+| quality-fixer | Input: `task_file` (path to current task file — always pass this in orchestrated flows), `filesModified` (extract from the upstream implementation step's response — passes the task's write set as the primary scope for stub-detection; falls back to `git diff HEAD` when omitted). Status: approved/stub_detected/blocked. `stub_detected` → route back to the implementation step with `incompleteImplementations[]` details for completion, then re-run quality-fixer. `blocked` → see quality-fixer blocked handling below | On stub_detected: re-invoke the implementation step. On blocked: see handling below |
 | document-reviewer | approvalReady (true/false) | Proceed to next step on true; request fixes on false |
 | design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | On CONFLICTS_FOUND: present conflicts to user before proceeding |
-| integration-test-reviewer | status (approved/needs_revision/blocked), requiredFixes | On needs_revision: pass requiredFixes back to task-executor |
-| security-reviewer | status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes | On needs_revision: pass requiredFixes back to task-executor |
+| integration-test-reviewer | status (approved/needs_revision/blocked), requiredFixes | On needs_revision: re-invoke the routed executor in Fix Mode with the same task_file and requiredFixes[] |
+| security-reviewer | status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes | On needs_revision: create a consolidated fix task file with affected files in Target Files, then invoke executor in Fix Mode with that task_file and requiredFixes[] (see build/implement recipes) |
 | acceptance-test-generator | status, generatedFiles (integration: path\|null, e2e: path\|null), budgetUsage, e2eAbsenceReason (null when E2E emitted, otherwise: no_multi_step_journey\|below_threshold_user_confirmed) | Verify files exist, pass to work-planner with absence reason |
 
 ### quality-fixer Blocked Handling
@@ -147,7 +147,7 @@ When quality-fixer returns `status: "blocked"`, discriminate by `reason`:
 - `"Cannot determine due to unclear specification"` → read `blockingIssues[]` for specification details
 - `"Execution prerequisites not met"` → read `missingPrerequisites[]` with `resolutionSteps` and present to user as actionable next steps
 
-## My Basic Flow for Work Planning
+## My Basic Flow: Planning and Implementation
 
 When receiving new features or change requests, I first request requirement analysis from requirement-analyzer.
 According to scale determination:
@@ -187,7 +187,9 @@ According to scale determination:
 ### Small Scale (1-2 Files) - 2 Steps
 
 1. work-planner → Simplified work plan creation **[Stop: Batch approval]**
-2. Direct implementation → Completion report
+2. task-executor → quality-fixer → commit (per task) → Completion report
+
+Note: At Small scale the implementation step still runs through task-executor with the standard 4-step cycle (`task-executor → escalation judgment → quality-fixer → commit`). Direct orchestrator edits are not used.
 
 ## Cross-Layer Orchestration
 
@@ -243,7 +245,7 @@ During autonomous execution, route agents by task filename pattern:
 ### Step 2 Execution Details
 - `status: escalation_needed` or `status: blocked` -> Escalate to user
 - `requiresTestReview` is `true` -> Execute **integration-test-reviewer**
-  - If verdict is `needs_revision` -> Return to task-executor with `requiredFixes`
+  - If verdict is `needs_revision` -> Re-invoke the routed executor (task-executor or task-executor-frontend per Layer-Aware Agent Routing) in **Fix Mode** with the same `task_file` and the `requiredFixes[]` array
   - If verdict is `approved` -> Proceed to quality-fixer
 
 ### Conditions for Stopping Autonomous Execution
@@ -270,6 +272,10 @@ Every subagent prompt must include:
 2. Expected action (what the agent should do)
 
 Construct the prompt from the agent's Input Parameters section and the deliverables available at that point in the flow.
+
+Two additional rules:
+- Subagents see only the Agent prompt and files they read. Include required paths, prior JSON, parameters, and scope constraints explicitly.
+- Replace every `[placeholder]` in examples below with concrete values before invoking the Agent tool.
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"

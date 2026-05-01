@@ -106,7 +106,7 @@ Invoke task-executor-frontend using Agent tool:
 Invoke quality-fixer-frontend using Agent tool:
 - `subagent_type`: "quality-fixer-frontend"
 - `description`: "Quality gate check"
-- `prompt`: "Confirm quality gate passage for fixed files."
+- `prompt`: "Confirm quality gate passage for fixed files. task_file: docs/plans/tasks/review-fixes-YYYYMMDD.md. filesModified: [extract from the prior implementation step's response]."
 
 ### Step 9: Re-validate code-reviewer
 
@@ -151,3 +151,14 @@ Remaining issues:
 - Committed secrets (blocked → human intervention)
 
 **Scope**: Design Doc compliance validation, security review, and auto-fixes.
+
+## Scope Boundary for Subagents
+
+Append the following block to every subagent prompt invoked from this recipe:
+
+```
+Scope boundary for subagents:
+Operate within the task scope and referenced files in the prompt.
+Use loaded skills to execute that scope.
+Escalate when the required fix or investigation falls outside that scope.
+```

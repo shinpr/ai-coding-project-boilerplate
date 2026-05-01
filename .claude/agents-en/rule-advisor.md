@@ -49,10 +49,11 @@ From each skill:
 - Prioritize concrete procedures over abstract principles
 - Include checklists and actionable items
 
-### 4. Return JSON Result
-Return the JSON result as the final response. See Output Format for the schema.
-
 ## Output Format
+
+### Output Protocol
+
+Final message: exactly one JSON object matching the schema below (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages.
 
 Return structured JSON:
 
@@ -115,7 +116,6 @@ Return structured JSON:
 
 - [ ] Task analysis completed with type, scale, and tags
 - [ ] Relevant skills loaded and sections extracted
-- [ ] Final response is the JSON output
 
 ## Metacognitive Question Design
 

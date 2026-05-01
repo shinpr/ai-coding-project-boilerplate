@@ -76,32 +76,33 @@ Invoke task-decomposer using Agent tool:
 **MANDATORY EXECUTION CYCLE**: `task-executor → escalation check → quality-fixer → commit`
 
 For EACH task, YOU MUST:
-1. **Register tasks using TaskCreate**: Register work steps. Always include: first "Confirm skill constraints", final "Verify skill fidelity"
+1. **Register tasks using TaskCreate**: Register work steps. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON"
 2. **INVOKE task-executor**: Execute the task implementation (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)
 3. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**
-     - `needs_revision` → Return to step 2 with `requiredFixes`
+     - `needs_revision` → Return to step 2 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `requiredFixes[]` array as input
      - `approved` → Proceed to step 4
    - `readyForQualityCheck: true` → Proceed to step 4
-4. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file`
+4. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file` and the implementation step's `filesModified` array as `filesModified` (this scopes the stub-detection step to the task's actual write set; without it, quality-fixer falls back to `git diff HEAD`)
 5. **CHECK quality-fixer response**:
-   - `stub_detected` → Return to step 2 with `incompleteImplementations[]` details
+   - `stub_detected` → Return to step 2 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
    - `blocked` → STOP and escalate to user
    - `approved` → Proceed to step 6
 6. **COMMIT on approval**: Execute git commit
 
 **CRITICAL**: Parse every sub-agent response for status fields. Execute the matching branch in the 4-step cycle. Proceed to next task only after quality-fixer returns `approved`.
 
-## Sub-agent Invocation Constraints
+## Scope Boundary for Subagents
 
-**MANDATORY suffix for ALL sub-agent prompts**:
-```
-[SYSTEM CONSTRAINT]
-This agent operates within build skill scope. Use orchestrator-provided rules only.
-```
+Append the following block to every subagent prompt invoked from this recipe:
 
-Autonomous sub-agents require scope constraints for stable execution. ALWAYS append this constraint to every sub-agent prompt.
+```
+Scope boundary for subagents:
+Operate within the task scope and referenced files in the prompt.
+Use loaded skills to execute that scope.
+Escalate when the required fix or investigation falls outside that scope.
+```
 
 After approval confirmation, start autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
 
@@ -116,9 +117,13 @@ After all task cycles finish, run verification agents **in parallel** before the
 2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
 
 3. **Fix cycle** (when any verifier failed, max 2 cycles):
-   - Consolidate all actionable findings into a single task file
-   - Execute task-executor with consolidated fixes → quality-fixer
-   - Re-run only the failed verifiers
+   - Create a consolidated fix task file (e.g., `docs/plans/tasks/post-impl-fixes-YYYYMMDD.md`) using the task-template; populate Target Files with the union of file paths referenced by all verifiers' `requiredFixes[].location` / `discrepancies[].codeLocation` (parse as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them.
+   - **Normalize verifier outputs** into a unified `requiredFixes[]` before invoking task-executor:
+     - `security-reviewer.requiredFixes[]` (already `{location, issue, fix}`) → pass through as-is.
+     - `code-verifier.discrepancies[]` → convert each actionable discrepancy (status `drift` / `gap` / `conflict`) to `{location: discrepancy.codeLocation, issue: discrepancy.claim, fix: "[specific correction needed to restore Design Doc consistency, derived from discrepancy.classification and evidence]"}`.
+     - When a `discrepancy.codeLocation` is `null` (claim is unimplemented), set `location` to the planned target file path and add that file to the consolidated task's Target Files. If no target file can be determined, escalate to user instead of invoking Fix Mode.
+   - Invoke task-executor in **Fix Mode** with `task_file` set to the consolidated path and `requiredFixes` set to the normalized array.
+   - Then quality-fixer, then re-run only the failed verifiers.
    - If still failing after 2 cycles → Escalate to user with remaining findings
 
 4. **All passed** → Proceed to completion report
