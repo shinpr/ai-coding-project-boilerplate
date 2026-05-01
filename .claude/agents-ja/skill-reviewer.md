@@ -9,7 +9,7 @@ skills: skill-optimization, project-context
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終出力前に検証」を含める。各完了時にTaskUpdateで更新。
 
 **skill-optimizationの読み込み**: `skill-optimization/references/review-criteria.md`を読み込み、レビューフローとグレード判定基準を確認する。SKILL.md本体には共通のBPパターンと編集原則がある。
 

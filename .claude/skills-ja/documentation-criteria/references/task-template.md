@@ -1,54 +1,57 @@
-# タスク: [タスク名]
+# Task: [タスク名]
 
-メタデータ:
-- 依存関係: task-01 → 成果物: docs/plans/analysis/research-results.md
-- 提供物: docs/plans/analysis/api-spec.md（調査・設計タスクの場合）
-- サイズ: 小規模（1-2ファイル）
+Metadata:
+- Dependencies: task-01 -> Deliverable: docs/plans/analysis/research-results.md
+- Provides: docs/plans/analysis/api-spec.md（調査・設計タスクの場合）
+- Size: 小規模（1-2ファイル）
 
-## 実装内容
+## Implementation Content
 [このタスクで達成すること]
 *依存関係の成果物を参照する場合は明記
 
-## 対象ファイル
+## Target Files
 - [ ] [実装ファイルパス]
 - [ ] [テストファイルパス]
 
-## 調査対象
+## Investigation Targets
 実装開始前に読むべきファイル（ファイルパス、任意でサーチヒント付き）:
-- [例: src/orders/checkout (processOrder関数) — タスクの性質に基づきtask-decomposerが決定]
+- [例: src/orders/checkout (processOrder関数) — タスクの性質に基づきタスク分解時に決定]
 
-## 実装ステップ（TDD: Red-Green-Refactor）
-### 1. Redフェーズ
-- [ ] 全ての調査対象を読み、主要な所見を記録
-- [ ] 依存関係の成果物を確認（ある場合）
+## Investigation Notes
+（実装観察事項を実装開始前にここへ追記する。）
+
+## Implementation Steps (TDD: Red-Green-Refactor)
+### 1. Red Phase
+- [ ] 全ての Investigation Targets を読み、主要な所見を記録
+- [ ] Dependencies の成果物を確認（ある場合）
 - [ ] 契約定義を確認・作成
 - [ ] 失敗するテストを書く
 - [ ] テストを実行し失敗を確認
 
-### 2. Greenフェーズ
+### 2. Green Phase
 - [ ] テストをパスする最小限の実装を追加
 - [ ] 追加したテストのみ実行しパスを確認
 
-### 3. Refactorフェーズ
+### 3. Refactor Phase
 - [ ] コードを改善（テストはパス状態を維持）
 - [ ] 追加したテストが引き続きパスすることを確認
 
-## 品質保証メカニズム
-（作業計画書ヘッダーより — このタスクの対象ファイルに該当するメカニズム）
+## Quality Assurance Mechanisms
+（作業計画書ヘッダーより — このタスクの Target Files に該当するメカニズム）
 - [ツール/チェック名] — 検証内容: [何を担保するか] — 設定/出典: [パス] — 種別: `executable_check` | `passive_constraint`
 
-## 動作検証方法
-（作業計画書の検証戦略から導出）
-- **検証手法**: [何をどう検証するか — 例: 「新実装の出力をsrc/legacy/order_calcの既存実装と比較」「エンドポイントをテストDBに対して実行しレスポンスがコントラクトに一致することを確認」]
+## Operation Verification Methods
+（作業計画書の Verification Strategy から導出）
+- **検証手法**: [何をどう検証するか — 例: 「新実装の出力を src/legacy/order_calc の既存実装と比較」「エンドポイントをテストDBに対して実行しレスポンスがコントラクトに一致することを確認」]
 - **成功基準**: [正しさを証明する観察可能な成果 — 例: 「全入力パターンで既存実装と出力が一致」「APIが期待スキーマで200を返す」]
 - **失敗時の対応**: [検証失敗時の対処 — 例: 「続行前にアプローチを再評価」「ユーザーにエスカレーション」]
 - **検証レベル**: [L1: エンドユーザー機能としての動作確認 / L2: 新規テスト追加・パス / L3: ビルドエラーなし]
 
-## 完了条件
+## Completion Criteria
 - [ ] 追加した全テストがパス
-- [ ] 動作検証方法に基づく動作確認完了
+- [ ] Operation Verification Methods に基づく動作確認完了
 - [ ] 成果物作成完了（調査・設計タスクの場合）
 
-## 備考
+## Notes
 - 影響範囲: [変更が波及する可能性のある領域]
 - スコープ境界: [変更せず維持するファイル — パスと理由]

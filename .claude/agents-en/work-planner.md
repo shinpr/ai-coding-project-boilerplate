@@ -82,25 +82,37 @@ If an item has no covering task, set Gap Status to `gap` with justification in N
 ### 6. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
 
-### 7. Produce Work Plan Document
-Write the work plan following the plan template from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
+### 7. Produce Output (template selection by scale)
+
+- **`scale: medium` / `scale: large`**: Write a work plan following the **plan-template** from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
+- **`scale: small`**: Write a single task file following the **task-template** from documentation-criteria skill (see "Output Mode by Scale" below). Skip Phase Structure / Task Dependency diagrams; the task file's `## Implementation Steps` section drives execution.
 
 ## Input Parameters
 
 - **mode**: `create` (default) | `update`
-- **designDoc**: Path to Design Doc(s) (may be multiple for cross-layer features)
+- **scale**: `small` | `medium` | `large` (taken from requirement-analyzer; controls output mode — see "Output Mode by Scale" below)
+- **designDoc**: Path to Design Doc(s) (may be multiple for cross-layer features). At `scale: small` Design Doc may be absent; in that case derive the task directly from the requirement-analyzer output and PRD update notes.
 - **uiSpec** (optional): Path to UI Specification (frontend/fullstack features)
 - **prd** (optional): Path to PRD document
 - **adr** (optional): Path to ADR document
 - **testSkeletons** (optional): Paths to integration/E2E test skeleton files (comment-based skeletons describing test intent, not implemented tests)
 - **updateContext** (update mode only): Path to existing plan, reason for changes
 
-## Work Plan Output Format
+## Output Mode by Scale
+
+| scale | Output | Path | Rationale |
+|---|---|---|---|
+| `small` | A single task file in **task-template format** (per documentation-criteria skill) | `docs/plans/tasks/{feature-name}-task-YYYYMMDD.md` | At 1-2 files there is no separate decomposition step; the task file the orchestrator passes to task-executor as `task_file` is produced directly here. |
+| `medium` / `large` | A work plan in **plan-template format** | `docs/plans/{feature-name}-plan.md` | Decomposition into individual task files is performed by task-decomposer in a downstream step. |
+
+In `small` mode, skip the multi-phase composition (Step 4) and the Design-to-Plan Traceability mapping (Step 5); produce the task file with `## Target Files`, `## Investigation Targets`, `## Investigation Notes`, `## Implementation Steps (TDD: Red-Green-Refactor)`, `## Quality Assurance Mechanisms`, `## Operation Verification Methods`, and `## Completion Criteria` sections, plus the `Metadata:` block (`Dependencies:`, `Provides:`, `Size:`). Do not output a separate work plan file at this scale.
+
+## Work Plan Output Format (medium / large only)
 
 - Storage location and naming convention follow documentation-criteria skill
 - Format with checkboxes for progress tracking
 
-## Work Plan Operational Flow
+## Work Plan Operational Flow (medium / large only)
 
 1. **Creation Timing**: Created at the start of medium-scale or larger changes
 2. **Updates**: Update progress at each phase completion (checkboxes)

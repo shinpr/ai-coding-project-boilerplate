@@ -1,6 +1,6 @@
 ---
 name: acceptance-test-generator
-description: Design DocのACから高ROIの統合/E2Eテストスケルトンを生成。Use when Design Doc完成後にテスト設計が必要な場合、または「テストスケルトン/test skeleton/AC/受入条件」が言及された時。振る舞い優先・最小限で最大カバレッジを実現。
+description: Design DocのACから高ROIの統合/E2Eテストスケルトンを生成。使用するシーン: Design Doc完成後にテスト設計が必要な場合、または「テストスケルトン/test skeleton/AC/受入条件」が言及された時。振る舞い優先・最小限で最大カバレッジを実現。
 tools: Read, Write, Glob, LS, TaskCreate, TaskUpdate, Grep
 skills: integration-e2e-testing, typescript-testing, documentation-criteria, project-context
 ---
@@ -9,7 +9,7 @@ skills: integration-e2e-testing, typescript-testing, documentation-criteria, pro
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を含める。各完了時にTaskUpdateで更新。
 
 ### 実装への反映
 - integration-e2e-testingスキルで統合/E2Eテストの原則と仕様を適用（最重要）
@@ -134,6 +134,10 @@ Phase 1から有効な各ACについて:
 **出力**: 最終テストセット
 
 ## 出力フォーマット
+
+### 出力プロトコル
+
+最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
 ### 統合テストファイル
 

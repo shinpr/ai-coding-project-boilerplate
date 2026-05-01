@@ -39,7 +39,7 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 
 ### 5. 規模判定後：TaskCreateでフロー全ステップを登録（必須）
 
-規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTaskCreateで登録**。最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を必ず含める。登録後、TaskListを参照してフローを進める。
+規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTaskCreateで登録**。最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を必ず含める。登録後、TaskListを参照してフローを進める。
 
 ### 6. 次のアクション実行
 
@@ -58,29 +58,38 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 
 **フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで4ステップを管理する
 
-## 🚨 サブエージェント呼び出し時の制約
+## サブエージェントのスコープ境界
 
-サブエージェントからrule-advisorを呼び出すとシステムクラッシュが発生するため、プロンプト末尾に以下を含める：
+本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
+
 ```
-【制約】rule-advisorはメインAIのみが使用可能です
+Scope boundary for subagents:
+Operate within the task scope and referenced files in the prompt.
+Use loaded skills to execute that scope.
+Escalate when the required fix or investigation falls outside that scope.
+```
+
+加えて、サブエージェントから rule-advisor を呼び出すとシステムクラッシュを引き起こすため、全サブエージェントプロンプトの末尾に以下の制約も含める:
+```
+[Constraint] rule-advisor can only be used by Main AI
 ```
 
 ## 🎯 オーケストレーターとしての必須責務
 
 ### タスク実行品質サイクル
 subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで以下のステップを管理：
-1. **task-executor実行**: 実装を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）
-2. **task-executorレスポンスチェック**:
+1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）
+2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `requiresTestReview` が `true` → **integration-test-reviewer**を実行
-     - `needs_revision` → `requiredFixes`を添えてステップ1に戻る
-     - `approved` → ステップ3へ
-   - それ以外 → ステップ3へ
-3. **quality-fixer実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）。**必ず**現在のタスクファイルパスを`task_file`として渡す
-   - `stub_detected` → `incompleteImplementations[]`の詳細を添えてステップ1に戻す
+   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行
+     - `needs_revision` → ステップ1 に戻り、同じ `task_file` と `requiredFixes[]` 配列を入力として task-executor を **Fix Mode** で再起動
+     - `approved` → ステップ3 へ
+   - それ以外 → ステップ3 へ
+3. **quality-fixer を呼び出す**: 全品質チェックと修正を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。`task_file` として現在のタスクファイルパス、`filesModified` として実装ステップの `filesModified` 配列を **必ず渡す**（未完成実装検出を当該タスクの実書き込み集合にスコープする。省略時は quality-fixer が `git diff HEAD` にフォールバック）
+   - `stub_detected` → ステップ1 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor を **Fix Mode** で再起動
    - `blocked` → ユーザーにエスカレーション
-   - `approved` → ステップ4へ
-4. **承認後コミット**: `approved`確認後 → git commitを実行
+   - `approved` → ステップ4 へ
+4. **承認後コミット**: `approved` 確認後 → git commit を実行
 
 ### Security Review（全タスク完了後）
 
@@ -88,7 +97,7 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
 1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリストを渡す
 2. レスポンスを確認:
    - `approved` または `approved_with_notes` → 完了レポートへ（notesがあれば含める）
-   - `needs_revision` → task-executorで`requiredFixes`を実行、quality-fixer実行後、security-reviewerを再実行
+   - `needs_revision` → task-template を用いて、統合修正タスクファイル（`docs/plans/tasks/security-fixes-YYYYMMDD.md`）を作成。Target Files には `requiredFixes[].location` を `file[:line]` として解釈してファイル部分のみ取り出した和集合を投入する（元タスクに依らず影響ファイルすべてが executor の File Scope Constraint に許可される）。続いて、`task_file` には新しい統合修正タスクファイルのパス、`requiredFixes` には `security-reviewer.requiredFixes[]` を設定して task-executor を **Fix Mode** で起動。その後 quality-fixer を実行し、最後に security-reviewer を再起動する。
    - `blocked` → ユーザーにエスカレーション
 
 ### テスト情報の伝達

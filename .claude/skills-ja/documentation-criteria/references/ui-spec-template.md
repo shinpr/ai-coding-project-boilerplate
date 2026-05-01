@@ -5,7 +5,7 @@
 [このUI仕様書の目的とスコープを2-3文で説明]
 
 ### 対象PRD
-- PRDパス: [docs/prd/xxx-prd.md | "N/A — requirement-analyzerの出力に基づく"]
+- PRDパス: [docs/prd/xxx-prd.md | "N/A — 要件分析の出力に基づく"]
 - 機能スコープ: [このUI SpecがカバーするPRD要件 | 分析済み要件の概要]
 
 ### 設計ソース

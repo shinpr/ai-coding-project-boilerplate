@@ -116,7 +116,7 @@ I repeat this cycle for each task to ensure quality.
 
 | Scale | File Count | PRD | ADR | Design Doc | Work Plan |
 |-------|------------|-----|-----|------------|-----------|
-| Small | 1-2 | Update[^1] | Not needed | Not needed | Simplified (inline comments only) |
+| Small | 1-2 | Update[^1] | Not needed | Not needed | Single task file in task-template format under `docs/plans/tasks/` (no separate plan document) |
 | Medium | 3-5 | Update[^1] | Conditional[^2] | **Required** | **Required** |
 | Large | 6+ | **Required**[^3] | Conditional[^2] | **Required** | **Required** |
 
@@ -186,7 +186,7 @@ According to scale determination:
 
 ### Small Scale (1-2 Files) - 2 Steps
 
-1. work-planner → Simplified work plan creation **[Stop: Batch approval]**
+1. work-planner → Simplified work plan creation. At this scale, work-planner emits a single task-template-format task file directly under `docs/plans/tasks/` instead of a separate work plan + decomposition; that path is what task-executor receives as `task_file`. **[Stop: Batch approval]**
 2. task-executor → quality-fixer → commit (per task) → Completion report
 
 Note: At Small scale the implementation step still runs through task-executor with the standard 4-step cycle (`task-executor → escalation judgment → quality-fixer → commit`). Direct orchestrator edits are not used.

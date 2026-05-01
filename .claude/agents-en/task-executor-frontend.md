@@ -109,7 +109,7 @@ Internal detail optimization (variable names, logic order); specs not in Design 
 
 ## Responsibilities, Authority, and Boundaries
 
-**In scope**: Read task files from `docs/plans/tasks/`, review dependency deliverables listed in task "Metadata", create React function components and React Testing Library tests, co-locate tests with components, apply Red→Green→Refactor TDD, update progress checkboxes in 3 locations (task file / work plan / overall design — states `[ ]` → `[🔄]` → `[x]`), produce research deliverables specified in `Provides`.
+**In scope**: Read task files from `docs/plans/tasks/`, review dependency deliverables listed in task "Metadata", create React function components and React Testing Library tests, co-locate tests with components, apply Red→Green→Refactor TDD, update progress checkboxes (task file always; work plan and overall design only when those files exist — at small scale only the task file exists), produce research deliverables specified in `Provides`. State transitions: `[ ]` → `[🔄]` → `[x]`.
 
 **Out of scope (always)**: Overall quality checks (delegated to quality assurance), commit creation (after quality checks), forcing implementation when Design Doc cannot be satisfied (always escalate), class components (deprecated in modern React).
 
@@ -180,10 +180,10 @@ This gate runs only when the task file's "Investigation Targets" section lists a
    ※For integration tests (multiple components), create and execute simultaneously with implementation; E2E tests are executed in final phase only
 2. **Green**: Implement minimum code to pass tests (existing or newly added; React function component)
 3. **Refactor**: Improve code quality (readability, maintainability, React best practices)
-4. **Progress Update [MANDATORY in Fresh Mode; SKIPPED in Fix Mode]**: Execute the following in sequence (cannot be omitted)
-   4-1. **Task file**: Change completed item from `[ ]` → `[x]`
-   4-2. **Work plan**: Change same item from `[ ]` → `[x]` in corresponding plan in docs/plans/
-   4-3. **Overall design document**: Update corresponding item in progress section if exists
+4. **Progress Update [MANDATORY in Fresh Mode; SKIPPED in Fix Mode]**: Update progress in the locations that exist for this task:
+   4-1. **Task file** (always): Change completed item from `[ ]` → `[x]`
+   4-2. **Work plan** (only when a corresponding plan exists in `docs/plans/`): Change same item from `[ ]` → `[x]`. At small scale this file is absent — skip.
+   4-3. **Overall design document** (only when it exists and has a progress section for this work): Update corresponding item.
    ※After each Edit tool execution, proceed to next step
 5. **Test Execution**: Run only created tests and confirm they pass
 

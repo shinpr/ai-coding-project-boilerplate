@@ -67,7 +67,12 @@ ls docs/ui-spec/*.md 2>/dev/null
 
 ### ステップ3: タスクファイル作成 [GATE]
 
-レイヤーごとに1つのタスクファイルを作成。monorepo-flow.mdの命名規則に従い、エージェントルーティングを決定的にする:
+**事前確認**: ステップ2 の各呼び出し結果について `generatedFiles.integration` を検査する:
+- `integration` がパス → 該当レイヤーのタスク作成へ進む
+- `integration` が `null` → 該当レイヤーのタスク作成をスキップし、レイヤー名と生成エージェントの `e2eAbsenceReason`（該当時）を最終レポート用に記録
+- 全レイヤーが `integration: null` を返した → ステップ4〜7 を完全にスキップし、「どのレイヤーでも統合テストスケルトンは生成されなかった」と各レイヤーの理由を添えて報告して終了
+
+`integration` パスが非nullのレイヤーごとに1つのタスクファイルを作成。monorepo-flow.mdの命名規則に従い、エージェントルーティングを決定的にする:
 - バックエンドのDesign Doc → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
 - フロントエンドのDesign Doc → `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
 - 単一レイヤー（バックエンド確定） → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
@@ -80,22 +85,28 @@ name: [機能名]の[レイヤー]統合テスト実装
 type: test-implementation
 ---
 
-## 目的
+## Implementation Content
 
 スケルトンファイルに定義されたテストケースを実装する。
 
-## 対象ファイル
+## Target Files
 
 - スケルトン: [ステップ2のgeneratedFilesからレイヤー別パス]
-- Design Doc: [ステップ1のレイヤー別Design Doc]
 
-## タスク
+## Investigation Targets
+
+- Design Doc: [ステップ1のレイヤー別Design Doc] — AC マッピングと契約定義の参照用
+
+## Investigation Notes
+（実装観察事項を実装開始前にここへ追記する。）
+
+## Implementation Steps
 
 - [ ] スケルトンの各テストケースを実装
 - [ ] 全テストがパスすることを確認
 - [ ] カバレッジが要件を満たすことを確認
 
-## 受入条件
+## Completion Criteria
 
 - 全スケルトンテストケースが実装済み
 - 全テストがパス
@@ -129,13 +140,13 @@ Agentツールでintegration-test-reviewerを呼び出す:
 
 ステップ5の結果を確認:
 - `status: approved` → 完了としてマーク、ステップ7へ進む
-- `status: needs_revision` → requiredFixesでtask-executorを呼び出し、ステップ5に戻る
+- `status: needs_revision` → ルーティング先の task-executor を **Fix Mode** で再起動。同じ `task_file` と `requiredFixes[]` を渡す（プロンプト詳細は下記）。その後ステップ5に戻る
 
 タスクファイル名パターンでルーティングしてtask-executorを呼び出す:
 - `*-backend-task-*` → `subagent_type`: "task-executor"
 - `*-frontend-task-*` → `subagent_type`: "task-executor-frontend"
 - `description`: "レビュー指摘の修正"
-- `prompt`: "テストファイルの以下の問題を修正: [ステップ5のrequiredFixes]"
+- `prompt`: "task_file: [ステップ4で使用したのと同じタスクファイルパス]。requiredFixes: [ステップ5の requiredFixes 配列]。Fix Mode を適用（タスクのチェックボックスはステップ4で既に `[x]` になっている）。"
 
 ### ステップ7: 品質チェック
 
@@ -143,16 +154,28 @@ Agentツールでintegration-test-reviewerを呼び出す:
 - `*-backend-task-*` → `subagent_type`: "quality-fixer"
 - `*-frontend-task-*` → `subagent_type`: "quality-fixer-frontend"
 - `description`: "最終品質保証"
-- `prompt`: "このワークフローで追加されたテストファイルの最終品質保証。全テストを実行しカバレッジを確認。"
+- `prompt`: "このワークフローで追加されたテストファイルの最終品質保証。全テストを実行しカバレッジを確認。task_file: [タスクファイルパス]。filesModified: [直近の実装ステップのレスポンスから抽出 — 通常はステップ4、修正再実行が走った場合はステップ4とステップ6の和集合]。"
 
 **期待される出力**: `status` (approved/stub_detected/blocked)
 
-quality-fixerレスポンスチェック:
-- `stub_detected` → `incompleteImplementations[]`の詳細を添えてStep 4に戻し、Steps 4→5→6→7を再実行
+quality-fixer レスポンスをチェック:
+- `stub_detected` → ステップ4 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor を **Fix Mode** で再起動し、ステップ4→5→6→7 を再実行
 - `blocked` → ユーザーにエスカレーション
-- `approved` → Step 8へ
+- `approved` → ステップ8 へ
 
 ### ステップ8: コミット
 
-quality-fixerから`approved`の場合:
-- Bashで適切なメッセージを付けてテストファイルをコミット
+quality-fixer から `approved` の場合:
+- Bash で適切なメッセージを付けてテストファイルをコミット
+
+## サブエージェントのスコープ境界
+
+本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
+
+```
+Scope boundary for subagents:
+Operate within the task scope and referenced files in the prompt.
+New files derived from the requested deliverable are in scope (e.g., test skeleton files specified by the recipe).
+Use loaded skills to execute that scope.
+Escalate when the required fix or investigation falls outside that scope.
+```

@@ -1,6 +1,6 @@
 ---
 name: ui-spec-designer
-description: PRDとプロトタイプコード(optional)からUI Specを作成。Use when PRD完成後にUI設計が必要な時、または「UI Spec/画面設計/コンポーネント分解」が言及された時。
+description: PRDとプロトタイプコード(optional)からUI Specを作成。使用するシーン: PRD完成後にUI設計が必要な時、または「UI Spec/画面設計/コンポーネント分解」が言及された時。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate
 skills: documentation-criteria, frontend-typescript-rules, project-context
 ---
@@ -9,7 +9,7 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終出力前に検証」を含める。各完了時にTaskUpdateで更新。
 
 **現在日時の確認**: 作業開始前に実行環境から実際の現在日時を取得する（トレーニングデータのカットオフ日に依存しない）。
 

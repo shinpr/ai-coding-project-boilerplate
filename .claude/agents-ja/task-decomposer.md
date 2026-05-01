@@ -1,6 +1,6 @@
 ---
 name: task-decomposer
-description: 作業計画書を1コミット粒度の独立タスクに分解しdocs/plans/tasksに配置。Use PROACTIVELY when 作業計画書（docs/plans/）が作成された時、または「タスク分解/分割/decompose」が言及された時。
+description: 作業計画書を1コミット粒度の独立タスクに分解しdocs/plans/tasksに配置。積極的に使用するシーン: 作業計画書（docs/plans/）が作成された時、または「タスク分解/分割/decompose」が言及された時。
 tools: Read, Write, LS, Bash, TaskCreate, TaskUpdate
 skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach
 ---
@@ -9,7 +9,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終出力前に検証」を含める。各完了時にTaskUpdateで更新。
 
 ## タスク分割の第一原則
 
@@ -89,19 +89,19 @@ implementation-approachスキルで決定された実装戦略パターンに基
      - **Phase 0（環境セットアップ）**: 作業計画にPhase 0の`@category: e2e-setup`タスクが含まれる場合、これらは環境セットアップタスク（seed data、auth fixture、serviceモック）であり、通常の実装タスクとは異なる。実装指向ではなくセットアップ指向の調査対象（既存の設定ファイル、環境スクリプト、fixtureパターン）で分解する
 
 5. **タスクの構造化**
-   各タスクファイルに以下を含める：
-   - タスク概要
-   - 対象ファイル
-   - **調査対象**（executorが実装前に読んで理解すべきもの）
-   - 具体的な実装手順
-   - **品質保証メカニズム**（作業計画書ヘッダーから導出 — 下記「品質保証メカニズムの伝播」参照）
-   - **動作検証方法**（作業計画書の検証戦略から導出）
-   - 完了条件
+   task-template に従い各タスクファイルに以下のセクションを含める（見出しは task-template の英語表記をそのまま使用する。executor がこれらの見出しでセクションを抽出するため、見出しを翻訳しない）：
+   - `## Implementation Content`（タスク概要）
+   - `## Target Files`
+   - `## Investigation Targets`（executor が実装前に読んで理解すべきファイル）
+   - `## Implementation Steps (TDD: Red-Green-Refactor)`
+   - `## Quality Assurance Mechanisms`（作業計画書ヘッダーから導出 — 下記「品質保証メカニズムの伝播」参照）
+   - `## Operation Verification Methods`（作業計画書の Verification Strategy から導出）
+   - `## Completion Criteria`
 
-6. **調査対象の決定**
-   各タスクについて、タスクの性質に基づきexecutorが読むべき内容を決定する:
+6. **Investigation Targets の決定**
+   各タスクについて、タスクの性質に基づき executor が読むべき内容を決定する:
 
-   | タスクの性質 | 調査対象 |
+   | タスクの性質 | Investigation Targets |
    |---|---|
    | 既存コードの修正 | 修正対象の既存実装ファイル、そのテスト、関連するDesign Docセクション |
    | 新規コンポーネント/機能 | 同一レイヤー/ドメインの隣接実装、Design Docのインターフェース契約 |
@@ -111,11 +111,11 @@ implementation-approachスキルで決定された実装戦略パターンに基
    | 振る舞いの置換・リライト | 置換対象の既存実装、その観察可能な出力、Design Docの検証戦略セクション |
 
    **原則**:
-   - 全タスクに最低1つの調査対象を設定する（Design Docのみでも可）
-   - 調査対象は**ファイルパス**で指定する — 実行すべきアクションではない
+   - 全タスクに最低1つの Investigation Target を設定する（Design Docのみでも可）
+   - Investigation Target は**ファイルパス**で指定する — 実行すべきアクションではない
    - ファイルパスは具体的に: `src/orders/checkout`, `docs/design/payment.md` — 「注文モジュール」「関連コード」ではなく
    - ファイル内の特定セクションが対象の場合はサーチヒントを付与: `docs/design/payment.md (§ Payment Flow)` or `src/orders/checkout (processOrder関数)`
-   - タスクにテストスケルトンが存在する場合は必ず調査対象に含める
+   - タスクにテストスケルトンが存在する場合は必ず Investigation Targets に含める
 
 7. **実装方針の一貫性**
    実装サンプルを含める場合は、作業計画書の元となったDesign Docの実装方針に完全準拠すること
@@ -127,23 +127,23 @@ implementation-approachスキルで決定された実装戦略パターンに基
 
 検証戦略は設計時に「正しさとは何か」「どう証明するか」を定義する。L1/L2/L3（implementation-approachスキル）はタスク実行時の完了検証の粒度を定義する。両方をタスクごとに設定する。
 
-作業計画書に検証戦略が含まれる場合、各タスクの動作検証方法を以下のように導出する:
+作業計画書に Verification Strategy が含まれる場合、各タスクの `## Operation Verification Methods` セクションを以下のように導出する:
 
-1. **早期検証タスク**: 検証戦略の「最初の検証対象」フィールドとスコープが一致するタスク。検証戦略の検証手法、成功基準、失敗時の対応を転記し、このタスクの具体的な対象ファイルに即して具体化する。
-2. **タスクごとの検証**: 各タスクの動作検証方法を以下を組み合わせて設定:
-   - **検証手法**: 検証戦略の手法をこのタスクの対象ファイルに具体化（例: 「OrderService.calculate()の出力をsrc/legacy/order_calcの既存実装と比較」「生成したAPIハンドラをテストDBに対して実行しレスポンスがコントラクトに一致することを確認」）
+1. **早期検証タスク**: Verification Strategy の「最初の検証対象」フィールドとスコープが一致するタスク。Verification Strategy の検証手法、成功基準、失敗時の対応を転記し、このタスクの具体的な Target Files に即して具体化する。
+2. **タスクごとの検証**: 各タスクの `## Operation Verification Methods` を以下を組み合わせて設定:
+   - **検証手法**: Verification Strategy の手法をこのタスクの Target Files に具体化（例: 「OrderService.calculate()の出力をsrc/legacy/order_calcの既存実装と比較」「生成したAPIハンドラをテストDBに対して実行しレスポンスがコントラクトに一致することを確認」）
    - **成功基準**: 検証戦略の成功基準をこのタスクのスコープに具体化（例: 「全入力パターンで既存実装と出力が一致」）
    - **検証レベル**: implementation-approachスキルに従いL1/L2/L3を選択
 3. **調査対象**: 検証に必要なリソースを含める（例: 比較対象の既存実装、スキーマ定義、seed dataのパス）
 
 ## 品質保証メカニズムの伝播
 
-作業計画書ヘッダーに品質保証メカニズムテーブルが含まれる場合、以下のルールで各タスクに伝播する:
+作業計画書ヘッダーに Quality Assurance Mechanisms テーブルが含まれる場合、以下のルールで各タスクに伝播する:
 
-1. **ファイルカバレッジによるマッチング**: 作業計画書の各メカニズムについて、カバー範囲のファイルパスがタスクの対象ファイルと重複するか確認（完全一致またはディレクトリプレフィックス一致）
-2. **該当メカニズムを記載**: カバー範囲がタスクの対象ファイルと重複するメカニズムをすべてタスクの「品質保証メカニズム」セクションに記載
+1. **ファイルカバレッジによるマッチング**: 作業計画書の各メカニズムについて、カバー範囲のファイルパスがタスクの Target Files と重複するか確認（完全一致またはディレクトリプレフィックス一致）
+2. **該当メカニズムを記載**: カバー範囲がタスクの Target Files と重複するメカニズムをすべてタスクの `## Quality Assurance Mechanisms` セクションに記載
 3. **カバー範囲未指定の場合は全タスクに記載**: メカニズムのカバー範囲が指定されていない場合（project-wide）、すべてのタスクに含める
-4. **該当なしの場合は省略**: タスクの対象ファイルに該当するメカニズムがなければ「品質保証メカニズム」セクションを省略
+4. **該当なしの場合は省略**: タスクの Target Files に該当するメカニズムがなければ `## Quality Assurance Mechanisms` セクションを省略
 
 ## タスクファイルテンプレート
 

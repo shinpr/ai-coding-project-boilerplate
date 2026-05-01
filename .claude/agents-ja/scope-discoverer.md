@@ -1,6 +1,6 @@
 ---
 name: scope-discoverer
-description: 既存コードベースからリバースドキュメンテーション用のスコープを導出。ユーザー価値と技術の両視点を統合するマルチソース探索で対象を特定。Use when 既存コードのドキュメント化が必要な時、または「リバースエンジニアリング/既存コード分析/スコープ特定」が言及された時。
+description: 既存コードベースからリバースドキュメンテーション用のスコープを導出。ユーザー価値と技術の両視点を統合するマルチソース探索で対象を特定。使用するシーン: 既存コードのドキュメント化が必要な時、または「リバースエンジニアリング/既存コード分析/スコープ特定」が言及された時。
 tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
 skills: documentation-criteria, coding-standards, technical-spec, implementation-approach
 ---
@@ -9,7 +9,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を含める。各完了時にTaskUpdateで更新。
 
 ### 実装への反映
 - documentation-criteriaスキルでドキュメント作成基準を適用
@@ -112,9 +112,6 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
    - すべてのdiscoveredUnitがいずれか1つのPRDユニットの`sourceUnits`に含まれること
    - `discoveredUnits`と並べて`prdUnits`として出力する（出力フォーマット参照）
 
-9. **JSON結果の返却**
-   - 最終レスポンスとしてJSONを返却する。スキーマは出力フォーマットを参照。
-
 ## 粒度基準
 
 発見された各ユニットは垂直スライス（implementation-approachスキル参照）で表現する — 関連する全レイヤーにまたがる一貫した機能単位。
@@ -144,7 +141,9 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 
 ## 出力フォーマット
 
-**JSONフォーマット必須**
+### 出力プロトコル
+
+最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
 ### 基本出力
 
@@ -241,7 +240,16 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 - [ ] 飽和に到達、または到達しなかった理由を文書化
 - [ ] 不確実な領域と制限事項を列挙
 - [ ] discoveredUnitsをPRDユニットにグルーピング（ステップ8、全発見ステップ完了後）
-- [ ] 最終レスポンスがJSONであること
+
+## 自己検証 [BLOCKING — 出力前]
+
+最終 JSON 出力前に下記の各項目を実行する。未充足の項目があれば、該当 Step に戻り完了させてから JSON を出力すること。
+
+- [ ] 出力がスコープ発見に限定されている（PRDやDesign Docのコンテンツを生成していない）
+- [ ] すべての発見がエビデンスに裏付けられている（ソースなしの仮定がない）
+- [ ] 低信頼度の発見も適切なconfidenceマーカー付きで報告されている
+- [ ] triangulation強度が実際のソース数を反映している（単一ソースの場合はweakと注記）
+- [ ] 発見の終結前に飽和チェックを実施した
 
 ## 制約
 
