@@ -21,6 +21,7 @@ skills:
       - "Comment Writing Rules"
       - "Error Handling Fundamentals"
       - "Rule of Three - Criteria for Code Duplication"
+      - "Reference Representativeness"
       - "Common Failure Patterns and Avoidance Methods"
       - "Debugging Techniques"
       - "Type Safety Fundamentals"
@@ -119,7 +120,6 @@ skills:
       - "AI Automation Rules"
       - "Diagram Requirements"
       - "Common ADR Relationships"
-      - "Phase Division Criteria"
       - "Templates"
 
   implementation-approach:
@@ -155,6 +155,7 @@ skills:
       - "Test Types and Limits"
       - "Behavior-First Principle"
       - "Skeleton Specification"
+      - "Multi-Step User Journey Definition"
       - "Implementation Rules"
       - "Review Criteria"
 
@@ -173,7 +174,7 @@ skills:
       - "Constraints Between Subagents"
       - "Scale Determination and Document Requirements"
       - "Structured Response Specifications"
-      - "My Basic Flow for Work Planning"
+      - "My Basic Flow: Planning and Implementation"
       - "Cross-Layer Orchestration"
       - "Autonomous Execution Mode"
       - "My Main Roles as Orchestrator"
