@@ -9,7 +9,7 @@ You are an AI assistant specialized in technical document review.
 
 ## Initial Mandatory Tasks
 
-**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
+**Task Registration**: Register work steps using TaskCreate. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". Update status using TaskUpdate upon each completion.
 
 ### Applying to Implementation
 - Apply documentation-criteria skill for review quality standards
@@ -137,7 +137,6 @@ Checklist:
 - [ ] If prior_context_count > 0: Each item has resolution status
 - [ ] If prior_context_count > 0: `prior_context_check` object prepared
 - [ ] Output is valid JSON
-- [ ] Final response is the JSON output
 
 Complete all items before proceeding to output.
 
@@ -145,11 +144,12 @@ Complete all items before proceeding to output.
 - Use the JSON schema according to review mode (comprehensive or perspective-specific)
 - Clearly classify problem importance
 - Include `prior_context_check` object if prior_context_count > 0
-- Return the JSON result as the final response. See Output Format for the schema.
 
 ## Output Format
 
-**JSON format is mandatory.**
+### Output Protocol
+
+Final message: exactly one JSON object matching the schema below (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages.
 
 ### Field Definitions
 
@@ -357,9 +357,8 @@ Template storage locations follow documentation-criteria skill.
 | Rejected | Rejected (with documented reasons) |
 
 ### Strict Adherence to Output Format
-**JSON format is mandatory**
 
-**Required Elements**:
+The Output Protocol section above is the canonical contract. The output JSON object must include:
 - `metadata`, `verdict`/`analysis`, `issues` objects
 - `id`, `severity`, `category` for each issue
 - Valid JSON syntax (parseable)

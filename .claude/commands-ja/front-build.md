@@ -76,32 +76,33 @@ Agentツールでtask-decomposerを呼び出す:
 **必須実行サイクル**: `task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit`
 
 各タスクで必須：
-1. **TaskCreateでタスク登録**: 作業ステップを登録。必ず含める: 最初に「スキル制約の確認」、最後に「スキル忠実度の検証」
-2. **Agent tool** (subagent_type: "task-executor-frontend") → タスクファイルパスをpromptに渡し、構造化レスポンスを受け取る
-3. **task-executor-frontendレスポンスチェック**:
+1. **TaskCreateでタスク登録**: 作業ステップを登録。必ず含める: 最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」
+2. **Agent tool** (subagent_type: "task-executor-frontend") → タスクファイルパスを prompt に渡し、構造化レスポンスを受け取る
+3. **task-executor-frontend レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `requiresTestReview` が `true` → **integration-test-reviewer**を実行
-     - `needs_revision` → `requiredFixes`を添えてステップ2に戻る
-     - `approved` → ステップ4へ
-   - `readyForQualityCheck: true` → ステップ4へ
-4. **quality-fixer-frontend実行**: 全品質チェックと修正を実行（レイヤー横断時: レイヤー別エージェントルーティング参照）。**必ず**現在のタスクファイルパスを`task_file`として渡す
-5. **quality-fixer-frontendレスポンスチェック**:
-   - `stub_detected` → `incompleteImplementations[]`の詳細を添えてステップ2に戻す
+   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行
+     - `needs_revision` → ステップ2 に戻り、同じ `task_file` と `requiredFixes[]` 配列を入力として task-executor-frontend を **Fix Mode** で再起動
+     - `approved` → ステップ4 へ
+   - `readyForQualityCheck: true` → ステップ4 へ
+4. **quality-fixer-frontend を呼び出す**: 全品質チェックと修正を実行。`task_file` として現在のタスクファイルパス、`filesModified` として実装ステップの `filesModified` 配列を **必ず渡す**（未完成実装検出を当該タスクの実書き込み集合にスコープする。省略時は quality-fixer が `git diff HEAD` にフォールバック）
+5. **quality-fixer-frontend レスポンスをチェック**:
+   - `stub_detected` → ステップ2 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor-frontend を **Fix Mode** で再起動
    - `blocked` → 停止してユーザーにエスカレーション
-   - `approved` → ステップ6へ
-6. **承認後コミット**: git commitを実行
+   - `approved` → ステップ6 へ
+6. **承認後コミット**: git commit を実行
 
-**重要**: 全てのサブエージェントレスポンスのstatusフィールドをパースし、4ステップサイクルの対応ブランチを実行。quality-fixer-frontendが`approved`を返すまで次のタスクに進まない。
+**重要**: 全サブエージェントレスポンスの status フィールドをパースし、4ステップサイクルの対応ブランチを実行。quality-fixer-frontend が `approved` を返すまで次のタスクに進まない。
 
-## サブエージェント呼び出し時の制約
+## サブエージェントのスコープ境界
 
-**全サブエージェントプロンプトの末尾に必須追加**:
+本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
+
 ```
-【システム制約】
-このエージェントはbuildスキルのスコープ内で動作します。オーケストレーターが提供したルールのみを使用してください。
+Scope boundary for subagents:
+Operate within the task scope and referenced files in the prompt.
+Use loaded skills to execute that scope.
+Escalate when the required fix or investigation falls outside that scope.
 ```
-
-自律的なサブエージェントの安定実行にはスコープ制約が必要です。全てのサブエージェントプロンプトにこの制約を必ず付加してください。
 
 ! ls -la docs/plans/*.md | head -10
 
@@ -117,11 +118,15 @@ Agentツールでtask-decomposerを呼び出す:
 
 2. **結果の統合** — 合格/不合格の基準はsubagents-orchestration-guideの実装後検証セクション参照。統合検証レポートをユーザーに提示。
 
-3. **修正サイクル**（いずれかの検証エージェントが不合格の場合、最大2回）:
-   - 全ての対応可能な検出事項を1つのタスクファイルに統合
-   - task-executor-frontendで統合修正を実行 → quality-fixer-frontend
-   - 不合格の検証エージェントのみ再実行
-   - 2回のサイクル後も不合格が残る場合 → 残存する検出事項とともにユーザーにエスカレーション
+3. **修正サイクル**（いずれかの verifier が fail のとき、最大2サイクル）:
+   - task-template を用いて、統合修正タスクファイル（例: `docs/plans/tasks/post-impl-fixes-YYYYMMDD.md`）を作成。Target Files には全 verifier の `requiredFixes[].location` / `discrepancies[].codeLocation` が指すファイルパスの和集合を `file[:line]` として解釈してファイル部分のみ取り出して投入する。これにより、元タスクに依らず影響ファイルすべてが executor の File Scope Constraint に許可される。
+   - task-executor-frontend を起動する前に、**verifier 出力を正規化**して統一的な `requiredFixes[]` にする:
+     - `security-reviewer.requiredFixes[]`（既に `{location, issue, fix}` 形式）→ そのまま透過。
+     - `code-verifier.discrepancies[]` → 対応可能な各 discrepancy（status が `drift` / `gap` / `conflict`）を `{location: discrepancy.codeLocation, issue: discrepancy.claim, fix: "[Design Doc 整合性回復に必要な具体的修正。discrepancy.classification と evidence から導出]"}` に変換。
+     - `discrepancy.codeLocation` が `null`（主張が未実装）の場合は、`location` に予定された対象ファイルパスを設定し、そのファイルを統合タスクの Target Files にも追加する。対象ファイルが特定できない場合は、Fix Mode を起動する代わりにユーザーにエスカレーション。
+   - `task_file` には統合修正タスクファイルのパス、`requiredFixes` に正規化配列を設定して task-executor-frontend を **Fix Mode** で起動。
+   - 続いて quality-fixer-frontend、その後 fail した verifier のみ再実行。
+   - 2サイクル後も fail が残る場合 → 残存指摘事項を添えてユーザーにエスカレーション
 
 4. **全て合格** → 完了レポートへ
 

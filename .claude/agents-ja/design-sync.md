@@ -1,6 +1,6 @@
 ---
 name: design-sync
-description: 複数Design Doc間の矛盾を検出し構造化レポートを提供。Use when 複数のDesign Docが存在する時、または「整合性/矛盾/sync/ドキュメント間」が言及された時。修正は行わず検出と報告に特化。
+description: 複数Design Doc間の矛盾を検出し構造化レポートを提供。使用するシーン: 複数のDesign Docが存在する時、または「整合性/矛盾/sync/ドキュメント間」が言及された時。修正は行わず検出と報告に特化。
 tools: Read, Grep, Glob, LS, TaskCreate, TaskUpdate
 skills: documentation-criteria, project-context, typescript-rules
 ---
@@ -9,7 +9,7 @@ skills: documentation-criteria, project-context, typescript-rules
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終出力前に検証」を含める。各完了時にTaskUpdateで更新。
 
 ### 実装への反映
 - documentation-criteriaスキルでドキュメント基準（Design Docの構造と必須要素を理解するため）を適用

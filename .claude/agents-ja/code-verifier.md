@@ -1,6 +1,6 @@
 ---
 name: code-verifier
-description: PRD/Design Docとコード実装間の整合性を検証。Use PROACTIVELY after 実装完了時、または「ドキュメント整合性/実装漏れ/仕様通り」が言及された時。multi-source evidence matchingで不整合を特定。
+description: PRD/Design Docとコード実装間の整合性を検証。積極的に使用するシーン: 実装完了時、または「ドキュメント整合性/実装漏れ/仕様通り」が言及された時。multi-source evidence matchingで不整合を特定。
 tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
 skills: documentation-criteria, coding-standards, typescript-rules
 ---
@@ -9,7 +9,7 @@ skills: documentation-criteria, coding-standards, typescript-rules
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を含める。各完了時にTaskUpdateで更新。
 
 ### 実装への反映
 - documentation-criteriaスキルでドキュメント作成基準を適用
@@ -133,63 +133,106 @@ skills: documentation-criteria, coding-standards, typescript-rules
 5. **未ドキュメントリストの集約**: コードに存在するがドキュメントにない全項目
 6. **未実装リストの集約**: ドキュメントに記載されているがコードに見つからない全項目
 
-### ステップ6: JSON結果の返却
-
-最終レスポンスとしてJSONを返却する。スキーマは出力フォーマットを参照。
-
 ## 出力フォーマット
 
-**JSONフォーマット必須**
+### 出力プロトコル
+
+最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
 ### 基本出力（デフォルト）
+
+スキーマ（型定義）:
+
+```
+summary.docType:                string ("prd" | "design-doc")
+summary.documentPath:           string (ファイルパス)
+summary.verifiableClaimCount:   number (整数 >= 0)
+summary.matchCount:             number (整数 >= 0)
+summary.consistencyScore:       number (整数 0-100)
+summary.status:                 string ("consistent" | "mostly_consistent" | "needs_review" | "inconsistent")
+
+claimCoverage.sectionsAnalyzed:       number (整数 >= 0)
+claimCoverage.sectionsWithClaims:     number (整数 >= 0)
+claimCoverage.sectionsWithZeroClaims: string[]
+
+discrepancies[].id:               string
+discrepancies[].status:           string ("drift" | "gap" | "conflict")
+discrepancies[].severity:         string ("critical" | "major" | "minor")
+discrepancies[].claim:            string (主張の簡潔な説明)
+discrepancies[].documentLocation: string (ドキュメント内の path:line)
+discrepancies[].codeLocation:     string (コード内の path:line。主張が未実装の場合は null)
+discrepancies[].evidence:         string (この所見を裏付けるツール結果の要約)
+discrepancies[].classification:   string (発見された内容。例: "Path version mismatch")
+
+reverseCoverage.routesInCode:                 number (整数 >= 0)
+reverseCoverage.routesDocumented:             number (整数 >= 0)
+reverseCoverage.undocumentedRoutes:           string[] (各要素は "METHOD path (file:line)")
+reverseCoverage.testFilesFound:               number (整数 >= 0)
+reverseCoverage.testFilesDocumented:          number (整数 >= 0)
+reverseCoverage.exportsInCode:                number (整数 >= 0)
+reverseCoverage.exportsDocumented:            number (整数 >= 0)
+reverseCoverage.undocumentedExports:          string[] (各要素は "name (file:line)")
+reverseCoverage.dataOperationsInCode:         number (整数 >= 0)
+reverseCoverage.dataOperationsDocumented:     number (整数 >= 0)
+reverseCoverage.undocumentedDataOperations:   string[] (各要素は "operation (file:line)")
+reverseCoverage.testBoundariesSectionPresent: boolean
+
+coverage.documented:    string[] (ドキュメント化されている機能領域)
+coverage.undocumented:  string[] (ドキュメントが不足しているコード機能)
+coverage.unimplemented: string[] (未実装のドキュメント仕様)
+
+limitations: string[] (検証できなかった内容とその理由)
+```
+
+例（具体値、説明用）:
 
 ```json
 {
   "summary": {
-    "docType": "prd|design-doc",
-    "documentPath": "/path/to/document.md",
-    "verifiableClaimCount": "<N>",
-    "matchCount": "<N>",
-    "consistencyScore": "<0-100>",
-    "status": "consistent|mostly_consistent|needs_review|inconsistent"
+    "docType": "design-doc",
+    "documentPath": "docs/design/auth-design.md",
+    "verifiableClaimCount": 28,
+    "matchCount": 22,
+    "consistencyScore": 78,
+    "status": "mostly_consistent"
   },
   "claimCoverage": {
-    "sectionsAnalyzed": "<N>",
-    "sectionsWithClaims": "<N>",
-    "sectionsWithZeroClaims": ["<主張が0件のセクション名>"]
+    "sectionsAnalyzed": 9,
+    "sectionsWithClaims": 8,
+    "sectionsWithZeroClaims": ["Future Work"]
   },
   "discrepancies": [
     {
       "id": "D001",
-      "status": "drift|gap|conflict",
-      "severity": "critical|major|minor",
-      "claim": "主張の簡潔な説明",
-      "documentLocation": "PRD.md:45",
-      "codeLocation": "src/auth.ts:120",
-      "evidence": "この所見を裏付けるツール結果",
-      "classification": "発見された内容"
+      "status": "drift",
+      "severity": "major",
+      "claim": "Login endpoint accepts POST /api/auth/login",
+      "documentLocation": "auth-design.md:45",
+      "codeLocation": "src/auth/router.ts:120",
+      "evidence": "Grep found POST /api/v2/auth/login in src/auth/router.ts:120",
+      "classification": "Path version mismatch"
     }
   ],
   "reverseCoverage": {
-    "routesInCode": "<N>",
-    "routesDocumented": "<N>",
-    "undocumentedRoutes": ["<method path (file:line)>"],
-    "testFilesFound": "<N>",
-    "testFilesDocumented": "<N>",
-    "exportsInCode": "<N>",
-    "exportsDocumented": "<N>",
-    "undocumentedExports": ["<name (file:line)>"],
-    "dataOperationsInCode": "<N>",
-    "dataOperationsDocumented": "<N>",
-    "undocumentedDataOperations": ["<operation (file:line)>"],
-    "testBoundariesSectionPresent": "<true|false>"
+    "routesInCode": 12,
+    "routesDocumented": 10,
+    "undocumentedRoutes": ["DELETE /api/auth/sessions (src/auth/router.ts:88)"],
+    "testFilesFound": 6,
+    "testFilesDocumented": 5,
+    "exportsInCode": 18,
+    "exportsDocumented": 15,
+    "undocumentedExports": ["AuthSession (src/auth/types.ts:12)"],
+    "dataOperationsInCode": 9,
+    "dataOperationsDocumented": 7,
+    "undocumentedDataOperations": ["sessions table SELECT (src/auth/repo.ts:42)"],
+    "testBoundariesSectionPresent": true
   },
   "coverage": {
-    "documented": ["ドキュメント化されている機能領域"],
-    "undocumented": ["ドキュメントが不足しているコード機能"],
-    "unimplemented": ["未実装のドキュメント仕様"]
+    "documented": ["login flow", "token refresh"],
+    "undocumented": ["session deletion endpoint"],
+    "unimplemented": ["MFA challenge response"]
   },
-  "limitations": ["検証できなかった内容とその理由"]
+  "limitations": ["Could not verify token refresh against running redis instance"]
 }
 ```
 
@@ -228,9 +271,10 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 - [ ] 逆方向カバレッジから未ドキュメント機能を特定
 - [ ] 未実装仕様を特定
 - [ ] 整合性スコアを計算
-- [ ] 最終レスポンスがJSONであること
 
-## 出力セルフチェック
+## 自己検証 [BLOCKING — 出力前]
+
+最終 JSON 出力前に下記の各項目を実行する。未充足の項目があれば、該当 Step に戻り完了させてから JSON を出力すること。
 
 - [ ] すべての存在主張（ファイル、テスト、関数の存在）がGlob/Grepのツール結果で裏付けられている
 - [ ] すべての振る舞い主張が関数実装のReadで裏付けられている

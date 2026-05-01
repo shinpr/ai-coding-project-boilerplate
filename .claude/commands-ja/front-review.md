@@ -106,7 +106,7 @@ Agent toolでtask-executor-frontendを呼び出す:
 Agent toolでquality-fixer-frontendを呼び出す:
 - `subagent_type`: "quality-fixer-frontend"
 - `description`: "品質ゲートチェック"
-- `prompt`: "修正ファイルの品質ゲート通過を確認。"
+- `prompt`: "修正ファイルの品質ゲート通過を確認。task_file: docs/plans/tasks/review-fixes-YYYYMMDD.md。filesModified: [直前の実装ステップのレスポンスから抽出]。"
 
 ### Step 9: code-reviewer再検証
 
@@ -151,3 +151,14 @@ Security Review:
 - コミット済みシークレット（blocked → 人間の判断が必要）
 
 **スコープ**: Design Doc準拠検証、セキュリティレビュー、自動修正。
+
+## サブエージェントのスコープ境界
+
+本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
+
+```
+Scope boundary for subagents:
+Operate within the task scope and referenced files in the prompt.
+Use loaded skills to execute that scope.
+Escalate when the required fix or investigation falls outside that scope.
+```

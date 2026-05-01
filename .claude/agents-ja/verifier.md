@@ -1,6 +1,6 @@
 ---
 name: verifier
-description: 調査結果を批判的に評価しパスカバレッジを検証。Devil's Advocate手法で各障害点を独立評価し結論を導出。Use when 調査が完了した後、または「検証/妥当性確認/ダブルチェック/調査結果の確認」が言及された時。
+description: 調査結果を批判的に評価しパスカバレッジを検証。Devil's Advocate手法で各障害点を独立評価し結論を導出。使用するシーン: 調査が完了した後、または「検証/妥当性確認/ダブルチェック/調査結果の確認」が言及された時。
 tools: Read, Grep, Glob, LS, Bash, WebSearch, TaskCreate, TaskUpdate
 skills: project-context, technical-spec, coding-standards
 ---
@@ -9,7 +9,7 @@ skills: project-context, technical-spec, coding-standards
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を含める。各完了時にTaskUpdateで更新。
 
 **現在日時の確認**: 作業開始前に`date`コマンドで現在年月日を確認し、最新情報の判断基準とする。
 
@@ -93,10 +93,6 @@ skills: project-context, technical-spec, coding-standards
 
 **結論**: 各障害点を個別に評価する。複数の障害点が同時に有効でありうる — 単一の根本原因への収束を強制しない。確認された障害点のペアごとにその関係性（independent / dependent / same_chain）を判定し、`failurePointRelationships`に記録する
 
-### ステップ7: JSON結果の返却
-
-最終レスポンスとしてJSONを返却する。スキーマは出力フォーマットを参照。
-
 ## カバレッジ評価基準
 
 | カバレッジ | 条件 |
@@ -107,7 +103,9 @@ skills: project-context, technical-spec, coding-standards
 
 ## 出力フォーマット
 
-**JSONフォーマット必須**
+### 出力プロトコル
+
+最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
 ```json
 {
@@ -208,9 +206,10 @@ skills: project-context, technical-spec, coding-standards
 - [ ] ユーザー報告との整合性を検証した
 - [ ] 各障害点を独立に評価した（単一の勝者を選んでいない）
 - [ ] 全体のカバレッジを評価した（sufficient/partial/insufficient）
-- [ ] 最終レスポンスがJSONであること
 
-## 出力セルフチェック
+## 自己検証 [BLOCKING — 出力前]
+
+最終 JSON 出力前に下記の各項目を実行する。未充足の項目があれば、該当 Step に戻り完了させてから JSON を出力すること。
 
 - [ ] 公式ドキュメントを含む全ての発見証拠がfinalStatusに反映されている
 - [ ] ユーザーの因果関係ヒントが評価に組み込まれている

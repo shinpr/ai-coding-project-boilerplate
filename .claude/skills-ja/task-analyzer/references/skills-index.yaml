@@ -23,6 +23,7 @@ skills:
       - "コメント記述ルール"
       - "エラーハンドリングの基本原則"
       - "Rule of Three - コード重複の判断基準"
+      - "参照の代表性"
       - "よくある失敗パターンと回避方法"
       - "デバッグ手法"
       - "型安全性の基礎"
@@ -32,7 +33,7 @@ skills:
       - "Red-Green-Refactorプロセス（テストファースト開発）"
       - "テスト設計原則"
       - "テストの粒度原則"
-      - "Security Principles (Secure Defaults, Input and Output Boundaries, Access Control, Knowledge Cutoff Supplement)"
+      - "Security Principles"
 
   typescript-rules:
     skill: "typescript-rules"
@@ -110,7 +111,6 @@ skills:
       - "AI自動化ルール"
       - "図表作成要件"
       - "共通ADRとの関係性"
-      - "フェーズ分割基準"
       - "テンプレート"
 
   implementation-approach:
@@ -146,6 +146,7 @@ skills:
       - "テスト種別と上限"
       - "振る舞い優先の原則"
       - "スケルトン仕様"
+      - "マルチステップユーザージャーニーの定義"
       - "実装ルール"
       - "レビュー基準"
 

@@ -9,7 +9,7 @@ You are an AI assistant specializing in document-code consistency verification.
 
 ## Initial Mandatory Tasks
 
-**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
+**Task Registration**: Register work steps using TaskCreate. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". Update status using TaskUpdate upon each completion.
 
 ### Applying to Implementation
 - Apply documentation-criteria skill for documentation creation criteria
@@ -133,63 +133,106 @@ This step discovers what exists in code but is MISSING from the document. Perfor
 5. **Compile undocumented list**: All items found in code but not in document
 6. **Compile unimplemented list**: All items specified in document but not found in code
 
-### Step 6: Return JSON Result
-
-Return the JSON result as the final response. See Output Format for the schema.
-
 ## Output Format
 
-**JSON format is mandatory.**
+### Output Protocol
+
+Final message: exactly one JSON object matching the schema below (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages.
 
 ### Essential Output (default)
+
+Schema (types):
+
+```
+summary.docType:                string ("prd" | "design-doc")
+summary.documentPath:           string (file path)
+summary.verifiableClaimCount:   number (integer >= 0)
+summary.matchCount:             number (integer >= 0)
+summary.consistencyScore:       number (integer 0-100)
+summary.status:                 string ("consistent" | "mostly_consistent" | "needs_review" | "inconsistent")
+
+claimCoverage.sectionsAnalyzed:       number (integer >= 0)
+claimCoverage.sectionsWithClaims:     number (integer >= 0)
+claimCoverage.sectionsWithZeroClaims: string[]
+
+discrepancies[].id:               string
+discrepancies[].status:           string ("drift" | "gap" | "conflict")
+discrepancies[].severity:         string ("critical" | "major" | "minor")
+discrepancies[].claim:            string (brief claim description)
+discrepancies[].documentLocation: string (path:line in document)
+discrepancies[].codeLocation:     string (path:line in code, or null when claim is unimplemented)
+discrepancies[].evidence:         string (tool result summary supporting this finding)
+discrepancies[].classification:   string (what was found, e.g., "Path version mismatch")
+
+reverseCoverage.routesInCode:                 number (integer >= 0)
+reverseCoverage.routesDocumented:             number (integer >= 0)
+reverseCoverage.undocumentedRoutes:           string[] (each "METHOD path (file:line)")
+reverseCoverage.testFilesFound:               number (integer >= 0)
+reverseCoverage.testFilesDocumented:          number (integer >= 0)
+reverseCoverage.exportsInCode:                number (integer >= 0)
+reverseCoverage.exportsDocumented:            number (integer >= 0)
+reverseCoverage.undocumentedExports:          string[] (each "name (file:line)")
+reverseCoverage.dataOperationsInCode:         number (integer >= 0)
+reverseCoverage.dataOperationsDocumented:     number (integer >= 0)
+reverseCoverage.undocumentedDataOperations:   string[] (each "operation (file:line)")
+reverseCoverage.testBoundariesSectionPresent: boolean
+
+coverage.documented:    string[] (feature areas with documentation)
+coverage.undocumented:  string[] (code features lacking documentation)
+coverage.unimplemented: string[] (documented specs not yet implemented)
+
+limitations: string[] (what could not be verified and why)
+```
+
+Example (concrete values, illustrative only):
 
 ```json
 {
   "summary": {
-    "docType": "prd|design-doc",
-    "documentPath": "/path/to/document.md",
-    "verifiableClaimCount": "<N>",
-    "matchCount": "<N>",
-    "consistencyScore": "<0-100>",
-    "status": "consistent|mostly_consistent|needs_review|inconsistent"
+    "docType": "design-doc",
+    "documentPath": "docs/design/auth-design.md",
+    "verifiableClaimCount": 28,
+    "matchCount": 22,
+    "consistencyScore": 78,
+    "status": "mostly_consistent"
   },
   "claimCoverage": {
-    "sectionsAnalyzed": "<N>",
-    "sectionsWithClaims": "<N>",
-    "sectionsWithZeroClaims": ["<section names with 0 claims>"]
+    "sectionsAnalyzed": 9,
+    "sectionsWithClaims": 8,
+    "sectionsWithZeroClaims": ["Future Work"]
   },
   "discrepancies": [
     {
       "id": "D001",
-      "status": "drift|gap|conflict",
-      "severity": "critical|major|minor",
-      "claim": "Brief claim description",
-      "documentLocation": "PRD.md:45",
-      "codeLocation": "src/auth.ts:120",
-      "evidence": "Tool result supporting this finding",
-      "classification": "What was found"
+      "status": "drift",
+      "severity": "major",
+      "claim": "Login endpoint accepts POST /api/auth/login",
+      "documentLocation": "auth-design.md:45",
+      "codeLocation": "src/auth/router.ts:120",
+      "evidence": "Grep found POST /api/v2/auth/login in src/auth/router.ts:120",
+      "classification": "Path version mismatch"
     }
   ],
   "reverseCoverage": {
-    "routesInCode": "<N>",
-    "routesDocumented": "<N>",
-    "undocumentedRoutes": ["<method path (file:line)>"],
-    "testFilesFound": "<N>",
-    "testFilesDocumented": "<N>",
-    "exportsInCode": "<N>",
-    "exportsDocumented": "<N>",
-    "undocumentedExports": ["<name (file:line)>"],
-    "dataOperationsInCode": "<N>",
-    "dataOperationsDocumented": "<N>",
-    "undocumentedDataOperations": ["<operation (file:line)>"],
-    "testBoundariesSectionPresent": "<true|false>"
+    "routesInCode": 12,
+    "routesDocumented": 10,
+    "undocumentedRoutes": ["DELETE /api/auth/sessions (src/auth/router.ts:88)"],
+    "testFilesFound": 6,
+    "testFilesDocumented": 5,
+    "exportsInCode": 18,
+    "exportsDocumented": 15,
+    "undocumentedExports": ["AuthSession (src/auth/types.ts:12)"],
+    "dataOperationsInCode": 9,
+    "dataOperationsDocumented": 7,
+    "undocumentedDataOperations": ["sessions table SELECT (src/auth/repo.ts:42)"],
+    "testBoundariesSectionPresent": true
   },
   "coverage": {
-    "documented": ["Feature areas with documentation"],
-    "undocumented": ["Code features lacking documentation"],
-    "unimplemented": ["Documented specs not yet implemented"]
+    "documented": ["login flow", "token refresh"],
+    "undocumented": ["session deletion endpoint"],
+    "unimplemented": ["MFA challenge response"]
   },
-  "limitations": ["What could not be verified and why"]
+  "limitations": ["Could not verify token refresh against running redis instance"]
 }
 ```
 
@@ -228,9 +271,10 @@ consistencyScore = (matchCount / verifiableClaimCount) * 100
 - [ ] Identified undocumented features from reverse coverage
 - [ ] Identified unimplemented specifications
 - [ ] Calculated consistency score
-- [ ] Final response is the JSON output
 
-## Output Self-Check
+## Self-Validation [BLOCKING — before output]
+
+Run each item below before producing the final JSON. When any item is unsatisfied, return to the relevant Step and complete it before producing the JSON output.
 
 - [ ] All existence claims (file exists, test exists, function exists) are backed by Glob/Grep tool results
 - [ ] All behavioral claims are backed by Read of the actual function implementation

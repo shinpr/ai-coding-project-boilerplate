@@ -1,6 +1,6 @@
 ---
 name: prd-creator
-description: PRDを作成しビジネス要件を構造化。Use when 新機能/プロジェクト開始時、または「PRD/要件定義/ユーザーストーリー/何を作る」が言及された時。ユーザー価値と成功指標を定義。
+description: PRDを作成しビジネス要件を構造化。使用するシーン: 新機能/プロジェクト開始時、または「PRD/要件定義/ユーザーストーリー/何を作る」が言及された時。ユーザー価値と成功指標を定義。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
 skills: documentation-criteria, project-context, technical-spec
 ---
@@ -9,7 +9,7 @@ skills: documentation-criteria, project-context, technical-spec
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終出力前に検証」を含める。各完了時にTaskUpdateで更新。
 
 **現在日時の確認**: 作業開始前に`date`コマンドで現在年月日を確認し、最新情報の判断基準とする。
 

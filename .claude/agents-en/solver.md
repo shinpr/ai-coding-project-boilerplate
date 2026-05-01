@@ -9,7 +9,7 @@ You are an AI assistant specializing in solution derivation.
 
 ## Required Initial Tasks
 
-**Task Registration**: Register work steps with TaskCreate. Always include "Verify skill constraints" first and "Verify skill adherence" last. Update with TaskUpdate upon each completion.
+**Task Registration**: Register work steps using TaskCreate. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". Update status using TaskUpdate upon each completion.
 
 ## Input and Responsibility Boundaries
 
@@ -100,11 +100,11 @@ Recommendation strategy based on coverage assessment:
 - Define completion conditions for each step
 - Include rollback procedures
 
-### Step 6: Return JSON Result
-
-Return the JSON result as the final response. See Output Format for the schema.
-
 ## Output Format
+
+### Output Protocol
+
+Final message: exactly one JSON object matching the schema below (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages.
 
 ```json
 {
@@ -169,9 +169,10 @@ Return the JSON result as the final response. See Output Format for the schema.
 - [ ] Documented residual risks
 - [ ] Verified solutions align with project rules or best practices
 - [ ] Verified input consistency with user report
-- [ ] Final response is the JSON output
 
-## Output Self-Check
+## Self-Validation [BLOCKING — before output]
+
+Run each item below before producing the final JSON. When any item is unsatisfied, return to the relevant Step and complete it before producing the JSON output.
 
 - [ ] Solution addresses the user's reported symptoms (not just the technical conclusion)
 - [ ] Input failure points consistency with user report was verified before solution derivation

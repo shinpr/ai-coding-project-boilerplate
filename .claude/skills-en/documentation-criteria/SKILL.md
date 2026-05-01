@@ -14,7 +14,7 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 | ADR Conditions Met (see below) | ADR -> Design Doc -> Work Plan | Start immediately |
 | 6+ Files | ADR -> Design Doc -> Work Plan (Required) | Start immediately |
 | 3-5 Files | Design Doc -> Work Plan (Recommended) | Start immediately |
-| 1-2 Files | None | Direct implementation |
+| 1-2 Files | None | Implementation cycle without work plan |
 
 ## ADR Creation Conditions (Required if Any Apply)
 
@@ -87,7 +87,7 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 - Visual acceptance criteria (golden states, layout constraints)
 - Accessibility requirements (keyboard, screen reader, contrast)
 
-**Scope**: Screen structure, transitions, component decomposition, interaction design, and visual acceptance criteria only. Technical implementation and API contracts belong in Design Doc, test implementation in acceptance-test-generator skeletons, schedule in Work Plan.
+**Scope**: Screen structure, transitions, component decomposition, interaction design, and visual acceptance criteria only. Technical implementation and API contracts belong in Design Doc, test implementation in test skeleton generation output, schedule in Work Plan.
 
 **Required Structural Elements**:
 - At least one component with state x display matrix and interaction table

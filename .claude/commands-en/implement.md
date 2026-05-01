@@ -39,7 +39,7 @@ When user responds to questions:
 
 ### 5. After Scale Determination: Register All Flow Steps with TaskCreate (Required)
 
-After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow with TaskCreate**. Always include: first "Confirm skill constraints", final "Verify skill fidelity". After registration, proceed through the flow referencing TaskList.
+After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow with TaskCreate**. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". After registration, proceed through the flow referencing TaskList.
 
 ### 6. Execute Next Action
 
@@ -58,9 +58,18 @@ After scale determination, **register all steps of the applicable subagents-orch
 
 **Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TaskCreate/TaskUpdate
 
-## 🚨 Sub-agent Invocation Constraints
+## Scope Boundary for Subagents
 
-Include the following at the end of prompts when invoking sub-agents, as rule-advisor invocation from sub-agents causes system crash:
+Append the following block to every subagent prompt invoked from this recipe:
+
+```
+Scope boundary for subagents:
+Operate within the task scope and referenced files in the prompt.
+Use loaded skills to execute that scope.
+Escalate when the required fix or investigation falls outside that scope.
+```
+
+Additionally, include the following constraint at the end of every sub-agent prompt, as rule-advisor invocation from sub-agents causes system crash:
 ```
 [Constraint] rule-advisor can only be used by Main AI
 ```
@@ -73,11 +82,11 @@ Following "Autonomous Execution Task Management" in subagents-orchestration-guid
 2. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**
-     - `needs_revision` → Return to step 1 with `requiredFixes`
+     - `needs_revision` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `requiredFixes[]` array as input
      - `approved` → Proceed to step 3
    - Otherwise → Proceed to step 3
-3. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file`
-   - `stub_detected` → Return to step 1 with `incompleteImplementations[]` details
+3. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file` and the implementation step's `filesModified` array as `filesModified` (this scopes the stub-detection step to the task's actual write set; without it, quality-fixer falls back to `git diff HEAD`)
+   - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
    - `blocked` → Escalate to user
    - `approved` → Proceed to step 4
 4. **COMMIT on approval**: Execute git commit
@@ -88,7 +97,7 @@ After all task cycles finish, invoke security-reviewer before the completion rep
 1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path and implementation file list
 2. Check response:
    - `approved` or `approved_with_notes` → Proceed to completion report (include notes if present)
-   - `needs_revision` → Execute task-executor with `requiredFixes`, then quality-fixer, then re-invoke security-reviewer
+   - `needs_revision` → Create a consolidated fix task file (`docs/plans/tasks/security-fixes-YYYYMMDD.md`) using the task-template; populate Target Files with the union of file paths referenced by `requiredFixes[].location` (parsed as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them. Then invoke task-executor in **Fix Mode** with `task_file` set to the new consolidated path and `requiredFixes` set to the security-reviewer array, followed by quality-fixer, then re-invoke security-reviewer.
    - `blocked` → Escalate to user
 
 ### Test Information Communication

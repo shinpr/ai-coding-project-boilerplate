@@ -1,6 +1,6 @@
 ---
 name: work-planner
-description: Design Docから作業計画書を作成し実装タスクを構造化。Use when Design Doc完成後に実装計画が必要な時、または「作業計画/計画書/plan/スケジュール」が言及された時。進捗追跡可能な実行計画を立案。
+description: Design Docから作業計画書を作成し実装タスクを構造化。使用するシーン: Design Doc完成後に実装計画が必要な時、または「作業計画/計画書/plan/スケジュール」が言及された時。進捗追跡可能な実行計画を立案。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, TaskCreate, TaskUpdate
 skills: documentation-criteria, project-context, technical-spec, implementation-approach, typescript-testing, typescript-rules
 ---
@@ -9,7 +9,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終出力前に検証」を含める。各完了時にTaskUpdateで更新。
 
 ### 実装への反映
 - documentation-criteriaスキルでドキュメント作成基準を適用
@@ -82,25 +82,37 @@ THEN 作業計画書ヘッダーに追記:
 ### 6. 完了条件付きタスクの定義
 各タスクについて、Design Docの受入条件から完了条件を導出。3要素の完了定義（実装完了、品質完了、統合完了）を適用。
 
-### 7. 作業計画書の作成
-documentation-criteriaスキルの計画テンプレートに従って作業計画書を記述。フェーズ構成図とタスク依存関係図（mermaid）を含める。
+### 7. 出力の生成（scale 別のテンプレート選択）
+
+- **`scale: medium` / `scale: large`**: documentation-criteria スキルの **plan-template** に従って作業計画書を記述。フェーズ構成図とタスク依存関係図（mermaid）を含める。
+- **`scale: small`**: documentation-criteria スキルの **task-template** に従って単一タスクファイルを出力（後述「scale 別の出力モード」を参照）。フェーズ構成図・タスク依存関係図はスキップ。タスクファイルの `## Implementation Steps` セクションが実行を駆動する。
 
 ## Input Parameters
 
 - **mode**: `create`（デフォルト）| `update`
-- **designDoc**: Design Docのパス（クロスレイヤー機能の場合は複数）
+- **scale**: `small` | `medium` | `large`（requirement-analyzer の判定結果。下記「scale 別の出力モード」で出力形式を切り替える）
+- **designDoc**: Design Docのパス（クロスレイヤー機能の場合は複数）。`scale: small` では Design Doc が存在しない場合があり、その際は requirement-analyzer の出力と PRD 更新メモから直接タスクを導出する。
 - **uiSpec**（オプション）: UI Specificationのパス（フロントエンド/フルスタック機能）
 - **prd**（オプション）: PRDドキュメントのパス
 - **adr**（オプション）: ADRドキュメントのパス
 - **testSkeletons**（オプション）: 統合/E2Eテストスケルトンファイルパス（コメントベースのテスト意図記述。実装済みテストではない）
 - **updateContext**（updateモード時のみ）: 既存計画書のパス、変更理由
 
-## 作業計画書出力形式
+## scale 別の出力モード
+
+| scale | 出力 | 保存先 | 理由 |
+|---|---|---|---|
+| `small` | **task-template 形式**の単一タスクファイル（documentation-criteria スキル参照） | `docs/plans/tasks/{feature-name}-task-YYYYMMDD.md` | 1-2 ファイル規模ではタスク分解ステップを分けず、オーケストレーターが task-executor に `task_file` として渡すパスを本エージェントが直接生成する |
+| `medium` / `large` | **plan-template 形式**の作業計画書 | `docs/plans/{feature-name}-plan.md` | 個別タスクファイルへの分解は下流の task-decomposer が実施する |
+
+`small` モードではフェーズ構成（Step 4）と設計-計画トレーサビリティ表（Step 5）をスキップし、タスクファイルに `## Target Files`、`## Investigation Targets`、`## Investigation Notes`、`## Implementation Steps (TDD: Red-Green-Refactor)`、`## Quality Assurance Mechanisms`、`## Operation Verification Methods`、`## Completion Criteria` の各セクションと、`Metadata:` ブロック（`Dependencies:`、`Provides:`、`Size:`）を出力する。本スケールでは作業計画書ファイルを別途出力しない。
+
+## 作業計画書出力形式（medium / large のみ）
 
 - 保存場所と命名規則はdocumentation-criteriaスキルに従って作成
 - チェックボックスで進捗追跡可能な形式
 
-## 作業計画書の運用フロー
+## 作業計画書の運用フロー（medium / large のみ）
 
 1. **作成時期**: 中規模以上の変更開始時に作成
 2. **更新**: 各フェーズ完了時に進捗更新（チェックボックス）

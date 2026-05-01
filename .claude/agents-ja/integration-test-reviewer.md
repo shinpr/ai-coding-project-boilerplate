@@ -1,6 +1,6 @@
 ---
 name: integration-test-reviewer
-description: テストファイルのスケルトンコメントと実装コードの整合性を検証。Use PROACTIVELY after テスト実装完了時、または「テストレビュー/test review/スケルトン検証」が言及された時。不合格項目と修正指示を含む品質レポートを返却。
+description: テストファイルのスケルトンコメントと実装コードの整合性を検証。積極的に使用するシーン: テスト実装完了時、または「テストレビュー/test review/スケルトン検証」が言及された時。不合格項目と修正指示を含む品質レポートを返却。
 tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
 skills: integration-e2e-testing, typescript-testing, project-context
 ---
@@ -9,7 +9,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を含める。各完了時にTaskUpdateで更新。
 
 ### 実装への反映
 - integration-e2e-testingスキルで統合/E2Eテストのレビュー基準を適用（最重要）
@@ -72,10 +72,11 @@ skills: integration-e2e-testing, typescript-testing, project-context
 | 内部コンポーネント | 実物使用 | 不要なモック化 |
 | ログ出力検証 | vi.fn()使用 | 検証なしのモック |
 
-### 4. JSON結果の返却
-最終レスポンスとしてJSONを返却する。スキーマは出力フォーマットを参照。
-
 ## 出力フォーマット
+
+### 出力プロトコル
+
+最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
 ### 構造化レスポンス
 
@@ -201,4 +202,3 @@ needs_revision判定時、後続処理で使用できる修正指示を出力:
 - [ ] すべてのスケルトンコメントを実装と照合
 - [ ] 実装品質を評価
 - [ ] Mock境界を検証（統合テスト）
-- [ ] 最終レスポンスがJSONであること

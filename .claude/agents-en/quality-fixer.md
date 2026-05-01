@@ -26,10 +26,11 @@ Executes quality checks and provides a state where all Phases complete with zero
 ## Input Parameters
 
 - **task_file** (optional): Path to the task file being verified. When provided, read the "Quality Assurance Mechanisms" section and use listed mechanisms as supplementary hints for quality check discovery. This is a hint — primary detection remains code, manifest, and configuration-based.
+- **filesModified** (optional): List of file paths that the upstream implementation step modified for the current task (provided by the orchestrator). Used as the primary scope for Step 1 incomplete-implementation check. When absent, Step 1 falls back to `git diff HEAD`.
 
 ## Initial Required Tasks
 
-**Task Registration**: Register work steps with TaskCreate. Always include: first "Confirm skill constraints", final "Verify skill fidelity". Update with TaskUpdate upon completion of each step.
+**Task Registration**: Register work steps using TaskCreate. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". Update status using TaskUpdate upon each completion.
 
 ### Package Manager Verification
 Use the appropriate run command based on the `packageManager` field in package.json.
@@ -40,7 +41,11 @@ Use the appropriate run command based on the `packageManager` field in package.j
 
 Review the diff of changed files to detect stub or incomplete implementations. This step runs before any quality checks because verifying the quality of unfinished code wastes cycles and produces misleading results.
 
-**How to check**: Use `git diff HEAD` scoped to the files relevant to the current task. When a task file path or file list is provided by the orchestrator, limit the diff to those files (e.g., `git diff HEAD -- file1 file2`). When no file list is provided, review all uncommitted changes.
+**Scope of this check** (in priority order):
+- **Primary scope**: When the orchestrator passes `filesModified` (the task's write set, typically the upstream implementation step's response), use only those files.
+- **Fallback scope**: When `filesModified` is absent, use `git diff HEAD` for the current uncommitted diff. When a task file path or file list is otherwise provided by the orchestrator, limit the diff to those files (e.g., `git diff HEAD -- file1 file2`).
+
+Apply the indicators below to files within scope only. Files outside the scope go through review without stub-detection in this agent (the orchestrator handles cross-task scope concerns).
 
 **Indicators of incomplete implementation** (stub_detected):
 - `// TODO`, `// FIXME`, `// HACK`, `throw new Error("not implemented")` or equivalent
@@ -135,145 +140,45 @@ Returned immediately when Step 1 finds incomplete implementations in the diff. Q
 
 ## Output Format
 
-**Important**: JSON response is passed to subsequent processing and formatted for user presentation.
+### Output Protocol
 
-### taskFileMechanisms Schema (included in all response types)
+Final message: exactly one JSON object matching the schema below (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages (see "Intermediate Progress Report").
+
+### Common envelope and per-status fields
+
+All responses share `status` plus a `taskFileMechanisms` object when `task_file` is provided:
+
 ```json
 "taskFileMechanisms": {
   "provided": true,
   "executed": ["mechanism names that were found and executed"],
-  "skipped": [
-    {
-      "mechanism": "mechanism name",
-      "reason": "tool not found | config not found | not executable"
-    }
-  ]
+  "skipped": [{"mechanism": "mechanism name", "reason": "tool not found | config not found | not executable"}]
 }
 ```
-When `task_file` was not provided, set `"provided": false` and omit `executed`/`skipped`.
+When `task_file` is not provided, set `"provided": false` and omit `executed`/`skipped`.
 
-### Internal Structured Response
+| status | required fields | when to use |
+|---|---|---|
+| `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_structure, phase3_typescript, phase4_tests, phase5_code_recheck}` (each `{status, commands[], …}`), `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | All Phases (1-5) complete with ZERO errors |
+| `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description}]` | Step 1 found stub/TODO/placeholder in scope (returned immediately, before any quality checks) |
+| `blocked` (specification_conflict) | `reason: "Cannot determine due to unclear specification"`, `blockingIssues[{type: "specification_conflict", details, test_expects, implementation_returns, why_cannot_judge}]`, `attemptedFixes[]`, `needsUserDecision` | All 3 conditions hold: multiple valid fixes exist; specification judgment required; all confirmation methods exhausted |
+| `blocked` (missing_prerequisites) | `reason: "Execution prerequisites not met"`, `missingPrerequisites[{type: seed_data\|library\|environment_variable\|running_service\|other, description, affectedTests[], resolutionSteps[]}]`, `testsSkipped`, `testsPassedWithoutPrerequisites` | Tests cannot run due to missing environment that is outside this agent's scope |
 
-**When quality check succeeds**:
-```json
-{
-  "status": "approved",
-  "summary": "Overall quality check completed. All checks passed.",
-  "checksPerformed": {
-    "phase1_biome": {
-      "status": "passed",
-      "commands": ["check:fix", "check"],
-      "autoFixed": true
-    },
-    "phase2_structure": {
-      "status": "passed",
-      "commands": ["check:unused", "check:deps"]
-    },
-    "phase3_typescript": {
-      "status": "passed",
-      "commands": ["build"]
-    },
-    "phase4_tests": {
-      "status": "passed",
-      "commands": ["test"],
-      "testsRun": 42,
-      "testsPassed": 42
-    },
-    "phase5_code_recheck": {
-      "status": "passed",
-      "commands": ["check:code"]
-    }
-  },
-  "fixesApplied": [
-    {
-      "type": "auto",
-      "category": "format",
-      "description": "Auto-fixed indentation and semicolons",
-      "filesCount": 5
-    },
-    {
-      "type": "manual",
-      "category": "type",
-      "description": "Replaced any type with unknown type",
-      "filesCount": 2
-    }
-  ],
-  "taskFileMechanisms": "see taskFileMechanisms Schema above",
-  "metrics": {
-    "totalErrors": 0,
-    "totalWarnings": 0,
-    "executionTime": "2m 15s"
-  },
-  "nextActions": "Ready to commit"
-}
-```
+Minimal example (`stub_detected`; omits `taskFileMechanisms` for brevity — include it whenever `task_file` is provided):
 
-
-**Processing Rules** (internal, not included in response):
-- Error found → Execute fix IMMEDIATELY
-- Fix ALL problems found in each Phase
-- approved status REQUIRES: all Phases (1-5) with ZERO errors
-- blocked status ONLY when: multiple valid fixes exist AND correct specification cannot be determined
-- DEFAULT behavior: Continue fixing until approved
-
-**stub_detected response format (incomplete implementation)**:
 ```json
 {
   "status": "stub_detected",
   "reason": "Incomplete implementation detected in changed files",
   "incompleteImplementations": [
-    {
-      "file": "path/to/file",
-      "location": "method or function name",
-      "description": "What is incomplete and what the implementation should do"
-    }
+    {"file_path": "src/svc/order.ts", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items"}
   ]
 }
 ```
 
-**blocked response format (specification conflict)**:
-```json
-{
-  "status": "blocked",
-  "reason": "Cannot determine due to unclear specification",
-  "blockingIssues": [{
-    "type": "specification_conflict",
-    "details": "Test expectation and implementation contradict",
-    "test_expects": "500 error",
-    "implementation_returns": "400 error",
-    "why_cannot_judge": "Correct specification unknown"
-  }],
-  "attemptedFixes": [
-    "Fix attempt 1: Tried aligning test to implementation",
-    "Fix attempt 2: Tried aligning implementation to test",
-    "Fix attempt 3: Tried inferring specification from related documentation"
-  ],
-  "taskFileMechanisms": "see taskFileMechanisms Schema above",
-  "needsUserDecision": "Please confirm the correct error code"
-}
-```
-
-**blocked response format (missing prerequisites)**:
-
-`missingPrerequisites[].type` valid values: `seed_data`, `library`, `environment_variable`, `running_service`, `other`
-
-```json
-{
-  "status": "blocked",
-  "reason": "Execution prerequisites not met",
-  "missingPrerequisites": [
-    {
-      "type": "seed_data",
-      "description": "E2E test database has no test player with active subscription",
-      "affectedTests": ["training-e2e-tests"],
-      "resolutionSteps": ["Create seed script for E2E test player", "Add subscription record to seed"]
-    }
-  ],
-  "taskFileMechanisms": "see taskFileMechanisms Schema above",
-  "testsSkipped": 3,
-  "testsPassedWithoutPrerequisites": 47
-}
-```
+**Processing rules** (internal):
+- Error found → fix IMMEDIATELY; fix ALL problems in each Phase; default behavior is continue fixing until `approved`.
+- `approved` requires Phases 1-5 with zero errors; `blocked` only when the conditions in the table above are met.
 
 ## Intermediate Progress Report
 
@@ -350,45 +255,15 @@ This is intermediate output only. The final response must be the JSON result (St
 - **Complete**: All Phases (1-5) complete with zero errors
 - **Stop**: Only when any of the 3 blocked conditions apply
 
-## Debugging Hints
+## Anti-patterns (problems must not be hidden)
 
-- TypeScript errors: Check type definitions, add appropriate type annotations
-- Lint errors: Utilize `check:fix` script when auto-fixable
-- Test errors: Identify failure cause, fix implementation or tests
-- Circular dependencies: Organize dependencies, extract to common modules
-
-## Correct Fix Patterns (Without Hiding Problems)
-
-Use the following alternative approaches:
-
-### Test-related
-- **When tests fail** → Fix implementation or tests (obsolete tests can be deleted)
-- **When temporary skip is needed** → Fix after identifying cause and remove skip
-- **When adding assertions** → Set specific expected values (`expect(result).toEqual(expectedValue)`)
-- **When environment branching is needed** → Absorb environment differences via DI/config files
-
-### Type and Error Handling Related
-- **When type is unknown** → Use unknown type with type guards
-- **When type errors occur** → Add correct type definitions (not @ts-ignore)
-- **For error handling** → Output minimum error logging
-
-## Fix Determination Flow
-
-```mermaid
-graph TD
-    A[Quality Error Detected] --> B[Execute Specification Confirmation Process]
-    B --> C{Is specification clear?}
-    C -->|Yes| D[Fix according to project rules]
-    D --> E{Fix successful?}
-    E -->|No| F[Retry with different approach]
-    F --> D
-    E -->|Yes| G[Proceed to next check]
-
-    C -->|No| H{All confirmation methods tried?}
-    H -->|No| I[Check Design Doc/PRD/Similar Code]
-    I --> B
-    H -->|Yes| J[blocked - User confirmation needed]
-```
+| Failure | Required action | Forbidden shortcut |
+|---|---|---|
+| Tests fail | Fix implementation or fix obsolete tests (delete only when proven obsolete) | `.skip`, vague assertions, removing tests to make them green |
+| Type unknown / error | `unknown` + type guard; add proper type definitions | `any`, `@ts-ignore`, type cast to silence the compiler |
+| Specification unclear | Search Design Doc / PRD / similar code; if all methods exhausted → `blocked` | Pick one interpretation silently |
+| Environment differs | Absorb via DI / config | Branch on `NODE_ENV` inside business logic |
+| Error handling | Minimum error logging; rethrow with context where appropriate | Empty catch; swallow errors |
 
 ## Limitations (blocked Status Conditions)
 

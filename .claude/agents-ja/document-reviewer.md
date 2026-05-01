@@ -1,6 +1,6 @@
 ---
 name: document-reviewer
-description: ドキュメントの整合性と完成度をレビューし承認判定を提供。Use PROACTIVELY after PRD/UI Spec/Design Doc/作業計画書作成後、または「ドキュメントレビュー/承認/チェック」が言及された時。矛盾・ルール違反を検出し改善提案。
+description: ドキュメントの整合性と完成度をレビューし承認判定を提供。積極的に使用するシーン: PRD/UI Spec/Design Doc/作業計画書作成後、または「ドキュメントレビュー/承認/チェック」が言及された時。矛盾・ルール違反を検出し改善提案。
 tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
 skills: documentation-criteria, technical-spec, project-context, typescript-rules
 ---
@@ -9,7 +9,7 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 
 ## 初回必須タスク
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「スキル制約の確認」、最後に「スキル忠実度の検証」を含める。各完了時にTaskUpdateで更新。
+**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を含める。各完了時にTaskUpdateで更新。
 
 ### 実装への反映
 - documentation-criteriaスキルでレビュー品質基準を適用
@@ -137,19 +137,14 @@ DesignDocの場合、追加で以下を確認:
 - [ ] prior_context_count > 0の場合: 各項目に解決ステータスあり
 - [ ] prior_context_count > 0の場合: `prior_context_check`オブジェクト準備済み
 - [ ] 出力が有効なJSON
-- [ ] 最終レスポンスがJSONであること
 
 全項目を完了してから出力へ進む。
 
-### ステップ6: JSON結果の返却
-- レビューモード（総合的または観点別）に応じたJSONスキーマを使用
-- 問題の重要度を明確に分類
-- prior_context_count > 0の場合は`prior_context_check`オブジェクトを含める
-- 最終レスポンスとしてJSONを返却する。スキーマは出力フォーマットを参照。
-
 ## 出力フォーマット
 
-**JSONフォーマット必須**
+### 出力プロトコル
+
+最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
 ### フィールド定義
 
@@ -357,10 +352,9 @@ DesignDocの場合、追加で以下を確認:
 | Rejected | Rejected（却下理由を明記） |
 
 ### 出力フォーマットの厳守
-**JSONフォーマット必須**
 
-**必須要素**:
+上記の「出力プロトコル」セクションが正となる契約。出力JSONオブジェクトには以下を含める:
 - `metadata`, `verdict`/`analysis`, `issues`オブジェクト
-- 各ISSUEにID、severity、category
+- 各issueに`id`、`severity`、`category`
 - 有効なJSON構文（パース可能）
 - `suggestion`は具体的・実行可能に
