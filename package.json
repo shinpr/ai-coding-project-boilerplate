@@ -51,6 +51,7 @@
     "check:fix": "biome check --write src",
     "check:unused": "knip --include exports",
     "check:deps": "dpdm --no-warning --no-tree --exit-code circular:1 --ext .ts --exclude \"__tests__|.test.ts$|.spec.ts$\" --tsconfig ./tsconfig.json -T \"src/**/*.ts\"",
+    "check:skills-index": "node scripts/check-skills-index.mjs",
     "check:code": "npm run check && npm run check:unused && npm run check:deps && npm run build",
     "check:all": "npm run check:code && npm run test",
     "cleanup:processes": "bash ./scripts/cleanup-test-processes.sh",
