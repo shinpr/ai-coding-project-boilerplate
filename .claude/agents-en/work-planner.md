@@ -44,22 +44,38 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 - Final phase is always Quality Assurance
 
 **E2E Gap Check (all strategies)**:
-After determining which test skeletons are available, check whether E2E skeletons are absent. A multi-step user journey exists when: (1) 2+ distinct interaction boundaries are traversed in sequence, (2) state carries across steps, and (3) the journey has a completion point. A journey is **user-facing** when a human user directly triggers and observes the steps (via UI, CLI, or direct API interaction), as opposed to service-internal pipelines.
+After determining which test skeletons are available, check the two E2E lanes (fixture-e2e, service-integration-e2e — see integration-e2e-testing skill) independently. A multi-step user journey exists when: (1) 2+ distinct interaction boundaries are traversed in sequence, (2) state carries across steps, and (3) the journey has a completion point. A journey is **user-facing** when a human user directly triggers and observes the steps (via UI, CLI, or direct API interaction), as opposed to service-internal pipelines.
 
 ```
-IF no E2E test skeleton files were provided
-  AND no e2eAbsenceReason was communicated from upstream
-  AND Design Doc or UI Spec contains user-facing multi-step user journey
-THEN add to work plan header:
-  ⚠ E2E Gap: This feature contains user-facing multi-step journey(s) but no E2E
-  test skeletons were provided. Route this feature back through acceptance-test
-  generation to evaluate E2E test candidates before final phase.
-  Detected journeys: [list journey descriptions and AC references]
+fixture-e2e gap:
+  IF no fixture-e2e skeleton was provided
+    AND e2eAbsenceReason.fixtureE2e was not communicated
+    AND Design Doc or UI Spec contains user-facing multi-step user journey
+  THEN add to work plan header:
+    ⚠ fixture-e2e Gap: This feature contains user-facing multi-step journey(s)
+    but no fixture-e2e skeleton was provided. Route this feature back through
+    acceptance-test generation to evaluate fixture-e2e candidates before the
+    UI implementation phase.
+    Detected journeys: [list journey descriptions and AC references]
+
+service-integration-e2e gap:
+  IF no service-integration-e2e skeleton was provided
+    AND e2eAbsenceReason.serviceE2e was not communicated
+    AND Design Doc indicates the journey requires real cross-service
+        verification (data persistence across services, transactional
+        consistency, external service contract)
+  THEN add to work plan header:
+    ⚠ service-integration-e2e Gap: This feature crosses service boundaries
+    where correctness depends on real cross-service behavior, but no
+    service-integration-e2e skeleton was provided.
+    Detected boundaries: [list crossings and AC references]
 ```
 
-When an `e2eAbsenceReason` is provided (from the acceptance-test Generation Report, e.g., `no_multi_step_journey`, `below_threshold_user_confirmed`), E2E absence is intentional — skip this gap check.
+"Was not communicated" means the upstream planning flow skipped test skeleton generation entirely — in that case the absence reason field is not passed to work-planner, so the gap check still runs. Per acceptance-test-generator's contract, when a skeleton was generated `e2eAbsenceReason.<lane>` is null; when generation ran but produced no skeleton, the reason is one of the strings enumerated in that contract — both cases mean the field WAS communicated, so no gap warning fires.
 
-This check applies regardless of whether Strategy A or B was selected. Integration-only skeletons being provided does not imply E2E coverage. Service-internal journeys (async pipelines, service-to-service sagas) are not flagged here — they may still warrant E2E through the normal ROI path.
+When an `e2eAbsenceReason` for a lane carries a string value (e.g., `no_multi_step_journey`, `below_threshold_user_confirmed`, `no_real_service_dependency` — see acceptance-test-generator for the per-lane allowed values), absence in that lane is intentional — skip the gap check for that lane.
+
+This check applies regardless of whether Strategy A or B was selected. Integration-only skeletons being provided does not imply E2E coverage. Service-internal journeys (async pipelines, service-to-service sagas) are not flagged for the reserved-slot rule but may still warrant service-integration-e2e through the normal ROI path.
 
 **Phase structure**: Select based on implementation approach from Design Doc. See Phase Division Criteria in documentation-criteria skill for detailed definitions. Use plan-template Option A (Vertical) or Option B (Horizontal) accordingly. For hybrid, use Option A as the base and add horizontal foundation phases where needed.
 
@@ -79,6 +95,39 @@ Map each extracted item to a covering task. Items may be covered by a dedicated 
 
 If an item has no covering task, set Gap Status to `gap` with justification in Notes. **When the Traceability table contains any `gap` entry, the plan is in draft status.** Output the plan as draft, but do not finalize it until the user has confirmed each justified gap. Unjustified gaps (no Notes) are errors — add a covering task or provide justification before proceeding.
 
+### 5a. Map UI Spec Components to Tasks (when UI Spec provided)
+
+When a UI Spec is among the inputs, also map components and states to the tasks that implement them. task-decomposer reads this mapping in a downstream step to populate each task's Investigation Targets, so without this step the UI Spec never reaches the executor.
+
+For each component documented in the UI Spec:
+1. Identify the component's section heading exactly as it appears in the UI Spec (the heading is the reference key — see ui-spec-designer's heading uniqueness rule)
+2. Identify which states (default / loading / empty / error / partial) the implementation must cover
+3. Identify the task(s) in this plan that implement the component or its tests
+
+Record the mapping in the **UI Spec Component → Task Mapping** table (see plan template). One row per component. Components with no covering task are flagged as `gap` requiring user confirmation, identical to the Design-to-Plan Traceability rule.
+
+### 5b. Map Cross-Package Boundaries to Tasks (when implementation crosses runtime/deployment boundaries)
+
+When the implementation crosses a runtime or deployment boundary, build a Connection Map so task-decomposer can propagate boundary context to each affected task.
+
+**A boundary qualifies for the Connection Map only when ALL of the following hold**:
+- The two sides run in separate processes, services, or runtimes (e.g., web client ↔ HTTP server, service A ↔ service B over a network, frontend bundle ↔ backend handler)
+- A serialized contract crosses between them (HTTP request/response, message envelope, RPC call, event payload)
+- A failure on one side produces an observable signal on the other (status code, missing field, timeout, dropped message)
+
+**Excluded — these are NOT boundaries for the Connection Map**:
+- A package importing a sibling utility, type definition, or shared constant from the same monorepo (in-process, no serialized contract)
+- Internal layering within the same runtime (e.g., handler → usecase → repository)
+- Source code dependencies that compile/bundle into the same artifact
+
+For each qualifying boundary:
+1. Identify the boundary (e.g., `web → API gateway`, `service-A → service-B`, `frontend → shared client → backend handler`)
+2. Identify the owner module/package on each side
+3. Identify the expected signal that confirms the boundary works (e.g., HTTP 200 with schema X, message published to topic Y, row inserted in table Z)
+4. Identify the task(s) that implement either side of the boundary
+
+Record the mapping in the **Connection Map** table (see plan template). Omit this section entirely when no qualifying boundary exists.
+
 ### 6. Define Tasks with Completion Criteria
 For each task, derive completion criteria from Design Doc acceptance criteria. Apply the 3-element completion definition (Implementation Complete, Quality Complete, Integration Complete).
 
@@ -86,6 +135,8 @@ For each task, derive completion criteria from Design Doc acceptance criteria. A
 
 - **`scale: medium` / `scale: large`**: Write a work plan following the **plan-template** from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
 - **`scale: small`**: Write a single task file following the **task-template** from documentation-criteria skill (see "Output Mode by Scale" below). Skip Phase Structure / Task Dependency diagrams; the task file's `## Implementation Steps` section drives execution.
+
+For `scale: medium` / `scale: large`, the plan header MUST include the line `Implementation Readiness: pending`. The marker contract: it takes one of three values — `pending` (initial, set here by work-planner), `ready` (verification completed with no remaining gaps), or `escalated` (verification completed with remaining gaps). The producer that promotes the marker beyond `pending` and the consumer that reads it before execution are external orchestration concerns owned outside this agent.
 
 ## Input Parameters
 
@@ -144,10 +195,11 @@ Include completion conditions in task names (e.g., "Service implementation and u
 #### Phase 0: Test Preparation (Unit Tests Only)
 Create Red state tests based on unit test definitions provided from previous process.
 
-**Test Implementation Timing**:
+**Test Implementation Timing and Placement**:
 - Unit tests: Phase 0 Red → Green during implementation
-- Integration tests: Create and execute at completion of implementation (Red-Green-Refactor not applied)
-- E2E tests: Execute only in final phase (Red-Green-Refactor not applied)
+- Integration tests: Create and execute at completion of relevant feature implementation (include in phase tasks like "[Feature name] implementation with integration test creation")
+- fixture-e2e tests: Create and execute alongside the UI feature phase (include in phase tasks like "[Feature name] UI implementation with fixture-e2e creation"). These run in CI without infrastructure setup.
+- service-integration-e2e tests: Execute only in the final phase (these depend on local stack and tend to be too slow/heavy for per-task cycles)
 
 #### Meta Information Utilization
 Analyze meta information (@category, @dependency, @complexity, etc.) included in test definitions,
@@ -193,22 +245,29 @@ Read test skeleton files (integration tests, E2E tests) with the Read tool and e
 
 #### Step 3: Extract Environment Prerequisites from E2E Skeletons
 
-When E2E test skeletons are provided, scan for environment prerequisites in two stages:
+When E2E test skeletons are provided, scan for environment prerequisites in two stages. Apply the lane-aware rules below — fixture-e2e and service-integration-e2e have very different prerequisite shapes.
 
-**Stage 1: Detect precondition patterns** — scan all E2E skeletons and list every detected precondition:
-- `Preconditions:` or `Arrange:` comment annotations mentioning seed data, test users, subscriptions, or specific DB state
-- `@dependency: full-system` combined with auth/login setup code
+**Stage 1: Detect precondition patterns** — scan each E2E skeleton (read its `@lane` header to know which lane applies) and list every detected precondition:
+- `Preconditions:` or `Arrange:` comment annotations mentioning seed data, test users, fixtures, or specific UI/DB state
+- `@dependency: full-ui (mocked backend)` combined with fixture loaders or API mock handlers (MSW route handlers — fixture-e2e)
+- `@dependency: full-system` combined with auth/login setup code (service-integration-e2e)
 - References to environment variables (`E2E_*`, `TEST_*`)
-- External service references requiring HTTP mock/intercept patterns in test code
+- External service references requiring HTTP mock/intercept patterns
 
-**Stage 2: Generate setup tasks** — for each detected precondition, create a corresponding Phase 0 task. Common categories include:
-- **Seed data** → "Create E2E seed data script (test users, required records)"
-- **Auth fixture** → "Implement E2E auth fixture using application's login flow"
-- **External service mocks** → "Configure external service mocks for E2E tests"
-- **Environment configuration** → "Define E2E environment variables and document setup"
-- **Other detected preconditions** → Create a setup task matching the detected category
+**Stage 2: Generate setup tasks** — for each detected precondition, create a corresponding Phase 0 task. Common categories by lane:
 
-Place all environment setup tasks in Phase 0 (before any implementation tasks). Mark with `@category: e2e-setup` for traceability.
+For **fixture-e2e**:
+- **Fixture data** → "Create fixture data files for [feature] UI states"
+- **Mock backend** → "Configure MSW handlers for fixture-e2e (browser-runtime mocks for the project's API surface)"
+- **Browser harness** → "Set up the Playwright harness for fixture-e2e (no live services required)"
+
+For **service-integration-e2e**:
+- **Seed data** → "Create seed data script for service-integration-e2e (test users, required records)"
+- **Auth fixture** → "Implement auth fixture using application's login flow"
+- **External service stubs** → "Configure external service stubs for service-integration-e2e"
+- **Environment configuration** → "Define service-integration-e2e environment variables and document local startup"
+
+Place all environment setup tasks in Phase 0 (before any implementation tasks). Mark with `@category: e2e-setup` and `@lane:` matching the target lane for traceability.
 
 #### Step 4: Structure Analysis and Classification of it.todo
 
@@ -216,7 +275,8 @@ Place all environment setup tasks in Phase 0 (before any implementation tasks). 
    - Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
    - Unit tests (individual functions) → Start from Phase 0 with Red-Green-Refactor
    - Integration tests → Place as create/execute tasks when relevant feature implementation is complete
-   - E2E tests → Place as execute-only tasks in final phase
+   - fixture-e2e tests → Place as create/execute tasks alongside the relevant UI feature implementation
+   - service-integration-e2e tests → Place as execute-only tasks in final phase
    - Non-functional requirement tests (performance, UX, etc.) → Place in quality assurance phase
    - Risk levels ("high risk", "required", etc.) → Move to earlier phases
 
@@ -238,7 +298,8 @@ Place all environment setup tasks in Phase 0 (before any implementation tasks). 
 ### Test Placement Principles
 **Phase Placement Rules**:
 - Integration tests: Include in relevant phase tasks like "[Feature name] implementation with integration test creation"
-- E2E tests: Place "E2E test execution" in final phase (implementation not needed, execution only)
+- fixture-e2e tests: Include alongside the UI feature phase (creation + execution in CI-friendly browser harness)
+- service-integration-e2e tests: Place "service-integration-e2e execution" in final phase (implementation not needed, execution only against the local stack)
 
 ### Implementation Approach Application
 Decompose tasks based on implementation approach and technical dependencies decided in Design Doc, following verification levels (L1/L2/L3) from implementation-approach skill.
@@ -270,6 +331,13 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 - [ ] Design-to-Plan Traceability table complete (all DD technical requirements categorized and mapped)
   - [ ] No `gap` entries without justification
   - [ ] All justified `gap` entries flagged for user confirmation before plan approval
+- [ ] UI Spec Component → Task Mapping table complete (when UI Spec provided)
+  - [ ] Every UI Spec component has a covering task, OR an explicit `gap` justification
+  - [ ] Component reference uses the UI Spec section heading exactly as it appears in the document
+- [ ] Connection Map table complete (when implementation crosses packages/services)
+  - [ ] Every boundary lists owner modules and expected signal
+  - [ ] Every boundary maps to at least one covering task on each side
+- [ ] Plan header includes `Implementation Readiness: pending` (medium / large only)
 - [ ] Verification Strategy extracted from Design Doc and included in plan header
 - [ ] Adopted Quality Assurance Mechanisms extracted from Design Doc and included in plan header
 - [ ] Phase structure matches implementation approach (vertical → value unit phases, horizontal → layer phases)
@@ -278,7 +346,8 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 - [ ] Quality assurance exists in final phase
 - [ ] Test skeleton file paths listed in corresponding phases (when provided)
 - [ ] E2E environment prerequisites addressed (when E2E skeletons provided)
-  - [ ] Seed data, auth fixture, and external service mock tasks generated
+  - [ ] fixture-e2e prerequisites: fixture data, mocked backend, browser harness tasks generated when applicable
+  - [ ] service-integration-e2e prerequisites: seed data, auth fixture, external service stub tasks generated when applicable
   - [ ] Environment setup tasks placed in Phase 0
 - [ ] Test design information reflected (only when provided)
   - [ ] Setup tasks placed in first phase

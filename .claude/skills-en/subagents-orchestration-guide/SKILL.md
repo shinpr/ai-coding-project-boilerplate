@@ -126,6 +126,27 @@ I repeat this cycle for each task to ensure quality.
 
 ## Structured Response Specifications
 
+All subagent invocation uses the **Agent tool** with:
+- `subagent_type`: Agent name (e.g., "task-executor")
+- `description`: Concise task description (3-5 words)
+- `prompt`: Specific instructions including deliverable paths
+
+### Orchestrator's Permitted Tools
+
+The orchestrator coordinates work using only the following tools:
+
+| Tool | Purpose |
+|------|---------|
+| Agent | Invoke subagents |
+| AskUserQuestion | User confirmations and questions |
+| TaskCreate / TaskUpdate | Progress tracking |
+| Bash | Shell operations (git commit, ls, verification commands) |
+| Read | Deliverable documents for information bridging between subagents |
+
+All implementation work (Edit, Write, MultiEdit) is performed by subagents, not the orchestrator.
+
+### Subagent Response Format
+
 Subagents respond in JSON format. Key fields for orchestrator decisions:
 
 | Agent | Key Fields | Decision Logic |
@@ -138,8 +159,8 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 | document-reviewer | approvalReady (true/false) | Proceed to next step on true; request fixes on false |
 | design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | On CONFLICTS_FOUND: present conflicts to user before proceeding |
 | integration-test-reviewer | status (approved/needs_revision/blocked), requiredFixes | On needs_revision: re-invoke the routed executor in Fix Mode with the same task_file and requiredFixes[] |
-| security-reviewer | status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes | On needs_revision: create a consolidated fix task file with affected files in Target Files, then invoke executor in Fix Mode with that task_file and requiredFixes[] (see build/implement recipes) |
-| acceptance-test-generator | status, generatedFiles (integration: path\|null, e2e: path\|null), budgetUsage, e2eAbsenceReason (null when E2E emitted, otherwise: no_multi_step_journey\|below_threshold_user_confirmed) | Verify files exist, pass to work-planner with absence reason |
+| security-reviewer | status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes | On needs_revision: create a consolidated fix task file with the affected file paths from `requiredFixes[].location` populated into Target Files, then invoke the routed executor in Fix Mode with that task_file and the `requiredFixes[]` array, then quality-fixer, then re-invoke security-reviewer to verify resolution. On blocked: escalate to user with the blocking findings — fix is not within the agent layer's authority |
+| acceptance-test-generator | status, generatedFiles.{integration,fixtureE2e,serviceE2e} (path\|null per lane), budgetUsage per lane, e2eAbsenceReason per E2E lane (null when emitted; reason enum is owned by acceptance-test-generator and integration-e2e-testing skill) | Verify each non-null file path exists, pass per-lane paths and absence reasons to work-planner |
 
 ### quality-fixer Blocked Handling
 
@@ -190,6 +211,15 @@ According to scale determination:
 2. task-executor → quality-fixer → commit (per task) → Completion report
 
 Note: At Small scale the implementation step still runs through task-executor with the standard 4-step cycle (`task-executor → escalation judgment → quality-fixer → commit`). Direct orchestrator edits are not used.
+
+### Implementation Readiness Marker
+
+For Medium / Large scale, after Batch approval the work plan carries an `Implementation Readiness:` header (work-planner emits `pending`; promotion to `ready` or `escalated` is an external orchestration concern). The marker takes one of three values:
+- `pending` — initial state set by work-planner
+- `ready` — readiness verification has completed with no remaining gaps; safe to start the task execution cycle
+- `escalated` — readiness verification has completed but residual gaps require user judgment before execution
+
+External orchestration owns both the producer that promotes the marker beyond `pending` and the consumer that reads it before invoking task-executor. This guide does not invoke any orchestrator above the agent layer; agents read/write the marker only when explicitly asked.
 
 ## Cross-Layer Orchestration
 
@@ -325,21 +355,13 @@ Two additional rules:
 
    #### *1 acceptance-test-generator → work-planner
 
-   **Pass to acceptance-test-generator**:
-   - Design Doc: [path]
-   - UI Spec: [path] (if exists)
+   **Pass to acceptance-test-generator**: Design Doc path; UI Spec path (if exists).
 
-   **Orchestrator verification items**:
-   - Verify `generatedFiles.integration` is a valid path (when not null) and the file exists
-   - Verify `generatedFiles.e2e` is a valid path (when not null) and the file exists
-   - When `generatedFiles.e2e` is null, verify `e2eAbsenceReason` is present — this is intentional absence, not an error
+   **Orchestrator verification**: Every non-null `generatedFiles.<lane>` path exists on disk. For each null lane, `e2eAbsenceReason.<lane>` is present — this is intentional absence, not an error.
 
-   **Pass to work-planner**:
-   - Integration test file: [path] (create and execute simultaneously with each phase implementation)
-   - E2E test file: [path] or null (execute only in final phase, when provided)
-   - E2E absence reason: [reason] (when E2E is null — pass this so work-planner can skip E2E Gap Check for intentional absence)
+   **Pass to work-planner**: integration / fixture-e2e / service-integration-e2e file paths (or null per lane), per-lane absence reasons, plus timing guidance — integration tests are created alongside each phase implementation, fixture-e2e tests are created alongside the UI feature phase, service-integration-e2e tests are executed only in the final phase.
 
-   **On error**: Escalate to user if integration file generation failed unexpectedly (status != completed). E2E being null with a valid absence reason is not an error.
+   **On error**: Escalate to user when status != completed and integration file generation failed unexpectedly. A null E2E lane with a valid absence reason is not an error.
 3. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
 ## Important Constraints
