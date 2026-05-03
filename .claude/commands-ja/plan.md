@@ -36,20 +36,21 @@ description: 設計書から作業計画書を作成し計画承認を取得
    - 設計書の存在を確認し、ない場合はその旨をユーザーに通知
    - 複数ある場合は選択肢を提示（$ARGUMENTS で指定可能）
 
-2. **E2Eテストスケルトンの生成確認**
-   - E2Eテストスケルトンを先に生成するかユーザーに確認
-   - 生成を希望する場合: acceptance-test-generator でテストスケルトンを生成
+2. **テストスケルトンの生成確認**
+   - テストスケルトン（統合 + E2Eレーン）を先に生成するかユーザーに確認
+   - 生成を希望する場合: acceptance-test-generator を呼び出す
    - 生成結果を subagents-orchestration-guideスキル の連携仕様に従って次工程に引き継ぐ
 
 3. **作業計画書の作成**
    Agentツールでwork-plannerを呼び出す:
    - `subagent_type`: "work-planner"
    - `description`: "作業計画書作成"
-   - ステップ2でテストスケルトンを生成した場合:
-     - `generatedFiles.e2e`がnullでない場合:
-       `prompt`: "[パス]のDesign Docから作業計画を作成。統合テストファイル: [ステップ2の統合テストパス]。E2Eテストファイル: [ステップ2のE2Eテストパス]。統合テストは各フェーズ実装と同時に作成、E2Eテストは最終フェーズでのみ実行。"
-     - `generatedFiles.e2e`がnullの場合:
-       `prompt`: "[パス]のDesign Docから作業計画を作成。統合テストファイル: [ステップ2の統合テストパス]。E2Eテストスケルトンは生成されませんでした（理由: [e2eAbsenceReason]）。統合テストは各フェーズ実装と同時に作成。"
+   - ステップ2でテストスケルトンを生成した場合、各レーンの状態を列挙する形でプロンプトを構築する:
+     - 必ず含める: "統合テストファイル: [パス または 'not generated']"
+     - E2Eの各レーン（`fixtureE2e`、`serviceE2e`）について:
+       - `generatedFiles.<lane>`がnullでない場合: "[lane] テストファイル: [パス]"
+       - `generatedFiles.<lane>`がnullの場合: "[lane] スケルトンは生成されませんでした（理由: [e2eAbsenceReason.<lane>]）"
+     - 配置ガイダンスを末尾に付加する: "統合テストは各フェーズ実装と同時に作成。fixture-e2eテストはUI機能フェーズと並行して作成。service-integration-e2eテストは最終フェーズでのみ実行。"
    - テストスケルトンを生成しなかった場合:
      `prompt`: "[パス]のDesign Docから作業計画を作成。"
 
@@ -64,7 +65,7 @@ description: 設計書から作業計画書を作成し計画承認を取得
 ✅ **必須**: 計画内容の承認後は以下の定型応答で終了
 ```
 計画フェーズが完了しました。
-- 作業計画書: docs/plans/[計画書名].md
+- 作業計画書: docs/plans/[plan-name].md
 - 状態: 承認済み
 
 実装は別途ご指示ください。

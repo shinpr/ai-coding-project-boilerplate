@@ -14,40 +14,64 @@ description: フロントエンド実装を自律実行モードで実行
 
 **重要**: 全てのコミット前にquality-fixer-frontendを実行。
 
-作業計画: $ARGUMENTS
+作業計画書: $ARGUMENTS
 
 ## 実行前提条件
 
-### タスクファイル存在チェック
-```bash
-# 作業計画書を確認
-! ls -la docs/plans/*.md | grep -v template | tail -5
+### Implementation Readinessチェック
 
-# タスクファイルを確認
-! ls docs/plans/tasks/*.md 2>/dev/null || echo "⚠️ タスクファイルが見つかりません"
-```
+タスク処理の前に、ゲート対象となる作業計画書を特定する。
+
+**`$ARGUMENTS`が指定されている場合**は、それがユーザーから渡された作業計画書のパスである。自動解決を行わずそのまま使用する。`{plan-name}`はファイル名から `.md` 拡張子（および末尾に `-plan` がある場合はそれも）を除いて抽出する。
+
+**`$ARGUMENTS`が空の場合**、タスクファイルから自動解決する:
+1. `docs/plans/tasks/`内で本レシピが消費可能な唯一のパターンに一致するタスクファイルを列挙する（subagents-orchestration-guideの「Layer-Aware Agent Routing」により、`task-executor-frontend` が所有するファイル名サフィックスはこの形のみ）:
+   - `{plan-name}-frontend-task-*.md`
+   - 素の `{plan-name}-task-*.md` は消費**しない** — ルーティング表により backend 予約のファイル名で、backend build レシピが所有する。`{plan-name}-backend-task-*.md` も同様に消費しない。
+2. マッチしたファイルから、以下のいずれかにマッチするものを除外する。これらは本実行の実装タスクではなく、他のワークフローフェーズに由来する: `*-task-prep-*.md`（readiness preflight タスク）、`_overview-*.md`（分解overviewファイル）、`*-phase*-completion.md`（フェーズ完了ファイル）、`review-fixes-*.md`（実装後レビュー修正）、`integration-tests-*-task-*.md`（統合テスト追加用スキャフォールディング）
+3. 残った各ファイルから、末尾の `-frontend-task-{NN}.md` を取り除いて `{plan-name}` を抽出する
+4. 少なくとも1つのタスクファイルがマッチした場合、最も新しい mtime を持つ `{plan-name}` の `docs/plans/{plan-name}.md` を作業計画書とする。タイは辞書順最大の `{plan-name}` で解決する
+5. `*-frontend-task-*.md` が見つからず、かつ `docs/plans/`に非テンプレートの作業計画書が存在する場合、最も新しい計画書を自動採用してはならない — frontend タスクは明示的に命名されている必要がある。停止して報告する: 「`docs/plans/tasks/`に `*-frontend-task-*.md` が見つかりませんでした。本レシピを frontend 計画に対して実行する意図であれば、task-decomposer を再実行して frontend 命名のタスクファイルを出力させるか、作業計画書のパスを `$ARGUMENTS` で指定してください。計画が backend ならば、backend build レシピを使用してください。」
+
+作業計画書のヘッダを読み、`Implementation Readiness: <status>`の行を見つける。以下のルールを適用する:
+
+| ステータス | アクション |
+|--------|--------|
+| `ready` | Consumed Task Set の計算へ進む |
+| `escalated` | 作業計画書のReadiness Reportセクションを読み、AskUserQuestionで残存ギャップをユーザーに提示する: 「Implementation Readinessが`escalated`で、以下の残存ギャップがあります: [リスト]。実行を継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
+| `pending` | AskUserQuestionで提示する: 「Implementation Readinessが`pending`です。事前にreadiness preflightを実行して作業計画書の実装可能性を検証してから再開してください。preflightなしで継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
+| 行が存在しない | `pending`として扱う — readinessマーカー導入前に作成された古い作業計画書は明示的にpreflightすべき |
+
+### Consumed Task Set
+
+本実行で消費する **Consumed Task Set** を計算する — 本レシピが所有・実行・後で削除する正確なファイル群。ルーティング表により、消費可能なパターンは1つだけ:
+
+1. Implementation Readinessチェックで解決した `{plan-name}` について、`docs/plans/tasks/`内で `{plan-name}-frontend-task-*.md` にマッチするタスクファイルを列挙する。`{plan-name}-task-*.md` および `{plan-name}-backend-task-*.md` は除外する — `task-executor` にルーティングされ、backend build レシピが所有する
+2. 以下にマッチするファイルを除外する: `*-task-prep-*.md`、`_overview-*.md`、`*-phase*-completion.md`、`review-fixes-*.md`、`integration-tests-*-task-*.md`（これらは他のワークフローフェーズに由来する）
+
+本レシピ内で「タスクファイル」と参照する箇所すべて — タスク生成判定フロー、タスク実行サイクルの反復、最終クリーンアップ — はこのセットを使用する。`docs/plans/tasks/*.md` を制限なく glob しない。
 
 ### タスク生成判定フロー
 
-タスクファイルの存在状態を分析し、必要なアクションを決定:
+Consumed Task Set を確認し、適切な対応を決定する。注: `$ARGUMENTS`が空かつ `*-frontend-task-*.md` が存在しない場合は、上記の readiness check が既に実行を停止している — 以下の表で「タスクなし」が関わる行は、ユーザーが明示的に `$ARGUMENTS` を指定した場合にのみ発火する。
 
 | 状態 | 基準 | 次のアクション |
 |------|------|--------------|
-| タスク存在 | tasks/ディレクトリに.mdファイルあり | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
-| タスクなし+計画あり | 計画書は存在するがタスクファイルなし | ユーザー確認 → task-decomposer実行 |
-| どちらもなし＋Design Docあり | 計画書・タスクファイルなし、docs/design/*.mdあり | work-plannerでDesign Docから作業計画書を作成し、タスク分解へ進む |
-| どちらもなし | 計画書・タスクファイル・Design Docすべてなし | 前提条件未達成をユーザーに報告して停止 |
+| タスク存在 | Consumed Task Set が非空 | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
+| タスクなし + `$ARGUMENTS`で計画書指定 | `$ARGUMENTS`が提供され Consumed Task Set が空 | ユーザーに確認 → task-decomposer実行（frontend命名ルールにより `*-frontend-task-*.md` を出力する） |
+| どちらもなし＋Design Docあり + `$ARGUMENTS`提供 | `$ARGUMENTS`が提供され、計画書なし、Consumed Task Setなし、ただし docs/design/*.md が存在 | work-plannerでDesign Docから作業計画書を作成し、タスク分解へ進む |
+| どちらもなし | `$ARGUMENTS`なし、計画書なし、Consumed Task Setなし、Design Docなし | 前提条件未達成をユーザーに報告して停止 |
 
 ## タスク分解フェーズ（条件付き）
 
-タスクファイルが存在しない場合：
+Consumed Task Set が空の場合：
 
 ### 1. ユーザー確認
 ```
-タスクファイルが見つかりません。
-作業計画: docs/plans/[plan-name].md
+Consumed Task Set にタスクファイルがありません。
+作業計画書: docs/plans/[plan-name].md
 
-作業計画からタスクを生成しますか？ (y/n):
+作業計画書からタスクを生成しますか？ (y/n):
 ```
 
 ### 2. タスク分解（承認された場合）
@@ -57,17 +81,14 @@ Agentツールでtask-decomposerを呼び出す:
 - `prompt`: "作業計画を読み込み、アトミックなタスクに分解。入力: docs/plans/[plan-name].md。出力: docs/plans/tasks/配下に個別タスクファイル。粒度: 1タスク = 1コミット = 独立実行可能"
 
 ### 3. 生成確認
-```bash
-# 生成されたタスクファイルを確認
-! ls -la docs/plans/tasks/*.md | head -10
-```
+上記「Consumed Task Set」セクションの制限パターンを使って Consumed Task Set を再計算し、非空であることを確認する。依然として空の場合はユーザーにエスカレーション — task-decomposer が静かに失敗したか、想定パターンに合致しないファイルを生成した可能性がある。
 
-**フロー**: タスク生成 → 自律実行（この順序で実行）
+**フロー**: タスク生成 → Consumed Task Set 再計算 → 自律実行（この順序）
 
 ## 実行前チェックリスト
 
-- [ ] docs/plans/tasks/にタスクファイルが存在することを確認
-- [ ] タスクの実行順序（依存関係）を特定
+- [ ] Consumed Task Set が非空であることを確認（上記「Consumed Task Set」セクションで計算）
+- [ ] Consumed Task Set 内のタスク実行順序（依存関係）を特定
 - [ ] **環境チェック**: タスク単位のコミットサイクルを実行可能か？
   - コミット機能が利用不可 → 自律実行モード前にエスカレーション
   - その他の環境（テスト、品質ツール） → サブエージェントがエスカレーション
@@ -75,7 +96,7 @@ Agentツールでtask-decomposerを呼び出す:
 ## タスク実行サイクル（4ステップサイクル）
 **必須実行サイクル**: `task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit`
 
-各タスクで必須：
+Consumed Task Set 内の各タスクで必須：
 1. **TaskCreateでタスク登録**: 作業ステップを登録。必ず含める: 最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」
 2. **Agent tool** (subagent_type: "task-executor-frontend") → タスクファイルパスを prompt に渡し、構造化レスポンスを受け取る
 3. **task-executor-frontend レスポンスをチェック**:
@@ -104,8 +125,6 @@ Use loaded skills to execute that scope.
 Escalate when the required fix or investigation falls outside that scope.
 ```
 
-! ls -la docs/plans/*.md | head -10
-
 承認ステータスを確認してから進む。確認後、自律実行モードを開始。要件変更を検出したら即座に停止。
 
 ## 実装後検証（全タスク完了後）
@@ -128,7 +147,18 @@ Escalate when the required fix or investigation falls outside that scope.
    - 続いて quality-fixer-frontend、その後 fail した verifier のみ再実行。
    - 2サイクル後も fail が残る場合 → 残存指摘事項を添えてユーザーにエスカレーション
 
-4. **全て合格** → 完了レポートへ
+4. **全て合格** → 最終クリーンアップへ
+
+## 最終クリーンアップ
+
+完了レポートの前に、本レシピが消費した実装タスクファイルを削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である:
+
+- Consumed Task Set 内のすべてのファイルを削除する
+- `docs/plans/tasks/{plan-name}-phase*-completion.md` にマッチするすべてのファイルを削除する（task-decomposer が生成した本 `{plan-name}` のフェーズ完了ファイル）
+- 該当する `docs/plans/tasks/_overview-{plan-name}.md` が存在する場合は削除する
+- 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
+
+タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが完了レポートをブロックしない。
 
 ## 出力例
 フロントエンド実装フェーズ完了。
@@ -136,3 +166,4 @@ Escalate when the required fix or investigation falls outside that scope.
 - 実装タスク: [件数] タスク
 - 品質チェック: 全てパス
 - コミット: [件数] コミット作成
+- クリーンアップ: docs/plans/tasks/ からタスクファイルを削除済み

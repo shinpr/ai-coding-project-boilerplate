@@ -125,8 +125,6 @@ Use loaded skills to execute that scope.
 Escalate when the required fix or investigation falls outside that scope.
 ```
 
-! ls -la docs/plans/*.md | head -10
-
 VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
 
 ## Post-Implementation Verification (After All Tasks Complete)

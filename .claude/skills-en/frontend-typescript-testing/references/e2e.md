@@ -237,13 +237,14 @@ test.describe('responsive navigation', () => {
 
 ## Skeleton Comment Format
 
-E2E test skeletons follow the same annotation format as integration tests:
+E2E test skeletons follow the same annotation format as integration tests, with a required `@lane:` annotation declaring the lane (see Lane Selection above):
 
 ```typescript
 // AC: [Original acceptance criteria text]
 // Behavior: [User action] → [System response] → [Observable result]
-// @category: e2e
-// @dependency: full-system
+// @category: fixture-e2e | service-integration-e2e
+// @lane: fixture-e2e | service-integration-e2e
+// @dependency: full-ui (mocked backend) | full-system
 // @complexity: high
 // ROI: [score]
 test('AC1: [Description]', async ({ page }) => {
@@ -252,3 +253,7 @@ test('AC1: [Description]', async ({ page }) => {
   // Assert: [Verification description]
 })
 ```
+
+**`@dependency` selection by lane**:
+- `fixture-e2e` → `@dependency: full-ui (mocked backend)` (no live services; intercept network via `page.route()` or fixture loaders)
+- `service-integration-e2e` → `@dependency: full-system` (running local stack required)

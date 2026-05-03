@@ -58,6 +58,19 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 
 **フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで4ステップを管理する
 
+## Implementation Readinessチェック（work-planner承認とtask-decomposerの間）
+
+work-plannerが完了しユーザーから一括承認を得た後、task-decomposerを呼び出す前に作業計画書のヘッダを読み、`Implementation Readiness: <status>`の行を見つける。以下のルールを適用する:
+
+| ステータス | アクション |
+|--------|--------|
+| `ready` | task-decomposerに進む |
+| `escalated` | 作業計画書のReadiness Reportセクションを読み、AskUserQuestionで残存ギャップをユーザーに提示する: 「Implementation Readinessが`escalated`で、以下の残存ギャップがあります: [リスト]。実行を継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
+| `pending` | AskUserQuestionで提示する: 「Implementation Readinessが`pending`です。事前にreadiness preflightを実行して作業計画書の実装可能性を検証してから再開してください。preflightなしで継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
+| 行が存在しない | `pending`として扱う — readinessマーカー導入前に作成された古い作業計画書は明示的にpreflightすべき |
+
+このチェックは全規模（Small / Medium / Large）に適用される。本レシピは規模に依存しないオーケストレーターであるため。
+
 ## サブエージェントのスコープ境界
 
 本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
@@ -101,11 +114,29 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
    - `blocked` → ユーザーにエスカレーション
 
 ### テスト情報の伝達
-acceptance-test-generator実行後、work-planner（subagent_type: "work-planner"）呼び出し時には以下を伝達：
-- 統合テストファイルパス（`generatedFiles.integration`から取得）
-- E2Eテストファイルパスまたはnull（`generatedFiles.e2e`から取得）
-- E2E不在理由（`e2eAbsenceReason`、E2Eがnullの場合）
-- 統合テストは実装と同時に作成、E2Eテストは全実装完了後に実行（E2Eパスが提供された場合）
+acceptance-test-generator実行後、work-planner（subagent_type: "work-planner"）呼び出し時にはレーン別に伝達する：
+- 統合テストファイルパス（`generatedFiles.integration`から取得）または null
+- fixture-e2eテストファイルパス（`generatedFiles.fixtureE2e`から取得）または null
+- service-integration-e2eテストファイルパス（`generatedFiles.serviceE2e`から取得）または null
+- レーン別の不在理由（`e2eAbsenceReason.fixtureE2e` / `e2eAbsenceReason.serviceE2e`、当該レーンが null の場合）
+- タイミングの明示: 統合テストは各フェーズ実装と並行して作成、fixture-e2eテストはUI機能フェーズと並行して作成、service-integration-e2eテストは最終フェーズでのみ実行
+
+### 最終クリーンアップ
+
+完了レポートの前に、本レシピが消費した実装タスクファイルを削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である。
+
+本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップはtask-decomposerの「Layer-aware naming」が出力するすべてのタスク命名パターンを対象とする:
+
+- 本実行で使用した作業計画書パスから導出した `{plan-name}` について、以下のいずれかにマッチするファイルすべてを削除する:
+  - `docs/plans/tasks/{plan-name}-task-*.md`（単層タスク）
+  - `docs/plans/tasks/{plan-name}-backend-task-*.md`（複層計画のbackend部分）
+  - `docs/plans/tasks/{plan-name}-frontend-task-*.md`（複層計画のfrontend部分）
+- 上記マッチから、以下のパターンに該当するものは除外する: `*-task-prep-*.md`、`_overview-*.md`、`*-phase*-completion.md`、`review-fixes-*.md`、`integration-tests-*-task-*.md`（これらは他のワークフローフェーズに由来する）
+- `docs/plans/tasks/{plan-name}-phase*-completion.md` にマッチするファイルすべてを削除する（task-decomposerが生成したフェーズ完了ファイル）
+- 該当する `docs/plans/tasks/_overview-{plan-name}.md` が存在する場合は削除する
+- 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
+
+タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが完了レポートをブロックしない。
 
 ## 実行方法
 

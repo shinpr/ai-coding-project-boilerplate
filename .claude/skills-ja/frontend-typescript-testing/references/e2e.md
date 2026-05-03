@@ -1,5 +1,16 @@
 # PlaywrightによるE2Eテスト実装
 
+## レーン選択
+
+本ワークフローのE2Eテストは2つのレーンに分割される（integration-e2e-testingスキル参照）:
+
+| レーン | バックエンド構成 | 使用するパターン |
+|------|---------------|----------------|
+| **fixture-e2e** | `page.route()` またはフィクスチャローダーでモック化、ライブサービスなし | ページオブジェクトパターン、Locator戦略、アサーション、後述の **フィクスチャベースのバックエンド** セクション |
+| **service-integration-e2e** | 実サービスを伴うローカルスタックでライブ実行 | 上記の全パターンに加えて、アプリケーションのログインフローに対する実認証Fixture と seed済みのテストデータ |
+
+スケルトンの `@lane:` アノテーションがテストの所属レーンを宣言する。これに合わせて実装パターンを選択する。
+
 ## テストフレームワーク
 - **Playwright Test**: `@playwright/test`
 - テストインポート: `import { test, expect } from '@playwright/test'`
@@ -10,18 +21,23 @@
 ```
 tests/
 └── e2e/
-    ├── pages/              # ページオブジェクト
+    ├── pages/                       # ページオブジェクト（レーン間で共通）
     │   ├── login.page.ts
     │   └── dashboard.page.ts
-    ├── fixtures/           # テストFixture
+    ├── fixtures/                    # テストFixture（auth、seed）
     │   └── auth.fixture.ts
-    └── *.e2e.test.ts       # テストファイル
+    ├── data/                        # fixture-e2e用の静的フィクスチャデータ
+    │   └── *.fixture.json
+    ├── *.fixture-e2e.test.ts        # fixture-e2eテストファイル
+    └── *.service-e2e.test.ts        # service-integration-e2eテストファイル
 ```
 
 ### 命名規則
-- テストファイル: `{FeatureName}.e2e.test.ts`
+- fixture-e2eファイル: `{FeatureName}.fixture-e2e.test.ts`
+- service-integration-e2eファイル: `{FeatureName}.service-e2e.test.ts`
 - ページオブジェクト: `{PageName}.page.ts`
 - Fixture: `{Purpose}.fixture.ts`
+- 静的フィクスチャデータ: `{scenario}.fixture.json`
 
 ## ページオブジェクトパターン
 
@@ -102,6 +118,59 @@ export const test = base.extend<{ authenticatedPage: Page }>({
 })
 ```
 
+## フィクスチャベースのバックエンド（fixture-e2e）
+
+fixture-e2eテストは決定論的フィクスチャに対して実ブラウザを動かす — ライブバックエンドなし、DBなし、外部サービスなし。ネットワークをフェイクするには以下のパターンのいずれかを使用する:
+
+### パターンA: page.route() による傍受
+
+```typescript
+import { test, expect } from '@playwright/test'
+import cardsFixture from './data/cards.fixture.json'
+
+test('Dismissしてからのundoでカードが復元される', async ({ page }) => {
+  // Arrange: 全てのバックエンド呼び出しを決定論的レスポンスで傍受
+  await page.route('**/api/cards', async (route) => {
+    await route.fulfill({ json: cardsFixture })
+  })
+  await page.route('**/api/cards/*/dismiss', async (route) => {
+    await route.fulfill({ status: 204 })
+  })
+
+  await page.goto('/cards')
+  await page.getByRole('button', { name: 'Dismiss' }).first().click()
+  await page.getByRole('button', { name: 'Undo' }).click()
+
+  await expect(page.getByText(cardsFixture[0].title)).toBeVisible()
+})
+```
+
+### パターンB: フィクスチャローダーの注入
+
+```typescript
+// data/cards-with-dismiss.fixture.json — テストと一緒にコミット
+// ルートヘルパーまたはアプリレベルのテストモード経由でロード
+```
+
+**fixture-e2e の原則**:
+- バックエンドはフェイクされ、稼働していない。これらのテストの実行に `npm run start:backend` は不要
+- フィクスチャはリポジトリ内（`tests/e2e/data/`）にバージョン管理される。マシンを越えて決定論的なテストになる
+- 認証が必要な場合もフェイクする（`page.context().addCookies()` でテストCookieをセット、またはfixtureモードのバイパスを使用）
+- 外部インフラのプロビジョニングなしにCIで実行可能
+
+## E2E環境前提条件（service-integration-e2e のみ）
+
+service-integration-e2eテストは実データ状態を持つ起動済みアプリケーションを必要とする。fixture-e2eと異なり、環境セットアップはテスト実装スコープの一部である。
+
+service-integration-e2eテストがパスする前に確認すべき項目:
+- [ ] アプリケーションが起動しており`baseURL`でアクセス可能
+- [ ] データベースに必要な seed data がある（テストユーザー、必要なレコード）
+- [ ] テストクレデンシャルで実認証フローが動作する
+- [ ] 環境変数が設定されている（`E2E_*` プレフィックス）
+- [ ] 外部サービスが利用可能、またはスタブされている
+
+作業計画書に環境セットアップ用の専用タスク（Phase 0）が含まれる場合、それに従う。計画にセットアップタスクがない場合、テスト実装タスク自体の中で不足する前提条件に対処するか、検証を fixture-e2e に移せないか検討する。
+
 ## Locator戦略
 
 アクセシブルなLocatorを以下の優先順位で使用:
@@ -168,13 +237,14 @@ test.describe('レスポンシブナビゲーション', () => {
 
 ## スケルトンコメント形式
 
-E2Eテストスケルトンは統合テストと同じアノテーション形式に従う:
+E2Eテストスケルトンは統合テストと同じアノテーション形式に従う。レーンを宣言する `@lane:` アノテーションを必ず付与する（上記「レーン選択」参照）:
 
 ```typescript
 // AC: [元の受入条件テキスト]
 // Behavior: [ユーザーアクション] → [システムレスポンス] → [観測可能な結果]
-// @category: e2e
-// @dependency: full-system
+// @category: fixture-e2e | service-integration-e2e
+// @lane: fixture-e2e | service-integration-e2e
+// @dependency: full-ui (mocked backend) | full-system
 // @complexity: high
 // ROI: [スコア]
 test('AC1: [説明]', async ({ page }) => {
@@ -183,3 +253,7 @@ test('AC1: [説明]', async ({ page }) => {
   // Assert: [検証の説明]
 })
 ```
+
+**レーン別の `@dependency` 選択**:
+- `fixture-e2e` → `@dependency: full-ui (mocked backend)`（ライブサービスなし、`page.route()` またはフィクスチャローダーでネットワークを傍受）
+- `service-integration-e2e` → `@dependency: full-system`（起動済みのローカルスタックが必要）

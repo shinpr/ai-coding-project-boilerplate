@@ -43,17 +43,18 @@ Agentツールでacceptance-test-generatorを呼び出す:
 - UI Specあり: `prompt: "[パス]のDesign Docからテストスケルトンを生成。UI Specは[ui-specパス]。"`
 - UI Specなし: `prompt: "[パス]のDesign Docからテストスケルトンを生成。"`
 
-統合テストファイルパス、E2Eテストファイルパス（またはnull）、およびe2eAbsenceReasonを、subagents-orchestration-guideの「acceptance-test-generator → work-planner」セクションに従いwork-plannerに渡す。
+レーン別のテストファイルパスと不在理由を、subagents-orchestration-guideの「acceptance-test-generator → work-planner」セクションに従いwork-plannerに渡す。
 
 ### Step 3: 作業計画書作成
 Agentツールでwork-plannerを呼び出す:
 - `subagent_type`: "work-planner"
 - `description`: "作業計画書作成"
-- ステップ2でテストスケルトンを生成した場合:
-  - `generatedFiles.e2e`がnullでない場合:
-    `prompt`: "[パス]のDesign Docから作業計画を作成。統合テストファイル: [ステップ2の統合テストパス]。E2Eテストファイル: [ステップ2のE2Eテストパス]。統合テストは各フェーズ実装と同時に作成、E2Eテストは最終フェーズでのみ実行。"
-  - `generatedFiles.e2e`がnullの場合:
-    `prompt`: "[パス]のDesign Docから作業計画を作成。統合テストファイル: [ステップ2の統合テストパス]。E2Eテストスケルトンは生成されませんでした（理由: [e2eAbsenceReason]）。統合テストは各フェーズ実装と同時に作成。"
+- ステップ2でテストスケルトンを生成した場合、各レーンの状態を列挙する形でプロンプトを構築する:
+  - 必ず含める: "統合テストファイル: [パス または 'not generated']"
+  - E2Eの各レーン（`fixtureE2e`、`serviceE2e`）について:
+    - `generatedFiles.<lane>`がnullでない場合: "[lane] テストファイル: [パス]"
+    - `generatedFiles.<lane>`がnullの場合: "[lane] スケルトンは生成されませんでした（理由: [e2eAbsenceReason.<lane>]）"
+  - 配置ガイダンスを末尾に付加する: "統合テストは各フェーズ実装と同時に作成。fixture-e2eテストはUI機能フェーズと並行して作成。service-integration-e2eテストは最終フェーズでのみ実行。"
 - テストスケルトンを生成しなかった場合:
   `prompt`: "[パス]のDesign Docから作業計画を作成。"
 
@@ -67,7 +68,7 @@ Agentツールでwork-plannerを呼び出す:
 計画内容承認後、以下の標準レスポンスで終了
 ```
 フロントエンド計画フェーズ完了。
-- 作業計画: docs/plans/[計画名].md
+- 作業計画: docs/plans/[plan-name].md
 - ステータス: 承認済み
 
 実装は別途指示してください。

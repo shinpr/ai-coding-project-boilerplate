@@ -161,7 +161,7 @@ The examples below use `//` comment syntax. Adapt to the project's language (e.g
 
 ```typescript
 // [Feature Name] Integration Test - Design Doc: [filename]
-// Generated: [date] | Budget Used: 2/3 integration, 0/2 E2E
+// Generated: [date] | Budget Used: 2/3 integration, 0/3 fixture-e2e, 0/2 service-integration-e2e
 
 import { describe, it } from '[detected test framework]'
 

@@ -71,7 +71,7 @@ Phase 1から有効な各ACについて:
 
 2. **テストレベルを分類**:
    - 統合テスト候補（機能レベルの相互作用）
-   - E2Eテスト候補（ユーザージャーニー）
+   - E2Eテスト候補 — レーンはPhase 3で割り当てる（モックで検証可能なUIジャーニーは `fixture-e2e`、実サービス間の挙動を必ずアサートする必要がある場合は `service-integration-e2e`）
    - Property-basedテスト候補（Property注釈付きAC → 統合テストファイルに配置）
 
 3. **メタデータを付与**:
@@ -97,12 +97,18 @@ Phase 1から有効な各ACについて:
 3. **Push-Down解析**:
    ```
    ユニットテスト可能？ → 統合/E2Eプールから削除
-   既に統合テスト作成済み？ → マルチステップユーザージャーニーの一部ならE2E候補として残す（integration-e2e-testingスキルの定義参照）
-   既に統合テスト作成済みかつマルチステップジャーニーでない？ → E2Eプールから削除
+   既に統合テスト作成済みかつin-processで検証可能？ → E2Eプールから削除
    ```
-4. **ROIで並び替え**（降順）
+4. **レーン割り当て**（E2E候補のみ）:
+   - モックバックエンド/フィクスチャ駆動の状態で検証可能なUIジャーニーは、デフォルトで `fixture-e2e` を割り当てる
+   - 検証が実サービス間の挙動に依存する場合のみ `service-integration-e2e` に昇格させる。以下のいずれかを必ずアサートする必要がある場合に該当:
+     - 実DB書き込みでデータが永続化する（例: 検証対象の実データベースに行が挿入/更新される）
+     - 下流サービスが実イベント/メッセージを受信する（例: トピックpublish、キューenqueue、webhookコール）
+     - 外部サービスが期待ペイロードを伴う実APIコールを受信する
+     - サービス間のトランザクション整合性（例: 2フェーズコミット、saga補償）
+5. **レーン内でROI降順に並び替え** — これが唯一のランキングステップ。Phase 4の予算強制はこのランク済みリストを再ソートせずにそのまま消費する。
 
-**出力**: ランク付け・重複排除済み候補リスト
+**出力**: ランク付け・重複排除済み候補リスト（E2E候補にはレーンが割り当てられている）。
 
 ### Phase 4: 過剰生成制限
 
@@ -110,28 +116,38 @@ Phase 1から有効な各ACについて:
 
 **機能あたりの上限**:
 - **統合テスト**: 最大3件
-- **E2Eテスト**: 最大1-2件、内訳:
-  - 1件の予約スロット（ROIに関わらず必ず出力）: 機能に**ユーザー向け**マルチステップユーザージャーニーが含まれる場合（integration-e2e-testingスキルの定義と分類を参照）
+- **fixture-e2e**: 最大3件。予約スロット（機能に**ユーザー向け**マルチステップユーザージャーニー — integration-e2e-testingスキルの定義参照 — が含まれる場合の最高ROIジャーニー候補）はROIに関わらず出力する。予約スロット以外の追加スロットは ROI ≥ 20 を要求（フロアを下回る場合は意図的に未消化のまま残す）
+- **service-integration-e2e**: 最大1-2件、内訳:
+  - 1件の予約スロット（ROIに関わらず必ず出力）: 予約されたジャーニーの正しさが、fixture-e2eでは検証できない実サービス間の挙動に依存する場合
   - 追加最大1件: ROI > 50が必要
 
 **選択アルゴリズム**:
 
 ```
-1. E2E予約スロットの確保:
+1. fixture-e2e予約スロットの確保:
    機能にユーザー向けマルチステップユーザージャーニーが含まれる場合
-   → 最高ROIのジャーニー候補に1件のE2Eスロットを予約
-   （この予約候補はROI閾値に関わらず出力される）
+   → 最高ROIのジャーニー候補に1件のfixture-e2eスロットを予約
 
-2. 残りの候補をROIで並び替え（降順）
+2. service-integration-e2e予約スロットの確保（必要な場合のみ）:
+   予約されたジャーニーの検証が以下のいずれかを必要とする場合:
+     - 実DB書き込みでデータが永続化する
+     - 下流サービスが実イベント/メッセージを受信する
+     - 外部サービスが期待ペイロードを伴う実APIコールを受信する
+     - サービス間のトランザクション整合性
+   → そのジャーニーに1件のservice-integration-e2eスロットを予約
 
-3. Property-basedテストは上限計算から除外し全て選択
-
-4. 上限設定内でトップNを選択:
+3. 候補リスト（Phase 3のステップ5でレーン内ROI降順に並び替え済み）を走査し、
+   予算内で選択:
    - 統合: 最高ROIのトップ3を選択
-   - E2E（予約分を除く追加分）: ROIスコア > 50の場合のみ最大1件追加
+   - fixture-e2e（予約分を除く追加分）: ROI ≥ 20 を満たす範囲で残予算まで選択
+   - service-integration-e2e（予約分を除く追加分）: ROI > 50 の場合のみ最大1件追加
+
+4. Property-basedテストは上限計算から除外し全て選択（このステップは順序非依存
+   — 1〜3の予約スロット選択やROIベース選択に影響を与えず、本アルゴリズム内
+   どの時点で実行しても結果は変わらない）
 ```
 
-**出力**: 最終テストセット
+**出力**: 最終テストセット（各E2E候補にレーンが割り当てられている）。
 
 ## 出力フォーマット
 
@@ -147,7 +163,7 @@ Phase 1から有効な各ACについて:
 
 ```typescript
 // [機能名] Integration Test - Design Doc: [ファイル名]
-// 生成日時: [日付] | 枠使用: 2/3統合, 0/2 E2E
+// 生成日時: [日付] | 枠使用: 2/3 integration, 0/3 fixture-e2e, 0/2 service-integration-e2e
 
 import { describe, it } from '[検出されたテストフレームワーク]'
 
@@ -170,24 +186,49 @@ describe('[機能名] Integration Test', () => {
 })
 ```
 
-### E2Eテストファイル
+### E2Eテストファイル群
+
+レーンごとに**別ファイル**で生成する: fixture-e2eは `*.fixture-e2e.test.[ext]`、service-integration-e2eは `*.service-e2e.test.[ext]`。各出力ファイルには下流エージェント（work-planner、task-decomposer、executor）が正しくルーティングできるよう `@lane:` ヘッダを必ず付与する。
+
+**fixture-e2e の例**（モックバックエンドによるUIジャーニー、インフラなしでCI実行可能）:
 
 ```typescript
-// [機能名] E2E Test - Design Doc: [ファイル名]
-// 生成日時: [日付] | 枠使用: 1/2 E2E
-// テスト種別: End-to-End Test
-// 実装タイミング: 全機能実装完了後
+// [機能名] fixture-e2e - Design Doc: [ファイル名]
+// 生成日時: [日付] | 枠使用: 1/3 fixture-e2e
+// @lane: fixture-e2e
 
 import { describe, it } from '[検出されたテストフレームワーク]'
 
-describe('[機能名] E2E Test', () => {
-  // ユーザージャーニー: 完全な購入フロー（閲覧 → カート追加 → チェックアウト → 決済 → 確認）
-  // ROI: 119 (BV:10 × Freq:10 + Legal:10 + Defect:9) | 予約スロット: マルチステップジャーニー
-  // 検証: 商品選択から注文確認までのエンドツーエンドユーザー体験
+describe('[機能名] fixture-e2e', () => {
+  // ユーザージャーニー: モック決済バックエンドでのカート → チェックアウト → 確認
+  // ROI: 64 | 予約スロット: マルチステップジャーニー
+  // 検証: 各ステップ後の UI 遷移と観測可能な状態（モックは固定レスポンスを返す）
   // @category: e2e
+  // @lane: fixture-e2e
+  // @dependency: full-ui (mocked backend)
+  // @complexity: medium
+  it.todo('ユーザージャーニー: モック決済でのカートから確認までのフロー')
+})
+```
+
+**service-integration-e2e の例**（起動済みローカルスタックに対する検証、最終フェーズのみ）:
+
+```typescript
+// [機能名] service-integration-e2e - Design Doc: [ファイル名]
+// 生成日時: [日付] | 枠使用: 1/2 service-integration-e2e
+// @lane: service-integration-e2e
+
+import { describe, it } from '[検出されたテストフレームワーク]'
+
+describe('[機能名] service-integration-e2e', () => {
+  // ユーザージャーニー: 実DB永続化と下流イベント発行をアサートする購入完了
+  // ROI: 119 | 予約スロット: 実サービス間挙動が必要
+  // 検証: 注文行がDBに挿入される、OrderCreatedイベントが発行される、領収書メールがキューに積まれる
+  // @category: e2e
+  // @lane: service-integration-e2e
   // @dependency: full-system
   // @complexity: high
-  it.todo('ユーザージャーニー: 閲覧から確認メールまでの商品購入完了')
+  it.todo('ユーザージャーニー: 購入完了で注文が永続化され下流イベントが発行される')
 })
 ```
 
@@ -208,49 +249,71 @@ it.todo('[AC番号]-property: [不変条件を自然言語で記述]')
 
 生成完了時は以下のJSON形式で報告。詳細なメタ情報はテストスケルトンファイル内のコメントに含まれており、後工程でファイルを読んで抽出する。
 
-**E2Eテストが出力される場合:**
+**全レーンが出力される場合:**
 ```json
 {
   "status": "completed",
   "feature": "payment",
   "generatedFiles": {
     "integration": "tests/payment.int.test.[ext]",
-    "e2e": "tests/payment.e2e.test.[ext]"
+    "fixtureE2e": "tests/payment.fixture-e2e.test.[ext]",
+    "serviceE2e": "tests/payment.service-e2e.test.[ext]"
   },
-  "budgetUsage": { "integration": "2/3", "e2e": "1/2" },
-  "e2eAbsenceReason": null
+  "budgetUsage": {
+    "integration": "2/3",
+    "fixtureE2e": "1/3",
+    "serviceE2e": "1/2"
+  },
+  "e2eAbsenceReason": { "fixtureE2e": null, "serviceE2e": null }
 }
 ```
 
-**E2Eテストが出力されない場合:**
+**fixture-e2eのみ出力される場合（実サービス間依存なし）:**
 ```json
 {
   "status": "completed",
-  "feature": "payment",
+  "feature": "checkout-ui",
   "generatedFiles": {
-    "integration": "tests/payment.int.test.[ext]",
-    "e2e": null
+    "integration": "tests/checkout.int.test.[ext]",
+    "fixtureE2e": "tests/checkout.fixture-e2e.test.[ext]",
+    "serviceE2e": null
   },
-  "budgetUsage": { "integration": "2/3", "e2e": "0/2" },
-  "e2eAbsenceReason": "no_multi_step_journey"
+  "budgetUsage": {
+    "integration": "1/3",
+    "fixtureE2e": "1/3",
+    "serviceE2e": "0/2"
+  },
+  "e2eAbsenceReason": { "fixtureE2e": null, "serviceE2e": "no_real_service_dependency" }
 }
 ```
 
-**統合テストも出力されない場合:**
+**どのE2Eレーンも該当しない場合:**
 ```json
 {
   "status": "completed",
   "feature": "config-update",
   "generatedFiles": {
-    "integration": null,
-    "e2e": null
+    "integration": "tests/config.int.test.[ext]",
+    "fixtureE2e": null,
+    "serviceE2e": null
   },
-  "budgetUsage": { "integration": "0/3", "e2e": "0/2" },
-  "e2eAbsenceReason": "no_multi_step_journey"
+  "budgetUsage": {
+    "integration": "1/3",
+    "fixtureE2e": "0/3",
+    "serviceE2e": "0/2"
+  },
+  "e2eAbsenceReason": { "fixtureE2e": "no_multi_step_journey", "serviceE2e": "no_multi_step_journey" }
 }
 ```
 
-**契約**: `generatedFiles.integration`と`generatedFiles.e2e`は常にキーとして存在する。値は生成された場合はファイルパス文字列、未生成の場合は`null`。`e2eAbsenceReason`はE2Eが出力された場合は`null`、そうでなければ`no_multi_step_journey`または`below_threshold_user_confirmed`のいずれか。
+**契約**: `generatedFiles.{integration,fixtureE2e,serviceE2e}` は常にキーとして存在する。値は出力された場合はファイルパス文字列、未出力の場合は`null`。`e2eAbsenceReason` は `fixtureE2e` と `serviceE2e` のキーを持つオブジェクトであり、レーンごとの許容値は以下のとおり:
+
+| レーン | 許容値 |
+|------|-------|
+| `e2eAbsenceReason.fixtureE2e` | `null`（レーン出力済み）\| `no_multi_step_journey` \| `below_threshold_user_confirmed` |
+| `e2eAbsenceReason.serviceE2e` | `null`（レーン出力済み）\| `no_multi_step_journey` \| `below_threshold_user_confirmed` \| `no_real_service_dependency` |
+
+`no_real_service_dependency` は service-integration-e2e 専用 — ジャーニーが fixture-e2e で完全に検証可能で、service-integration-e2e が不要であることを示す。fixture-e2e レーンはこの reason 値を出力しない。
 
 ## 制約と品質基準
 
@@ -262,7 +325,7 @@ it.todo('[AC番号]-property: [不変条件を自然言語で記述]')
 - テスト上限設定内に収める；重要テストに上限超過の場合は報告
 
 **品質基準**:
-- ROIランキングに基づき上限内でテストを選択（統合: ROIトップ3、E2E: ユーザー向けジャーニーの予約スロット + ROI > 50の追加分）
+- ROIランキングに基づき上限内でテストを選択（統合: ROIトップ3、fixture-e2e: ジャーニーの予約スロット + ROI ≥ 20を満たす範囲で残予算まで、service-integration-e2e: 実サービス間挙動が必要な場合の予約スロット + ROI > 50の追加最大1件）
 - 振る舞い優先フィルタリングを厳格に適用
 - 重複を排除（Grepで既存テストをチェック）
 - 依存関係を明示
@@ -273,12 +336,13 @@ it.todo('[AC番号]-property: [不変条件を自然言語で記述]')
 ### 自動処理可能
 - **ディレクトリが存在しない**: 検出されたテスト構造に従い適切なディレクトリを自動作成
 - **高ROI統合テストなし**: 有効な結果 - "全ACがROI閾値未満または既存テストでカバー済み"と報告
-- **E2Eテストなし（マルチステップジャーニーなし）**: 有効な結果 - "マルチステップユーザージャーニー未検出、E2Eテスト対象外"と報告
+- **両E2Eレーンで出力なし（マルチステップジャーニーなし）**: 有効な結果 - "マルチステップユーザージャーニー未検出、fixture-e2eおよびservice-integration-e2eは対象外"と報告
+- **fixture-e2eは出力されたがservice-integration-e2eは出力されない（実サービス間依存なし）**: 有効な結果 - "ジャーニーがモックバックエンドに対するE2E検証で十分。service-integration-e2eの不在理由は `no_real_service_dependency`"と報告
 - **重要テストが上限超過**: ユーザーに報告
 
 ### エスカレーション必須
 1. **重大**: ACが存在しない、Design Docが存在しない → エラー終了
-2. **高**: 上限適用後にE2Eテストが出力されなかったが、機能にユーザー向けマルチステップジャーニーが含まれる → "機能にユーザー向けマルチステップジャーニーが含まれるがE2Eテストが出力されませんでした。評価したジャーニー候補: [ROIスコア付きリスト]。E2Eなしで進めてよいか確認してください。"とエスカレーション（注: このエスカレーションはPhase 4の予約スロットが適用されなかった場合のみ発火する。予約スロット候補が存在する場合はそれが出力され、このエスカレーションは発火しない）
+2. **高**: 上限適用後にいずれのE2Eレーンでもテストが出力されなかったが、機能にユーザー向けマルチステップジャーニーが含まれる → レーン別に "機能にユーザー向けマルチステップジャーニーが含まれるがfixture-e2eもservice-integration-e2eも出力されませんでした。レーン別に評価したジャーニー候補: [レーンごとのROIスコア付きリスト]。E2Eカバレッジなしで進めてよいか確認してください。"とエスカレーション（注: このエスカレーションはPhase 4のいずれの予約スロットも適用されなかった場合のみ発火する。いずれかのレーンで予約スロット候補が存在する場合はそれが出力され、当該レーンに対しては発火しない）
 3. **高**: 全ACフィルタ済みだが機能がビジネスクリティカル → ユーザー確認必要
 4. **中**: クリティカルユーザージャーニー（ROI > 90）に上限不足 → オプション提示
 5. **低**: 複数解釈可能だが影響軽微 → 解釈を採用 + レポートに注記
@@ -308,5 +372,5 @@ it.todo('[AC番号]-property: [不変条件を自然言語で記述]')
 - **実行後**:
   - 選択されたテストの完全性
   - 依存関係の妥当性検証
-  - 統合テストとE2Eテストが別ファイルに生成
+  - 統合テスト・fixture-e2e・service-integration-e2eが別ファイルに生成（各E2Eファイルに `@lane:` ヘッダ付き）
   - 生成レポートの完全性
