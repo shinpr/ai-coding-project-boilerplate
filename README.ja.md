@@ -135,6 +135,7 @@ Claude Codeで利用できる主要なコマンド
 | `/task` | スキルに基づいた単一タスクの実行 | バグ修正、小規模な変更 |
 | `/design` | 設計書の作成 | アーキテクチャの計画時 |
 | `/plan` | 設計書から作業計画書を作成 | 設計承認後 |
+| `/prepare-implementation` | `/build` 実行可能な状態にする（readinessを検証しギャップを解消） | `/build`の前に計画が実装可能であることを担保したいとき |
 | `/build` | 既存の計画から実行 | 作業の再開時 |
 | `/review` | コードの準拠性確認 | 実装完了後 |
 | `/diagnose` | 問題診断ワークフロー | デバッグ、トラブルシューティング |
@@ -178,9 +179,9 @@ Claude Codeで利用できる主要なコマンド
 | `documentation-criteria` | PRD、ADR、Design Doc、UI Spec基準 |
 | `technical-spec` | アーキテクチャ、環境設定、ビルドコマンド |
 | `implementation-approach` | 戦略パターン、タスク分解 |
-| `integration-e2e-testing` | 統合/E2Eテスト設計、ROIベース選択、ジャーニー定義 |
+| `integration-e2e-testing` | 統合テストと二レーンE2E（fixture-e2e / service-integration-e2e）、ROIベース選択、ジャーニー定義 |
 | `frontend-typescript-rules` | Reactコンポーネント設計、Props駆動パターン |
-| `frontend-typescript-testing` | React Testing Library、MSW、Playwright E2E |
+| `frontend-typescript-testing` | React Testing Library、MSW、Playwright E2E（fixture / service-integrationパターン） |
 | `frontend-technical-spec` | Reactアーキテクチャ、環境設定、データフロー |
 | `project-context` | AIの実行精度のためのプロジェクト前提情報（`/project-inject`で設定） |
 
