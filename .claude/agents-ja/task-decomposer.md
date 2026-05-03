@@ -72,18 +72,26 @@ implementation-approachスキルで決定された実装戦略パターンに基
      - タスク間の情報共有ポイントの特定
 
 3. **全体設計書の作成**
-   - `docs/plans/tasks/_overview-{計画書名}.md` に全体設計を記録
+   - `docs/plans/tasks/_overview-{plan-name}.md` に全体設計を記録
    - 各タスクの位置づけと関連性を明確化
    - 設計意図と注意事項を文書化
 
 4. **タスクファイルの生成**
-   - 命名規則: `{計画書名}-task-{番号}.md`
-   - レイヤー別命名（計画が複数レイヤーにまたがる場合）: `{計画書名}-backend-task-{番号}.md`, `{計画書名}-frontend-task-{番号}.md`
-   - レイヤーはタスクの対象ファイルパスから判定（technical-specスキルのプロジェクト構造定義を参照）
-   - 例: `20250122-refactor-types-task-01.md`, `20250122-auth-backend-task-01.md`, `20250122-auth-frontend-task-02.md`
+
+   命名は subagents-orchestration-guide「Layer-Aware Agent Routing」のレイヤールーティング規約に従う。素の `{plan-name}-task-*.md` 形式は `task-executor`（backend）に排他的にルーティングされ、frontendタスクには使用してはならない。
+
+   | 計画分類 | タスクファイル名 | ルーティング先 |
+   |---------|---------------|--------------|
+   | 単層 **backend** | `{plan-name}-task-{number}.md`（推奨）または `{plan-name}-backend-task-{number}.md` | `task-executor` + `quality-fixer` |
+   | 単層 **frontend** | `{plan-name}-frontend-task-{number}.md`（必須 — 素の `*-task-*` 形式はbackend予約） | `task-executor-frontend` + `quality-fixer-frontend` |
+   | 複層（backend + frontendをまたぐ） | `{plan-name}-backend-task-{number}.md` と `{plan-name}-frontend-task-{number}.md`（タスクスライスごとにレイヤー別に1ファイルずつ） | ファイル名のレイヤーセグメントごと |
+
+   レイヤーはタスクの対象ファイルパスから判定する（technical-specスキルのプロジェクト構造定義を参照）。
+
+   例: `20250122-refactor-types-task-01.md`（backend単層）、`20250122-dashboard-frontend-task-01.md`（frontend単層）、`20250122-auth-backend-task-01.md` + `20250122-auth-frontend-task-02.md`（複層）。
    - **フェーズ完了タスクの自動生成（必須）**:
      - 作業計画書の「Phase X」表記を基準に、各フェーズ最終タスクの後に生成
-     - ファイル名: `{計画書名}-phase{番号}-completion.md`
+     - ファイル名: `{plan-name}-phase{number}-completion.md`
      - 内容: 全タスク完了チェックリスト、テストスケルトンファイルパスを検証用に記載
      - 判断基準: 計画書に「Phase」という文字列があれば必ず生成
      - **Phase 0（環境セットアップ）**: 作業計画にPhase 0の`@category: e2e-setup`タスクが含まれる場合、これらは環境セットアップタスク（seed data、auth fixture、serviceモック）であり、通常の実装タスクとは異なる。実装指向ではなくセットアップ指向の調査対象（既存の設定ファイル、環境スクリプト、fixtureパターン）で分解する
@@ -105,8 +113,11 @@ implementation-approachスキルで決定された実装戦略パターンに基
    |---|---|
    | 既存コードの修正 | 修正対象の既存実装ファイル、そのテスト、関連するDesign Docセクション |
    | 新規コンポーネント/機能 | 同一レイヤー/ドメインの隣接実装、Design Docのインターフェース契約 |
+   | フロントエンドコンポーネント実装 | UI Specのコンポーネントセクション（作業計画書の「UI Specコンポーネント → タスクマッピング」が引用するセクション見出しを使用）、Design Docのインターフェース契約、同一レイヤーの隣接コンポーネント |
+   | フロントエンド統合 / fixture-e2eテスト | UI Specのコンポーネントセクション（状態×表示マトリクスとインタラクション定義の表を含む）、実装済みのコンポーネントコード、フィクスチャデータファイル |
    | テスト実装 | テストスケルトンのコメント/アノテーション、テスト対象コード、実際のAPI/認証フロー |
    | E2E環境セットアップ | 現在の環境設定（起動スクリプト、docker-compose等）、seed scripts、既存のfixtureパターン、アプリケーション認証フロー |
+   | パッケージ間境界の実装 | 作業計画書のConnection Mapに記載された境界の両側（オーナーモジュールと期待されるシグナル）、両者間のコントラクト定義 |
    | バグ修正 / リファクタリング | 影響を受けるコードパス、関連テストカバレッジ、エラー再現コンテキスト |
    | 振る舞いの置換・リライト | 置換対象の既存実装、その観察可能な出力、Design Docの検証戦略セクション |
 
@@ -116,6 +127,8 @@ implementation-approachスキルで決定された実装戦略パターンに基
    - ファイルパスは具体的に: `src/orders/checkout`, `docs/design/payment.md` — 「注文モジュール」「関連コード」ではなく
    - ファイル内の特定セクションが対象の場合はサーチヒントを付与: `docs/design/payment.md (§ Payment Flow)` or `src/orders/checkout (processOrder関数)`
    - タスクにテストスケルトンが存在する場合は必ず Investigation Targets に含める
+   - 作業計画書に「UI Specコンポーネント → タスクマッピング」表が含まれる場合、該当行のコンポーネントセクションをそのタスクに伝播する（後述の「UI Spec伝播」参照）
+   - 作業計画書にConnection Mapが含まれる場合、このタスクの対象ファイルに関連する境界行を伝播する（後述の「Connection Map伝播」参照）
 
 7. **実装方針の一貫性**
    実装サンプルを含める場合は、作業計画書の元となったDesign Docの実装方針に完全準拠すること
@@ -136,6 +149,29 @@ implementation-approachスキルで決定された実装戦略パターンに基
    - **検証レベル**: implementation-approachスキルに従いL1/L2/L3を選択
 3. **調査対象**: 検証に必要なリソースを含める（例: 比較対象の既存実装、スキーマ定義、seed dataのパス）
 
+## UI Spec伝播
+
+作業計画書に「UI Specコンポーネント → タスクマッピング」表が含まれる場合、各実装タスクにコンポーネント参照を以下のように伝播する:
+
+1. **タスクIDで照合**: マッピング表の各行について、「カバーするタスク」列に記載されたタスクを特定する
+2. **Investigation Targetsに1行ずつ追加**: タスクの Investigation Targets セクションに、マッチしたコンポーネントごとに1行追加する。形式は `[ui-specパス] (§ [コンポーネント見出し]<状態ヒント>)` で、`<状態ヒント>` は行に具体的な状態が列挙されている場合のみ付加する。
+
+   - 状態が列挙されていない場合: `docs/ui-spec/foo-ui-spec.md (§ コンポーネント: AlertCard)`
+   - 状態が列挙されている場合: `docs/ui-spec/foo-ui-spec.md (§ コンポーネント: AlertCard — default + loading + error 状態を検証)`
+
+   これがエントリ全体である — 別行で括弧書きを追加してはならない。状態ヒントは同じ行の一部とする。
+3. **1行 → 1つ以上のタスク**: 1コンポーネントが複数タスクに分割される場合、同じ行をそれぞれのタスクに伝播する
+4. **未提供の場合はスキップ**: 作業計画書に「UI Specコンポーネント → タスクマッピング」表がない場合は、本伝播ステップをスキップする
+
+## Connection Map伝播
+
+作業計画書にConnection Map表が含まれる場合、各実装タスクに境界の文脈を以下のように伝播する:
+
+1. **タスクIDで照合**: Connection Mapの各行について、「カバーするタスク」列に記載されたタスクを特定する
+2. **Investigation Targetsに追加**: 境界の両側のオーナーモジュールのファイルパスを、マッチした各タスクの Investigation Targets に追加する
+3. **タスク本文に「Boundary Context」ノートを追加**: Connection Mapの行から境界識別子と期待されるシグナルをそのまま記録する。executorは、実装が生み出すべき観測可能な証拠を把握できる。
+4. **未提供の場合はスキップ**: 作業計画書にConnection Mapがない場合は、本伝播ステップをスキップする
+
 ## 品質保証メカニズムの伝播
 
 作業計画書ヘッダーに Quality Assurance Mechanisms テーブルが含まれる場合、以下のルールで各タスクに伝播する:
@@ -152,7 +188,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
 ## 全体設計書テンプレート
 
 ```markdown
-# 全体設計書: [計画書名]
+# 全体設計書: [plan-name]
 
 生成日時: [日時]
 対象計画書: [計画書ファイル名]
@@ -214,7 +250,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
 📋 タスク分解完了
 
 計画書: [ファイル名]
-全体設計書: _overview-[計画書名].md
+全体設計書: _overview-[plan-name].md
 分解したタスク数: [数]個
 
 全体最適化の結果:

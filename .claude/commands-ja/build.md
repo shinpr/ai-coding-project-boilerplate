@@ -18,34 +18,77 @@ description: 分解済みタスクを自律実行モードで実装
 
 ## 実行前提条件
 
-### タスクファイル存在チェック
-```bash
-# 計画書の確認
-! ls -la docs/plans/*.md | grep -v template | tail -5
+### Implementation Readinessチェック
 
-# タスクファイルの確認
-! ls docs/plans/tasks/*.md 2>/dev/null || echo "⚠️ タスクファイルが見つかりません"
-```
+タスク処理の前に、ゲート対象となる作業計画書を特定する。
+
+**`$ARGUMENTS`が指定されている場合**は、それがユーザーから渡された作業計画書のパスである。自動解決を行わずそのまま使用する。`{plan-name}`はファイル名から `.md` 拡張子（および末尾に `-plan` がある場合はそれも）を除いて抽出する。
+
+**`$ARGUMENTS`が空の場合**、タスクファイルから自動解決する:
+1. `docs/plans/tasks/`内で本レシピが消費可能なパターンに一致するタスクファイルを列挙する（subagents-orchestration-guideの「Layer-Aware Agent Routing」で `task-executor` を経由するルートに対応）:
+   - `{plan-name}-task-*.md`（単層タスク。ルーティング表により backend 予約）
+   - `{plan-name}-backend-task-*.md`（複層計画の backend 部分）
+   - `{plan-name}-frontend-task-*.md` は本レシピでは消費**しない** — `task-executor-frontend` にルーティングされ、frontend build レシピが所有する
+2. マッチしたファイルから、以下のいずれかにマッチするものを除外する。これらは本実行の実装タスクではなく、他のワークフローフェーズに由来する: `*-task-prep-*.md`（readiness preflight タスク）、`_overview-*.md`（分解overviewファイル）、`*-phase*-completion.md`（フェーズ完了ファイル）、`review-fixes-*.md`（実装後レビュー修正）、`integration-tests-*-task-*.md`（統合テスト追加用スキャフォールディング）
+3. 残った各ファイルから、末尾の `-task-{NN}.md` または `-backend-task-{NN}.md` を取り除いて `{plan-name}` を抽出する
+4. 少なくとも1つのタスクファイルがマッチした場合、最も新しい mtime を持つ `{plan-name}` の `docs/plans/{plan-name}.md` を作業計画書とする。タイは辞書順最大の `{plan-name}` で解決する
+5. **消費可能なパターンが何もマッチせず、`docs/plans/tasks/`に `*-frontend-task-*.md` が存在する場合**: 停止してユーザーに報告する: 「frontend 命名のタスクファイルしか見つかりませんでした。frontend build レシピを実行する意図であればそちらに切り替えてください。計画が backend ならば、task-decomposer を再実行して backend 命名のタスクファイルを出力させるか、作業計画書のパスを `$ARGUMENTS` で指定してください。」
+6. 消費可能パターンも `*-frontend-task-*.md` も見つからない場合、**backendであることを積極的に示す信号が確認できた場合に限り** `docs/plans/`の最も新しい mtime の非テンプレート `.md` にフォールバックする。多くの計画書テンプレートには backend / frontend のいずれにも合致しない layer-neutral なパス（例: `src/presentation`、`src/app`）が含まれるため、frontend 信号の不在だけでは不十分 — backend の確証が必要である。計画書を読んで以下を確認する:
+
+   **Backend 信号（最低1つ必要）**:
+   - `## Impact Scope > ### Target Files`（または同等のセクション）の対象ファイルが backend マーカー（`**/api/**`、`**/server/**`、`**/services/**`、`**/backend/**`、`**/handlers/**`、`**/repositories/**`、または technical-spec スキルで宣言されたプロジェクト固有の backend パス）に**排他的に**マッチする
+   - 計画書の `## 関連ドキュメント` が、ファイル名から明示的に backend と特定できる Design Doc を参照している（例: `*-backend-design.md`、`backend-*-design.md`）
+   - 計画書のタイトル、`## 目的`、`## 背景` セクションが作業を backend と明示している（例: 「backend 実装」「APIエンドポイント」「データベースマイグレーション」「サーバーサイド」）
+
+   **Frontend 信号（1つでも該当すれば不適格扱いとなる。backend 信号が存在しても優先される）**:
+   - `## 関連ドキュメント` が `docs/ui-spec/*` を指している
+   - `## UI Specコンポーネント → タスクマッピング` セクションが存在する
+   - 対象ファイルが frontend パス（`**/components/**`、`**/pages/**`、`**/web/**`、`**/*.tsx`、`**/*.jsx`）に排他的に該当する
+   - 計画書のタイトルや目的が React、UI コンポーネント、画面、frontend を明示している
+
+   **判定**:
+   - backend 信号 ≥1 かつ frontend 信号 = 0 → 計画書を受容して進む
+   - それ以外（backend 信号がない、または frontend 信号が1つでもある、または layer-neutral なパスのみ）→ 停止して報告する: 「最も新しい作業計画書 `[path]` が backend 計画であることを確証できません（確認した信号と結果: [リスト]）。意図する backend 計画書のパスを `$ARGUMENTS` で指定するか、task-decomposer を先に実行して `docs/plans/tasks/` に backend 命名のタスクファイルを出力してください。」
+7. `docs/plans/`に計画書が一切存在しない場合は、停止して報告する: 「作業計画書が見つかりません。作業計画書のパスを `$ARGUMENTS` で指定するか、計画フェーズを先に完了してください。」
+
+作業計画書のヘッダを読み、`Implementation Readiness: <status>`の行を見つける。以下のルールを適用する:
+
+| ステータス | アクション |
+|--------|--------|
+| `ready` | Consumed Task Set の計算へ進む |
+| `escalated` | 作業計画書のReadiness Reportセクションを読み、AskUserQuestionで残存ギャップをユーザーに提示する: 「Implementation Readinessが`escalated`で、以下の残存ギャップがあります: [リスト]。実行を継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
+| `pending` | AskUserQuestionで提示する: 「Implementation Readinessが`pending`です。事前にreadiness preflightを実行して作業計画書の実装可能性を検証してから再開してください。preflightなしで継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
+| 行が存在しない | `pending`として扱う — readinessマーカー導入前に作成された古い作業計画書は明示的にpreflightすべき |
+
+### Consumed Task Set
+
+本実行で消費する **Consumed Task Set** を計算する — 本レシピが所有・実行・後で削除する正確なファイル群。Implementation Readinessチェックと同じ消費可能パターンを使用する:
+
+1. Implementation Readinessチェックで解決した `{plan-name}` について、`docs/plans/tasks/`内で `{plan-name}-task-*.md` または `{plan-name}-backend-task-*.md` にマッチするタスクファイルを列挙する。`{plan-name}-frontend-task-*.md` は除外する — frontend build レシピが所有する
+2. 以下にマッチするファイルを除外する: `*-task-prep-*.md`、`_overview-*.md`、`*-phase*-completion.md`、`review-fixes-*.md`、`integration-tests-*-task-*.md`（これらは他のワークフローフェーズに由来する）
+
+本レシピ内で「タスクファイル」と参照する箇所すべて — タスク生成判定フロー、タスク実行サイクルの反復、最終クリーンアップ — はこのセットを使用する。`docs/plans/tasks/*.md` を制限なく glob しない。
 
 ### タスク生成判定フロー
 
-タスクファイルの存在状態を確認し、適切な対応を決定:
+Consumed Task Set を確認し、適切な対応を決定する。注: 本セクションに到達するということは、上記の readiness check が作業計画書を解決済み（Steps 1-6 が成功）であることを意味する。「計画書なし」の状態は readiness check の Step 7 が既に終了させており、本表には到達しない。
 
 | 状態 | 判定基準 | 次のアクション |
 |------|---------|--------------|
-| タスク存在 | tasks/ディレクトリに.mdファイルあり | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
-| タスクなし＋計画書あり | 計画書は存在するがタスクファイルなし | ユーザーに確認 → task-decomposer実行 |
-| 両方なし＋Design Docあり | 計画書・タスクファイルなし、docs/design/*.mdあり | work-plannerでDesign Docから作業計画書を作成し、タスク分解へ進む |
-| 両方なし | 計画書・タスクファイル・Design Docすべてなし | 前提条件未達成をユーザーに報告して停止 |
+| タスク存在 | Consumed Task Set が非空 | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
+| タスクなし + `$ARGUMENTS`で計画書指定 | `$ARGUMENTS`が提供され Consumed Task Set が空 | ユーザーに確認 → task-decomposer実行 |
+| タスクなし + 計画書を自動解決 | Consumed Task Set が空かつ計画書が自動解決（readiness check の Step 6 経由）で得られ、backend 信号 ≥1 かつ frontend 信号 = 0 が確認済み | ユーザーに確認 → task-decomposer実行（Step 6 のレイヤー検証で frontend / 不確定な計画は既に除外されているため安全） |
+
+Design Doc から作業計画書がまだない状態で着手したい場合は、先に計画レシピを実行して計画書を生成してから本レシピを再起動する — 上記 readiness check は意図的に自動生成を行わず、レイヤー判断を明示的に保つ。
 
 ## タスク分解フェーズ（条件付き実行）
 
-タスクファイルが存在しない場合：
+Consumed Task Set が空の場合：
 
 ### 1. ユーザー確認
 ```
-タスクファイルが見つかりません。
-作業計画書: docs/plans/[計画書名].md
+Consumed Task Set にタスクファイルがありません。
+作業計画書: docs/plans/[plan-name].md
 
 計画書からタスクを生成しますか？ (y/n):
 ```
@@ -54,20 +97,17 @@ description: 分解済みタスクを自律実行モードで実装
 Agentツールでtask-decomposerを呼び出す:
 - `subagent_type`: "task-decomposer"
 - `description`: "作業計画をタスクに分解"
-- `prompt`: "作業計画書を読み込み、1コミット粒度の独立したタスクに分解。入力: docs/plans/[計画書名].md。出力: docs/plans/tasks/配下に個別タスクファイル生成。粒度: 1タスク = 1コミット = 独立して実行可能"
+- `prompt`: "作業計画書を読み込み、1コミット粒度の独立したタスクに分解。入力: docs/plans/[plan-name].md。出力: docs/plans/tasks/配下に個別タスクファイル生成。粒度: 1タスク = 1コミット = 独立して実行可能"
 
 ### 3. 生成確認
-```bash
-# 生成されたタスクファイルを確認
-! ls -la docs/plans/tasks/*.md | head -10
-```
+上記「Consumed Task Set」セクションの制限パターンを使って Consumed Task Set を再計算し、非空であることを確認する。依然として空の場合はユーザーにエスカレーション — task-decomposer が静かに失敗したか、想定パターンに合致しないファイルを生成した可能性がある。
 
-**フロー**: タスク生成 → 自律実行（この順序で実行）
+**フロー**: タスク生成 → Consumed Task Set 再計算 → 自律実行（この順序）
 
 ## 実行前チェックリスト
 
-- [ ] docs/plans/tasks/にタスクファイルが存在することを確認
-- [ ] タスクの実行順序（依存関係）を特定
+- [ ] Consumed Task Set が非空であることを確認（上記「Consumed Task Set」セクションで計算）
+- [ ] Consumed Task Set 内のタスク実行順序（依存関係）を特定
 - [ ] **環境チェック**: タスク単位のコミットサイクルを実行可能か？
   - コミット機能が利用不可 → 自律実行モード前にエスカレーション
   - その他の環境（テスト、品質ツール） → サブエージェントがエスカレーション
@@ -75,7 +115,7 @@ Agentツールでtask-decomposerを呼び出す:
 ## タスク実行サイクル（4ステップサイクル）
 **必須実行サイクル**: `task-executor → エスカレーションチェック → quality-fixer → commit`
 
-各タスクで必須：
+Consumed Task Set 内の各タスクで必須：
 1. **TaskCreateでタスク登録**: 作業ステップを登録。必ず含める: 最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」
 2. **task-executor を呼び出す**: タスク実装を実行（レイヤー横断 の場合は subagents-orchestration-guide の レイヤー別エージェントルーティング 参照）
 3. **task-executor レスポンスをチェック**:
@@ -126,7 +166,18 @@ Escalate when the required fix or investigation falls outside that scope.
    - 続いて quality-fixer、その後 fail した verifier のみ再実行。
    - 2サイクル後も fail が残る場合 → 残存指摘事項を添えてユーザーにエスカレーション
 
-4. **全て合格** → 完了レポートへ
+4. **全て合格** → 最終クリーンアップへ
+
+## 最終クリーンアップ
+
+完了レポートの前に、本レシピが消費した実装タスクファイルを削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である:
+
+- Consumed Task Set 内のすべてのファイルを削除する
+- `docs/plans/tasks/{plan-name}-phase*-completion.md` にマッチするすべてのファイルを削除する（task-decomposer が生成した本 `{plan-name}` のフェーズ完了ファイル）
+- 該当する `docs/plans/tasks/_overview-{plan-name}.md` が存在する場合は削除する
+- 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
+
+タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが完了レポートをブロックしない。
 
 ## 出力例
 実装フェーズが完了しました。
@@ -134,6 +185,7 @@ Escalate when the required fix or investigation falls outside that scope.
 - 実装されたタスク: [タスク数]件
 - 品質チェック: すべて通過
 - コミット: [コミット数]件作成
+- クリーンアップ: docs/plans/tasks/ からタスクファイルを削除済み
 
 **責務境界**:
 - スコープ内: タスク分解から実装完了まで

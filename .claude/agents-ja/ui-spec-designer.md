@@ -103,6 +103,8 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 - [ ] プロトタイプ提供時: プロトタイプが`docs/ui-spec/assets/`に配置されている
 - [ ] 未確定事項の全TBDに担当者と期限がある
 - [ ] UI Specの全要件がPRD要件と整合している
+- [ ] **コンポーネント見出しの一意性**: 全コンポーネントが、UI Spec内でテキストとして一意なセクション見出しの下に記述されている。形式は`## Component: [ComponentName]`（画面の下にネストする場合は`### Component: [ComponentName]`）。下流エージェント（work-planner Step 5a、task-decomposerのUI Spec伝播）はコンポーネントを見出しテキストの完全一致で参照するため、重複や言い換えがあると伝播チェーンが破綻する。
+  - **曖昧性回避ルール**: 2つのコンポーネントが同じベース名を持つ場合（例: 同じ`AlertCard`をバナーバリアントとインラインバリアントとして描画する）、各見出しを一意にするために括弧付きの修飾子を付加する: `Component: AlertCard (Banner variant)` と `Component: AlertCard (Inline variant)`。最終チェックで一意性を検証する: すべての`Component: `見出しを抽出し、重複がゼロであることを確認する
 
 ## 重要な設計原則
 

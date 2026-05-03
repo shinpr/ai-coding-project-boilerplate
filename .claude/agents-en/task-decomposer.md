@@ -77,10 +77,18 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Document design intent and important notes
 
 4. **Task File Generation**
-   - Naming convention: `{plan-name}-task-{number}.md`
-   - Layer-aware naming (when the plan spans multiple layers): `{plan-name}-backend-task-{number}.md`, `{plan-name}-frontend-task-{number}.md`
-   - Layer is determined from the task's Target files paths (refer to project structure defined in technical-spec skill)
-   - Examples: `20250122-refactor-types-task-01.md`, `20250122-auth-backend-task-01.md`, `20250122-auth-frontend-task-02.md`
+
+   Naming follows the layer routing convention in subagents-orchestration-guide "Layer-Aware Agent Routing". The bare `{plan-name}-task-*.md` form routes exclusively to `task-executor` (backend) and must NOT be used for frontend tasks.
+
+   | Plan classification | Task filename | Routes to |
+   |---------------------|---------------|-----------|
+   | Single-layer **backend** | `{plan-name}-task-{number}.md` (preferred) OR `{plan-name}-backend-task-{number}.md` | `task-executor` + `quality-fixer` |
+   | Single-layer **frontend** | `{plan-name}-frontend-task-{number}.md` (REQUIRED — bare `*-task-*` form is reserved for backend) | `task-executor-frontend` + `quality-fixer-frontend` |
+   | Multi-layer (spans backend + frontend) | `{plan-name}-backend-task-{number}.md` AND `{plan-name}-frontend-task-{number}.md` (one file per layer per task slice) | per filename layer segment |
+
+   Layer is determined from the task's Target files paths (refer to project structure defined in technical-spec skill).
+
+   Examples: `20250122-refactor-types-task-01.md` (backend single-layer), `20250122-dashboard-frontend-task-01.md` (frontend single-layer), `20250122-auth-backend-task-01.md` + `20250122-auth-frontend-task-02.md` (multi-layer).
    - **Phase Completion Task Auto-generation (Required)**:
      - Based on "Phase X" notation in work plan, generate after each phase's final task
      - Filename: `{plan-name}-phase{number}-completion.md`
@@ -105,8 +113,11 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    |---|---|
    | Existing code modification | The existing implementation files being modified, their tests, related Design Doc sections |
    | New component/feature | Adjacent implementations in the same layer/domain, Design Doc interface contracts |
+   | Frontend component implementation | UI Spec component section (use the section heading the work plan's UI Spec Component → Task Mapping cites), Design Doc interface contracts, adjacent components in the same layer |
+   | Frontend integration / fixture-e2e test | UI Spec component section including the State x Display Matrix and Interaction Definition tables, the implemented component code, fixture data files |
    | Test implementation | Test skeleton comments/annotations, the target code being tested, actual API/auth flows |
    | E2E environment setup | Current environment config (startup scripts, docker-compose or equivalent), seed scripts, existing fixture patterns, application auth flow |
+   | Cross-package boundary implementation | Both sides of the boundary as listed in the work plan's Connection Map (owner modules and expected signal), the contract definition between them |
    | Bug fix / refactor | The affected code paths, related test coverage, error reproduction context |
    | Behavior replacement / rewrite | The existing implementation being replaced, its observable outputs, Design Doc Verification Strategy section |
 
@@ -116,6 +127,8 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Be specific with file paths: `src/orders/checkout`, `docs/design/payment.md` — not "the order module" or "related code"
    - When the target is a section within a file, write the file path and add a search hint: `docs/design/payment.md (§ Payment Flow)` or `src/orders/checkout (processOrder function)`
    - When test skeletons exist for the task, always include them as Investigation Targets
+   - When the work plan contains a UI Spec Component → Task Mapping table, propagate the matching component section to every task in that row (see UI Spec Propagation below)
+   - When the work plan contains a Connection Map, propagate the boundary rows touching this task's target files (see Connection Map Propagation below)
 
 7. **Implementation Pattern Consistency**
    When including implementation samples, MUST ensure strict compliance with the Design Doc implementation approach that forms the basis of the work plan
@@ -135,6 +148,29 @@ When the work plan includes a Verification Strategy, derive each task's Operatio
    - **Success criteria**: Instantiate the Verification Strategy's success criteria for this task's scope (e.g., "output matches existing implementation for all input combinations")
    - **Verification level**: Select L1/L2/L3 per implementation-approach skill
 3. **Investigation Targets**: Include resources needed for verification (e.g., existing implementation for comparison, schema definitions, seed data paths)
+
+## UI Spec Propagation
+
+When the work plan contains a UI Spec Component → Task Mapping table, propagate component references to each implementation task as follows:
+
+1. **Lookup by task ID**: For each row in the mapping table, locate the task(s) listed in the "Covered By Task(s)" column
+2. **Append a single line to Investigation Targets**: Add one line per matched component in the task's Investigation Targets section. The line format is `[ui-spec path] (§ [component heading]<state hint>)`, where `<state hint>` is appended only when the row lists specific states.
+
+   - When no states are listed: `docs/ui-spec/foo-ui-spec.md (§ Component: AlertCard)`
+   - When states are listed: `docs/ui-spec/foo-ui-spec.md (§ Component: AlertCard — verify default + loading + error states)`
+
+   This is the entire entry — do not also add a separate parenthetical line. The state hint is part of the same line.
+3. **One row → one or more tasks**: A component can be split across multiple tasks; propagate the same line to each
+4. **Skip when not provided**: If the work plan has no UI Spec Component → Task Mapping table, skip this propagation step
+
+## Connection Map Propagation
+
+When the work plan contains a Connection Map table, propagate boundary context to each implementation task as follows:
+
+1. **Lookup by task ID**: For each row in the Connection Map, locate the task(s) listed in the "Covered By Task(s)" column
+2. **Append to Investigation Targets**: Add the boundary's owner module file paths on both sides to each matched task's Investigation Targets
+3. **Add a "Boundary Context" note in the task body**: Record the boundary identifier and expected signal verbatim from the Connection Map row, so the executor knows what observable evidence the implementation must produce
+4. **Skip when not provided**: If the work plan has no Connection Map, skip this propagation step
 
 ## Quality Assurance Mechanism Propagation
 
