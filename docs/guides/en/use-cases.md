@@ -77,9 +77,10 @@ Creates design documents, conducts LLM self-review, requests user review as need
 Execute Design → Plan → Build individually. You can work more incrementally by specifying phases directly in the command arguments.
 
 ```bash
-/design                    # Create design docs
-/plan                      # Create work plan
-/build implement phase 1   # Execute implementation (with phase specification)
+/design                          # Create design docs
+/plan                            # Create work plan
+/prepare-implementation          # (Optional) Bring the plan to implement-ready state
+/build implement phase 1         # Execute implementation (with phase specification)
 ```
 
 ## Want to resume work?
@@ -203,6 +204,20 @@ Use when not adopting the full design-to-implementation process via `/implement`
 
 Creates work plan from Design Doc. Also creates integration/E2E tests required for implementation.
 Use when not adopting the full design-to-implementation process via `/implement`.
+
+### /prepare-implementation
+**Purpose**: Bring the work plan to implement-ready state
+**Args**: [work plan path] (optional)
+**Prerequisite**: Approved work plan must exist
+**Process**:
+1. Load work plan and verify five readiness criteria (Verification Strategy references, E2E preconditions, Phase 1 observability, UI rendering surface, local lane procedure)
+2. Generate Phase 0 prep tasks for any failing criteria
+3. User confirmation gate before executing prep tasks
+4. Execute prep tasks via the standard 4-step cycle
+5. Re-scan and promote the work plan's `Implementation Readiness:` header to `ready` or `escalated`
+
+Brings the work plan to implement-ready state before `/build`. Resolves gaps via Phase 0 prep tasks (fixture entries, seed scripts, local startup docs, etc.) so the implementation is observable from the first phase, then promotes the readiness marker accordingly. Exits no-op when readiness already holds, so it is safe to invoke unconditionally.
+Use when not adopting the full design-to-implementation process via `/implement`, or when extra confidence in plan readiness is wanted before a long autonomous build run.
 
 ### /build
 **Purpose**: Automated implementation execution

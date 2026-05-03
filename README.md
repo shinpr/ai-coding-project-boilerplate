@@ -135,6 +135,7 @@ Essential commands for Claude Code:
 | `/task` | Single task with skill-based precision | Bug fixes, small changes |
 | `/design` | Create design docs only | Architecture planning |
 | `/plan` | Create work plan from design | After design approval |
+| `/prepare-implementation` | Get the plan ready for `/build` (verify readiness and resolve gaps) | Before `/build` to ensure the plan is implementable |
 | `/build` | Execute from existing plan | Resume work |
 | `/review` | Check code compliance | Post-implementation |
 | `/diagnose` | Problem diagnosis workflow | Debugging, troubleshooting |
@@ -178,9 +179,9 @@ This boilerplate provides the principles used in agentic implementation workflow
 | `documentation-criteria` | PRD, ADR, Design Doc, UI Spec standards |
 | `technical-spec` | Architecture, environment, build commands |
 | `implementation-approach` | Strategy patterns, task decomposition |
-| `integration-e2e-testing` | Integration/E2E test design, ROI-based selection, journey definition |
+| `integration-e2e-testing` | Integration tests and two-lane E2E (fixture-e2e / service-integration-e2e), ROI-based selection, journey definition |
 | `frontend-typescript-rules` | React component design, Props-driven patterns |
-| `frontend-typescript-testing` | React Testing Library, MSW, Playwright E2E |
+| `frontend-typescript-testing` | React Testing Library, MSW, Playwright E2E (fixture and service-integration patterns) |
 | `frontend-technical-spec` | React architecture, environment, data flow |
 | `project-context` | Project-specific prerequisites for AI accuracy (set via `/project-inject`) |
 
