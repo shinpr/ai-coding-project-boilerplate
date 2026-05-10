@@ -86,11 +86,6 @@ skills:
     size: small
     key-references:
       - "プロジェクト固有（経験則）"
-    sections:
-      - "プロジェクト概要"
-      - "ドメイン制約"
-      - "開発フェーズ"
-      - "ディレクトリ規約"
 
   documentation-criteria:
     skill: "documentation-criteria"

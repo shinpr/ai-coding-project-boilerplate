@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.0] - 2026-05-10
+
+### Added
+
+- **External Resources section in project-context skill** (skills) — Captures access methods for resources outside the repository (design source, design system, schema source, secret store, IaC source, deployment trigger) across four domains: frontend, backend, API contract, infrastructure. Each domain reference (`references/external-resources-{frontend,backend,api,infra}.md`) defines four structured axes plus a self-declaration phase. Per-axis output schema records three fields: Source type, Location, Access method. Multiple-instance and cross-axis-reference rules cover primary/analytics splits and resources shared across domains
+- **Template-driven /project-inject command** (commands) — Section catalog and hearing protocol live in `.claude/skills/project-context/references/template.md`; new dimensions are added by editing the template. Section-level hearing supports five dispositions (`add` / `keep` / `update` / `remove` / `skip`) for incremental updates without re-running the full flow. Vagueness rejection filter sends back subjective rules for measurable rephrasing during hearing
+
+### Changed
+
+- **project-context skill scope** (skills) — Expanded from domain constraints / development phase / directory conventions to also cover external-resource access methods. Description frontmatter advertises all four axes with explicit "Use when" trigger phrases (session start, project structure check, domain rules, external resources). Configured SKILL.md is shaped by /project-inject from the catalog; unconfigured stub ships as a minimal one-line invitation to run /project-inject
+- **skills-index validator: dynamic-content skills allowed** (tooling) — `scripts/check-skills-index.mjs` treats yaml entries with no sections as dynamic content (logged, skipped) rather than failing. Releases the prior implicit requirement that every skill have at least one static section, removing the need for stub-padding workarounds for skills whose content is populated at runtime
+
 ## [1.21.0] - 2026-05-03
 
 ### Added

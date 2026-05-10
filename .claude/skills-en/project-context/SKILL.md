@@ -1,21 +1,8 @@
 ---
 name: project-context
-description: Provides project-specific prerequisites for AI execution accuracy. Use when checking project structure.
+description: Provides project-specific prerequisites for AI execution accuracy — domain constraints, development phase, directory conventions, external resource access methods. Use when the session starts, when checking project structure, or when a task references domain rules or external resources outside the repository.
 ---
 
 # Project Context
 
-> **Not configured.** Run `/project-inject` to set up project-specific context.
-
-## Project Overview
-- **What this project does**: (to be configured)
-- **Domain**: (to be configured)
-
-## Domain Constraints
-(Domain-specific rules that affect AI decision-making)
-
-## Development Phase
-- **Phase**: (Prototype / Production / In operation)
-
-## Directory Conventions
-(File placement rules, if any)
+Run `/project-inject` to populate this skill.
