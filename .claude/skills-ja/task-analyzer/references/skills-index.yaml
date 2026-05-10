@@ -91,6 +91,7 @@ skills:
       - "ドメイン制約"
       - "開発フェーズ"
       - "ディレクトリ規約"
+      - "外部リソース"
 
   documentation-criteria:
     skill: "documentation-criteria"
