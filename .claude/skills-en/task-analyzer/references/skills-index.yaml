@@ -95,12 +95,6 @@ skills:
     size: small
     key-references:
       - "Project-specific (empirical)"
-    sections:
-      - "Project Overview"
-      - "Domain Constraints"
-      - "Development Phase"
-      - "Directory Conventions"
-      - "External Resources"
 
   documentation-criteria:
     skill: "documentation-criteria"

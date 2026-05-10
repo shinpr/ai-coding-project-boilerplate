@@ -14,9 +14,9 @@ Register all steps below using TaskCreate before starting Step 1, and update eac
 
 ### Step 1: Load Inputs
 
-1. Read `.claude/skills/project-context/SKILL.md` to learn the current state. The body holds the catalog section headings (`## Project Overview`, `## Domain Constraints`, `## Development Phase`, `## Directory Conventions`, `## External Resources`) in catalog order. Distinguish the two cases by whether captured content appears beneath any of these headings:
-   - **Unconfigured** — every catalog heading is empty (the next non-blank line is another `## ` heading or end of file).
-   - **Configured** — at least one catalog heading has captured content beneath it.
+1. Read `.claude/skills/project-context/SKILL.md` to learn the current state. Distinguish the two cases by the count of catalog section headings (`## Project Overview`, `## Domain Constraints`, `## Development Phase`, `## Directory Conventions`, `## External Resources`) present in the body:
+   - **Unconfigured** — the body has zero catalog section headings.
+   - **Configured** — the body has one or more catalog section headings.
 2. Read `.claude/skills/project-context/references/template.md` to obtain the section catalog.
 
 **Checkpoint**: You hold the section catalog from `template.md` and the configured-or-unconfigured state of `SKILL.md`.

@@ -6,13 +6,3 @@ description: Provides project-specific prerequisites for AI execution accuracy â
 # Project Context
 
 Run `/project-inject` to populate this skill.
-
-## Project Overview
-
-## Domain Constraints
-
-## Development Phase
-
-## Directory Conventions
-
-## External Resources
