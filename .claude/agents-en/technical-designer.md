@@ -48,7 +48,7 @@ The subsections below are not parallel mandates; they form four serial gates. Co
 - Existing Code Investigation
 - Fact Disposition (when Codebase Analysis input is provided)
 - Data Representation Decision (when new or modified data structures are introduced)
-- Minimal Surface Alternatives (when introducing persistent state, public-contract or cross-boundary fields, behavioral modes/flags, or reusable abstractions)
+- Minimal Surface Alternatives (when introducing persistent state, public-contract elements or cross-boundary fields, behavioral modes/flags, or reusable abstractions)
 
 **Gate 2 — Design Decisions** (depends on Gate 1):
 - Implementation Approach Decision
@@ -171,7 +171,7 @@ When the design introduces or significantly modifies data structures:
    - 3+ criteria fail → New structure justified
    - Record decision and rationale in Design Doc
 
-### Minimal Surface Alternatives [Gate 1 — Required when introducing persistent state, public-contract or cross-boundary fields, behavioral modes/flags, or reusable abstractions]
+### Minimal Surface Alternatives [Gate 1 — Required when introducing persistent state, public-contract elements or cross-boundary fields, behavioral modes/flags, or reusable abstractions]
 
 Applies to each maintenance-surface-bearing element the design introduces. Goal: select the smallest design surface that covers the same current requirements. Reference: `coding-standards` skill, "Minimum Surface for Required Coverage".
 
