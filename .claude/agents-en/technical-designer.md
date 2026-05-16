@@ -48,6 +48,7 @@ The subsections below are not parallel mandates; they form four serial gates. Co
 - Existing Code Investigation
 - Fact Disposition (when Codebase Analysis input is provided)
 - Data Representation Decision (when new or modified data structures are introduced)
+- Minimal Surface Alternatives (when introducing persistent state, public-contract or cross-boundary fields, behavioral modes/flags, or reusable abstractions)
 
 **Gate 2 — Design Decisions** (depends on Gate 1):
 - Implementation Approach Decision
@@ -169,6 +170,41 @@ When the design introduces or significantly modifies data structures:
    - 1-2 criteria fail → Evaluate extension with adapter
    - 3+ criteria fail → New structure justified
    - Record decision and rationale in Design Doc
+
+### Minimal Surface Alternatives [Gate 1 — Required when introducing persistent state, public-contract or cross-boundary fields, behavioral modes/flags, or reusable abstractions]
+
+Applies to each maintenance-surface-bearing element the design introduces. Goal: select the smallest design surface that covers the same current requirements. Reference: `coding-standards` skill, "Minimum Surface for Required Coverage".
+
+**In scope**: persistent state (DB columns/tables, file fields, cache entries, queue payloads, session/cookie data — state outliving a single operation); public-contract elements (exported types, API request/response fields, exported function signatures, schema definitions); cross-boundary fields (passed between modules/services); behavioral modes/flags (state-machine states, feature flags, config options); reusable abstractions (new types/classes/modules/interfaces intended for reuse).
+
+**Out of scope**: local variables within a single function; internal fields used only within one module; test fixture or mock fields; transient state confined to a single operation; private state without external observers.
+
+**Precedence**: when an element matches both an in-scope and an out-of-scope condition (e.g., an internal field that is also persisted to a DB column), the in-scope classification wins and the gate applies.
+
+Execute the 5 steps below for each in-scope element. Record the result in the Design Doc's "Minimal Surface Alternatives" section (see design-template.md).
+
+1. **Fix Requirements**
+   - List the current user-visible requirements / ACs / accepted technical constraints (audit, data integrity, compatibility, security, performance) this element serves. Reference each by AC ID, AC heading, EARS clause, or constraint ID from the Design Doc or referenced PRD.
+   - Eligibility: only requirements / constraints inside the current Design Doc's adopted scope qualify.
+
+2. **Diverge** (generate alternatives)
+   - Produce at least 2 alternative realizations covering the same fixed requirements.
+   - At least one alternative is subtractive. Subtractive options are drawn from: derive from existing data, compute on demand, keep at caller / invocation boundary, reuse existing structure, introduce no new state.
+
+3. **Compare** (record alternatives in a table)
+
+   | Alternative | Current requirements covered (AC reference) | New persistent state (count) | New concept / mode / flag (count) | Crosses module/service boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
+   |---|---|---|---|---|---|---|
+
+   Resolution priority (later columns are tiebreakers when earlier are equal): (1) new persistent state (lower=smaller); (2) crosses module/service boundary (no=smaller); (3) new concept/mode/flag (lower=smaller); (4) breaking change or migration (no=smaller); (5) subjective cost notes.
+
+4. **Converge** (select)
+   - Select the alternative with the smallest surface that covers all fixed requirements, applying the resolution priority above.
+   - When the selected alternative is not the smallest, name the current requirement (from Step 1) that smaller alternatives fail to satisfy.
+   - "Useful" / "future-ready" / "convenient for implementation" / "users might want" belong in the Subjective cost notes column only (tiebreakers).
+
+5. **Record Rejected Alternatives**
+   - For each rejected alternative, record 1-2 lines: what it was, why rejected. Keep this in the Design Doc so future iterations or agents avoid re-proposing.
 
 ### Implementation Approach Decision [Gate 2 — Required]
 Must be performed when creating Design Doc.
@@ -320,8 +356,6 @@ Consistency first (follow existing patterns; document reason when introducing ne
 
 ### Design Doc Checklist
 
-Items below are output-content checks performed in addition to (not duplicating) the Gate Ordering [BLOCKING] gates. The gates cover whether each subsection ran; the checklist below covers content quality of the produced output.
-
 **All modes**:
 - [ ] Architecture and data flow clearly expressed in diagrams
 - [ ] Quality assurance mechanisms recorded with `adopted`/`noted` status (and `executable_check` / `passive_constraint` type)
@@ -415,6 +449,7 @@ Mode for documenting existing architecture as-is. Used when creating Design Docs
 - Field Propagation Map (no new fields being introduced)
 - Implementation Approach Decision (no implementation strategy to select)
 - Latest Information Research (documenting what exists, not designing something new)
+- Minimal Surface Alternatives (documenting existing elements, not introducing new ones)
 
 ### Reverse-Engineer Mode Execution Steps
 
