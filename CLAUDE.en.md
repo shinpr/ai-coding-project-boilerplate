@@ -29,7 +29,7 @@ Core rules for maximizing AI execution accuracy. All instructions must follow th
 **Trigger**: When starting work that involves Edit/Write/MultiEdit tools
 
 - [ ] Execute rule-advisor subagent (using Task tool)
-- [ ] Update tasks with TaskCreate/TaskUpdate
+- [ ] Create/update tasks with TaskCreate/TaskUpdate
   - Record taskEssence as completion criteria
   - Reflect firstActionGuidance as first action
   - Record warningPatterns as checkpoints during execution
@@ -69,6 +69,15 @@ Pause work and report status when these conditions occur:
 3. Root cause analysis (5 Whys)
 4. Present action plan to user
 5. Execute fix after approval
+
+## Scope Discipline
+
+**Apply instructions to the user's specified scope. Ask before expanding it.**
+
+- Treat explicit quantities and targets ("one", "this file", "only X") as boundaries
+- Copy/move/mirror requests preserve content verbatim; edit content only when requested
+- Port/translation requests preserve intent and behavior; adapt only what the destination context requires
+- Ask before changing related files, symmetric locations, adjacent behavior, or adding "helpful" extras
 
 ## User Confirmation Required
 

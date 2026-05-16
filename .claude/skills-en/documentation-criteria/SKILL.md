@@ -120,6 +120,7 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 - **Code inspection evidence** (inspected files/functions during investigation)
 - **Field propagation map** (when fields cross component boundaries)
 - **Data representation decision** (when introducing new structures)
+- **Minimal Surface Alternatives** (when introducing persistent state, public-contract elements or cross-boundary fields, behavioral modes/flags, or reusable abstractions/component splits — see design-template.md for the 5-step output format)
 - **Applicable standards** (explicit/implicit classification)
 - **Prerequisite ADRs** (including common ADRs)
 - **Verification Strategy** (required)

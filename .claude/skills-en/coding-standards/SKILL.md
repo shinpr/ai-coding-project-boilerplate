@@ -29,6 +29,7 @@ Immediately stop and reconsider design when detecting the following patterns:
 
 - **Aggressive Refactoring** - Prevent technical debt and maintain health
 - **No Unused "Just in Case" Code** - Violates YAGNI principle (Kent Beck)
+- **Minimum Surface for Required Coverage** - When introducing maintenance-surface-bearing elements (persistent state, public-contract elements or cross-boundary fields/props, behavioral modes/flags/variants, reusable abstractions, or component splits), select the smallest design surface that covers current user-visible requirements and accepted technical constraints (audit, data integrity, compatibility, security, performance, accessibility). Adoption is justified by naming a current requirement or constraint that smaller alternatives fail to cover; value-based arguments (reusable, future-ready, convenient for implementation) serve as tiebreakers only. Distinct from YAGNI: YAGNI is a time-axis check (refuse work for future-only needs); this principle constrains surface area at a fixed coverage point.
 
 ## Comment Writing Rules
 

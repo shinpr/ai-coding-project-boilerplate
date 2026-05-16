@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.22.1] - 2026-05-16
+
+### Added
+
+- **Minimal Surface Alternatives design gate** (agents, skills) — Gate-1 sub-gate for `technical-designer` and `technical-designer-frontend` requiring each new maintenance-surface-bearing element (persistent state; public-contract elements or cross-boundary fields/props; behavioral modes/flags/variants; reusable abstractions or component splits) to be evaluated against subtractive alternatives via a 5-step procedure: Fix Requirements (referencing the Design Doc, PRD, or UI Spec by AC ID, AC heading, EARS clause, or constraint ID) → Diverge with at least one subtractive alternative → Compare in a context-adaptive table → Converge on the smallest surface using a 5-column resolution priority → Record Rejected Alternatives. Context-specific in-scope sets distinguish backend (fields crossing module/service boundaries, concept/mode/flag) from frontend (ownership boundary crossings — public API props of exported reusable components, Context values, state lifted across ownership boundaries — plus props/modes/variants that change observable behavior). `document-reviewer` enforces section existence at Gate 0 and per-element quality at Gate 1 (AC reference present, subtractive alternative present, rationale anchored to a current requirement smaller alternatives fail to cover, rejected log present). `code-reviewer` escalates when implementation introduces in-scope elements absent from the Design Doc's section. `technical-designer` Reverse-Engineer Mode skips the gate (documenting existing elements, not introducing new ones)
+- **Minimum Surface for Required Coverage principle** (skills) — New `coding-standards` Basic Principle, distinct from YAGNI: YAGNI is a time-axis check (refuse work for future-only needs); this principle constrains surface area at a fixed coverage point. Adoption is justified by naming a current requirement or constraint that smaller alternatives fail to cover; value-based arguments (reusable, future-ready, convenient for implementation) serve as tiebreakers only
+- **Design Doc template: Minimal Surface Alternatives and Future Extensibility sections** (skills) — `design-template.md` gains a per-element 5-step output template (fixed requirements, alternatives table with column-name adaptation guidance for backend/frontend contexts, resolution priority for selecting "smallest", selection rationale, rejected alternatives log) and a Future Extensibility section recording capabilities excluded from the current design surface (Deferred possibilities tied to a current requirement, Intentional limitations, Extension points limited to existing interfaces with named current consumers). The two sections are distinguished by record granularity — Step 5 records element-level rejections, Future Extensibility records capability-level exclusions
+- **CLAUDE.md Scope Discipline rule** (project rules) — New section in `CLAUDE.md` defining how to keep edits within the user's specified scope
+
+### Changed
+
+- **`documentation-criteria` Design Doc Includes list** (skills) — Adds "Minimal Surface Alternatives" as required Design Doc content when introducing maintenance-surface elements, keeping the required-content list in sync with `document-reviewer` enforcement
+
 ## [1.22.0] - 2026-05-10
 
 ### Added

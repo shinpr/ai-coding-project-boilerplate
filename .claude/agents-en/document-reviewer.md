@@ -89,6 +89,7 @@ For DesignDoc, additionally verify:
 - [ ] Field propagation map present (when fields cross boundaries)
 - [ ] Verification Strategy section present with: correctness definition, verification method, verification timing, early verification point
 - [ ] Fact Disposition Table section exists in the Design Doc
+- [ ] Minimal Surface Alternatives section present with one entry per new in-scope element (persistent state; public-contract elements or cross-boundary fields/props — for backend, fields crossing module/service boundaries; for frontend, public API props of exported reusable components, Context values, or state lifted across ownership boundaries; behavioral mode/flag/variant; reusable abstraction or component split) when the design introduces any. Each entry contains the 5-step output (fixed requirements with AC references — AC ID, AC heading, EARS clause, or constraint ID — from the Design Doc or referenced PRD/UI Spec; alternatives table including at least one subtractive alternative; selected alternative with rationale; rejected alternatives log)
 
 #### Gate 1: Quality Assessment (only after Gate 0 passes)
 
@@ -118,6 +119,17 @@ For DesignDoc, additionally verify:
   - `remove`: valid when the rationale states the deletion and its reason. Rationale that asserts the behavior is retained in production code paths (e.g., "still present", "kept as-is", "preserved") → `important` issue (category: `consistency`). Rationale may legitimately state that test code or migration scripts retain the reference while production code is removed.
   - `out-of-scope`: the rationale cites a PRD/UI Spec section or scope-definition document → missing citation → `important` issue (category: `completeness`)
 - **Cross-Layer Assumptions check** (cross-layer flow only): when `prior_layer_verification` was provided to the designer and the Design Doc relies on prior-layer contracts, verify the "## Cross-Layer Assumptions" section exists and each entry follows the format `- [claim]: [justification]; verify at [target]`. Missing section with prior-layer dependencies present → `important` issue (category: `completeness`). Entry missing the `verify at` clause → `important` issue (category: `completeness`)
+- **Minimal Surface Alternatives check**:
+  - *Scope trigger*: applies when the Design Doc introduces in-scope elements. The in-scope set is context-specific:
+    - **Backend designs**: persistent state; public-contract elements (exported types, API request/response fields, exported function signatures, schema definitions); cross-boundary fields (passed between modules/services); behavioral modes/flags; reusable abstractions.
+    - **Frontend designs**: persistent client/server state; props or fields crossing ownership boundaries (public API props of an exported reusable component, Context values, state lifted across ownership boundaries to a shared ancestor); behavioral modes/variants that change observable behavior; reusable component splits (sub-components, custom hooks, or utilities extracted for multi-parent use).
+    - Ordinary parent→child prop passes that stay within one ownership boundary, local `useState`/`useReducer` confined to a single component, internal fields used only within one module, and transient state are out of scope and do not require an entry.
+  - *Section existence*: trigger fires but the "Minimal Surface Alternatives" section is absent or empty → `critical` issue (category: `completeness`).
+  - *Per-element entry*:
+    - (1) Step 1 lists at least one AC reference (AC ID, AC heading, EARS clause, or constraint ID) from the Design Doc or referenced PRD/UI Spec — missing linkage, or list contains only speculative requirements ("future", "might want") → `critical` issue (category: `compliance`).
+    - (2) Steps 2–3 include at least one subtractive alternative (derive / compute on demand / keep at caller / reuse existing / introduce no new state) — missing subtractive alternative → `critical` issue (category: `compliance`).
+    - (3) Step 4 rationale either selects the smallest alternative or names a current requirement smaller alternatives fail to satisfy — "useful" / "future-ready" / "convenient" / "users might want" used as primary rationale → `critical` issue (category: `compliance`).
+    - (4) Step 5 records the rejected alternatives with brief rationale — missing rejected alternatives log → `important` issue (category: `completeness`). Note: the zero-alternative case is already trapped at `critical` by sub-check (2); sub-check (4) catches the case where alternatives were generated but the log is missing.
 
 **Perspective-specific Mode**:
 - Implement review based on specified mode and focus
@@ -278,6 +290,7 @@ Include in output when `prior_context_count > 0`:
 - [ ] Output comparison defined when design replaces/modifies existing behavior (covers all transformation pipeline steps)
 - [ ] Fact Disposition Table covers every `codebase_analysis.focusAreas` entry with verbatim `fact_id` / `evidence` carry-through and rationale-disposition semantic alignment (when `codebase_analysis` is provided)
 - [ ] Cross-Layer Assumptions section present when `prior_layer_verification` shows unresolved contracts the design depends on
+- [ ] Minimal Surface Alternatives section covers every new in-scope element with the 5-step output; Step 4 rationale either names the smallest alternative as selected, or names the current requirement smaller alternatives fail to cover (when the design introduces any in-scope elements)
 
 ## Review Criteria (for Comprehensive Mode)
 

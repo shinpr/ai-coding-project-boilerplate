@@ -47,6 +47,7 @@ The subsections below are not parallel mandates; they form four serial gates. Co
 **Gate 1 — Existing State Analysis** (depends on Gate 0):
 - Existing Code Investigation
 - Fact Disposition (when Codebase Analysis input is provided)
+- Minimal Surface Alternatives (when introducing persistent client/server state, props or fields crossing ownership boundaries — public API props of exported reusable components, Context values, or state lifted across ownership boundaries — behavioral modes/variants that change observable behavior, or reusable component splits)
 
 **Gate 2 — Design Decisions** (depends on Gate 1):
 - Implementation Approach Decision
@@ -133,6 +134,41 @@ For every entry in `Codebase Analysis.focusAreas`, produce one row in the Design
 **Cross-Layer Assumptions**: When this Design Doc depends on contracts from a prior-layer Design Doc whose claims remain unverified (see Prior-Layer Verification input), list each such claim in a "## Cross-Layer Assumptions" section with justification (why the dependency is required) and propagate it as a verification target for downstream review. Use the format: `- [claim]: [justification]; verify at [step or artifact]`.
 
 The Fact Disposition Table is the primary mechanism that binds **structural existing-behavior facts** to the design. Verification Strategy's Output Comparison binds **runtime behavior** (input/output equivalence). Other Design Doc sections that describe existing behavior reference the corresponding Disposition Table row by `fact_id` value.
+
+### Minimal Surface Alternatives [Gate 1 — Required when introducing persistent client/server state, props or fields crossing ownership boundaries (public API props of exported reusable components, Context values, or state lifted across ownership boundaries), behavioral modes/variants that change observable behavior, or reusable component splits]
+
+Applies to each maintenance-surface-bearing element the design introduces. Goal: select the smallest design surface that covers the same current requirements. Reference: `coding-standards` skill, "Minimum Surface for Required Coverage".
+
+**In scope**: persistent state (localStorage/sessionStorage/IndexedDB/cookies/server-saved fields — state that survives reload, navigation, or session, or is saved outside component memory); props or fields crossing ownership boundaries (public API props of an exported reusable component, Context values, state lifted across ownership boundaries to a shared ancestor); behavioral modes/variants (component variants, mode props, conditional rendering modes that change observable behavior); reusable component splits (sub-components, custom hooks, or utilities extracted for use by multiple parents).
+
+**Out of scope**: local `useState` / `useReducer` confined to a single component's internal logic (lost on reload); private hooks used by one component; ordinary parent→child prop passes that stay within one ownership boundary; test fixture or mock props; transient render-only state; internal helper functions without external observers.
+
+**Precedence**: when an element matches both an in-scope and an out-of-scope condition (e.g., local `useState` that is now lifted to a Context so additional sibling subtrees can read it — the local-state aspect would be out of scope but the Context aspect is in scope), the in-scope classification wins and the gate applies.
+
+Execute the 5 steps below for each in-scope element. Record the result in the Design Doc's "Minimal Surface Alternatives" section (see design-template.md).
+
+1. **Fix Requirements**
+   - List the current user-visible requirements / ACs / accepted technical constraints (audit, accessibility, performance, security, compatibility) this element serves. Reference each by AC ID, AC heading, EARS clause, or constraint ID from the Design Doc or referenced PRD/UI Spec.
+   - Eligibility: only requirements / constraints inside the current Design Doc's adopted scope qualify.
+
+2. **Diverge** (generate alternatives)
+   - Produce at least 2 alternative realizations covering the same fixed requirements.
+   - At least one alternative is subtractive. Subtractive options are drawn from: derive from existing props/state, lift state to existing parent, reuse existing component or variant, keep at caller / URL / server response, introduce no new mode.
+
+3. **Compare** (record alternatives in a table)
+
+   | Alternative | Current requirements covered (AC reference) | New persistent state (client or server, count) | New props / modes / variants (count) | Crosses component boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
+   |---|---|---|---|---|---|---|
+
+   Resolution priority (later columns are tiebreakers when earlier are equal): (1) new persistent state (lower=smaller); (2) crosses component boundary (no=smaller); (3) new props/modes/variants (lower=smaller); (4) breaking change or migration (no=smaller); (5) subjective cost notes.
+
+4. **Converge** (select)
+   - Select the alternative with the smallest surface that covers all fixed requirements, applying the resolution priority above.
+   - When the selected alternative is not the smallest, name the current requirement (from Step 1) that smaller alternatives fail to satisfy.
+   - "Reusable" / "future-ready" / "convenient for implementation" / "users might want" belong in the Subjective cost notes column only (tiebreakers).
+
+5. **Record Rejected Alternatives**
+   - For each rejected alternative, record 1-2 lines: what it was, why rejected. Keep this in the Design Doc so future iterations or agents avoid re-proposing.
 
 ### Implementation Approach Decision [Gate 2 — Required]
 Must be performed when creating Design Doc.
@@ -314,8 +350,6 @@ Non-compliant: class components, `any`, untyped responses without guards, secret
 - [ ] Comparison matrix completeness (including performance impact)
 
 ### Design Doc Checklist
-
-Items below are output-content checks performed in addition to (not duplicating) the Gate Ordering [BLOCKING] gates. The gates cover whether each subsection ran; the checklist below covers content quality of the produced output.
 
 **All modes**:
 - [ ] Component hierarchy and data flow clearly expressed in diagrams

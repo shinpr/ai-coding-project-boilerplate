@@ -185,6 +185,49 @@ Evaluate existing structures: semantic fit, responsibility fit, lifecycle fit, b
 
 **Decision**: [reuse / extend / new] — [rationale]
 
+### Minimal Surface Alternatives (When Introducing Maintenance-Surface Elements)
+
+One entry per new in-scope element (persistent state / public-contract element or cross-boundary field or prop / behavioral mode/flag/variant / reusable abstraction or component split). Records the 5-step output produced by the invoking designer agent. Reference: `coding-standards` skill, "Minimum Surface for Required Coverage".
+
+#### Element 1: [name of the new element]
+
+**Step 1 — Fixed Requirements**
+- [AC reference — AC ID, AC heading, EARS clause, or constraint ID]: [requirement / constraint text]
+- [AC reference]: [requirement / constraint text]
+
+References may point to the Design Doc, referenced PRD, or referenced UI Spec.
+
+**Steps 2–3 — Alternatives Compared**
+
+Adapt the column names below to the design context: backend Design Docs use "Crosses module/service boundary" and "New concept / mode / flag"; frontend Design Docs use "Crosses component boundary" and "New props / modes / variants" (and add the "client or server" qualifier to the persistent-state column).
+
+| Alternative | Current requirements covered (AC reference) | New persistent state introduced (count) | New concept / mode / flag / prop / variant (count) | Crosses module/service or component boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
+|---|---|---|---|---|---|---|
+| [The added element as proposed] | | | | | | |
+| [Subtractive alternative — derive / compute on demand / keep at caller / reuse existing / introduce no new state] | | | | | | |
+| [Optional third alternative] | | | | | | |
+
+Subjective cost notes accepts: maintainability concerns, naming clarity, perceived implementation effort, future-readiness sentiment, and similar judgment-level remarks.
+
+**Resolution priority for selecting "smallest"** (later columns are tiebreakers when earlier are equal):
+1. New persistent state introduced (lower = smaller)
+2. Crosses module/service or component boundary (no = smaller)
+3. New concept / mode / flag / prop / variant (lower = smaller)
+4. Breaking change or migration required (no = smaller)
+5. Subjective cost notes
+
+**Step 4 — Selected Alternative and Rationale**
+- **Selected**: [alternative name]
+- **Rationale**:
+  - When selected = smallest alternative considered: state "smallest alternative considered; no further reduction available"
+  - When selected > smallest: name the current requirement(s) from Step 1 that smaller alternatives fail to satisfy
+
+**Step 5 — Rejected Alternatives Log**
+- [Alternative name]: [1-2 lines on what it was and why rejected]
+- [Alternative name]: [1-2 lines on what it was and why rejected]
+
+Repeat the Element block above for each additional in-scope element. Mark the whole section N/A with brief rationale when the design introduces no in-scope elements.
+
 ### Type Definitions
 
 ```typescript
@@ -350,6 +393,16 @@ Mark as N/A with brief rationale when the design introduces entirely new behavio
 - **Advantages**: [Advantages]
 - **Disadvantages**: [Disadvantages]
 - **Reason for Rejection**: [Why it wasn't adopted]
+
+## Future Extensibility
+
+This section records capabilities **excluded** from the current design surface. Limit entries to capabilities tied to a current requirement, a current consumer, or a documented constraint; route purely speculative future plans into a separate proposal document.
+
+Distinguish from "Minimal Surface Alternatives → Step 5 (Rejected Alternatives)": Step 5 records element-level alternatives that were compared and rejected within a single in-scope element; this section records capability-level items not bound to a single element (broader scope considered but excluded).
+
+- **Deferred possibilities**: [Capabilities considered during design and explicitly excluded from the current design surface. Each entry names the current requirement it would have served]
+- **Intentional limitations**: [What was deliberately kept small and why]
+- **Extension points (existing, with current consumers)**: [Interfaces or hooks already in use by named current consumers. Each entry names a current consumer]
 
 ## Risks and Mitigation
 
