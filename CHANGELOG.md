@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.0] - 2026-05-22
+
+### Added
+
+- **ui-analyzer agent** (agents) — Read-only UI fact-gathering agent for frontend design and adjustment preparation. Reads the `project-context` skill's External Resources section, fetches external sources (design origin, design system, guidelines, visual verification environment) via MCP or URL, and analyzes the existing UI codebase across twelve steps (component structure, props/variant patterns, CSS layout, state × display matrix, display conditions, i18n, accessibility, generated-artifact readiness, candidate write set). Outputs a single consolidated UI context JSON consumed by `ui-spec-designer` and `technical-designer-frontend`; design decisions and code modifications are out of scope. Registered in `subagents-orchestration-guide` and wired into the front-design recipe as a dedicated UI fact-gathering step
+- **ADR binding decision propagation** (agents, commands, skills) — Implementation-binding ADR decisions now flow end to end. `work-planner` resolves referenced ADRs and builds an ADR Bindings table mapping each binding decision (classified on one of five axes: placement, dependency direction, contract/schema shape, data flow, persistence) to the tasks it constrains. `task-decomposer` propagates matching rows into each task file's Binding Decisions section. `task-executor` and `task-executor-frontend` run a Binding Decision Check before the TDD cycle and re-evaluate it at the Exit Gate, escalating `binding_decision_violation` when a planned or final implementation violates a decision. plan-template and task-template carry the new sections
+- **Standards Identification for frontend technical design** (agents) — `technical-designer-frontend` gains a Gate 0 Standards Identification subsection (project standards classified explicit/implicit, quality assurance mechanisms classified adopted/noted), aligning the frontend designer with the backend `technical-designer`
+- **Completion Report Contract for build recipes** (commands) — build / front-build replace the prose Output Example with an explicit completion-report contract enumerating required fields (task decomposition status, implemented task count, quality check result, commit count, cleanup result, escalation/blocking summary)
+
+### Changed
+
+- **Codebase-first linear design recipes** (commands) — design and front-design are reworked into a fixed linear flow with no orchestrator branching. The flow starts from a lightweight scope bootstrap (locating seed files) → `codebase-analyzer` → user scope confirmation → design document creation → verification chain. When the design involves an architecture decision, an ADR is created as a prerequisite to the Design Doc rather than a substitute for it; the Design Doc and the full verification chain (`code-verifier` → `document-reviewer` → `design-sync`) always run. `design-sync` runs before the final user approval, consistent with the Workflow Overview
+- **Design-to-Plan Traceability: Design Doc column** (skills) — The traceability table gains a `Design Doc` column so downstream task generation resolves the source design document unambiguously; `task-decomposer` propagates the resolved (Design Doc, DD Section) pair into task Investigation Targets
+- **Prompt context trimming for reviewer and designer agents** (agents) — Redundant or duplicated sections removed from code-reviewer, code-verifier, document-reviewer, technical-designer, and technical-designer-frontend without behavior loss. document-reviewer's Step 5 Self-Validation is upgraded to a blocking gate that re-verifies Gate 0 / Gate 1 coverage before output
+
 ## [1.22.1] - 2026-05-16
 
 ### Added
