@@ -167,6 +167,18 @@ This gate runs only when the task file's "Investigation Targets" section lists a
 2. **Investigate existing implementations**: Search for similar functions in same domain/responsibility
 3. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
+#### Binding Decision Check (Required when the task file has a Binding Decisions section)
+
+This check runs after Pre-implementation Verification and before the TDD cycle. It applies only when the task file contains a Binding Decisions section with one or more rows.
+
+1. Confirm each Source in the Binding Decisions table has been read (Sources are also listed in Investigation Targets and were read at Step 2)
+2. Record the planned implementation approach in Investigation Notes — one sentence per distinct `Axis` value present in the task's Binding Decisions table. When multiple rows share the same `Axis` value, group them and record one sentence covering the group
+3. Evaluate each row's Compliance Check against the planned approach. Record the result for each row as `Y`, `N`, or `Unknown` in Investigation Notes, with a one-line rationale. Use `Unknown` only when the planned approach has no decision yet on the predicate's subject; if the planning is complete, the answer is `Y` or `N`
+4. Per row, branch on the evaluation:
+   - `Y`: proceed
+   - `N`: stop implementation and produce the final response with `status: "escalation_needed"` and `escalation_type: "binding_decision_violation"` with `phase: "pre_implementation"` (see the Escalation Response table). `N` represents a planned violation
+   - `Unknown`: mark the row as deferred in Investigation Notes and proceed to the TDD cycle. The Exit Gate re-evaluates every row (including Unknown rows deferred from this step) against the final implementation and escalates if any remains `N` or `Unknown` at that point
+
 #### Reference Representativeness (Applied During Implementation)
 
 A per-adoption check applied each time a pattern or dependency is referenced. Apply coding-standards "Reference Representativeness" at the point of adoption:
@@ -282,6 +294,7 @@ Per-type contract (set `escalation_type`, `reason`, type-specific fields, and `s
 | `similar_function_found` | "Similar function discovered" | `similar_functions[{file_path, function_name, similarity_reason, code_snippet, technical_debt_assessment: high\|medium\|low\|unknown}]`; `search_details: {keywords_used[], files_searched, matches_found}`; `claude_recommendation` | "Extend existing" / "Refactor existing then use" / "New as technical debt (create ADR)" / "New with differentiation" |
 | `investigation_target_not_found` | "Investigation target not found" | `missingTargets[{path, searchHint, searchAttempts[]}]` | "Provide correct path" / "Remove this Investigation Target" / "Update task file with current paths" |
 | `dependency_version_uncertain` | "Dependency version uncertain" | `dependency: {name, versionsFound[], filesChecked[], ambiguityReason}` | "Use majority version X" / "Use version Y with reason" / "Research latest stable" |
+| `binding_decision_violation` | "Binding decision violation" | `phase: 'pre_implementation' \| 'exit_gate'`; `plannedApproach`; `failures[{source, axis, decision, complianceCheck, evaluation: 'N' \| 'Unknown', rationale}]` | "Adjust the implementation plan to satisfy the binding decision" / "Update the ADR (then update the work plan's ADR Bindings and this task's Binding Decisions)" / "Provide additional context that resolves the Unknown evaluation" |
 | `out_of_scope_file` | "Out of scope file" | `details: {file_path, allowed_list[], modification_reason}` | "Add to Target files and retry" / "Split into separate task" / "Reconsider approach" |
 | `task_file_not_found` / `task_already_completed` / `target_files_missing` | "Task selection precondition failed" | `details: {task_file_path, failure_reason: 'file does not exist' \| 'file unreadable' \| 'all checkboxes already [x]' \| 'Target Files section missing or empty'}` | "Provide correct task file path" / "Re-decompose the work plan" / "Mark complete and skip" |
 
@@ -310,6 +323,7 @@ This gate runs immediately before producing the final JSON response.
 ☐ Fresh Mode: all task checkboxes completed with evidence (or `escalation_needed` triggered earlier)
 ☐ Fix Mode: every `requiredFixes` / `incompleteImplementations` item is addressed in `changeSummary` or escalated
 ☐ Implementation is consistent with the Investigation Notes recorded at Step 2 (when Investigation Targets were present)
+☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section). Re-evaluate here even when the pre-implementation check passed, because the implementation may have diverged from the planned approach
 ☐ Final response is a single JSON with `status: "completed"` or `status: "escalation_needed"` and matches the schema in Structured Response Specification
 
-**ENFORCEMENT**: When any gate item is unchecked, produce the final response in the JSON format defined in Structured Response Specification with `status: "escalation_needed"`.
+**ENFORCEMENT**: When any gate item is unchecked, produce the final response in the JSON format defined in Structured Response Specification with `status: "escalation_needed"`. When the unchecked item is the Binding Decisions Compliance Check, use `escalation_type: "binding_decision_violation"` with `phase: "exit_gate"`.

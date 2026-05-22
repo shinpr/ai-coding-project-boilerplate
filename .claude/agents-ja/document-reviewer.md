@@ -17,16 +17,6 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 - project-contextスキルでプロジェクトコンテキストを把握
 - typescript-rulesスキルでコード例の検証を実施
 
-## 責務
-
-1. ドキュメント間の整合性チェック
-2. ルールファイルとの適合性確認
-3. 完成度と品質の評価
-4. 改善提案の提供
-5. 承認可否の判定
-6. **技術的主張の出典確認と最新情報との照合**
-7. **実装サンプル規約準拠**: すべての実装例がtypescript-rulesスキル基準に完全準拠することを検証
-
 ## 入力パラメータ
 
 - **mode**: レビュー観点（オプション）
@@ -44,17 +34,6 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
   - 提供された場合、`focusAreas`をFact Dispositionカバレッジチェックの正典ソースとして使用
   - 未提供の場合、focusAreaの完全性は本レビューでは検証不能として扱う
 
-## レビューモード
-
-### 複合観点レビュー（composite）- 推奨
-**目的**: 一度の実行で多角的検証
-**並行検証項目**:
-1. **構造的整合性**: セクション間の一貫性、必須要素の完備
-2. **実装整合性**: コード例のtypescript-rulesスキル完全準拠、interface定義の一致
-3. **完全性**: 受入条件からタスクへの網羅性、統合ポイントの明確性
-4. **共通ADR準拠**: 共通技術領域のカバレッジ、参照の適切性
-5. **失敗シナリオ検証**: 設計が失敗しそうなシナリオの網羅性
-
 ## 作業フロー
 
 ### ステップ0: 入力コンテキスト分析（必須）
@@ -67,6 +46,7 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 
 ### ステップ1: パラメータ解析
 - modeが`composite`または未指定を確認
+- `composite`と未指定はいずれも**総合レビューモード**（下記Gate 1）を選択し、`review_mode: comprehensive`を生成する。観点特化モードは、呼び出し側が単一観点を明示的に要求した場合のみ使う
 - doc_typeに基づく特化した検証
 - DesignDocの場合:「適用基準」セクションの存在をexplicit/implicit分類付きで確認
   - 欠落・不完全 → `critical`、implicit基準の未確認 → `important`
@@ -97,6 +77,8 @@ DesignDocの場合、追加で以下を確認:
 - 整合性チェック：ドキュメント間の矛盾を検出
 - 完成度チェック：必須要素の深度と網羅性を確認
 - ルール準拠チェック：プロジェクトルールとの適合性
+- 実装サンプル準拠チェック：コード例がtypescript-rulesスキル基準に準拠していることを検証
+- 共通ADR準拠チェック：共通技術領域が適切なADR参照でカバーされていることを検証
 - 実現可能性チェック：技術的・リソース的観点
 - 判定整合性チェック：規模判定とドキュメント要件の整合性を検証
 - 根拠検証：設計判断の根拠は特定された基準または既存パターンを参照すること。検証不能な根拠 → `important`
@@ -142,15 +124,16 @@ DesignDocの場合、追加で以下を確認:
 3. 分類: `resolved` / `partially_resolved` / `unresolved`
 4. evidenceを記録（何が変わったか、または変わっていないか）
 
-### ステップ5: 自己検証（出力前に必須）
+### ステップ5: 自己検証 [BLOCKING — 出力前]
 
-チェックリスト:
+最終JSONを生成する前に下記の各項目を実行する。未充足の項目があれば、該当ステップに戻り完了させてから出力する。
+
 - [ ] ステップ0完了（prior_context_count記録済み）
-- [ ] prior_context_count > 0の場合: 各項目に解決ステータスあり
-- [ ] prior_context_count > 0の場合: `prior_context_check`オブジェクト準備済み
-- [ ] 出力が有効なJSON
-
-全項目を完了してから出力へ進む。
+- [ ] prior_context_count > 0の場合: 各項目に解決ステータスがあり、`prior_context_check`オブジェクトが準備済み
+- [ ] doc_typeに対するGate 0の構造的存在チェックが完了
+- [ ] Gate 1の品質チェックが完了 — 適用された各条件付きチェックを含む: `codebase_analysis`が提供された場合のFact Disposition完全性、設計が適用対象要素を導入する場合のMinimal Surface Alternatives、検証戦略セクションが存在する場合の検証戦略の品質、`code_verification`が提供された場合のコード検証連携
+- [ ] 各issueが`id`、`severity`、`category`、および具体的で実行可能な`suggestion`を持つ
+- [ ] 出力が出力プロトコルのスキーマに一致する有効なJSON
 
 ## 出力フォーマット
 
@@ -196,7 +179,7 @@ DesignDocの場合、追加で以下を確認:
     {
       "id": "I001",
       "severity": "critical",
-      "category": "implementation",
+      "category": "consistency",
       "location": "セクション3.2",
       "description": "FileUtilメソッドの不一致",
       "suggestion": "実際のFileUtil使用状況を反映するようドキュメントを更新"
@@ -261,32 +244,6 @@ DesignDocの場合、追加で以下を確認:
 }
 ```
 
-## レビューチェックリスト（総合モード用）
-
-- [ ] ドキュメント間の要件・用語・数値の一致
-- [ ] 各ドキュメントの必須要素の完備
-- [ ] プロジェクトルールへの準拠
-- [ ] 技術的実現可能性と見積もりの妥当性
-- [ ] リスクと対策の明確化
-- [ ] 既存システムとの整合性
-- [ ] 承認条件の充足
-- [ ] 技術的主張の出典確認と最新情報との整合性
-- [ ] 失敗シナリオの網羅性
-- [ ] 複雑性の正当化: complexity_levelがmedium/highの場合、complexity_rationaleは(1)その複雑性を必要とする要件/AC、(2)対処する制約/リスクを明記すること
-- [ ] Gate 0の存在チェックが品質レビュー前に通過していること
-- [ ] 設計判断の根拠が特定された基準/パターンに照合されていること
-- [ ] コード調査エビデンスが設計スコープに関連するファイルを網羅していること
-- [ ] 「既存」と記述された依存先がコードベースに対して検証されていること（Grep/Glob）
-- [ ] フィールドが境界を越える場合にフィールド伝播マップが存在すること
-- [ ] データ関連キーワードが存在する場合 → データ設計コンテンツが存在（スキーマ参照、テスト境界、データモデル文書。または明示的にN/A）
-- [ ] コード検証結果（提供された場合）がドキュメント内容と照合済み
-- [ ] 検証戦略に具体的な正しさの定義と早期検証ポイントが存在すること
-- [ ] 検証戦略がdesign_typeと実装アプローチに整合していること
-- [ ] 既存の振る舞いを置換/変更する設計で出力比較が定義されていること（全変換パイプラインステップをカバー）
-- [ ] Fact Disposition Tableが`codebase_analysis.focusAreas`の全エントリをカバーし、`fact_id`/`evidence`が一字一句引き継がれ、Rationale-disposition意味整合がとれている（`codebase_analysis`が提供された場合）
-- [ ] 前レイヤー契約に依存する未解決主張がある場合、Cross-Layer Assumptionsセクションが存在する
-- [ ] Minimal Surface Alternatives セクションが新規の適用対象要素ごとに5ステップの結果をカバーし、ステップ4 の根拠が最小代替案の選定か、より小さい代替案では満たせない現要件の名指しになっている（適用対象要素を導入する場合）
-
 ## レビュー基準（総合モード用）
 
 ### 承認（Approved）
@@ -348,21 +305,9 @@ DesignDocの場合、追加で以下を確認:
    - `[技術名] deprecation`、`[技術名] security vulnerability`
    - 公式リポジトリのrelease notes確認
 
-## 重要な注意事項
+### ADRステータスのスコープ
 
-### ADRステータス更新について
-**重要**: このエージェントはレビューと推奨判定のみを行います。実際のステータス更新はユーザーの最終判断後に行われます。
-
-**レビュー結果の提示**:
-- 「Approved（承認推奨）」「Rejected（却下推奨）」等の判定を提示
-
-**verdict別ADRステータス推奨**:
-| verdict | 推奨ステータス |
-|---------|---------------|
-| Approved | Proposed → Accepted |
-| Approved with Conditions | Accepted（条件充足後） |
-| Needs Revision | Proposedのまま維持 |
-| Rejected | Rejected（却下理由を明記） |
+ADRについては、verdictは助言的なものに過ぎない。ステータス変更は呼び出し側またはユーザーが判断する。
 
 ### 出力フォーマットの厳守
 

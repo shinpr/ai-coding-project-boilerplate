@@ -17,8 +17,17 @@ Metadata:
 実装開始前に読むべきファイル（ファイルパス、任意でサーチヒント付き）:
 - [例: src/orders/checkout (processOrder関数) — タスクの性質に基づきタスク分解時に決定]
 
+## Binding Decisions
+（作業計画書のADR Bindings表がこのタスクをカバーする場合に本セクションを記載する。それ以外は省略する。）
+
+各行は、このタスクの実装が準拠すべきADR決定である。
+
+| Source | Axis | Decision | Compliance Check |
+|---|---|---|---|
+| [docs/adr/ADR-XXXX.md (§ <Source Section>) — 対応する作業計画書の行のセクション名（`Decision` または `Implementation Guidance`）に置き換える] | [作業計画書のADR Bindings行から逐語コピーしたAxis値] | [作業計画書のADR Bindings行からコピーしたバインディング決定] | [計画中/最終の実装が決定を満たすかをY/Nで判定できる肯定述語] |
+
 ## Investigation Notes
-（実装観察事項を実装開始前にここへ追記する。）
+（実装観察事項を実装開始前にここへ追記する。Binding Decisionsがある場合、計画した実装アプローチと各Compliance Check結果をここに記録する。）
 
 ## Implementation Steps (TDD: Red-Green-Refactor)
 ### 1. Red Phase
@@ -51,6 +60,7 @@ Metadata:
 - [ ] 追加した全テストがパス
 - [ ] Operation Verification Methods に基づく動作確認完了
 - [ ] 成果物作成完了（調査・設計タスクの場合）
+- [ ] （Binding Decisionsがある場合）全てのCompliance Checkが最終実装に対して`Y`と評価され、根拠（file:line、テスト結果、またはコマンド出力）がInvestigation Notesに記録されている
 
 ## Notes
 - 影響範囲: [変更が波及する可能性のある領域]
