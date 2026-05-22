@@ -120,6 +120,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
    | パッケージ間境界の実装 | 作業計画書のConnection Mapに記載された境界の両側（オーナーモジュールと期待されるシグナル）、両者間のコントラクト定義 |
    | バグ修正 / リファクタリング | 影響を受けるコードパス、関連テストカバレッジ、エラー再現コンテキスト |
    | 振る舞いの置換・リライト | 置換対象の既存実装、その観察可能な出力、Design Docの検証戦略セクション |
+   | ADRに拘束されるタスク（作業計画書のADR Bindings表がこのタスクをカバーする） | このタスクをカバーする各バインディング行について、行の `Source Section` 値に対応するセクションヒント（例: `(§ Decision)` または `(§ Implementation Guidance)`）を付したADRファイル |
 
    **原則**:
    - 全タスクに最低1つの Investigation Target を設定する（Design Docのみでも可）
@@ -129,6 +130,8 @@ implementation-approachスキルで決定された実装戦略パターンに基
    - タスクにテストスケルトンが存在する場合は必ず Investigation Targets に含める
    - 作業計画書に「UI Specコンポーネント → タスクマッピング」表が含まれる場合、該当行のコンポーネントセクションをそのタスクに伝播する（後述の「UI Spec伝播」参照）
    - 作業計画書にConnection Mapが含まれる場合、このタスクの対象ファイルに関連する境界行を伝播する（後述の「Connection Map伝播」参照）
+   - 作業計画書にこのタスクをカバーするADR Bindings表が含まれる場合、該当行を伝播する（後述の「ADR Binding伝播」参照）
+   - 作業計画書に設計-計画トレーサビリティ表が含まれる場合、該当するDDセクション行を伝播する（後述の「設計トレーサビリティ伝播」参照）
 
 7. **実装方針の一貫性**
    実装サンプルを含める場合は、作業計画書の元となったDesign Docの実装方針に完全準拠すること
@@ -171,6 +174,34 @@ implementation-approachスキルで決定された実装戦略パターンに基
 2. **Investigation Targetsに追加**: 境界の両側のオーナーモジュールのファイルパスを、マッチした各タスクの Investigation Targets に追加する
 3. **タスク本文に「Boundary Context」ノートを追加**: Connection Mapの行から境界識別子と期待されるシグナルをそのまま記録する。executorは、実装が生み出すべき観測可能な証拠を把握できる。
 4. **未提供の場合はスキップ**: 作業計画書にConnection Mapがない場合は、本伝播ステップをスキップする
+
+## ADR Binding伝播
+
+作業計画書にADR Bindings表が含まれる場合、各バインディング決定を、それがカバーするタスクに伝播する:
+
+1. **タスクIDで照合**: ADR Bindings表の各行について、「Covered By Task(s)」列に記載されたタスクを特定する
+2. **Investigation Targetsに追加**: 行の `Source Section` 値に対応するセクションヒント（例: `docs/adr/ADR-0042.md (§ Decision)` または `docs/adr/ADR-0042.md (§ Implementation Guidance)`）を付したADRファイルパスを、マッチした各タスクに追加する
+3. **タスクにBinding Decisions表を追加**: マッチした各行について、タスクのBinding Decisions表に1行追加する:
+   - **Source**: 行の `Source Section` 値に対応するセクションヒントを付したADRファイルパス
+   - **Axis**: 作業計画書の行から `Axis` 値を逐語コピーする
+   - **Decision**: 作業計画書の行からバインディング決定文を逐語コピーする
+   - **Compliance Check**: 実装が決定を満たすことを述べる、Y/Nで回答可能な肯定述語を書く。バインディング軸ごとの例:
+     - `placement`: 「認証エントリポイントが `src/middleware/**` にある」
+     - `dependency_direction`: 「ドメイン層は `src/domain/**` と `src/shared/**` からのみインポートする」
+     - `contract_schema`: 「APIレスポンスが `ResponseEnvelope<T>` スキーマに一致する」
+     - `data_flow`: 「セッショントークンはRedisクライアント経由でのみ書き込まれる」
+     - `persistence`: 「ユーザーレコードは `UsersRepository` インターフェース経由でのみ永続化される」
+
+     決定がfile:lineやコマンドだけでは検証できない場合、述語は論理的判断に依拠してよいが、Y/Nで回答可能でなければならない
+4. **提供時のみ適用**: この伝播は作業計画書にADR Bindings表が含まれる場合のみ実行する
+
+## 設計トレーサビリティ伝播
+
+作業計画書に設計-計画トレーサビリティ表が含まれる場合、該当するDDセクションを各タスクに伝播する:
+
+1. 各行について、`[Design Doc値] (§ [DDセクション値])` の形式で、(`Design Doc`, `DD Section`) のペアを「カバーするタスク」に記載された全タスクのInvestigation Targetとして追加する
+2. 同一タスクで複数行に同じ (Design Doc, DD Section) ペアが現れる場合は重複排除する
+3. 作業計画書に設計-計画トレーサビリティ表が含まれる場合のみ適用する
 
 ## 品質保証メカニズムの伝播
 

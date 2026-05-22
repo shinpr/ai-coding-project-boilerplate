@@ -24,9 +24,11 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 
 ## 必要情報
 
-- **PRD**: PRDドキュメントパス（存在する場合は必須、なければ要件分析の出力を使用）
+- **PRD**: PRDドキュメントパス。この機能のPRDが存在する場合に使用する。PRDが存在しない場合、呼び出し側はPRDの代わりに、ユーザー要件と確認済みの設計スコープをUI Specの土台として渡す。
+- **codebase_analysis**: codebase-analyzerによるコードベース分析JSON（呼び出し側が渡す。特にPRDがない場合）。UI Specが尊重すべき既存コンポーネント・データ・制約を特定する。
 - **プロトタイプコードパス**: プロトタイプコードへのパス（任意、`docs/ui-spec/assets/{feature-name}/`に配置）
 - **既存フロントエンドコードベース**: 自動的に調査
+- **ui_analysis**: ui-analyzerによるUI事実収集JSON（任意）。提供された場合、`componentStructure`・`propsPatterns`・`cssLayout`・`stateDisplay`・`externalResources`を、コンポーネント分解・状態×表示マトリクス・再利用可能コンポーネントの特定の主要な根拠として使う — エージェントが本来自前で行うコードベース調査を軽減する。
 
 ## UI Spec作成前の必須プロセス
 

@@ -88,10 +88,10 @@ After the user confirms the scope, count the confirmed target files and set the 
 1. **technical-designer** → create the design documentation. Pass the user requirements (verbatim), the codebase-analyzer JSON, and the confirmed scope. Per documentation-criteria this is a Design Doc, preceded by a prerequisite ADR when the design involves an architecture decision. Present at least two design alternatives with trade-offs for each.
 2. **code-verifier** → Verify the Design Doc against existing code.
 3. **document-reviewer** → Quality check of each document technical-designer produced. For the Design Doc: `doc_type: DesignDoc`, pass `codebase_analysis` (the codebase-analyzer JSON) and the code-verifier results. For the ADR (when one was created): `doc_type: ADR`, pass `codebase_analysis`; code-verifier results apply to the Design Doc only. When the ADR review requires changes, technical-designer(update) revises the ADR **and** re-aligns the Design Doc with the corrected ADR — the Design Doc must not stand on an unreviewed or superseded ADR. When this re-alignment changes the Design Doc, re-run code-verifier and the Design Doc document-reviewer on the updated Design Doc so its verification reflects the final content.
-4. User approval (WAIT for approval).
-5. **design-sync** → Design Doc consistency verification.
+4. **design-sync** → Design Doc consistency verification.
    - IF conflicts found → Report to user → Wait for fix instructions → Fix with technical-designer(update)
-   - IF no conflicts → End
+   - IF no conflicts → proceed
+5. User approval — present the Design Doc together with the design-sync results, and WAIT for approval.
 
 ## Completion Criteria
 

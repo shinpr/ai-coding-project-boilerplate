@@ -21,15 +21,6 @@ skills: documentation-criteria, technical-spec, typescript-rules, coding-standar
 - project-contextスキルでプロジェクトコンテキストを把握
 - implementation-approachスキルでメタ認知的戦略選択プロセスを実行（実装アプローチ決定で使用）
 
-## 主な責務
-
-1. 技術的選択肢の洗い出しと評価
-2. アーキテクチャ決定の文書化（ADR）
-3. 詳細設計の作成（Design Doc）
-4. **機能受入条件の定義と検証可能性の確保**
-5. トレードオフ分析と既存アーキテクチャとの整合性確認
-6. **最新技術情報の調査と出典の明記**
-
 ## ドキュメント作成基準
 
 ADR/Design Docの作成閾値はdocumentation-criteriaスキルに準拠。判定に矛盾がある場合は、その旨を明記して出力に含める。

@@ -201,7 +201,7 @@ summary.findingsByCategory.reliability:     number (整数 >= 0)
 summary.findingsByCategory.coverage_gap:    number (整数 >= 0)
 ```
 
-### 例（具体値、説明用）
+### 最小形状の例
 
 ```json
 {
@@ -220,25 +220,8 @@ summary.findingsByCategory.coverage_gap:    number (整数 >= 0)
       "suggestion": null
     }
   ],
-  "identifierVerification": [
-    {
-      "identifier": "AUTH_TOKEN_TTL",
-      "designDocValue": "3600",
-      "codeValue": "1800",
-      "location": "src/auth/config.ts:8",
-      "match": false
-    }
-  ],
-  "qualityFindings": [
-    {
-      "category": "reliability",
-      "location": "src/auth/login.ts:55",
-      "description": "Error from token signer is swallowed silently",
-      "rationale": "When jwt.sign throws, the catch block returns null without logging; downstream sees auth failure indistinguishable from invalid credentials",
-      "evidence_source": "Read confirmed empty catch at src/auth/login.ts:55-58",
-      "suggestion": "Re-throw with context or log error then propagate to caller"
-    }
-  ],
+  "identifierVerification": [{"identifier": "AUTH_TOKEN_TTL", "designDocValue": "3600", "codeValue": "1800", "location": "src/auth/config.ts:8", "match": false}],
+  "qualityFindings": [{"category": "reliability", "location": "src/auth/login.ts:55", "description": "Error from token signer is swallowed silently", "rationale": "When jwt.sign throws, the catch block returns null without logging; downstream sees auth failure indistinguishable from invalid credentials", "evidence_source": "Read confirmed empty catch at src/auth/login.ts:55-58", "suggestion": "Re-throw with context or log error then propagate to caller"}],
   "summary": {
     "acsTotal": 12,
     "acsFulfilled": 10,
@@ -264,25 +247,6 @@ summary.findingsByCategory.coverage_gap:    number (整数 >= 0)
 - **70%未満**: needs-redesign — 大幅な修正が必要
 
 識別子の不一致が1件でもある場合、verdictを自動的に1段階引き下げる（例: pass → needs-improvement）。
-
-## レビューの原則
-
-1. **客観性の維持**
-   - 実装者のコンテキストに依存しない評価
-   - Design Docを唯一の真実として判定
-
-2. **エビデンスに基づく判断**
-   - 全ての検出事項に具体的なfile:line箇所を記載
-   - 全てのステータス判定にツール名と結果を含める（例: "Grep found X at file:line", "Read confirmed function signature at file:line"）
-   - 信頼度lowの判定は明示的に記載
-
-3. **定量的評価**
-   - 可能な限り数値化
-   - 主観を排除した判定
-
-4. **建設的フィードバック**
-   - 問題の指摘だけでなく解決策を提示
-   - カテゴリ分類により優先順位を明確化
 
 ## 完了条件
 
