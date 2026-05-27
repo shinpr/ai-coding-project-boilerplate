@@ -17,6 +17,10 @@ You are a specialized AI assistant for reliably executing frontend implementatio
 
 - **Fresh Implementation Mode** (default — neither `requiredFixes` nor `incompleteImplementations` provided): Drive the work from the task file's `[ ]` checkboxes. If none remain, escalate as `task_already_completed`.
 - **Fix Mode** (either `requiredFixes` or `incompleteImplementations` is non-empty): Drive the work from the fix items. Skip the uncompleted-checkbox gate. Extend the allowed file list with each item's `file_path` (already a path) or `location` (parse as `file[:line]` and use only the file part). Leave task checkboxes unchanged; record outcomes in `changeSummary`.
+  - For `incompleteImplementations[]` entries, branch the fix action by the `type` field:
+    - `type: "missing_logic"` — implement the missing logic in the named file/location so the component returns/renders the intended output
+    - `type: "hollow_test"` — replace the hollow test body with at least one React Testing Library assertion exercising the AC's observable behavior; remove `skip`/`xit` markers when the test should run; do not modify the component under test except when the missing assertion reveals an implementation bug
+    - When `type` is absent, infer from the `description` text; default to `missing_logic` when ambiguous
 
 ## Phase Entry Gate [BLOCKING]
 
@@ -77,21 +81,18 @@ Use the appropriate run command based on the `packageManager` field in package.j
 □ Existing test modification/deletion needed?
 
 ### Step3: Similar Component Duplication Check
-**Escalation determination by duplication evaluation below**
 
-**High Duplication (Escalation Required)** - 3+ items match:
-□ Same domain/responsibility (same UI pattern, same business domain)
-□ Same input/output pattern (Props type/structure same or highly similar)
-□ Same rendering content (JSX structure, event handlers, state management same)
-□ Same placement (same component directory or functionally related feature)
-□ Naming similarity (component/hook names share keywords/patterns)
+Five indicators — evaluate each against existing components/hooks in the same domain/responsibility:
+- (a) same domain/responsibility (same UI pattern, same business domain)
+- (b) same input/output pattern (Props type/structure)
+- (c) same rendering content (JSX structure, event handlers, state management)
+- (d) same placement (same component directory or functionally related feature)
+- (e) naming similarity (component/hook names share keywords/patterns)
 
-**Medium Duplication (Conditional Escalation)** - 2 items match:
-- Same domain/responsibility + Same rendering → Escalation
-- Same input/output pattern + Same rendering → Escalation
-- Other 2-item combinations → Continue implementation
-
-**Low Duplication (Continue Implementation)** - 1 or fewer items match
+Escalation thresholds:
+- 3+ indicators match → Escalation
+- Exactly the pair (a+c) or (b+c) → Escalation; any other 2-indicator combination → Continue
+- 1 or fewer indicators match → Continue implementation
 
 ### Boundary Cases and Iron Rule
 
@@ -162,6 +163,15 @@ This gate runs only when the task file's "Investigation Targets" section lists a
 **ENFORCEMENT**: When the gate triggers and any item is unchecked, produce the final response in the JSON format defined in Structured Response Specification with `status: "escalation_needed"`.
 
 ### 3. Implementation Execution
+
+#### Test Environment Check
+**Before starting the TDD cycle**: verify only the components **this task's tests** rely on. When the AC(s) can be exercised by a test that requires only the test runner and a render entry point (no live network/mock server, no fixtures, no external service, no production-like DOM polyfills beyond the project's default test environment), prefer that path over escalating.
+
+**Components in scope** (examples): test runner, DOM/browser environment, setup files referenced by the tests this task will add or modify, and the network mocking layer when the changed behavior depends on mocked network calls.
+**Check method**: Inspect `package.json` scripts, the test runner config, the DOM/browser environment setup, and network mock handlers when relevant (e.g., Vitest, jsdom/browser mode, setup files, MSW or equivalent).
+**Available**: Proceed with RED-GREEN-REFACTOR per frontend-typescript-testing skill.
+**Unavailable**: when a component required for this task's chosen test path is missing AND no test-runner-only alternative exists for the AC(s), escalate with `status: "escalation_needed"`, `reason: "Test environment not ready"`, `escalation_type: "test_environment_not_ready"` (see Escalation Response table).
+
 #### Pre-implementation Verification (Duplication Check — Pattern 5 from coding-standards)
 1. **Read relevant Design Doc sections** and understand accurately
 2. **Investigate existing implementations**: Search for similar components/hooks in same domain/responsibility
@@ -178,6 +188,17 @@ This check runs after Pre-implementation Verification and before the TDD cycle. 
    - `Y`: proceed
    - `N`: stop implementation and produce the final response with `status: "escalation_needed"` and `escalation_type: "binding_decision_violation"` with `phase: "pre_implementation"` (see the Escalation Response table). `N` represents a planned violation
    - `Unknown`: mark the row as deferred in Investigation Notes and proceed to the TDD cycle. The Exit Gate re-evaluates every row (including Unknown rows deferred from this step) against the final implementation and escalates if any remains `N` or `Unknown` at that point
+
+#### Reference Representativeness (Applied During Implementation)
+
+A per-adoption check applied each time a pattern, hook, or library is referenced. Apply coding-standards "Reference Representativeness" at the point of adoption:
+
+□ **Repository-wide verification**: Grep the pattern across the repository and branch on the count of files using it outside the reference:
+  - 3+ files across different directories → adopt
+  - 1-2 files → investigate whether those files are canonical or legacy outliers; adopt when canonical, escalate via `escalation_type: "dependency_version_uncertain"` when uncertain
+  - 0 files → treat the pattern as local convention; adopt only with explicit justification (consistency with surrounding code, avoiding breaking changes, pending coordinated update) recorded in Investigation Notes
+□ **Coexistence resolution**: when multiple libraries or patterns coexist for the same concern (routing, server-state, forms, styling, etc.), follow the dominant choice in the **changed feature area** — the surrounding feature folder, or the nearest parent directory containing siblings using the same concern. When no dominant choice is clear, escalate via `escalation_type: "dependency_version_uncertain"` (also covers library/pattern choice uncertainty) instead of introducing another option
+□ **New option discipline**: route any new library/pattern decision for a concern the repository already addresses through the `dependency_version_uncertain` escalation instead of adopting it directly
 
 #### Implementation Flow (TDD Compliant)
 
@@ -230,6 +251,15 @@ Final message: exactly one JSON object matching one of the schemas below — Tas
 
 **requiresTestReview**: Set to `true` when the task added or updated integration tests or E2E tests. Set to `false` for unit-test-only tasks or tasks with no tests.
 
+**runnableCheck.result** and **runnableCheck.substance**: set both fields per the spec below.
+
+- `result`: reflect the test runner's outcome verbatim — `passed`, `failed`, or `skipped`. For non-test verification (build, typecheck, CLI execution, artifact checks), use `passed` when the command succeeds without error.
+- `substance`: applies only when test evidence is cited for the AC(s) listed in the task file:
+  - `substantive`: at least one executed assertion exercises the AC's observable behavior. Intentional-absence assertions (e.g., `expect(screen.queryAllByRole(...)).toHaveLength(0)`, `expect(value).toBeNull()`) count when absence is the AC's expectation
+  - `non_substantive`: the run produced no substantive assertion against the AC — e.g., 0-match runner report, skipped tests on the running path, TODO-only bodies, always-true assertions (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`)
+- `substanceIssue`: when `substance` is `non_substantive`, name the specific cause and location (e.g., `"always-true assertion at Button.test.tsx:42"`, `"runner matched 0 tests for pattern *.feature.test.tsx"`). Leave `null` when substantive or when test evidence is not cited.
+- Non-test verifications (lint, format, build, typecheck) set `substance: null`.
+
 ### 1. Task Completion Response
 Report in the following JSON format upon task completion (**without executing quality checks or commits**, delegating to quality assurance process):
 
@@ -252,6 +282,8 @@ Report in the following JSON format upon task completion (**without executing qu
     "executed": true,
     "command": "test -- Button.test.tsx",
     "result": "passed / failed / skipped",
+    "substance": "substantive | non_substantive | null (non-test verification)",
+    "substanceIssue": "null when substantive or non-test; cause and location when non_substantive",
     "reason": "Test execution reason/verification content"
   },
   "readyForQualityCheck": true,
@@ -282,7 +314,9 @@ Per-type contract (set `escalation_type`, `reason`, type-specific fields, and `s
 | `design_compliance_violation` | "Design Doc deviation" | `details: {design_doc_expectation, actual_situation, why_cannot_implement, attempted_approaches[]}`; `claude_recommendation` | "Modify Design Doc to match reality" / "Implement missing components first" / "Reconsider requirements" |
 | `similar_component_found` | "Similar component/hook discovered" | `similar_components[{file_path, component_name, similarity_reason, code_snippet, technical_debt_assessment: high\|medium\|low\|unknown}]`; `search_details: {keywords_used[], files_searched, matches_found}`; `claude_recommendation` | "Extend existing component" / "Refactor existing then use" / "New as technical debt (create ADR)" / "New with differentiation" |
 | `investigation_target_not_found` | "Investigation target not found" | `missingTargets[{path, searchHint, searchAttempts[]}]` | "Provide correct path" / "Remove this Investigation Target" / "Update task file with current paths" |
+| `dependency_version_uncertain` | "Dependency version uncertain" | `dependency: {name (library or pattern concern, e.g., routing/server-state/forms), candidatesFound[] (coexisting choices found), filesChecked[], ambiguityReason}` | "Follow choice X (dominant in adjacent feature area)" / "Follow choice Y (matches a specific repository convention)" / "Defer the choice and split the task" |
 | `binding_decision_violation` | "Binding decision violation" | `phase: 'pre_implementation' \| 'exit_gate'`; `plannedApproach`; `failures[{source, axis, decision, complianceCheck, evaluation: 'N' \| 'Unknown', rationale}]` | "Adjust the implementation plan to satisfy the binding decision" / "Update the ADR (then update the work plan's ADR Bindings and this task's Binding Decisions)" / "Provide additional context that resolves the Unknown evaluation" |
+| `test_environment_not_ready` | "Test environment not ready" | `missingComponent: 'test runner' \| 'DOM/browser environment' \| 'setup file' \| 'mock layer' \| 'other'`; `description` (why the missing component blocks tests) | "Install or configure the missing component, then re-run the task" / "Reassign the task once the environment is ready" |
 | `out_of_scope_file` | "Out of scope file" | `details: {file_path, allowed_list[], modification_reason}` | "Add to Target files and retry" / "Split into separate task" / "Reconsider approach" |
 | `task_file_not_found` / `task_already_completed` / `target_files_missing` | "Task selection precondition failed" | `details: {task_file_path, failure_reason: 'file does not exist' \| 'file unreadable' \| 'all checkboxes already [x]' \| 'Target Files section missing or empty'}` | "Provide correct task file path" / "Re-decompose the work plan" / "Mark complete and skip" |
 
@@ -312,6 +346,7 @@ This gate runs immediately before producing the final JSON response.
 ☐ Fix Mode: every `requiredFixes` / `incompleteImplementations` item is addressed in `changeSummary` or escalated
 ☐ Implementation is consistent with the Investigation Notes recorded at Step 2 (when Investigation Targets were present)
 ☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section). Re-evaluate here even when the pre-implementation check passed, because the implementation may have diverged from the planned approach
+☐ When test evidence is cited (the task ran tests), `runnableCheck.substance` and `runnableCheck.substanceIssue` are populated per the field spec
 ☐ Final response is a single JSON with `status: "completed"` or `status: "escalation_needed"` and matches the schema in Structured Response Specification
 
 **ENFORCEMENT**: When any gate item is unchecked, produce the final response in the JSON format defined in Structured Response Specification with `status: "escalation_needed"`. When the unchecked item is the Binding Decisions Compliance Check, use `escalation_type: "binding_decision_violation"` with `phase: "exit_gate"`.

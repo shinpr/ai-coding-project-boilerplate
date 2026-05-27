@@ -63,6 +63,7 @@ Verify the following for each test case:
 | Independence | Isolated state per test (reset in beforeEach) | Shared state modified across tests |
 | Reproducibility | Deterministic execution (mock time/random sources when needed) | Non-deterministic elements present |
 | Readability | Test name matches verification content | Name and content diverge |
+| Substantive Assertion | At least one executed assertion observes the AC's behavior; intentional-absence assertions (e.g., `toHaveLength(0)`, `toBeNull()`) count when absence is the AC's expectation | TODO-only body, `skip`/`xit` left on a test that should run, always-true assertion (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`) |
 
 ### 4. Mock Boundary Check (Integration Tests Only)
 
@@ -196,6 +197,11 @@ When needs_revision decision, output fix instructions usable in subsequent proce
 - IF `@dependency: full-system` → mock usage is FAILURE
 - Verify execution timing: AFTER all components are implemented
 - Verify critical user journey coverage is COMPLETE
+
+### Hollow or Placeholder Assertion
+
+**Issue**: The test reads as passing but does not verify the AC's observable behavior — always-true assertion, TODO-only body, or leftover `skip`/`xit` marker on a test that should run.
+**Fix**: Replace with an assertion that observes the AC's behavior; remove `skip`/`xit` markers when the test should run. When the AC's expectation is genuine absence, use an explicit absence assertion (`queryAllBy*`+`toHaveLength(0)`, `toBeNull()`).
 
 ## Completion Criteria
 
