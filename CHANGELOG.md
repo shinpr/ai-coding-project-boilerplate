@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.1] - 2026-05-28
+
+### Added
+
+- **Acceptance evidence discipline** (agents, skills) — Substance check rejects cited test evidence that is hollow (skipped, TODO-only, always-true, or 0-match). `task-executor` reports `runnableCheck.substance` / `substanceIssue`; `quality-fixer` gates on it and routes unrecoverable hollow tests via `stub_detected` with new `incompleteImplementations[].type` (`missing_logic` / `hollow_test`). `code-reviewer` §3-3 and `integration-test-reviewer` add matching inspection criteria
+- **`test_environment_not_ready` escalation** (agents, skills) — `task-executor` / `-frontend` escalate with a typed reason when the required test toolchain is unavailable. Registered in `subagents-orchestration-guide`
+- **Frontend executor symmetry** (agents) — `task-executor-frontend` gains Reference Representativeness (IF-THEN by repository-wide file count) and `dependency_version_uncertain` escalation, matching the backend executor
+
+### Changed
+
+- **Reference Representativeness rule** (agents, skills) — Rewritten as explicit IF-THEN (3+ adopt / 1-2 investigate canonical-vs-legacy / 0 justify) so a canonical pattern with only 1-2 nearby files can still be adopted instead of being forced to escalate
+- **Frontend quality-fixer guidance** (agents) — Replace obsolete patterns (manual `cleanup()`, snapshot-first thinking) with current RTL practice (auto-cleanup, behavior assertions over snapshots, mock at the existing network boundary)
+- **Prompt tightening** (agents, skills) — Compressed Similar Function / Component Duplication Check; removed redundant Special Considerations (`code-reviewer`) and Important Principles (`quality-fixer`); added a Policy References hub to Fix Execution Policy; split `quality-fixer` `blocked` example into Variant A (specification conflict) and Variant B (missing prerequisites); `subagents-orchestration-guide` task-executor Output and quality-fixer Input contracts updated to carry `runnableCheck` through
+
 ## [1.23.0] - 2026-05-22
 
 ### Added
