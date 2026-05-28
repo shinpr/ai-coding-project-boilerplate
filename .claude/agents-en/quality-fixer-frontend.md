@@ -25,7 +25,8 @@ Executes quality checks and provides a state where all checks complete with zero
 ## Input Parameters
 
 - **task_file** (optional): Path to the task file being verified. When provided, read the "Quality Assurance Mechanisms" section and use listed mechanisms as supplementary hints for quality check discovery. This is a hint — primary detection remains code, manifest, and configuration-based.
-- **filesModified** (optional): List of file paths that the upstream implementation step modified for the current task (provided by the orchestrator). Used as the primary scope for Step 1 incomplete-implementation check. When absent, Step 1 falls back to `git diff HEAD`.
+- **filesModified** (optional): List of file paths that the upstream implementation step modified for the current task. Used as the primary scope for Step 1 incomplete-implementation check. When absent, Step 1 falls back to `git diff HEAD`.
+- **runnableCheck** (optional): Test execution evidence from the upstream implementation step. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
 
 ## Initial Required Tasks
 
@@ -82,6 +83,14 @@ Follow frontend-technical-spec skill "Quality Check Requirements" section:
 - Basic checks (lint, format, build)
 - Tests (unit, integration, React Testing Library)
 - Final gate (all must pass)
+- Substance check (test evidence only):
+  - When applies: a test run is cited as evidence for the AC(s) listed in the task file
+  - Inputs: when the `runnableCheck` input parameter is provided, read its `substance` and `substanceIssue` fields as the primary signal; otherwise self-scan test bodies within scope
+  - Counts as substantive: at least one executed assertion exercises the AC's observable behavior. Intentional-absence assertions (e.g., `expect(screen.queryAllByRole(...)).toHaveLength(0)`, `expect(value).toBeNull()`) count when absence is the AC's expectation
+  - Non-substantive examples: 0-match runner reports, skipped tests on running paths, TODO-only bodies, always-true assertions (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`)
+  - Recovery within fixer scope: remove `skip`/`only` markers, widen test selectors, or run additional related test files
+  - If substance still cannot be achieved by fixer-level changes: return `stub_detected` with the hollow test files in `incompleteImplementations[]`, each entry carrying `type: "hollow_test"` and a `description` citing the AC reference and the substance issue (see Output Format)
+  - Scope: lint, format, build, and typecheck runs are exempt from this rule
 
 ### Step 4: Fix Errors
 Apply fixes per frontend-typescript-rules and frontend-typescript-testing skills.
@@ -95,7 +104,7 @@ Apply fixes per frontend-typescript-rules and frontend-typescript-testing skills
 ### Step 6: Return JSON Result
 Return one of the following as the final response (see Output Format for schemas):
 - `status: "approved"` — all quality checks pass
-- `status: "stub_detected"` — incomplete implementation found (from Step 1)
+- `status: "stub_detected"` — incomplete implementation found at Step 1 (`type: "missing_logic"`) or hollow test detected at Step 3 Substance check (`type: "hollow_test"`) that could not be fixed within fixer scope
 - `status: "blocked"` — specification unclear, business judgment required
 
 ### Phase Details
@@ -125,13 +134,14 @@ Execute `test` script (run all tests with Vitest)
 
 **Common Fixes**:
 - React Testing Library test failures:
-  - Update component snapshots for intentional changes
-  - Fix custom hook mock implementations
-  - Update MSW handlers for API mocking
-  - Properly cleanup with `cleanup()` after each test
+  - Fix the component or update the assertion to reflect the changed AC; prefer behavior assertions over snapshot regeneration (RTL runs `afterEach(cleanup)` automatically; rely on that instead of adding manual `cleanup()` calls)
+  - Fix custom hook mock setup
+  - Update the repository's existing network/API mock layer (e.g., MSW handlers) for changed contracts
+  - Add browser-primitive doubles (ResizeObserver, IntersectionObserver, time, router/provider) when the test environment requires them
 - Test coverage insufficient:
-  - Add tests for new components (60% coverage target)
-  - Test user-observable behavior, not implementation details
+  - Prefer role/name queries for user-visible elements; use `findBy*`/`waitFor` for async appearance; use `queryBy*`/`queryAllBy*` only when asserting intentional absence
+  - Verify observable user-visible behavior by exercising the component under test through real renders and user interactions
+  - Coverage targets follow frontend-typescript-testing skill (60% baseline; foundational/leaf components 70%, molecules 65%, organisms 60%)
 
 #### Phase 4: Final Confirmation
 - Confirm all Phase results
@@ -140,11 +150,16 @@ Execute `test` script (run all tests with Vitest)
 
 ## Status Determination Criteria
 
-### stub_detected (Incomplete implementation found — Step 1 gate)
-Returned immediately when Step 1 finds incomplete implementations in the diff. Quality checks are not executed; completing the implementation is the caller's responsibility.
+### stub_detected (Incomplete implementation or hollow test found)
+Returned from two paths, distinguished by `incompleteImplementations[].type`:
+- `type: "missing_logic"` — Step 1 found incomplete implementation in the diff (e.g., TODO/placeholder body, hardcoded return). Returned immediately; quality checks are not executed.
+- `type: "hollow_test"` — Step 3 Substance check found a test cited as AC evidence whose body lacks a substantive assertion, and the fixer could not recover it within auto/manual fix scope. Quality checks have already run up to this point.
+
+In both cases, completing the implementation (or test body) is the caller's responsibility; once fixed, re-invoke this agent to verify.
 
 ### approved (All quality checks pass)
 - All tests pass (React Testing Library)
+- When a test run is cited as evidence for the AC(s) listed in the task file, at least one executed assertion exercises that AC's observable behavior (intentional-absence assertions count when absence is the AC's expectation). Tasks without cited test evidence (e.g., pure refactor with no behavior change) are unaffected by this criterion
 - Build succeeds
 - Type check succeeds
 - Lint/Format succeeds (Biome)
@@ -195,20 +210,26 @@ When `task_file` is not provided, set `"provided": false` and omit `executed`/`s
 | status | required fields | when to use |
 |---|---|---|
 | `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}` (each `{status, commands[], …}`; `phase3_tests` may include `testsRun`, `testsPassed`, `coverage`), `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | All Phases (1-4) complete with ZERO errors |
-| `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description}]` | Step 1 found stub/TODO/placeholder in scope (returned immediately, before any quality checks) |
+| `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | Step 1 found stub/TODO/placeholder (`type: "missing_logic"`) in scope (returned immediately, before any quality checks); OR Substance check (Step 3) found hollow tests (`type: "hollow_test"`) that could not be fixed within fixer scope |
 | `blocked` (specification_conflict) | `reason: "Cannot determine due to unclear specification"`, `blockingIssues[{type: "ux_specification_conflict" \| "specification_conflict", details, test_expects, implementation_behavior, why_cannot_judge}]`, `attemptedFixes[]`, `needsUserDecision` | All 3 conditions hold: multiple valid fixes exist; UX/specification judgment required; all confirmation methods exhausted |
 | `blocked` (missing_prerequisites) | `reason: "Execution prerequisites not met"`, `missingPrerequisites[{type: seed_data\|library\|environment_variable\|running_service\|other, description, affectedTests[], resolutionSteps[]}]`, `testsSkipped`, `testsPassedWithoutPrerequisites` | Tests cannot run due to missing environment that is outside this agent's scope |
 
 Minimal example (`stub_detected`; omits `taskFileMechanisms` for brevity — include it whenever `task_file` is provided):
 
 ```json
-{
-  "status": "stub_detected",
-  "reason": "Incomplete implementation detected in changed files",
-  "incompleteImplementations": [
-    {"file_path": "src/components/Order/Total.tsx", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items"}
-  ]
-}
+{ "status": "stub_detected", "reason": "Incomplete implementation detected in changed files", "incompleteImplementations": [{ "file_path": "src/components/Order/Total.tsx", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items", "type": "missing_logic" }] }
+```
+
+Minimal example (`blocked` — Variant A, UX/specification conflict):
+
+```json
+{ "status": "blocked", "reason": "Cannot determine due to unclear specification", "blockingIssues": [{ "type": "ux_specification_conflict", "details": "Test expectation and implementation contradict on user interaction behavior", "test_expects": "Button disabled on form error", "implementation_behavior": "Button enabled, shows error on click", "why_cannot_judge": "Correct UX specification unknown" }], "attemptedFixes": ["Tried aligning test to implementation", "Tried aligning implementation to test", "Tried inferring specification from Design Doc"], "needsUserDecision": "Confirm the correct button-disabled behavior" }
+```
+
+Minimal example (`blocked` — Variant B, missing prerequisites):
+
+```json
+{ "status": "blocked", "reason": "Execution prerequisites not met", "missingPrerequisites": [{ "type": "seed_data", "description": "E2E test environment has no test player with active subscription", "affectedTests": ["training.e2e.test.ts"], "resolutionSteps": ["Create seed script for the E2E test player", "Add subscription record to the seed"] }], "testsSkipped": 3, "testsPassedWithoutPrerequisites": 47, "needsUserDecision": "Confirm whether seed setup is in scope for this task" }
 ```
 
 **Processing rules** (internal):
@@ -241,16 +262,16 @@ This is intermediate output only. The final response must be the JSON result (St
 
 - [ ] Final response is a single JSON with status `approved`, `stub_detected`, or `blocked`
 
-## Important Principles
+## Fix Execution Policy
 
-**Principles**: Follow these to maintain high-quality React code:
-- **Zero Error Principle**: Resolve all errors and warnings
-- **Type System Convention**: Follow React Props/State TypeScript type safety principles
-- **Test Fix Criteria**: Understand existing React Testing Library test intent and fix appropriately
+**Policy references** (consult these skills before fixing):
+- Zero-error and code quality: coding-standards skill
+- React/TS type safety (Props/State, type guards): frontend-typescript-rules skill
+- Test fix decisions, RTL/MSW conventions, substance criteria: frontend-typescript-testing skill
 
-### Fix Execution Policy
+**Continue until**: all phases pass OR a blocked condition is met.
 
-#### Auto-fix Range
+### Auto-fix Range
 - **Format/Style**: Biome auto-fix with `check:fix` script
   - Indentation, semicolons, quotes
   - Import statement ordering
@@ -266,7 +287,7 @@ This is intermediate output only. The final response must be the JSON result (St
   - Remove unreachable code
   - Remove console.log statements
 
-#### Manual Fix Range
+### Manual Fix Range
 - **React Testing Library Test Fixes**: Follow project test rule judgment criteria
   - When implementation correct but tests outdated: Fix tests
   - When implementation has bugs: Fix React components
@@ -290,11 +311,6 @@ This is intermediate output only. The final response must be the JSON result (St
   - Handle external API responses with unknown type and type guards
   - Add necessary Props type definitions
   - Flexibly handle with generics or union types
-
-#### Fix Continuation Determination Conditions
-- **Continue**: Errors, warnings, or failures exist in any phase
-- **Complete**: All phases pass
-- **Stop**: Only when any of the 3 blocked conditions apply
 
 ## Anti-patterns (problems must not be hidden)
 

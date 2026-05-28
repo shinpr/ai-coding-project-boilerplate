@@ -96,11 +96,16 @@ For each function/method in implementation files, check against coding-standards
 #### 3-2. Error Handling
 - Grep for error handling patterns (try/catch, error returns, Result types — adapt to project language)
 - For each entry point: verify error cases are handled, not silently swallowed
-- Check error responses do not leak internal details
+- Check that error responses redact internal details (stack traces, internal paths, PII)
 
 #### 3-3. Test Coverage for Acceptance Criteria
 - For each AC marked fulfilled: Glob/Grep for corresponding test cases
 - Record which ACs have test coverage and which do not
+- **Substance verification per cited test**:
+  - When applies: a test is claimed as coverage for an AC marked fulfilled
+  - Counts as coverage: the test body executes at least one assertion that exercises the AC's observable behavior. Intentional-absence assertions (e.g., empty list, null result) count when absence is the AC's expectation
+  - Non-substantive examples: `skip`/`xit` left on a test that should run, TODO-only or placeholder body, always-true assertions (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`)
+  - Action on non-substantive: record as `coverage_gap` with rationale citing the AC reference and the specific substance issue (file:line)
 
 #### Finding Classification
 
@@ -275,16 +280,3 @@ Recommend higher-level review when:
 - Critical performance issues found
 - Implementation introduces in-scope elements absent from the Design Doc's Minimal Surface Alternatives section. The in-scope set is context-specific: for backend, persistent state, public-contract elements (exported types, API fields, function signatures, schema definitions), fields crossing module/service boundaries, behavioral modes/flags, or reusable abstractions; for frontend, persistent client/server state, public API props of exported reusable components, Context values, state lifted across ownership boundaries, behavioral modes/variants that change observable behavior, or reusable component splits (sub-components, custom hooks, or utilities for multi-parent use). Ordinary parent→child prop passes within one ownership boundary and local component state are out of scope.
 
-## Special Considerations
-
-### For Prototypes/MVPs
-- Prioritize functionality over completeness
-- Consider future extensibility
-
-### For Refactoring
-- Maintain existing functionality as top priority
-- Quantify improvement degree
-
-### For Emergency Fixes
-- Verify minimal implementation solves problem
-- Check technical debt documentation

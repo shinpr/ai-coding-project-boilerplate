@@ -26,7 +26,8 @@ Executes quality checks and provides a state where all Phases complete with zero
 ## Input Parameters
 
 - **task_file** (optional): Path to the task file being verified. When provided, read the "Quality Assurance Mechanisms" section and use listed mechanisms as supplementary hints for quality check discovery. This is a hint — primary detection remains code, manifest, and configuration-based.
-- **filesModified** (optional): List of file paths that the upstream implementation step modified for the current task (provided by the orchestrator). Used as the primary scope for Step 1 incomplete-implementation check. When absent, Step 1 falls back to `git diff HEAD`.
+- **filesModified** (optional): List of file paths that the upstream implementation step modified for the current task. Used as the primary scope for Step 1 incomplete-implementation check. When absent, Step 1 falls back to `git diff HEAD`.
+- **runnableCheck** (optional): Test execution evidence from the upstream implementation step. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
 
 ## Initial Required Tasks
 
@@ -83,6 +84,14 @@ Follow technical-spec skill "Quality Check Requirements" section:
 - Basic checks (lint, format, build)
 - Tests (unit, integration)
 - Final gate (all must pass)
+- Substance check (test evidence only):
+  - When applies: a test run is cited as evidence for the AC(s) listed in the task file
+  - Inputs: when the `runnableCheck` input parameter is provided, read its `substance` and `substanceIssue` fields as the primary signal; otherwise self-scan test bodies within scope
+  - Counts as substantive: at least one executed assertion exercises the AC's observable behavior. Intentional-absence assertions (e.g., empty result, null return) count when absence is the AC's expectation
+  - Non-substantive examples: 0-match runner reports, skipped tests on running paths, TODO-only bodies, always-true assertions (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`)
+  - Recovery within fixer scope: remove `skip`/`only` markers, widen test selectors, or run additional related test files
+  - If substance still cannot be achieved by fixer-level changes: return `stub_detected` with the hollow test files in `incompleteImplementations[]`, each entry carrying `type: "hollow_test"` and a `description` citing the AC reference and the substance issue (see Output Format)
+  - Scope: lint, format, build, and typecheck runs are exempt from this rule
 
 ### Step 4: Fix Errors
 Apply fixes per coding-standards and typescript-testing skills.
@@ -96,7 +105,7 @@ Apply fixes per coding-standards and typescript-testing skills.
 ### Step 6: Return JSON Result
 Return one of the following as the final response (see Output Format for schemas):
 - `status: "approved"` — all quality checks pass
-- `status: "stub_detected"` — incomplete implementation found (from Step 1)
+- `status: "stub_detected"` — incomplete implementation found at Step 1 (`type: "missing_logic"`) or hollow test detected at Step 3 Substance check (`type: "hollow_test"`) that could not be fixed within fixer scope
 - `status: "blocked"` — specification unclear, business judgment required
 
 ### Phase Details
@@ -105,11 +114,16 @@ Refer to the "Quality Check Requirements" section in technical-spec skill for de
 
 ## Status Determination Criteria
 
-### stub_detected (Incomplete implementation found — Step 1 gate)
-Returned immediately when Step 1 finds incomplete implementations in the diff. Quality checks are not executed; completing the implementation is the caller's responsibility.
+### stub_detected (Incomplete implementation or hollow test found)
+Returned from two paths, distinguished by `incompleteImplementations[].type`:
+- `type: "missing_logic"` — Step 1 found incomplete implementation in the diff (e.g., TODO/placeholder body, hardcoded return). Returned immediately; quality checks are not executed.
+- `type: "hollow_test"` — Step 3 Substance check found a test cited as AC evidence whose body lacks a substantive assertion, and the fixer could not recover it within auto/manual fix scope. Quality checks have already run up to this point.
+
+In both cases, completing the implementation (or test body) is the caller's responsibility; once fixed, re-invoke this agent to verify.
 
 ### approved (All quality checks pass)
 - All tests pass
+- When a test run is cited as evidence for the AC(s) listed in the task file, at least one executed assertion exercises that AC's observable behavior (intentional-absence assertions count when absence is the AC's expectation). Tasks without cited test evidence (e.g., pure refactor with no behavior change) are unaffected by this criterion
 - Build succeeds
 - Type check succeeds
 - Lint/Format succeeds
@@ -160,20 +174,26 @@ When `task_file` is not provided, set `"provided": false` and omit `executed`/`s
 | status | required fields | when to use |
 |---|---|---|
 | `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_structure, phase3_typescript, phase4_tests, phase5_code_recheck}` (each `{status, commands[], …}`), `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | All Phases (1-5) complete with ZERO errors |
-| `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description}]` | Step 1 found stub/TODO/placeholder in scope (returned immediately, before any quality checks) |
+| `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | Step 1 found stub/TODO/placeholder (`type: "missing_logic"`) in scope (returned immediately, before any quality checks); OR Substance check (Step 3) found hollow tests (`type: "hollow_test"`) that could not be fixed within fixer scope |
 | `blocked` (specification_conflict) | `reason: "Cannot determine due to unclear specification"`, `blockingIssues[{type: "specification_conflict", details, test_expects, implementation_returns, why_cannot_judge}]`, `attemptedFixes[]`, `needsUserDecision` | All 3 conditions hold: multiple valid fixes exist; specification judgment required; all confirmation methods exhausted |
 | `blocked` (missing_prerequisites) | `reason: "Execution prerequisites not met"`, `missingPrerequisites[{type: seed_data\|library\|environment_variable\|running_service\|other, description, affectedTests[], resolutionSteps[]}]`, `testsSkipped`, `testsPassedWithoutPrerequisites` | Tests cannot run due to missing environment that is outside this agent's scope |
 
 Minimal example (`stub_detected`; omits `taskFileMechanisms` for brevity — include it whenever `task_file` is provided):
 
 ```json
-{
-  "status": "stub_detected",
-  "reason": "Incomplete implementation detected in changed files",
-  "incompleteImplementations": [
-    {"file_path": "src/svc/order.ts", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items"}
-  ]
-}
+{ "status": "stub_detected", "reason": "Incomplete implementation detected in changed files", "incompleteImplementations": [{ "file_path": "src/svc/order.ts", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items", "type": "missing_logic" }] }
+```
+
+Minimal example (`blocked` — Variant A, specification conflict):
+
+```json
+{ "status": "blocked", "reason": "Cannot determine due to unclear specification", "blockingIssues": [{ "type": "specification_conflict", "details": "Test expectation and implementation contradict", "test_expects": "500 error", "implementation_returns": "400 error", "why_cannot_judge": "Correct specification unknown" }], "attemptedFixes": ["Tried aligning test to implementation", "Tried aligning implementation to test", "Tried inferring specification from related documentation"], "needsUserDecision": "Confirm the correct error code" }
+```
+
+Minimal example (`blocked` — Variant B, missing prerequisites):
+
+```json
+{ "status": "blocked", "reason": "Execution prerequisites not met", "missingPrerequisites": [{ "type": "seed_data", "description": "Integration test database has no seed records for the new flow", "affectedTests": ["order-flow.int.test.ts"], "resolutionSteps": ["Create seed script for the test database", "Add the missing records to the seed"] }], "testsSkipped": 3, "testsPassedWithoutPrerequisites": 47, "needsUserDecision": "Confirm whether seed setup is in scope for this task" }
 ```
 
 **Processing rules** (internal):
@@ -206,16 +226,16 @@ This is intermediate output only. The final response must be the JSON result (St
 
 - [ ] Final response is a single JSON with status `approved`, `stub_detected`, or `blocked`
 
-## Important Principles
+## Fix Execution Policy
 
-**Principles**: Follow these to maintain high-quality code:
-- **Zero Error Principle**: See coding-standards skill
-- **Type System Convention**: See typescript-rules skill (especially any type alternatives)
-- **Test Fix Criteria**: See typescript-testing skill
+**Policy references** (consult these skills before fixing):
+- Zero-error and code quality: coding-standards skill
+- Type safety (`any` alternatives, type guards): typescript-rules skill
+- Test fix decisions and substance criteria: typescript-testing skill
 
-### Fix Execution Policy
+**Continue until**: all Phases pass OR a blocked condition is met.
 
-#### Auto-fix Range
+### Auto-fix Range
 - **Format/Style**: Biome auto-fix with `check:fix` script
   - Indentation, semicolons, quotes
   - Import statement ordering
@@ -231,7 +251,7 @@ This is intermediate output only. The final response must be the JSON result (St
   - Remove unreachable code
   - Remove console.log statements
 
-#### Manual Fix Range
+### Manual Fix Range
 - **Test Fixes**: Follow judgment criteria in typescript-testing skill
   - When implementation correct but tests outdated: Fix tests
   - When implementation has bugs: Fix implementation
@@ -249,11 +269,6 @@ This is intermediate output only. The final response must be the JSON result (St
   - Handle with unknown type and type guards (absolutely prohibit any type)
   - Add necessary type definitions
   - Flexibly handle with generics or union types
-
-#### Fix Continuation Determination Conditions
-- **Continue**: Errors, warnings, or failures exist in any Phase
-- **Complete**: All Phases (1-5) complete with zero errors
-- **Stop**: Only when any of the 3 blocked conditions apply
 
 ## Anti-patterns (problems must not be hidden)
 
