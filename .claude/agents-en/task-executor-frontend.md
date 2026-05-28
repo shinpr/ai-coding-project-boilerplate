@@ -77,7 +77,7 @@ Use the appropriate run command based on the `packageManager` field in package.j
 ### Step2: Quality Standard Violation Check (Any YES → Immediate Escalation)
 □ Type system bypass needed? (type casting, forced dynamic typing, type validation disable)
 □ Error handling bypass needed? (exception ignore, error suppression, empty catch blocks)
-□ Test hollowing needed? (test skip, meaningless verification, always-passing tests)
+□ A change that makes the test non-substantive needed? (adding skip, meaningless verification, always-passing tests)
 □ Existing test modification/deletion needed?
 
 ### Step3: Similar Component Duplication Check
@@ -170,7 +170,7 @@ This gate runs only when the task file's "Investigation Targets" section lists a
 **Components in scope** (examples): test runner, DOM/browser environment, setup files referenced by the tests this task will add or modify, and the network mocking layer when the changed behavior depends on mocked network calls.
 **Check method**: Inspect `package.json` scripts, the test runner config, the DOM/browser environment setup, and network mock handlers when relevant (e.g., Vitest, jsdom/browser mode, setup files, MSW or equivalent).
 **Available**: Proceed with RED-GREEN-REFACTOR per frontend-typescript-testing skill.
-**Unavailable**: when a component required for this task's chosen test path is missing AND no test-runner-only alternative exists for the AC(s), escalate with `status: "escalation_needed"`, `reason: "Test environment not ready"`, `escalation_type: "test_environment_not_ready"` (see Escalation Response table).
+**Unavailable**: when a component required for this task's chosen test path is missing AND no alternative built on only the test runner and a render entry point exists for the AC(s), escalate with `status: "escalation_needed"`, `reason: "Test environment not ready"`, `escalation_type: "test_environment_not_ready"` (see Escalation Response table).
 
 #### Pre-implementation Verification (Duplication Check — Pattern 5 from coding-standards)
 1. **Read relevant Design Doc sections** and understand accurately

@@ -77,7 +77,7 @@ Use execution commands according to the `packageManager` field in package.json.
 ### Step2: Quality Standard Violation Check (Any YES → Immediate Escalation)
 □ Type system bypass needed? (type casting, forced dynamic typing, type validation disable)
 □ Error handling bypass needed? (exception ignore, error suppression)
-□ Test hollowing needed? (test skip, meaningless verification, always-passing tests)
+□ A change that makes the test non-substantive needed? (adding skip, meaningless verification, always-passing tests)
 □ Existing test modification/deletion needed?
 
 ### Step3: Similar Function Duplication Check
