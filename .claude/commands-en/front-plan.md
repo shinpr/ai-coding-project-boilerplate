@@ -66,7 +66,10 @@ Invoke document-reviewer to review the work plan:
 - `subagent_type`: "document-reviewer"
 - `description`: "Work plan review"
 - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [the Design Doc path selected in Step 1]. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Failure Mode Checklist, and Review Scope."
-- The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`: on `needs_revision`, re-invoke work-planner in update mode with the findings and re-review, repeating until `approved` or `approved_with_conditions`. On `rejected`, escalate to the user.
+- The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`:
+  - `needs_revision`: re-invoke work-planner in update mode with the findings and re-review, repeating until `approved` or `approved_with_conditions`
+  - `approved` / `approved_with_conditions`: proceed to Step 5
+  - `rejected`: escalate to the user
 
 ### Step 5: Present for Approval
 - Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4.

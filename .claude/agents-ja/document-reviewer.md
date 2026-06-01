@@ -23,7 +23,7 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
   - `composite`: 複合観点レビュー（推奨）- 構造・実装・完全性を一度に検証
   - 未指定時: 総合的レビュー
 
-- **doc_type**: ドキュメントタイプ（`PRD`/`UISpec`/`ADR`/`DesignDoc`）
+- **doc_type**: ドキュメントタイプ（`PRD`/`UISpec`/`ADR`/`DesignDoc`/`WorkPlan`）
 - **target**: レビュー対象のドキュメントパス
 
 - **code_verification**: コード検証結果のJSON（任意）
@@ -33,6 +33,10 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 - **codebase_analysis**: コードベース分析のJSON（任意、DesignDocレビュー用）
   - 提供された場合、`focusAreas`をFact Dispositionカバレッジチェックの正典ソースとして使用
   - 未提供の場合、focusAreaの完全性は本レビューでは検証不能として扱う
+
+- **design_doc**: Design Docのパス（任意、WorkPlanレビュー用）
+  - 提供された場合、計画に対するAC / コントラクト / 状態遷移のカバレッジチェックのソースとして読み込む
+  - 未提供の場合、作業計画書の「関連ドキュメント」セクションからDesign Docを解決する
 
 ## 作業フロー
 
@@ -50,6 +54,7 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 - doc_typeに基づく特化した検証
 - DesignDocの場合:「適用基準」セクションの存在をexplicit/implicit分類付きで確認
   - 欠落・不完全 → `critical`、implicit基準の未確認 → `important`
+- WorkPlanの場合: セマンティックゲートの判定対象となる成果物が計画に含まれることを確認 — 設計-計画トレーサビリティ、故障モードチェックリスト、レビュースコープ、検証戦略の要約、証明戦略。参照されているDesign Docを読み込み、AC / コントラクト / 状態遷移のカバレッジを計画のタスクに対して確認できるようにする
 - `code_verification`が提供された場合: 不整合リストと逆方向カバレッジのギャップを抽出し、Gate 1の事前検証エビデンスとして組み込む
 - `codebase_analysis`が提供された場合: `focusAreas`とその`evidence`値を抽出し、Gate 0 / Gate 1のFact Dispositionチェックに使用
 
@@ -70,6 +75,13 @@ DesignDocの場合、追加で以下を確認:
 - [ ] 検証戦略セクションの存在（正しさの定義、検証手法、検証タイミング、早期検証ポイント）
 - [ ] Fact Disposition TableセクションがDesign Docに存在する
 - [ ] Minimal Surface Alternatives セクションが存在し、新規に導入される適用対象要素（永続状態 / 公開コントラクト要素または境界を越えるフィールド・Props — バックエンドではモジュール/サービス境界を越えるフィールド、フロントエンドではエクスポートされた再利用可能コンポーネントの公開 API Props・Context 値・所有境界を越えて持ち上げられた状態 / 振る舞いモード・フラグ・バリアント / 再利用可能な抽象またはコンポーネント分割）ごとに1エントリ持つ（適用対象要素を導入する場合）。各エントリには5ステップの結果が含まれる（確定要件 — Design Docまたは参照PRD/UI SpecのAC参照（AC ID、AC見出し、EARS節、または制約ID）、削減的な代替案を1つ以上含む比較表、根拠付きの選定結果、不採用案の記録）
+
+WorkPlanの場合、追加で以下を確認:
+- [ ] レビュースコープが記録されている（変更予定ファイルの範囲、または改訂計画ではベースブランチ + diff範囲）
+- [ ] 設計-計画トレーサビリティ表が存在し、各行がタスクにマッピングされているか正当化されたギャップを持つ
+- [ ] 検証戦略の要約と証明戦略が存在する
+- [ ] 故障モードチェックリストが存在する
+- [ ] 最終フェーズに品質保証が含まれる（受入基準の達成、全テストのパス）
 
 #### Gate 1: 品質評価（Gate 0通過後のみ実施）
 
@@ -112,6 +124,14 @@ DesignDocの場合、追加で以下を確認:
     - (2) ステップ2〜3 に少なくとも1つの削減的代替案（既存から導出 / オンデマンド計算 / 呼び出し側に留める / 既存を再利用 / 新規状態を導入しない）が含まれる — 削減的代替案の欠落 → `critical`（カテゴリ: `compliance`）。
     - (3) ステップ4 の根拠が、最小の代替案を選定するか、より小さい代替案では満たせない現要件を名指している — 「便利」「将来対応」「実装が楽」「ユーザーが欲しがるかも」が主たる根拠として使われている → `critical`（カテゴリ: `compliance`）。
     - (4) ステップ5 で不採用案が簡潔な根拠とともに記録されている — 不採用案ログの欠落 → `important`（カテゴリ: `completeness`）。注: 代替案ゼロのケースはサブチェック(2)で先に `critical` として検出される。サブチェック(4)は代替案は生成されたが記録が抜けているケースを検出する。
+
+- **作業計画書セマンティックゲート**（doc_type WorkPlan）:
+  - (1) カバレッジは各項目が計画内で存在する場所で確認する: 各受入基準がタスクでカバーされている — 設計-計画トレーサビリティの行がそのACをタスクにマッピングしているか、タスクの完了基準または Proof Obligations がそのACを参照していることで示される。各データコントラクトと状態遷移は、設計-計画トレーサビリティの行でタスクにマッピングされるか、明示的なスコープ外エントリを持つ。各品質保証メカニズムは、カバー対象ファイルとともに品質保証メカニズム表に現れる。いずれのカバレッジもない項目 → `critical`（カテゴリ: `completeness`）。カバーされない受入基準は原因を区別する: Design Docが裏付けるのにタスクがマッピングされていない（計画の漏れ、再計画で修正可能）→ `critical`、Design Docや入力に裏付けがない（再計画でも修正不能なギャップ）→ 下記Verdictマッピングの`rejected`トリガー
+  - (2) 早期検証ポイントが最終フェーズではなく早期フェーズに置かれている — 最終フェーズへの後回し → `important`（カテゴリ: `consistency`）
+  - (3) 境界横断・公開境界・永続状態の各変更が、それを実境界経由で検証するタスクを名指している — 欠落 → `important`（カテゴリ: `completeness`）
+  - (4) 存在する各トレーサビリティ表（設計-計画、UI Specコンポーネント、Connection Map、ADR Bindings）が対象タスクを解決できる粒度で埋められている — 粒度不足の行 → `important`（カテゴリ: `completeness`）
+  - (5) 故障モードチェックリストが計画の該当するドメイン非依存カテゴリ（same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility）をカバーしている — 該当カテゴリの欠落 → `recommended`（カテゴリ: `completeness`）
+  - Verdictマッピング（WorkPlan）: セマンティックゲートの`critical`はいずれもverdictを最低でも`needs_revision`にする — ただしDesign Doc/入力要素の欠落や矛盾に起因するカバレッジギャップ（再計画で修正不能）→ `rejected`、`important`のみの場合はverdictを`approved_with_conditions`までに制限する
 
 **観点特化モード**:
 - 指定されたmodeとfocusに基づいてレビューを実施

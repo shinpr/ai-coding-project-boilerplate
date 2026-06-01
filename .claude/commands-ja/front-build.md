@@ -59,8 +59,21 @@ Consumed Task Set を確認し、適切な対応を決定する。注: `$ARGUMEN
 |------|------|--------------|
 | タスク存在 | Consumed Task Set が非空 | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
 | タスクなし + `$ARGUMENTS`で計画書指定 | `$ARGUMENTS`が提供され Consumed Task Set が空 | ユーザーに確認 → task-decomposer実行（frontend命名ルールにより `*-frontend-task-*.md` を出力する） |
-| どちらもなし＋Design Docあり + `$ARGUMENTS`提供 | `$ARGUMENTS`が提供され、計画書なし、Consumed Task Setなし、ただし docs/design/*.md が存在 | work-plannerでDesign Docから作業計画書を作成し、タスク分解へ進む |
+| どちらもなし＋Design Docあり + `$ARGUMENTS`提供 | `$ARGUMENTS`が提供され、計画書なし、Consumed Task Setなし、ただし docs/design/*.md が存在 | work-plannerでDesign Docから作業計画書を作成し、タスク分解の前に**作業計画書レビュー**（下記参照）を行う |
 | どちらもなし | `$ARGUMENTS`なし、計画書なし、Consumed Task Setなし、Design Docなし | 前提条件未達成をユーザーに報告して停止 |
+
+## 作業計画書レビュー（本レシピが計画書を作成した場合）
+
+上記の判断フローでDesign Docから作業計画書を作成した場合、タスク分解の前にレビューする:
+
+1. Agentツールでdocument-reviewerを呼び出す:
+   - `subagent_type`: "document-reviewer"
+   - `description`: "作業計画書レビュー"
+   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [Design Docのパス]。Design Docへの意味的トレーサビリティ、早期検証の配置、実境界での検証カバレッジ、故障モードチェックリスト、レビュースコープをレビューする。"
+2. reviewerの `verdict.decision` で分岐する:
+   - `needs_revision` → 所見を渡してwork-plannerをupdateモードで再実行し、`approved`/`approved_with_conditions` になるまで再レビューする
+   - `rejected` → タスク分解の前に停止しユーザーにエスカレーションする
+3. レビュー済みの計画書をタスク分解の前にバッチ承認のため提示する。
 
 ## タスク分解フェーズ（条件付き）
 

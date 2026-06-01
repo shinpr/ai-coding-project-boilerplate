@@ -55,7 +55,7 @@ Maps each Design Doc technical requirement to the covering task(s). One row per 
 
 ## Failure Mode Checklist
 
-Domain-independent failure categories this implementation must guard against. Enumerate all eight categories, mark which apply, and list a covering task for each that applies; keep entries free of project-specific names.
+Domain-independent failure categories this implementation must guard against. Enumerate all eight categories, mark each in the Applies? column as yes/no, and list a covering task for each that applies; keep entries free of project-specific names.
 
 | Category | Applies? | Covered By Task(s) |
 |---|---|---|
