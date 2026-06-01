@@ -23,6 +23,7 @@ description: Create frontend work plan from design document and obtain plan appr
 - Design document selection
 - Test skeleton generation with acceptance-test-generator
 - Work plan creation with work-planner
+- Work plan review with document-reviewer
 - Plan approval obtainment
 
 **Responsibility Boundary**: This command completes with work plan approval.
@@ -59,8 +60,17 @@ Invoke work-planner using Agent tool:
   `prompt`: "Create work plan from Design Doc at [path]."
 
 - Follow subagents-orchestration-guide Prompt Construction Rule for additional prompt parameters
-- Present work plan to user for review. If user requests changes, re-invoke work-planner with revised parameters
-- Highlight steps with unclear scope or external dependencies and ask user to confirm
+
+### Step 4: Work Plan Review
+Invoke document-reviewer to review the work plan:
+- `subagent_type`: "document-reviewer"
+- `description`: "Work plan review"
+- `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [the Design Doc path selected in Step 1]. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Failure Mode Checklist, and Review Scope."
+- The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`: on `needs_revision`, re-invoke work-planner in update mode with the findings and re-review, repeating until `approved` or `approved_with_conditions`. On `rejected`, escalate to the user.
+
+### Step 5: Present for Approval
+- Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4.
+- Highlight steps with unclear scope or external dependencies and ask the user to confirm
 
 **Scope**: Up to work plan creation and obtaining approval for plan content.
 

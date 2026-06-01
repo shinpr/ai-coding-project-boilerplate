@@ -59,8 +59,21 @@ Analyze the Consumed Task Set and determine the action required. Note: when `$AR
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
 | No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | Confirm with user → run task-decomposer (which will emit `*-frontend-task-*.md` per the frontend naming rule) |
-| Neither exists + Design Doc exists + `$ARGUMENTS` provided | `$ARGUMENTS` provided, no plan, no Consumed Task Set, but docs/design/*.md exists | Invoke work-planner to create work plan from Design Doc, then proceed to task decomposition |
+| Neither exists + Design Doc exists + `$ARGUMENTS` provided | `$ARGUMENTS` provided, no plan, no Consumed Task Set, but docs/design/*.md exists | Invoke work-planner to create work plan from Design Doc, then run **Work Plan Review** (see below) before task decomposition |
 | Neither exists | No `$ARGUMENTS`, no plan, no Consumed Task Set, no Design Doc | Report missing prerequisites to user and stop |
+
+## Work Plan Review (when this recipe created the plan)
+
+When the decision flow above created the work plan from a Design Doc, review it before decomposition:
+
+1. Invoke document-reviewer using Agent tool:
+   - `subagent_type`: "document-reviewer"
+   - `description`: "Work plan review"
+   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [the Design Doc path]. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Failure Mode Checklist, and Review Scope."
+2. Branch on the reviewer's `verdict.decision`:
+   - `needs_revision` → re-invoke work-planner (update) with the findings and re-review until `approved`/`approved_with_conditions`
+   - `rejected` → stop before task decomposition and escalate to the user
+3. Present the reviewed plan for batch approval before task decomposition.
 
 ## Task Decomposition Phase (Conditional)
 

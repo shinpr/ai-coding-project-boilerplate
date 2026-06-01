@@ -158,7 +158,7 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 | code-verifier | status (consistent/mostly_consistent/needs_review/inconsistent), consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). Pre-implementation: verifies Design Doc claims against existing codebase. Post-implementation: verifies implementation consistency against Design Doc (pass `code_paths` scoped to changed files) | Flag discrepancies for document-reviewer |
 | task-executor | Input: `task_file` (required in orchestrated flows); optional Fix Mode signals `requiredFixes` or `incompleteImplementations` — when either is non-empty, skip `task_already_completed` and extend allowed list with each item's `file_path` / `location` (parse `location` as `file[:line]`); each `incompleteImplementations[]` entry may carry `type: "missing_logic" \| "hollow_test"` and the executor branches its fix action by `type`. Output: status (escalation_needed/completed), filesModified[], testsAdded, requiresTestReview, runnableCheck{level, executed, command, result, substance, substanceIssue, reason}, escalation_type ∈ {task_file_not_found, task_already_completed, target_files_missing, design_compliance_violation, similar_function_found, similar_component_found, investigation_target_not_found, out_of_scope_file, dependency_version_uncertain, binding_decision_violation, test_environment_not_ready}. | On escalation_needed: handle by escalation_type |
 | quality-fixer | Input: `task_file` (path to current task file — always pass this in orchestrated flows), `filesModified` (extract from the upstream implementation step's response — passes the task's write set as the primary scope for stub-detection; falls back to `git diff HEAD` when omitted), `runnableCheck` (extract from the upstream implementation step's response — passes the test execution evidence including `substance` and `substanceIssue` so the substance check has the runtime signal; omit when the upstream did not run tests). Status: approved/stub_detected/blocked. `stub_detected` → `incompleteImplementations[]` items carry `type: "missing_logic" \| "hollow_test"`; route back to the implementation step (which branches its fix action on `type`), then re-run quality-fixer. `blocked` → see quality-fixer blocked handling below | On stub_detected: re-invoke the implementation step. On blocked: see handling below |
-| document-reviewer | approvalReady (true/false) | Proceed to next step on true; request fixes on false |
+| document-reviewer | verdict.decision (approved/approved_with_conditions/needs_revision/rejected) | Proceed on approved/approved_with_conditions; request fixes on needs_revision; escalate on rejected |
 | design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | On CONFLICTS_FOUND: present conflicts to user before proceeding |
 | integration-test-reviewer | status (approved/needs_revision/blocked), requiredFixes | On needs_revision: re-invoke the routed executor in Fix Mode with the same task_file and requiredFixes[] |
 | security-reviewer | status (approved/approved_with_notes/needs_revision/blocked), findings, notes, requiredFixes | On needs_revision: create a consolidated fix task file with the affected file paths from `requiredFixes[].location` populated into Target Files, then invoke the routed executor in Fix Mode with that task_file and the `requiredFixes[]` array, then quality-fixer, then re-invoke security-reviewer to verify resolution. On blocked: escalate to user with the blocking findings — fix is not within the agent layer's authority |
@@ -175,7 +175,7 @@ When quality-fixer returns `status: "blocked"`, discriminate by `reason`:
 When receiving new features or change requests, I first request requirement analysis from requirement-analyzer.
 According to scale determination:
 
-### Large Scale (6+ Files) - 13 Steps (backend) / 15 Steps (frontend/fullstack)
+### Large Scale (6+ Files) - 14 Steps (backend) / 16 Steps (frontend/fullstack)
 
 1. requirement-analyzer → Requirement analysis + Check existing PRD **[Stop]**
 2. prd-creator → PRD creation
@@ -190,10 +190,11 @@ According to scale determination:
 11. document-reviewer → Design Doc review (pass code-verifier results as code_verification; cross-layer: per Design Doc)
 12. design-sync → Consistency verification **[Stop: Design Doc Approval]**
 13. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
-14. work-planner → Work plan creation **[Stop: Batch approval]**
-15. task-decomposer → Autonomous execution → Completion report
+14. work-planner → Work plan creation
+15. document-reviewer → Work plan review (doc_type: WorkPlan; pass the Design Doc path so AC/contract/state coverage is traceable). On `needs_revision`: re-invoke work-planner (update) and re-review until `approved`/`approved_with_conditions` — the plan is a derivation of the Design Doc, so plan-fidelity findings need no user adjudication. On `rejected`: escalate to user. **[Stop: Batch approval]**
+16. task-decomposer → Autonomous execution → Completion report
 
-### Medium Scale (3-5 Files) - 9 Steps (backend) / 11 Steps (frontend/fullstack)
+### Medium Scale (3-5 Files) - 10 Steps (backend) / 12 Steps (frontend/fullstack)
 
 1. requirement-analyzer → Requirement analysis **[Stop]**
 2. **(frontend/fullstack only)** Ask user for prototype code → ui-spec-designer → UI Spec creation (UI Spec informs component structure for technical design)
@@ -204,8 +205,9 @@ According to scale determination:
 7. document-reviewer → Design Doc review (pass code-verifier results as code_verification; cross-layer: per Design Doc)
 8. design-sync → Consistency verification **[Stop: Design Doc Approval]**
 9. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
-10. work-planner → Work plan creation **[Stop: Batch approval]**
-11. task-decomposer → Autonomous execution → Completion report
+10. work-planner → Work plan creation
+11. document-reviewer → Work plan review (doc_type: WorkPlan; pass the Design Doc path so AC/contract/state coverage is traceable). On `needs_revision`: re-invoke work-planner (update) and re-review until `approved`/`approved_with_conditions` — the plan is a derivation of the Design Doc, so plan-fidelity findings need no user adjudication. On `rejected`: escalate to user. **[Stop: Batch approval]**
+12. task-decomposer → Autonomous execution → Completion report
 
 ### Small Scale (1-2 Files) - 2 Steps
 

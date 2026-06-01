@@ -106,6 +106,11 @@ For each function/method in implementation files, check against coding-standards
   - Counts as coverage: the test body executes at least one assertion that exercises the AC's observable behavior. Intentional-absence assertions (e.g., empty list, null result) count when absence is the AC's expectation
   - Non-substantive examples: `skip`/`xit` left on a test that should run, TODO-only or placeholder body, always-true assertions (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`)
   - Action on non-substantive: record as `coverage_gap` with rationale citing the AC reference and the specific substance issue (file:line)
+- **Proof verification per cited test** (beyond substance):
+  - When applies: a test counts as substantive coverage for an AC marked fulfilled
+  - Primary-failure-mode source: cite the claim's recorded Proof Obligation (task file) or test skeleton annotation; derive from the AC only when neither exists, so the judgment matches what the test author targeted
+  - Counts as proof: the test turns red under that primary failure mode and exercises the claimed boundary directly
+  - Action when unproven: a test that passes yet would stay green if the claimed behavior regressed → record as `coverage_gap` with rationale naming the unproven failure mode (file:line)
 
 #### Finding Classification
 
