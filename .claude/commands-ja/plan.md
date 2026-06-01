@@ -23,6 +23,7 @@ description: 設計書から作業計画書を作成し計画承認を取得
 - 設計書の選択
 - E2Eテストスケルトン生成（オプション、ユーザー確認後）
 - work-plannerによる作業計画書作成
+- document-reviewerによる作業計画書レビュー
 - 計画承認の取得
 
 **責務境界**: このコマンドは作業計画書承認で責務完了。
@@ -55,7 +56,20 @@ description: 設計書から作業計画書を作成し計画承認を取得
      `prompt`: "[パス]のDesign Docから作業計画を作成。"
 
    - subagents-orchestration-guideのプロンプト構成ルールに従い追加パラメータを設定
-   - ユーザーと対話して計画を完成させ、計画内容の承認を得る
+
+4. **作業計画書レビュー**
+   document-reviewerを呼び出し作業計画書をレビューする:
+   - `subagent_type`: "document-reviewer"
+   - `description`: "作業計画書レビュー"
+   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [ステップ1で選択したDesign Docのパス]。Design Docへの意味的トレーサビリティ、早期検証の配置、実境界での検証カバレッジ、故障モードチェックリスト、レビュースコープをレビューする。"
+   - 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘はユーザー入力なしで解消する。reviewerの `verdict.decision` で分岐する:
+     - `needs_revision`: 所見を渡してwork-plannerをupdateモードで再実行し、`approved`/`approved_with_conditions` になるまで再レビューを繰り返す
+     - `approved` / `approved_with_conditions`: ステップ5へ進む
+     - `rejected`: ユーザーにエスカレーションする
+
+5. **承認のための提示**
+   - レビュー済みの作業計画書をユーザーにバッチ承認のため提示する。変更要望があればwork-plannerを修正パラメータで再実行し、ステップ4を再実行する。
+   - スコープが不明確なステップや外部依存があるステップを強調し、ユーザーに確認を求める
 
 選択された設計書から作業計画書を作成し、実装の具体的なステップとリスクを明確にします。
 

@@ -73,6 +73,15 @@ Verify the following for each test case:
 | Internal Components | Use actual | Unnecessary mocking |
 | Log Output Verification | Use vi.fn() | Mock without verification |
 
+### 5. Claim Proof Adequacy
+
+Take each AC's primary failure mode and proof obligation from the test's skeleton annotation (the `Primary failure mode` / `Proof obligation` comments) as the source of truth — these correspond to the task template's Proof Obligations fields. Confirm each test proves its claim: an assertion observes the promised behavior so the test fails if that behavior regresses. Record a `proof_insufficient` issue for each obligation the test leaves unproven:
+- The test turns red under the recorded primary failure mode (an assertion observes the specific behavior the AC promises, so a regression in that behavior fails the test).
+- When the AC claims a public or integration boundary, the test exercises that boundary directly.
+- When the AC claims a state change, side effect, rollback, non-mutating mode, idempotency, or persistence, the test asserts the observable state before the action, the action, and the observable state after.
+- Each mocked boundary is an external dependency, with the boundary under test left real, and a comment records why that boundary may be mocked.
+- Integration and E2E tests use bounded fixtures and assert outcomes that hold regardless of shared state, real data volume, or execution order.
+
 ## Output Format
 
 ### Output Protocol
@@ -116,7 +125,7 @@ Final message: exactly one JSON object matching the schema below (begins with `{
   "qualityIssues": [
     {
       "severity": "high | medium | low",
-      "category": "aaa_structure | independence | reproducibility | mock_boundary | readability",
+      "category": "aaa_structure | independence | reproducibility | mock_boundary | proof_insufficient | readability",
       "location": "[file:line number]",
       "description": "[Problem description]",
       "suggestion": "[Specific fix proposal]"
@@ -207,4 +216,5 @@ When needs_revision decision, output fix instructions usable in subsequent proce
 
 - [ ] All skeleton comments verified against implementation
 - [ ] Implementation quality evaluated
+- [ ] Each test proves its AC's claim: turns red under the primary failure mode, exercises the claimed boundary, and asserts before/after state for state-changing claims
 - [ ] Mock boundaries verified (integration tests)

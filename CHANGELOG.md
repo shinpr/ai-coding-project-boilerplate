@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.2] - 2026-06-01
+
+### Added
+
+- **Proof-quality review gate** (agents, skills) — Verification is raised from "tests exist" to "tests prove the claim's primary failure mode." `acceptance-test-generator` emits `Primary failure mode` / `Proof obligation` annotations on every skeleton; `work-planner`, `task-decomposer`, plan-template, and task-template carry per-claim Proof Obligations into task files; `integration-test-reviewer` adds a Claim Proof Adequacy check with a `proof_insufficient` issue type; `code-reviewer` requires AC-coverage tests to turn red under the recorded primary failure mode and exercise the claimed boundary directly
+- **Planning-fidelity review gate** (agents, commands, skills) — The work plan now gets the same automated review the Design Doc does, before implementation starts. `document-reviewer` gains a `WorkPlan` doc_type semantic gate (Design-to-Plan traceability, early-verification placement, real-boundary coverage, Failure Mode Checklist, Review Scope) with a verdict mapping and a `design_doc` input; `work-planner` and plan-template add a Proof Strategy, Review Scope, and Failure Mode Checklist; the plan / front-plan recipes review the plan and self-heal `needs_revision` (re-plan and re-review) while escalating `rejected`; front-build reviews a plan it creates from a Design Doc before decomposition; `subagents-orchestration-guide` wires WorkPlan review into the Medium/Large planning flow and moves the `document-reviewer` output contract to `verdict.decision`
+
 ## [1.23.1] - 2026-05-28
 
 ### Added

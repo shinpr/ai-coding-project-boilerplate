@@ -73,6 +73,15 @@ skills: integration-e2e-testing, typescript-testing, project-context
 | 内部コンポーネント | 実物使用 | 不要なモック化 |
 | ログ出力検証 | vi.fn()使用 | 検証なしのモック |
 
+### 5. 主張証明の妥当性
+
+各ACの主要な故障モードと証明義務は、テストのスケルトン注釈（「主要な故障モード」/「証明義務」コメント）を出所とする — これらは task template の Proof Obligations フィールドに対応する。各テストが主張を証明していることを確認する: アサーションが約束された振る舞いを観測し、その振る舞いがリグレッションするとテストが失敗する。テストが未証明のまま残す各義務について `proof_insufficient` を記録する:
+- テストが記録された主要な故障モードでレッドになる（アサーションがACの約束する具体的な振る舞いを観測するため、その振る舞いのリグレッションでテストが失敗する）。
+- ACが公開境界または統合境界を主張する場合、テストはその境界を直接通過する。
+- ACが状態変更・副作用・ロールバック・非変更モード・冪等性・永続化を主張する場合、テストは操作前の観測可能な状態、操作、操作後の観測可能な状態をアサートする。
+- モックする各境界は外部依存であり、テスト対象の境界は実物のまま残し、その境界をモックしてよい理由をコメントで記録する。
+- 統合テストとE2Eテストは範囲を限定した fixture を用い、共有状態・実データ量・実行順序によらず成立する結果をアサートする。
+
 ## 出力フォーマット
 
 ### 出力プロトコル
@@ -116,7 +125,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
   "qualityIssues": [
     {
       "severity": "high | medium | low",
-      "category": "aaa_structure | independence | reproducibility | mock_boundary | readability",
+      "category": "aaa_structure | independence | reproducibility | mock_boundary | proof_insufficient | readability",
       "location": "[ファイル:行番号]",
       "description": "[問題の説明]",
       "suggestion": "[具体的な修正提案]"
@@ -207,4 +216,5 @@ needs_revision判定時、後続処理で使用できる修正指示を出力:
 
 - [ ] すべてのスケルトンコメントを実装と照合
 - [ ] 実装品質を評価
+- [ ] 各テストがACの主張を証明している: 主要な故障モードでレッドになり、主張された境界を通過し、状態変更を伴う主張では操作前後の状態をアサートする
 - [ ] Mock境界を検証（統合テスト）

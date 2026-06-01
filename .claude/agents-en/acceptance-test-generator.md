@@ -172,6 +172,8 @@ describe('[Feature Name] Integration Test', () => {
   // @category: core-functionality
   // @dependency: PaymentService, OrderRepository, Database
   // @complexity: high
+  // Primary failure mode: payment succeeds but the order row is absent or unpersisted
+  // Proof obligation: the order is persisted only after a successful payment; the external payment gateway is the only boundary that may be mocked
   it.todo('AC1: Successful payment creates persisted order with correct status')
 
   // AC1-error: "Payment failure shows user-friendly error message"
@@ -180,9 +182,15 @@ describe('[Feature Name] Integration Test', () => {
   // @category: core-functionality
   // @dependency: PaymentService, ErrorHandler
   // @complexity: medium
+  // Primary failure mode: payment failure still creates an order, or the error is swallowed without a user-visible message
+  // Proof obligation: a failed payment surfaces an actionable error and leaves no order persisted; only the payment gateway may be mocked
   it.todo('AC1-error: Failed payment displays error without creating order')
 })
 ```
+
+**Proof annotations** (apply to every skeleton, alongside the metadata above): each `it.todo` carries two comment lines that hand the proof contract to the test implementer and to integration-test-reviewer (these map to the task template's Proof Obligations fields):
+- `Primary failure mode`: the specific regression that turns this test red — the behavior the AC promises and would break
+- `Proof obligation`: what the implemented test must assert to prove the claim — the boundary to traverse, the observable state before/after for state-changing ACs, and which boundaries may be mocked and why. Phrase it as design intent describing what to assert; the implementer writes the executable assertions and mock setup
 
 ### E2E Test Files
 
@@ -205,6 +213,8 @@ describe('[Feature Name] fixture-e2e', () => {
   // @lane: fixture-e2e
   // @dependency: full-ui (mocked backend)
   // @complexity: medium
+  // Primary failure mode: a step transition or its observable state is lost across the journey
+  // Proof obligation: each step's UI transition and resulting state are asserted in sequence; only the backend is mocked (canned responses)
   it.todo('User Journey: Cart-to-confirmation flow with mocked payment')
 })
 ```
@@ -226,6 +236,8 @@ describe('[Feature Name] service-integration-e2e', () => {
   // @lane: service-integration-e2e
   // @dependency: full-system
   // @complexity: high
+  // Primary failure mode: the order row or downstream event is absent after a real cross-service purchase
+  // Proof obligation: the DB row, published event, and enqueued email are observed against the real local stack; nothing on the asserted path is mocked
   it.todo('User Journey: Complete purchase persists order and publishes downstream event')
 })
 ```
@@ -240,6 +252,8 @@ describe('[Feature Name] service-integration-e2e', () => {
 // ROI: [value] | Test Type: property-based
 // @category: core-functionality
 // fast-check: fc.property(fc.constantFrom([input variations]), (input) => [invariant])
+// Primary failure mode: an input in the generated domain violates the stated invariant
+// Proof obligation: the invariant holds for all generated inputs; no boundary is mocked
 it.todo('[AC#]-property: [invariant in natural language]')
 ```
 
@@ -316,7 +330,7 @@ Upon completion, report in the following JSON format. Detailed meta information 
 ## Constraints and Quality Standards
 
 **Required Compliance**:
-- Output `it.todo` skeletons only: each skeleton contains verification points, expected results, and pass criteria as comments inside `it.todo` blocks.
+- Output `it.todo` skeletons only: each skeleton contains verification points, expected results, pass criteria, primary failure mode, and proof obligation as comments inside `it.todo` blocks.
   Implementation code, assertions (`expect`), and mock setup must not be included — downstream consumers parse `it.todo` presence to determine phase placement and review status.
 - Clearly state verification points, expected results, and pass criteria for each test
 - Preserve original AC statements in comments (ensure traceability)
