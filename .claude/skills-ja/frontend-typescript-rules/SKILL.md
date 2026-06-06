@@ -5,311 +5,66 @@ description: React/TypeScriptの型安全性、コンポーネント設計、状
 
 # TypeScript 開発ルール（フロントエンド）
 
-## 型システム
+実装向けの frontend 固有 React/TypeScript ルール: しきい値、境界での型安全性、コンポーネント/状態の設計、エラーハンドリング、プロジェクト規約。
 
-### 型安全性の原則
-- **strictモード必須**: tsconfig.jsonでstrict: trueを設定
-- **any型使用禁止**: コードベースでany型を使用しない
-- **as使用最小化**: 型キャストはやむを得ない場合のみ（理由をコメント）
-- **unknown優先**: any型が必要な場合はunknown + 型ガード
+## アンチパターンとしきい値
+設計変更を促すシグナル:
+- prop drilling が 3 階層以上 → Context または状態管理へ持ち上げる
+- コンポーネントが 300 行超 → 分割する
+- Props が 10 個超 → コンポーネントを分割（3〜7 個が適正範囲）
+- optional Props が 50% 超 → デフォルト値または Context を導入する
+- Props のネストが 2 階層超 → フラット化する
+- 同一の `as` アサーションが 3 回以上出現 → 型設計を見直す
 
-```typescript
-// 良い: 型ガード付きのunknown
-function processData(data: unknown): User {
-  if (!isUser(data)) throw new Error('Invalid user data')
-  return data
-}
+## 境界での型安全性
+`any` を禁止する。型が得られない場合は `unknown` で受けて型ガードで絞り込む。`as` は最小化する（やむを得ない場合は理由をコメント）。
 
-// 悪い: any型の使用
-function processData(data: any): User {
-  return data as User
-}
-```
-
-### 型定義のベストプラクティス
-
-#### オブジェクト型
-- **interface優先**: 拡張可能なオブジェクト型にはinterfaceを使用
-- **typeはunion/intersection用**: 複合型やユーティリティ型に使用
-- **readonlyの活用**: 不変なプロパティにはreadonlyを明示
+アプリ内部では React の Props/State は型保証されており `unknown` は不要。外部境界では必ず `unknown` で受け、使用前に型ガードで絞り込む: API レスポンス、`localStorage`/`sessionStorage`、URL パラメータ、パースした JSON。制御コンポーネントのフォーム入力は React 合成イベントを通じて型安全に保たれる。
 
 ```typescript
-// 良い: 明確な型定義
-interface User {
-  readonly id: string
-  name: string
-  email: string
-}
-
-type UserWithRole = User & { role: 'admin' | 'user' }
+const raw: unknown = await (await fetch(url)).json()
+if (!isUser(raw)) throw new ValidationError('invalid user')
+const user = raw // User に絞り込み済み
 ```
 
-#### 関数型
-- **戻り値型を明示**: 複雑なロジックを持つ関数
-- **ジェネリクスの活用**: 再利用可能な型安全な関数
-
-```typescript
-// 良い: 戻り値型を明示
-function calculateTotal(items: CartItem[]): number {
-  return items.reduce((sum, item) => sum + item.price, 0)
-}
-
-// 良い: ジェネリクスの活用
-function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
-  // implementation
-}
-```
-
-## Reactコンポーネント設計
-
-### Function Components必須
-
-```typescript
-// 良い: Function Component
-const UserCard: React.FC<UserCardProps> = ({ user, onSelect }) => {
-  return (
-    <div onClick={() => onSelect(user.id)}>
-      {user.name}
-    </div>
-  )
-}
-
-// 悪い: Class Component（非推奨）
-class UserCard extends React.Component<UserCardProps> { }
-```
-
-### Props型定義
-
-```typescript
-interface ButtonProps {
-  label: string
-  onClick: () => void
-  variant?: 'primary' | 'secondary'
-  disabled?: boolean
-}
-
-const Button: React.FC<ButtonProps> = ({
-  label,
-  onClick,
-  variant = 'primary',
-  disabled = false
-}) => {
-  // implementation
-}
-```
-
-### Children Props
-
-```typescript
-interface LayoutProps {
-  children: React.ReactNode
-  sidebar?: React.ReactNode
-}
-
-const Layout: React.FC<LayoutProps> = ({ children, sidebar }) => (
-  <div>
-    <main>{children}</main>
-    {sidebar && <aside>{sidebar}</aside>}
-  </div>
-)
-```
-
-## 状態管理
-
-### useState型定義
-
-```typescript
-// 良い: 明示的な型
-const [user, setUser] = useState<User | null>(null)
-const [items, setItems] = useState<Item[]>([])
-
-// 良い: 初期値から推論可能な場合
-const [count, setCount] = useState(0)
-```
-
-### useReducerの型安全性
-
-```typescript
-type Action =
-  | { type: 'SET_USER'; payload: User }
-  | { type: 'CLEAR_USER' }
-  | { type: 'SET_ERROR'; payload: string }
-
-interface State {
-  user: User | null
-  error: string | null
-}
-
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case 'SET_USER':
-      return { ...state, user: action.payload, error: null }
-    case 'CLEAR_USER':
-      return { ...state, user: null }
-    case 'SET_ERROR':
-      return { ...state, error: action.payload }
-  }
-}
-```
-
-### Custom Hooks
-
-```typescript
-interface UseUserReturn {
-  user: User | null
-  loading: boolean
-  error: Error | null
-  refetch: () => Promise<void>
-}
-
-function useUser(userId: string): UseUserReturn {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<Error | null>(null)
-
-  const refetch = useCallback(async () => {
-    setLoading(true)
-    try {
-      const data = await fetchUser(userId)
-      setUser(data)
-    } catch (e) {
-      setError(e instanceof Error ? e : new Error('Unknown error'))
-    } finally {
-      setLoading(false)
-    }
-  }, [userId])
-
-  useEffect(() => { refetch() }, [refetch])
-
-  return { user, loading, error, refetch }
-}
-```
+## コンポーネントと状態の設計
+- **Function component のみ。** class component は Error Boundary に限り許可（hook の代替が存在しないため）。
+- **Props は名前付き型で明示**し分割代入する: `function UserCard({ user, onSelect }: UserCardProps)`。`React.FC` は使わず、props を関数に直接型付けして Props 契約を明示する。
+- **Props 駆動:** 依存は Props で渡す。グローバル状態や Context へは必要なときだけアクセスする。
+- **Custom hook** をロジック再利用と依存注入の単位とする（テスト容易性のため、協調オブジェクトは hook 経由で注入する）。
+- **関数引数:** 位置引数は 0〜2 個。3 個以上は単一の options オブジェクトで受ける。
+- **状態の形:** 状態は明示的に型付けする。複数フィールドかつ離散的な遷移を持つ状態は、複数の `useState` ではなく discriminated union の action 型を用いた `useReducer` にする。
 
 ## エラーハンドリング
-
-### Error Boundary
+- すべてのエラーを表に出す: ログして処理するか伝播する — 握り潰さない。
+- **Fail fast:** 不正な状態では、無言のフォールバックを返さず throw する。
+- 想定内の失敗は `Result` 型で値として表現する。`throw` は想定外/回復不能なケースに限る。
+- 目的別のエラークラスは `code` を持つ基底 `AppError` を継承する（例: ValidationError, ApiError, NotFoundError）。
+- **層の責務:** API 層は transport エラーをドメインエラーへ変換する。hook は `AppError` を上位へ伝播する。Error Boundary はレンダリング時のエラーを捕捉しフォールバック UI を表示する。
+- 機微情報（password, token, apiKey, creditCard）をログに出さない。
 
 ```typescript
-interface ErrorBoundaryProps {
-  children: React.ReactNode
-  fallback: React.ReactNode
-}
+type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }
 
-interface ErrorBoundaryState {
-  hasError: boolean
+class AppError extends Error {
+  constructor(message: string, readonly code: string, readonly statusCode = 500) {
+    super(message); this.name = this.constructor.name
+  }
 }
+```
 
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+Error Boundary — class component が必要となる唯一の箇所:
+```typescript
+class ErrorBoundary extends React.Component<{ children: React.ReactNode; fallback: React.ReactNode }, { hasError: boolean }> {
   state = { hasError: false }
-
-  static getDerivedStateFromError(): ErrorBoundaryState {
-    return { hasError: true }
-  }
-
-  render() {
-    if (this.state.hasError) return this.props.fallback
-    return this.props.children
-  }
+  static getDerivedStateFromError() { return { hasError: true } }
+  render() { return this.state.hasError ? this.props.fallback : this.props.children }
 }
 ```
 
-### APIエラーハンドリング
-
-```typescript
-interface ApiError {
-  code: string
-  message: string
-  details?: Record<string, string>
-}
-
-function isApiError(error: unknown): error is ApiError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    'message' in error
-  )
-}
-
-async function fetchWithErrorHandling<T>(url: string): Promise<T> {
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    const error: unknown = await response.json()
-    if (isApiError(error)) {
-      throw new ApiError(error.code, error.message)
-    }
-    throw new Error('Unknown API error')
-  }
-
-  return response.json() as Promise<T>
-}
-```
-
-## イベントハンドリング
-
-### イベント型
-
-```typescript
-const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-  e.preventDefault()
-  // handle click
-}
-
-const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const value = e.target.value
-  // handle change
-}
-
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault()
-  // handle submit
-}
-```
-
-## コーディング規約
-
-### 命名規則
-- **コンポーネント**: PascalCase（例: `UserProfile`）
-- **フック**: camelCase + use接頭辞（例: `useUserData`）
-- **型/インターフェース**: PascalCase（例: `UserProps`）
-- **定数**: SCREAMING_SNAKE_CASE（例: `MAX_RETRY_COUNT`）
-- **ファイル名**: コンポーネントはPascalCase、その他はcamelCase
-
-### インポート順序
-1. React関連
-2. 外部ライブラリ
-3. 内部モジュール（絶対パス）
-4. 内部モジュール（相対パス）
-5. 型のみのインポート
-6. スタイル/アセット
-
-```typescript
-import { useState, useEffect } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { api } from '@/lib/api'
-import { formatDate } from '../utils'
-import type { User } from '@/types'
-import styles from './Component.module.css'
-```
-
-## アンチパターン
-
-### 避けるべきパターン
-
-```typescript
-// 悪い: Propsのスプレッド展開
-const Button = (props: ButtonProps) => <button {...props} />
-
-// 良い: 明示的なPropsの受け渡し
-const Button = ({ label, onClick, disabled }: ButtonProps) => (
-  <button onClick={onClick} disabled={disabled}>{label}</button>
-)
-
-// 悪い: インラインでの複雑なロジック
-{items.filter(i => i.active).map(i => <Item key={i.id} {...i} />)}
-
-// 良い: 事前に変数として抽出
-const activeItems = items.filter(item => item.active)
-{activeItems.map(item => <Item key={item.id} item={item} />)}
-```
+## プロジェクト規約
+- **環境変数:** ビルドツールの環境変数システム経由で読む（ブラウザに `process.env` は存在しない）。秘密情報はすべてサーバーサイドに置く — フロントエンドのコードはクライアントに配信される。
+- **バンドルとパフォーマンス:** `build` スクリプトで監視し 500KB 未満に保つ。高コストなコンポーネントは `React.memo` でメモ化する。`React.lazy` + `Suspense` でコード分割する。再レンダリングを最小化する状態構造にする。
+- **命名:** コンポーネント/型は `PascalCase`、変数/関数は `camelCase`、hook は `use` 接頭辞、定数は `SCREAMING_SNAKE_CASE`。
+- **インポート:** `src/` からの絶対パス。順序: React → 外部ライブラリ → 内部（絶対）→ 内部（相対）→ 型のみ → スタイル/アセット。
+- **フォーマット:** Biome に従う（セミコロンやスタイルはプロジェクト設定に従う）。

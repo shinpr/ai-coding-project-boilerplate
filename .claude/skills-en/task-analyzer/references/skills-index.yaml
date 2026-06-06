@@ -192,21 +192,19 @@ skills:
   # Frontend-specific Skills
   frontend-typescript-rules:
     skill: "frontend-typescript-rules"
-    tags: [frontend, react, implementation, type-safety, function-components, props-driven, async, refactoring, coding-style]
-    typical-use: "React component creation, Props type definitions, frontend TypeScript development"
+    tags: [frontend, react, implementation, type-safety, component-design, props-driven, hooks, error-handling, conventions]
+    typical-use: "React component creation, Props/state design, error handling, frontend TypeScript implementation rules"
     size: small
     key-references:
-      - "React Function Components - React Official"
-      - "Props-driven Design - React Best Practices"
-      - "YAGNI Principle - Kent Beck"
-      - "Clean Code - Robert C. Martin"
-      - "TypeScript satisfies Operator - Microsoft"
+      - "React Function Components - React docs"
+      - "Type guards at external boundaries (unknown narrowing)"
+      - "Result type and Error Boundary error handling"
     sections:
-      - "Frontend-Specific Anti-patterns"
-      - "Type Safety in Frontend Implementation"
-      - "Coding Conventions"
+      - "Anti-patterns and Thresholds"
+      - "Type Safety at Boundaries"
+      - "Component and State Design"
       - "Error Handling"
-      - "Performance Optimization"
+      - "Project Conventions"
 
   frontend-typescript-testing:
     skill: "frontend-typescript-testing"
