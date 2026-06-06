@@ -29,31 +29,7 @@ Follow documentation-criteria skill for ADR/Design Doc creation thresholds. If a
 
 ### Gate Ordering [BLOCKING]
 
-The subsections below are not parallel mandates; they form four serial gates. Complete each gate fully before starting the next. Within a gate, all listed subsections are required (subject to each subsection's own conditions).
-
-**Gate 0 — Inputs and Standards** (no upstream dependencies):
-- Agreement Checklist
-- Standards Identification
-
-**Gate 1 — Existing State Analysis** (depends on Gate 0):
-- Existing Code Investigation
-- Fact Disposition (when Codebase Analysis input is provided)
-- Data Representation Decision (when new or modified data structures are introduced)
-- Minimal Surface Alternatives (when introducing persistent state, public-contract elements or cross-boundary fields, behavioral modes/flags, or reusable abstractions)
-
-**Gate 2 — Design Decisions** (depends on Gate 1):
-- Implementation Approach Decision
-- Common ADR Process
-- Data Contracts
-- State Transitions (when applicable)
-
-**Gate 3 — Impact Documentation** (depends on Gate 2):
-- Integration Points
-- Change Impact Map
-- Field Propagation Map (when fields cross component boundaries)
-- Interface Change Impact Analysis
-
-Each subsection below carries a `[Gate N — ...]` annotation in its heading. Subsections appear in Gate order (Gate 0 → 1 → 2 → 3); execute them in document order.
+The subsections below are not parallel mandates; they form four serial gates: **Gate 0** Inputs & Standards → **Gate 1** Existing-State Analysis → **Gate 2** Design Decisions → **Gate 3** Impact Documentation. Complete each gate fully before starting the next. Each subsection below carries a `[Gate N — ...]` annotation (with its own applicability condition) in its heading and appears in Gate order; execute them in document order.
 
 ### Agreement Checklist [Gate 0 — Required]
 Must be performed at the beginning of Design Doc creation:
