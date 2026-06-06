@@ -140,8 +140,10 @@ describe('Button', () => {
 
 ## Test Design Patterns
 
+Test user-visible results, not implementation details. Query by accessibility (`getByRole`/`getByLabelText`/`getByText`), not `getByTestId` or `container.querySelector`. Cover empty, error, and loading/async states, not only the happy path; await async UI with `findBy*`.
+
 ```typescript
-// Correct: test user-visible results
+// Test the user-visible result
 it('increments count when clicked', async () => {
   const user = userEvent.setup()
   render(<Counter />)
@@ -149,10 +151,10 @@ it('increments count when clicked', async () => {
   expect(screen.getByText('Count: 1')).toBeInTheDocument()
 })
 
-// Avoid: testing implementation details
-it('calls setState', () => {
-  const setState = vi.spyOn(React, 'useState')
-  render(<Counter />)
-  // ...
+// Error state: override the handler for one test
+it('shows an error message on API failure', async () => {
+  server.use(http.get('/api/users', () => new HttpResponse(null, { status: 500 })))
+  render(<UserList />)
+  expect(await screen.findByText('Something went wrong')).toBeInTheDocument()
 })
 ```

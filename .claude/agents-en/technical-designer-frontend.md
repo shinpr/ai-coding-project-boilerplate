@@ -30,29 +30,7 @@ Follow documentation-criteria skill for ADR/Design Doc creation thresholds. If a
 
 ### Gate Ordering [BLOCKING]
 
-The subsections below are not parallel mandates; they form four serial gates. Complete each gate fully before starting the next. Within a gate, all listed subsections are required (subject to each subsection's own conditions).
-
-**Gate 0 — Inputs and Standards** (no upstream dependencies):
-- Agreement Checklist
-- Standards Identification
-
-**Gate 1 — Existing State Analysis** (depends on Gate 0):
-- Existing Code Investigation
-- Fact Disposition (when Codebase Analysis input is provided)
-- Minimal Surface Alternatives (when introducing persistent client/server state, props or fields crossing ownership boundaries — public API props of exported reusable components, Context values, or state lifted across ownership boundaries — behavioral modes/variants that change observable behavior, or reusable component splits)
-
-**Gate 2 — Design Decisions** (depends on Gate 1):
-- Implementation Approach Decision
-- Common ADR Process
-- Data Contracts
-- State Transitions (when applicable)
-
-**Gate 3 — Impact Documentation** (depends on Gate 2):
-- Integration Point Analysis
-- Change Impact Map
-- Interface Change Impact Analysis
-
-Each subsection below carries a `[Gate N — ...]` annotation in its heading. Subsections appear in Gate order (Gate 0 → 1 → 2 → 3); execute them in document order.
+The subsections below are not parallel mandates; they form four serial gates: **Gate 0** Inputs & Standards → **Gate 1** Existing-State Analysis → **Gate 2** Design Decisions → **Gate 3** Impact Documentation. Complete each gate fully before starting the next. Each subsection below carries a `[Gate N — ...]` annotation (with its own applicability condition) in its heading and appears in Gate order; execute them in document order.
 
 ### Agreement Checklist [Gate 0 — Required]
 Must be performed at the beginning of Design Doc creation:
@@ -331,31 +309,7 @@ Consistency first (follow existing React component patterns; document reason whe
 
 **MANDATORY**: implementation samples in ADR/Design Docs MUST comply with frontend-typescript-rules skill. Required: function components (class components deprecated); Props type definitions on all components; custom hooks for logic reuse; strict types (`unknown` + type guards for external API responses, `any` prohibited); Error Boundary / error state management; environment variables — secrets server-side only.
 
-Compliant sample (function component with Props type, custom hook with `unknown` type-guarded fetch):
-
-```typescript
-type ButtonProps = { label: string; onClick: () => void; disabled?: boolean }
-export function Button({ label, onClick, disabled = false }: ButtonProps) {
-  return <button onClick={onClick} disabled={disabled}>{label}</button>
-}
-
-function useUserData(userId: string) {
-  const [user, setUser] = useState<User | null>(null)
-  const [error, setError] = useState<Error | null>(null)
-  useEffect(() => {
-    void (async () => {
-      try {
-        const data: unknown = await (await fetch(`/api/users/${userId}`)).json()
-        if (!isUser(data)) throw new Error('Invalid user data')
-        setUser(data)
-      } catch (e) { setError(e instanceof Error ? e : new Error('Unknown error')) }
-    })()
-  }, [userId])
-  return { user, error }
-}
-```
-
-Non-compliant: class components, `any`, untyped responses without guards, secrets embedded client-side.
+Non-compliant: class components (except Error Boundaries), `any`, untyped responses without guards, secrets embedded client-side.
 
 ## Diagram Creation (mermaid)
 
@@ -393,6 +347,14 @@ Non-compliant: class components, `any`, untyped responses without guards, secret
 - [ ] All items from Unit Inventory (if provided) accounted for
 
 ## Acceptance Criteria Creation Guidelines
+
+### Value-First Drafting and Boundary Expansion
+
+Draft each AC value-first, then expand it across requirement boundaries before applying the scoping rules below:
+
+1. **Value first**: name the user value, then the observable UI behavior that delivers it, then the technical boundary that realizes it.
+2. **Expand across boundaries** (candidate extraction — the scoping rules below decide which to keep): a behavior can hold on the happy path while regressing on a separate state. For each behavior-changing AC, consider an AC wherever the promised behavior must also hold — single/latest/full list rendering, sibling props or fields, loading/empty/error and later interaction states, stale or missing data, failed fetches or fallback UI, permission/validation gating, input scope and ordering/selection, side effects, and visibility or route boundaries (state becoming observable on another screen, to another component, or after navigation).
+3. **Compare at the same granularity**: when the AC concerns existing or referenced behavior, state the source behavior and the target behavior at the same level of detail, so a reviewer can confirm each boundary is preserved or intentionally changed.
 
 ### AC Scoping for Autonomous Implementation (Frontend)
 

@@ -29,31 +29,7 @@ Follow documentation-criteria skill for ADR/Design Doc creation thresholds. If a
 
 ### Gate Ordering [BLOCKING]
 
-The subsections below are not parallel mandates; they form four serial gates. Complete each gate fully before starting the next. Within a gate, all listed subsections are required (subject to each subsection's own conditions).
-
-**Gate 0 — Inputs and Standards** (no upstream dependencies):
-- Agreement Checklist
-- Standards Identification
-
-**Gate 1 — Existing State Analysis** (depends on Gate 0):
-- Existing Code Investigation
-- Fact Disposition (when Codebase Analysis input is provided)
-- Data Representation Decision (when new or modified data structures are introduced)
-- Minimal Surface Alternatives (when introducing persistent state, public-contract elements or cross-boundary fields, behavioral modes/flags, or reusable abstractions)
-
-**Gate 2 — Design Decisions** (depends on Gate 1):
-- Implementation Approach Decision
-- Common ADR Process
-- Data Contracts
-- State Transitions (when applicable)
-
-**Gate 3 — Impact Documentation** (depends on Gate 2):
-- Integration Points
-- Change Impact Map
-- Field Propagation Map (when fields cross component boundaries)
-- Interface Change Impact Analysis
-
-Each subsection below carries a `[Gate N — ...]` annotation in its heading. Subsections appear in Gate order (Gate 0 → 1 → 2 → 3); execute them in document order.
+The subsections below are not parallel mandates; they form four serial gates: **Gate 0** Inputs & Standards → **Gate 1** Existing-State Analysis → **Gate 2** Design Decisions → **Gate 3** Impact Documentation. Complete each gate fully before starting the next. Each subsection below carries a `[Gate N — ...]` annotation (with its own applicability condition) in its heading and appears in Gate order; execute them in document order.
 
 ### Agreement Checklist [Gate 0 — Required]
 Must be performed at the beginning of Design Doc creation:
@@ -369,6 +345,14 @@ Consistency first (follow existing patterns; document reason when introducing ne
 
 
 ## Acceptance Criteria Creation Guidelines
+
+### Value-First Drafting and Boundary Expansion
+
+Draft each AC value-first, then expand it across requirement boundaries before applying the rules below:
+
+1. **Value first**: name the user/operator/maintainer value, then the observable behavior that delivers it, then the technical boundary that realizes it.
+2. **Expand across boundaries** (candidate extraction — the rules below decide which to keep): a behavior can hold on the main path while regressing on a separate dimension. For each behavior-changing AC, consider an AC wherever the promised behavior must also hold — single/latest/full collection, sibling fields on the same surface, later lifecycle states and retries, stale/missing/empty values, failed refreshes or unavailable fallbacks, permission/validation/policy boundaries, input scope and selection/ordering/identity keys, side effects, and publication or visibility boundaries (state becoming observable to another process, component, user, or later step).
+3. **Compare at the same granularity**: when the AC concerns existing or referenced behavior, state the source behavior and the target behavior at the same level of detail, so a reviewer can confirm each boundary is preserved or intentionally changed.
 
 ### Writing Measurable ACs
 

@@ -183,20 +183,19 @@ skills:
   # フロントエンド固有スキル
   frontend-typescript-rules:
     skill: "frontend-typescript-rules"
-    tags: [frontend, react, implementation, type-safety, props-driven, hooks, component-design, vite, error-boundary]
-    typical-use: "React/Viteでのフロントエンド開発、コンポーネント設計、Props設計、環境変数管理"
+    tags: [frontend, react, implementation, type-safety, component-design, props-driven, hooks, error-handling, conventions]
+    typical-use: "Reactコンポーネント実装、Props/状態設計、エラーハンドリング、frontend TypeScript実装ルール"
     size: small
     key-references:
-      - "React公式ドキュメント - Function Components"
-      - "Props-driven開発 - React Patterns"
+      - "React Function Components - React docs"
+      - "Type guards at external boundaries (unknown narrowing)"
+      - "Result type and Error Boundary error handling"
     sections:
-      - "型システム"
-      - "Reactコンポーネント設計"
-      - "状態管理"
+      - "アンチパターンとしきい値"
+      - "境界での型安全性"
+      - "コンポーネントと状態の設計"
       - "エラーハンドリング"
-      - "イベントハンドリング"
-      - "コーディング規約"
-      - "アンチパターン"
+      - "プロジェクト規約"
 
   frontend-typescript-testing:
     skill: "frontend-typescript-testing"
@@ -209,12 +208,12 @@ skills:
       - "ADR-0002 Co-location原則"
       - "references/e2e.md - Playwright E2Eパターン"
     sections:
+      - "参照"
       - "テストフレームワーク"
       - "テストの基本方針"
       - "テストの実装規約"
       - "モックの型安全性の徹底"
       - "React Testing Libraryの基本例"
-      - "テスト品質基準"
       - "テスト設計パターン"
 
   frontend-technical-spec:

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.3] - 2026-06-06
+
+### Added
+
+- **Requirement-boundary fidelity gates** (agents) — Behavior changes are specified, proven, and verified at the requirement boundaries where regressions hide (a behavior can hold on the main path while regressing on a separate branch / state / input / lifecycle / fallback dimension). `technical-designer` / `-frontend` draft each AC value-first and expand it across requirement boundaries before scoping; `acceptance-test-generator` records a boundary-path proof obligation so the generated test traverses the path that would otherwise stay green through a regression; `task-executor` / `-frontend` add a Step 4 Core Mechanism Preservation Check that escalates `design_compliance_violation` when a required mechanism would be replaced by a weaker substitute or is infeasible; `code-reviewer` verifies boundary-path evidence, core-mechanism preservation, and publication-boundary state at AC verification
+
+### Changed
+
+- **technical-designer prompt trimming** (agents) — Compressed the Gate Ordering section to a single serial-gate line, with gate membership and applicability conditions retained in each subsection's `[Gate N — ...]` heading; removed the inline React implementation sample from `technical-designer-frontend` in favor of the loaded `frontend-typescript-rules` skill
+- **Frontend skill alignment across en/ja** (skills) — `frontend-typescript-rules` is a rules-first, self-contained rewrite (thresholds, boundary type safety, component/state rules, and `Result` / `AppError` / Error Boundary idioms; generic syntax examples and `React.FC` dropped); `frontend-typescript-testing` unifies the en/ja structure, routes E2E to `references/e2e.md`, and uses MSW v2 (`http` / `HttpResponse`); `frontend-technical-spec` uses the `VITE_` prefix for client-exposed environment variables
+
 ## [1.23.2] - 2026-06-01
 
 ### Added

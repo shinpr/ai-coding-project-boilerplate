@@ -94,6 +94,12 @@ Escalation thresholds:
 - Exactly the pair (a+c) or (b+c) → Escalation; any other 2-indicator combination → Continue
 - 1 or fewer indicators match → Continue implementation
 
+### Step4: Core Mechanism Preservation Check (Any YES → Immediate Escalation)
+Preserve the core mechanism the task, AC, Design Doc, or UI Spec requires. Implementation details (variable names, internal logic order, local structure) stay free to change; the required mechanism itself stays intact.
+□ Required core mechanism replaced by a simpler or weaker substitute? (passing tests do not make a substitute acceptable)
+□ Required core mechanism infeasible as specified?
+Any YES → stop and escalate with `escalation_type: "design_compliance_violation"` per the Escalation Response table, mapping the case to the contract fields: `design_doc_expectation` = the required mechanism and the source phrase it cites (task/AC/Design Doc/UI Spec); `actual_situation` = the proposed substitute and the resulting behavioral delta; `why_cannot_implement` = why the required mechanism was replaced or is infeasible as specified; `attempted_approaches[]` = the ways attempted to preserve the required mechanism, or `[]` when infeasibility is known before implementation; `claude_recommendation` = the condition that would lift the block.
+
 ### Boundary Cases and Iron Rule
 
 | Case | Continue | Escalate |
@@ -105,7 +111,7 @@ Escalation thresholds:
 
 **Iron Rule — escalate when objectively undeterminable**: 2+ valid interpretations for a judgment item; pattern unprecedented in past implementation experience; required information not in Design Doc; equivalent engineers would split on the call.
 
-### Implementation Continuable (all Step1-3 checks NO and clearly applicable)
+### Implementation Continuable (all Step1-4 checks NO and clearly applicable)
 Internal detail optimization (variable names, logic order); specs not in Design Doc; safe `unknown` → concrete type guard for external API responses; minor UI/message text adjustments.
 
 ## Responsibilities, Authority, and Boundaries

@@ -17,10 +17,10 @@ TypeScript-based React application implementation. Architecture patterns should 
 - Properly implement default value settings and mandatory checks
 
 ```typescript
-// Build tool environment variables (public values only)
+// Build tool environment variables (public values only; client-exposed vars need the VITE_ prefix)
 const config = {
-  apiUrl: import.meta.env.API_URL || 'http://localhost:3000',
-  appName: import.meta.env.APP_NAME || 'My App'
+  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  appName: import.meta.env.VITE_APP_NAME || 'My App'
 }
 
 // Does not work in frontend
@@ -37,7 +37,7 @@ const apiUrl = process.env.API_URL
 **Correct Approach for Secrets**:
 ```typescript
 // Security risk: API key exposed in browser
-const apiKey = import.meta.env.API_KEY
+const apiKey = import.meta.env.VITE_API_KEY
 const response = await fetch(`https://api.example.com/data?key=${apiKey}`)
 
 // Correct: Backend manages secrets, frontend accesses via proxy
