@@ -18,9 +18,9 @@ Work plan: $ARGUMENTS
 
 ## Pre-execution Prerequisites
 
-### Implementation Readiness Check
+### Work Plan Resolution
 
-Before any task processing, locate the work plan to gate against.
+Before any task processing, locate the work plan.
 
 **When `$ARGUMENTS` is provided**, it is the work plan path supplied by the user. Use it directly without auto-resolution. Extract `{plan-name}` from the filename by stripping the `.md` extension (and any trailing `-plan` suffix when present).
 
@@ -33,27 +33,18 @@ Before any task processing, locate the work plan to gate against.
 4. When at least one task file matches, the work plan is `docs/plans/{plan-name}.md` for the prefix that has the most recent task-file mtime; ties broken by the lexicographically last `{plan-name}`
 5. When no `*-frontend-task-*.md` is found AND a non-template work plan exists in `docs/plans/`, do not assume the most-recent plan applies — frontend tasks must be explicitly named. Stop and report: "No `*-frontend-task-*.md` found in `docs/plans/tasks/`. If you intended to run this recipe on a frontend plan, either re-run task-decomposer so it emits frontend-named task files, or pass the work plan path as `$ARGUMENTS`. If the plan is backend, use the backend build recipe instead."
 
-Read the work plan header and find the line `Implementation Readiness: <status>`. Apply this rule:
-
-| Status | Action |
-|--------|--------|
-| `ready` | Proceed to Consumed Task Set computation |
-| `escalated` | Read the work plan's Readiness Report section, surface remaining gaps to the user via AskUserQuestion: "Implementation Readiness is `escalated` with the following remaining gaps: [list]. Continue execution? (y/n)". On `y` proceed; on `n` stop |
-| `pending` | Present via AskUserQuestion: "Implementation Readiness is `pending`. Run the readiness preflight first to verify the work plan is implementable, then resume. Continue without preflight? (y/n)". On `y` proceed; on `n` stop |
-| absent (line missing) | Treat as `pending` — older work plans created before the readiness marker existed should be preflighted explicitly |
-
 ### Consumed Task Set
 
 Compute the **Consumed Task Set** for this run — the exact files this recipe owns, executes, and later deletes. Per the routing table, the only consumable pattern is:
 
-1. List task files in `docs/plans/tasks/` matching `{plan-name}-frontend-task-*.md` for the `{plan-name}` resolved by the readiness check. `{plan-name}-task-*.md` and `{plan-name}-backend-task-*.md` are excluded — they route to `task-executor` and are owned by the backend build recipe
+1. List task files in `docs/plans/tasks/` matching `{plan-name}-frontend-task-*.md` for the `{plan-name}` resolved by Work Plan Resolution. `{plan-name}-task-*.md` and `{plan-name}-backend-task-*.md` are excluded — they route to `task-executor` and are owned by the backend build recipe
 2. Exclude every file matching: `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, `integration-tests-*-task-*.md` (these originate from other workflow phases)
 
 Every subsequent reference to "task files" in this recipe — Task Generation Decision Flow, Task Execution Cycle iteration, and Final Cleanup — uses this set, not the unrestricted `docs/plans/tasks/*.md` glob.
 
 ### Task Generation Decision Flow
 
-Analyze the Consumed Task Set and determine the action required. Note: when `$ARGUMENTS` is empty AND no `*-frontend-task-*.md` exist, the readiness check above already stops execution — so the rows below that involve "no tasks" only fire when the user explicitly supplied `$ARGUMENTS`.
+Analyze the Consumed Task Set and determine the action required. Note: when `$ARGUMENTS` is empty AND no `*-frontend-task-*.md` exist, Work Plan Resolution above already stops execution — so the rows below that involve "no tasks" only fire when the user explicitly supplied `$ARGUMENTS`.
 
 | State | Criteria | Next Action |
 |-------|----------|-------------|

@@ -216,14 +216,9 @@ According to scale determination:
 
 Note: At Small scale the implementation step still runs through task-executor with the standard 4-step cycle (`task-executor → escalation judgment → quality-fixer → commit`). Direct orchestrator edits are not used.
 
-### Implementation Readiness Marker
+### Optional Preflight
 
-For Medium / Large scale, after Batch approval the work plan carries an `Implementation Readiness:` header (work-planner emits `pending`; promotion to `ready` or `escalated` is an external orchestration concern). The marker takes one of three values:
-- `pending` — initial state set by work-planner
-- `ready` — readiness verification has completed with no remaining gaps; safe to start the task execution cycle
-- `escalated` — readiness verification has completed but residual gaps require user judgment before execution
-
-External orchestration owns both the producer that promotes the marker beyond `pending` and the consumer that reads it before invoking task-executor. This guide does not invoke any orchestrator above the agent layer; agents read/write the marker only when explicitly asked.
+For Medium / Large scale, after Batch approval implementation proceeds directly. Verifying the plan is implementable end-to-end (verification-strategy references, fixtures, UI rendering surface, E2E/local lane environment) is an optional preflight the user runs at their discretion via the prepare-implementation recipe, which exits no-op when readiness criteria already pass. This guide does not invoke any orchestrator above the agent layer.
 
 ## Cross-Layer Orchestration
 

@@ -332,7 +332,8 @@ Upon completion, report in the following JSON format. Detailed meta information 
 
 **Required Compliance**:
 - Output `it.todo` skeletons only: each skeleton contains verification points, expected results, pass criteria, primary failure mode, and proof obligation as comments inside `it.todo` blocks.
-  Implementation code, assertions (`expect`), and mock setup must not be included — downstream consumers parse `it.todo` presence to determine phase placement and review status.
+  Import only the test-framework symbols the `it.todo` needs (e.g. `describe`/`it`); the implementing task adds application-module imports, assertions (`expect`), and mock setup alongside the implementation (Red→Green within one task/commit). Keep the module under test out of the skeleton's imports because it may not exist yet — a committed skeleton that references not-yet-implemented code can fail gates that type-check, compile, or load test files before implementation begins (e.g. TypeScript projects may report TS2307).
+  Downstream consumers parse `it.todo` presence to determine phase placement and review status.
 - Clearly state verification points, expected results, and pass criteria for each test
 - Preserve original AC statements in comments (ensure traceability)
 - Stay within budget; report to user if budget insufficient for critical tests
