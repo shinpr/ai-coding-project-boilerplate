@@ -45,6 +45,8 @@ The two E2E lanes are budgeted independently — having a fixture-e2e for a jour
 
 ### Required Comment Format
 
+The committed skeleton imports only the test framework (for `describe`/`it`/`it.todo`); the module under test is imported by the implementing task, never by the skeleton — a skeleton that references a not-yet-created module can fail gates that type-check, compile, or load test files before implementation begins.
+
 Each test MUST include the following annotations.
 
 ```typescript

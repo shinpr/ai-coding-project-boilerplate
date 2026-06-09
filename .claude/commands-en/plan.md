@@ -76,11 +76,16 @@ Create a work plan from the selected design document, clarifying specific implem
 **Scope**: Up to work plan creation and obtaining approval for plan content.
 
 ## Response at Completion
-✅ **REQUIRED**: End with the following standard response after plan content approval
+**REQUIRED**: After plan content approval, output the following standard response
 ```
 Planning phase completed.
 - Work plan: docs/plans/[plan-name].md
 - Status: Approved
 
 Please provide separate instructions for implementation.
+```
+
+When the approved plan includes any of the following — E2E test skeletons; a Verification Strategy referencing commands, files, functions, or endpoints not yet in the codebase; UI components without a fixture entry or dev route to render their states; or a local lane not yet confirmed to run end-to-end — append one more line as the final line of the response (omit it otherwise):
+```
+Optional preflight: `/prepare-implementation docs/plans/[plan-name].md` verifies these are implementable before build (exits no-op when readiness criteria already pass).
 ```

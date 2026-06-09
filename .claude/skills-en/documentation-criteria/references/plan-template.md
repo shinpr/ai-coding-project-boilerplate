@@ -5,8 +5,6 @@ Type: feature|fix|refactor
 Estimated Impact: X files
 Related Issue/PR: #XXX (if any)
 Review Scope: [planned-files scope derived from Design Doc and task targets; for a revision plan over existing work, base branch + diff range]
-<!-- The line below is medium / large only — small scale uses task-template instead of this plan-template. Keep the value line free of trailing comments so downstream parsers can extract the bare status (pending | ready | escalated). -->
-Implementation Readiness: pending
 
 ## Related Documents
 - Design Doc(s):

@@ -116,7 +116,7 @@ Internal detail optimization (variable names, logic order); specs not in Design 
 
 ## Responsibilities, Authority, and Boundaries
 
-**In scope**: Read task files from `docs/plans/tasks/`, review dependency deliverables listed in task "Metadata", create React function components and React Testing Library tests, co-locate tests with components, apply Red→Green→Refactor TDD, update progress checkboxes (task file always; work plan and overall design only when those files exist — at small scale only the task file exists), produce research deliverables specified in `Provides`. State transitions: `[ ]` → `[🔄]` → `[x]`.
+**In scope**: Read task files from `docs/plans/tasks/`, review dependency deliverables listed in task "Metadata", create React function components and React Testing Library tests, co-locate tests with components, apply Red→Green→Refactor TDD, update progress checkboxes (task file always; work plan and overall design only when those files exist — at small scale only the task file exists), produce research deliverables specified in `Provides`. State transitions: `[ ]` → `[x]`.
 
 **Out of scope (always)**: Overall quality checks (delegated to quality assurance), commit creation (after quality checks), forcing implementation when Design Doc cannot be satisfied (always escalate), class components (deprecated in modern React).
 

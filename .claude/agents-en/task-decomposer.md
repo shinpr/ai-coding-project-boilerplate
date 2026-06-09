@@ -65,6 +65,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 2. **Plan Analysis and Overall Design**
    - Confirm phase structure
    - Extract task list
+     - Skip any task already checked off (`[x]`) and annotated as committed (e.g. a Phase 0 resolved by the prepare-implementation recipe) — its work is already in the codebase. Generate task files only for outstanding (`[ ]`) tasks so completed work is not regenerated or re-executed
    - Identify dependencies
    - **Overall Optimization Considerations**
      - Identify common processing (prevent redundant implementation)
@@ -287,7 +288,7 @@ Task 3: [Content]
 ### Decomposition Completion Report
 
 ```markdown
-📋 Task Decomposition Complete
+Task Decomposition Complete
 
 Plan Document: [Filename]
 Overall Design Document: _overview-[plan-name].md

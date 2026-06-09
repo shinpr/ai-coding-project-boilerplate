@@ -18,9 +18,9 @@ Work plan: $ARGUMENTS
 
 ## Pre-execution Prerequisites
 
-### Implementation Readiness Check
+### Work Plan Resolution
 
-Before any task processing, locate the work plan to gate against.
+Before any task processing, locate the work plan.
 
 **When `$ARGUMENTS` is provided**, it is the work plan path supplied by the user. Use it directly without auto-resolution. Extract `{plan-name}` from the filename by stripping the `.md` extension (and any trailing `-plan` suffix when present).
 
@@ -51,27 +51,18 @@ Before any task processing, locate the work plan to gate against.
    - Otherwise (no backend signal found, OR any frontend signal present, OR layer-neutral paths only) → stop and report: "Cannot positively verify the most-recent work plan at `[path]` is a backend plan (signals examined: [list of signals checked and their results]). Pass the intended backend plan path as `$ARGUMENTS`, or run task-decomposer first to populate `docs/plans/tasks/` with backend-named task files."
 7. When no plan exists at all in `docs/plans/`, stop and report: "No work plan found. Pass a work plan path as `$ARGUMENTS`, or complete the planning phase first."
 
-Read the work plan header and find the line `Implementation Readiness: <status>`. Apply this rule:
-
-| Status | Action |
-|--------|--------|
-| `ready` | Proceed to Consumed Task Set computation |
-| `escalated` | Read the work plan's Readiness Report section, surface remaining gaps to the user via AskUserQuestion: "Implementation Readiness is `escalated` with the following remaining gaps: [list]. Continue execution? (y/n)". On `y` proceed; on `n` stop |
-| `pending` | Present via AskUserQuestion: "Implementation Readiness is `pending`. Run the readiness preflight first to verify the work plan is implementable, then resume. Continue without preflight? (y/n)". On `y` proceed; on `n` stop |
-| absent (line missing) | Treat as `pending` — older work plans created before the readiness marker existed should be preflighted explicitly |
-
 ### Consumed Task Set
 
-Compute the **Consumed Task Set** for this run — the exact files this recipe owns, executes, and later deletes. Use the same consumable patterns as the Implementation Readiness Check:
+Compute the **Consumed Task Set** for this run — the exact files this recipe owns, executes, and later deletes. Use the same consumable patterns as Work Plan Resolution:
 
-1. List task files in `docs/plans/tasks/` matching `{plan-name}-task-*.md` OR `{plan-name}-backend-task-*.md` for the `{plan-name}` resolved by the readiness check. `{plan-name}-frontend-task-*.md` is excluded — it is owned by the frontend build recipe
+1. List task files in `docs/plans/tasks/` matching `{plan-name}-task-*.md` OR `{plan-name}-backend-task-*.md` for the `{plan-name}` resolved by Work Plan Resolution. `{plan-name}-frontend-task-*.md` is excluded — it is owned by the frontend build recipe
 2. Exclude every file matching: `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, `integration-tests-*-task-*.md` (these originate from other workflow phases)
 
 Every subsequent reference to "task files" in this recipe — Task Generation Decision Flow, Task Execution Cycle iteration, and Final Cleanup — uses this set, not the unrestricted `docs/plans/tasks/*.md` glob.
 
 ### Task Generation Decision Flow
 
-Analyze the Consumed Task Set and determine the action required. Reaching this section implies the readiness check above resolved a work plan (Steps 1-6 succeeded); the "no plan" state is already terminated by readiness-check Step 7 and never reaches this table.
+Analyze the Consumed Task Set and determine the action required. Reaching this section implies Work Plan Resolution above resolved a work plan (Steps 1-6 succeeded); the "no plan" state is already terminated by Work Plan Resolution Step 7 and never reaches this table.
 
 | State | Criteria | Next Action |
 |-------|----------|-------------|
@@ -79,7 +70,7 @@ Analyze the Consumed Task Set and determine the action required. Reaching this s
 | No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | Confirm with user → run task-decomposer |
 | No tasks + plan auto-resolved | Consumed Task Set empty AND plan came from auto-resolution AND Step 6 confirmed at least one backend signal with zero frontend signals | Confirm with user → run task-decomposer (the layer verification in Step 6 already excluded frontend and ambiguous plans, so this is safe) |
 
-To bootstrap from a Design Doc when no plan exists yet, run the planning recipe first to produce a work plan, then re-invoke this recipe — the readiness check above intentionally requires a resolved work plan rather than auto-creating one, to keep the layer decision explicit.
+To bootstrap from a Design Doc when no plan exists yet, run the planning recipe first to produce a work plan, then re-invoke this recipe — Work Plan Resolution above intentionally requires a resolved work plan rather than auto-creating one, to keep the layer decision explicit.
 
 ## Task Decomposition Phase (Conditional)
 

@@ -55,7 +55,7 @@ fixture-e2e gap:
     AND e2eAbsenceReason.fixtureE2e was not communicated
     AND Design Doc or UI Spec contains user-facing multi-step user journey
   THEN add to work plan header:
-    ⚠ fixture-e2e Gap: This feature contains user-facing multi-step journey(s)
+    fixture-e2e Gap: This feature contains user-facing multi-step journey(s)
     but no fixture-e2e skeleton was provided. Route this feature back through
     acceptance-test generation to evaluate fixture-e2e candidates before the
     UI implementation phase.
@@ -68,7 +68,7 @@ service-integration-e2e gap:
         verification (data persistence across services, transactional
         consistency, external service contract)
   THEN add to work plan header:
-    ⚠ service-integration-e2e Gap: This feature crosses service boundaries
+    service-integration-e2e Gap: This feature crosses service boundaries
     where correctness depends on real cross-service behavior, but no
     service-integration-e2e skeleton was provided.
     Detected boundaries: [list crossings and AC references]
@@ -158,8 +158,6 @@ For each task, derive completion criteria from Design Doc acceptance criteria. A
 
 - **`scale: medium` / `scale: large`**: Write a work plan following the **plan-template** from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
 - **`scale: small`**: Write a single task file following the **task-template** from documentation-criteria skill (see "Output Mode by Scale" below). Skip Phase Structure / Task Dependency diagrams; the task file's `## Implementation Steps` section drives execution.
-
-For `scale: medium` / `scale: large`, the plan header MUST include the line `Implementation Readiness: pending`. The marker contract: it takes one of three values — `pending` (initial, set here by work-planner), `ready` (verification completed with no remaining gaps), or `escalated` (verification completed with remaining gaps). The producer that promotes the marker beyond `pending` and the consumer that reads it before execution are external orchestration concerns owned outside this agent.
 
 ## Input Parameters
 
@@ -365,7 +363,6 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
   - [ ] Each row's `Axis` value is exactly one of `placement` | `dependency_direction` | `contract_schema` | `data_flow` | `persistence`
   - [ ] Each row's `Source Section` is set to `Decision` or `Implementation Guidance` matching the actual location of the decision in the ADR
   - [ ] Every row maps to at least one covering task
-- [ ] Plan header includes `Implementation Readiness: pending` (medium / large only)
 - [ ] Verification Strategy extracted from Design Doc and included in plan header
 - [ ] Proof Strategy included in plan header (proof obligation source + per-task propagation rule)
 - [ ] Review Scope recorded in plan header (base branch / diff range / changed-files scope)

@@ -43,9 +43,9 @@ Present proposals to user and apply after approval:
 
 ```
 [1/N] typescript-rules
-  ✅ sections: synchronized
-  💡 tags proposed: +[functional-programming]
-  💡 typical-use: "old description" → "new description"
+  sections: synchronized
+  tags proposed: +[functional-programming]
+  typical-use: "old description" → "new description"
 ```
 
 ## Completion Criteria

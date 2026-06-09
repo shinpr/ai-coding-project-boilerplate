@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.4] - 2026-06-09
+
+### Changed
+
+- **Implementation Readiness gate → optional preflight** (agents, commands, skills) — The work plan no longer carries an `Implementation Readiness` marker and the build / front-build / implement recipes no longer halt on it. Verifying a plan is implementable end-to-end is now an optional, user-invoked preflight via `prepare-implementation`, which presents its Readiness Report in-session (instead of persisting it into the plan or promoting a header marker) and records committed Phase 0 tasks as done so `task-decomposer` does not regenerate them. `plan` surfaces the preflight as a conditional suggestion; `subagents-orchestration-guide` describes it as optional. Applied across en/ja.
+- **Test skeletons stay green under static gates** (agents, skills) — `acceptance-test-generator` and `integration-e2e-testing` bound skeleton generation so a committed skeleton imports only the test framework (no module under test, assertions, or mocks); the implementing task adds executable code alongside the implementation, keeping a freshly committed skeleton green under typecheck / compile / test-load gates.
+- **Removed decorative emojis** (agents, commands) — Stripped pictographic emojis from prompt files and simplified `task-executor` progress states to `[ ] → [x]`. Functional symbols (`[ ]` / `[x]` checkboxes, `→` flow arrows, check / cross marks) are retained.
+
 ## [1.23.3] - 2026-06-06
 
 ### Added

@@ -18,9 +18,9 @@ description: 分解済みタスクを自律実行モードで実装
 
 ## 実行前提条件
 
-### Implementation Readinessチェック
+### 作業計画書の解決
 
-タスク処理の前に、ゲート対象となる作業計画書を特定する。
+タスク処理の前に、作業計画書を特定する。
 
 **`$ARGUMENTS`が指定されている場合**は、それがユーザーから渡された作業計画書のパスである。自動解決を行わずそのまま使用する。`{plan-name}`はファイル名から `.md` 拡張子（および末尾に `-plan` がある場合はそれも）を除いて抽出する。
 
@@ -51,35 +51,26 @@ description: 分解済みタスクを自律実行モードで実装
    - それ以外（backend 信号がない、または frontend 信号が1つでもある、または layer-neutral なパスのみ）→ 停止して報告する: 「最も新しい作業計画書 `[path]` が backend 計画であることを確証できません（確認した信号と結果: [リスト]）。意図する backend 計画書のパスを `$ARGUMENTS` で指定するか、task-decomposer を先に実行して `docs/plans/tasks/` に backend 命名のタスクファイルを出力してください。」
 7. `docs/plans/`に計画書が一切存在しない場合は、停止して報告する: 「作業計画書が見つかりません。作業計画書のパスを `$ARGUMENTS` で指定するか、計画フェーズを先に完了してください。」
 
-作業計画書のヘッダを読み、`Implementation Readiness: <status>`の行を見つける。以下のルールを適用する:
-
-| ステータス | アクション |
-|--------|--------|
-| `ready` | Consumed Task Set の計算へ進む |
-| `escalated` | 作業計画書のReadiness Reportセクションを読み、AskUserQuestionで残存ギャップをユーザーに提示する: 「Implementation Readinessが`escalated`で、以下の残存ギャップがあります: [リスト]。実行を継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
-| `pending` | AskUserQuestionで提示する: 「Implementation Readinessが`pending`です。事前にreadiness preflightを実行して作業計画書の実装可能性を検証してから再開してください。preflightなしで継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
-| 行が存在しない | `pending`として扱う — readinessマーカー導入前に作成された古い作業計画書は明示的にpreflightすべき |
-
 ### Consumed Task Set
 
-本実行で消費する **Consumed Task Set** を計算する — 本レシピが所有・実行・後で削除する正確なファイル群。Implementation Readinessチェックと同じ消費可能パターンを使用する:
+本実行で消費する **Consumed Task Set** を計算する — 本レシピが所有・実行・後で削除する正確なファイル群。作業計画書の解決と同じ消費可能パターンを使用する:
 
-1. Implementation Readinessチェックで解決した `{plan-name}` について、`docs/plans/tasks/`内で `{plan-name}-task-*.md` または `{plan-name}-backend-task-*.md` にマッチするタスクファイルを列挙する。`{plan-name}-frontend-task-*.md` は除外する — frontend build レシピが所有する
+1. 作業計画書の解決で確定した `{plan-name}` について、`docs/plans/tasks/`内で `{plan-name}-task-*.md` または `{plan-name}-backend-task-*.md` にマッチするタスクファイルを列挙する。`{plan-name}-frontend-task-*.md` は除外する — frontend build レシピが所有する
 2. 以下にマッチするファイルを除外する: `*-task-prep-*.md`、`_overview-*.md`、`*-phase*-completion.md`、`review-fixes-*.md`、`integration-tests-*-task-*.md`（これらは他のワークフローフェーズに由来する）
 
 本レシピ内で「タスクファイル」と参照する箇所すべて — タスク生成判定フロー、タスク実行サイクルの反復、最終クリーンアップ — はこのセットを使用する。`docs/plans/tasks/*.md` を制限なく glob しない。
 
 ### タスク生成判定フロー
 
-Consumed Task Set を確認し、適切な対応を決定する。注: 本セクションに到達するということは、上記の readiness check が作業計画書を解決済み（Steps 1-6 が成功）であることを意味する。「計画書なし」の状態は readiness check の Step 7 が既に終了させており、本表には到達しない。
+Consumed Task Set を確認し、適切な対応を決定する。注: 本セクションに到達するということは、上記の作業計画書の解決（Steps 1-6 が成功）で作業計画書が確定済みであることを意味する。「計画書なし」の状態は作業計画書の解決の Step 7 が既に終了させており、本表には到達しない。
 
 | 状態 | 判定基準 | 次のアクション |
 |------|---------|--------------|
 | タスク存在 | Consumed Task Set が非空 | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
 | タスクなし + `$ARGUMENTS`で計画書指定 | `$ARGUMENTS`が提供され Consumed Task Set が空 | ユーザーに確認 → task-decomposer実行 |
-| タスクなし + 計画書を自動解決 | Consumed Task Set が空かつ計画書が自動解決（readiness check の Step 6 経由）で得られ、backend 信号 ≥1 かつ frontend 信号 = 0 が確認済み | ユーザーに確認 → task-decomposer実行（Step 6 のレイヤー検証で frontend / 不確定な計画は既に除外されているため安全） |
+| タスクなし + 計画書を自動解決 | Consumed Task Set が空かつ計画書が自動解決（作業計画書の解決の Step 6 経由）で得られ、backend 信号 ≥1 かつ frontend 信号 = 0 が確認済み | ユーザーに確認 → task-decomposer実行（Step 6 のレイヤー検証で frontend / 不確定な計画は既に除外されているため安全） |
 
-Design Doc から作業計画書がまだない状態で着手したい場合は、先に計画レシピを実行して計画書を生成してから本レシピを再起動する — 上記 readiness check は意図的に自動生成を行わず、レイヤー判断を明示的に保つ。
+Design Doc から作業計画書がまだない状態で着手したい場合は、先に計画レシピを実行して計画書を生成してから本レシピを再起動する — 上記の作業計画書の解決は意図的に自動生成を行わず、レイヤー判断を明示的に保つ。
 
 ## タスク分解フェーズ（条件付き実行）
 

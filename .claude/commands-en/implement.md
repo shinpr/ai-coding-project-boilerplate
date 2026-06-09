@@ -45,7 +45,7 @@ After scale determination, **register all steps of the applicable subagents-orch
 
 **Check next pending task with TaskList**.
 
-## 📋 subagents-orchestration-guide skill Compliance Execution
+## subagents-orchestration-guide skill Compliance Execution
 
 **Pre-execution Checklist (Required)**:
 - [ ] Confirmed relevant subagents-orchestration-guide skill flow
@@ -57,19 +57,6 @@ After scale determination, **register all steps of the applicable subagents-orch
 - [ ] Understood the 4-step cycle after task execution (task-executor → escalation judgment/follow-up → quality-fixer → commit)
 
 **Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TaskCreate/TaskUpdate
-
-## Implementation Readiness Check (between work-planner approval and task-decomposer)
-
-After work-planner completes and the user grants batch approval, before invoking task-decomposer, read the work plan header and find the line `Implementation Readiness: <status>`. Apply this rule:
-
-| Status | Action |
-|--------|--------|
-| `ready` | Proceed to task-decomposer |
-| `escalated` | Read the work plan's Readiness Report section, surface remaining gaps to the user via AskUserQuestion: "Implementation Readiness is `escalated` with the following remaining gaps: [list]. Continue execution? (y/n)". On `y` proceed; on `n` stop |
-| `pending` | Present via AskUserQuestion: "Implementation Readiness is `pending`. Run the readiness preflight first to verify the work plan is implementable, then resume. Continue without preflight? (y/n)". On `y` proceed; on `n` stop |
-| absent (line missing) | Treat as `pending` — older work plans created before the readiness marker existed should be preflighted explicitly |
-
-This check applies to all scales (Small / Medium / Large) because this recipe is the scale-agnostic orchestrator.
 
 ## Scope Boundary for Subagents
 
@@ -87,7 +74,7 @@ Additionally, include the following constraint at the end of every sub-agent pro
 [Constraint] rule-advisor can only be used by Main AI
 ```
 
-## 🎯 Mandatory Orchestrator Responsibilities
+## Mandatory Orchestrator Responsibilities
 
 ### Task Execution Quality Cycle
 Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these steps with TaskCreate/TaskUpdate:
