@@ -288,7 +288,7 @@ Task 3: [Content]
 ### Decomposition Completion Report
 
 ```markdown
-📋 Task Decomposition Complete
+Task Decomposition Complete
 
 Plan Document: [Filename]
 Overall Design Document: _overview-[plan-name].md

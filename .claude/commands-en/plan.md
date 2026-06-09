@@ -76,7 +76,7 @@ Create a work plan from the selected design document, clarifying specific implem
 **Scope**: Up to work plan creation and obtaining approval for plan content.
 
 ## Response at Completion
-✅ **REQUIRED**: End with the following standard response after plan content approval
+**REQUIRED**: After plan content approval, output the following standard response
 ```
 Planning phase completed.
 - Work plan: docs/plans/[plan-name].md

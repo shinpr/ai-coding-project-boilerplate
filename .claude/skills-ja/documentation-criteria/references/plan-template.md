@@ -5,8 +5,6 @@
 想定影響範囲: Xファイル
 関連Issue/PR: #XXX（該当する場合）
 レビュースコープ: [Design Docとタスク対象から導出した変更予定ファイルの範囲。既存作業に対する改訂計画の場合はベースブランチ + diff範囲]
-<!-- 下記の行はmedium / large規模のみ — small規模はこのplan-templateではなくtask-templateを使用する。値の行は末尾コメントを付けず、下流のパーサがbare statusの抽出（pending | ready | escalated）を行えるように保つこと。 -->
-Implementation Readiness: pending
 
 ## 関連ドキュメント
 - 設計書:

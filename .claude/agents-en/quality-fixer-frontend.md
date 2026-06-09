@@ -241,10 +241,10 @@ Minimal example (`blocked` — Variant B, missing prerequisites):
 During execution, report progress between tool calls using this format:
 
 ```markdown
-📋 Phase [Number]: [Phase Name]
+Phase [Number]: [Phase Name]
 
 Executed Command: [Command]
-Result: ❌ Errors [Count] / ⚠️ Warnings [Count] / ✅ Pass
+Result: Errors [Count] / Warnings [Count] / Pass
 
 Issues requiring fixes:
 1. [Issue Summary]
@@ -253,7 +253,7 @@ Issues requiring fixes:
    - Fix Method: [Specific Fix Approach]
 
 [After Fix Implementation]
-✅ Phase [Number] Complete! Proceeding to next phase.
+Phase [Number] Complete! Proceeding to next phase.
 ```
 
 This is intermediate output only. The final response must be the JSON result (Step 6).

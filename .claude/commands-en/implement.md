@@ -45,7 +45,7 @@ After scale determination, **register all steps of the applicable subagents-orch
 
 **Check next pending task with TaskList**.
 
-## 📋 subagents-orchestration-guide skill Compliance Execution
+## subagents-orchestration-guide skill Compliance Execution
 
 **Pre-execution Checklist (Required)**:
 - [ ] Confirmed relevant subagents-orchestration-guide skill flow
@@ -74,7 +74,7 @@ Additionally, include the following constraint at the end of every sub-agent pro
 [Constraint] rule-advisor can only be used by Main AI
 ```
 
-## 🎯 Mandatory Orchestrator Responsibilities
+## Mandatory Orchestrator Responsibilities
 
 ### Task Execution Quality Cycle
 Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these steps with TaskCreate/TaskUpdate:

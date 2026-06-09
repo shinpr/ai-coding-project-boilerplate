@@ -45,7 +45,7 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 
 **TaskListで次のpendingタスクを確認して実行**。
 
-## 📋 subagents-orchestration-guideスキル準拠の実行
+## subagents-orchestration-guideスキル準拠の実行
 
 **実行前チェック（必須）**：
 - [ ] subagents-orchestration-guideスキルの該当フローを確認した
@@ -57,19 +57,6 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 - [ ] タスク実行後の4ステップサイクル（task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit）を理解した
 
 **フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで4ステップを管理する
-
-## Implementation Readinessチェック（work-planner承認とtask-decomposerの間）
-
-work-plannerが完了しユーザーから一括承認を得た後、task-decomposerを呼び出す前に作業計画書のヘッダを読み、`Implementation Readiness: <status>`の行を見つける。以下のルールを適用する:
-
-| ステータス | アクション |
-|--------|--------|
-| `ready` | task-decomposerに進む |
-| `escalated` | 作業計画書のReadiness Reportセクションを読み、AskUserQuestionで残存ギャップをユーザーに提示する: 「Implementation Readinessが`escalated`で、以下の残存ギャップがあります: [リスト]。実行を継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
-| `pending` | AskUserQuestionで提示する: 「Implementation Readinessが`pending`です。事前にreadiness preflightを実行して作業計画書の実装可能性を検証してから再開してください。preflightなしで継続しますか？(y/n)」。`y`なら進む、`n`なら停止 |
-| 行が存在しない | `pending`として扱う — readinessマーカー導入前に作成された古い作業計画書は明示的にpreflightすべき |
-
-このチェックは全規模（Small / Medium / Large）に適用される。本レシピは規模に依存しないオーケストレーターであるため。
 
 ## サブエージェントのスコープ境界
 
@@ -87,7 +74,7 @@ Escalate when the required fix or investigation falls outside that scope.
 [Constraint] rule-advisor can only be used by Main AI
 ```
 
-## 🎯 オーケストレーターとしての必須責務
+## オーケストレーターとしての必須責務
 
 ### タスク実行品質サイクル
 subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで以下のステップを管理：

@@ -55,7 +55,7 @@ fixture-e2e gap:
     AND e2eAbsenceReason.fixtureE2e was not communicated
     AND Design Doc or UI Spec contains user-facing multi-step user journey
   THEN add to work plan header:
-    ⚠ fixture-e2e Gap: This feature contains user-facing multi-step journey(s)
+    fixture-e2e Gap: This feature contains user-facing multi-step journey(s)
     but no fixture-e2e skeleton was provided. Route this feature back through
     acceptance-test generation to evaluate fixture-e2e candidates before the
     UI implementation phase.
@@ -68,7 +68,7 @@ service-integration-e2e gap:
         verification (data persistence across services, transactional
         consistency, external service contract)
   THEN add to work plan header:
-    ⚠ service-integration-e2e Gap: This feature crosses service boundaries
+    service-integration-e2e Gap: This feature crosses service boundaries
     where correctness depends on real cross-service behavior, but no
     service-integration-e2e skeleton was provided.
     Detected boundaries: [list crossings and AC references]

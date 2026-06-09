@@ -211,14 +211,9 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 
 注: 小規模スケールでも実装ステップは task-executor を介して標準の4ステップサイクル（`task-executor → エスカレーション判定 → quality-fixer → commit`）で実行する。オーケストレーターによる直接編集は行わない。
 
-### Implementation Readinessマーカー
+### 任意の事前検証（Optional Preflight）
 
-Medium / Large規模では、一括承認後、作業計画書のヘッダに `Implementation Readiness:` 行が含まれる（work-plannerが`pending`を出力する。`ready` または `escalated` への昇格は外部オーケストレーションの関心事である）。マーカーは以下3値のいずれかを取る:
-- `pending` — work-plannerが設定する初期状態
-- `ready` — readiness検証が完了し残存ギャップなし。タスク実行サイクルを安全に開始できる
-- `escalated` — readiness検証は完了したが残存ギャップが存在し、実行前にユーザー判断が必要
-
-`pending`から先へマーカーを昇格させるプロデューサと、task-executor呼び出し前にマーカーを読むコンシューマは、いずれも外部オーケストレーションが所有する。本ガイドはエージェント層の上位にあるオーケストレーターを呼び出さない。エージェントは明示的に依頼された場合にのみマーカーを読み書きする。
+Medium / Large規模では、一括承認後、実装はそのまま進行する。計画がエンドツーエンドで実装可能か（検証戦略の参照、fixture、UI 描画面、E2E/ローカルレーン環境）の検証は、ユーザーが任意に prepare-implementation レシピで実行する事前検証であり、readiness 基準が既に満たされていれば no-op で終了する。本ガイドはエージェント層の上位にあるオーケストレーターを呼び出さない。
 
 ## レイヤー横断オーケストレーション
 
