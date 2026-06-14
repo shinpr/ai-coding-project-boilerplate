@@ -51,7 +51,7 @@ skills:
   typescript-testing:
     skill: "typescript-testing"
     tags: [quality, testing, coverage, vitest, backend, implementation]
-    typical-use: "バックエンドテスト作成、Vitest設定、70%カバレッジ要件、テスト品質基準"
+    typical-use: "バックエンドテスト作成、Vitest設定、カバレッジ方針、テスト品質基準"
     size: small
     key-references:
       - "Vitest公式ドキュメント"
@@ -200,12 +200,12 @@ skills:
   frontend-typescript-testing:
     skill: "frontend-typescript-testing"
     tags: [frontend, react, quality, testing, coverage, vitest, react-testing-library, msw, component-testing, implementation, playwright, e2e]
-    typical-use: "Reactコンポーネントのテスト作成、React Testing Library、MSW、60%カバレッジ要件、Co-location、Playwright E2Eテスト"
+    typical-use: "Reactコンポーネントのテスト作成、React Testing Library、MSW、カバレッジ方針、Co-location、Playwright E2Eテスト"
     size: small
     key-references:
       - "React Testing Library - Kent C. Dodds"
       - "MSW (Mock Service Worker) - API Mocking"
-      - "ADR-0002 Co-location原則"
+      - "Co-location原則"
       - "references/e2e.md - Playwright E2Eパターン"
     sections:
       - "参照"

@@ -116,23 +116,12 @@ Final message: exactly one JSON object matching the schema below (begins with `{
   "fileCount": 3,
   "adrRequired": true,
   "adrReason": "specific condition met, or null if not required",
-  "technicalConsiderations": {
-    "constraints": ["list"],
-    "risks": ["list"],
-    "dependencies": ["list"]
-  },
+  "technicalConsiderations": {"constraints": ["list"], "risks": ["list"], "dependencies": ["list"]},
   "scopeDependencies": [
-    {
-      "question": "specific question that affects scale",
-      "impact": { "if_yes": "large", "if_no": "medium" }
-    }
+    {"question": "specific question that affects scale", "impact": {"if_yes": "large", "if_no": "medium"}}
   ],
   "questions": [
-    {
-      "category": "boundary|existing_code|dependencies",
-      "question": "specific question",
-      "options": ["A", "B", "C"]
-    }
+    {"category": "boundary|existing_code|dependencies", "question": "specific question", "options": ["A", "B", "C"]}
   ]
 }
 ```

@@ -61,7 +61,8 @@ skills: project-context, technical-spec, coding-standards
 
 1. **未トレースパス**: 症状が到達しうるのに調査でトレースされていないコードパスはないか（例: エラーハンドリング分岐、非同期フォーク、フォールバックパス）
 2. **未チェックノード**: トレース済みパス上でチェックされていないノードはないか
-3. **追加の障害点**: 未トレースパスや未チェックノードから新たな障害が見つかった場合は記録する
+3. **隣接ケース**: 調査が `bug-fix` / `regression` / `state-change` / `boundary-change` に関わる場合（デバッグフローには Change Category フィールドが無いため、調査自体から判断する）、同一の経路・契約・永続状態・外部境界を共有し同じ障害を抱えうるケースはないか。妥当な隣接ケースをすべてトレースするか、トレースしないものは明示的に正当化する
+4. **追加の障害点**: 未トレースパス・未チェックノード・隣接ケースから新たな障害が見つかった場合は記録する
 
 目的は、調査のパスカバレッジが十分であるかを検証すること。
 
@@ -115,78 +116,33 @@ skills: project-context, technical-spec, coding-standards
     "identifiedGaps": ["未トレースパスや未チェックノード"]
   },
   "triangulationSupplements": [
-    {
-      "source": "追加で調査した情報源",
-      "findings": "発見した内容",
-      "impactOnFailurePoints": "既存の障害点への影響"
-    }
+    {"source": "追加で調査した情報源", "findings": "発見した内容", "impactOnFailurePoints": "既存の障害点への影響"}
   ],
   "externalResearch": [
-    {
-      "query": "検索したクエリ",
-      "source": "情報源",
-      "findings": "発見した関連情報",
-      "impactOnFailurePoints": "障害点への影響"
-    }
+    {"query": "検索したクエリ", "source": "情報源", "findings": "発見した関連情報", "impactOnFailurePoints": "障害点への影響"}
   ],
   "coverageCheck": {
     "missingPaths": ["調査入力でトレースされていないパス"],
     "uncheckedNodes": ["トレース済みパス上の未チェックノード"],
     "additionalFailurePoints": [
-      {
-        "id": "AFP1",
-        "nodeId": "ノード参照",
-        "symptomId": "症状参照",
-        "description": "新たに発見された障害",
-        "checkStatus": "supported|weakened|blocked|not_reached",
-        "evidence": [
-          {"type": "supporting", "detail": "証拠の詳細", "source": "file:line"}
-        ]
-      }
+      {"id": "AFP1", "nodeId": "ノード参照", "symptomId": "症状参照", "description": "新たに発見された障害", "checkStatus": "supported|weakened|blocked|not_reached", "evidence": [{"type": "supporting", "detail": "証拠の詳細", "source": "file:line"}]}
     ]
   },
   "devilsAdvocateFindings": [
-    {
-      "targetFailurePoint": "FP1",
-      "alternativeExplanation": "正常な動作である可能性は？",
-      "hiddenAssumptions": ["暗黙の前提"],
-      "potentialCounterEvidence": ["見落とされている可能性のある反証"]
-    }
+    {"targetFailurePoint": "FP1", "alternativeExplanation": "正常な動作である可能性は？", "hiddenAssumptions": ["暗黙の前提"], "potentialCounterEvidence": ["見落とされている可能性のある反証"]}
   ],
   "failurePointEvaluation": [
-    {
-      "failurePointId": "FP1またはAFP1",
-      "description": "障害点の記述",
-      "originalCheckStatus": "調査入力のcheckStatus（検証段階で発見されたAFPはnull）",
-      "finalStatus": "supported|weakened|blocked|not_reached",
-      "statusChangeReason": "ステータスが変更された理由（変更があった場合）",
-      "remainingUncertainty": ["残る不確実性"]
-    }
+    {"failurePointId": "FP1またはAFP1", "description": "障害点の記述", "originalCheckStatus": "調査入力のcheckStatus（検証段階で発見されたAFPはnull）", "finalStatus": "supported|weakened|blocked|not_reached", "statusChangeReason": "ステータスが変更された理由（変更があった場合）", "remainingUncertainty": ["残る不確実性"]}
   ],
   "conclusion": {
     "confirmedFailurePoints": [
-      {
-        "failurePointId": "FP1",
-        "description": "障害の内容",
-        "location": "file:line",
-        "symptomId": "S1",
-        "symptomExplained": "この障害が観察された症状にどうつながるか",
-        "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor",
-        "finalStatus": "supported|weakened",
-        "causalChain": ["現象", "→ 直接原因", "→ 根本原因"],
-        "impactScope": ["影響を受けるファイルパス"],
-        "recurrenceRisk": "low|medium|high"
-      }
+      {"failurePointId": "FP1", "description": "障害の内容", "location": "file:line", "symptomId": "S1", "symptomExplained": "この障害が観察された症状にどうつながるか", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "finalStatus": "supported|weakened", "causalChain": ["現象", "→ 直接原因", "→ 根本原因"], "impactScope": ["影響を受けるファイルパス"], "recurrenceRisk": "low|medium|high"}
     ],
     "refutedFailurePoints": [
       {"failurePointId": "FP2", "reason": "反証された理由"}
     ],
     "failurePointRelationships": [
-      {
-        "points": ["FP1", "FP3"],
-        "relationship": "independent|dependent|same_chain",
-        "detail": "障害点間の関係の説明"
-      }
+      {"points": ["FP1", "FP3"], "relationship": "independent|dependent|same_chain", "detail": "障害点間の関係の説明"}
     ],
     "coverageAssessment": "sufficient|partial|insufficient",
     "unresolvedSymptoms": ["確認された障害点で完全に説明できない症状"],

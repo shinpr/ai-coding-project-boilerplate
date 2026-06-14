@@ -102,6 +102,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Task overview
    - Target files
    - **Investigation Targets** (what the executor must read and understand before implementing)
+   - **Change Category** (when the task is a bug fix / regression / state-change / boundary-change — see Change Category Classification below)
    - Concrete implementation steps
    - **Quality Assurance Mechanisms** (derived from work plan header — see Quality Assurance Mechanism Propagation below)
    - **Operation Verification Methods** (derived from Verification Strategy in work plan)
@@ -221,6 +222,21 @@ When the work plan header includes a Quality Assurance Mechanisms table, propaga
 2. **Include matching mechanisms**: List all mechanisms whose coverage overlaps with the task's target files in the task's "Quality Assurance Mechanisms" section
 3. **Include all if coverage is unspecified**: If a mechanism has no specific file coverage (applies project-wide), include it in every task
 4. **Omit when no match**: If no mechanisms match a task's target files, omit the "Quality Assurance Mechanisms" section from that task
+
+## Change Category Classification
+
+When a task corrects observed behavior or alters how state or a boundary behaves, classify it so the executor and downstream reviewers run a scoped adjacent-case sweep from the field value, rather than re-inferring the task's intent:
+
+1. **Classify from the work plan and Design Doc**. A task can match more than one category (e.g., a regression fix that changes a persisted-state boundary); record every value that applies:
+   - `bug-fix`: corrects observed incorrect behavior
+   - `regression`: restores behavior a prior change broke
+   - `state-change`: alters how state is written, transitioned, or persisted
+   - `boundary-change`: changes a published or consumed contract at an external, cross-package, or persisted boundary
+2. **Populate the task's `Change Category` field** with all matched values, comma-separated (see task template).
+3. **Extend Investigation Targets with the adjacent cases**. For every matched category, add the files sharing the same path, contract, persisted state, or external boundary as the change — including the owner module on both sides of an affected boundary — so the executor can sweep them for the same class of defect. Union the targets across all matched categories.
+4. **Apply only on a match**. Purely additive, config, or scaffolding tasks default to no `Change Category` field and skip this propagation.
+
+This is distinct from per-AC boundary-path proof (which proves a boundary path *within* an AC): Change Category drives a sweep of cases that sit *outside* the task's ACs but share its path, contract, state, or boundary.
 
 ## Task File Template
 
@@ -359,6 +375,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Implementation efficiency and rework prevention (pre-identification of common processing, clarification of impact scope)
 - [ ] Investigation Targets specified for every task (specific file paths, not vague categories)
 - [ ] Proof Obligations recorded for each claim-implementing task (primary failure mode + boundary to exercise)
+- [ ] Change Category set for bug-fix / regression / state-change / boundary-change tasks, with adjacent path/boundary owners added to Investigation Targets
 - [ ] Quality Assurance Mechanisms from work plan header propagated to relevant tasks
 
 ## Task Design Principles

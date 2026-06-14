@@ -199,11 +199,7 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 All responses share `status` plus a `taskFileMechanisms` object when `task_file` is provided:
 
 ```json
-"taskFileMechanisms": {
-  "provided": true,
-  "executed": ["mechanism names that were found and executed"],
-  "skipped": [{"mechanism": "mechanism name", "reason": "tool not found | config not found | not executable"}]
-}
+"taskFileMechanisms": {"provided": true, "executed": ["mechanism names that were found and executed"], "skipped": [{"mechanism": "mechanism name", "reason": "tool not found | config not found | not executable"}]}
 ```
 When `task_file` is not provided, set `"provided": false` and omit `executed`/`skipped`.
 

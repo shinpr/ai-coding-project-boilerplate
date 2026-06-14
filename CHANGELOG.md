@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.23.5] - 2026-06-14
+
+### Changed
+
+- **Adjacent-case sweep** (agents, skills) — bug-fix / regression / state-change / boundary-change tasks carry a `Change Category` that drives a scoped sweep of sibling cases sharing the change's path, contract, state, or boundary: `task-decomposer` extends Investigation Targets, `task-executor` / `-frontend` fold in-scope residuals into tests and escalate confirmed out-of-scope siblings, `code-reviewer` adds an `adjacent_residual` finding (with optional `taskFiles` input and a self-classification fallback), and `verifier` / `solver` trace adjacent cases. Applied across en/ja.
+- **Frontend rules modernization** (skills) — `frontend-typescript-rules` adopts bundler-agnostic env access (Vite / Next.js / CRA prefixes), React Compiler-aware memoization, a `useEffect` race/cleanup guard, RSC Server/Client boundary guidance, and a project-defined bundle budget in place of a fixed size.
+- **Coverage reframed as a signal** (agents, skills) — coverage is a diagnostic signal rather than a target (Goodhart's Law), with any threshold deferred to the project's CI config; removed an invented standard label and a dangling ADR reference across the testing/spec skills.
+
 ## [1.23.4] - 2026-06-09
 
 ### Changed

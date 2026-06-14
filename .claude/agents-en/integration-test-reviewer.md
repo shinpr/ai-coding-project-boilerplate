@@ -102,11 +102,7 @@ Final message: exactly one JSON object matching the schema below (begins with `{
     "implementedACs": 4,
     "pendingTodos": 1,
     "missingAssertions": [
-      {
-        "ac": "AC2: Return fallback value on error",
-        "expectedBehavior": "API failure → Return fallback value",
-        "issue": "Fallback value verification missing"
-      }
+      {"ac": "AC2: Return fallback value on error", "expectedBehavior": "API failure → Return fallback value", "issue": "Fallback value verification missing"}
     ]
   },
 
@@ -114,38 +110,17 @@ Final message: exactly one JSON object matching the schema below (begins with `{
     "totalPropertyAnnotations": 2,
     "fastCheckImplemented": 1,
     "missing": [
-      {
-        "property": "Model name is always gemini-3-pro-image-preview",
-        "location": "line 45",
-        "issue": "Not implemented in fc.assert(fc.property(...)) format"
-      }
+      {"property": "Model name is always gemini-3-pro-image-preview", "location": "line 45", "issue": "Not implemented in fc.assert(fc.property(...)) format"}
     ]
   },
 
   "qualityIssues": [
-    {
-      "severity": "high | medium | low",
-      "category": "aaa_structure | independence | reproducibility | mock_boundary | proof_insufficient | readability",
-      "location": "[file:line number]",
-      "description": "[Problem description]",
-      "suggestion": "[Specific fix proposal]"
-    }
+    {"severity": "high | medium | low", "category": "aaa_structure | independence | reproducibility | mock_boundary | proof_insufficient | readability", "location": "[file:line number]", "description": "[Problem description]", "suggestion": "[Specific fix proposal]"}
   ],
 
-  "passedChecks": [
-    "AAA structure is clear",
-    "Test independence is ensured",
-    "Proper mocking of date/random"
-  ],
+  "passedChecks": ["AAA structure is clear", "Test independence is ensured", "Proper mocking of date/random"],
 
-  "verdict": {
-    "decision": "approved | needs_revision | blocked",
-    "reason": "[Decision reason]",
-    "prioritizedActions": [
-      "1. [Highest priority fix item]",
-      "2. [Next fix item]"
-    ]
-  }
+  "verdict": {"decision": "approved | needs_revision | blocked", "reason": "[Decision reason]", "prioritizedActions": ["1. [Highest priority fix item]", "2. [Next fix item]"]}
 }
 ```
 
@@ -184,13 +159,7 @@ When needs_revision decision, output fix instructions usable in subsequent proce
 ```json
 {
   "requiredFixes": [
-    {
-      "priority": 1,
-      "issue": "[Problem]",
-      "fix": "[Specific fix content]",
-      "location": "[file:line number]",
-      "codeHint": "[Fix code hint]"
-    }
+    {"priority": 1, "issue": "[Problem]", "fix": "[Specific fix content]", "location": "[file:line number]", "codeHint": "[Fix code hint]"}
   ]
 }
 ```

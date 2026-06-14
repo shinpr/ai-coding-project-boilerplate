@@ -152,17 +152,14 @@ description: {生成したdescription}
 {
   "mode": "creation|modification",
   "skillName": "...",
-  "frontmatter": {
-    "name": "...",
-    "description": "..."
-  },
+  "frontmatter": {"name": "...", "description": "..."},
   "body": "frontmatter以降のmarkdownコンテンツ全文",
   "references": [
-    { "filename": "...", "content": "..." }
+    {"filename": "...", "content": "..."}
   ],
   "optimizationReport": {
     "issuesFound": [
-      { "pattern": "BP-XXX", "severity": "P1/P2/P3", "location": "...", "transform": "..." }
+      {"pattern": "BP-XXX", "severity": "P1/P2/P3", "location": "...", "transform": "..."}
     ],
     "researchFindings": [],
     "lineCount": 0,

@@ -102,11 +102,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
     "implementedACs": 4,
     "pendingTodos": 1,
     "missingAssertions": [
-      {
-        "ac": "AC2: エラー時にフォールバック値を返す",
-        "expectedBehavior": "API障害 → フォールバック値返却",
-        "issue": "フォールバック値の検証が欠落"
-      }
+      {"ac": "AC2: エラー時にフォールバック値を返す", "expectedBehavior": "API障害 → フォールバック値返却", "issue": "フォールバック値の検証が欠落"}
     ]
   },
 
@@ -114,38 +110,17 @@ skills: integration-e2e-testing, typescript-testing, project-context
     "totalPropertyAnnotations": 2,
     "fastCheckImplemented": 1,
     "missing": [
-      {
-        "property": "モデル名は常にgemini-3-pro-image-preview",
-        "location": "line 45",
-        "issue": "fc.assert(fc.property(...))形式で未実装"
-      }
+      {"property": "モデル名は常にgemini-3-pro-image-preview", "location": "line 45", "issue": "fc.assert(fc.property(...))形式で未実装"}
     ]
   },
 
   "qualityIssues": [
-    {
-      "severity": "high | medium | low",
-      "category": "aaa_structure | independence | reproducibility | mock_boundary | proof_insufficient | readability",
-      "location": "[ファイル:行番号]",
-      "description": "[問題の説明]",
-      "suggestion": "[具体的な修正提案]"
-    }
+    {"severity": "high | medium | low", "category": "aaa_structure | independence | reproducibility | mock_boundary | proof_insufficient | readability", "location": "[ファイル:行番号]", "description": "[問題の説明]", "suggestion": "[具体的な修正提案]"}
   ],
 
-  "passedChecks": [
-    "AAA構造が明確",
-    "テスト間の独立性が確保",
-    "日時・乱数の適切なモック化"
-  ],
+  "passedChecks": ["AAA構造が明確", "テスト間の独立性が確保", "日時・乱数の適切なモック化"],
 
-  "verdict": {
-    "decision": "approved | needs_revision | blocked",
-    "reason": "[判定理由]",
-    "prioritizedActions": [
-      "1. [最優先の修正項目]",
-      "2. [次の修正項目]"
-    ]
-  }
+  "verdict": {"decision": "approved | needs_revision | blocked", "reason": "[判定理由]", "prioritizedActions": ["1. [最優先の修正項目]", "2. [次の修正項目]"]}
 }
 ```
 
@@ -184,13 +159,7 @@ needs_revision判定時、後続処理で使用できる修正指示を出力:
 ```json
 {
   "requiredFixes": [
-    {
-      "priority": 1,
-      "issue": "[問題]",
-      "fix": "[具体的な修正内容]",
-      "location": "[ファイル:行番号]",
-      "codeHint": "[修正コードのヒント]"
-    }
+    {"priority": 1, "issue": "[問題]", "fix": "[具体的な修正内容]", "location": "[ファイル:行番号]", "codeHint": "[修正コードのヒント]"}
   ]
 }
 ```

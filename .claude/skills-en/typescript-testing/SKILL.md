@@ -14,14 +14,14 @@ description: Applies Vitest test design and quality standards. Provides coverage
 ## Basic Testing Policy
 
 ### Quality Requirements
-- **Coverage**: Unit test coverage must be 70% or higher
+- **Coverage**: treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law). Concentrate tests on critical paths, business logic, and behavior whose regression would matter. Any numeric threshold is the project's CI config
 - **Independence**: Each test can run independently without depending on other tests
 - **Reproducibility**: Tests are environment-independent and always return the same results
 - **Readability**: Test code maintains the same quality as production code
 
-### Coverage Requirements
-**Mandatory**: Unit test coverage must be 70% or higher
-**Metrics**: Statements, Branches, Functions, Lines
+### Coverage
+- Prioritize meaningful assertions over the coverage number; raise coverage where a gap leaves a real regression unguarded, not to hit a percentage
+- **Metrics** (what coverage reports break down): Statements, Branches, Functions, Lines
 
 ### Test Types and Scope
 1. **Unit Tests**

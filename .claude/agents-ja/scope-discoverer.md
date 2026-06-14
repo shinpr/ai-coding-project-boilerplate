@@ -164,17 +164,8 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
       "entryPoints": ["/path1", "/path2"],
       "relatedFiles": ["src/feature/*"],
       "dependencies": ["UNIT-002"],
-      "valueProfile": {
-        "targetPersona": "この機能が誰向けか（例: 'エンドユーザー', '管理者', '開発者'）",
-        "userGoal": "この機能でユーザーが達成したいこと",
-        "valueCategory": "属する上位機能（例: '認証', 'コンテンツ管理', 'レポーティング'）"
-      },
-      "technicalProfile": {
-        "primaryModules": ["src/<feature>/module-a.ts", "src/<feature>/module-b.ts"],
-        "publicInterfaces": ["ServiceA.operation()", "ModuleB.handle()"],
-        "dataFlowSummary": "入力元 → 主要処理経路 → 出力先",
-        "infrastructureDeps": ["外部依存リスト"]
-      },
+      "valueProfile": {"targetPersona": "この機能が誰向けか（例: 'エンドユーザー', '管理者', '開発者'）", "userGoal": "この機能でユーザーが達成したいこと", "valueCategory": "属する上位機能（例: '認証', 'コンテンツ管理', 'レポーティング'）"},
+      "technicalProfile": {"primaryModules": ["src/<feature>/module-a.ts", "src/<feature>/module-b.ts"], "publicInterfaces": ["ServiceA.operation()", "ModuleB.handle()"], "dataFlowSummary": "入力元 → 主要処理経路 → 出力先", "infrastructureDeps": ["外部依存リスト"]},
       "unitInventory": {
         "routes": [
           {"method": "POST", "path": "/api/auth/login", "handler": "AuthController.handleLogin", "file": "routes:15"}
@@ -189,28 +180,13 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
     }
   ],
   "relationships": [
-    {
-      "from": "UNIT-001",
-      "to": "UNIT-002",
-      "type": "depends_on|extends|shares_data"
-    }
+    {"from": "UNIT-001", "to": "UNIT-002", "type": "depends_on|extends|shares_data"}
   ],
   "uncertainAreas": [
-    {
-      "area": "領域名",
-      "reason": "不確実な理由",
-      "suggestedAction": "推奨アクション"
-    }
+    {"area": "領域名", "reason": "不確実な理由", "suggestedAction": "推奨アクション"}
   ],
   "prdUnits": [
-    {
-      "id": "PRD-001",
-      "name": "PRDユニット名（ユーザー価値レベル）",
-      "description": "この機能がユーザーに提供する価値",
-      "sourceUnits": ["UNIT-001", "UNIT-003"],
-      "combinedRelatedFiles": ["src/feature-a/*", "src/feature-b/*"],
-      "combinedEntryPoints": ["/path1", "/path2", "/path3"]
-    }
+    {"id": "PRD-001", "name": "PRDユニット名（ユーザー価値レベル）", "description": "この機能がユーザーに提供する価値", "sourceUnits": ["UNIT-001", "UNIT-003"], "combinedRelatedFiles": ["src/feature-a/*", "src/feature-b/*"], "combinedEntryPoints": ["/path1", "/path2", "/path3"]}
   ],
   "limitations": ["発見できなかった内容とその理由"]
 }

@@ -133,14 +133,10 @@ Quality checks are mandatory upon implementation completion:
 - `test:coverage:fresh` - Coverage measurement
 - `check:all` - Overall integrated check
 
-### Coverage Requirements
-- **Mandatory**: Unit test coverage must be 60% or higher
-- **Component-specific targets**:
-  - Atoms: 70% or higher
-  - Molecules: 65% or higher
-  - Organisms: 60% or higher
-  - Custom Hooks: 65% or higher
-  - Utils: 70% or higher
+### Coverage
+- Treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law)
+- Concentrate test rigor on foundational, high-reuse units (shared components, custom hooks, utils) whose regression has the widest blast radius; higher-composition surfaces (organisms, pages) lean on integration/E2E coverage instead
+- Any enforced numeric threshold is the project's CI/coverage config, not a goal in itself
 
 ### Non-functional Requirements
 - **Browser Compatibility**: Chrome/Firefox/Safari/Edge (latest 2 versions)

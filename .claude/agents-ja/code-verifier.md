@@ -188,41 +188,12 @@ limitations: string[] (検証できなかった内容とその理由)
 
 ```json
 {
-  "summary": {
-    "docType": "design-doc",
-    "documentPath": "docs/design/auth-design.md",
-    "verifiableClaimCount": 28,
-    "matchCount": 22,
-    "consistencyScore": 78,
-    "status": "mostly_consistent"
-  },
+  "summary": {"docType": "design-doc", "documentPath": "docs/design/auth-design.md", "verifiableClaimCount": 28, "matchCount": 22, "consistencyScore": 78, "status": "mostly_consistent"},
   "claimCoverage": { "sectionsAnalyzed": 9, "sectionsWithClaims": 8, "sectionsWithZeroClaims": ["Future Work"] },
   "discrepancies": [
-    {
-      "id": "D001",
-      "status": "drift",
-      "severity": "major",
-      "claim": "Login endpoint accepts POST /api/auth/login",
-      "documentLocation": "auth-design.md:45",
-      "codeLocation": "src/auth/router.ts:120",
-      "evidence": "Grep found POST /api/v2/auth/login in src/auth/router.ts:120",
-      "classification": "Path version mismatch"
-    }
+    {"id": "D001", "status": "drift", "severity": "major", "claim": "Login endpoint accepts POST /api/auth/login", "documentLocation": "auth-design.md:45", "codeLocation": "src/auth/router.ts:120", "evidence": "Grep found POST /api/v2/auth/login in src/auth/router.ts:120", "classification": "Path version mismatch"}
   ],
-  "reverseCoverage": {
-    "routesInCode": 12,
-    "routesDocumented": 10,
-    "undocumentedRoutes": ["DELETE /api/auth/sessions (src/auth/router.ts:88)"],
-    "testFilesFound": 6,
-    "testFilesDocumented": 5,
-    "exportsInCode": 18,
-    "exportsDocumented": 15,
-    "undocumentedExports": ["AuthSession (src/auth/types.ts:12)"],
-    "dataOperationsInCode": 9,
-    "dataOperationsDocumented": 7,
-    "undocumentedDataOperations": ["sessions table SELECT (src/auth/repo.ts:42)"],
-    "testBoundariesSectionPresent": true
-  },
+  "reverseCoverage": {"routesInCode": 12, "routesDocumented": 10, "undocumentedRoutes": ["DELETE /api/auth/sessions (src/auth/router.ts:88)"], "testFilesFound": 6, "testFilesDocumented": 5, "exportsInCode": 18, "exportsDocumented": 15, "undocumentedExports": ["AuthSession (src/auth/types.ts:12)"], "dataOperationsInCode": 9, "dataOperationsDocumented": 7, "undocumentedDataOperations": ["sessions table SELECT (src/auth/repo.ts:42)"], "testBoundariesSectionPresent": true},
   "coverage": { "documented": ["login flow", "token refresh"], "undocumented": ["session deletion endpoint"], "unimplemented": ["MFA challenge response"] },
   "limitations": ["Could not verify token refresh against running redis instance"]
 }

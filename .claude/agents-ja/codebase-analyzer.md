@@ -109,106 +109,38 @@ skills: coding-standards, project-context, technical-spec
 
 ```json
 {
-  "analysisScope": {
-    "filesAnalyzed": ["path/to/file1"],
-    "tracedDependencies": ["path/to/dep1"],
-    "categoriesDetected": ["data_layer", "external_integration", "validation", "auth"]
-  },
+  "analysisScope": {"filesAnalyzed": ["path/to/file1"], "tracedDependencies": ["path/to/dep1"], "categoriesDetected": ["data_layer", "external_integration", "validation", "auth"]},
   "existingElements": [
-    {
-      "category": "interface|type|function|method|class|constant|configuration",
-      "name": "要素名",
-      "filePath": "path/to/file:行番号",
-      "visibility": "public|private|internal",
-      "signature": "シグネチャまたは定義の概要",
-      "usedBy": ["path/to/consumer1"]
-    }
+    {"category": "interface|type|function|method|class|constant|configuration", "name": "要素名", "filePath": "path/to/file:行番号", "visibility": "public|private|internal", "signature": "シグネチャまたは定義の概要", "usedBy": ["path/to/consumer1"]}
   ],
   "dataModel": {
     "detected": true,
     "schemas": [
-      {
-        "name": "テーブルまたはモデル名",
-        "definitionPath": "path/to/schema:行番号",
-        "fields": [
-          {
-            "name": "フィールド名",
-            "type": "フィールド型",
-            "constraints": ["NOT NULL", "UNIQUE"]
-          }
-        ],
-        "relationships": [
-          "外部キーカラム経由で他テーブルを参照"
-        ]
-      }
+      {"name": "テーブルまたはモデル名", "definitionPath": "path/to/schema:行番号", "fields": [{"name": "フィールド名", "type": "フィールド型", "constraints": ["NOT NULL", "UNIQUE"]}], "relationships": ["外部キーカラム経由で他テーブルを参照"]}
     ],
     "accessPatterns": [
-      {
-        "operation": "read|write|aggregate|join|delete",
-        "location": "path/to/file:行番号",
-        "targetSchema": "テーブルまたはモデル名",
-        "description": "操作内容の概要"
-      }
+      {"operation": "read|write|aggregate|join|delete", "location": "path/to/file:行番号", "targetSchema": "テーブルまたはモデル名", "description": "操作内容の概要"}
     ],
     "migrationFiles": ["path/to/migration/files"]
   },
   "dataTransformationPipelines": [
-    {
-      "entryPoint": "ClassName.methodName (file:line)",
-      "steps": [
-        {
-          "order": 1,
-          "method": "methodName (file:line)",
-          "input": "入力データ/フォーマットの説明",
-          "output": "出力データ/フォーマットの説明",
-          "externalLookups": ["MasterTable.getData() でコード変換"],
-          "transformation": "何が変わるか（例: 生値がルックアップテーブル経由で表示値にマッピング）"
-        }
-      ],
-      "intermediateFormats": ["中間データ表現の説明（該当する場合）"],
-      "finalOutput": "最終出力データ/フォーマットの説明"
-    }
+    {"entryPoint": "ClassName.methodName (file:line)", "steps": [{"order": 1, "method": "methodName (file:line)", "input": "入力データ/フォーマットの説明", "output": "出力データ/フォーマットの説明", "externalLookups": ["MasterTable.getData() でコード変換"], "transformation": "何が変わるか（例: 生値がルックアップテーブル経由で表示値にマッピング）"}], "intermediateFormats": ["中間データ表現の説明（該当する場合）"], "finalOutput": "最終出力データ/フォーマットの説明"}
   ],
   "constraints": [
-    {
-      "type": "validation|business_rule|configuration|assumption",
-      "description": "制約が強制する内容",
-      "location": "path/to/file:行番号",
-      "impact": "この制約に違反した場合の影響"
-    }
+    {"type": "validation|business_rule|configuration|assumption", "description": "制約が強制する内容", "location": "path/to/file:行番号", "impact": "この制約に違反した場合の影響"}
   ],
   "qualityAssurance": {
     "mechanisms": [
-      {
-        "tool": "ツールまたはチェック名",
-        "enforces": "検証する品質項目",
-        "configLocation": "path/to/config:行番号",
-        "coveredFiles": ["このメカニズムでカバーされる影響ファイル"],
-        "type": "linter|static_analysis|schema_validator|domain_specific|ci_check"
-      }
+      {"tool": "ツールまたはチェック名", "enforces": "検証する品質項目", "configLocation": "path/to/config:行番号", "coveredFiles": ["このメカニズムでカバーされる影響ファイル"], "type": "linter|static_analysis|schema_validator|domain_specific|ci_check"}
     ],
     "domainConstraints": [
-      {
-        "constraint": "ドメイン固有の制約の説明",
-        "source": "path/to/config-or-ci:行番号",
-        "affectedFiles": ["この制約の対象ファイル"]
-      }
+      {"constraint": "ドメイン固有の制約の説明", "source": "path/to/config-or-ci:行番号", "affectedFiles": ["この制約の対象ファイル"]}
     ]
   },
   "focusAreas": [
-    {
-      "fact_id": "src/auth/createUser.ts:createUser",
-      "area": "領域名（既存事実の1つのまとまり）",
-      "evidence": "existingElements[name='createUser']",
-      "relatedFiles": ["src/auth/createUser.ts", "src/api/routes/users.ts", "src/services/notification.ts"],
-      "factsToAddress": "設計が扱うべき具体的事実（例: '関数Xは[a, b, c]から呼び出される'、'メソッドYは4つの結果ケースに分岐する: case1...case4'、'フィールドZは[v1, v2, v3]の値を受け付ける'）",
-      "risk": "これらの事実を設計が省略または矛盾させた場合に起こる問題"
-    }
+    {"fact_id": "src/auth/createUser.ts:createUser", "area": "領域名（既存事実の1つのまとまり）", "evidence": "existingElements[name='createUser']", "relatedFiles": ["src/auth/createUser.ts", "src/api/routes/users.ts", "src/services/notification.ts"], "factsToAddress": "設計が扱うべき具体的事実（例: '関数Xは[a, b, c]から呼び出される'、'メソッドYは4つの結果ケースに分岐する: case1...case4'、'フィールドZは[v1, v2, v3]の値を受け付ける'）", "risk": "これらの事実を設計が省略または矛盾させた場合に起こる問題"}
   ],
-  "testCoverage": {
-    "testedElements": ["テストファイルが見つかった要素名"],
-    "untestedElements": ["テストファイルが見つからなかった要素名"]
-  },
+  "testCoverage": {"testedElements": ["テストファイルが見つかった要素名"], "untestedElements": ["テストファイルが見つからなかった要素名"]},
   "limitations": ["分析できなかった内容とその理由"]
 }
 ```

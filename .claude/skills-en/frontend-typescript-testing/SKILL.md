@@ -24,21 +24,15 @@ description: Designs tests with React Testing Library, MSW, and Playwright E2E. 
 ## Basic Testing Policy
 
 ### Quality Requirements
-- **Coverage**: Unit test coverage must be 60% or higher (Frontend standard 2025)
+- **Coverage**: prioritize meaningful assertions on critical paths and high-reuse components; treat coverage as a signal for gaps, not a target (a target gets gamed into trivial tests — Goodhart's Law). Any numeric threshold is the project's CI config
 - **Independence**: Each test can run independently without depending on other tests
 - **Reproducibility**: Tests are environment-independent and always return the same results
 - **Readability**: Test code maintains the same quality as production code
 
-### Coverage Requirements (ADR-0002 Compliant)
-**Mandatory**: Unit test coverage must be 60% or higher
-**Component-specific targets**:
-- Atoms (Button, Text, etc.): 70% or higher
-- Molecules (FormField, etc.): 65% or higher
-- Organisms (Header, Footer, etc.): 60% or higher
-- Custom Hooks: 65% or higher
-- Utils: 70% or higher
+### Where to concentrate test rigor
+Test foundational, high-reuse units the hardest — shared components, custom hooks, and utils reused across many features carry the widest blast radius. Higher-composition surfaces (organisms, pages) lean on integration/E2E coverage instead. Any numeric threshold is the project's CI config.
 
-**Metrics**: Statements, Branches, Functions, Lines
+**Metrics** (what coverage reports break down): Statements, Branches, Functions, Lines
 
 ### Test Types and Scope
 1. **Unit Tests (React Testing Library)**
@@ -74,7 +68,7 @@ src/
 
 **Rationale**:
 - React Testing Library best practice
-- ADR-0002 Co-location principle
+- Co-location principle: tests live alongside the implementation they cover
 - Easy to find and maintain tests alongside implementation
 
 ### Naming Conventions

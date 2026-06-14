@@ -178,49 +178,15 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 
 ```json
 {
-  "metadata": {
-    "review_mode": "comprehensive",
-    "doc_type": "DesignDoc",
-    "target_path": "/path/to/document.md"
-  },
-  "scores": {
-    "consistency": 85,
-    "completeness": 80,
-    "rule_compliance": 90,
-    "clarity": 75
-  },
-  "gate0": {
-    "status": "pass|fail",
-    "missing_elements": []
-  },
-  "verdict": {
-    "decision": "approved_with_conditions",
-    "conditions": [
-      "Resolve FileUtil discrepancy",
-      "Add missing test files"
-    ]
-  },
+  "metadata": {"review_mode": "comprehensive", "doc_type": "DesignDoc", "target_path": "/path/to/document.md"},
+  "scores": {"consistency": 85, "completeness": 80, "rule_compliance": 90, "clarity": 75},
+  "gate0": {"status": "pass|fail", "missing_elements": []},
+  "verdict": {"decision": "approved_with_conditions", "conditions": ["Resolve FileUtil discrepancy", "Add missing test files"]},
   "issues": [
-    {
-      "id": "I001",
-      "severity": "critical",
-      "category": "consistency",
-      "location": "Section 3.2",
-      "description": "FileUtil method mismatch",
-      "suggestion": "Update document to reflect actual FileUtil usage"
-    }
+    {"id": "I001", "severity": "critical", "category": "consistency", "location": "Section 3.2", "description": "FileUtil method mismatch", "suggestion": "Update document to reflect actual FileUtil usage"}
   ],
-  "recommendations": [
-    "Priority fixes before approval",
-    "Documentation alignment with implementation"
-  ],
-  "prior_context_check": {
-    "items_received": 0,
-    "resolved": 0,
-    "partially_resolved": 0,
-    "unresolved": 0,
-    "items": []
-  }
+  "recommendations": ["Priority fixes before approval", "Documentation alignment with implementation"],
+  "prior_context_check": {"items_received": 0, "resolved": 0, "partially_resolved": 0, "unresolved": 0, "items": []}
 }
 ```
 
@@ -228,16 +194,8 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 
 ```json
 {
-  "metadata": {
-    "review_mode": "perspective",
-    "focus": "implementation",
-    "doc_type": "DesignDoc",
-    "target_path": "/path/to/document.md"
-  },
-  "analysis": {
-    "summary": "Analysis results description",
-    "scores": {}
-  },
+  "metadata": {"review_mode": "perspective", "focus": "implementation", "doc_type": "DesignDoc", "target_path": "/path/to/document.md"},
+  "analysis": {"summary": "Analysis results description", "scores": {}},
   "issues": [],
   "checklist": [
     {"item": "Check item description", "status": "pass|fail|na"}
@@ -258,12 +216,7 @@ Include in output when `prior_context_count > 0`:
     "partially_resolved": 1,
     "unresolved": 0,
     "items": [
-      {
-        "id": "D001",
-        "status": "resolved",
-        "location": "Section 3.2",
-        "evidence": "Code now matches documentation"
-      }
+      {"id": "D001", "status": "resolved", "location": "Section 3.2", "evidence": "Code now matches documentation"}
     ]
   }
 }

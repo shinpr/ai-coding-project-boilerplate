@@ -100,22 +100,11 @@ Final message: exactly one JSON object matching the schema below (begins with `{
   "summary": "[1-2 sentence summary]",
   "filesReviewed": 5,
   "findings": [
-    {
-      "category": "confirmed_risk|suspected_risk|defense_gap|hardening|policy",
-      "confidence": "high|medium|low",
-      "location": "[file:line]",
-      "description": "[specific issue found]",
-      "rationale": "[category-specific, see Category-Specific Rationale]",
-      "suggestion": "[specific fix]"
-    }
+    {"category": "confirmed_risk|suspected_risk|defense_gap|hardening|policy", "confidence": "high|medium|low", "location": "[file:line]", "description": "[specific issue found]", "rationale": "[category-specific, see Category-Specific Rationale]", "suggestion": "[specific fix]"}
   ],
   "notes": "[summary of hardening/policy findings for completion report, present when status is approved_with_notes]",
   "requiredFixes": [
-    {
-      "location": "[file:line — parseable as file[:line] for Fix Mode allowed-list expansion]",
-      "issue": "[specific issue to fix — drawn from the corresponding finding]",
-      "fix": "[specific fix instruction]"
-    }
+    {"location": "[file:line — parseable as file[:line] for Fix Mode allowed-list expansion]", "issue": "[specific issue to fix — drawn from the corresponding finding]", "fix": "[specific fix instruction]"}
   ]
 }
 ```

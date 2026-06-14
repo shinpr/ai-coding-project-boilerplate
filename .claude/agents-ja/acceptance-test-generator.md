@@ -269,16 +269,8 @@ it.todo('[AC番号]-property: [不変条件を自然言語で記述]')
 {
   "status": "completed",
   "feature": "payment",
-  "generatedFiles": {
-    "integration": "tests/payment.int.test.[ext]",
-    "fixtureE2e": "tests/payment.fixture-e2e.test.[ext]",
-    "serviceE2e": "tests/payment.service-e2e.test.[ext]"
-  },
-  "budgetUsage": {
-    "integration": "2/3",
-    "fixtureE2e": "1/3",
-    "serviceE2e": "1/2"
-  },
+  "generatedFiles": {"integration": "tests/payment.int.test.[ext]", "fixtureE2e": "tests/payment.fixture-e2e.test.[ext]", "serviceE2e": "tests/payment.service-e2e.test.[ext]"},
+  "budgetUsage": {"integration": "2/3", "fixtureE2e": "1/3", "serviceE2e": "1/2"},
   "e2eAbsenceReason": { "fixtureE2e": null, "serviceE2e": null }
 }
 ```
@@ -288,16 +280,8 @@ it.todo('[AC番号]-property: [不変条件を自然言語で記述]')
 {
   "status": "completed",
   "feature": "checkout-ui",
-  "generatedFiles": {
-    "integration": "tests/checkout.int.test.[ext]",
-    "fixtureE2e": "tests/checkout.fixture-e2e.test.[ext]",
-    "serviceE2e": null
-  },
-  "budgetUsage": {
-    "integration": "1/3",
-    "fixtureE2e": "1/3",
-    "serviceE2e": "0/2"
-  },
+  "generatedFiles": {"integration": "tests/checkout.int.test.[ext]", "fixtureE2e": "tests/checkout.fixture-e2e.test.[ext]", "serviceE2e": null},
+  "budgetUsage": {"integration": "1/3", "fixtureE2e": "1/3", "serviceE2e": "0/2"},
   "e2eAbsenceReason": { "fixtureE2e": null, "serviceE2e": "no_real_service_dependency" }
 }
 ```
@@ -307,16 +291,8 @@ it.todo('[AC番号]-property: [不変条件を自然言語で記述]')
 {
   "status": "completed",
   "feature": "config-update",
-  "generatedFiles": {
-    "integration": "tests/config.int.test.[ext]",
-    "fixtureE2e": null,
-    "serviceE2e": null
-  },
-  "budgetUsage": {
-    "integration": "1/3",
-    "fixtureE2e": "0/3",
-    "serviceE2e": "0/2"
-  },
+  "generatedFiles": {"integration": "tests/config.int.test.[ext]", "fixtureE2e": null, "serviceE2e": null},
+  "budgetUsage": {"integration": "1/3", "fixtureE2e": "0/3", "serviceE2e": "0/2"},
   "e2eAbsenceReason": { "fixtureE2e": "no_multi_step_journey", "serviceE2e": "no_multi_step_journey" }
 }
 ```

@@ -119,74 +119,21 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 
 ```json
 {
-  "problemSummary": {
-    "phenomenon": "Objective description of observed phenomenon",
-    "context": "Occurrence conditions, environment, timing",
-    "scope": "Impact range"
-  },
+  "problemSummary": {"phenomenon": "Objective description of observed phenomenon", "context": "Occurrence conditions, environment, timing", "scope": "Impact range"},
   "investigationSources": [
-    {
-      "type": "code|history|dependency|config|document|external",
-      "location": "Location investigated",
-      "findings": "Facts discovered (without interpretation)"
-    }
+    {"type": "code|history|dependency|config|document|external", "location": "Location investigated", "findings": "Facts discovered (without interpretation)"}
   ],
   "externalResearch": [
-    {
-      "query": "Search query used",
-      "source": "Information source",
-      "findings": "Related information discovered",
-      "relevance": "Relevance to this problem"
-    }
+    {"query": "Search query used", "source": "Information source", "findings": "Related information discovered", "relevance": "Relevance to this problem"}
   ],
   "pathMap": [
-    {
-      "symptomId": "S1",
-      "symptom": "Description of observed symptom",
-      "trigger": "What triggers this symptom",
-      "paths": [
-        {
-          "pathId": "S1-P1",
-          "description": "Path description (e.g., main data fetch path)",
-          "nodes": [
-            {
-              "nodeId": "S1-P1-N1",
-              "location": "file:line",
-              "description": "What this node does"
-            }
-          ]
-        }
-      ]
-    }
+    {"symptomId": "S1", "symptom": "Description of observed symptom", "trigger": "What triggers this symptom", "paths": [{"pathId": "S1-P1", "description": "Path description (e.g., main data fetch path)", "nodes": [{"nodeId": "S1-P1-N1", "location": "file:line", "description": "What this node does"}]}]}
   ],
   "failurePoints": [
-    {
-      "id": "FP1",
-      "nodeId": "S1-P1-N1",
-      "symptomId": "S1",
-      "description": "What the fault is",
-      "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor",
-      "location": "file:line",
-      "upstreamDependency": "What this node depends on",
-      "symptomExplained": "How this fault leads to the observed symptom",
-      "causalChain": ["Observed fault", "→ Direct cause", "→ Root cause (stop condition)"],
-      "checkStatus": "supported|weakened|blocked|not_reached",
-      "evidence": [
-        {"type": "supporting|contradicting", "detail": "Evidence detail", "source": "Source location", "strength": "direct|indirect|circumstantial"}
-      ],
-      "comparisonAnalysis": {
-        "normalImplementation": "Path to working implementation (null if not found)",
-        "keyDifferences": ["Differences"]
-      }
-    }
+    {"id": "FP1", "nodeId": "S1-P1-N1", "symptomId": "S1", "description": "What the fault is", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "location": "file:line", "upstreamDependency": "What this node depends on", "symptomExplained": "How this fault leads to the observed symptom", "causalChain": ["Observed fault", "→ Direct cause", "→ Root cause (stop condition)"], "checkStatus": "supported|weakened|blocked|not_reached", "evidence": [{"type": "supporting|contradicting", "detail": "Evidence detail", "source": "Source location", "strength": "direct|indirect|circumstantial"}], "comparisonAnalysis": {"normalImplementation": "Path to working implementation (null if not found)", "keyDifferences": ["Differences"]}}
   ],
   "impactAnalysis": [
-    {
-      "failurePointId": "FP1",
-      "impactScope": ["Affected file paths"],
-      "recurrenceRisk": "low|medium|high",
-      "riskRationale": "Rationale for risk determination"
-    }
+    {"failurePointId": "FP1", "impactScope": ["Affected file paths"], "recurrenceRisk": "low|medium|high", "riskRationale": "Rationale for risk determination"}
   ],
   "unexploredAreas": [
     {"area": "Unexplored area", "reason": "Reason could not investigate", "potentialRelevance": "Relevance"}

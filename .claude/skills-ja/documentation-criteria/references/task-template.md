@@ -17,6 +17,13 @@ Metadata:
 実装開始前に読むべきファイル（ファイルパス、任意でサーチヒント付き）:
 - [例: src/orders/checkout (processOrder関数) — タスクの性質に基づきタスク分解時に決定]
 
+## Change Category
+（タスクがバグ修正・リグレッション・状態変更・境界変更の場合のみ本フィールドを記載する — タスク分解時に設定。それ以外は省略する。）
+
+`Change Category: <bug-fix, regression, state-change, boundary-change のうち該当するものをカンマ区切りで>`
+
+記載がある場合、実装は同一の経路・契約・永続状態・外部境界を共有するケースを、同一クラスの欠陥について走査する（Implementation Steps の Red Phase 参照）。
+
 ## Binding Decisions
 （作業計画書のADR Bindings表がこのタスクをカバーする場合に本セクションを記載する。それ以外は省略する。）
 
@@ -32,6 +39,7 @@ Metadata:
 ## Implementation Steps (TDD: Red-Green-Refactor)
 ### 1. Red Phase
 - [ ] 全ての Investigation Targets を読み、主要な所見を記録
+- [ ] （Change Category が設定されている場合）同一の経路/契約/状態/境界を共有する隣接ケースを同一クラスの欠陥について走査し、スコープ内で見つかったものを失敗するテストに取り込む
 - [ ] Dependencies の成果物を確認（ある場合）
 - [ ] 契約定義を確認・作成
 - [ ] 失敗するテストを書く
