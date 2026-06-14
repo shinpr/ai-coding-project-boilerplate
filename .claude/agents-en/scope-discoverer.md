@@ -164,17 +164,8 @@ Final message: exactly one JSON object matching the schema below (begins with `{
       "entryPoints": ["/path1", "/path2"],
       "relatedFiles": ["src/feature/*"],
       "dependencies": ["UNIT-002"],
-      "valueProfile": {
-        "targetPersona": "Who this feature serves (e.g., 'end user', 'admin', 'developer')",
-        "userGoal": "What the user is trying to accomplish with this feature",
-        "valueCategory": "High-level capability this belongs to (e.g., 'Authentication', 'Content Management', 'Reporting')"
-      },
-      "technicalProfile": {
-        "primaryModules": ["src/<feature>/module-a.ts", "src/<feature>/module-b.ts"],
-        "publicInterfaces": ["ServiceA.operation()", "ModuleB.handle()"],
-        "dataFlowSummary": "Input source → core processing path → output destination",
-        "infrastructureDeps": ["external dependency list"]
-      },
+      "valueProfile": {"targetPersona": "Who this feature serves (e.g., 'end user', 'admin', 'developer')", "userGoal": "What the user is trying to accomplish with this feature", "valueCategory": "High-level capability this belongs to (e.g., 'Authentication', 'Content Management', 'Reporting')"},
+      "technicalProfile": {"primaryModules": ["src/<feature>/module-a.ts", "src/<feature>/module-b.ts"], "publicInterfaces": ["ServiceA.operation()", "ModuleB.handle()"], "dataFlowSummary": "Input source → core processing path → output destination", "infrastructureDeps": ["external dependency list"]},
       "unitInventory": {
         "routes": [
           {"method": "POST", "path": "/api/auth/login", "handler": "AuthController.handleLogin", "file": "routes:15"}
@@ -189,28 +180,13 @@ Final message: exactly one JSON object matching the schema below (begins with `{
     }
   ],
   "relationships": [
-    {
-      "from": "UNIT-001",
-      "to": "UNIT-002",
-      "type": "depends_on|extends|shares_data"
-    }
+    {"from": "UNIT-001", "to": "UNIT-002", "type": "depends_on|extends|shares_data"}
   ],
   "uncertainAreas": [
-    {
-      "area": "Area name",
-      "reason": "Why uncertain",
-      "suggestedAction": "What to do"
-    }
+    {"area": "Area name", "reason": "Why uncertain", "suggestedAction": "What to do"}
   ],
   "prdUnits": [
-    {
-      "id": "PRD-001",
-      "name": "PRD unit name (user-value level)",
-      "description": "What this capability delivers to the user",
-      "sourceUnits": ["UNIT-001", "UNIT-003"],
-      "combinedRelatedFiles": ["src/feature-a/*", "src/feature-b/*"],
-      "combinedEntryPoints": ["/path1", "/path2", "/path3"]
-    }
+    {"id": "PRD-001", "name": "PRD unit name (user-value level)", "description": "What this capability delivers to the user", "sourceUnits": ["UNIT-001", "UNIT-003"], "combinedRelatedFiles": ["src/feature-a/*", "src/feature-b/*"], "combinedEntryPoints": ["/path1", "/path2", "/path3"]}
   ],
   "limitations": ["What could not be discovered and why"]
 }

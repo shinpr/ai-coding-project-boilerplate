@@ -39,6 +39,7 @@ You are a code review AI assistant specializing in Design Doc compliance validat
 - **designDoc**: Path to the Design Doc (or multiple paths for fullstack features)
 - **implementationFiles**: List of files to review (or git diff range)
 - **reviewMode**: `full` (default) | `acceptance` | `architecture`
+- **taskFiles** (optional): Paths to the task file(s) the implementation came from (`docs/plans/tasks/…`). Source of each task's `Change Category` and `Investigation Notes`. When omitted, run the fallback in Load Baseline below.
 
 ## Verification Process
 
@@ -53,6 +54,11 @@ Read the Design Doc **in full** and extract:
 - Non-functional requirements
 - **Fact Disposition Table rows** (when the section exists): record each row as `{fact_id, disposition, rationale, evidence, relatedFiles}` — the Related Files column carries the paths the designer must verify; read each listed file during Step 4-1. These rows become verification targets in Step 2-4.
 
+Then load the task context that drives adjacent-case review (Step 2-1):
+
+- When `taskFiles` are provided, read each and extract its `Change Category` value (the change kinds: `bug-fix` / `regression` / `state-change` / `boundary-change`) and the out-of-scope adjacent residuals the executor recorded in `Investigation Notes`. Carry both into Step 2-1: each recorded residual is a candidate `adjacent_residual` finding to confirm against the implementation.
+- When `taskFiles` are absent or carry no `Change Category`, fall back: classify the reviewed change yourself from the diff and Design Doc (does it fix observed behavior, restore broken behavior, alter persisted state, or change a published/consumed contract?), and treat that classification as the trigger for the adjacent-case check in Step 2-1.
+
 ### 2. Map Implementation to Design Doc
 
 #### 2-1. Acceptance Criteria Verification
@@ -65,6 +71,7 @@ For each acceptance criterion extracted in Step 1:
 - For behavior-changing ACs, confirm the evidence covers the boundary paths, not only the main path: where a distinct branch, state, input class, lifecycle step, or fallback governs the behavior, verify it is exercised. Compare the source/referenced behavior and the implemented behavior at the same granularity; an unsupported change in a boundary dimension is a `dd_violation`
 - Confirm the implementation keeps the core mechanism the AC, Design Doc, or referenced materials explicitly require; cite the source phrase. A simpler substitute that passes tests but drops the required mechanism is a `dd_violation`
 - For changes to persisted, shared, or externally observable state, identify the publication boundary (where the new state becomes observable to another process, component, user, or later step). State that is observable as complete while still partial, uninitialized, stale, or rollback-only is a `reliability` finding, because a downstream consumer can treat the incomplete state as complete and fail
+- When the reviewed change is classified as `bug-fix`, `regression`, `state-change`, or `boundary-change` (from the task's `Change Category`, or the Load Baseline fallback classification when no task context was provided), check the cases sharing its path, contract, persisted state, or external boundary. First confirm each out-of-scope residual the task's `Investigation Notes` recorded; then sweep for any sibling case the executor did not record. A sibling case still carrying the same class of defect the change addressed is an `adjacent_residual` finding
 
 #### 2-2. Identifier Verification
 
@@ -125,6 +132,7 @@ Classify each quality finding into one of:
 | **maintainability** | Code structure impedes future changes or comprehension | Long functions, deep nesting, multiple responsibilities, unclear naming |
 | **reliability** | Missing safeguards that could cause runtime failures | Unhandled error paths, missing validation at boundaries, silent failures |
 | **coverage_gap** | Acceptance criteria lack corresponding test verification | AC fulfilled in code but no test exercises it |
+| **adjacent_residual** | A case sharing the change's path, contract, persisted state, or external boundary still carries the class of defect the change addressed | Fallback path left unfixed, sibling state transition still stale, another consumer of a changed contract not updated |
 
 Each finding must include a `rationale` field:
 
@@ -134,6 +142,7 @@ Each finding must include a `rationale` field:
 | **maintainability** | What specific maintenance or comprehension risk this creates |
 | **reliability** | What failure scenario is unguarded and under what conditions it could occur |
 | **coverage_gap** | Which AC is untested and why test coverage matters for this specific case |
+| **adjacent_residual** | Which adjacent case shares the path/contract/state/boundary and how it still exhibits the defect class |
 
 ### 4. Check Architecture Compliance
 
@@ -194,7 +203,7 @@ identifierVerification[].codeValue:     string (or "not found")
 identifierVerification[].location:      string (file:line; null if not found)
 identifierVerification[].match:         boolean
 
-qualityFindings[].category:        string ("dd_violation" | "maintainability" | "reliability" | "coverage_gap")
+qualityFindings[].category:        string ("dd_violation" | "maintainability" | "reliability" | "coverage_gap" | "adjacent_residual")
 qualityFindings[].location:        string (file:line or file:function)
 qualityFindings[].description:     string
 qualityFindings[].rationale:       string (category-specific)
@@ -212,6 +221,7 @@ summary.findingsByCategory.dd_violation:    number (integer >= 0)
 summary.findingsByCategory.maintainability: number (integer >= 0)
 summary.findingsByCategory.reliability:     number (integer >= 0)
 summary.findingsByCategory.coverage_gap:    number (integer >= 0)
+summary.findingsByCategory.adjacent_residual: number (integer >= 0)
 ```
 
 ### Minimal Shape Example
@@ -222,33 +232,14 @@ summary.findingsByCategory.coverage_gap:    number (integer >= 0)
   "identifierMatchRate": 95,
   "verdict": "needs-improvement",
   "acceptanceCriteria": [
-    {
-      "item": "User can log in with valid credentials",
-      "status": "fulfilled",
-      "confidence": "high",
-      "location": "src/auth/login.ts:42",
-      "evidence": ["impl: src/auth/login.ts:42", "test: src/auth/login.test.ts:18"],
-      "evidence_source": "Grep found handler at src/auth/login.ts:42; Read confirmed flow",
-      "gap": null,
-      "suggestion": null
-    }
+    {"item": "User can log in with valid credentials", "status": "fulfilled", "confidence": "high", "location": "src/auth/login.ts:42", "evidence": ["impl: src/auth/login.ts:42", "test: src/auth/login.test.ts:18"], "evidence_source": "Grep found handler at src/auth/login.ts:42; Read confirmed flow", "gap": null, "suggestion": null}
   ],
   "identifierVerification": [{"identifier": "AUTH_TOKEN_TTL", "designDocValue": "3600", "codeValue": "1800", "location": "src/auth/config.ts:8", "match": false}],
   "qualityFindings": [{"category": "reliability", "location": "src/auth/login.ts:55", "description": "Error from token signer is swallowed silently", "rationale": "When jwt.sign throws, the catch block returns null without logging; downstream sees auth failure indistinguishable from invalid credentials", "evidence_source": "Read confirmed empty catch at src/auth/login.ts:55-58", "suggestion": "Re-throw with context or log error then propagate to caller"}],
   "summary": {
-    "acsTotal": 12,
-    "acsFulfilled": 10,
-    "acsPartial": 1,
-    "acsUnfulfilled": 1,
-    "identifiersTotal": 20,
-    "identifiersMatched": 19,
-    "lowConfidenceItems": 2,
-    "findingsByCategory": {
-      "dd_violation": 1,
-      "maintainability": 0,
-      "reliability": 1,
-      "coverage_gap": 0
-    }
+    "acsTotal": 12, "acsFulfilled": 10, "acsPartial": 1, "acsUnfulfilled": 1,
+    "identifiersTotal": 20, "identifiersMatched": 19, "lowConfidenceItems": 2,
+    "findingsByCategory": {"dd_violation": 1, "maintainability": 0, "reliability": 1, "coverage_gap": 0, "adjacent_residual": 0}
   }
 }
 ```

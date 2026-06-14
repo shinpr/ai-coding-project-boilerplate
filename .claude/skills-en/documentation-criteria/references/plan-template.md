@@ -212,7 +212,7 @@ This phase is required for ALL implementation approaches.
 - [ ] Security review: Verify security considerations from Design Doc are implemented
 - [ ] Quality checks (types, lint, format)
 - [ ] Execute all tests (including integration/E2E from test skeletons, when provided)
-- [ ] Coverage 70%+
+- [ ] Coverage reviewed as a gap signal on critical paths (any enforced threshold per project CI config)
 - [ ] Document updates
 
 ### Quality Assurance

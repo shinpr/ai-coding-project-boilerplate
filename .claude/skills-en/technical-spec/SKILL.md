@@ -92,6 +92,7 @@ Quality checks are mandatory upon implementation completion:
 - **Cache issues**: Run the `test:coverage:fresh` script
 - **Dependency errors**: Clean reinstall dependencies
 
-### Coverage Requirements
-- **MANDATORY**: Unit test coverage MUST be 70% or higher
-- **Metrics**: Statements, Branches, Functions, Lines
+### Coverage
+- Treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law). Concentrate tests on critical paths and business logic whose regression would matter
+- Any enforced numeric threshold is the project's CI/coverage config, not a goal in itself
+- **Metrics** (what coverage reports break down): Statements, Branches, Functions, Lines

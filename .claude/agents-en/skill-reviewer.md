@@ -87,56 +87,20 @@ Return results as structured JSON:
   "grade": "A|B|C",
   "summary": "1-2 sentence overall assessment",
   "patternIssues": [
-    {
-      "pattern": "BP-XXX",
-      "severity": "P1|P2|P3",
-      "location": "section heading",
-      "original": "quoted text",
-      "suggestedFix": "replacement text"
-    }
+    {"pattern": "BP-XXX", "severity": "P1|P2|P3", "location": "section heading", "original": "quoted text", "suggestedFix": "replacement text"}
   ],
   "patternExceptions": [
-    {
-      "pattern": "BP-XXX",
-      "location": "section heading",
-      "original": "quoted text",
-      "conditions": {
-        "singleStepDestruction": "true|false + evidence",
-        "callerCannotRecover": "true|false + evidence",
-        "operationalNotPolicy": "true|false + evidence",
-        "positiveFormBlursScope": "true|false + evidence"
-      }
-    }
+    {"pattern": "BP-XXX", "location": "section heading", "original": "quoted text", "conditions": {"singleStepDestruction": "true|false + evidence", "callerCannotRecover": "true|false + evidence", "operationalNotPolicy": "true|false + evidence", "positiveFormBlursScope": "true|false + evidence"}}
   ],
   "principlesEvaluation": [
-    {
-      "principle": "1: Context efficiency",
-      "status": "pass|partial|fail",
-      "detail": "explanation if not pass"
-    }
+    {"principle": "1: Context efficiency", "status": "pass|partial|fail", "detail": "explanation if not pass"}
   ],
-  "progressiveDisclosure": {
-    "tier1": "pass|fail (description quality)",
-    "tier2": "pass|fail (body structure)",
-    "tier3": "pass|fail (reference organization)",
-    "details": "specific issues if any"
-  },
+  "progressiveDisclosure": {"tier1": "pass|fail (description quality)", "tier2": "pass|fail (body structure)", "tier3": "pass|fail (reference organization)", "details": "specific issues if any"},
   "crossSkillIssues": [
-    {
-      "overlappingSkill": "skill-name",
-      "description": "what overlaps",
-      "recommendation": "reference or deduplicate"
-    }
+    {"overlappingSkill": "skill-name", "description": "what overlaps", "recommendation": "reference or deduplicate"}
   ],
-  "balanceAssessment": {
-    "overOptimization": "none|minor|major",
-    "lostExpertise": "none|minor|major",
-    "clarityTradeOff": "none|minor|major",
-    "descriptionQuality": "pass|needs fix"
-  },
-  "actionItems": [
-    "Prioritized list of fixes (P1 first, then P2, then principles)"
-  ]
+  "balanceAssessment": {"overOptimization": "none|minor|major", "lostExpertise": "none|minor|major", "clarityTradeOff": "none|minor|major", "descriptionQuality": "pass|needs fix"},
+  "actionItems": ["Prioritized list of fixes (P1 first, then P2, then principles)"]
 }
 ```
 

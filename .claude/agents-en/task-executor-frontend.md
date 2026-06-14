@@ -183,6 +183,17 @@ This gate runs only when the task file's "Investigation Targets" section lists a
 2. **Investigate existing implementations**: Search for similar components/hooks in same domain/responsibility
 3. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
+#### Adjacent Case Sweep (Required when the task file has a `Change Category` field set to one or more of `bug-fix`, `regression`, `state-change`, `boundary-change`)
+
+Runs after Pre-implementation Verification, before the Binding Decision Check. This step fires on the field value the task decomposition wrote — read the field value and treat it as authoritative for whether the sweep applies.
+
+1. From the Investigation Targets (the decomposition already extended them with the adjacent files), identify the cases sharing the same path, contract, persisted state, or external boundary as the change — fallback rendering, stale state, retries, and external calls related to the change.
+2. Check each for the same class of defect this task corrects.
+3. Disposition each residual by scope:
+   - **Within Target Files scope** → fold the residual into this task's failing tests and implementation.
+   - **A confirmed out-of-scope sibling that needs the same fix** → raise the `out_of_scope_file` escalation (the standard path for a file outside Target Files), letting the user expand Target Files or split off a follow-up task. This routes a confirmed adjacent defect to an explicit decision.
+   - **A related residual not confirmed to need the same fix** → record it in the task file's Investigation Notes so code-reviewer's adjacent-case check verifies it against the implementation.
+
 #### Binding Decision Check (Required when the task file has a Binding Decisions section)
 
 This check runs after Pre-implementation Verification and before the TDD cycle. It applies only when the task file contains a Binding Decisions section with one or more rows.
@@ -278,20 +289,8 @@ Report in the following JSON format upon task completion (**without executing qu
   "testsAdded": ["src/components/Button/Button.test.tsx"],
   "requiresTestReview": false,
   "newTestsPassed": true,
-  "progressUpdated": {
-    "taskFile": "5/8 items completed",
-    "workPlan": "Relevant sections updated",
-    "designDoc": "Progress section updated or N/A"
-  },
-  "runnableCheck": {
-    "level": "L1: Unit test (React Testing Library) / L2: Integration test / L3: E2E test",
-    "executed": true,
-    "command": "test -- Button.test.tsx",
-    "result": "passed / failed / skipped",
-    "substance": "substantive | non_substantive | null (non-test verification)",
-    "substanceIssue": "null when substantive or non-test; cause and location when non_substantive",
-    "reason": "Test execution reason/verification content"
-  },
+  "progressUpdated": {"taskFile": "5/8 items completed", "workPlan": "Relevant sections updated", "designDoc": "Progress section updated or N/A"},
+  "runnableCheck": {"level": "L1: Unit test (React Testing Library) / L2: Integration test / L3: E2E test", "executed": true, "command": "test -- Button.test.tsx", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null (non-test verification)", "substanceIssue": "null when substantive or non-test; cause and location when non_substantive", "reason": "Test execution reason/verification content"},
   "readyForQualityCheck": true,
   "nextActions": "Overall quality verification by quality assurance process"
 }
@@ -334,11 +333,7 @@ Minimal example (out_of_scope_file):
   "reason": "Out of scope file",
   "taskName": "[task name]",
   "escalation_type": "out_of_scope_file",
-  "details": {
-    "file_path": "[path attempted]",
-    "allowed_list": ["[union of Target Files, task file, work plan, Provides]"],
-    "modification_reason": "[why modification was attempted]"
-  },
+  "details": {"file_path": "[path attempted]", "allowed_list": ["[union of Target Files, task file, work plan, Provides]"], "modification_reason": "[why modification was attempted]"},
   "user_decision_required": true,
   "suggested_options": ["Add to Target files and retry", "Split into separate task", "Reconsider approach"]
 }

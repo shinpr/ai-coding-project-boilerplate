@@ -109,106 +109,38 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 
 ```json
 {
-  "analysisScope": {
-    "filesAnalyzed": ["path/to/file1"],
-    "tracedDependencies": ["path/to/dep1"],
-    "categoriesDetected": ["data_layer", "external_integration", "validation", "auth"]
-  },
+  "analysisScope": {"filesAnalyzed": ["path/to/file1"], "tracedDependencies": ["path/to/dep1"], "categoriesDetected": ["data_layer", "external_integration", "validation", "auth"]},
   "existingElements": [
-    {
-      "category": "interface|type|function|method|class|constant|configuration",
-      "name": "ElementName",
-      "filePath": "path/to/file:lineNumber",
-      "visibility": "public|private|internal",
-      "signature": "brief signature or definition",
-      "usedBy": ["path/to/consumer1"]
-    }
+    {"category": "interface|type|function|method|class|constant|configuration", "name": "ElementName", "filePath": "path/to/file:lineNumber", "visibility": "public|private|internal", "signature": "brief signature or definition", "usedBy": ["path/to/consumer1"]}
   ],
   "dataModel": {
     "detected": true,
     "schemas": [
-      {
-        "name": "table_or_model_name",
-        "definitionPath": "path/to/schema:lineNumber",
-        "fields": [
-          {
-            "name": "field_name",
-            "type": "field_type",
-            "constraints": ["NOT NULL", "UNIQUE"]
-          }
-        ],
-        "relationships": [
-          "references other_table via foreign_key_column"
-        ]
-      }
+      {"name": "table_or_model_name", "definitionPath": "path/to/schema:lineNumber", "fields": [{"name": "field_name", "type": "field_type", "constraints": ["NOT NULL", "UNIQUE"]}], "relationships": ["references other_table via foreign_key_column"]}
     ],
     "accessPatterns": [
-      {
-        "operation": "read|write|aggregate|join|delete",
-        "location": "path/to/file:lineNumber",
-        "targetSchema": "table_or_model_name",
-        "description": "Brief description of what the operation does"
-      }
+      {"operation": "read|write|aggregate|join|delete", "location": "path/to/file:lineNumber", "targetSchema": "table_or_model_name", "description": "Brief description of what the operation does"}
     ],
     "migrationFiles": ["path/to/migration/files"]
   },
   "dataTransformationPipelines": [
-    {
-      "entryPoint": "ClassName.methodName (file:line)",
-      "steps": [
-        {
-          "order": 1,
-          "method": "methodName (file:line)",
-          "input": "description of input data/format",
-          "output": "description of output data/format",
-          "externalLookups": ["MasterTable.getData() for code conversion"],
-          "transformation": "what changes (e.g., raw value mapped to display value via lookup table)"
-        }
-      ],
-      "intermediateFormats": ["description of intermediate data representation if any"],
-      "finalOutput": "description of final output data/format"
-    }
+    {"entryPoint": "ClassName.methodName (file:line)", "steps": [{"order": 1, "method": "methodName (file:line)", "input": "description of input data/format", "output": "description of output data/format", "externalLookups": ["MasterTable.getData() for code conversion"], "transformation": "what changes (e.g., raw value mapped to display value via lookup table)"}], "intermediateFormats": ["description of intermediate data representation if any"], "finalOutput": "description of final output data/format"}
   ],
   "constraints": [
-    {
-      "type": "validation|business_rule|configuration|assumption",
-      "description": "What the constraint enforces",
-      "location": "path/to/file:lineNumber",
-      "impact": "What breaks if this constraint is violated"
-    }
+    {"type": "validation|business_rule|configuration|assumption", "description": "What the constraint enforces", "location": "path/to/file:lineNumber", "impact": "What breaks if this constraint is violated"}
   ],
   "qualityAssurance": {
     "mechanisms": [
-      {
-        "tool": "Tool or check name",
-        "enforces": "What quality aspect it enforces",
-        "configLocation": "path/to/config:lineNumber",
-        "coveredFiles": ["affected files covered by this mechanism"],
-        "type": "linter|static_analysis|schema_validator|domain_specific|ci_check"
-      }
+      {"tool": "Tool or check name", "enforces": "What quality aspect it enforces", "configLocation": "path/to/config:lineNumber", "coveredFiles": ["affected files covered by this mechanism"], "type": "linter|static_analysis|schema_validator|domain_specific|ci_check"}
     ],
     "domainConstraints": [
-      {
-        "constraint": "Description of domain-specific constraint",
-        "source": "path/to/config-or-ci:lineNumber",
-        "affectedFiles": ["files subject to this constraint"]
-      }
+      {"constraint": "Description of domain-specific constraint", "source": "path/to/config-or-ci:lineNumber", "affectedFiles": ["files subject to this constraint"]}
     ]
   },
   "focusAreas": [
-    {
-      "fact_id": "src/auth/createUser.ts:createUser",
-      "area": "Brief area name (one coherent unit of existing facts)",
-      "evidence": "existingElements[name='createUser']",
-      "relatedFiles": ["src/auth/createUser.ts", "src/api/routes/users.ts", "src/services/notification.ts"],
-      "factsToAddress": "Concrete facts the designer must address (e.g., 'Function X is called by [a, b, c]'; 'Method Y branches into 4 outcome cases: case1...case4'; 'Field Z accepts values [v1, v2, v3]')",
-      "risk": "What goes wrong when these facts are omitted or contradicted by the design"
-    }
+    {"fact_id": "src/auth/createUser.ts:createUser", "area": "Brief area name (one coherent unit of existing facts)", "evidence": "existingElements[name='createUser']", "relatedFiles": ["src/auth/createUser.ts", "src/api/routes/users.ts", "src/services/notification.ts"], "factsToAddress": "Concrete facts the designer must address (e.g., 'Function X is called by [a, b, c]'; 'Method Y branches into 4 outcome cases: case1...case4'; 'Field Z accepts values [v1, v2, v3]')", "risk": "What goes wrong when these facts are omitted or contradicted by the design"}
   ],
-  "testCoverage": {
-    "testedElements": ["element names with test files found"],
-    "untestedElements": ["element names with no test files found"]
-  },
+  "testCoverage": {"testedElements": ["element names with test files found"], "untestedElements": ["element names with no test files found"]},
   "limitations": ["What could not be analyzed and why"]
 }
 ```

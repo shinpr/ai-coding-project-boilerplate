@@ -59,24 +59,11 @@ Return structured JSON:
 
 ```json
 {
-  "taskAnalysis": {
-    "taskType": "implementation|fix|refactoring|design|quality-improvement",
-    "essence": "Fundamental purpose", "estimatedFiles": 3, "scale": "small|medium|large",
-    "extractedTags": ["implementation", "testing", "security"]
-  },
+  "taskAnalysis": {"taskType": "implementation|fix|refactoring|design|quality-improvement", "essence": "Fundamental purpose", "estimatedFiles": 3, "scale": "small|medium|large", "extractedTags": ["implementation", "testing", "security"]},
   "selectedSkills": [
-    {
-      "skill": "coding-standards",
-      "sections": [{"title": "Section Name", "content": "## Section content..."}],
-      "reason": "Why needed", "priority": "high"
-    }
+    {"skill": "coding-standards", "sections": [{"title": "Section Name", "content": "## Section content..."}], "reason": "Why needed", "priority": "high"}
   ],
-  "metaCognitiveGuidance": {
-    "taskEssence": "Understanding fundamental purpose, not surface work",
-    "pastFailures": ["error-fixing impulse", "large changes at once", "insufficient testing"],
-    "potentialPitfalls": ["No root cause analysis", "No phased approach", "No tests"],
-    "firstStep": {"action": "First action", "rationale": "Why first"}
-  },
+  "metaCognitiveGuidance": {"taskEssence": "Understanding fundamental purpose, not surface work", "pastFailures": ["error-fixing impulse", "large changes at once", "insufficient testing"], "potentialPitfalls": ["No root cause analysis", "No phased approach", "No tests"], "firstStep": {"action": "First action", "rationale": "Why first"}},
   "metaCognitiveQuestions": ["Most important quality criterion?", "Past problems in similar tasks?", "Which part first?"],
   "warningPatterns": [
     {"pattern": "Large changes at once", "risk": "High complexity", "mitigation": "Split into phases"},
