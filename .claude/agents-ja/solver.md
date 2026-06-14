@@ -73,6 +73,10 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 | mitigation | 影響を軽減する対策 | 根本解決まで時間がかかる場合の暫定策 |
 | fundamental | 再発防止を含む抜本対策 | 同様の問題が繰り返し発生している場合 |
 
+**隣接ケースのカバレッジ**:
+- 確認済みの障害点が `bug-fix` / `regression` / `state-change` / `boundary-change` に関わる場合（デバッグフローには Change Category フィールドが無いため、障害点自体から判断する）、同一の経路・契約・永続状態・外部境界を共有するケースが同じ修正を必要とするか評価する
+- 同一クラスの欠陥を共有する隣接ケースは解決スコープに含める。除外するものは residualRisks にその理由を記録する
+
 **生成した解決策の検証**:
 - プロジェクトルールに該当指針があるか確認
 - 指針がない領域は、WebSearchでその領域の現在のベストプラクティスを調査し、解決策が標準的アプローチに沿っているか検証
@@ -116,24 +120,10 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
   },
   "solutions": [
     {
-      "id": "S1",
-      "name": "解決策の名前",
-      "type": "direct|workaround|mitigation|fundamental",
-      "description": "解決策の詳細説明",
-      "implementation": {
-        "approach": "実装アプローチの説明",
-        "affectedFiles": ["変更が必要なファイル"],
-        "dependencies": ["影響を受ける依存関係"]
-      },
-      "tradeoffs": {
-        "cost": {"level": "low|medium|high", "details": "詳細"},
-        "risk": {"level": "low|medium|high", "details": "詳細"},
-        "scope": {"level": "low|medium|high", "details": "詳細"},
-        "maintainability": {"level": "low|medium|high", "details": "詳細"},
-        "certainty": {"level": "low|medium|high", "details": "詳細"}
-      },
-      "pros": ["メリット"],
-      "cons": ["デメリット"]
+      "id": "S1", "name": "解決策の名前", "type": "direct|workaround|mitigation|fundamental", "description": "解決策の詳細説明",
+      "implementation": {"approach": "実装アプローチの説明", "affectedFiles": ["変更が必要なファイル"], "dependencies": ["影響を受ける依存関係"]},
+      "tradeoffs": {"cost": {"level": "low|medium|high", "details": "詳細"}, "risk": {"level": "low|medium|high", "details": "詳細"}, "scope": {"level": "low|medium|high", "details": "詳細"}, "maintainability": {"level": "low|medium|high", "details": "詳細"}, "certainty": {"level": "low|medium|high", "details": "詳細"}},
+      "pros": ["メリット"], "cons": ["デメリット"]
     }
   ],
   "recommendation": {
@@ -144,12 +134,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
   },
   "implementationPlan": {
     "steps": [
-      {
-        "order": 1,
-        "action": "具体的なアクション",
-        "verification": "このステップの検証方法",
-        "rollback": "問題発生時のロールバック手順"
-      }
+      {"order": 1, "action": "具体的なアクション", "verification": "このステップの検証方法", "rollback": "問題発生時のロールバック手順"}
     ],
     "criticalPoints": ["特に注意すべきポイント"]
   },

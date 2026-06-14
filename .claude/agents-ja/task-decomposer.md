@@ -102,6 +102,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
    - `## Implementation Content`（タスク概要）
    - `## Target Files`
    - `## Investigation Targets`（executor が実装前に読んで理解すべきファイル）
+   - `## Change Category`（タスクがバグ修正・リグレッション・状態変更・境界変更の場合 — 下記「Change Category の分類」参照）
    - `## Implementation Steps (TDD: Red-Green-Refactor)`
    - `## Quality Assurance Mechanisms`（作業計画書ヘッダーから導出 — 下記「品質保証メカニズムの伝播」参照）
    - `## Operation Verification Methods`（作業計画書の Verification Strategy から導出）
@@ -221,6 +222,21 @@ implementation-approachスキルで決定された実装戦略パターンに基
 2. **該当メカニズムを記載**: カバー範囲がタスクの Target Files と重複するメカニズムをすべてタスクの `## Quality Assurance Mechanisms` セクションに記載
 3. **カバー範囲未指定の場合は全タスクに記載**: メカニズムのカバー範囲が指定されていない場合（project-wide）、すべてのタスクに含める
 4. **該当なしの場合は省略**: タスクの Target Files に該当するメカニズムがなければ `## Quality Assurance Mechanisms` セクションを省略
+
+## Change Category の分類
+
+タスクが観測された振る舞いを修正する、または状態や境界の振る舞いを変える場合、executor と下流のレビュアーがタスクの意図を推測し直すのではなくフィールド値からスコープ限定の隣接ケース走査を実行できるよう、これを分類する:
+
+1. **作業計画書と Design Doc から分類する**。タスクは複数のカテゴリに該当しうる（例: 永続状態の境界を変えるリグレッション修正）。該当する値をすべて記録する:
+   - `bug-fix`: 観測された誤った振る舞いを修正する
+   - `regression`: 過去の変更が壊した振る舞いを復元する
+   - `state-change`: 状態の書き込み・遷移・永続化のされ方を変える
+   - `boundary-change`: 外部・パッケージ間・永続化の境界で、公開または利用される契約を変える
+2. **タスクの `Change Category` フィールドに**該当する値をすべてカンマ区切りで記入する（task-template 参照）。
+3. **隣接ケースを Investigation Targets に追加する**。該当する各カテゴリについて、変更と同一の経路・契約・永続状態・外部境界を共有するファイル（影響を受ける境界の両側のオーナーモジュールを含む）を追加し、executor が同一クラスの欠陥を走査できるようにする。該当する全カテゴリにわたって対象を統合する。
+4. **該当する場合のみ適用する**。純粋な追加・設定・スキャフォールディングのタスクは既定で `Change Category` フィールドを持たず、この伝播をスキップする。
+
+これは AC ごとの境界パス証明（AC の*内側*の境界パスを証明する）とは別物である。Change Category は、タスクの AC の*外側*にありながらその経路・契約・状態・境界を共有するケースの走査を駆動する。
 
 ## タスクファイルテンプレート
 
@@ -359,6 +375,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
 - [ ] 実装効率と手戻り防止（共通処理の事前識別、影響範囲の明確化）
 - [ ] 全タスクに調査対象が指定されている（具体的なファイルパス、曖昧なカテゴリではない）
 - [ ] 主張を実装する各タスクに Proof Obligations を記録（主要な故障モード + 検証する境界）
+- [ ] bug-fix / regression / state-change / boundary-change のタスクに Change Category を設定し、隣接する経路/境界のオーナーを Investigation Targets に追加済み
 - [ ] 作業計画書ヘッダーの品質保証メカニズムを該当タスクに伝播済み
 
 ## タスク設計の原則

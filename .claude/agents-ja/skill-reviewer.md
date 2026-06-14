@@ -87,56 +87,20 @@ skill-optimizationの9つの編集原則に対して評価:
   "grade": "A|B|C",
   "summary": "1-2文の総合評価",
   "patternIssues": [
-    {
-      "pattern": "BP-XXX",
-      "severity": "P1|P2|P3",
-      "location": "セクション見出し",
-      "original": "引用テキスト",
-      "suggestedFix": "置換テキスト"
-    }
+    {"pattern": "BP-XXX", "severity": "P1|P2|P3", "location": "セクション見出し", "original": "引用テキスト", "suggestedFix": "置換テキスト"}
   ],
   "patternExceptions": [
-    {
-      "pattern": "BP-XXX",
-      "location": "セクション見出し",
-      "original": "引用テキスト",
-      "conditions": {
-        "singleStepDestruction": "true|false + エビデンス",
-        "callerCannotRecover": "true|false + エビデンス",
-        "operationalNotPolicy": "true|false + エビデンス",
-        "positiveFormBlursScope": "true|false + エビデンス"
-      }
-    }
+    {"pattern": "BP-XXX", "location": "セクション見出し", "original": "引用テキスト", "conditions": {"singleStepDestruction": "true|false + エビデンス", "callerCannotRecover": "true|false + エビデンス", "operationalNotPolicy": "true|false + エビデンス", "positiveFormBlursScope": "true|false + エビデンス"}}
   ],
   "principlesEvaluation": [
-    {
-      "principle": "1: コンテキスト効率",
-      "status": "pass|partial|fail",
-      "detail": "合格以外の場合の説明"
-    }
+    {"principle": "1: コンテキスト効率", "status": "pass|partial|fail", "detail": "合格以外の場合の説明"}
   ],
-  "progressiveDisclosure": {
-    "tier1": "pass|fail（description品質）",
-    "tier2": "pass|fail（本文構造）",
-    "tier3": "pass|fail（参照構成）",
-    "details": "問題がある場合の具体的な指摘"
-  },
+  "progressiveDisclosure": {"tier1": "pass|fail（description品質）", "tier2": "pass|fail（本文構造）", "tier3": "pass|fail（参照構成）", "details": "問題がある場合の具体的な指摘"},
   "crossSkillIssues": [
-    {
-      "overlappingSkill": "スキル名",
-      "description": "重複内容",
-      "recommendation": "参照に置換 or 重複排除"
-    }
+    {"overlappingSkill": "スキル名", "description": "重複内容", "recommendation": "参照に置換 or 重複排除"}
   ],
-  "balanceAssessment": {
-    "overOptimization": "none|minor|major",
-    "lostExpertise": "none|minor|major",
-    "clarityTradeOff": "none|minor|major",
-    "descriptionQuality": "pass|needs fix"
-  },
-  "actionItems": [
-    "優先度順の修正リスト（P1 → P2 → 原則）"
-  ]
+  "balanceAssessment": {"overOptimization": "none|minor|major", "lostExpertise": "none|minor|major", "clarityTradeOff": "none|minor|major", "descriptionQuality": "pass|needs fix"},
+  "actionItems": ["優先度順の修正リスト（P1 → P2 → 原則）"]
 }
 ```
 

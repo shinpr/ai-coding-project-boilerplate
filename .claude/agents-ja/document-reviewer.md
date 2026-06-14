@@ -173,49 +173,15 @@ WorkPlanの場合、追加で以下を確認:
 
 ```json
 {
-  "metadata": {
-    "review_mode": "comprehensive",
-    "doc_type": "DesignDoc",
-    "target_path": "/path/to/document.md"
-  },
-  "scores": {
-    "consistency": 85,
-    "completeness": 80,
-    "rule_compliance": 90,
-    "clarity": 75
-  },
-  "gate0": {
-    "status": "pass|fail",
-    "missing_elements": []
-  },
-  "verdict": {
-    "decision": "approved_with_conditions",
-    "conditions": [
-      "FileUtilの不整合を解消",
-      "不足しているテストファイルを追加"
-    ]
-  },
+  "metadata": {"review_mode": "comprehensive", "doc_type": "DesignDoc", "target_path": "/path/to/document.md"},
+  "scores": {"consistency": 85, "completeness": 80, "rule_compliance": 90, "clarity": 75},
+  "gate0": {"status": "pass|fail", "missing_elements": []},
+  "verdict": {"decision": "approved_with_conditions", "conditions": ["FileUtilの不整合を解消", "不足しているテストファイルを追加"]},
   "issues": [
-    {
-      "id": "I001",
-      "severity": "critical",
-      "category": "consistency",
-      "location": "セクション3.2",
-      "description": "FileUtilメソッドの不一致",
-      "suggestion": "実際のFileUtil使用状況を反映するようドキュメントを更新"
-    }
+    {"id": "I001", "severity": "critical", "category": "consistency", "location": "セクション3.2", "description": "FileUtilメソッドの不一致", "suggestion": "実際のFileUtil使用状況を反映するようドキュメントを更新"}
   ],
-  "recommendations": [
-    "承認前に優先修正が必要",
-    "ドキュメントと実装の整合"
-  ],
-  "prior_context_check": {
-    "items_received": 0,
-    "resolved": 0,
-    "partially_resolved": 0,
-    "unresolved": 0,
-    "items": []
-  }
+  "recommendations": ["承認前に優先修正が必要", "ドキュメントと実装の整合"],
+  "prior_context_check": {"items_received": 0, "resolved": 0, "partially_resolved": 0, "unresolved": 0, "items": []}
 }
 ```
 
@@ -223,16 +189,8 @@ WorkPlanの場合、追加で以下を確認:
 
 ```json
 {
-  "metadata": {
-    "review_mode": "perspective",
-    "focus": "implementation",
-    "doc_type": "DesignDoc",
-    "target_path": "/path/to/document.md"
-  },
-  "analysis": {
-    "summary": "分析結果の説明",
-    "scores": {}
-  },
+  "metadata": {"review_mode": "perspective", "focus": "implementation", "doc_type": "DesignDoc", "target_path": "/path/to/document.md"},
+  "analysis": {"summary": "分析結果の説明", "scores": {}},
   "issues": [],
   "checklist": [
     {"item": "チェック項目の説明", "status": "pass|fail|na"}
@@ -253,12 +211,7 @@ WorkPlanの場合、追加で以下を確認:
     "partially_resolved": 1,
     "unresolved": 0,
     "items": [
-      {
-        "id": "D001",
-        "status": "resolved",
-        "location": "セクション3.2",
-        "evidence": "コードがドキュメントと一致"
-      }
+      {"id": "D001", "status": "resolved", "location": "セクション3.2", "evidence": "コードがドキュメントと一致"}
     ]
   }
 }

@@ -119,74 +119,21 @@ skills: project-context, technical-spec, coding-standards
 
 ```json
 {
-  "problemSummary": {
-    "phenomenon": "観察された現象の客観的記述",
-    "context": "発生条件、環境、タイミング",
-    "scope": "影響範囲"
-  },
+  "problemSummary": {"phenomenon": "観察された現象の客観的記述", "context": "発生条件、環境、タイミング", "scope": "影響範囲"},
   "investigationSources": [
-    {
-      "type": "code|history|dependency|config|document|external",
-      "location": "調査した場所",
-      "findings": "発見した事実（解釈を含めない）"
-    }
+    {"type": "code|history|dependency|config|document|external", "location": "調査した場所", "findings": "発見した事実（解釈を含めない）"}
   ],
   "externalResearch": [
-    {
-      "query": "検索したクエリ",
-      "source": "情報源",
-      "findings": "発見した関連情報",
-      "relevance": "この問題との関連性"
-    }
+    {"query": "検索したクエリ", "source": "情報源", "findings": "発見した関連情報", "relevance": "この問題との関連性"}
   ],
   "pathMap": [
-    {
-      "symptomId": "S1",
-      "symptom": "観察された症状の記述",
-      "trigger": "この症状を引き起こすトリガー",
-      "paths": [
-        {
-          "pathId": "S1-P1",
-          "description": "パスの説明（例: メインのデータ取得パス）",
-          "nodes": [
-            {
-              "nodeId": "S1-P1-N1",
-              "location": "file:line",
-              "description": "このノードが行うこと"
-            }
-          ]
-        }
-      ]
-    }
+    {"symptomId": "S1", "symptom": "観察された症状の記述", "trigger": "この症状を引き起こすトリガー", "paths": [{"pathId": "S1-P1", "description": "パスの説明（例: メインのデータ取得パス）", "nodes": [{"nodeId": "S1-P1-N1", "location": "file:line", "description": "このノードが行うこと"}]}]}
   ],
   "failurePoints": [
-    {
-      "id": "FP1",
-      "nodeId": "S1-P1-N1",
-      "symptomId": "S1",
-      "description": "障害の内容",
-      "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor",
-      "location": "file:line",
-      "upstreamDependency": "このノードが依存しているもの",
-      "symptomExplained": "この障害が観察された症状にどうつながるか",
-      "causalChain": ["観察された障害", "→ 直接原因", "→ 根本原因（停止条件）"],
-      "checkStatus": "supported|weakened|blocked|not_reached",
-      "evidence": [
-        {"type": "supporting|contradicting", "detail": "証拠の詳細", "source": "情報源の場所", "strength": "direct|indirect|circumstantial"}
-      ],
-      "comparisonAnalysis": {
-        "normalImplementation": "正常動作する実装のパス（見つからない場合はnull）",
-        "keyDifferences": ["差分"]
-      }
-    }
+    {"id": "FP1", "nodeId": "S1-P1-N1", "symptomId": "S1", "description": "障害の内容", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "location": "file:line", "upstreamDependency": "このノードが依存しているもの", "symptomExplained": "この障害が観察された症状にどうつながるか", "causalChain": ["観察された障害", "→ 直接原因", "→ 根本原因（停止条件）"], "checkStatus": "supported|weakened|blocked|not_reached", "evidence": [{"type": "supporting|contradicting", "detail": "証拠の詳細", "source": "情報源の場所", "strength": "direct|indirect|circumstantial"}], "comparisonAnalysis": {"normalImplementation": "正常動作する実装のパス（見つからない場合はnull）", "keyDifferences": ["差分"]}}
   ],
   "impactAnalysis": [
-    {
-      "failurePointId": "FP1",
-      "impactScope": ["影響を受けるファイルパス"],
-      "recurrenceRisk": "low|medium|high",
-      "riskRationale": "リスク判定の根拠"
-    }
+    {"failurePointId": "FP1", "impactScope": ["影響を受けるファイルパス"], "recurrenceRisk": "low|medium|high", "riskRationale": "リスク判定の根拠"}
   ],
   "unexploredAreas": [
     {"area": "未探索領域", "reason": "調査できなかった理由", "potentialRelevance": "関連性"}

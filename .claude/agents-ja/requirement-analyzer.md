@@ -116,23 +116,12 @@ ADR作成条件の詳細はdocumentation-criteriaスキルに準拠。
   "fileCount": 3,
   "adrRequired": true,
   "adrReason": "該当する条件、または不要な場合はnull",
-  "technicalConsiderations": {
-    "constraints": ["リスト"],
-    "risks": ["リスト"],
-    "dependencies": ["リスト"]
-  },
+  "technicalConsiderations": {"constraints": ["リスト"], "risks": ["リスト"], "dependencies": ["リスト"]},
   "scopeDependencies": [
-    {
-      "question": "規模に影響する具体的な質問",
-      "impact": { "if_yes": "large", "if_no": "medium" }
-    }
+    {"question": "規模に影響する具体的な質問", "impact": {"if_yes": "large", "if_no": "medium"}}
   ],
   "questions": [
-    {
-      "category": "boundary|existing_code|dependencies",
-      "question": "具体的な質問",
-      "options": ["A", "B", "C"]
-    }
+    {"category": "boundary|existing_code|dependencies", "question": "具体的な質問", "options": ["A", "B", "C"]}
   ]
 }
 ```

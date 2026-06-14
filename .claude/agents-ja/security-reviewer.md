@@ -100,22 +100,11 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
   "summary": "[1-2文の要約]",
   "filesReviewed": 5,
   "findings": [
-    {
-      "category": "confirmed_risk|suspected_risk|defense_gap|hardening|policy",
-      "confidence": "high|medium|low",
-      "location": "[file:line]",
-      "description": "[検出された具体的な問題]",
-      "rationale": "[カテゴリ別、上記参照]",
-      "suggestion": "[具体的な修正方法]"
-    }
+    {"category": "confirmed_risk|suspected_risk|defense_gap|hardening|policy", "confidence": "high|medium|low", "location": "[file:line]", "description": "[検出された具体的な問題]", "rationale": "[カテゴリ別、上記参照]", "suggestion": "[具体的な修正方法]"}
   ],
   "notes": "[hardening/policy検出結果の要約、statusがapproved_with_notesの場合に提示]",
   "requiredFixes": [
-    {
-      "location": "[file:line — Fix Mode の許可リスト拡張のため file[:line] として解釈可能であること]",
-      "issue": "[修正対象の具体的な問題 — 対応する finding から取得]",
-      "fix": "[具体的な修正指示]"
-    }
+    {"location": "[file:line — Fix Mode の許可リスト拡張のため file[:line] として解釈可能であること]", "issue": "[修正対象の具体的な問題 — 対応する finding から取得]", "fix": "[具体的な修正指示]"}
   ]
 }
 ```

@@ -165,142 +165,43 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context
 
 ```json
 {
-  "analysisScope": {
-    "filesAnalyzed": ["path/to/component.tsx"],
-    "stylesAnalyzed": ["path/to/styles.module.css"],
-    "uiConventions": {
-      "componentExtension": ".tsx",
-      "styleStrategy": "css-modules|vanilla-css|css-in-js|utility-classes",
-      "storybook": true,
-      "testRunner": "vitest|jest|other"
-    }
-  },
+  "analysisScope": {"filesAnalyzed": ["path/to/component.tsx"], "stylesAnalyzed": ["path/to/styles.module.css"], "uiConventions": {"componentExtension": ".tsx", "styleStrategy": "css-modules|vanilla-css|css-in-js|utility-classes", "storybook": true, "testRunner": "vitest|jest|other"}},
   "externalResources": {
     "status": "fetched|partial|not_recorded",
-    "designOrigin": {
-      "fetch_status": "fetched|mcp_unavailable|skipped|not_applicable",
-      "accessMethod": "MCP name | URL | file path | existing-implementation-only",
-      "fetched_summary": "brief description of fetched content (e.g., screen names, frame ids, token snapshot)"
-    },
-    "designSystem": {
-      "fetch_status": "fetched|mcp_unavailable|skipped|not_applicable",
-      "accessMethod": "...",
-      "fetched_summary": "components catalogued, tokens captured, anti-pattern identifiers"
-    },
-    "guidelines": {
-      "fetch_status": "fetched|skipped|not_applicable",
-      "accessMethod": "...",
-      "fetched_summary": "rule categories captured (CSS, accessibility, i18n, etc.)"
-    },
-    "visualVerification": {
-      "fetch_status": "available|mcp_unavailable|not_applicable",
-      "accessMethod": "...",
-      "notes": "how rendered output is verified during implementation"
-    }
+    "designOrigin": {"fetch_status": "fetched|mcp_unavailable|skipped|not_applicable", "accessMethod": "MCP name | URL | file path | existing-implementation-only", "fetched_summary": "brief description of fetched content (e.g., screen names, frame ids, token snapshot)"},
+    "designSystem": {"fetch_status": "fetched|mcp_unavailable|skipped|not_applicable", "accessMethod": "...", "fetched_summary": "components catalogued, tokens captured, anti-pattern identifiers"},
+    "guidelines": {"fetch_status": "fetched|skipped|not_applicable", "accessMethod": "...", "fetched_summary": "rule categories captured (CSS, accessibility, i18n, etc.)"},
+    "visualVerification": {"fetch_status": "available|mcp_unavailable|not_applicable", "accessMethod": "...", "notes": "how rendered output is verified during implementation"}
   },
   "componentStructure": [
-    {
-      "name": "ComponentName",
-      "filePath": "path/to/file:lineNumber",
-      "propsInterface": "name and brief shape",
-      "topLevelElement": "tag or component name",
-      "domOrder": ["child1", "child2", "child3"],
-      "conditionalBranches": [
-        {"predicate": "condition expression", "renderedSubtree": "brief description"}
-      ],
-      "callSites": ["path/to/consumer:line"]
-    }
+    {"name": "ComponentName", "filePath": "path/to/file:lineNumber", "propsInterface": "name and brief shape", "topLevelElement": "tag or component name", "domOrder": ["child1", "child2", "child3"], "conditionalBranches": [{"predicate": "condition expression", "renderedSubtree": "brief description"}], "callSites": ["path/to/consumer:line"]}
   ],
   "propsPatterns": [
-    {
-      "component": "ComponentName",
-      "callSite": "path/to/file:line",
-      "props": {"variant": "primary", "size": "md"},
-      "computedProps": ["onClick (useCallback)"],
-      "groupKey": "primary-md"
-    }
+    {"component": "ComponentName", "callSite": "path/to/file:line", "props": {"variant": "primary", "size": "md"}, "computedProps": ["onClick (useCallback)"], "groupKey": "primary-md"}
   ],
   "cssLayout": [
-    {
-      "filePath": "path/to/styles.module.css",
-      "classNamingConvention": "camelCase|kebab-case|BEM",
-      "baseClass": "root",
-      "layouts": [
-        {
-          "selector": ".className",
-          "display": "flex|grid|block",
-          "direction": "row|column|grid-template",
-          "gap": "8px|none",
-          "wrap": "wrap|nowrap|absent",
-          "logicalProperties": true,
-          "stateSelectors": ["[data-state=active]", "[aria-selected=true]"]
-        }
-      ],
-      "responsiveBreakpoints": ["768px", "1024px"]
-    }
+    {"filePath": "path/to/styles.module.css", "classNamingConvention": "camelCase|kebab-case|BEM", "baseClass": "root", "layouts": [{"selector": ".className", "display": "flex|grid|block", "direction": "row|column|grid-template", "gap": "8px|none", "wrap": "wrap|nowrap|absent", "logicalProperties": true, "stateSelectors": ["[data-state=active]", "[aria-selected=true]"]}], "responsiveBreakpoints": ["768px", "1024px"]}
   ],
   "stateDisplay": [
-    {
-      "component": "ComponentName",
-      "states": [
-        {"name": "loading|empty|partial|error|ready|disabled", "trigger": "what causes this state", "renders": "brief description"}
-      ],
-      "unsupportedStates": ["states the component does not currently express"]
-    }
+    {"component": "ComponentName", "states": [{"name": "loading|empty|partial|error|ready|disabled", "trigger": "what causes this state", "renders": "brief description"}], "unsupportedStates": ["states the component does not currently express"]}
   ],
   "displayConditions": [
-    {
-      "component": "ComponentName",
-      "condition": "feature_flag|role|route|region|tenant|page_context",
-      "predicateLocation": "path/to/file:line",
-      "predicate": "expression",
-      "gatedSubtree": "brief description"
-    }
+    {"component": "ComponentName", "condition": "feature_flag|role|route|region|tenant|page_context", "predicateLocation": "path/to/file:line", "predicate": "expression", "gatedSubtree": "brief description"}
   ],
-  "i18n": {
-    "format": "csv|json|code-catalog|other",
-    "structuralConventions": {"csvColumns": 2, "trailingComma": false, "jsonNestingDepth": 1},
-    "keyNamingConvention": "pattern with examples",
-    "locales": ["ja-JP", "en-US"],
-    "localeGaps": ["keys present in one locale only"],
-    "generatedTypings": {"command": "generator command", "outputPath": "path/to/output"}
-  },
+  "i18n": {"format": "csv|json|code-catalog|other", "structuralConventions": {"csvColumns": 2, "trailingComma": false, "jsonNestingDepth": 1}, "keyNamingConvention": "pattern with examples", "locales": ["ja-JP", "en-US"], "localeGaps": ["keys present in one locale only"], "generatedTypings": {"command": "generator command", "outputPath": "path/to/output"}},
   "accessibility": [
-    {
-      "component": "ComponentName",
-      "ariaAttributes": ["role=button", "aria-label fed by prop accessibleName"],
-      "keyboardHandling": "Enter and Space mapped to onClick",
-      "focusStyling": "focus-visible outline",
-      "testCoverage": "axe checks present|absent"
-    }
+    {"component": "ComponentName", "ariaAttributes": ["role=button", "aria-label fed by prop accessibleName"], "keyboardHandling": "Enter and Space mapped to onClick", "focusStyling": "focus-visible outline", "testCoverage": "axe checks present|absent"}
   ],
   "generatedArtifacts": [
-    {
-      "kind": "css-module-typings|message-catalog-typings|route-typings|other",
-      "command": "generator command",
-      "trigger": "on *.module.css change|manual|other",
-      "consumers": ["typecheck", "test", "build", "runtime"]
-    }
+    {"kind": "css-module-typings|message-catalog-typings|route-typings|other", "command": "generator command", "trigger": "on *.module.css change|manual|other", "consumers": ["typecheck", "test", "build", "runtime"]}
   ],
   "focusAreas": [
-    {
-      "fact_id": "src/components/Card/Card.tsx:Card",
-      "area": "Brief UI area name",
-      "evidence": "componentStructure[name=Card] | cssLayout[selector=.root] | propsPatterns[groupKey=...] | externalResources.designOrigin",
-      "factsToAddress": "Concrete UI facts the designer or implementer must respect",
-      "risk": "What inconsistency results if these facts are omitted"
-    }
+    {"fact_id": "src/components/Card/Card.tsx:Card", "area": "Brief UI area name", "evidence": "componentStructure[name=Card] | cssLayout[selector=.root] | propsPatterns[groupKey=...] | externalResources.designOrigin", "factsToAddress": "Concrete UI facts the designer or implementer must respect", "risk": "What inconsistency results if these facts are omitted"}
   ],
   "candidateWriteSet": [
-    {
-      "path": "src/components/Card/Card.tsx",
-      "reasonRef": "focusAreas[fact_id=src/components/Card/Card.tsx:Card]",
-      "confidence": "high|medium|low"
-    }
+    {"path": "src/components/Card/Card.tsx", "reasonRef": "focusAreas[fact_id=src/components/Card/Card.tsx:Card]", "confidence": "high|medium|low"}
   ],
-  "limitations": [
-    "Areas the analysis could not reach with confidence"
-  ]
+  "limitations": ["Areas the analysis could not reach with confidence"]
 }
 ```
 
