@@ -120,7 +120,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    | Frontend integration / fixture-e2e test | UI Spec component section including the State x Display Matrix and Interaction Definition tables, the implemented component code, fixture data files |
    | Test implementation | Test skeleton comments/annotations, the target code being tested, actual API/auth flows |
    | E2E environment setup | Current environment config (startup scripts, docker-compose or equivalent), seed scripts, existing fixture patterns, application auth flow |
-   | Cross-package boundary implementation | Both sides of the boundary as listed in the work plan's Connection Map (owner modules and expected signal), the contract definition between them |
+   | Cross-package boundary implementation | The Connection Map owner file path(s) on both sides of the boundary, plus the contract definition file between them (the expected signal and any serialized format/parse rule are recorded in the task's Boundary Context note, not as Investigation Targets) |
    | Bug fix / refactor | The affected code paths, related test coverage, error reproduction context |
    | Behavior replacement / rewrite | The existing implementation being replaced, its observable outputs, Design Doc Verification Strategy section |
    | Task constrained by an ADR (work plan's ADR Bindings table covers this task) | The ADR file with section hint matching the row's `Source Section` value (e.g., `(§ Decision)` or `(§ Implementation Guidance)`) for each binding row covering this task |
@@ -183,7 +183,7 @@ When the work plan contains a Connection Map table, propagate boundary context t
 
 1. **Lookup by task ID**: For each row in the Connection Map, locate the task(s) listed in the "Covered By Task(s)" column
 2. **Append to Investigation Targets**: Add the boundary's owner module file paths on both sides to each matched task's Investigation Targets
-3. **Add a "Boundary Context" note in the task body**: Record the boundary identifier and expected signal verbatim from the Connection Map row, so the executor knows what observable evidence the implementation must produce
+3. **Add a "Boundary Context" note in the task body**: Record the boundary identifier and expected signal verbatim from the Connection Map row, so the executor knows what observable evidence the implementation must produce. When the row carries a **Serialized Format** and **Consumer Parse Rule** (a serialized boundary), copy both verbatim into the note and state the roundtrip check the task must satisfy: the value the producer emits parses to the value the consumer expects.
 4. **Skip when not provided**: If the work plan has no Connection Map, skip this propagation step
 
 ## ADR Binding Propagation
@@ -205,6 +205,19 @@ When the work plan contains an ADR Bindings table, propagate each binding decisi
 
      When the decision cannot be verified by file:line or command alone, the predicate may rely on reasoned judgment, but it must remain Y/N-answerable
 4. **Apply only when provided**: Run this propagation only when the work plan contains an ADR Bindings table
+
+## Reference Contract Propagation
+
+When the work plan contains a **Reference Contract Values** table, propagate each binding observable value to the task(s) it covers, so the executor is checked against the exact value rather than a back-pointer it must re-derive:
+
+1. **Lookup by task ID**: For each row, locate the task(s) listed in "Covered By Task(s)"
+2. **Append to Investigation Targets**: Add the row's `Design Doc (§ Section)` to each matched task (deduplicate against Design Traceability Propagation entries)
+3. **Add a Reference Contracts table row to the task**: For each matched row, add one row to the task's Reference Contracts table:
+   - **Source**: the `Design Doc (§ Section)` value
+   - **Contract Type**: copy the `Contract Type` value verbatim (structure-order / derived-display / state-lifecycle-negative)
+   - **Required Observable Value**: copy the value **verbatim** from the work plan row, preserving its exact wording and detail
+   - **Compliance Check**: write a Y/N-answerable positive predicate stating the final implementation reproduces the value (e.g., "the listed fields render in the specified order"; "the label shows the looked-up name in place of the raw code"; "the persisted state is applied only when the restore signal is present")
+4. **Apply only when provided**: Run this propagation only when the work plan contains a Reference Contract Values table. Serialized boundaries are propagated by Connection Map Propagation above, not here.
 
 ## Design Traceability Propagation
 
@@ -376,6 +389,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Investigation Targets specified for every task (specific file paths, not vague categories)
 - [ ] Proof Obligations recorded for each claim-implementing task (primary failure mode + boundary to exercise)
 - [ ] Change Category set for bug-fix / regression / state-change / boundary-change tasks, with adjacent path/boundary owners added to Investigation Targets
+- [ ] Reference Contract Values rows propagated to matching tasks as Reference Contracts, value copied verbatim (when work plan has the table)
 - [ ] Quality Assurance Mechanisms from work plan header propagated to relevant tasks
 
 ## Task Design Principles

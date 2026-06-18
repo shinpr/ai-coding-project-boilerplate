@@ -254,7 +254,11 @@ Invariants:
 ```
 
 ### Field Propagation Map (When Fields Cross Boundaries)
+
+A boundary here includes a **serialized boundary** — a value encoded on one side and parsed on the other through a medium such as a query string, CLI argument, environment variable, config entry, message/queue payload, storage key, or file — not only in-memory crossings. For a serialized row, append `Serialized: [exact representation the producer emits]; Parse: [how the consumer decodes/validates it]` — the **Serialized Format** and **Consumer Parse Rule** — so producer and consumer agree; omit that suffix for in-memory crossings.
+
 - [field]: [ComponentA → B] — preserved / transformed / dropped — [reason]
+- [field]: [ComponentA → B] — transformed — Serialized: [exact representation]; Parse: [decode/validate rule] — [reason] (serialized boundary)
 
 ### State Transitions and Invariants
 
