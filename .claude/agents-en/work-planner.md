@@ -74,9 +74,9 @@ service-integration-e2e gap:
     Detected boundaries: [list crossings and AC references]
 ```
 
-"Was not communicated" means the upstream planning flow skipped test skeleton generation entirely — in that case the absence reason field is not passed to work-planner, so the gap check still runs. Per acceptance-test-generator's contract, when a skeleton was generated `e2eAbsenceReason.<lane>` is null; when generation ran but produced no skeleton, the reason is one of the strings enumerated in that contract — both cases mean the field WAS communicated, so no gap warning fires.
+"Was not communicated" means the upstream planning flow skipped test skeleton generation entirely — in that case the absence reason field is not provided, so the gap check still runs. Per the test-skeleton generation contract, when a skeleton was generated `e2eAbsenceReason.<lane>` is null; when generation ran but produced no skeleton, the reason is one of the strings enumerated in that contract — both cases mean the field WAS communicated, so no gap warning fires.
 
-When an `e2eAbsenceReason` for a lane carries a string value (e.g., `no_multi_step_journey`, `below_threshold_user_confirmed`, `no_real_service_dependency` — see acceptance-test-generator for the per-lane allowed values), absence in that lane is intentional — skip the gap check for that lane.
+When an `e2eAbsenceReason` for a lane carries a string value (e.g., `no_multi_step_journey`, `below_threshold_user_confirmed`, `no_real_service_dependency` — see the test-skeleton generation contract for the per-lane allowed values), absence in that lane is intentional — skip the gap check for that lane.
 
 This check applies regardless of whether Strategy A or B was selected. Integration-only skeletons being provided does not imply E2E coverage. Service-internal journeys (async pipelines, service-to-service sagas) are not flagged for the reserved-slot rule but may still warrant service-integration-e2e through the normal ROI path.
 
@@ -102,10 +102,10 @@ If an item has no covering task, set Gap Status to `gap` with justification in N
 
 ### 5a. Map UI Spec Components to Tasks (when UI Spec provided)
 
-When a UI Spec is among the inputs, also map components and states to the tasks that implement them. task-decomposer reads this mapping in a downstream step to populate each task's Investigation Targets, so without this step the UI Spec never reaches the executor.
+When a UI Spec is among the inputs, also map components and states to the tasks that implement them. This mapping is read in a downstream step to populate each task's Investigation Targets, so without it the UI Spec never reaches implementation.
 
 For each component documented in the UI Spec:
-1. Identify the component's section heading exactly as it appears in the UI Spec (the heading is the reference key — see ui-spec-designer's heading uniqueness rule)
+1. Identify the component's section heading exactly as it appears in the UI Spec (the heading is the reference key, and headings are unique)
 2. Identify which states (default / loading / empty / error / partial) the implementation must cover
 3. Identify the task(s) in this plan that implement the component or its tests
 
@@ -113,7 +113,7 @@ Record the mapping in the **UI Spec Component → Task Mapping** table (see plan
 
 ### 5b. Map Boundaries to Tasks (when crossing a runtime/deployment boundary, or passing a serialized value across any boundary)
 
-Build a Connection Map when the implementation crosses a runtime or deployment boundary, **or when a value is serialized and re-parsed across any boundary (even within one runtime)**, so task-decomposer can propagate boundary context to each affected task.
+Build a Connection Map when the implementation crosses a runtime or deployment boundary, **or when a value is serialized and re-parsed across any boundary (even within one runtime)**, so boundary context propagates to each affected task in the downstream step.
 
 **A boundary qualifies for the Connection Map when EITHER condition holds**:
 - *Cross-process*: the two sides run in separate processes, services, or runtimes (web client ↔ HTTP server, service A ↔ service B, frontend bundle ↔ backend handler); a serialized contract crosses between them (HTTP request/response, message envelope, RPC, event payload); and a failure on one side produces an observable signal on the other.
@@ -164,8 +164,8 @@ For each task, derive completion criteria from Design Doc acceptance criteria. A
 ## Input Parameters
 
 - **mode**: `create` (default) | `update`
-- **scale**: `small` | `medium` | `large` (taken from requirement-analyzer; controls output mode — see "Output Mode by Scale" below)
-- **designDoc**: Path to Design Doc(s) (may be multiple for cross-layer features). At `scale: small` Design Doc may be absent; in that case derive the task directly from the requirement-analyzer output and PRD update notes.
+- **scale**: `small` | `medium` | `large` (taken from the requirements-analysis result; controls output mode — see "Output Mode by Scale" below)
+- **designDoc**: Path to Design Doc(s) (may be multiple for cross-layer features). At `scale: small` Design Doc may be absent; in that case derive the task directly from the requirements-analysis output and PRD update notes.
 - **uiSpec** (optional): Path to UI Specification (frontend/fullstack features)
 - **prd** (optional): Path to PRD document
 - **adr** (optional): Path to ADR document
@@ -176,8 +176,8 @@ For each task, derive completion criteria from Design Doc acceptance criteria. A
 
 | scale | Output | Path | Rationale |
 |---|---|---|---|
-| `small` | A single task file in **task-template format** (per documentation-criteria skill) | `docs/plans/tasks/{feature-name}-task-YYYYMMDD.md` | At 1-2 files there is no separate decomposition step; the task file the orchestrator passes to task-executor as `task_file` is produced directly here. |
-| `medium` / `large` | A work plan in **plan-template format** | `docs/plans/{feature-name}-plan.md` | Decomposition into individual task files is performed by task-decomposer in a downstream step. |
+| `small` | A single task file in **task-template format** (per documentation-criteria skill) | `docs/plans/tasks/{feature-name}-task-YYYYMMDD.md` | At 1-2 files there is no separate decomposition step; the task file passed to the execution step as `task_file` is produced directly here. |
+| `medium` / `large` | A work plan in **plan-template format** | `docs/plans/{feature-name}-plan.md` | Decomposition into individual task files is performed in a downstream step. |
 
 In `small` mode, skip the multi-phase composition (Step 4) and the Design-to-Plan Traceability mapping (Step 5); produce the task file with `## Target Files`, `## Investigation Targets`, `## Investigation Notes`, `## Implementation Steps (TDD: Red-Green-Refactor)`, `## Quality Assurance Mechanisms`, `## Operation Verification Methods`, and `## Completion Criteria` sections, plus the `Metadata:` block (`Dependencies:`, `Provides:`, `Size:`). Do not output a separate work plan file at this scale.
 

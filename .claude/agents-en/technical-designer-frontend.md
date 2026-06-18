@@ -270,7 +270,7 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 
   Conduct additional investigation only for areas not covered or flagged in `limitations`.
 
-- **UI Analysis** (optional, frontend recipe). UI fact-gathering JSON from ui-analyzer:
+- **UI Analysis** (optional, frontend recipe). UI fact-gathering JSON from the UI analysis step:
 
   | input field | downstream use |
   |---|---|

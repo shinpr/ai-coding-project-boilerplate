@@ -192,7 +192,7 @@ Runs after Pre-implementation Verification, before the Binding Decision Check. T
 3. Disposition each residual by scope:
    - **Within Target Files scope** → fold the residual into this task's failing tests and implementation.
    - **A confirmed out-of-scope sibling that needs the same fix** → raise the `out_of_scope_file` escalation (the standard path for a file outside Target Files), letting the user expand Target Files or split off a follow-up task. This routes a confirmed adjacent defect to an explicit decision.
-   - **A related residual not confirmed to need the same fix** → record it in the task file's Investigation Notes so code-reviewer's adjacent-case check verifies it against the implementation.
+   - **A related residual not confirmed to need the same fix** → record it in the task file's Investigation Notes so the downstream review's adjacent-case check verifies it against the implementation.
 
 #### Binding Decision Check (Required when the task file has a Binding Decisions section)
 

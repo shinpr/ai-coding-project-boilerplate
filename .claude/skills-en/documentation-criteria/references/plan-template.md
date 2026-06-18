@@ -76,13 +76,13 @@ Domain-independent failure categories this implementation must guard against. En
 
 ## UI Spec Component → Task Mapping
 
-Include this section when a UI Spec is among the inputs. Maps each component documented in the UI Spec to the task(s) that implement it. task-decomposer reads this table to populate each task's Investigation Targets with the corresponding UI Spec section. Omit the section when no UI Spec exists.
+Include this section when a UI Spec is among the inputs. Maps each component documented in the UI Spec to the task(s) that implement it. This table is read in a downstream step to populate each task's Investigation Targets with the corresponding UI Spec section. Omit the section when no UI Spec exists.
 
 | UI Spec Component (section heading) | States to Cover | Covered By Task(s) | Gap Status | Notes |
 |---|---|---|---|---|
 | [Use the UI Spec heading exactly as written, e.g., "§ Component: AlertCard"] | [default / loading / empty / error / partial — list the states the implementation must produce] | [Phase X Task Y] | covered | |
 
-**Reference key rule**: The component identifier in column 1 is the UI Spec section heading (verbatim). ui-spec-designer enforces unique component headings so this reference resolves to exactly one section.
+**Reference key rule**: The component identifier in column 1 is the UI Spec section heading (verbatim). Component headings are unique, so this reference resolves to exactly one section.
 
 **Gap Status values**: `covered` (task exists), `gap` (no task — requires justification in Notes, user confirmation required before plan approval)
 
@@ -100,7 +100,7 @@ One row per binding decision. A single ADR can contribute multiple rows. A singl
 
 ## Connection Map
 
-Include this section when the implementation crosses a package, service, or process boundary, **or when a value is serialized and re-parsed across a boundary even within a single runtime** — through a medium such as a query string, route/CLI argument, environment variable, config entry, message/queue payload, storage key, or file (producer and consumer must agree on the exact representation). Document each boundary so task-decomposer can propagate boundary context to the implementation tasks on each side. Record each Owner as concrete file path(s), not a bare module/package/component name, so task-decomposer adds it as an Investigation Target the executor can read. Omit the section when no such boundary exists.
+Include this section when the implementation crosses a package, service, or process boundary, **or when a value is serialized and re-parsed across a boundary even within a single runtime** — through a medium such as a query string, route/CLI argument, environment variable, config entry, message/queue payload, storage key, or file (producer and consumer must agree on the exact representation). Document each boundary so boundary context propagates to the implementation tasks on each side in a downstream step. Record each Owner as concrete file path(s), not a bare module/package/component name, so it resolves as an Investigation Target the executor can read. Omit the section when no such boundary exists.
 
 For a serialized boundary, fill Serialized Format and Consumer Parse Rule. Set both to "—" when the contract is already captured by the Expected Signal (e.g., a cross-process call whose body matches the agreed schema); fill them when producer and consumer must agree on a specific encoding of a value (query string, storage key, CLI argument, config entry, message field).
 

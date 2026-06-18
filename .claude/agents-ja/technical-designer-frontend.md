@@ -270,7 +270,7 @@ UI Specが存在する場合（`docs/ui-spec/{feature-name}-ui-spec.md`）:
 
   分析でカバーされていない領域、または `limitations` でフラグされた領域についてのみ追加調査を実施。
 
-- **UI Analysis**（任意、フロントエンドレシピ）。ui-analyzerによるUI事実収集JSON:
+- **UI Analysis**（任意、フロントエンドレシピ）。UI解析工程によるUI事実収集JSON:
 
   | 入力フィールド | 反映先 |
   |---|---|

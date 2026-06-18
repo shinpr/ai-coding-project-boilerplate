@@ -189,13 +189,13 @@ describe('[Feature Name] Integration Test', () => {
 })
 ```
 
-**Proof annotations** (apply to every skeleton, alongside the metadata above): each `it.todo` carries two comment lines that hand the proof contract to the test implementer and to integration-test-reviewer (these map to the task template's Proof Obligations fields):
+**Proof annotations** (apply to every skeleton, alongside the metadata above): each `it.todo` carries two comment lines that hand the proof contract to the test implementer and the downstream review (these map to the task template's Proof Obligations fields):
 - `Primary failure mode`: the specific regression that turns this test red — the behavior the AC promises and would break
 - `Proof obligation`: what the implemented test must assert to prove the claim — the boundary to traverse, the observable state before/after for state-changing ACs, and which boundaries may be mocked and why. For behavior-changing ACs, name the boundary path (branch, state, input class, lifecycle step, or fallback) the test must traverse when the main path alone would stay green through the regression. Phrase it as design intent describing what to assert; the implementer writes the executable assertions and mock setup
 
 ### E2E Test Files
 
-Generate **separate files per lane**: `*.fixture-e2e.test.[ext]` for fixture-e2e, `*.service-e2e.test.[ext]` for service-integration-e2e. Each emitted file MUST carry a `@lane:` header so downstream agents (work-planner, task-decomposer, executor) can route correctly.
+Generate **separate files per lane**: `*.fixture-e2e.test.[ext]` for fixture-e2e, `*.service-e2e.test.[ext]` for service-integration-e2e. Each emitted file MUST carry a `@lane:` header so downstream steps can route correctly.
 
 **fixture-e2e example** (UI journey with mocked backend, runs in CI without infrastructure):
 

@@ -79,13 +79,13 @@ implementation-approachスキルで決定された実装戦略パターンに基
 
 4. **タスクファイルの生成**
 
-   命名は subagents-orchestration-guide「Layer-Aware Agent Routing」のレイヤールーティング規約に従う。素の `{plan-name}-task-*.md` 形式は `task-executor`（backend）に排他的にルーティングされ、frontendタスクには使用してはならない。
+   命名は subagents-orchestration-guide「Layer-Aware Agent Routing」のレイヤールーティング規約に従う。素の `{plan-name}-task-*.md` 形式はbackend予約であり、frontendタスクには使用してはならない。
 
-   | 計画分類 | タスクファイル名 | ルーティング先 |
-   |---------|---------------|--------------|
-   | 単層 **backend** | `{plan-name}-task-{number}.md`（推奨）または `{plan-name}-backend-task-{number}.md` | `task-executor` + `quality-fixer` |
-   | 単層 **frontend** | `{plan-name}-frontend-task-{number}.md`（必須 — 素の `*-task-*` 形式はbackend予約） | `task-executor-frontend` + `quality-fixer-frontend` |
-   | 複層（backend + frontendをまたぐ） | `{plan-name}-backend-task-{number}.md` と `{plan-name}-frontend-task-{number}.md`（タスクスライスごとにレイヤー別に1ファイルずつ） | ファイル名のレイヤーセグメントごと |
+   | 計画分類 | タスクファイル名 |
+   |---------|---------------|
+   | 単層 **backend** | `{plan-name}-task-{number}.md`（推奨）または `{plan-name}-backend-task-{number}.md` |
+   | 単層 **frontend** | `{plan-name}-frontend-task-{number}.md`（必須 — 素の `*-task-*` 形式はbackend予約） |
+   | 複層（backend + frontendをまたぐ） | `{plan-name}-backend-task-{number}.md` と `{plan-name}-frontend-task-{number}.md`（タスクスライスごとにレイヤー別に1ファイルずつ） |
 
    レイヤーはタスクの対象ファイルパスから判定する（technical-specスキルのプロジェクト構造定義を参照）。
 

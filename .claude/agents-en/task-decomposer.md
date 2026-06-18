@@ -79,13 +79,13 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 
 4. **Task File Generation**
 
-   Naming follows the layer routing convention in subagents-orchestration-guide "Layer-Aware Agent Routing". The bare `{plan-name}-task-*.md` form routes exclusively to `task-executor` (backend) and must NOT be used for frontend tasks.
+   Naming follows the layer routing convention in subagents-orchestration-guide "Layer-Aware Agent Routing". The bare `{plan-name}-task-*.md` form is reserved for backend and must NOT be used for frontend tasks.
 
-   | Plan classification | Task filename | Routes to |
-   |---------------------|---------------|-----------|
-   | Single-layer **backend** | `{plan-name}-task-{number}.md` (preferred) OR `{plan-name}-backend-task-{number}.md` | `task-executor` + `quality-fixer` |
-   | Single-layer **frontend** | `{plan-name}-frontend-task-{number}.md` (REQUIRED — bare `*-task-*` form is reserved for backend) | `task-executor-frontend` + `quality-fixer-frontend` |
-   | Multi-layer (spans backend + frontend) | `{plan-name}-backend-task-{number}.md` AND `{plan-name}-frontend-task-{number}.md` (one file per layer per task slice) | per filename layer segment |
+   | Plan classification | Task filename |
+   |---------------------|---------------|
+   | Single-layer **backend** | `{plan-name}-task-{number}.md` (preferred) OR `{plan-name}-backend-task-{number}.md` |
+   | Single-layer **frontend** | `{plan-name}-frontend-task-{number}.md` (REQUIRED — bare `*-task-*` form is reserved for backend) |
+   | Multi-layer (spans backend + frontend) | `{plan-name}-backend-task-{number}.md` AND `{plan-name}-frontend-task-{number}.md` (one file per layer per task slice) |
 
    Layer is determined from the task's Target files paths (refer to project structure defined in technical-spec skill).
 

@@ -2,7 +2,7 @@
 
 ## Lane Selection
 
-E2E tests in this workflow split into two lanes (defined in integration-e2e-testing skill):
+E2E tests in this workflow split into two lanes:
 
 | Lane | Backend setup | Use these patterns |
 |------|---------------|-------------------|

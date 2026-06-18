@@ -187,7 +187,7 @@ Evaluate existing structures: semantic fit, responsibility fit, lifecycle fit, b
 
 ### Minimal Surface Alternatives (When Introducing Maintenance-Surface Elements)
 
-One entry per new in-scope element (persistent state / public-contract element or cross-boundary field or prop / behavioral mode/flag/variant / reusable abstraction or component split). Records the 5-step output produced by the invoking designer agent. Reference: `coding-standards` skill, "Minimum Surface for Required Coverage".
+One entry per new in-scope element (persistent state / public-contract element or cross-boundary field or prop / behavioral mode/flag/variant / reusable abstraction or component split). Records the 5-step output produced by the invoking designer agent. Reference: the "Minimum Surface for Required Coverage" principle.
 
 #### Element 1: [name of the new element]
 

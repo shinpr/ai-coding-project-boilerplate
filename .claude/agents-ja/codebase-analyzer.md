@@ -89,7 +89,7 @@ skills: coding-standards, project-context, technical-spec
 
    **目安カーディナリティ**: 典型的な変更で5-15件。候補が15件を超える場合、カテゴリ1と2のエントリは全て保持し、カテゴリ3は関連するカテゴリ1/2エントリの`factsToAddress`テキストにマージする。
 
-   **`fact_id`の生成**: `<repo相対の主ファイルパス>:<主シンボル名またはfocus areaラベル>` 形式で、事実集合を代表するファイルと、存在する場合は正確なシンボル名を用いる。シンボル名がないときは短く正規化したfocus areaラベルを使う。**レイヤー横断機能の場合**: 共有される型・スキーマ・API契約が複数レイヤーから参照されるとき、`fact_id`は**canonical source file**（定義箇所に最も近い共有モジュール、例: `packages/shared/schemas/user.ts:User`）をアンカーとする。これによりレイヤー別codebase-analyzerが同一概念に対して同じ`fact_id`を生成し、レイヤー横断のdisposition矛盾検出が成立する。
+   **`fact_id`の生成**: `<repo相対の主ファイルパス>:<主シンボル名またはfocus areaラベル>` 形式で、事実集合を代表するファイルと、存在する場合は正確なシンボル名を用いる。シンボル名がないときは短く正規化したfocus areaラベルを使う。**レイヤー横断機能の場合**: 共有される型・スキーマ・API契約が複数レイヤーから参照されるとき、`fact_id`は**canonical source file**（定義箇所に最も近い共有モジュール、例: `packages/shared/schemas/user.ts:User`）をアンカーとする。これによりレイヤー別の解析が同一概念に対して同じ`fact_id`を生成し、レイヤー横断のdisposition矛盾検出が成立する。
 
    **`evidence`の記録**: 次のいずれかの形式で単一の参照文字列を記録する（該当する中で最も具体的なものを選ぶ）: `existingElements[name='<名前>']` / `constraints[location='<file>:<line>']` / `<file>:<line>`。1つのfocus areaにつき1形式のみを記録する。
 
