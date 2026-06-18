@@ -51,6 +51,14 @@ Maps each Design Doc technical requirement to the covering task(s). One row per 
 
 **Gap Status values**: `covered` (task exists), `gap` (no task — requires justification in Notes, user confirmation required before plan approval)
 
+## Reference Contract Values
+
+Include this section when the Design Doc specifies a **binding observable value** the implementation must reproduce exactly — extract these from the Design Doc directly, not from the Traceability table's summarized DD Item: a column/label set and order, a derived-display rule (display value derived from another field), or a state-lifecycle negative (the condition under which the state must stay unused). The Traceability table records *that* a row is covered; this table carries the value *verbatim* so the covering task is checked against the exact contract rather than a re-derived summary. Serialized boundaries are owned by the Connection Map below; ADR-derived structural decisions by ADR Bindings. Omit the section when none apply.
+
+| Design Doc (§ Section) | Contract Type | Required Observable Value (verbatim) | Covered By Task(s) |
+|---|---|---|---|
+| [docs/design/XXX.md (§ Section)] | structure-order / derived-display / state-lifecycle-negative | [the exact value copied from the Design Doc — e.g., "the listed fields in the specified order"; "the label shows the looked-up name in place of the raw code"; "the persisted state is applied only when an explicit restore signal is present"] | [Phase X Task Y] |
+
 ## Failure Mode Checklist
 
 Domain-independent failure categories this implementation must guard against. Enumerate all eight categories, mark each in the Applies? column as yes/no, and list a covering task for each that applies; keep entries free of project-specific names.
@@ -68,13 +76,13 @@ Domain-independent failure categories this implementation must guard against. En
 
 ## UI Spec Component → Task Mapping
 
-Include this section when a UI Spec is among the inputs. Maps each component documented in the UI Spec to the task(s) that implement it. task-decomposer reads this table to populate each task's Investigation Targets with the corresponding UI Spec section. Omit the section when no UI Spec exists.
+Include this section when a UI Spec is among the inputs. Maps each component documented in the UI Spec to the task(s) that implement it. This table is read in a downstream step to populate each task's Investigation Targets with the corresponding UI Spec section. Omit the section when no UI Spec exists.
 
 | UI Spec Component (section heading) | States to Cover | Covered By Task(s) | Gap Status | Notes |
 |---|---|---|---|---|
 | [Use the UI Spec heading exactly as written, e.g., "§ Component: AlertCard"] | [default / loading / empty / error / partial — list the states the implementation must produce] | [Phase X Task Y] | covered | |
 
-**Reference key rule**: The component identifier in column 1 is the UI Spec section heading (verbatim). ui-spec-designer enforces unique component headings so this reference resolves to exactly one section.
+**Reference key rule**: The component identifier in column 1 is the UI Spec section heading (verbatim). Component headings are unique, so this reference resolves to exactly one section.
 
 **Gap Status values**: `covered` (task exists), `gap` (no task — requires justification in Notes, user confirmation required before plan approval)
 
@@ -92,11 +100,13 @@ One row per binding decision. A single ADR can contribute multiple rows. A singl
 
 ## Connection Map
 
-Include this section when the implementation crosses more than one package, service, or process boundary. Document each boundary so task-decomposer can propagate boundary context to the implementation tasks on each side. Omit the section when the implementation stays within a single package.
+Include this section when the implementation crosses a package, service, or process boundary, **or when a value is serialized and re-parsed across a boundary even within a single runtime** — through a medium such as a query string, route/CLI argument, environment variable, config entry, message/queue payload, storage key, or file (producer and consumer must agree on the exact representation). Document each boundary so boundary context propagates to the implementation tasks on each side in a downstream step. Record each Owner as concrete file path(s), not a bare module/package/component name, so it resolves as an Investigation Target the executor can read. Omit the section when no such boundary exists.
 
-| Boundary | Owner (left side) | Owner (right side) | Expected Signal | Covered By Task(s) |
-|---|---|---|---|---|
-| [e.g., "web client → API gateway"] | [module/package on the request side] | [module/package on the response side] | [Observable evidence the boundary works — e.g., "HTTP 200 with response matching ContractA", "row inserted in tableB", "message published to topicC"] | [Phase X Task Y on each side] |
+For a serialized boundary, fill Serialized Format and Consumer Parse Rule. Set both to "—" when the contract is already captured by the Expected Signal (e.g., a cross-process call whose body matches the agreed schema); fill them when producer and consumer must agree on a specific encoding of a value (query string, storage key, CLI argument, config entry, message field).
+
+| Boundary | Owner (left side) | Owner (right side) | Serialized Format | Consumer Parse Rule | Expected Signal | Covered By Task(s) |
+|---|---|---|---|---|---|---|
+| [producing side → consuming side] | [owner on the producing side — concrete file path(s)] | [owner on the consuming side — concrete file path(s)] | [exact representation the producer emits; "—" if not serialized] | [how the consumer decodes/validates it; "—" if not serialized] | [Observable evidence the boundary works — e.g., a response matching the agreed contract, or the consumer reproducing the producer's values] | [Phase X Task Y on each side] |
 
 ## Objective
 [Why this change is necessary, what problem it solves]

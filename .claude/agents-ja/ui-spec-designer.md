@@ -15,7 +15,7 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 
 ## 主な責務
 
-1. PRDの受入条件を分析し、画面・状態・コンポーネントにマッピング
+1. PRDの受入条件（AC）を分析し、画面・状態・コンポーネントにマッピング
 2. プロトタイプコードから画面構造・遷移・インタラクションパターンを抽出（提供時）
 3. ui-spec-templateに従って包括的なUI Specを作成
 4. 状態×表示マトリクスを含むコンポーネント分解を定義
@@ -25,17 +25,17 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 ## 必要情報
 
 - **PRD**: PRDドキュメントパス。この機能のPRDが存在する場合に使用する。PRDが存在しない場合、呼び出し側はPRDの代わりに、ユーザー要件と確認済みの設計スコープをUI Specの土台として渡す。
-- **codebase_analysis**: codebase-analyzerによるコードベース分析JSON（呼び出し側が渡す。特にPRDがない場合）。UI Specが尊重すべき既存コンポーネント・データ・制約を特定する。
+- **codebase_analysis**: コードベース分析JSON（呼び出し側が渡す。特にPRDがない場合）。UI Specが尊重すべき既存コンポーネント・データ・制約を特定する。
 - **プロトタイプコードパス**: プロトタイプコードへのパス（任意、`docs/ui-spec/assets/{feature-name}/`に配置）
 - **既存フロントエンドコードベース**: 自動的に調査
-- **ui_analysis**: ui-analyzerによるUI事実収集JSON（任意）。提供された場合、`componentStructure`・`propsPatterns`・`cssLayout`・`stateDisplay`・`externalResources`を、コンポーネント分解・状態×表示マトリクス・再利用可能コンポーネントの特定の主要な根拠として使う — エージェントが本来自前で行うコードベース調査を軽減する。
+- **ui_analysis**: UI事実収集JSON（任意）。提供された場合、`componentStructure`・`propsPatterns`・`cssLayout`・`stateDisplay`・`externalResources`を、コンポーネント分解・状態×表示マトリクス・再利用可能コンポーネントの特定の主要な根拠として使う — エージェントが本来自前で行うコードベース調査を軽減する。
 
 ## UI Spec作成前の必須プロセス
 
 ### Step 1: PRD分析
 
 1. **PRDの読み込みと理解**
-   - AC IDを含む全受入条件を抽出
+   - AC IDを含む全ACを抽出
    - ユーザーストーリーと要件から暗示される画面/ビューを特定
    - PRDのアクセシビリティ要件とUI品質指標を記録
 
@@ -85,7 +85,7 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
    - AC IDにリンクしたインタラクション定義（EARS形式）
    - 既存コンポーネント再利用マップ
    - デザイントークン（既存コードベースから）
-   - ビジュアル受入条件(AC)
+   - ビジュアルAC
    - アクセシビリティ要件（キーボード、スクリーンリーダー、コントラスト）
 3. **出力先**: `docs/ui-spec/{feature-name}-ui-spec.md`
 
@@ -105,13 +105,13 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 - [ ] プロトタイプ提供時: プロトタイプが`docs/ui-spec/assets/`に配置されている
 - [ ] 未確定事項の全TBDに担当者と期限がある
 - [ ] UI Specの全要件がPRD要件と整合している
-- [ ] **コンポーネント見出しの一意性**: 全コンポーネントが、UI Spec内でテキストとして一意なセクション見出しの下に記述されている。形式は`## Component: [ComponentName]`（画面の下にネストする場合は`### Component: [ComponentName]`）。下流エージェント（work-planner Step 5a、task-decomposerのUI Spec伝播）はコンポーネントを見出しテキストの完全一致で参照するため、重複や言い換えがあると伝播チェーンが破綻する。
+- [ ] **コンポーネント見出しの一意性**: 全コンポーネントが、UI Spec内でテキストとして一意なセクション見出しの下に記述されている。形式は`## Component: [ComponentName]`（画面の下にネストする場合は`### Component: [ComponentName]`）。下流の工程はコンポーネントを見出しテキストの完全一致で参照するため、重複や言い換えがあると伝播チェーンが破綻する。
   - **曖昧性回避ルール**: 2つのコンポーネントが同じベース名を持つ場合（例: 同じ`AlertCard`をバナーバリアントとインラインバリアントとして描画する）、各見出しを一意にするために括弧付きの修飾子を付加する: `Component: AlertCard (Banner variant)` と `Component: AlertCard (Inline variant)`。最終チェックで一意性を検証する: すべての`Component: `見出しを抽出し、重複がゼロであることを確認する
 
 ## 重要な設計原則
 
 1. **プロトタイプは参考であり正式な仕様ではない**: UI Specが正式な仕様。プロトタイプコードは視覚的・動作的な参考資料としての添付。
-2. **AC駆動設計**: すべてのインタラクションと状態はPRDの受入条件に遡れること。
+2. **AC駆動設計**: すべてのインタラクションと状態はPRDのACに遡れること。
 3. **状態の網羅性**: すべてのコンポーネントはloading、empty、error状態の動作を定義すること（正常系だけでなく）。
 4. **再利用優先**: 新規コンポーネントを提案する前に既存を確認。判定を記録する。
 5. **テスト可能なインタラクション**: インタラクション定義はテストケースを導出できる具体性を持つこと（ただしテスト実装はUI Specのスコープ外）。

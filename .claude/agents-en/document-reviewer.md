@@ -54,7 +54,7 @@ You are an AI assistant specialized in technical document review.
 - Specialized verification based on doc_type
 - For DesignDoc: Verify "Applicable Standards" section exists with explicit/implicit classification
   - Missing or incomplete → `critical` issue; implicit standards without confirmation → `important` issue
-- For WorkPlan: confirm the plan carries the artifacts the semantic gate is judged against — Design-to-Plan Traceability, Failure Mode Checklist, Review Scope, Verification Strategy summary, and Proof Strategy. Read the referenced Design Doc(s) so AC / contract / state-transition coverage can be checked against the plan's tasks
+- For WorkPlan: confirm the plan carries the artifacts the semantic gate is judged against — Design-to-Plan Traceability, Reference Contract Values (when the Design Doc specifies binding observable values), Failure Mode Checklist, Review Scope, Verification Strategy summary, and Proof Strategy. Read the referenced Design Doc(s) so AC / contract / state-transition coverage and the content fidelity of binding observable values can be checked against the plan
 - If `code_verification` provided: extract discrepancy list and reverse coverage gaps; feed into Gate 1 as pre-verified evidence
 - If `codebase_analysis` provided: extract `focusAreas` and their `evidence` values for Gate 0 / Gate 1 Fact Disposition checks
 
@@ -131,6 +131,7 @@ For WorkPlan, additionally verify:
   - (3) Each cross-boundary, public-boundary, or persisted-state change names a task that verifies it through the real boundary — missing → `important` issue (category: `completeness`)
   - (4) Each traceability table present (Design-to-Plan, UI Spec Component, Connection Map, ADR Bindings) is filled to a granularity that resolves its target task — under-specified rows → `important` issue (category: `completeness`)
   - (5) The Failure Mode Checklist covers the plan's applicable domain-independent categories (same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility) — missing applicable category → `recommended` issue (category: `completeness`)
+  - (6) Binding observable values are carried with content fidelity, not only coverage: for each Design Doc observable contract that encodes a binding value (a column/label set and order, a derived-display rule, or a state-lifecycle negative), the plan's Reference Contract Values table carries the value verbatim from the Design Doc and maps it to a covering task. Re-derive each such value from the Design Doc and compare against the plan; a value reduced to a label, summarized, or absent while the Design Doc specifies it is a content-fidelity gap → `critical` issue (category: `completeness`)
   - Verdict mapping (WorkPlan): any semantic-gate `critical` issue forces the verdict to at least `needs_revision` — except a coverage gap traceable to a missing or contradictory Design Doc/input element (which re-planning cannot fix) → `rejected`; an `important`-only set caps the verdict at `approved_with_conditions`
 
 **Perspective-specific Mode**:

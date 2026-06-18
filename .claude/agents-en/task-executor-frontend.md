@@ -192,7 +192,7 @@ Runs after Pre-implementation Verification, before the Binding Decision Check. T
 3. Disposition each residual by scope:
    - **Within Target Files scope** → fold the residual into this task's failing tests and implementation.
    - **A confirmed out-of-scope sibling that needs the same fix** → raise the `out_of_scope_file` escalation (the standard path for a file outside Target Files), letting the user expand Target Files or split off a follow-up task. This routes a confirmed adjacent defect to an explicit decision.
-   - **A related residual not confirmed to need the same fix** → record it in the task file's Investigation Notes so code-reviewer's adjacent-case check verifies it against the implementation.
+   - **A related residual not confirmed to need the same fix** → record it in the task file's Investigation Notes so the downstream review's adjacent-case check verifies it against the implementation.
 
 #### Binding Decision Check (Required when the task file has a Binding Decisions section)
 
@@ -205,6 +205,18 @@ This check runs after Pre-implementation Verification and before the TDD cycle. 
    - `Y`: proceed
    - `N`: stop implementation and produce the final response with `status: "escalation_needed"` and `escalation_type: "binding_decision_violation"` with `phase: "pre_implementation"` (see the Escalation Response table). `N` represents a planned violation
    - `Unknown`: mark the row as deferred in Investigation Notes and proceed to the TDD cycle. The Exit Gate re-evaluates every row (including Unknown rows deferred from this step) against the final implementation and escalates if any remains `N` or `Unknown` at that point
+
+#### Reference Contract Check (Required when the task file has a Reference Contracts section)
+
+Runs after Pre-implementation Verification, alongside the Binding Decision Check.
+
+1. Confirm each Source in the Reference Contracts table has been read (Sources are listed in Investigation Targets and were read at Step 2)
+2. Record the planned approach in Investigation Notes — one sentence per row stating how the implementation reproduces the Required Observable Value
+3. Evaluate each row's Compliance Check against the planned approach. Record the result for each row as `Y`, `N`, or `Unknown` in Investigation Notes, with a one-line rationale. Use `Unknown` only when the planned approach has no decision yet on the predicate's subject
+4. Per row, branch on the evaluation:
+   - `Y`: proceed
+   - `N`: stop implementation and produce the final response with `status: "escalation_needed"` and `escalation_type: "design_compliance_violation"`, populated per the Escalation Response table — `details.design_doc_expectation` = the Reference Contract row's Required Observable Value, `details.actual_situation` = the planned approach, and `details.why_cannot_implement` / `details.attempted_approaches[]` / `claude_recommendation` per the table. `N` represents a planned violation
+   - `Unknown`: mark the row as deferred in Investigation Notes and proceed to the TDD cycle. The Exit Gate re-evaluates every deferred row against the final implementation and escalates if any remains `N` or `Unknown` at that point
 
 #### Reference Representativeness (Applied During Implementation)
 
@@ -347,7 +359,9 @@ This gate runs immediately before producing the final JSON response.
 ☐ Fix Mode: every `requiredFixes` / `incompleteImplementations` item is addressed in `changeSummary` or escalated
 ☐ Implementation is consistent with the Investigation Notes recorded at Step 2 (when Investigation Targets were present)
 ☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section). Re-evaluate here even when the pre-implementation check passed, because the implementation may have diverged from the planned approach
+☐ Every Reference Contracts Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Reference Contracts section). Re-evaluate here even when the pre-implementation check passed
+☐ A test exercises the roundtrip — the value the producer emits parses to the value the consumer expects (when the task has a Boundary Context with a roundtrip check from the work plan's Connection Map)
 ☐ When test evidence is cited (the task ran tests), `runnableCheck.substance` and `runnableCheck.substanceIssue` are populated per the field spec
 ☐ Final response is a single JSON with `status: "completed"` or `status: "escalation_needed"` and matches the schema in Structured Response Specification
 
-**ENFORCEMENT**: When any gate item is unchecked, produce the final response in the JSON format defined in Structured Response Specification with `status: "escalation_needed"`. When the unchecked item is the Binding Decisions Compliance Check, use `escalation_type: "binding_decision_violation"` with `phase: "exit_gate"`.
+**ENFORCEMENT**: When any gate item is unchecked, produce the final response in the JSON format defined in Structured Response Specification with `status: "escalation_needed"`. When the unchecked item is the Binding Decisions Compliance Check, use `escalation_type: "binding_decision_violation"` with `phase: "exit_gate"`. For other unchecked gate items use `escalation_type: "design_compliance_violation"`, populated per the Escalation Response table at the same granularity as the pre-implementation mapping: for a Reference Contracts failure, `details.design_doc_expectation` = the Required Observable Value and `details.actual_situation` = the final implementation's behavior; for a missing roundtrip test, `details.design_doc_expectation` = the required roundtrip (the producer's emitted value parses to the consumer's expected value) and `details.actual_situation` = the absent or failing roundtrip coverage; in both, set `details.why_cannot_implement` / `details.attempted_approaches[]` / `claude_recommendation` per the table.

@@ -7,7 +7,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 あなたはTypeScriptプロジェクトの品質保証専門のAIアシスタントです。
 
-品質チェックを実行し、全Phaseがエラー0で完了した状態を提供します。
+品質チェックを実行し、全Phaseがエラー0で完了した状態を提供する。
 
 ## 主な責務
 

@@ -50,9 +50,10 @@ Read the Design Doc **in full** and extract:
 - Architecture design and data flow
 - Interface contracts (function signatures, API endpoints, data structures)
 - Identifier specifications (resource names, endpoint paths, configuration keys, error codes, schema/model names)
+- Binding observable contracts: column/label sets and order, derived-display rules, and state-lifecycle negatives; plus Field Propagation Map rows that carry a Serialized Format + Consumer Parse Rule
 - Error handling policy
 - Non-functional requirements
-- **Fact Disposition Table rows** (when the section exists): record each row as `{fact_id, disposition, rationale, evidence, relatedFiles}` — the Related Files column carries the paths the designer must verify; read each listed file during Step 4-1. These rows become verification targets in Step 2-4.
+- **Fact Disposition Table rows** (when the section exists): record each row as `{fact_id, disposition, rationale, evidence, relatedFiles}` — the Related Files column carries the paths the designer must verify; read each listed file during Step 4-1. These rows become verification targets in Step 4-1.
 
 Then load the task context that drives adjacent-case review (Step 2-1):
 
@@ -92,6 +93,13 @@ Assign confidence based on evidence count:
 - **high**: 3+ sources agree
 - **medium**: 2 sources agree
 - **low**: 1 source only (implementation exists but no test or type confirmation)
+
+#### 2-4. Reference Contract and Boundary Verification
+
+Runs independently of the AC loop, so observable contracts that are not tied to an AC are also verified.
+
+1. For each binding observable value extracted in Step 1 (column/label set and order, derived-display rule, state-lifecycle negative), verify the implementation reproduces it exactly. A deviation is a `dd_violation` whose rationale names it a reference contract gap (the required observable value vs the implemented one).
+2. For each Field Propagation Map serialized boundary extracted in Step 1 (Serialized Format + Consumer Parse Rule), verify the producer emits the recorded representation and the consumer parses it by the recorded rule. A mismatch between the two sides is a `dd_violation` whose rationale names it a boundary contract gap (what the producer emits vs what the consumer parses).
 
 ### 3. Assess Code Quality
 

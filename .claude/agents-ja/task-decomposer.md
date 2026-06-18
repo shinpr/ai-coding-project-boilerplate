@@ -79,13 +79,13 @@ implementation-approachスキルで決定された実装戦略パターンに基
 
 4. **タスクファイルの生成**
 
-   命名は subagents-orchestration-guide「Layer-Aware Agent Routing」のレイヤールーティング規約に従う。素の `{plan-name}-task-*.md` 形式は `task-executor`（backend）に排他的にルーティングされ、frontendタスクには使用してはならない。
+   命名は subagents-orchestration-guide「Layer-Aware Agent Routing」のレイヤールーティング規約に従う。素の `{plan-name}-task-*.md` 形式はbackend予約であり、frontendタスクには使用してはならない。
 
-   | 計画分類 | タスクファイル名 | ルーティング先 |
-   |---------|---------------|--------------|
-   | 単層 **backend** | `{plan-name}-task-{number}.md`（推奨）または `{plan-name}-backend-task-{number}.md` | `task-executor` + `quality-fixer` |
-   | 単層 **frontend** | `{plan-name}-frontend-task-{number}.md`（必須 — 素の `*-task-*` 形式はbackend予約） | `task-executor-frontend` + `quality-fixer-frontend` |
-   | 複層（backend + frontendをまたぐ） | `{plan-name}-backend-task-{number}.md` と `{plan-name}-frontend-task-{number}.md`（タスクスライスごとにレイヤー別に1ファイルずつ） | ファイル名のレイヤーセグメントごと |
+   | 計画分類 | タスクファイル名 |
+   |---------|---------------|
+   | 単層 **backend** | `{plan-name}-task-{number}.md`（推奨）または `{plan-name}-backend-task-{number}.md` |
+   | 単層 **frontend** | `{plan-name}-frontend-task-{number}.md`（必須 — 素の `*-task-*` 形式はbackend予約） |
+   | 複層（backend + frontendをまたぐ） | `{plan-name}-backend-task-{number}.md` と `{plan-name}-frontend-task-{number}.md`（タスクスライスごとにレイヤー別に1ファイルずつ） |
 
    レイヤーはタスクの対象ファイルパスから判定する（technical-specスキルのプロジェクト構造定義を参照）。
 
@@ -120,7 +120,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
    | フロントエンド統合 / fixture-e2eテスト | UI Specのコンポーネントセクション（状態×表示マトリクスとインタラクション定義の表を含む）、実装済みのコンポーネントコード、フィクスチャデータファイル |
    | テスト実装 | テストスケルトンのコメント/アノテーション、テスト対象コード、実際のAPI/認証フロー |
    | E2E環境セットアップ | 現在の環境設定（起動スクリプト、docker-compose等）、seed scripts、既存のfixtureパターン、アプリケーション認証フロー |
-   | パッケージ間境界の実装 | 作業計画書のConnection Mapに記載された境界の両側（オーナーモジュールと期待されるシグナル）、両者間のコントラクト定義 |
+   | パッケージ間境界の実装 | 境界の両側のConnection Mapオーナーのファイルパス、および両者間のコントラクト定義ファイル（期待されるシグナルおよびSerialized Format/Consumer Parse Ruleはタスクの「Boundary Context」ノートに記録し、Investigation Targetsには含めない） |
    | バグ修正 / リファクタリング | 影響を受けるコードパス、関連テストカバレッジ、エラー再現コンテキスト |
    | 振る舞いの置換・リライト | 置換対象の既存実装、その観察可能な出力、Design Docの検証戦略セクション |
    | ADRに拘束されるタスク（作業計画書のADR Bindings表がこのタスクをカバーする） | このタスクをカバーする各バインディング行について、行の `Source Section` 値に対応するセクションヒント（例: `(§ Decision)` または `(§ Implementation Guidance)`）を付したADRファイル |
@@ -183,7 +183,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
 
 1. **タスクIDで照合**: Connection Mapの各行について、「カバーするタスク」列に記載されたタスクを特定する
 2. **Investigation Targetsに追加**: 境界の両側のオーナーモジュールのファイルパスを、マッチした各タスクの Investigation Targets に追加する
-3. **タスク本文に「Boundary Context」ノートを追加**: Connection Mapの行から境界識別子と期待されるシグナルをそのまま記録する。executorは、実装が生み出すべき観測可能な証拠を把握できる。
+3. **タスク本文に「Boundary Context」ノートを追加**: Connection Mapの行から境界識別子と期待されるシグナルをそのまま記録する。executorは、実装が生み出すべき観測可能な証拠を把握できる。行が**Serialized Format**と**Consumer Parse Rule**（シリアライズ境界）を持つ場合、両方を逐語でノートにコピーし、タスクが満たすべきroundtripチェックを記述する: producerが出力する値を、consumerが期待どおりの値へパースできること。
 4. **未提供の場合はスキップ**: 作業計画書にConnection Mapがない場合は、本伝播ステップをスキップする
 
 ## ADR Binding伝播
@@ -205,6 +205,19 @@ implementation-approachスキルで決定された実装戦略パターンに基
 
      決定がfile:lineやコマンドだけでは検証できない場合、述語は論理的判断に依拠してよいが、Y/Nで回答可能でなければならない
 4. **提供時のみ適用**: この伝播は作業計画書にADR Bindings表が含まれる場合のみ実行する
+
+## Reference Contract Propagation
+
+作業計画書に**Reference Contract Values**表が含まれる場合、各拘束的観測値を、それがカバーするタスクに伝播する。executorが再導出すべき後方参照ではなく正確な値に対して検証されるようにするため:
+
+1. **タスクIDで照合**: 各行について、「Covered By Task(s)」に記載されたタスクを特定する
+2. **Investigation Targetsに追加**: 行の `Design Doc (§ セクション)` を、マッチした各タスクに追加する（設計トレーサビリティ伝播のエントリと重複排除する）
+3. **タスクにReference Contracts表の行を追加**: マッチした各行について、タスクのReference Contracts表に1行追加する:
+   - **Source**: `Design Doc (§ セクション)` の値
+   - **Contract Type**: `Contract Type` 値を逐語コピーする（structure-order / derived-display / state-lifecycle-negative）
+   - **Required Observable Value**: 作業計画書の行から値を**逐語**コピーし、正確な文言と詳細を保持する
+   - **Compliance Check**: 最終実装が値を再現することを述べる、Y/Nで回答可能な肯定述語を書く（例: 「列挙フィールドが指定順序でレンダリングされる」「ラベルが生コードの代わりに参照名を表示する」「永続状態は復元シグナルがある場合のみ適用される」）
+4. **提供時のみ適用**: この伝播は作業計画書にReference Contract Values表が含まれる場合のみ実行する。シリアライズ境界は上記のConnection Map伝播が扱い、ここでは扱わない。
 
 ## 設計トレーサビリティ伝播
 
@@ -324,7 +337,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
 [依存関係を考慮した推奨実行順序]
 
 次のステップ:
-分解されたタスクを順序に従って実行してください。
+分解されたタスクを順序に従って実行する。
 ```
 
 ## 重要な考慮事項
@@ -376,6 +389,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
 - [ ] 全タスクに調査対象が指定されている（具体的なファイルパス、曖昧なカテゴリではない）
 - [ ] 主張を実装する各タスクに Proof Obligations を記録（主要な故障モード + 検証する境界）
 - [ ] bug-fix / regression / state-change / boundary-change のタスクに Change Category を設定し、隣接する経路/境界のオーナーを Investigation Targets に追加済み
+- [ ] Reference Contract Values行を該当タスクにReference Contractsとして伝播し、値を逐語コピー済み（作業計画書に表がある場合）
 - [ ] 作業計画書ヘッダーの品質保証メカニズムを該当タスクに伝播済み
 
 ## タスク設計の原則

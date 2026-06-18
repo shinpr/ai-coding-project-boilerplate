@@ -74,9 +74,9 @@ service-integration-e2e gap:
     Detected boundaries: [list crossings and AC references]
 ```
 
-"Was not communicated" means the upstream planning flow skipped test skeleton generation entirely — in that case the absence reason field is not passed to work-planner, so the gap check still runs. Per acceptance-test-generator's contract, when a skeleton was generated `e2eAbsenceReason.<lane>` is null; when generation ran but produced no skeleton, the reason is one of the strings enumerated in that contract — both cases mean the field WAS communicated, so no gap warning fires.
+"Was not communicated" means the upstream planning flow skipped test skeleton generation entirely — in that case the absence reason field is not provided, so the gap check still runs. Per the test-skeleton generation contract, when a skeleton was generated `e2eAbsenceReason.<lane>` is null; when generation ran but produced no skeleton, the reason is one of the strings enumerated in that contract — both cases mean the field WAS communicated, so no gap warning fires.
 
-When an `e2eAbsenceReason` for a lane carries a string value (e.g., `no_multi_step_journey`, `below_threshold_user_confirmed`, `no_real_service_dependency` — see acceptance-test-generator for the per-lane allowed values), absence in that lane is intentional — skip the gap check for that lane.
+When an `e2eAbsenceReason` for a lane carries a string value (e.g., `no_multi_step_journey`, `below_threshold_user_confirmed`, `no_real_service_dependency` — see the test-skeleton generation contract for the per-lane allowed values), absence in that lane is intentional — skip the gap check for that lane.
 
 This check applies regardless of whether Strategy A or B was selected. Integration-only skeletons being provided does not imply E2E coverage. Service-internal journeys (async pipelines, service-to-service sagas) are not flagged for the reserved-slot rule but may still warrant service-integration-e2e through the normal ROI path.
 
@@ -98,36 +98,38 @@ Map each extracted item to a covering task. Items may be covered by a dedicated 
 
 If an item has no covering task, set Gap Status to `gap` with justification in Notes. **When the Traceability table contains any `gap` entry, the plan is in draft status.** Output the plan as draft, but do not finalize it until the user has confirmed each justified gap. Unjustified gaps (no Notes) are errors — add a covering task or provide justification before proceeding.
 
+**Carry binding observable values verbatim.** Identify binding observable values from the Design Doc directly, not from the Traceability table's summarized DD Item, so the exact column/label order and derived-display rules are not lost to a summary. A binding observable value is a column/label set and order (Contract Type `structure-order`), a derived-display rule — a display value derived from another field — (`derived-display`), or a state-lifecycle negative — a condition under which the state must stay unused — (`state-lifecycle-negative`). Copy each value **verbatim from the Design Doc** into the plan's **Reference Contract Values** table (see plan template), one row per value with its Contract Type token, mapped to the covering task(s). Preserve the full value, so the covering task is later checked against this exact value rather than a re-derived summary. This table covers DD-derived observable contracts only; serialized boundaries go in the Connection Map (step 5b) and ADR-derived structural decisions in the ADR Bindings table.
+
 ### 5a. Map UI Spec Components to Tasks (when UI Spec provided)
 
-When a UI Spec is among the inputs, also map components and states to the tasks that implement them. task-decomposer reads this mapping in a downstream step to populate each task's Investigation Targets, so without this step the UI Spec never reaches the executor.
+When a UI Spec is among the inputs, also map components and states to the tasks that implement them. This mapping is read in a downstream step to populate each task's Investigation Targets, so without it the UI Spec never reaches implementation.
 
 For each component documented in the UI Spec:
-1. Identify the component's section heading exactly as it appears in the UI Spec (the heading is the reference key — see ui-spec-designer's heading uniqueness rule)
+1. Identify the component's section heading exactly as it appears in the UI Spec (the heading is the reference key, and headings are unique)
 2. Identify which states (default / loading / empty / error / partial) the implementation must cover
 3. Identify the task(s) in this plan that implement the component or its tests
 
 Record the mapping in the **UI Spec Component → Task Mapping** table (see plan template). One row per component. Components with no covering task are flagged as `gap` requiring user confirmation, identical to the Design-to-Plan Traceability rule.
 
-### 5b. Map Cross-Package Boundaries to Tasks (when implementation crosses runtime/deployment boundaries)
+### 5b. Map Boundaries to Tasks (when crossing a runtime/deployment boundary, or passing a serialized value across any boundary)
 
-When the implementation crosses a runtime or deployment boundary, build a Connection Map so task-decomposer can propagate boundary context to each affected task.
+Build a Connection Map when the implementation crosses a runtime or deployment boundary, **or when a value is serialized and re-parsed across any boundary (even within one runtime)**, so boundary context propagates to each affected task in the downstream step.
 
-**A boundary qualifies for the Connection Map only when ALL of the following hold**:
-- The two sides run in separate processes, services, or runtimes (e.g., web client ↔ HTTP server, service A ↔ service B over a network, frontend bundle ↔ backend handler)
-- A serialized contract crosses between them (HTTP request/response, message envelope, RPC call, event payload)
-- A failure on one side produces an observable signal on the other (status code, missing field, timeout, dropped message)
+**A boundary qualifies for the Connection Map when EITHER condition holds**:
+- *Cross-process*: the two sides run in separate processes, services, or runtimes (web client ↔ HTTP server, service A ↔ service B, frontend bundle ↔ backend handler); a serialized contract crosses between them (HTTP request/response, message envelope, RPC, event payload); and a failure on one side produces an observable signal on the other.
+- *Serialized in-runtime*: a value is encoded and re-parsed across a boundary even within a single runtime — through a medium such as a query string, CLI argument, environment variable, config entry, message/queue payload, storage key, or file (e.g., one component encodes a value another component or process later decodes; a value written to storage and read after a transition). Producer and consumer must agree on the exact representation.
 
 **Excluded — these are NOT boundaries for the Connection Map**:
-- A package importing a sibling utility, type definition, or shared constant from the same monorepo (in-process, no serialized contract)
-- Internal layering within the same runtime (e.g., handler → usecase → repository)
+- A package importing a sibling utility, type definition, or shared constant from the same monorepo (in-process, no serialized value)
+- Internal layering within the same runtime where values pass as typed in-memory calls (e.g., handler → usecase → repository)
 - Source code dependencies that compile/bundle into the same artifact
 
 For each qualifying boundary:
-1. Identify the boundary (e.g., `web → API gateway`, `service-A → service-B`, `frontend → shared client → backend handler`)
-2. Identify the owner module/package on each side
-3. Identify the expected signal that confirms the boundary works (e.g., HTTP 200 with schema X, message published to topic Y, row inserted in table Z)
-4. Identify the task(s) that implement either side of the boundary
+1. Identify the boundary (e.g., `service A → service B`, `producer → storage → consumer`, `component A → component B via an encoded parameter`)
+2. Identify the owner on each side (producer and consumer) and record it as concrete file path(s), not a bare module/package/component name, so it resolves as an Investigation Target downstream
+3. For a serialized boundary, record the **Serialized Format** (the exact representation the producer emits) and the **Consumer Parse Rule** (how the consumer decodes/validates it). Set both to "—" when the contract is already captured by the Expected Signal (e.g., a cross-process call whose body matches the agreed schema); fill them when producer and consumer must agree on a specific encoding of a value (query string, storage key, CLI argument, config entry, message field).
+4. Identify the expected signal that confirms the boundary works (e.g., a response matching the agreed schema; the consumer reproducing the producer's values)
+5. Identify the task(s) that implement either side of the boundary
 
 Record the mapping in the **Connection Map** table (see plan template). Omit this section entirely when no qualifying boundary exists.
 
@@ -162,8 +164,8 @@ For each task, derive completion criteria from Design Doc acceptance criteria. A
 ## Input Parameters
 
 - **mode**: `create` (default) | `update`
-- **scale**: `small` | `medium` | `large` (taken from requirement-analyzer; controls output mode — see "Output Mode by Scale" below)
-- **designDoc**: Path to Design Doc(s) (may be multiple for cross-layer features). At `scale: small` Design Doc may be absent; in that case derive the task directly from the requirement-analyzer output and PRD update notes.
+- **scale**: `small` | `medium` | `large` (taken from the requirements-analysis result; controls output mode — see "Output Mode by Scale" below)
+- **designDoc**: Path to Design Doc(s) (may be multiple for cross-layer features). At `scale: small` Design Doc may be absent; in that case derive the task directly from the requirements-analysis output and PRD update notes.
 - **uiSpec** (optional): Path to UI Specification (frontend/fullstack features)
 - **prd** (optional): Path to PRD document
 - **adr** (optional): Path to ADR document
@@ -174,8 +176,8 @@ For each task, derive completion criteria from Design Doc acceptance criteria. A
 
 | scale | Output | Path | Rationale |
 |---|---|---|---|
-| `small` | A single task file in **task-template format** (per documentation-criteria skill) | `docs/plans/tasks/{feature-name}-task-YYYYMMDD.md` | At 1-2 files there is no separate decomposition step; the task file the orchestrator passes to task-executor as `task_file` is produced directly here. |
-| `medium` / `large` | A work plan in **plan-template format** | `docs/plans/{feature-name}-plan.md` | Decomposition into individual task files is performed by task-decomposer in a downstream step. |
+| `small` | A single task file in **task-template format** (per documentation-criteria skill) | `docs/plans/tasks/{feature-name}-task-YYYYMMDD.md` | At 1-2 files there is no separate decomposition step; the task file passed to the execution step as `task_file` is produced directly here. |
+| `medium` / `large` | A work plan in **plan-template format** | `docs/plans/{feature-name}-plan.md` | Decomposition into individual task files is performed in a downstream step. |
 
 In `small` mode, skip the multi-phase composition (Step 4) and the Design-to-Plan Traceability mapping (Step 5); produce the task file with `## Target Files`, `## Investigation Targets`, `## Investigation Notes`, `## Implementation Steps (TDD: Red-Green-Refactor)`, `## Quality Assurance Mechanisms`, `## Operation Verification Methods`, and `## Completion Criteria` sections, plus the `Metadata:` block (`Dependencies:`, `Provides:`, `Size:`). Do not output a separate work plan file at this scale.
 
@@ -352,11 +354,14 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 - [ ] Design-to-Plan Traceability table complete (all DD technical requirements categorized and mapped)
   - [ ] No `gap` entries without justification
   - [ ] All justified `gap` entries flagged for user confirmation before plan approval
+- [ ] Reference Contract Values table complete (when the Design Doc specifies binding observable values: column/label order, derived-display, state-lifecycle negative)
+  - [ ] Each value copied verbatim from the Design Doc, preserving full wording, and mapped to a covering task
 - [ ] UI Spec Component → Task Mapping table complete (when UI Spec provided)
   - [ ] Every UI Spec component has a covering task, OR an explicit `gap` justification
   - [ ] Component reference uses the UI Spec section heading exactly as it appears in the document
-- [ ] Connection Map table complete (when implementation crosses packages/services)
-  - [ ] Every boundary lists owner modules and expected signal
+- [ ] Connection Map table complete (when crossing packages/services, or passing a serialized value across any boundary)
+  - [ ] Every boundary lists owner file path(s) and expected signal
+  - [ ] Serialized boundaries record Serialized Format and Consumer Parse Rule
   - [ ] Every boundary maps to at least one covering task on each side
 - [ ] ADR Bindings table complete (when ADR provided or referenced from Design Doc)
   - [ ] Each row represents one implementation-binding decision (placement, dependency, contract, data flow, or persistence)

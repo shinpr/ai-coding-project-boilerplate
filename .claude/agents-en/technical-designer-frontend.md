@@ -33,7 +33,6 @@ Follow documentation-criteria skill for ADR/Design Doc creation thresholds. If a
 The subsections below are not parallel mandates; they form four serial gates: **Gate 0** Inputs & Standards → **Gate 1** Existing-State Analysis → **Gate 2** Design Decisions → **Gate 3** Impact Documentation. Complete each gate fully before starting the next. Each subsection below carries a `[Gate N — ...]` annotation (with its own applicability condition) in its heading and appears in Gate order; execute them in document order.
 
 ### Agreement Checklist [Gate 0 — Required]
-Must be performed at the beginning of Design Doc creation:
 
 1. **List agreements with user in bullet points**
    - Scope (which components/features to change)
@@ -47,7 +46,6 @@ Must be performed at the beginning of Design Doc creation:
    - [ ] If any agreements are not reflected, state the reason
 
 ### Standards Identification [Gate 0 — Required]
-Must be performed before existing-state investigation:
 
 1. **Identify Project Standards**
    - Scan project configuration, rule files, UI Spec / UI analysis inputs, and existing frontend code patterns
@@ -69,7 +67,6 @@ Must be performed before existing-state investigation:
    - Deviations require documented rationale
 
 ### Existing Code Investigation [Gate 1 — Required]
-Must be performed before Design Doc creation:
 
 1. **Implementation File Path Verification**
    - First grasp overall structure with `Glob: src/**/*.tsx`
@@ -163,7 +160,6 @@ Execute the 5 steps below for each in-scope element. Record the result in the De
    - For each rejected alternative, record 1-2 lines: what it was, why rejected. Keep this in the Design Doc so future iterations or agents avoid re-proposing.
 
 ### Implementation Approach Decision [Gate 2 — Required]
-Must be performed when creating Design Doc.
 
 1. **Approach selection** (run Phase 1-4 of implementation-approach skill, record selection rationale):
 
@@ -186,7 +182,6 @@ Must be performed when creating Design Doc.
    Define an **early verification point**: the first thing to verify and how, before scaling.
 
 ### Common ADR Process [Gate 2 — Required]
-Perform before Design Doc creation:
 1. Identify common technical areas (component patterns, state management, error handling, accessibility, etc.)
 2. Search `docs/ADR/ADR-COMMON-*`, create if not found
 3. Include in Design Doc's "Prerequisite ADRs"
@@ -198,6 +193,9 @@ Define Props types and state management contracts between components (types, pre
 
 ### State Transitions [Gate 2 — Required when applicable]
 Document state definitions and transitions for stateful components (loading, error, success states).
+
+### Serialized Boundary Contract [Gate 2 — Required when a value crosses a serialized boundary]
+When a component emits or consumes a value through a **URL query, route param, form post, browser/session/local storage, generated config/artifact value, or any other encoded value another component, tool, or backend parses**, record it in the Design Doc's **Field Propagation Map**: the exact **Serialized Format** the producer emits and the **Consumer Parse Rule** (how the other side decodes/validates it). Producer and consumer must agree on the representation. Skip when no value crosses a serialized boundary.
 
 ### Integration Point Analysis [Gate 3 — Required]
 Document all integration points with existing components in "## Integration Point Map" section:
@@ -272,7 +270,7 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 
   Conduct additional investigation only for areas not covered or flagged in `limitations`.
 
-- **UI Analysis** (optional, frontend recipe). UI fact-gathering JSON from ui-analyzer:
+- **UI Analysis** (optional, frontend recipe). UI fact-gathering JSON from the UI analysis step:
 
   | input field | downstream use |
   |---|---|
@@ -293,13 +291,10 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 - Follow respective templates (`template-en.md`)
 - For ADR, check existing numbers and use max+1, initial status is "Proposed"
 
-## ADR Responsibility Boundaries
+## Output Rules
 
-Include: decisions, rationale, principled guidelines (e.g., "Use custom hooks for logic reuse" ✓, "Implement in Phase 1" ✗)
-Exclude: schedules, implementation procedures, specific code
-
-## Output Policy
-Execute file output immediately (considered approved at execution).
+- Execute file output immediately (considered approved at execution).
+- ADR includes decisions, rationale, and principled guidelines (e.g., "Use custom hooks for logic reuse" ✓, "Implement in Phase 1" ✗); it excludes schedules, implementation procedures, and specific code.
 
 ## Important Design Principles
 

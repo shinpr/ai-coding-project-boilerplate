@@ -18,7 +18,7 @@ Metadata:
 - [例: src/orders/checkout (processOrder関数) — タスクの性質に基づきタスク分解時に決定]
 
 ## Change Category
-（タスクがバグ修正・リグレッション・状態変更・境界変更の場合のみ本フィールドを記載する — タスク分解時に設定。それ以外は省略する。）
+（タスクがバグ修正・リグレッション・状態変更・境界変更の場合のみ本フィールドを記載する。設定はタスク分解時に行う。それ以外は省略する。）
 
 `Change Category: <bug-fix, regression, state-change, boundary-change のうち該当するものをカンマ区切りで>`
 
@@ -32,6 +32,15 @@ Metadata:
 | Source | Axis | Decision | Compliance Check |
 |---|---|---|---|
 | [docs/adr/ADR-XXXX.md (§ <Source Section>) — 対応する作業計画書の行のセクション名（`Decision` または `Implementation Guidance`）に置き換える] | [作業計画書のADR Bindings行から逐語コピーしたAxis値] | [作業計画書のADR Bindings行からコピーしたバインディング決定] | [計画中/最終の実装が決定を満たすかをY/Nで判定できる肯定述語] |
+
+## Reference Contracts
+（作業計画書のReference Contract Values表がこのタスクをカバーする場合に本セクションを記載する。それ以外は省略する。）
+
+各行は、このタスクの実装が正確に再現すべきDD由来の観測可能契約である。シリアライズ境界はBoundary Context（作業計画書のConnection Mapから）が、ADR由来の構造的決定は上記のBinding Decisionsが扱う。
+
+| Source | Contract Type | Required Observable Value | Compliance Check |
+|---|---|---|---|
+| [対応する作業計画書のReference Contract Values行からコピーしたDesign Docパス (§ セクション)] | [作業計画書の行からコピーしたContract Type: structure-order / derived-display / state-lifecycle-negative] | [作業計画書の行から逐語コピーしたRequired Observable Value] | [計画中/最終の実装が値を再現するかをY/Nで判定できる肯定述語] |
 
 ## Investigation Notes
 （実装観察事項を実装開始前にここへ追記する。Binding Decisionsがある場合、計画した実装アプローチと各Compliance Check結果をここに記録する。）
@@ -81,6 +90,7 @@ Metadata:
 - [ ] 各 Proof Obligation が満たされている: テストが主要な故障モードでレッドになり、指定された境界を通過する
 - [ ] 成果物作成完了（調査・設計タスクの場合）
 - [ ] （Binding Decisionsがある場合）全てのCompliance Checkが最終実装に対して`Y`と評価され、根拠（file:line、テスト結果、またはコマンド出力）がInvestigation Notesに記録されている
+- [ ] （Reference Contractsがある場合）全てのReference Contract Compliance Checkが最終実装に対して`Y`と評価され、根拠がInvestigation Notesに記録されている
 
 ## Notes
 - 影響範囲: [変更が波及する可能性のある領域]

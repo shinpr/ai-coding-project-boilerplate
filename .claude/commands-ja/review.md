@@ -58,7 +58,7 @@ Agent toolでsecurity-reviewerを呼び出す:
 
 **両方の結果をサブエージェントの出力フィールドのみを使用して独立に報告**（サブエージェントのレスポンスにないフィールドを追加しない）。
 
-**早期終了（ルーティング対象なし）**: code-reviewer の `verdict` が `pass` かつ `acceptanceCriteria[]` のすべてのエントリが `status: "fulfilled"` かつ `identifierMismatches[]` が空かつ `qualityFindings[]` が空かつ security-reviewer の `findings[]` が空の場合、Steps 5-10 をスキップして直接 Step 11 へ進む — ルーティング対象がないため。クリーンな結果をユーザーに提示する。
+**早期終了（ルーティング対象なし）**: code-reviewer の `verdict` が `pass` かつ `acceptanceCriteria[]` のすべてのエントリが `status: "fulfilled"` かつ `identifierMismatches[]` が空かつ `qualityFindings[]` が空かつ security-reviewer の `findings[]` が空の場合、ルーティング対象がないため、Steps 5-10 をスキップして直接 Step 11 へ進む。クリーンな結果をユーザーに提示する。
 
 それ以外の場合、ユーザー提示の前に、オーケストレーターは以下のルールで finding ごとに推奨ルートを計算する（このルール自体は内部用 — ユーザー向けプロンプトには含めない）。ルールは code-reviewer の既存構造化フィールドのみを参照する。「DDの意図」のような解釈は不安定な推論を避けるため意図的に行わない:
 
