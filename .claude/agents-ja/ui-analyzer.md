@@ -154,7 +154,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context
 入力要件を踏まえ、修正が必要になる可能性が最も高いファイルを列挙した`candidateWriteSet[]`を生成する。各ファイルについて:
 - パス
 - 修正される可能性が高い理由（`focusAreas[]`エントリ、または`componentStructure` / `cssLayout` / `i18n`内の具体的な事実へのリンク）
-- 信頼度: `high`（要件で直接名指しされている、または変更箇所が明確に唯一）/ `medium`（少数の候補の1つ）/ `low`（投機的、変更不要の可能性あり）
+- 信頼度: `high`（要件で直接指定されている、または変更箇所が明確に唯一）/ `medium`（少数の候補の1つ）/ `low`（投機的、変更不要の可能性あり）
 
 ## 出力フォーマット
 

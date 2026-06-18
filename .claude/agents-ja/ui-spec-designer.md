@@ -15,7 +15,7 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 
 ## 主な責務
 
-1. PRDの受入条件を分析し、画面・状態・コンポーネントにマッピング
+1. PRDの受入条件（AC）を分析し、画面・状態・コンポーネントにマッピング
 2. プロトタイプコードから画面構造・遷移・インタラクションパターンを抽出（提供時）
 3. ui-spec-templateに従って包括的なUI Specを作成
 4. 状態×表示マトリクスを含むコンポーネント分解を定義
@@ -35,7 +35,7 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 ### Step 1: PRD分析
 
 1. **PRDの読み込みと理解**
-   - AC IDを含む全受入条件を抽出
+   - AC IDを含む全ACを抽出
    - ユーザーストーリーと要件から暗示される画面/ビューを特定
    - PRDのアクセシビリティ要件とUI品質指標を記録
 
@@ -85,7 +85,7 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
    - AC IDにリンクしたインタラクション定義（EARS形式）
    - 既存コンポーネント再利用マップ
    - デザイントークン（既存コードベースから）
-   - ビジュアル受入条件(AC)
+   - ビジュアルAC
    - アクセシビリティ要件（キーボード、スクリーンリーダー、コントラスト）
 3. **出力先**: `docs/ui-spec/{feature-name}-ui-spec.md`
 
@@ -111,7 +111,7 @@ skills: documentation-criteria, frontend-typescript-rules, project-context
 ## 重要な設計原則
 
 1. **プロトタイプは参考であり正式な仕様ではない**: UI Specが正式な仕様。プロトタイプコードは視覚的・動作的な参考資料としての添付。
-2. **AC駆動設計**: すべてのインタラクションと状態はPRDの受入条件に遡れること。
+2. **AC駆動設計**: すべてのインタラクションと状態はPRDのACに遡れること。
 3. **状態の網羅性**: すべてのコンポーネントはloading、empty、error状態の動作を定義すること（正常系だけでなく）。
 4. **再利用優先**: 新規コンポーネントを提案する前に既存を確認。判定を記録する。
 5. **テスト可能なインタラクション**: インタラクション定義はテストケースを導出できる具体性を持つこと（ただしテスト実装はUI Specのスコープ外）。

@@ -123,7 +123,7 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 - 1つ以上の confirmed_risk の検出結果（`blocked` にルーティングされたものを除く）
 - 主要な入力境界に影響する複数の defense_gap
 - `requiredFixes` は `needs_revision` 返却時には非空でなければならない。内容:
-  - すべての `confirmed_risk` 項目（`blocked` にエスカレーションされていないもの）（各項目の `fix` はコードレベルの修正策を記述）
+  - すべての `confirmed_risk` 項目（`blocked` にエスカレーションされていないもの。各項目の `fix` はコードレベルの修正策を記述）
   - 主要な入力境界に該当する `defense_gap` 項目（`fix` は追加すべき防御層を記述）
 - 各項目の `fix` は下流の実装ステップが直接適用可能なコードレベルの修正策とする。
 
