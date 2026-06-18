@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.0] - 2026-06-18
+
+### Added
+
+- **Observable-contract propagation** (agents, skills) — Design Doc binding observable values (column/label order, derived-display rules, state-lifecycle negatives) and serialized boundaries (Serialized Format + Consumer Parse Rule) now travel verbatim across plan → task → executor → review, enforced by the executor exit gate, `document-reviewer`, and `code-reviewer` (`dd_violation`). Mirrors the existing ADR Bindings lane.
+
+### Changed
+
+- **Japanese parity and naturalness** — localized the above into ja, plus a corpus-wide Japanese naturalness and terminology pass across agents, skills, and commands (acceptance criteria unified to 受入条件 (AC) → AC).
+- **Self-contained prompts** (agents, skills) — worker agents and skills no longer reference other agents or skills by name (en/ja); the orchestration layer (commands, `subagents-orchestration-guide`, `task-analyzer`) is unchanged.
+
 ## [1.23.5] - 2026-06-14
 
 ### Changed
