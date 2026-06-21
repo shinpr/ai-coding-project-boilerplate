@@ -49,7 +49,7 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 ### Frontend Architecture Patterns
 
 **React Component Architecture**:
-- **Function Components**: Mandatory, class components deprecated
+- **Function Components**: Mandatory; class components allowed solely for Error Boundaries (no hook equivalent)
 - **Custom Hooks**: For logic reuse and dependency injection
 - **Component Hierarchy**: Atoms -> Molecules -> Organisms -> Templates -> Pages
 - **Props-driven**: Components receive all necessary data via props

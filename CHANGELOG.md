@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.1] - 2026-06-21
+
+### Changed
+
+- **Skill rule consistency** (skills) — resolved conflicting rules across skills: aligned the ADR file-count matrix with the automation rule in `documentation-criteria`, unified the comment policy (code-first, comment the "why") between `coding-standards` and `typescript-rules`, and added the Error Boundary exception to the class-component rule in `frontend-technical-spec`. Applied across en/ja.
+
 ## [1.24.0] - 2026-06-18
 
 ### Added
