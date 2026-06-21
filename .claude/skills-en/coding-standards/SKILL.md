@@ -33,7 +33,8 @@ Immediately stop and reconsider design when detecting the following patterns:
 
 ## Comment Writing Rules
 
-- **Function Description Focus**: Describe what the code "does"
+- **Code first**: Names, types, and structure are the primary medium; add a comment only when it carries what the code cannot express. When in doubt, improve the name instead of commenting
+- **Comment the "why", not the "what"**: Explain reasoning, trade-offs, constraints/edge cases, or public API contracts
 - **No Historical Information**: Do not record development history
 - **Timeless**: Write only content that remains valid whenever read
 - **Conciseness**: Keep explanations to necessary minimum
