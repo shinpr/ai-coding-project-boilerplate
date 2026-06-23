@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.24.2] - 2026-06-23
+
+### Added
+
+- **Failure-mode and spec-completeness coverage** (agents, skills) — added a ninth domain-independent failure category (`missing-sort-key ordering`), a mode × branch AC-expansion step in technical design, and reset/clear state captured as a `state-lifecycle-negative` contract. Failure Mode Checklist categories now propagate from the work plan to task Proof Obligations and are verified in review (`code-reviewer`, `integration-test-reviewer`), with a deterministic fallback when task files are absent so AC-less obligations are not silently treated as verified. Applied across en/ja.
+
 ## [1.24.1] - 2026-06-21
 
 ### Changed
