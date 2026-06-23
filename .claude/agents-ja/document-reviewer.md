@@ -130,7 +130,7 @@ WorkPlanの場合、追加で以下を確認:
   - (2) 早期検証ポイントが最終フェーズではなく早期フェーズに置かれている — 最終フェーズへの後回し → `important`（カテゴリ: `consistency`）
   - (3) 境界横断・公開境界・永続状態の各変更が、それを実境界経由で検証するタスクを特定している — 欠落 → `important`（カテゴリ: `completeness`）
   - (4) 存在する各トレーサビリティ表（設計-計画、UI Specコンポーネント、Connection Map、ADR Bindings）が対象タスクを解決できる粒度で埋められている — 粒度不足の行 → `important`（カテゴリ: `completeness`）
-  - (5) 故障モードチェックリストが計画の該当するドメイン非依存カテゴリ（same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility）をカバーしている — 該当カテゴリの欠落 → `recommended`（カテゴリ: `completeness`）
+  - (5) 故障モードチェックリストが計画の該当するドメイン非依存カテゴリ（same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering）をカバーしている — 該当カテゴリの欠落 → `recommended`（カテゴリ: `completeness`）
   - (6) 拘束的観測値がカバレッジだけでなく内容忠実性をもって保持されている: 拘束的値をエンコードする各Design Doc観測可能契約（列/ラベルの集合と順序、派生表示ルール、状態ライフサイクルの否定条件）について、計画のReference Contract Values表がその値をDesign Docから逐語で転記し、カバーするタスクにマッピングしている。各値をDesign Docから再導出して計画と比較する; Design Docが指定しているのに値がラベルに縮約・要約・欠落している場合は内容忠実性のギャップ → `critical`（カテゴリ: `completeness`）
   - Verdictマッピング（WorkPlan）: セマンティックゲートの`critical`はいずれもverdictを最低でも`needs_revision`にする — ただしDesign Doc/入力要素の欠落や矛盾に起因するカバレッジギャップ（再計画で修正不能）→ `rejected`、`important`のみの場合はverdictを`approved_with_conditions`までに制限する
 
