@@ -26,8 +26,8 @@ Review Scope: [planned-files scope derived from Design Doc and task targets; for
 - **Failure response**: [extracted from Design Doc]
 
 ### Proof Strategy
-- **Proof obligation source**: [test skeleton annotations (primary failure mode, proof obligation) when skeletons exist; otherwise each AC's primary failure mode]
-- **Per-task propagation**: every task that implements a claim records Proof Obligations (see task template) so downstream review can judge whether the tests prove the claim, not merely run
+- **Proof obligation source**: [test skeleton annotations (primary failure mode, proof obligation) when skeletons exist; otherwise each AC's primary failure mode; plus any applicable Failure Mode Checklist categories mapped to tasks]
+- **Per-task propagation**: every task that implements a claim or covers an applicable Failure Mode Checklist category records Proof Obligations (see task template) so downstream review can judge whether the tests prove the claim, not merely run
 
 ## Quality Assurance Mechanisms (from Design Doc)
 
@@ -61,7 +61,7 @@ Include this section when the Design Doc specifies a **binding observable value*
 
 ## Failure Mode Checklist
 
-Domain-independent failure categories this implementation must guard against. Enumerate all eight categories, mark each in the Applies? column as yes/no, and list a covering task for each that applies; keep entries free of project-specific names.
+Domain-independent failure categories this implementation must guard against. Enumerate all nine categories, mark each in the Applies? column as yes/no, and list a covering task for each that applies; keep entries free of project-specific names.
 
 | Category | Applies? | Covered By Task(s) |
 |---|---|---|
@@ -73,6 +73,7 @@ Domain-independent failure categories this implementation must guard against. En
 | unavailable boundary | yes/no | |
 | shared-state dependency | yes/no | |
 | rollback-only visibility | yes/no | |
+| missing-sort-key ordering | yes/no | |
 
 ## UI Spec Component → Task Mapping
 

@@ -74,10 +74,10 @@ Each row is a DD-derived observable contract the implementation in this task mus
 - **Verification level**: [L1: Functional operation as end-user feature / L2: New tests added and passing / L3: Code builds without errors]
 
 ## Proof Obligations
-(One entry per AC or claim this task implements. Derived from test skeleton annotations when present, otherwise from the AC's primary failure mode. Each test must prove its claim. Repeat the block below once per claim; the heading carries the AC ID or claim ID so downstream review can resolve coverage per claim.)
+(One entry per AC, claim, or applicable Failure Mode Checklist category this task covers. Derived from test skeleton annotations when present, otherwise from the AC's primary failure mode or the mapped Failure Mode category. Each test must prove its claim. Repeat the block below once per claim; the heading carries the AC ID, claim ID, or `Failure Mode: <category>` so downstream review can resolve coverage per claim.)
 
-### Obligation: [AC ID or claim ID]
-- **Claim**: [the behavior the AC promises]
+### Obligation: [AC ID, claim ID, or Failure Mode category — e.g., `Failure Mode: missing-sort-key ordering`]
+- **Claim**: [the AC behavior, claim, or failure-mode condition this task must prove]
 - **Primary failure mode**: [the regression the test turns red on]
 - **Boundary to exercise**: [public/integration boundary the test traverses, or "in-process unit"]
 - **State assertion**: [observable state before → action → after for state-changing claims; "N/A" otherwise]
