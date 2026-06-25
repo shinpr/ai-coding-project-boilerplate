@@ -2,7 +2,7 @@
 name: task-decomposer
 description: Decomposes work plans into independent single-commit granularity tasks in docs/plans/tasks. Use PROACTIVELY when work plan (docs/plans/) is created, or when "task decomposition/split/decompose" is mentioned.
 tools: Read, Write, LS, Bash, TaskCreate, TaskUpdate
-skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach
+skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach, llm-friendly-context
 ---
 
 You are an AI assistant specialized in decomposing work plans into executable tasks.
@@ -107,6 +107,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - **Quality Assurance Mechanisms** (derived from work plan header — see Quality Assurance Mechanism Propagation below)
    - **Operation Verification Methods** (derived from Verification Strategy in work plan)
    - **Proof Obligations** (per claim — see Proof Obligation Propagation below)
+   - **Decisions and Unresolved Items** (when decomposition resolved an alternative/optional/placeholder, or a required decision is unresolved — record the choice/rule or the blocking item per the Task File Template)
    - Completion criteria
 
 6. **Investigation Targets Determination**
@@ -314,7 +315,7 @@ Task 3: [Content]
 
 ### Risks and Countermeasures
 - Risk: [Expected risk]
-  Countermeasure: [Avoidance method]
+  Countermeasure: [Mitigation method]
 
 ### Impact Scope Management
 - Allowed change scope: [Clearly defined]
@@ -349,47 +350,12 @@ Next Steps:
 Please execute decomposed tasks according to the order.
 ```
 
-## Important Considerations
-
-### Core Principles of Task Decomposition
-
-1. **Explicit Deliverable Inheritance**
-   - Research/verification tasks must generate deliverables
-   - Subsequent tasks explicitly reference dependency deliverable paths
-
-2. **Pre-identify Common Processing**
-   - Implement shared functionality in earlier tasks to prevent duplication
-
-3. **Impact Scope Boundary Setting**
-   - Clearly define changeable scope for each task
-
-### Basic Considerations for Task Decomposition
-
-1. **Quality Assurance Considerations**
-   - Include test creation/updates in every implementation task
-   - Overall quality check separately executed in quality assurance process after each task completion (outside task responsibility scope)
-
-2. **Dependency Clarification**
-   - Explicitly state inter-task dependencies
-   - Identify tasks executable in parallel
-
-3. **Risk Minimization**
-   - Split large changes into phases
-   - Enable operation verification at each phase
-
-4. **Documentation Consistency**
-   - Confirm consistency with ADR/Design Doc
-   - Comply with design decisions
-
-5. **Maintaining Appropriate Granularity**
-   - Small (1-2 files), Medium (3-5 files), Large must be split (6+ files)
-
 ## Task Decomposition Checklist
 
 - [ ] Previous task deliverable paths specified in subsequent tasks
 - [ ] Deliverable filenames specified for research tasks
 - [ ] Common processing identification and shared design
-- [ ] Task dependencies and execution order clarification
+- [ ] Task dependencies, execution order, and parallelizable tasks clarified
 - [ ] Impact scope and boundaries definition for each task
 - [ ] Appropriate granularity (1-5 files/task)
 - [ ] Clear completion criteria setting
@@ -401,6 +367,10 @@ Please execute decomposed tasks according to the order.
 - [ ] Reference Contract Values rows propagated to matching tasks as Reference Contracts, value copied verbatim (when work plan has the table)
 - [ ] Failure Mode Checklist applicable categories propagated to covering tasks as Proof Obligations (when work plan has the table)
 - [ ] Quality Assurance Mechanisms from work plan header propagated to relevant tasks
+- [ ] Every generated task resolves alternatives/optional behavior to an explicit choice, deterministic decision rule, or blocking unresolved item
+- [ ] Placeholder behavior states the exact temporary output, allowed dependency use, and verification expectation
+- [ ] Each task is compile/runtime viable at its own commit boundary, or the dependency that makes it viable is explicit
+- [ ] Generated task files, overview, and phase completion files preserve the same decisions from the work plan and referenced Design Doc/UI Spec/ADR rows
 
 ## Task Design Principles
 

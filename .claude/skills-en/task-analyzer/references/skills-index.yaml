@@ -189,6 +189,21 @@ skills:
       - "9 Skill Editing Principles"
       - "References"
 
+  llm-friendly-context:
+    skill: "llm-friendly-context"
+    tags: [universal, cross-cutting, prompt, handoff, artifact, clarity, ambiguity-removal, downstream-execution, documentation]
+    typical-use: "Writing or revising LLM-facing prompts, handoffs, planning artifacts, reviews, reports, or generated instructions so downstream agents can execute without guessing"
+    size: small
+    key-references:
+      - "Positive, executable instructions over prohibitions"
+      - "Observable success criteria for agent handoffs"
+      - "Explicit unresolved items over silent ambiguity"
+    sections:
+      - "Core Rules"
+      - "Rewrite Patterns"
+      - "Handoff Checklist"
+      - "Generated Artifact Checklist"
+
   # Frontend-specific Skills
   frontend-typescript-rules:
     skill: "frontend-typescript-rules"
