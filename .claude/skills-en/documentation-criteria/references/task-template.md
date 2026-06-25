@@ -42,6 +42,21 @@ Each row is a DD-derived observable contract the implementation in this task mus
 |---|---|---|---|
 | [Design Doc path (§ Section) copied from the matching work plan Reference Contract Values row] | [structure-order / derived-display / state-lifecycle-negative, copied from the work plan row] | [Required Observable Value copied verbatim from the work plan row] | [Y/N-answerable positive predicate that evaluates whether the planned/final implementation reproduces the value] |
 
+## Decisions and Unresolved Items
+(Include this section when task decomposition resolved an alternative, optional behavior, or placeholder, or when a required decision is unresolved at decomposition time. Omit when the task carries no such items.)
+
+Resolved decisions — each alternative, optional behavior, or placeholder the decomposition fixed to an explicit choice:
+
+| Item | Decision | Source / Rule |
+|---|---|---|
+| [the alternative, optional behavior, or placeholder] | [the selected choice or the deterministic rule that selects it; for a placeholder, the exact temporary output, allowed dependencies, and verification expectation] | [work plan / Design Doc / UI Spec / ADR section, or the basis of the decision rule] |
+
+Blocking unresolved items — decisions that cannot be made at decomposition time and block execution:
+
+| Item | Required Input | Escalation Condition |
+|---|---|---|
+| [the unresolved decision] | [the input needed to resolve it] | [who or what to escalate to, and the point at which the executor must stop rather than guess] |
+
 ## Investigation Notes
 (Implementation observations are appended here before implementation begins. When Binding Decisions exist, record the planned implementation approach and each Compliance Check result here.)
 
@@ -91,6 +106,7 @@ Each row is a DD-derived observable contract the implementation in this task mus
 - [ ] Deliverables created (for research/design tasks)
 - [ ] (When Binding Decisions exist) Every Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (file:line, test result, or command output)
 - [ ] (When Reference Contracts exist) Every Reference Contract Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes
+- [ ] (When Decisions and Unresolved Items exist) Every resolved decision is applied as recorded, and no blocking unresolved item remains open — if one does, execution halts and is escalated per its Escalation Condition
 
 ## Notes
 - Impact scope: [Areas where changes may propagate]

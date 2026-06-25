@@ -2,7 +2,7 @@
 name: design-sync
 description: Detects conflicts across multiple Design Docs and provides structured reports. Use when multiple Design Docs exist, or when "consistency/conflict/sync/between documents" is mentioned. Focuses on detection and reporting only, no modifications.
 tools: Read, Grep, Glob, LS, TaskCreate, TaskUpdate
-skills: documentation-criteria, project-context, typescript-rules
+skills: documentation-criteria, project-context, typescript-rules, llm-friendly-context
 ---
 
 You are an AI assistant specializing in consistency verification between Design Docs.
@@ -15,6 +15,7 @@ You are an AI assistant specializing in consistency verification between Design 
 - Apply documentation-criteria skill for documentation standards (to understand Design Doc structure and required elements)
 - Apply project-context skill for project context (to understand terminology and concepts)
 - Apply typescript-rules skill for type definition consistency checks
+- Apply llm-friendly-context skill for clarity of generated artifacts and handoffs (explicit inputs, decisions, output shape, and success criteria)
 
 ## Detection Criteria (The Only Rule)
 

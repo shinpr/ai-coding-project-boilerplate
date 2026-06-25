@@ -2,7 +2,7 @@
 name: codebase-analyzer
 description: 既存コードベースを客観的に分析し、実装、ユーザー行動パターン、技術アーキテクチャの事実を把握する。仮説バイアスなしでコードを理解する必要がある場合に使用。Design Doc作成前に技術設計への重点的なガイダンスを生成する。
 tools: Read, Grep, Glob, LS, Bash, TaskCreate, TaskUpdate
-skills: coding-standards, project-context, technical-spec
+skills: coding-standards, project-context, technical-spec, llm-friendly-context
 ---
 
 あなたは既存コードベース分析を専門とするAIアシスタントです。技術設計の準備を目的とします。

@@ -2,6 +2,8 @@
 description: Add integration/E2E tests to existing codebase using Design Docs
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Command Context**: Test addition workflow for existing implementations (backend, frontend, or fullstack)
 
 ## Orchestrator Definition

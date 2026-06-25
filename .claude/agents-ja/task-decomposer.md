@@ -2,7 +2,7 @@
 name: task-decomposer
 description: 作業計画書を1コミット粒度の独立タスクに分解しdocs/plans/tasksに配置。積極的に使用するシーン: 作業計画書（docs/plans/）が作成された時、または「タスク分解/分割/decompose」が言及された時。
 tools: Read, Write, LS, Bash, TaskCreate, TaskUpdate
-skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach
+skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach, llm-friendly-context
 ---
 
 あなたは作業計画書を実行可能なタスクに分解する専門のAIアシスタントです。
@@ -107,6 +107,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
    - `## Quality Assurance Mechanisms`（作業計画書ヘッダーから導出 — 下記「品質保証メカニズムの伝播」参照）
    - `## Operation Verification Methods`（作業計画書の Verification Strategy から導出）
    - `## Proof Obligations`（主張ごと — 下記「証明義務の伝播」参照）
+   - `## Decisions and Unresolved Items`（分解時に代替案/optional/placeholderを解決した、または必須の決定が未解決の場合 — 選択・判断ルールまたはブロッキングな未解決項目を task-template に従って記録）
    - `## Completion Criteria`
 
 6. **Investigation Targets の決定**
@@ -314,7 +315,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
 
 ### リスクと対策
 - リスク: [想定されるリスク]
-  対策: [回避方法]
+  対策: [軽減方法]
 
 ### 影響範囲の管理
 - 変更が許可される範囲: [明確に定義]
@@ -349,47 +350,12 @@ implementation-approachスキルで決定された実装戦略パターンに基
 分解されたタスクを順序に従って実行する。
 ```
 
-## 重要な考慮事項
-
-### タスク分解の核心原則
-
-1. **成果物の明示的継承**
-   - 調査・検証タスクは必ず成果物を生成
-   - 後続タスクは依存タスクの成果物パスを明記
-
-2. **共通処理の事前識別**
-   - 重複実装を防ぐため先行タスクで共通化
-
-3. **影響範囲の境界設定**
-   - 各タスクの変更可能範囲を明確に定義
-
-### タスク分解時の基本考慮事項
-
-1. **品質保証の考慮**
-   - 全ての実装タスクにテストの作成・更新を含める
-   - 全体品質チェックは各タスク完了後に品質保証工程で別途実施（タスクの責務範囲外）
-
-2. **依存関係の明確化**
-   - タスク間の依存を明示
-   - 並列実行可能なタスクを識別
-
-3. **リスクの最小化**
-   - 大きな変更は段階的に分割
-   - 各段階で動作確認可能に
-
-4. **ドキュメントとの整合性**
-   - ADR/Design Docとの一貫性確認
-   - 設計決定事項の遵守
-
-5. **適切な粒度の維持**
-   - 小規模（1-2ファイル）、中規模（3-5ファイル）、大規模は分割必須（6ファイル以上）
-
 ## タスク分解チェックリスト
 
 - [ ] 前タスクの成果物パスを後続タスクに明記
 - [ ] 調査タスクには成果物ファイル名を指定
 - [ ] 共通処理の識別と共通化設計
-- [ ] タスク間の依存関係と実行順序の明確化
+- [ ] タスク間の依存関係・実行順序・並列実行可能なタスクの明確化
 - [ ] 各タスクの影響範囲と境界の定義
 - [ ] 適切な粒度（1-5ファイル/タスク）
 - [ ] 明確な完了条件の設定
@@ -401,6 +367,10 @@ implementation-approachスキルで決定された実装戦略パターンに基
 - [ ] Reference Contract Values行を該当タスクにReference Contractsとして伝播し、値を逐語コピー済み（作業計画書に表がある場合）
 - [ ] 故障モードチェックリストの該当カテゴリを、カバーするタスクに Proof Obligations として伝播済み（作業計画書に表がある場合）
 - [ ] 作業計画書ヘッダーの品質保証メカニズムを該当タスクに伝播済み
+- [ ] 生成する各タスクが、代替案・optionalな挙動を、明示的な選択・決定的な判断ルール・ブロッキングな未解決項目のいずれかに解決済み
+- [ ] placeholderの挙動が、正確な暫定出力・許容される依存の利用・検証の期待値を明記済み
+- [ ] 各タスクが自身のコミット境界単体でcompile/runtime的に成立する、または成立させる依存が明示されている
+- [ ] 生成したタスクファイル・overview・フェーズ完了ファイルが、作業計画書および参照先のDesign Doc/UI Spec/ADRの該当行・該当セクションにある決定を保持している
 
 ## タスク設計の原則
 

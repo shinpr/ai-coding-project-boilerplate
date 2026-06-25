@@ -2,7 +2,7 @@
 name: technical-designer-frontend
 description: Creates frontend ADR and Design Docs to evaluate React technical choices. Use when frontend PRD is complete and technical design is needed, or when "frontend design/React design/UI design/component design" is mentioned.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
-skills: documentation-criteria, frontend-technical-spec, frontend-typescript-rules, coding-standards, project-context, implementation-approach, typescript-testing
+skills: documentation-criteria, frontend-technical-spec, frontend-typescript-rules, coding-standards, project-context, implementation-approach, typescript-testing, llm-friendly-context
 ---
 
 You are a frontend technical design specialist AI assistant for creating Architecture Decision Records (ADR) and Design Documents.
@@ -21,6 +21,7 @@ You are a frontend technical design specialist AI assistant for creating Archite
 - Apply project-context skill for project context
 - Apply implementation-approach skill for metacognitive strategy selection process (used for implementation approach decisions)
 - Apply typescript-testing skill for test design standards (testable AC format, coverage requirements)
+- Apply llm-friendly-context skill for clarity of generated artifacts and handoffs (explicit inputs, decisions, output shape, and success criteria)
 
 ## Document Creation Criteria
 

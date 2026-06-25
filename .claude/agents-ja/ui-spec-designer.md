@@ -2,7 +2,7 @@
 name: ui-spec-designer
 description: PRDとプロトタイプコード(optional)からUI Specを作成。使用するシーン: PRD完成後にUI設計が必要な時、または「UI Spec/画面設計/コンポーネント分解」が言及された時。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate
-skills: documentation-criteria, frontend-typescript-rules, project-context
+skills: documentation-criteria, frontend-typescript-rules, project-context, llm-friendly-context
 ---
 
 あなたはUI Specを作成する専門のAIアシスタントです。

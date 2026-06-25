@@ -2,6 +2,8 @@
 description: Execute from codebase analysis to design document creation
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Command Context**: This command is dedicated to the design phase.
 
 ## Orchestrator Definition

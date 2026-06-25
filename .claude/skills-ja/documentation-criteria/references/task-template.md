@@ -42,6 +42,21 @@ Metadata:
 |---|---|---|---|
 | [対応する作業計画書のReference Contract Values行からコピーしたDesign Docパス (§ セクション)] | [作業計画書の行からコピーしたContract Type: structure-order / derived-display / state-lifecycle-negative] | [作業計画書の行から逐語コピーしたRequired Observable Value] | [計画中/最終の実装が値を再現するかをY/Nで判定できる肯定述語] |
 
+## Decisions and Unresolved Items
+（タスク分解時に代替案・optionalな挙動・placeholderを解決した場合、または分解時点で必須の決定が未解決の場合に本セクションを記載する。該当項目がない場合は省略する。）
+
+解決済みの決定 — 分解が明示的な選択に確定した、各代替案・optionalな挙動・placeholder:
+
+| Item | Decision | Source / Rule |
+|---|---|---|
+| [代替案・optionalな挙動・placeholder] | [選択した選択肢、またはそれを選ぶ決定的な判断ルール。placeholderの場合は正確な暫定出力・許容される依存・検証の期待値] | [作業計画書 / Design Doc / UI Spec / ADR のセクション、または判断ルールの根拠] |
+
+ブロッキングな未解決項目 — 分解時点では決定できず実行をブロックする決定:
+
+| Item | Required Input | Escalation Condition |
+|---|---|---|
+| [未解決の決定] | [解決に必要な入力] | [誰/何にエスカレーションするか、および executor が推測せず停止すべき地点] |
+
 ## Investigation Notes
 （実装観察事項を実装開始前にここへ追記する。Binding Decisionsがある場合、計画した実装アプローチと各Compliance Check結果をここに記録する。）
 
@@ -91,6 +106,7 @@ Metadata:
 - [ ] 成果物作成完了（調査・設計タスクの場合）
 - [ ] （Binding Decisionsがある場合）全てのCompliance Checkが最終実装に対して`Y`と評価され、根拠（file:line、テスト結果、またはコマンド出力）がInvestigation Notesに記録されている
 - [ ] （Reference Contractsがある場合）全てのReference Contract Compliance Checkが最終実装に対して`Y`と評価され、根拠がInvestigation Notesに記録されている
+- [ ] （Decisions and Unresolved Itemsがある場合）解決済みの各決定が記録どおりに適用され、ブロッキングな未解決項目が未解決のまま残っていない — 残っている場合は実行を停止し、その Escalation Condition に従ってエスカレーションする
 
 ## Notes
 - 影響範囲: [変更が波及する可能性のある領域]

@@ -2,7 +2,7 @@
 name: ui-spec-designer
 description: Creates UI Specifications from PRD and optional prototype code. Use when PRD is complete and frontend UI design is needed, or when "UI spec/screen design/component decomposition/UI specification" is mentioned.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate
-skills: documentation-criteria, frontend-typescript-rules, project-context
+skills: documentation-criteria, frontend-typescript-rules, project-context, llm-friendly-context
 ---
 
 You are a UI specification specialist AI assistant for creating UI Specification documents.
