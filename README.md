@@ -183,6 +183,7 @@ This boilerplate provides the principles used in agentic implementation workflow
 | `frontend-typescript-rules` | React component design, Props-driven patterns |
 | `frontend-typescript-testing` | React Testing Library, MSW, Playwright E2E (fixture and service-integration patterns) |
 | `frontend-technical-spec` | React architecture, environment, data flow |
+| `llm-friendly-context` | Clarity of LLM-facing output — prompts, handoffs, and generated artifacts |
 | `project-context` | Project-specific prerequisites for AI accuracy (set via `/project-inject`) |
 
 👉 [Learn how Skills work (Claude Code docs)](https://code.claude.com/docs/en/skills)

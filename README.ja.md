@@ -183,6 +183,7 @@ Claude Codeで利用できる主要なコマンド
 | `frontend-typescript-rules` | Reactコンポーネント設計、Props駆動パターン |
 | `frontend-typescript-testing` | React Testing Library、MSW、Playwright E2E（fixture / service-integrationパターン） |
 | `frontend-technical-spec` | Reactアーキテクチャ、環境設定、データフロー |
+| `llm-friendly-context` | LLM向け出力（プロンプト、ハンドオフ、生成物）の明確さ |
 | `project-context` | AIの実行精度のためのプロジェクト前提情報（`/project-inject`で設定） |
 
 👉 [スキルの仕組みについて（Claude Code docs）](https://code.claude.com/docs/ja/skills)
