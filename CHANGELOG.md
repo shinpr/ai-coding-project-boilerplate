@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **LLM-friendly context skill** (agents, skills) — added the `llm-friendly-context` skill so prompts, handoffs, and generated artifacts state explicit inputs, output structure, success criteria, decisions, and blocking unresolved items, wired into the 11 artifact-producing agents. `document-reviewer` gains an LLM-facing artifact clarity check (`clarity` category); `task-decomposer` gains self-checks for unresolved alternatives/optional behavior, placeholder output, commit-boundary viability, and decision preservation, and records resolved choices and blocking unresolved items in a new `Decisions and Unresolved Items` task-template section. The redundant task-decomposer recap section was trimmed losslessly. Applied across en/ja.
+- **LLM-friendly context skill** (agents, skills, commands) — added the `llm-friendly-context` skill so prompts, handoffs, and generated artifacts state explicit inputs, output structure, success criteria, decisions, and blocking unresolved items, wired into the 11 artifact-producing agents and invoked by the 15 orchestrator commands before they construct Agent prompts, handoffs, or generated artifacts. `document-reviewer` gains an LLM-facing artifact clarity check (`clarity` category); `task-decomposer` gains self-checks for unresolved alternatives/optional behavior, placeholder output, commit-boundary viability, and decision preservation, and records resolved choices and blocking unresolved items in a new `Decisions and Unresolved Items` task-template section. The redundant task-decomposer recap section was trimmed losslessly. Applied across en/ja.
 
 ## [1.24.2] - 2026-06-23
 
