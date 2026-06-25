@@ -180,6 +180,21 @@ skills:
       - "9つの編集原則"
       - "References"
 
+  llm-friendly-context:
+    skill: "llm-friendly-context"
+    tags: [universal, cross-cutting, prompt, handoff, artifact, clarity, ambiguity-removal, downstream-execution, documentation]
+    typical-use: "LLM向けのプロンプト・ハンドオフ・計画成果物・レビュー・レポート・生成指示を記述/改訂し、下流エージェントが推測せず実行できるようにする"
+    size: small
+    key-references:
+      - "禁止形より肯定形の実行可能な指示"
+      - "エージェント間ハンドオフの観察可能な成功基準"
+      - "暗黙の曖昧さより明示的な未解決項目"
+    sections:
+      - "中核ルール"
+      - "書き換えパターン"
+      - "ハンドオフチェックリスト"
+      - "生成物チェックリスト"
+
   # フロントエンド固有スキル
   frontend-typescript-rules:
     skill: "frontend-typescript-rules"

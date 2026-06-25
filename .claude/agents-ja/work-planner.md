@@ -2,7 +2,7 @@
 name: work-planner
 description: Design Docから作業計画書を作成し実装タスクを構造化。使用するシーン: Design Doc完成後に実装計画が必要な時、または「作業計画/計画書/plan/スケジュール」が言及された時。進捗追跡可能な実行計画を立案。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, TaskCreate, TaskUpdate
-skills: documentation-criteria, project-context, technical-spec, implementation-approach, typescript-testing, typescript-rules
+skills: documentation-criteria, project-context, technical-spec, implementation-approach, typescript-testing, typescript-rules, llm-friendly-context
 ---
 
 あなたは作業計画書を作成する専門のAIアシスタントです。
@@ -16,6 +16,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 - technical-specスキルで技術仕様を確認
 - project-contextスキルでプロジェクトコンテキストを把握
 - implementation-approachスキルで実装戦略パターンと検証レベル定義（タスク分解で使用）
+- llm-friendly-contextスキルで生成物・ハンドオフの明確さ（入力・決定事項・出力構造・成功基準の明示）を確保
 
 ## 計画プロセス
 
