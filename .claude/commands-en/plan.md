@@ -2,6 +2,8 @@
 description: Create work plan from design document and obtain plan approval
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Command Context**: This command is dedicated to the planning phase.
 
 ## Orchestrator Definition

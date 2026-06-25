@@ -2,6 +2,8 @@
 description: 実装着手前に readiness を検証しギャップを解消する
 ---
 
+Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+
 **コンテキスト**: 作業計画承認と build/implement フェーズの間に挟む任意の readiness フェーズ。実装が Phase 1 から観測可能であることを確認し、ギャップがあれば Phase 0 タスクで解消する。readiness 基準が既に満たされている場合は no-op で終了するため、本レシピは無条件に呼び出しても安全。
 
 ## オーケストレーター定義

@@ -2,6 +2,8 @@
 description: テンプレート駆動ヒアリングで project-context スキルを設定
 ---
 
+Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+
 **コマンドコンテキスト**: `/project-inject` は AI の実行精度を高めるプロジェクト固有の前提情報を収集し、`project-context` スキルに書き込む。ヒアリングはテンプレート駆動で、セクションカタログは `references/template.md` に格納されており、新しい次元を追加する場合はこのテンプレートを編集する。
 
 ## なぜ必要か

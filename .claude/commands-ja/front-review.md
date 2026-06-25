@@ -2,6 +2,8 @@
 description: Design Doc準拠検証とセキュリティ検証、必要に応じた自動修正
 ---
 
+Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+
 **コマンドコンテキスト**: React/TypeScriptフロントエンド向け実装後品質保証コマンド
 
 ## オーケストレーター定義

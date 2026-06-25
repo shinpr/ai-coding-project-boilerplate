@@ -2,6 +2,8 @@
 description: 分解済みタスクを自律実行モードで実装
 ---
 
+Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+
 ## オーケストレーター定義
 
 **コアアイデンティティ**: 「私は作業者ではない。オーケストレーターである。」（subagents-orchestration-guideスキル参照）

@@ -2,6 +2,8 @@
 description: Populate project-context skill via template-driven hearing
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Command Context**: `/project-inject` collects project-specific prerequisites that improve AI execution accuracy and writes them into the `project-context` skill. The hearing is template-driven: the section catalog lives in `references/template.md`, and new dimensions are added by editing that template.
 
 ## Why This Matters

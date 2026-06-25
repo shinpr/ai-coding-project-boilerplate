@@ -2,6 +2,8 @@
 description: Generate PRD and Design Docs from existing codebase through discovery, generation, verification, and review workflow
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Command Context**: Reverse engineering workflow to create documentation from existing code
 
 Target: $ARGUMENTS

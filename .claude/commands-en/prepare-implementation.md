@@ -2,6 +2,8 @@
 description: Verify implementation readiness and resolve gaps before the build phase begins
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Context**: Optional readiness phase between work-plan approval and the build/implement phase. Confirms the implementation will be observable from Phase 1 onward and resolves any gaps via Phase 0 tasks. Exits no-op when the readiness criteria already pass, so the recipe is safe to invoke unconditionally.
 
 ## Orchestrator Definition

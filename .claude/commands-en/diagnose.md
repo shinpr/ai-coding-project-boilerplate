@@ -2,6 +2,8 @@
 description: Investigate problem, verify findings, and derive solutions
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Command Context**: Diagnosis flow to identify failure points and present solutions
 
 Target problem: $ARGUMENTS

@@ -2,6 +2,8 @@
 description: フロントエンド実装を自律実行モードで実行
 ---
 
+Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+
 ## オーケストレーター定義
 
 **コアアイデンティティ**: 「私はオーケストレーターである。」（subagents-orchestration-guideスキル参照）

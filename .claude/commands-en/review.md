@@ -2,6 +2,8 @@
 description: Design Doc compliance and security validation with optional auto-fixes
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Command Context**: Post-implementation quality assurance command
 
 ## Execution Method

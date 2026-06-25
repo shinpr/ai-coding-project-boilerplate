@@ -2,6 +2,8 @@
 description: Update existing design documents (Design Doc / PRD / ADR) with review
 ---
 
+Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+
 **Command Context**: This command is dedicated to updating existing design documents.
 
 ## Orchestrator Definition
