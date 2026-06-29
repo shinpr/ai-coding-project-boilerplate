@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.1] - 2026-06-29
+
+### Added
+
+- **Unimplemented-dependency handling** (agents) — `task-executor` / `-frontend` gain a rule for a dependency the task requires that is absent or unimplemented: it is a stop condition only when preserving the required contract needs it and no local, reversible construct (a vertical slice, or a contract-preserving stub/adapter scoped to the Target Files) can stand in. The required contract is established from an already-read source first — a missing `Dependencies:` deliverable whose contract no read source defines escalates as `design_compliance_violation`; one or more interchangeable constructs proceed with the integration handoff recorded in Investigation Notes; no viable construct, or constructs that differ on an architectural trade-off, escalate (reusing the existing escalation type, no new enum). Applied across en/ja.
+
 ## [1.25.0] - 2026-06-25
 
 ### Added
