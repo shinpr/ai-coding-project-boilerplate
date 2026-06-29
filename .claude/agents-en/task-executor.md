@@ -183,6 +183,16 @@ This gate runs only when the task file's "Investigation Targets" section lists a
 2. **Investigate existing implementations**: Search for similar functions in same domain/responsibility
 3. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
+#### Unimplemented Dependency Handling
+
+Applies when Pre-implementation Verification finds a dependency this task requires is absent or unimplemented (e.g., a Design Doc component marked "requires new creation"). Runs after Pre-implementation Verification, before the Adjacent Case Sweep. Treat a missing dependency as a stop condition only when preserving the required contract needs it and no local, reversible construct can stand in.
+
+1. Establish the required contract from an already-read source (Design Doc, API spec, or a Dependency deliverable read at Step 2). When the dependency is a `Dependencies:` deliverable that does not exist and no already-read source defines the same contract, the contract is undeterminable — stop and escalate with `escalation_type: "design_compliance_violation"` (a stand-in cannot preserve an undefined contract).
+2. Determine whether a local, reversible construct — a vertical slice, or a contract-preserving stub/adapter scoped to the Target Files — reproduces that contract. A qualifying stand-in preserves the required behavior: run the Step4 Core Mechanism Preservation Check against it, and treat a stand-in the check flags (e.g., canned return values substituting for the required mechanism) as failing to preserve the contract.
+3. Branch on the result:
+   - One or more local, reversible constructs preserve the contract and any alternatives are interchangeable (no architectural trade-off between them) → proceed with one and record the integration handoff (what the real dependency must later provide, and where it connects) in Investigation Notes.
+   - No local construct preserves the contract, or two or more valid constructs differ on an architectural trade-off (placement, dependency direction, contract shape) — consistent with the Iron Rule → stop and escalate with `escalation_type: "design_compliance_violation"` per the Escalation Response table; populate every field the row requires — map the Design Doc requirement for the dependency to `details.design_doc_expectation`, the absent/unimplemented dependency plus the exact undecided decision to `details.actual_situation`, and also set `details.why_cannot_implement`, `details.attempted_approaches[]`, and `claude_recommendation` per the table.
+
 #### Adjacent Case Sweep (Required when the task file has a `Change Category` field set to one or more of `bug-fix`, `regression`, `state-change`, `boundary-change`)
 
 Runs after Pre-implementation Verification, before the Binding Decision Check. This step fires on the field value the task decomposition wrote — read the field value and treat it as authoritative for whether the sweep applies.
