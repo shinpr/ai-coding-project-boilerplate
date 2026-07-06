@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.2] - 2026-07-07
+
+### Added
+
+- **Behavioral claim verification** (agents, skills) — Design Docs now back the behavioral/factual claims they rely on but do not themselves define — framework/library defaults, capabilities assumed already provided, features assumed already implemented — with evidence at design time, or bind them to a follow-up. `technical-designer` / `-frontend` gain a Behavioral Claim Verification step (Gate 1) that records each material claim in a new Agreement Checklist "Assumed Behaviors" slot: evidence + `Confirmed: Yes`, or `Confirmed: No` with a matching Risks and Mitigation row propagated downstream as `verify at [step or artifact]`; a framework/library default requires the official doc paired with the resolved package version. Routing defers to the Fact Disposition Table (Codebase Analysis facts) and Cross-Layer Assumptions (prior-layer claims). `document-reviewer` gains a matching evidence check (`important` / `feasibility`). Incidentally trimmed redundant skill cues, the Change Impact example, and duplicated Fact Disposition prose. Applied across en/ja.
+
 ## [1.25.1] - 2026-06-29
 
 ### Added
