@@ -52,6 +52,11 @@ unknowns:
 - [基準/規約] `[explicit]` — 出典: [設定ファイル / ルールファイル / ドキュメントパス]
 - [観察されたパターン] `[implicit]` — 根拠: [ファイルパス] — 確認: [済/未]
 
+#### Assumed Behaviors
+設計が依存するが自身では定義しておらず、かつ誤っていれば設計方針が破綻する振る舞い・事実の主張（フレームワーク/ライブラリのデフォルト、既に提供されていると想定する能力、既に実装済みと想定する機能）のうち、Fact Disposition Table や Cross-Layer Assumptions で既にカバーされていないもの。各主張は根拠とともに 確認: 済 とするか、確認: 未（根拠: 特定できず）として対応する「リスクと対策」の行を持つ — その行は主張を（共有ルックアップキーとして）リスクとして再掲し、どう検証またはガードするかを記し、下流に `検証先: [ステップまたは成果物]` として伝播する。フレームワーク/ライブラリのデフォルトについては、公式ドキュメントと（lockfile または設定から）解決したパッケージバージョンをセットで根拠とする。このスロットは根拠が集まる既存コード調査の段階で記入するため、合意事項チェックリストの他項目を最初に埋める時点では空でよい。該当する主張がなければスロットを N/A とする。
+
+- [ ] [主張 — 例: 「フレームワーク X のデフォルトは Y」「サービスは既に Z を返す」] — 根拠: [file:line / コマンド出力 / 解決したパッケージバージョンとセットの doc URL、確認: 未 の場合は「特定できず」] — 確認: [済/未]
+
 #### 品質保証メカニズム
 変更対象領域で品質がどのように担保されているか。各項目は adopted（実装時に適用）または noted（観察されたが不採用、理由付き）のいずれか。
 
@@ -112,11 +117,11 @@ unknowns:
 
 ### Fact Disposition Table
 
-コードベース分析の`focusAreas`の各エントリに対して1行ずつ記載する。この表は**構造的な既存事実**と設計を結び付ける主たるテーブルである（Verification StrategyのOutput Comparisonは**ランタイムの振る舞い**を別途拘束する）。既存の振る舞いに言及する他セクションは、この表の行を`fact_id`値で参照する。
+コードベース分析の`focusAreas`の各エントリに対して1行ずつ記載する。この表は**構造的な既存事実**を設計に結び付ける。既存の振る舞いに言及する他セクションは、この表の行を`fact_id`値で参照する。
 
 | Fact ID | Focus Area | Disposition | Rationale | Evidence | Related Files |
 |---------|------------|-------------|-----------|----------|---------------|
-| [focusAreasのfact_id] | [focusAreasのarea] | preserve / transform / remove / out-of-scope | [preserve: 確認のみの文言、例「既存の振る舞いを変更なしで維持」 — 振る舞い変更を主張するRationaleはレビューでpreserve mismatchとして検出される、transform: 新しい観測可能な結果を記述、例「分岐Xは410でなく404を返す」 — 全体として無変更を主張するRationaleはtransform mismatchとして検出される、remove: 理由を記述、ポリシー由来ならPRD/UI Specセクションを引用 — 本番コードパスでの保持を主張するRationaleはremove mismatchとして検出される（テスト/移行スクリプトでの保持を明示した場合は妥当）、out-of-scope: スコープ定義セクションを引用、既存の振る舞いがそのまま残るならpreserveを優先] | [focusAreasのevidence値をそのまま引き継ぎ] | [focusAreas.relatedFilesのパス一覧をそのまま引き継ぎ、カンマ区切り、例: `src/auth/createUser.ts, src/api/routes/users.ts`] |
+| [focusAreasのfact_id] | [focusAreasのarea] | preserve / transform / remove / out-of-scope | [disposition別 — preserve: 確認のみの文言（「変更なしで維持」）、transform: 新しい観測可能な結果（「410でなく404を返す」）、remove: 理由 + ポリシー由来ならPRD/UI Specを引用、out-of-scope: スコープ定義セクションを引用] | [focusAreasのevidence値をそのまま引き継ぎ] | [focusAreas.relatedFilesのパス一覧をそのまま引き継ぎ、カンマ区切り、例: `src/auth/createUser.ts, src/api/routes/users.ts`] |
 
 ### Cross-Layer Assumptions（レイヤー横断フロー時のみ）
 
@@ -255,7 +260,7 @@ unknowns:
 
 ### フィールド伝播マップ（フィールドが境界を越える場合）
 
-ここでの境界には**シリアライズ境界** — 一方の側でエンコードされ、クエリ文字列、CLI引数、環境変数、設定エントリ、メッセージ/キューのペイロード、ストレージキー、ファイルなどの媒体を介して他方の側でパースされる値 — も含まれ、インメモリの受け渡しに限らない。シリアライズ境界の行では `Serialized: [producerが出力する正確な表現]; Parse: [consumerがどうデコード/検証するか]` — すなわち **Serialized Format** と **Consumer Parse Rule** — を付記し、producerとconsumerが合意するようにする。インメモリの受け渡しでは付記を省略する。
+ここでの境界には**シリアライズ境界** — 一方の側でエンコードされ、クエリ文字列、CLI引数、環境変数、設定エントリ、メッセージ/キューのペイロード、ストレージキー、ファイルなどを介して他方の側でパースされる値 — も含まれ、インメモリの受け渡しに限らない。シリアライズ境界の行では **Serialized Format**（`Serialized: [producerが出力する正確な表現]`）と **Consumer Parse Rule**（`Parse: [consumerがどうデコード/検証するか]`）を付記し、producerとconsumerが合意するようにする。インメモリの受け渡しでは付記を省略する。
 
 - [フィールド名]: [コンポーネントA → B] — preserved / transformed / dropped — [理由]
 - [フィールド名]: [コンポーネントA → B] — transformed — Serialized: [正確な表現]; Parse: [デコード/検証ルール] — [理由]（シリアライズ境界）
