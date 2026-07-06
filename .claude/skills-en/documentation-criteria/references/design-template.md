@@ -52,6 +52,11 @@ unknowns:
 - [Standard/convention] `[explicit]` — Source: [config / rule file / doc path]
 - [Observed pattern] `[implicit]` — Evidence: [file paths] — Confirmed: [Yes/No]
 
+#### Assumed Behaviors
+Behavioral or factual claims the design relies on but does not itself define — framework/library defaults, capabilities assumed already provided, features assumed already implemented — whose falsity would invalidate the design approach, and that are not already covered by the Fact Disposition Table or Cross-Layer Assumptions. Each claim carries evidence with Confirmed: Yes, or Confirmed: No (with Evidence: Not located) plus a matching Risks and Mitigation row — one that restates the claim as its Risk (the shared lookup key), names how it will be verified or guarded, and propagates the check downstream as `verify at [step or artifact]`. For a framework/library default, the doc evidence pairs the official doc with the resolved package version (from the lockfile or config). This slot is completed during Existing Code Investigation once evidence is gathered, so it may be empty when the rest of the Agreement Checklist is first filled. Mark the slot N/A when the design relies on no such claims.
+
+- [ ] [Claim — e.g., "framework X defaults to Y", "service already returns Z"] — Evidence: [file:line / command output / doc URL paired with resolved package version, or "Not located" when Confirmed: No] — Confirmed: [Yes/No]
+
 #### Quality Assurance Mechanisms
 How quality is enforced in the change area. Each item is either adopted (will be enforced during implementation) or noted (observed but not adopted, with reason).
 
@@ -112,11 +117,11 @@ Each AC is written in EARS format. Keywords determine test type.
 
 ### Fact Disposition Table
 
-One row per codebase analysis `focusAreas` entry. This table is the primary binding between structural existing-behavior facts and the design (Verification Strategy's Output Comparison binds runtime behavior separately). Other sections that describe existing behavior reference the row by `fact_id` value.
+One row per codebase analysis `focusAreas` entry. This table binds structural existing-behavior facts to the design; other sections referencing existing behavior cite the row by `fact_id`.
 
 | Fact ID | Focus Area | Disposition | Rationale | Evidence | Related Files |
 |---------|------------|-------------|-----------|----------|---------------|
-| [fact_id from focusAreas] | [area name from focusAreas] | preserve / transform / remove / out-of-scope | [preserve: confirmation-only language, e.g., "existing behavior retained without modification" — Rationale asserting a behavior change is flagged as preserve mismatch; transform: state new observable outcome, e.g., "branch X now returns 404 instead of 410" — Rationale asserting no change at all is flagged as transform mismatch; remove: state reason with PRD/UI Spec citation when policy-driven — Rationale asserting production-code retention is flagged as remove mismatch (test/migration retention stated explicitly is acceptable); out-of-scope: cite the scope-defining section and prefer preserve when behavior continues unchanged] | [evidence value carried verbatim from focusAreas] | [comma-separated path list carried verbatim from focusAreas.relatedFiles, e.g., `src/auth/createUser.ts, src/api/routes/users.ts`] |
+| [fact_id from focusAreas] | [area name from focusAreas] | preserve / transform / remove / out-of-scope | [per disposition — preserve: confirmation-only ("retained without modification"); transform: new observable outcome ("now returns 404 instead of 410"); remove: reason + PRD/UI Spec citation when policy-driven; out-of-scope: cite the scope-defining section] | [evidence value carried verbatim from focusAreas] | [comma-separated path list carried verbatim from focusAreas.relatedFiles, e.g., `src/auth/createUser.ts, src/api/routes/users.ts`] |
 
 ### Cross-Layer Assumptions (cross-layer flow only)
 
@@ -255,7 +260,7 @@ Invariants:
 
 ### Field Propagation Map (When Fields Cross Boundaries)
 
-A boundary here includes a **serialized boundary** — a value encoded on one side and parsed on the other through a medium such as a query string, CLI argument, environment variable, config entry, message/queue payload, storage key, or file — not only in-memory crossings. For a serialized row, append `Serialized: [exact representation the producer emits]; Parse: [how the consumer decodes/validates it]` — the **Serialized Format** and **Consumer Parse Rule** — so producer and consumer agree; omit that suffix for in-memory crossings.
+A boundary includes a **serialized boundary** — a value encoded on one side and parsed on the other (query string, CLI argument, environment variable, config entry, message/queue payload, storage key, or file), not only in-memory crossings. For a serialized row, append the **Serialized Format** (`Serialized: [exact representation the producer emits]`) and the **Consumer Parse Rule** (`Parse: [how the consumer decodes/validates it]`) so producer and consumer agree; omit that suffix for in-memory crossings.
 
 - [field]: [ComponentA → B] — preserved / transformed / dropped — [reason]
 - [field]: [ComponentA → B] — transformed — Serialized: [exact representation]; Parse: [decode/validate rule] — [reason] (serialized boundary)
