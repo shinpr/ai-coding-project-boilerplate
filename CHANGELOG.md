@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.3] - 2026-07-16
+
+### Changed
+
+- **Leaner skill generation and review** (skills, agents) — refined `skill-optimization` and its `skill-creator` / `skill-reviewer` agents so generated and reviewed skills come out less over-constrained and easier to follow: vague wording is clarified with the least-restrictive option that still adds the needed precision, examples default to the minimal necessary set instead of forced variety, context guidance also removes duplicated or distracting material, decomposed steps must state an observable completion output and the condition to proceed, and uncertainty is handled by stopping for the specific evidence or decision required. Applied across en/ja.
+
 ## [1.25.2] - 2026-07-07
 
 ### Added
