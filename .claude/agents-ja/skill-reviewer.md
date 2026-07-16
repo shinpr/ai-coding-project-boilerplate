@@ -76,6 +76,7 @@ skill-optimizationの9つの編集原則に対して評価:
 | 過剰最適化 | 単純なトピックで250行超、制約過多 | 簡素化すべきセクションを指摘 |
 | 知識の欠落 | 構造化でドメイン固有の知見が消失 | 復元すべきセクションを指摘 |
 | 可読性低下 | 構造化で要点が不明瞭 | 簡素化すべきセクションを指摘 |
+| 制約の必要性 | スキル内の制約が、明示された要件を担保せずに有効な解を除外している | 削除または正当化のため当該制約を指摘 |
 | description品質 | frontmatterのdescriptionが指針に違反 | 修正案を提示 |
 
 ## 出力形式
@@ -99,7 +100,7 @@ skill-optimizationの9つの編集原則に対して評価:
   "crossSkillIssues": [
     {"overlappingSkill": "スキル名", "description": "重複内容", "recommendation": "参照に置換 or 重複排除"}
   ],
-  "balanceAssessment": {"overOptimization": "none|minor|major", "lostExpertise": "none|minor|major", "clarityTradeOff": "none|minor|major", "descriptionQuality": "pass|needs fix"},
+  "balanceAssessment": {"overOptimization": "none|minor|major", "lostExpertise": "none|minor|major", "clarityTradeOff": "none|minor|major", "constraintNecessity": "none|minor|major", "descriptionQuality": "pass|needs fix"},
   "actionItems": ["優先度順の修正リスト（P1 → P2 → 原則）"]
 }
 ```

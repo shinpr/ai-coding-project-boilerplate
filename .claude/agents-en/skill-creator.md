@@ -67,8 +67,8 @@ The calling command or agent specifies the mode:
 Apply transforms in priority order (P1 → P2 → P3):
 
 1. **BP-001**: Convert negative instructions to positive form. **Exception**: Preserve negative form only when ALL 4 conditions are met: (1) violation destroys state in a single step, (2) caller or subsequent steps cannot normally recover, (3) operational/procedural constraint (not quality policy or role boundary), (4) positive rewording would expand or blur scope. See skill-optimization SKILL.md BP-001 for boundary examples.
-2. **BP-002**: Replace vague terms with measurable criteria
-3. **BP-003**: Add output format for any process/methodology sections
+2. **BP-002**: Resolve vague terms with the least-restrictive sufficient criterion (the measurable rule/threshold that adds the needed precision while excluding the fewest valid behaviors). For an applied clarification record its precision contribution, constraint cost, and the source it was derived from; when input or project context cannot determine the decision, record the required source instead of guessing
+3. **BP-003**: Define the output format each process/methodology section's consumer requires, rather than selecting a format by convention
 4. **BP-004**: Structure content following standard section order:
    - Context/Prerequisites
    - Core concepts (definitions, patterns)
@@ -76,10 +76,10 @@ Apply transforms in priority order (P1 → P2 → P3):
    - Output format/Examples
    - Quality checklist
    - References
-5. **BP-005**: Make all prerequisites explicit
-6. **BP-006**: Decompose complex instructions into evaluable steps
-7. **BP-007**: Ensure examples cover diverse cases (happy path, edge cases, errors)
-8. **BP-008**: Add escalation criteria for ambiguous situations
+5. **BP-005**: Add missing prerequisites and remove excess — condense duplicated, distracting, or unactionable context that has no downstream effect
+6. **BP-006**: Decompose complex instructions into evaluable steps; each step names its output evidence and the transition condition that permits the next step
+7. **BP-007**: Keep examples minimal — use a concise rule or consumer-required output shape for generally known behavior; add only the smallest example set covering domain-, product-, or organization-specific mappings, non-obvious exceptions, or boundaries a rule cannot express
+8. **BP-008**: Classify claims as observed, inferred, or unknown; add escalation criteria and, when an unknown blocks the next step, a stopping condition that names the evidence or user decision required to continue
 
 ### Step 3: Generate Description
 
@@ -159,7 +159,7 @@ Return results as structured JSON:
   ],
   "optimizationReport": {
     "issuesFound": [
-      {"pattern": "BP-XXX", "severity": "P1/P2/P3", "location": "...", "transform": "..."}
+      {"pattern": "BP-XXX", "severity": "P1/P2/P3", "location": "...", "transform": "...", "bp002Resolution": {"status": "applied|unresolved", "precisionContribution": "applied only: observable output difference improved", "constraintCost": "applied only: valid solutions excluded", "source": "applied only: named source the criterion was derived from, or null", "requiredSource": "unresolved only: source needed to decide"}}
     ],
     "researchFindings": [],
     "lineCount": 0,
@@ -171,6 +171,7 @@ Return results as structured JSON:
 
 - **`changesSummary`**: Empty array `[]` in creation mode. Populated only in modification mode.
 - **`researchFindings`**: Empty array `[]` when no time-sensitive knowledge was involved. Populated only when WebSearch was performed and findings exist.
+- **`bp002Resolution`**: Present only on BP-002 issues. Populate the `applied` fields when a clarification was chosen; populate `requiredSource` when context could not determine the decision.
 
 ## Quality Checklist
 
@@ -180,7 +181,7 @@ Return results as structured JSON:
 - [ ] Frontmatter name and description present and valid
 - [ ] Content follows standard section order
 - [ ] No duplicate content with existing skills
-- [ ] Examples include diverse cases (not just happy path)
+- [ ] Examples are the minimal necessary set — each maps to a specific ambiguity and encodes only mappings, exceptions, or boundaries a rule cannot convey
 - [ ] All domain terms defined or linked to prerequisites
 - [ ] Line count within size target
 
