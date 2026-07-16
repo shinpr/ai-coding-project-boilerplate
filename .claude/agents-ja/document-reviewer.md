@@ -35,6 +35,12 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
   - 提供された場合、`focusAreas`をFact Dispositionカバレッジチェックの正典ソースとして使用
   - 未提供の場合、focusAreaの完全性は本レビューでは検証不能として扱う
 
+- **requirements_verbatim**: 元のユーザー要件（DesignDoc作成レビューで必須）
+  - Adopted design validity チェックの正典となる要件リストとして使用
+- **confirmed_decisions**: ユーザーが確認したスコープと確定した決定事項（DesignDoc作成レビューで必須）
+  - `requirements_verbatim` を具体化・制約する、正となる情報として使用
+  - 両方の入力があるDesignDocレビューは「DesignDoc作成レビュー」とする
+
 - **design_doc**: Design Docのパス（任意、WorkPlanレビュー用）
   - 提供された場合、計画に対するAC / コントラクト / 状態遷移のカバレッジチェックのソースとして読み込む
   - 未提供の場合、作業計画書の「関連ドキュメント」セクションからDesign Docを解決する
@@ -58,6 +64,7 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 - WorkPlanの場合: セマンティックゲートの判定対象となる成果物が計画に含まれることを確認 — 設計-計画トレーサビリティ、Reference Contract Values（Design Docが拘束的観測値を指定する場合）、故障モードチェックリスト、レビュースコープ、検証戦略の要約、証明戦略。参照されているDesign Docを読み込み、AC / コントラクト / 状態遷移のカバレッジと拘束的観測値の内容忠実性を計画に対して確認できるようにする
 - `code_verification`が提供された場合: 不整合リストと逆方向カバレッジのギャップを抽出し、Gate 1の事前検証エビデンスとして組み込む
 - `codebase_analysis`が提供された場合: `focusAreas`とその`evidence`値を抽出し、Gate 0 / Gate 1のFact Dispositionチェックに使用
+- DesignDoc作成レビューの場合: `confirmed_decisions` を `requirements_verbatim` に適用し、Adopted design validity チェックが使う実効要件を導出する
 
 ### ステップ2: 対象ドキュメントの収集
 - targetで指定されたドキュメントを読み込み
@@ -90,7 +97,7 @@ WorkPlanの場合、追加で以下を確認:
 - 整合性チェック：ドキュメント間の矛盾を検出
 - 完成度チェック：必須要素の深度と網羅性を確認
 - ルール準拠チェック：プロジェクトルールとの適合性
-- LLM向け成果物の明確さチェック：対象ドキュメントをllm-friendly-contextに照らしてレビューし、下流の実行を分岐させうる未解決の代替案やoptionalな挙動は `important`（category: `clarity`）に、下流作業を実行不能にする必須のtarget/action/source/outputの欠落は `critical`（category: `clarity`）に分類する
+- LLM向け成果物の明確さチェック：対象ドキュメントをllm-friendly-contextに照らしてレビューし、DesignDoc作成レビューでは `confirmed_decisions` を用いて確定済みの選択肢と未解決の代替案を区別する。下流の実行を分岐させうる未解決の代替案やoptionalな挙動は `important`（カテゴリ: `clarity`）に、下流作業を実行不能にする必須のtarget/action/source/outputの欠落は `critical`（カテゴリ: `clarity`）に分類する
 - 実装サンプル準拠チェック：コード例がtypescript-rulesスキル基準に準拠していることを検証
 - 共通ADR準拠チェック：共通技術領域が適切なADR参照でカバーされていることを検証
 - 実現可能性チェック：技術的・リソース的観点
@@ -100,6 +107,12 @@ WorkPlanの場合、追加で以下を確認:
 - 失敗シナリオ検証：正常系・高負荷・外部障害の失敗シナリオを特定し、どの設計要素がボトルネックになるか指摘
 - コード調査エビデンス検証：調査ファイルが設計スコープに関連するか確認、主要な関連ファイルの漏れを指摘
 - 依存先の実在性検証：Design Docの「既存コードベース分析」セクションが「既存」と記述する依存先について、Grep/Globでコードベース内の定義を確認。コードベースに見つからず公式の外部出典の記載もない → `critical`（カテゴリ: `feasibility`）。存在するが定義のシグネチャ（メソッド名、パラメータ型、戻り値型）がDesign Docの記述と乖離 → `important`（カテゴリ: `consistency`）
+- **Adopted design validity チェック**（DesignDoc作成レビュー）:
+  - 各実効要件について、採用フローがその要件の求める観測可能な結果に到達するか、または具体的な設計・検証エビデンスによって満たされていることが裏づけられるかを検証する。いずれもない → `critical`（カテゴリ: `feasibility`）。
+  - 採用フロー内のコンポーネント横断ステップごとに、producer の出力と consumer の入力を突き合わせる。矛盾 → `critical`（カテゴリ: `consistency`）。
+  - 採用フロー内で必要な副作用ごとに、それを担うコンポーネントを特定する。担い手が無い → `critical`（カテゴリ: `feasibility`）。
+  - 再利用する各コンポーネントについて、Read/Grepで定義と呼び出し箇所を確認し、必要な入力・対象/受け手・副作用を検証する。不一致 → `important`（カテゴリ: `consistency`）。
+  - 直接確認しても必要な振る舞いが検証不能なまま → `important`（カテゴリ: `feasibility`）。欠落しているエビデンスを具体的に明記する。
 - **振る舞いに関する主張のエビデンスチェック**: Design Doc が依存するが自身では定義しておらず、誤っていれば設計方針が破綻する振る舞い・事実の主張をスキャンする — フレームワーク/ライブラリのデフォルト挙動、既に提供されていると想定する能力、既に実装済みと想定する機能。「already」「by default」「defaults to」「handled by」「既に」「デフォルトで」「デフォルトは」「処理済み」「〜で処理する」「自動的に」といった断定的な言い回しがスキャンの起点になりやすい（網羅ではない）。Fact Disposition Table（Codebase Analysis が明らかにした事実）や Cross-Layer Assumptions（前レイヤーの主張）に既に記録されている主張は正しく振り分けられているものとして扱い、本チェックの対象から除外する。残りの各主張について、「合意事項チェックリスト」の Assumed Behaviors スロットが、根拠（コードベースの file:line、コマンド結果、または解決したパッケージバージョンとセットの公式ドキュメント）付きで 確認: 済 として記録しているか、または 確認: 未 として対応する「リスクと対策」の行（再掲した主張で対応付け）を持ち、どう検証/ガードするかを記していることを確認する。残りの主張のうち次に該当するものを `important`（カテゴリ: `feasibility`）として指摘する: スロットに存在しない; 確認: 済 だが根拠が添付されていない; 確認: 済 だがフレームワーク/ライブラリのデフォルトで根拠に解決したパッケージバージョンがない; 確認: 未 だが対応する「リスクと対策」の行がない; または 確認: 未 だが対応する「リスクと対策」の行に下流の `検証先: [ステップまたは成果物]` 伝播（検証戦略または作業計画書のステップへの具体的参照）がない
 - **既存実装ドキュメント検証**: コード検証結果が提供され、ドキュメントが既存実装を記述している場合（将来の要件ではなく）、コードから観察可能な振る舞いが事実として記述されていることを検証する。確定的な振る舞いに対する推測的な表現 → `important`
 - **データ設計完全性チェック**: ドキュメントにデータ格納キーワード（database, persistence, storage, migration）またはデータアクセスキーワード（repository, query, ORM, SQL）またはデータスキーマキーワード（table, schema, column）が含まれるにもかかわらず、データ設計コンテンツが不足している場合（スキーマ参照なし、データ層戦略を含む「テスト境界」セクションなし、データモデル文書なし） → `important`（カテゴリ: `completeness`）。注: 「model」「field」「record」「entity」等の汎用語のみでは本チェックを発火しない — データ格納またはデータアクセスキーワードとの共起が必要
@@ -155,7 +168,7 @@ WorkPlanの場合、追加で以下を確認:
 - [ ] ステップ0完了（prior_context_count記録済み）
 - [ ] prior_context_count > 0の場合: 各項目に解決ステータスがあり、`prior_context_check`オブジェクトが準備済み
 - [ ] doc_typeに対するGate 0の構造的存在チェックが完了
-- [ ] Gate 1の品質チェックが完了 — 適用された各条件付きチェックを含む: `codebase_analysis`が提供された場合のFact Disposition完全性、設計が適用対象要素を導入する場合のMinimal Surface Alternatives、検証戦略セクションが存在する場合の検証戦略の品質、`code_verification`が提供された場合のコード検証連携
+- [ ] Gate 1の品質チェックが完了 — 適用された各条件付きチェックを含む: `codebase_analysis`が提供された場合のFact Disposition完全性、設計が適用対象要素を導入する場合のMinimal Surface Alternatives、検証戦略セクションが存在する場合の検証戦略の品質、`requirements_verbatim`と`confirmed_decisions`が提供された場合のAdopted design validity、`code_verification`が提供された場合のコード検証連携
 - [ ] 各issueが`id`、`severity`、`category`、および具体的で実行可能な`suggestion`を持つ
 - [ ] 出力が出力プロトコルのスキーマに一致する有効なJSON
 

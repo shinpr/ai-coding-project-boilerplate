@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.25.3] - 2026-07-16
 
+### Added
+
+- **Adopted design validity review** (agents, commands) — `document-reviewer` now checks that a Design Doc's adopted design actually satisfies the confirmed requirements and decisions. It gains `requirements_verbatim` / `confirmed_decisions` inputs, an effective-requirements derivation step (apply the confirmed decisions to the verbatim requirements), a `confirmed_decisions` clause in the LLM-facing clarity check, an Adopted design validity check block (each effective requirement is reachable by an adopted flow or backed by design/verification evidence; producer/consumer, side-effect ownership, and reused-component contracts are verified), and a matching Self-Validation entry. `design` / `front-design` wire the confirmed scope and user answers into the Design Doc review and pass them to the technical designer. Applied across en/ja.
+
 ### Changed
 
 - **Leaner skill generation and review** (skills, agents) — refined `skill-optimization` and its `skill-creator` / `skill-reviewer` agents so generated and reviewed skills come out less over-constrained and easier to follow: vague wording is clarified with the least-restrictive option that still adds the needed precision, examples default to the minimal necessary set instead of forced variety, context guidance also removes duplicated or distracting material, decomposed steps must state an observable completion output and the condition to proceed, and uncertainty is handled by stopping for the specific evidence or decision required. Applied across en/ja.
