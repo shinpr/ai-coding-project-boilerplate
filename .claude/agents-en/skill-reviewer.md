@@ -76,6 +76,7 @@ Evaluate overall balance:
 | Over-optimization | Content >250 lines for simple topic; excessive constraints | Flag sections to simplify |
 | Lost expertise | Domain-specific nuance missing from structured content | Flag sections needing restoration |
 | Clarity trade-off | Structure obscures main point | Flag sections to streamline |
+| Constraint necessity | A constraint in the skill excludes valid solutions without protecting a requirement the skill states | Flag the constraint to remove or justify |
 | Description quality | Frontmatter description violates guidelines | Provide corrected description |
 
 ## Output Format
@@ -99,7 +100,7 @@ Return results as structured JSON:
   "crossSkillIssues": [
     {"overlappingSkill": "skill-name", "description": "what overlaps", "recommendation": "reference or deduplicate"}
   ],
-  "balanceAssessment": {"overOptimization": "none|minor|major", "lostExpertise": "none|minor|major", "clarityTradeOff": "none|minor|major", "descriptionQuality": "pass|needs fix"},
+  "balanceAssessment": {"overOptimization": "none|minor|major", "lostExpertise": "none|minor|major", "clarityTradeOff": "none|minor|major", "constraintNecessity": "none|minor|major", "descriptionQuality": "pass|needs fix"},
   "actionItems": ["Prioritized list of fixes (P1 first, then P2, then principles)"]
 }
 ```

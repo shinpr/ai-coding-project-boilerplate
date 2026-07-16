@@ -39,12 +39,22 @@ Quality policies, role boundaries, scoring criteria, and general work rules alwa
 
 | Detection | Transform |
 |-----------|-----------|
-| "appropriate", "good", "proper", "best", "should be clear" | Replace with measurable if-then criteria or concrete thresholds. **Skill exception**: Expressions that the LLM can resolve unambiguously from input context (e.g., "where the user left gaps" when the user's prompt is available for comparison) are not vague — they describe a deterministic operation, not a subjective judgment. |
-| Missing output format, scope, or success criteria | Add explicit constraints |
+| Vague term ("appropriate", "good", "proper", "best", "should be clear") that leaves a decision the intended outcome requires, where plausible interpretations would materially change execution or verification | Resolve it with the **least-restrictive sufficient criterion**, following the resolution steps below |
+| Unspecified format, length, scope, tone, or success criteria whose plausible interpretations satisfy the intended outcome equally well | Treat as acceptable flexibility; add a constraint only when one interpretation is required (for a format a downstream consumer requires, see BP-003) |
+
+**Resolution steps** (first-row findings):
+1. Choose the least-restrictive sufficient criterion — the measurable if-then rule or threshold that supplies the required precision while excluding the fewest valid behaviors.
+2. Record its **precision contribution**: the observable output difference it improves for the intended outcome.
+3. Record its **constraint cost**: the valid solutions allowed by the original intent that it excludes.
+4. Apply it only when the precision contribution is identifiable and the constraint cost preserves the original intent.
+5. When input or project context cannot determine the decision, record the required source instead of guessing.
+
+**Skill exception**: Expressions that the LLM can resolve unambiguously from input context (e.g., "where the user left gaps" when the user's prompt is available for comparison) are not vague — they describe a deterministic operation, not a subjective judgment.
 
 **Skill example:**
 - Before: "Handle errors appropriately"
-- After: "Error handling criteria: 1. try-catch for external API calls, file I/O, JSON.parse 2. Log: error.name, error.stack, timestamp 3. Re-throw with context if caller needs to handle"
+- After (criteria derived from a named source): "Follow the project error-handling policy (docs/error-handling.md): wrap external API calls, file I/O, and JSON.parse in try-catch; log error.name, error.stack, and timestamp; re-throw with context when the caller must handle it."
+- After (no source available): "Record 'error-handling policy' as the required source instead of inventing try-catch targets, log fields, or thresholds."
 
 **Why critical for skills**: Accounts for ~40% of execution variance. Every vague instruction forces LLM to guess.
 
@@ -52,11 +62,11 @@ Quality policies, role boundaries, scoring criteria, and general work rules alwa
 
 | Detection | Transform |
 |-----------|-----------|
-| Skill describes what to do but not the expected deliverable format | Add output section with structure, fields, and example |
+| Skill describes what to do but not the expected deliverable format | Add an output section defining the structure, fields, and ordering required by the output consumer (parsing, routing, comparison, verification), rather than selecting a format by convention |
 
 **Skill example:**
 - Before: "Analyze the code for issues"
-- After: "Output format: `## Issues Found` with table: | Severity | Location | Description | Suggested Fix |"
+- After (format required by the review-report consumer): "Emit `## Issues Found` as a table the report renderer parses: | Severity | Location | Description | Suggested Fix |"
 
 **Why critical for skills**: Structured output constraints reduce hallucination and make skill results consistent.
 
@@ -82,13 +92,14 @@ Issues that reduce skill effectiveness when addressed.
 
 **Conditional**: Skip restructuring if skill is under 30 lines and covers a single topic.
 
-#### BP-005: Missing Context → Explicit Prerequisites
+#### BP-005: Missing or Excess Context → Necessary and Sufficient Context
 
 | Detection | Transform |
 |-----------|-----------|
 | Skill assumes knowledge not stated | Add Prerequisites section listing required context |
 | Domain terms used without definition | Add definitions inline or in a glossary table. **Skill exception**: Terms within the LLM's baseline knowledge (widely-used technical terminology, standard domain vocabulary) require no definition. Only project-specific terms, internal naming conventions, or domain jargon outside common LLM training data need explicit definition. |
 | No "when to use" guidance | Add trigger conditions with concrete scenarios |
+| Duplicated, distracting, or unactionable context with no downstream effect | Condense repeated facts into one operative statement; keep raw background behind a path or reference when only an extracted fact is needed; name the source for project-specific facts |
 
 **Skill example:**
 - Before: "Apply the strangler pattern for migration"
@@ -98,32 +109,32 @@ Issues that reduce skill effectiveness when addressed.
 
 | Detection | Transform |
 |-----------|-----------|
-| 3+ objectives in one instruction | Break into numbered steps with checkpoints |
-| Sequential dependencies not explicit | Add dependency markers between steps |
-| No intermediate verification | Insert checkpoint after each step |
+| 3+ objectives in one instruction | Break into numbered steps; each step names its output evidence and the transition condition that permits the next step |
+| Sequential dependencies not explicit | Make each step's transition condition depend on the prior step's output evidence |
+| Multiple dependent actions presented as one step | Split so each produces observable completion evidence before the next begins |
 
 **Conditional**: Skip decomposition for simple reference tables or single-criteria rules.
 
-**Key insight**: Goal is evaluable granularity with quality checkpoints, not decomposition for its own sake.
+**Key insight**: Goal is externally visible state progression — each step produces evidence that controls whether the next step is valid, not decomposition for its own sake.
 
 ### P3: Enhancement (Could Fix)
 
 Incremental improvements for specific contexts.
 
-#### BP-007: Biased Examples → Diverse Coverage
+#### BP-007: Unnecessary or Biased Examples → Minimal Necessary Examples
 
 | Detection | Transform |
 |-----------|-----------|
-| All examples share same pattern/structure | Add edge cases and exceptions |
-| Only happy-path examples | Add error cases, boundary conditions |
-| Examples all same complexity | Include simple, moderate, and complex |
+| Examples restate behavior already known to the LLM | Replace with a concise rule or consumer-required output shape, and remove the examples |
+| Examples encode a domain-, product-, or organization-specific mapping, non-obvious exception, or boundary a rule cannot express | Keep the smallest set that covers those mappings; map each example to the ambiguity it removes |
+| Multiple examples remove the same ambiguity, or all share the same surface pattern | Reduce to the smallest covering set; add a different case only when it removes a distinct ambiguity |
 
 #### BP-008: No Uncertainty Permission → Explicit Escalation
 
 | Detection | Transform |
 |-----------|-----------|
-| Skill demands definitive answers always | Add escalation criteria for ambiguous cases |
-| No "when to stop" guidance | Add explicit stopping conditions |
+| Skill demands definitive answers always | Classify claims as observed, inferred, or unknown; add escalation criteria for ambiguous cases |
+| No "when to stop" guidance | When an unknown blocks the next step, stop at that gate and name the exact evidence or user decision required to continue |
 
 **Skill example:**
 - Before: "Determine the root cause"
@@ -138,10 +149,10 @@ Measurable quality criteria for skill content. Each principle includes a pass/fa
 | 1 | Context efficiency | Every sentence contributes to LLM decision-making. No filler. | "This is an important skill that helps with..." |
 | 2 | Deduplication | No concept explained twice at the same abstraction level within the skill or across skills. Mentions at different structural roles (e.g., classification framework vs execution detail) are not duplicates, provided the re-mention adds new constraints or criteria | Same error handling rules restated at the same abstraction level in multiple related skills |
 | 3 | Grouping | Related criteria in single section (minimize read operations) | Scattered error handling rules across 4 sections |
-| 4 | Measurability | All criteria use if-then format or concrete thresholds | "Write clean code" without definition of clean |
+| 4 | Measurability | Criteria name observable evidence, deterministic decision rules, or justified thresholds | "Write clean code" without an observable condition |
 | 5 | Positive form | Instructions state what to do (BP-001 applied) | "Don't use any" instead of "Use only X" |
 | 6 | Consistent notation | Uniform heading levels, list styles, table formats | Mix of `-`, `*`, `1.` in same context |
-| 7 | Explicit prerequisites | All assumed knowledge stated | Uses "DI" without defining Dependency Injection |
+| 7 | Explicit prerequisites | Project-specific and non-baseline prerequisites are stated or linked; baseline technical knowledge is left concise | Uses "DI" without defining Dependency Injection |
 | 8 | Priority ordering | Most important items first, exceptions last | Edge cases before common patterns |
 | 9 | Scope boundaries | Explicit coverage: what this skill addresses vs references to other skills | Overlapping guidance with no cross-reference |
 

@@ -38,6 +38,7 @@ Verify the 3-tier disclosure architecture:
    - Over-optimization: Excessive constraints for simple topic
    - Lost expertise: Domain knowledge compressed away in structured content
    - Clarity trade-off: Structure obscures main point
+   - Constraint necessity: Each constraint in the skill traces to a stated requirement or finding; flag any constraint that excludes valid solutions without protecting a named requirement
    - Description quality: Frontmatter description follows guidelines
 5. Assign grade
 
