@@ -16,6 +16,8 @@ Criteria for evaluating existing or generated skill content quality.
 
 **Output**: Issue list with severity, location, and original text per finding.
 
+**Analysis gate**: Proceed only when BP-001 through BP-008 are covered, every issue has a unique finding ID and quoted evidence, preservation requirements are explicit, and no unresolved input blocks faithful review.
+
 ### Step 2: Progressive Disclosure Evaluation
 
 Verify the 3-tier disclosure architecture:
@@ -25,6 +27,8 @@ Verify the 3-tier disclosure architecture:
 | Tier 1 | description | Passes the description quality checklist (see creation-guide.md) |
 | Tier 2 | SKILL.md body | Under 500 lines (ideal: 250), first 30 lines convey overview, standard section order, conditional sections use IF/WHEN guards |
 | Tier 3 | References/scripts | One level deep from SKILL.md only, SKILL.md over 400 lines must be split |
+
+For pure skills, verify standalone execution. Duplication across independently loaded pure skills is valid when each copy is required; record only semantic conflicts or in-skill duplication. Cross-skill references are valid for orchestration and skill-selection roles.
 
 ### Step 3: Evaluate and Grade
 
@@ -42,7 +46,17 @@ Verify the 3-tier disclosure architecture:
    - Description quality: Frontmatter description follows guidelines
 5. Assign grade
 
-**Output**: Quality report with grade, issues, and action items.
+**Output**: Quality report containing:
+- BP-001 through BP-008 coverage
+- Findings with ID, severity, location, and quoted evidence
+- One applied/skipped resolution per finding with reason
+- Preservation requirements and unresolved inputs
+- Progressive Disclosure and 9-principle results
+- Grade and ordered action items
+
+**Optimization gate**: Every finding has exactly one resolution, every proposed change traces to a finding or project source, and all preservation requirements remain represented.
+
+**Balance gate**: Intent preservation, decision sufficiency, information density, constraint necessity, and traceability all pass. When evidence is unknown and blocks a check, stop and name the required evidence or decision.
 
 ## Grading
 

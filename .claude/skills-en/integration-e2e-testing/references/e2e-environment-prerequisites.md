@@ -1,10 +1,10 @@
-# E2E Environment Prerequisites
+# Service-Integration E2E Environment Prerequisites
 
-E2E tests require a running application with real data state. Unlike unit/integration tests, environment setup is part of E2E test implementation scope.
+These prerequisites apply only to the `service-integration-e2e` lane. That lane requires a running local application stack and real or service-level stubbed data state. The `fixture-e2e` lane uses a real browser with a mocked backend or deterministic fixture loader and does not require a live service or real database.
 
 ## Seed Data Strategy
 
-Prepare test data via API calls or database seeding — never through UI interaction:
+Prepare test data through an API fixture or database seeding so the test journey begins at the behavior under verification:
 
 ```typescript
 // fixtures/seed.fixture.ts
@@ -55,12 +55,12 @@ export const test = base.extend<{ playerPage: Page }>({
 
 **Principles**:
 - Use the application's existing authentication flow; auth fixtures must follow the same path that real users use
-- Store test credentials in environment variables, never hardcoded
+- Load test credentials from the configured test environment or secret fixture
 - If the auth flow requires specific user records, seed them in the fixture
 
 ## Environment Checklist
 
-Before E2E tests can pass, verify:
+Before service-integration-e2e tests can pass, verify:
 - [ ] Application is running and accessible at `baseURL`
 - [ ] Database has required seed data (test users, subscriptions, content)
 - [ ] Authentication flow works with test credentials

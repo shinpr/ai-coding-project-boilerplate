@@ -5,35 +5,41 @@ description: Defines environment variables, architecture design, and build/test 
 
 # Technical Design Rules
 
+## Prerequisite Detection
+
+Inspect manifests, lockfiles, build/test configuration, CI definitions, and representative source files before applying a technology- or command-specific rule. Treat a tool, script, path alias, or runtime as observed only when repository evidence names it. Label conclusions from surrounding patterns as inferred. When a missing decision changes architecture, compatibility, security, or verification, stop and name the exact configuration or user decision required.
+
 ## Basic Technology Stack Policy
-TypeScript-based application implementation. Architecture patterns should be selected according to project requirements and scale.
+These rules apply to a TypeScript application when repository configuration confirms that stack. Select architecture by mapping current requirements and accepted constraints to explicit module responsibilities, dependency direction, data flow, and verification boundaries.
 
 ## Environment Variable Management and Security
 
 ### Environment Variable Management
 - Centrally manage environment variables and build mechanisms to ensure type safety
-- Avoid direct references to `process.env`, obtain through configuration management layer
-- Properly implement default value settings and mandatory checks
+- Read environment variables through one typed configuration boundary; application code consumes validated configuration values
+- Give a variable a default only when requirements define valid behavior for absence; otherwise fail configuration validation with the variable name and expected format
 
 ### Security
-- Do not include `.env` files in Git
-- Always manage API keys and secrets as environment variables
-- Prohibit logging of sensitive information
-- Do not include sensitive information in error messages
+- Keep local `.env` files outside version control and provide non-secret example files for required variable names
+- Load API keys and secrets from the configured secret store or runtime environment boundary
+- Log and return only fields approved for the current trust boundary; redact credentials, tokens, personal data, and internal diagnostics from untrusted responses
 
 ## Architecture Design
 
 ### Architecture Design Principles
-Select appropriate architecture for each project and define clearly:
+Select architecture using these observable decisions:
 
-- **Separation of Responsibilities**: Clearly define responsibilities for each layer and module, and maintain boundaries
+- **Responsibilities**: Each module/layer names the behavior it owns and the behavior it delegates
+- **Dependency direction**: Imports and runtime calls follow the project boundary rules observed in configuration or representative implementations
+- **State/data ownership**: Each persisted or mutable value has one authoritative owner
+- **Verification boundary**: Each public contract has a unit, integration, or E2E check that can observe it
 
 ## Unified Data Flow Principles
 
 #### Basic Principles
 1. **Single Data Source**: Store the same information in only one place
 2. **Structured Data Priority**: Use parsed objects rather than JSON strings
-3. **Clear Responsibility Separation**: Clearly define responsibilities for each layer
+3. **Responsibility Separation**: Each layer names the data or behavior it owns and the boundary through which other layers use it
 
 #### Data Flow Best Practices
 - **Validation at Input**: Validate data at input layer and pass internally in type-safe form
@@ -41,7 +47,7 @@ Select appropriate architecture for each project and define clearly:
 - **Structured Logging**: Output structured logs at each stage of data flow
 
 ## Build and Testing
-Use the appropriate run command based on the `packageManager` field in package.json.
+Select the package manager from the `packageManager` field, lockfile, or established CI command in that order. Execute only scripts present in the selected manifest.
 
 ### Build Commands
 - `build` - TypeScript build
@@ -75,11 +81,17 @@ Quality checks are mandatory upon implementation completion:
   - Detect circular dependencies
   - TypeScript build
 
+**Transition evidence**: every applicable static/domain check exits successfully. A missing required script is reported with the manifest/configuration path and blocks the next phase until an equivalent established command is identified.
+
 **Phase 4: Tests**
 - `test` - Test execution
 
+**Transition evidence**: all applicable configured test suites pass, or an environment-dependent suite is recorded as blocked with its exact prerequisite.
+
 **Phase 5: Code Quality Re-verification**
 - `check:code` - Re-verify code quality (clean up side effects from test fixes in Phase 4)
+
+**Completion evidence**: static/domain checks still pass after test-related fixes, the build succeeds, and every required test has passed or is explicitly blocked.
 
 ### Auxiliary Commands
 - `check:all` - Overall integrated check (check:code + test) *for manual batch verification
@@ -90,7 +102,7 @@ Quality checks are mandatory upon implementation completion:
 ### Troubleshooting
 - **Port in use error**: Run the `cleanup:processes` script
 - **Cache issues**: Run the `test:coverage:fresh` script
-- **Dependency errors**: Clean reinstall dependencies
+- **Dependency errors**: First record the failing resolver output, selected package manager, manifest, and lockfile state. Use the repository's established clean-install command only when it preserves the lockfile and generated artifacts; request approval before an operation that removes or regenerates dependency state
 
 ### Coverage
 - Treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law). Concentrate tests on critical paths and business logic whose regression would matter

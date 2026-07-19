@@ -24,13 +24,17 @@ Historical Context Understanding: Current form rationale, past decision validity
 - What dependencies or implicit preconditions are unclear from the code?
 - What benefits and constraints does the current design bring?
 
+**Completion evidence**: inspected paths, observed architecture/data-flow facts, known constraints, inferred historical rationale labeled as inferred, and unknowns that could change strategy selection.
+
+**Transition**: proceed when every strategy-relevant claim is observed, explicitly inferred with evidence, or recorded as unknown.
+
 ### Phase 2: Strategy Exploration and Creation
 
 **Core Question**: "When determining before -> after, what implementation patterns or strategies should be referenced?"
 
 #### Strategy Discovery Process
 ```yaml
-Research and Exploration: Tech stack examples (WebSearch), similar projects, OSS references, literature/blogs
+Research and Exploration: repository patterns first; then official documentation for the resolved dependency version; then maintained OSS implementations; use literature/blogs only for supplementary alternatives and label them as non-authoritative
 Creative Thinking: Strategy combinations, constraint-based design, phase division, extension point design
 ```
 
@@ -51,11 +55,13 @@ Creative Thinking: Strategy combinations, constraint-based design, phase divisio
 - Decorator Pattern: Phased enhancement of existing features
 - Bridge Pattern: Flexibility through abstraction
 
-**Important**: The optimal solution is discovered through creative thinking according to each project's context.
+**Completion evidence**: at least two feasible candidate approaches when the decision is non-trivial, with each candidate mapped to the observed constraints it satisfies and the constraints it leaves unresolved.
+
+**Transition**: proceed when candidates are comparable against the same constraint set.
 
 ### Phase 3: Risk Assessment and Control
 
-**Core Question**: "What risks arise when applying this to existing implementation, and what's the best way to control them?"
+**Core Question**: "What risks arise when applying this to the existing implementation, and which control measurably reduces likelihood or impact while preserving verification and rollback?"
 
 #### Risk Analysis Matrix
 ```yaml
@@ -70,6 +76,10 @@ Preventive Measures: Phased migration, parallel operation verification, integrat
 Incident Response: Rollback procedures, log/metrics preparation, communication system, service continuation procedures
 ```
 
+**Completion evidence**: each material risk has likelihood/impact evidence, one preventive or containment control, and a verification point.
+
+**Transition**: proceed when no high-impact risk lacks a control or blocking escalation.
+
 ### Phase 4: Constraint Compatibility Verification
 
 **Core Question**: "What are this project's constraints?"
@@ -82,9 +92,13 @@ Resource Constraints: Team/skills, work hours/systems, budget, external contract
 Business Constraints: Market launch timing, customer impact, regulatory compliance
 ```
 
+**Completion evidence**: each constraint is observed, inferred, or unknown; every unknown that can invalidate a candidate names the required evidence or user decision.
+
+**Transition**: proceed when remaining unknowns cannot change the valid candidate set, or the user resolves them.
+
 ### Phase 5: Implementation Approach Decision
 
-Select optimal solution from basic implementation approaches (creative combinations encouraged):
+Select the approach that satisfies all hard constraints and current requirements with the lowest transition risk and smallest verification delay. Use lifecycle cost and implementation effort only as tiebreakers after requirement coverage, compatibility, and risk control are equal.
 
 #### Vertical Slice (Feature-driven)
 **Characteristics**: Vertical implementation across all layers by feature unit
@@ -99,11 +113,31 @@ Select optimal solution from basic implementation approaches (creative combinati
 #### Hybrid (Creative Combination)
 **Characteristics**: Flexible combination according to project characteristics
 **Application Conditions**: Unclear requirements, need to change approach per phase, transition from prototyping to full implementation
-**Verification Method**: Verify at appropriate L1/L2/L3 levels according to each phase's goals
+**Verification Method**: Assign L1 when the phase produces end-user-operable behavior, L2 when it produces a testable internal behavior or contract, and L3 only when the phase produces build-time structure with no runnable behavior yet
+
+For Hybrid, assign one explicit L1/L2/L3 verification level and observable completion result to every phase.
+
+**Completion evidence**: one selected approach, its phase boundaries, integration points, and a verification result for every phase.
+
+**Transition**: proceed to documentation when the selected approach covers every hard constraint and its risks have controls; otherwise return to candidate exploration.
 
 ### Phase 6: Decision Rationale Documentation
 
-**Design Doc Documentation**: Clearly specify implementation strategy selection reasons and rationale.
+Return the following structure in the Design Doc or planning handoff:
+
+```yaml
+implementationApproachDecision:
+  observedConstraints: [<constraint + evidence>]
+  inferredConstraints: [<constraint + evidence and inference>]
+  unknowns: [<unknown + required evidence or decision>]
+  candidates: [<approach + requirements covered + risks + verification delay>]
+  selectedApproach: <vertical | horizontal | hybrid description>
+  selectionRationale: <hard-constraint coverage, compatibility, risk control, then tiebreakers>
+  rejectedApproaches: [<approach + unmet requirement or higher material risk>]
+  phaseVerification: [<phase + L1/L2/L3 + observable completion evidence>]
+```
+
+**Completion evidence**: every selected/rejected decision traces to an observed constraint, accepted inference, or resolved user decision.
 
 ## Verification Level Definitions
 
@@ -123,19 +157,21 @@ Define integration points according to selected strategy:
 - **Foundation-driven**: When all architecture layers are ready and E2E tests pass
 - **Hybrid**: When individual goals defined for each phase are achieved
 
-## Anti-patterns
+## Decision Gate Checklist
 
-- **Pattern Fixation**: Selecting only from listed strategies without considering unique combinations
-- **Insufficient Analysis**: Skipping Phase 1 analysis framework before strategy selection
-- **Risk Neglect**: Starting implementation without Phase 3 risk analysis matrix
-- **Constraint Ignorance**: Deciding strategy without checking Phase 4 constraint checklist
-- **Rationale Omission**: Selecting strategy without using Phase 6 documentation template
+- [ ] Phase 1 evidence exists before strategy selection
+- [ ] Candidate generation includes combinations when no listed strategy satisfies all hard constraints
+- [ ] Every material risk has a control and verification point
+- [ ] Every hard constraint maps to the selected approach
+- [ ] Phase 6 output records the selection and rejection rationale
+
+When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence or user decision needed to continue.
 
 ## Guidelines for Meta-cognitive Execution
 
 1. **Leverage Known Patterns**: Use as starting point, explore creative combinations
-2. **Active WebSearch Use**: Research implementation examples from similar tech stacks
+2. **Evidence-Ordered Research**: Use repository evidence, version-matched official documentation, maintained OSS examples, then supplementary secondary sources
 3. **Apply 5 Whys**: Pursue root causes to grasp essence
-4. **Multi-perspective Evaluation**: Comprehensively evaluate from each Phase 1-4 perspective
-5. **Creative Thinking**: Consider sequential application of multiple strategies and designs leveraging project-specific constraints
-6. **Clarify Decision Rationale**: Make strategy selection rationale explicit in design documents
+4. **Multi-perspective Evaluation**: Complete the evidence and transition checks for Phases 1-4
+5. **Strategy Composition**: Combine strategies when one strategy cannot satisfy all hard constraints
+6. **Decision Traceability**: Map every selection reason to evidence in the Phase 6 output

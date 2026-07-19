@@ -10,7 +10,7 @@
 
 ## Decision
 
-[Describe the actual decision made. Aim for specific and clear descriptions]
+[State the selected option, affected boundary, and behavior or constraint it establishes]
 
 ### Decision Details
 
@@ -24,7 +24,7 @@
 
 ## Rationale
 
-[Explain why this decision was made and why it is the best option compared to alternatives]
+[Map the selected option to the decision drivers it satisfies and name the material trade-off that ruled out each alternative]
 
 ### Options Considered
 
@@ -52,7 +52,7 @@
 
 ### Neutral Consequences
 
-- [List changes that are neither good nor bad]
+- [List neutral consequences or operational differences]
 
 ## Architecture Impact
 

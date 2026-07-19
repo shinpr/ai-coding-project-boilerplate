@@ -37,7 +37,7 @@ skills:
     skill: "typescript-rules"
     tags: [implementation, type-safety, async, refactoring, coding-style, functional-programming, dependency-injection, branded-types, backend]
     typical-use: "Backend TypeScript code creation, modification, refactoring, modern type features utilization"
-    size: small
+    size: medium
     key-references:
       - "YAGNI Principle - Kent Beck"
       - "Clean Code - Robert C. Martin"
@@ -49,6 +49,7 @@ skills:
       - "Dependency Injection - Martin Fowler"
       - "Avoiding fallback in distributed systems - AWS Builders' Library"
     sections:
+      - "Prerequisite Detection"
       - "Type Safety in Backend Implementation"
       - "Coding Conventions"
       - "Error Handling"
@@ -58,13 +59,14 @@ skills:
     skill: "typescript-testing"
     tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring, backend]
     typical-use: "Backend test creation, quality checks, test quality criteria, development steps for code/bug fixes, refactoring, and new feature implementation"
-    size: small
+    size: medium
     key-references:
       - "Test-Driven Development - Kent Beck"
       - "Rule of Three - Martin Fowler"
       - "Red-Green-Refactor - Kent Beck"
       - "AAA Pattern - Arrange-Act-Assert"
     sections:
+      - "Prerequisite Detection"
       - "Test Framework"
       - "Basic Testing Policy"
       - "Test Implementation Conventions"
@@ -82,6 +84,7 @@ skills:
       - "ADR Format - Michael Nygard"
       - "Single Data Source Principle - Single Source of Truth"
     sections:
+      - "Prerequisite Detection"
       - "Basic Technology Stack Policy"
       - "Environment Variable Management and Security"
       - "Architecture Design"
@@ -131,14 +134,14 @@ skills:
       - "Meta-cognitive Strategy Selection Process"
       - "Verification Level Definitions"
       - "Integration Point Definitions"
-      - "Anti-patterns"
+      - "Decision Gate Checklist"
       - "Guidelines for Meta-cognitive Execution"
 
   integration-e2e-testing:
     skill: "integration-e2e-testing"
     tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality, playwright]
     typical-use: "Integration and E2E test skeleton generation, test implementation, test review, Property-Based Test implementation, E2E test design"
-    size: small
+    size: medium
     key-references:
       - "fast-check - Property-based testing for TypeScript"
       - "Node.js Testing Best Practices - Yoni Goldberg"
@@ -158,7 +161,7 @@ skills:
     skill: "subagents-orchestration-guide"
     tags: [orchestration, subagents, workflow, scale-determination, document-requirements, autonomous-execution]
     typical-use: "Coordinating subagents through implementation workflows, scale determination, document requirements"
-    size: medium
+    size: large
     key-references:
       - "Workflow Orchestration Patterns"
       - "Agent Coordination Patterns"
@@ -193,7 +196,7 @@ skills:
     skill: "llm-friendly-context"
     tags: [universal, cross-cutting, prompt, handoff, artifact, clarity, ambiguity-removal, downstream-execution, documentation]
     typical-use: "Writing or revising LLM-facing prompts, handoffs, planning artifacts, reviews, reports, or generated instructions so downstream agents can execute without guessing"
-    size: small
+    size: medium
     key-references:
       - "Positive, executable instructions over prohibitions"
       - "Observable success criteria for agent handoffs"
@@ -215,6 +218,7 @@ skills:
       - "Type guards at external boundaries (unknown narrowing)"
       - "Result type and Error Boundary error handling"
     sections:
+      - "Prerequisite Detection"
       - "Anti-patterns and Thresholds"
       - "Type Safety at Boundaries"
       - "Component and State Design"
@@ -225,7 +229,7 @@ skills:
     skill: "frontend-typescript-testing"
     tags: [frontend, react, quality, testing, tdd, coverage, vitest, react-testing-library, msw, implementation, playwright, e2e]
     typical-use: "React component testing, React Testing Library tests, MSW API mocking, frontend test creation, Playwright E2E testing"
-    size: small
+    size: medium
     key-references:
       - "React Testing Library - Kent C. Dodds"
       - "MSW (Mock Service Worker) - MSW Team"
@@ -234,6 +238,7 @@ skills:
       - "User-Observable Behavior Testing - Testing Library"
       - "references/e2e.md - Playwright E2E patterns"
     sections:
+      - "Prerequisite Detection"
       - "References"
       - "Test Framework"
       - "Basic Testing Policy"
@@ -252,6 +257,7 @@ skills:
       - "Build Tool Best Practices"
       - "Single Source of Truth"
     sections:
+      - "Prerequisite Detection"
       - "Basic Technology Stack Policy"
       - "Environment Variable Management and Security"
       - "Architecture Design"

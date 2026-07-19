@@ -7,14 +7,15 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 
 ## Creation Decision Matrix
 
-| Condition | Required Documents | Creation Order |
-|-----------|-------------------|----------------|
-| New Feature Addition (backend) | PRD -> [ADR] -> Design Doc -> Work Plan | After PRD approval |
-| New Feature Addition (frontend/fullstack) | PRD -> **UI Spec** -> [ADR] -> Design Doc -> Work Plan | UI Spec before Design Doc |
-| ADR Conditions Met (see below) | ADR -> Design Doc -> Work Plan | Start immediately |
-| 6+ Files | [ADR if conditions apply] -> Design Doc -> Work Plan (Design Doc + Work Plan required) | Start immediately |
-| 3-5 Files | Design Doc -> Work Plan (Required) | Start immediately |
-| 1-2 Files | None | Implementation cycle without work plan |
+Evaluate rows by confirmed scale, then add the conditional documents named in the same row. ADR Creation Conditions override scale: when any ADR condition applies, create or update the ADR even for a 1-2 file change.
+
+| Confirmed Scale | Required Documents | Conditional Additions | Creation Order |
+|-----------------|--------------------|-----------------------|----------------|
+| Large (6+ files or large-risk axis) | PRD, Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies | PRD -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
+| Medium (3-5 files or medium-risk axis) | Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies; update an existing PRD when the feature scope changes | PRD update (if applicable) -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
+| Small (1-2 files with no higher-risk axis) | One task file in task-template format | ADR when any ADR condition applies; update an existing PRD when the feature scope changes | PRD update (if applicable) -> ADR (if applicable) -> task file |
+
+For a Large change, satisfy the PRD requirement by creating a new PRD, updating the relevant PRD, or creating a reverse PRD when no current product document exists. File count is one scale signal; contract, data, boundary, and decision risk can raise the scale.
 
 ## ADR Creation Conditions (Required if Any Apply)
 
@@ -97,7 +98,7 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 
 **Prototype Code Handling**:
 - Prototype code provided by user is placed in `docs/ui-spec/assets/{feature-name}/`
-- Prototype is an attachment to UI Spec, never the source of truth
+- Prototype is an attachment to the UI Spec; the UI Spec and Design Doc remain the canonical specification
 - UI Spec + Design Doc are the canonical specifications
 
 ### Design Document
@@ -113,7 +114,7 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 - Interface and type definitions
 - Data flow and component design
 - **Acceptance criteria (EARS format — see design-template.md; each criterion specifies a verifiable condition with pass/fail threshold)**
-- Change impact map (clearly specify direct impact/indirect impact/no ripple effect)
+- Change impact map with explicit direct impact, indirect impact, and verified no-ripple-effect entries
 - Complete enumeration of integration points
 - Data contract clarification
 - **Agreement checklist** (agreements with stakeholders)
@@ -157,7 +158,7 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 **When Hybrid selected**:
 - Combine vertical and horizontal as defined in Design Doc implementation approach
 
-**All approaches**: Final phase is always Quality Assurance (acceptance criteria achievement, all tests passing, quality checks). Each phase's verification method follows Verification Strategy from Design Doc.
+**All approaches**: The final phase is Quality Assurance: verify acceptance criteria, configured tests, and applicable quality checks. Each phase's verification method follows the Verification Strategy from the Design Doc.
 
 **Three Elements of Task Completion Definition**:
 1. **Implementation Complete**: Code is functional
@@ -168,9 +169,17 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 
 1. **Problem Analysis**: Change scale assessment, ADR condition check
    - Identify explicit and implicit project standards before investigation
+   - **Output evidence**: confirmed scale with deciding axis, required-document list, and named source for each existing document
+   - **Transition**: proceed when every document has `create`, `update`, or `not required` with a rule-based reason
 2. **ADR Option Consideration** (ADR only): Compare 3+ options, specify trade-offs
+   - **Output evidence**: option comparison with selected option, rejected options, known unknowns, and kill criteria
+   - **Transition**: proceed when the decision is reviewable and blocking unknowns are named
 3. **Creation**: Use templates, include measurable conditions
+   - **Output evidence**: document at the required storage path with every required section populated or marked N/A with rationale
+   - **Transition**: proceed when template checks and traceability checks pass
 4. **Approval**: "Accepted" after review enables implementation
+   - **Output evidence**: reviewer result, resolved conditions, and recorded user approval
+   - **Transition**: implementation begins only after the required approval is recorded
 
 ## Storage Locations
 
@@ -190,8 +199,8 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 `Proposed` -> `Accepted` -> `Deprecated`/`Superseded`/`Rejected`
 
 ## AI Automation Rules
-- 6+ files: Evaluate ADR Creation Conditions; suggest ADR only when a condition applies
-- Type/data flow change detected: ADR mandatory
+- Evaluate ADR Creation Conditions at every scale; create or update an ADR when any condition applies
+- A type or data-flow change requires an ADR when it matches a condition in the corresponding section above
 - Check existing ADRs before implementation
 
 ## Diagram Requirements
@@ -201,7 +210,7 @@ Required diagrams for each document (using mermaid notation):
 | Document | Required Diagrams | Purpose |
 |----------|------------------|---------|
 | PRD | User journey diagram, Scope boundary diagram | Clarify user experience and scope |
-| ADR | Option comparison diagram (when needed) | Visualize trade-offs |
+| ADR | Option comparison diagram when 2+ material options have relationships or trade-offs that are easier to compare visually | Visualize trade-offs |
 | UI Spec | Screen transition diagram, Component tree diagram | Clarify screen flow and component structure |
 | Design Doc | Architecture diagram, Data flow diagram | Understand technical structure |
 | Work Plan | Phase structure diagram, Task dependency diagram | Clarify implementation order |

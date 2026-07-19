@@ -1,9 +1,13 @@
 ---
 name: frontend-typescript-testing
-description: Designs tests with React Testing Library, MSW, and Playwright E2E. Applies component testing and E2E testing patterns.
+description: Designs frontend tests using the repository's configured React test and browser harnesses, including RTL, MSW, Vitest, and Playwright when present. Use when adding or reviewing component, loading/error-state, integration, or frontend E2E tests.
 ---
 
 # TypeScript Testing Rules (Frontend)
+
+## Prerequisite Detection
+
+Inspect `package.json`, the lockfile, test configuration, and existing test imports before selecting a framework or command. Apply Vitest, React Testing Library, MSW, or Playwright rules only when the dependency/configuration is present. Use the repository's configured equivalent when different. If no runnable harness can be identified, report the inspected paths and the missing framework or command instead of inventing one.
 
 ## References
 
@@ -13,7 +17,7 @@ description: Designs tests with React Testing Library, MSW, and Playwright E2E. 
 | **E2E** | [references/e2e.md](references/e2e.md) | Implementing browser-level E2E tests with Playwright |
 
 ## Test Framework
-- **Vitest**: This project uses Vitest
+- **Vitest**: Use when the repository config or existing tests select Vitest
 - **React Testing Library**: For component testing
 - **MSW (Mock Service Worker)**: For API mocking
 - Test imports: `import { describe, it, expect, beforeEach, vi } from 'vitest'`
@@ -24,13 +28,13 @@ description: Designs tests with React Testing Library, MSW, and Playwright E2E. 
 ## Basic Testing Policy
 
 ### Quality Requirements
-- **Coverage**: prioritize meaningful assertions on critical paths and high-reuse components; treat coverage as a signal for gaps, not a target (a target gets gamed into trivial tests — Goodhart's Law). Any numeric threshold is the project's CI config
+- **Coverage**: assert the named acceptance result, public branch, or failure state on critical paths and high-reuse components; treat coverage as a signal for gaps, not a target. Any numeric threshold comes from the project's CI configuration
 - **Independence**: Each test can run independently without depending on other tests
-- **Reproducibility**: Tests are environment-independent and always return the same results
-- **Readability**: Test code maintains the same quality as production code
+- **Reproducibility**: Control time, randomness, environment values, network responses, and browser state so identical inputs produce the same observable result
+- **Readability**: Each test names one user-visible behavior, separates setup/action/assertion, and keeps fixtures limited to values used by that behavior
 
 ### Where to concentrate test rigor
-Test foundational, high-reuse units the hardest — shared components, custom hooks, and utils reused across many features carry the widest blast radius. Higher-composition surfaces (organisms, pages) lean on integration/E2E coverage instead. Any numeric threshold is the project's CI config.
+For shared components, custom hooks, and utilities reused across features, cover their public branches, error states, and boundary contracts because their regression blast radius is wider. Verify page-level composition through integration/E2E tests when the behavior depends on multiple rendered units. Any numeric threshold is the project's CI config.
 
 **Metrics** (what coverage reports break down): Statements, Branches, Functions, Lines
 
@@ -45,13 +49,13 @@ Test foundational, high-reuse units the hardest — shared components, custom ho
    - Verify coordination between multiple components
    - Mock APIs with MSW (Mock Service Worker)
    - No actual DB connections (backend manages DB)
-   - Verify major functional flows
+   - Verify flows that implement a primary acceptance criterion or coordinate multiple rendered components
 
 3. **Cross-functional Verification in E2E Tests**
    - Mandatory verification of impact on existing features when adding new features
-   - Cover integration points with "High" and "Medium" impact levels from Design Doc's "Integration Point Map"
+   - Cover integration points classified as "High" and "Medium" in the Design Doc's "Integration Point Map"; when no Design Doc exists, classify an integration point as High when failure breaks a primary user journey or contract, and Medium when failure degrades a secondary observable behavior
    - Verification pattern: Existing feature operation -> Enable new feature -> Verify continuity of existing features
-   - Success criteria: No change in displayed content, rendering time within 5 seconds
+   - Success criteria: Preserve the displayed content and interaction behavior named by the source acceptance criteria; apply a rendering-time threshold only when project configuration or a requirement defines its value and measurement method
    - Designed for automatic execution in CI/CD pipelines
 
 ## Test Implementation Conventions
@@ -67,7 +71,7 @@ src/
 ```
 
 **Rationale**:
-- React Testing Library best practice
+- Keeps component behavior tests discoverable beside the implementation they cover
 - Co-location principle: tests live alongside the implementation they cover
 - Easy to find and maintain tests alongside implementation
 
@@ -79,13 +83,7 @@ src/
 
 ### Test Code Quality Rules
 
-**Recommended: Keep all tests always active**
-- Merit: Guarantees test suite completeness
-- Practice: Fix problematic tests and activate them
-
-**Avoid: test.skip() or commenting out**
-- Reason: Creates test gaps and incomplete quality checks
-- Solution: Completely delete unnecessary tests
+Keep every committed test active. Repair a test that protects current behavior; remove a test only when its behavior is no longer required and the source requirement or implementation contract confirms the removal.
 
 ## Mock Type Safety Enforcement
 
@@ -107,10 +105,10 @@ const handlers = [
 type TestProps = Pick<ButtonProps, 'label' | 'onClick'>
 const mockProps: TestProps = { label: 'Click', onClick: vi.fn() }
 
-// Only when absolutely necessary, with clear justification
+// Type only the router surface consumed by the subject under test
 const mockRouter = {
   push: vi.fn()
-} as unknown as Router // Complex router type structure
+} satisfies Pick<Router, 'push'>
 ```
 
 ## Basic React Testing Library Example
@@ -135,6 +133,8 @@ describe('Button', () => {
 ## Test Design Patterns
 
 Test user-visible results, not implementation details. Query by accessibility (`getByRole`/`getByLabelText`/`getByText`), not `getByTestId` or `container.querySelector`. Cover empty, error, and loading/async states, not only the happy path; await async UI with `findBy*`.
+
+When the required UI state, accessibility name, or external contract is unknown, stop test design for that assertion and name the UI Spec, acceptance criterion, implementation contract, or user decision needed. Continue with independent assertions whose expected behavior is observed.
 
 ```typescript
 // Test the user-visible result

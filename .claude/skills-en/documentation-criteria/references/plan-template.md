@@ -130,10 +130,10 @@ For a serialized boundary, fill Serialized Format and Consumer Parse Rule. Set b
 
 ## Implementation Phases
 
-Select ONE phase structure based on implementation approach from Design Doc.
+Retain exactly one phase structure selected by the implementation approach in the Design Doc.
 See documentation-criteria skill for detailed Phase Division Criteria.
 All quality checks follow the project's standard Quality Check Workflow.
-**Delete the unused Option entirely from the final plan.** For hybrid approach, use Option C.
+For a hybrid approach, retain Option C. The final plan contains only the selected option.
 
 ### Option A: Vertical Slice Phase Structure
 

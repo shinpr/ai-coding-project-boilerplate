@@ -92,9 +92,9 @@ When UI Spec defines responsive behavior, test critical breakpoints:
 
 | Breakpoint | Width | When to Test |
 |-----------|-------|-------------|
-| Mobile | 375px | If UI Spec defines mobile-specific interactions |
-| Tablet | 768px | If UI Spec defines tablet layout differences |
-| Desktop | 1280px | Default — always test |
+| Mobile | UI Spec breakpoint or configured mobile project viewport | If UI Spec defines mobile-specific interactions |
+| Tablet | UI Spec breakpoint or configured tablet project viewport | If UI Spec defines tablet layout differences |
+| Default | Playwright project viewport or UI Spec baseline | For each selected responsive journey |
 
 ## Budget Enforcement
 

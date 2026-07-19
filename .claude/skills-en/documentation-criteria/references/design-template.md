@@ -88,17 +88,13 @@ How quality is enforced in the change area. Each item is either adopted (will be
 
 Each AC is written in EARS format. Keywords determine test type.
 
-### [Functional Requirement 1]
+### [Functional Requirement]
 
-- [ ] **When** user clicks login button with valid credentials, the system shall authenticate and redirect to dashboard
-- [ ] **If** credentials are invalid, **then** the system shall display error message "Invalid credentials"
-- [ ] **While** user is logged in, the system shall maintain the session for 60 minutes
-
-### [Functional Requirement 2]
-
-- [ ] The system shall display data list with pagination of 10 items per page
-- [ ] **When** input is entered in search field, the system shall apply real-time filtering
-  - **Property**: `filtered.every(item => item.name.includes(query))`
+- [ ] **When** [trigger], the system shall [observable response with pass/fail threshold]
+- [ ] **If** [exception condition], **then** the system shall [observable exception behavior]
+- [ ] **While** [state], the system shall [invariant]
+- [ ] [Ubiquitous requirement stated as an observable system behavior]
+  - **Property**: `[invariant expression, only when property-based verification is warranted]`
 
 ## Existing Codebase Analysis
 
@@ -236,7 +232,7 @@ Repeat the Element block above for each additional in-scope element. Mark the wh
 ### Type Definitions
 
 ```typescript
-// Record major type definitions here
+// Record types that cross module, process, persistence, or public API boundaries
 ```
 
 ### Data Contract

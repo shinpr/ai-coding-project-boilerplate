@@ -5,16 +5,20 @@ description: Applies type safety and error handling rules. Enforces no-any polic
 
 # TypeScript Development Rules
 
+## Prerequisite Detection
+
+Inspect `tsconfig`, runtime/framework configuration, lint/format configuration, path aliases, package scripts, and representative modules before applying project conventions. Treat a rule as project-specific only when configuration or an established pattern supports it. Label limited-pattern conclusions as inferred. When competing conventions change a public contract, runtime behavior, or error boundary, stop and name the source or user decision required.
+
 ## Type Safety in Backend Implementation
 
 **Type Safety in Data Flow**
 Input Layer (`unknown`) -> Type Guard -> Business Layer (Type Guaranteed) -> Output Layer (Serialization)
 
 **Backend-Specific Type Scenarios**:
-- **API Communication**: Always receive responses as `unknown`, validate with type guards
+- **API Communication**: Receive responses as `unknown` and validate them with type guards
 - **Form Input**: External input as `unknown`, type determined after validation
-- **Legacy Integration**: Stepwise assertion like `window as unknown as LegacyWindow`
-- **Test Code**: Always define types for mocks, utilize `Partial<T>` and `vi.fn<[Args], Return>()`
+- **Legacy Integration**: Receive the legacy boundary as `unknown`; isolate any evidence-backed assertion in the adapter that owns the boundary
+- **Test Code**: Define mock input/output types with the configured test harness; use `Partial<T>` for intentionally partial fixtures and typed `vi.fn<[Args], Return>()` only when Vitest is configured
 
 ## Coding Conventions
 
@@ -47,36 +51,35 @@ Input Layer (`unknown`) -> Type Guard -> Business Layer (Type Guaranteed) -> Out
   ```
 
 **Asynchronous Processing**
-- Promise Handling: Always use `async/await`
-- Error Handling: Always handle with `try-catch`
+- Promise Handling: Follow the established repository style; use `async/await` when it makes sequencing and error propagation explicit
+- Error Handling: Add `try-catch` when the current layer can convert, enrich, recover, or record the failure. Otherwise allow the promise rejection to propagate to the owning boundary
 - Type Definition: Explicitly define return value types (e.g., `Promise<Result>`)
 
 **Format Rules**
-- Semicolon omission (follow Biome settings)
+- Follow the repository's configured formatter, including its semicolon policy
 - Types in `PascalCase`, variables/functions in `camelCase`
-- Imports use absolute paths (`src/`)
+- Use absolute imports only through aliases declared in `tsconfig` or the configured build tool; otherwise use relative imports
 
 **Clean Code Principles**
-- Delete unused code immediately
+- Remove unused code within the current change
 - Delete debug `console.log()`
-- No commented-out code (manage history with version control)
+- Keep executable source free of commented-out code; version control retains removed implementations
 - Comments explain "why" (not "what")
 
 ## Error Handling
 
-**Absolute Rule**: Error suppression prohibited. All errors must have log output and appropriate handling.
+**Error Outcome Rule**: Every failure has one owning outcome: return a typed expected error, recover according to a named requirement, or propagate it with diagnostic context. Log at the observability-owning boundary so one failure is not logged repeatedly.
 
 **Fail-Fast Principle**: Fail quickly on errors to prevent continued processing in invalid states
 ```typescript
-// Prohibited: Unconditional fallback
+// Invalid: fallback hides a failure required by the caller
 catch (error) {
   return defaultValue // Hides error
 }
 
-// Required: Explicit failure
+// Explicit propagation with added context
 catch (error) {
-  logger.error('Processing failed', error)
-  throw error // Handle appropriately at higher layer
+  throw new Error('Processing failed', { cause: error })
 }
 ```
 
@@ -108,14 +111,14 @@ export class AppError extends Error {
 - Repository Layer: Convert technical errors to domain errors
 
 **Structured Logging and Sensitive Information Protection**
-Never include sensitive information (password, token, apiKey, secret, creditCard) in logs
+Log only fields approved for the current trust boundary. Redact credentials, tokens, secrets, payment data, and personal data before logging.
 
 **Asynchronous Error Handling**
-- Global handler setup mandatory: `unhandledRejection`, `uncaughtException`
-- Use try-catch with all async/await
-- Always log and re-throw errors
+- Configure runtime-level `unhandledRejection`/`uncaughtException` handling at the application entry point when the runtime exposes those events; libraries leave process-level policy to their host
+- Catch an asynchronous failure at the layer that can add a typed outcome, recovery, or diagnostic context
+- Propagate failures after enrichment unless a named requirement owns recovery at that layer
 
 ## Performance Optimization
 
-- Streaming Processing: Process large datasets with streams
-- Memory Leak Prevention: Explicitly release unnecessary objects
+- Streaming Processing: Use streaming or bounded batches when measured input size can exceed the available-memory budget or when requirements demand incremental output; record the triggering measurement or constraint
+- Resource Lifetime: Release timers, subscriptions, handles, and retained references at the lifecycle boundary that owns them
