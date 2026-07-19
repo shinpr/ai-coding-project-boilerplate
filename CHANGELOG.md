@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.4] - 2026-07-19
+
+### Changed
+
+- **Evidence-driven skill execution guidance** (skills) — made pure skills more self-contained and deterministic with repository-backed prerequisite detection, explicit phase and completion evidence, risk-aware task sizing, bounded verification loops, clearer test-boundary and ROI rules, and aligned natural Japanese translations. Applied across en/ja.
+
 ## [1.25.3] - 2026-07-16
 
 ### Added
