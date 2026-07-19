@@ -155,7 +155,7 @@ test('Dismissしてからのundoでカードが復元される', async ({ page }
 **fixture-e2e の原則**:
 - バックエンドはフェイクされ、稼働していない。これらのテストの実行に `npm run start:backend` は不要
 - フィクスチャはリポジトリ内（`tests/e2e/data/`）にバージョン管理される。マシンを越えて決定論的なテストになる
-- 認証が必要な場合もフェイクする（`page.context().addCookies()` でテストCookieをセット、またはfixtureモードのバイパスを使用）
+- ジャーニーに認証済み状態が必要だが、実際の認証を検証しない場合は、決定的なテストCookieまたはfixture-mode sessionで認証状態を確立
 - 外部インフラのプロビジョニングなしにCIで実行可能
 
 ## E2E環境前提条件（service-integration-e2e のみ）
@@ -174,7 +174,7 @@ service-integration-e2eテストがパスする前に確認すべき項目:
 ## Locator戦略
 
 アクセシブルなLocatorを以下の優先順位で使用:
-1. `page.getByRole()` — アクセシビリティに最適
+1. `page.getByRole()` — accessibility roleとユーザーに見える名前を対象にする
 2. `page.getByLabel()` — フォーム要素
 3. `page.getByText()` — 表示テキスト
 4. `page.getByTestId()` — 最終手段
@@ -183,7 +183,7 @@ service-integration-e2eテストがパスする前に確認すべき項目:
 // 推奨
 await page.getByRole('button', { name: 'Submit' }).click()
 
-// 非推奨
+// 実装に結合した壊れやすいlocator
 await page.locator('#submit-btn').click()
 await page.locator('.btn-primary').click()
 ```

@@ -1,6 +1,6 @@
 ---
 name: subagents-orchestration-guide
-description: サブエージェントのタスク分担と連携を調整。規模判定と自律実行モードを制御。大規模タスク分割時に使用。
+description: 規模に応じた計画、承認、実装、検証、エスカレーションのフローでサブエージェントを調整。サブエージェントへの作業振り分け、承認済み作業計画の実行、自律実行の再開時に使用。
 ---
 
 # サブエージェント実践ガイド - オーケストレーション指針
@@ -12,12 +12,12 @@ description: サブエージェントのタスク分担と連携を調整。規�
 **「私は作業者ではない。オーケストレーターである。」**
 
 ### 正しい振る舞い
-- 新規タスク: requirement-analyzerから開始
-- フロー実行中: 規模判定に基づくフローを厳守
-- 各フェーズ: 適切なサブエージェントに委譲
-- 停止ポイント: 必ずユーザー承認を待つ
+- 新規タスク: requirement-analyzerから開始し、記録された規模判定結果からフローを選択
+- フロー実行中: 選択した規模別フローと移行条件に従う
+- 各フェーズ: 宣言された責務が必要な出力と一致するエージェントへ委譲
+- 停止ポイント: 必要なユーザー承認が記録された場合にのみ継続
 - **調査**: すべての調査はrequirement-analyzerまたはcodebase-analyzerに委譲（Grep/Glob/Readはサブエージェント内部のツール）
-- **分析・設計**: 該当するサブエージェントに委譲
+- **分析・設計**: 宣言された責務に必要な出力が含まれる専門サブエージェントに委譲
 - **初動**: ユーザー要件はrequirement-analyzerに渡してから他のステップへ進む
 
 ### 初動アクション規則
@@ -31,13 +31,13 @@ description: サブエージェントのタスク分担と連携を調整。規�
 - 制約・条件の追加（データ量制限、権限制御など）
 - 技術要件の変更（処理方式、出力形式の変更など）
 
-**1つでも該当 → 統合要件でrequirement-analyzerから再開**
+いずれかに該当する場合は、統合した要件を記録し、requirement-analyzerから再開する。
 
 ## 活用できるサブエージェント
 
 ### 実装支援エージェント
 1. **quality-fixer**: 全体品質保証と修正完了まで自己完結処理
-2. **task-decomposer**: 作業計画書の適切なタスク分解
+2. **task-decomposer**: 承認済み作業計画書を、依存関係と対象ファイルが明示されたtask-template形式のファイルへ分解
 3. **task-executor**: 個別タスクの実行と構造化レスポンス
 4. **integration-test-reviewer**: 統合テスト/E2Eテストのスケルトン準拠レビュー
 5. **security-reviewer**: 全タスク完了後のDesign Docおよびプロジェクトのコーディング規約に対するセキュリティ準拠レビュー
@@ -91,8 +91,7 @@ description: サブエージェントのタスク分担と連携を調整。規�
 
 **task-executorの責務**:
 - 実装作業とテスト追加
-- 追加したテストのパス確認（既存テストは対象外）
-- 品質保証はtask-executorの責務外
+- 追加したテストが成功することを確認。リポジトリ全体の品質保証はquality-fixerの責務
 
 **quality-fixerの責務**:
 - 全体品質保証（型チェック、lint、全テスト実行等）
@@ -113,9 +112,11 @@ description: サブエージェントのタスク分担と連携を調整。規�
 
 ## 規模判定とドキュメント要件
 
-| 規模 | ファイル数 | PRD | ADR | Design Doc | 作業計画書 |
-|------|-----------|-----|-----|------------|-----------|
-| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | task-template 形式の単一タスクファイル（`docs/plans/tasks/` 直下、計画書ファイルは別途作成しない） |
+見積もりファイル数、観測可能な成果、契約・データ、境界、判断リスクのいずれかが示す最も高い規模を選択する。以下のファイル数は基準値であり、より高いリスク軸がある場合は確定規模と必要ドキュメントの行を引き上げる。
+
+| 規模 | 基準ファイル数 | PRD | ADR | Design Doc | 作業計画書 |
+|------|---------------|-----|-----|------------|-----------|
+| 小規模 | 1-2 | 更新※1 | 条件付き※2 | 不要 | task-template 形式の単一タスクファイル（`docs/plans/tasks/` 直下、計画書ファイルは別途作成しない） |
 | 中規模 | 3-5 | 更新※1 | 条件付き※2 | **必須** | **必須** |
 | 大規模 | 6以上 | **必須**※3 | 条件付き※2 | **必須** | **必須** |
 
@@ -204,10 +205,11 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 11. document-reviewer → 作業計画書レビュー（doc_type: WorkPlan。AC/コントラクト/状態のカバレッジをトレースできるようDesign Docのパスを渡す）。`needs_revision` の場合: work-plannerを（updateで）再実行し `approved`/`approved_with_conditions` になるまで再レビューする — 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘にユーザー裁定は不要。`rejected` の場合: ユーザーにエスカレーション。 **[停止: 一括承認]**
 12. task-decomposer → 自律実行 → 完了報告
 
-### 小規模（1-2ファイル） - 2ステップ
+### 小規模（1-2ファイル） - 3ステップ
 
-1. work-planner → 簡易作業計画作成。本スケールでは作業計画書とタスク分解ステップを分けず、`docs/plans/tasks/` 直下に task-template 形式の単一タスクファイルを直接出力する。task-executor にはそのパスを `task_file` として渡す **[停止: 一括承認]**
-2. task-executor → quality-fixer → commit（タスクごと）→ 完了報告
+1. requirement-analyzer → 要件分析と小規模判定の確定
+2. work-planner → 簡易作業計画作成。本スケールでは作業計画書とタスク分解ステップを分けず、`docs/plans/tasks/` 直下に task-template 形式の単一タスクファイルを直接出力する。task-executor にはそのパスを `task_file` として渡す **[停止: 一括承認]**
+3. task-executor → quality-fixer → commit（タスクごと）→ 完了報告
 
 注: 小規模スケールでも実装ステップは task-executor を介して標準の4ステップサイクル（`task-executor → エスカレーション判定 → quality-fixer → commit`）で実行する。オーケストレーターによる直接編集は行わない。
 
@@ -217,7 +219,7 @@ Medium / Large規模では、一括承認後、実装はそのまま進行する
 
 ## レイヤー横断オーケストレーション
 
-requirement-analyzerが複数レイヤー（backend + frontend）にまたがる機能と判定した場合（`crossLayerScope`で判断）、以下の拡張を適用。ステップ番号は大規模フロー基準。中規模フローではDesign Doc作成がステップ2から始まるため、同じパターンをステップ2a/2b/3/4として適用する。
+requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend + frontend）にまたがると判定した場合、以下の拡張を適用する。ステップ番号は大規模フローに対応する。中規模のcross-layer flowでは、単一のcodebase analysisとDesign Docの区間を、以下と同じbackend先行・frontend後続の順序に置き換える。大規模フローのステップ番号を流用せず、名前付きのPhase移行を使用する。
 
 ### 設計フェーズの拡張
 
@@ -302,6 +304,19 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 - サブエージェントは Agent prompt と自身が読み込んだファイルしか参照できない。必須のパス、先行 JSON、パラメータ、スコープ制約をプロンプトに明示的に注入する。
 - 以下の例の `[placeholder]` は Agent ツール呼び出し前にすべて具体値へ置換する。
 
+### 完了報告の形式
+
+選択したフローの完了後、以下を返す：
+
+```json
+{
+  "status": "completed | blocked", "scale": "small | medium | large", "completedTasks": [{"taskFile": "path", "status": "completed", "commit": "sha-or-null"}], "filesModified": ["path"],
+  "verification": [{"check": "name", "result": "passed | failed | not_run", "evidence": "command or verifier result"}], "verifiers": [{"name": "agent", "status": "status value"}], "unresolvedItems": [{"item": "decision or evidence", "requiredInput": "input", "escalation": "condition"}]
+}
+```
+
+選択したフローで必須のタスク、品質ゲート、検証エージェント、commit stepがすべて完了した場合にのみ`status`を`completed`とする。未解決項目によって次の移行が妨げられる場合は`blocked`とする。
+
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
 - description: "コードベース分析"
@@ -345,7 +360,7 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
    **ギャップ発生時の制御（オーケストレーターの責務）**: work-plannerが`gap`を含むドラフト計画書を出力した場合、オーケストレーターは以下を実行する:
    1. ギャップ項目と理由をユーザーに提示する
    2. ユーザーが各ギャップを確認するまで計画書をドラフト状態に保つ
-   3. 全ギャップの解消または確認が完了するまで、後続エージェント（task-decomposer等）に計画書を渡さない
+   3. すべてのギャップが解消されたか明示的に確認された後、後続エージェント（task-decomposer等）に計画書を渡す
    理由なしのギャップはエラーとして扱い、work-plannerに差し戻してカバーするタスクの追加または理由の記載を求める。
 
    #### *1 acceptance-test-generator → work-planner
@@ -361,10 +376,10 @@ requirement-analyzerが複数レイヤー（backend + frontend）にまたがる
 
 ## 重要な制約
 
-- **品質チェックは必須**: コミット前にquality-fixerの承認が必要
-- **構造化レスポンス必須**: サブエージェント間の情報伝達はJSON形式
-- **承認管理**: ドキュメント作成→document-reviewer実行→ユーザー承認を得てから次へ進む
-- **フロー確認**: 承認取得後は必ず作業計画フロー（大規模/中規模/小規模）で次のステップを確認
+- **品質チェック**: quality-fixerが`approved`を返した後にcommitできる
+- **構造化レスポンス**: サブエージェント間で渡す情報には、宣言済みのJSON fieldを使用する
+- **承認管理**: ドキュメント作成後にdocument-reviewerを実行し、指定されたユーザー承認の停止点を通過してから次のPhaseへ進む
+- **フロー確認**: 承認後は、確定した大規模・中規模・小規模フローから次のstepを選択する
 - **整合性検証**: サブエージェントの出力が矛盾した場合、優先順位に従って解決（委譲の境界セクション参照）
 
 ### 進捗管理
@@ -378,4 +393,4 @@ TaskCreateで全体フェーズを登録。各フェーズ完了時にTaskUpdate
 | code-verifier | `status`が`consistent`または`mostly_consistent` | `status`が`needs_review`または`inconsistent` | — |
 | security-reviewer | `status`が`approved`または`approved_with_notes` | `status`が`needs_revision` | `status`が`blocked` → ユーザーにエスカレーション |
 
-**再実行ルール**: 修正サイクル後、**Fail**を返した検証エージェントのみ再実行。前回Passした検証エージェントは再実行しない。最大2回の修正サイクル — 2回後も不合格が残る場合、残存する検出事項とともにユーザーにエスカレーション。
+**再実行ルール**: 修正サイクルは最大2回とする。各サイクル後に**Fail**を返した検証エージェントを再実行し、Passした検証エージェントの記録済み証跡は維持する。以前Failだった検証エージェントがPassになるか、名前付きの残存指摘件数が減った場合にのみ進捗ありと判定する。進捗がない、または外部入力が必要な場合は直ちにエスカレーションする。2回目のサイクル後は、残るすべての不合格を指摘内容とともにエスカレーションする。

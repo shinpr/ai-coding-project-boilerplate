@@ -1,6 +1,6 @@
 ---
 name: task-analyzer
-description: タスクの本質を分析し適切なスキルを選択。規模見積もりとメタデータを返却。タスク開始時、スキル選択時に使用。
+description: タスクの意図、変更リスク、実行規模を分類し、プロジェクトのスキルインデックスからスキルを選択。作業開始、タスクの振り分け、スコープ見積もり、スキル選択時に使用。
 ---
 
 # タスクアナライザー
@@ -31,11 +31,17 @@ description: タスクの本質を分析し適切なスキルを選択。規模�
 
 ### 2. タスク規模の見積もり
 
-| 規模 | ファイル数 | 指標 |
-|------|----------|------|
-| 小規模 | 1-2 | 単一の関数/コンポーネントの変更 |
-| 中規模 | 3-5 | 複数の関連コンポーネント |
-| 大規模 | 6以上 | 横断的関心事、アーキテクチャへの影響 |
+ファイル数は判断材料の1つであり、決定ルールではない。以下の軸をすべて評価し、観測したいずれかの軸が示す最も高い規模を選択する。
+
+| 軸 | 小規模 | 中規模 | 大規模 |
+|----|-------|-------|-------|
+| 見積もりファイル数 | 1〜2 | 3〜5 | 6以上 |
+| 観測可能な成果 | 1つの振る舞い | 関連する複数の振る舞い | 独立して検証できる複数の成果 |
+| 契約・データ | 公開契約または永続データの変更なし | 後方互換性のある契約変更 | 破壊的な契約変更、schema migration、永続データmigration |
+| 境界 | 1つのローカルモジュール/コンポーネント | 同一レイヤー内の複数モジュール | レイヤー間、サービス間、外部システムとの境界 |
+| 判断リスク | 既存パターンをそのまま適用可能 | 境界の明確な技術判断が1つ | アーキテクチャ、セキュリティ、コンプライアンス、不可逆な運用判断 |
+
+最終規模を決めた軸を記録する。機械的な生成ファイル更新だけでファイル数が多い場合は、振る舞いと検証経路が1つであることをリポジトリのワークフローから証明できれば規模を下げられる。その根拠を`scaleRationale`に記録する。
 
 **規模がスキル優先度に影響：**
 - 大規模 → プロセス/ドキュメントスキルがより重要
@@ -45,11 +51,19 @@ description: タスクの本質を分析し適切なスキルを選択。規模�
 
 | タイプ | 特徴 | キースキル |
 |--------|------|-----------|
-| 実装 | 新規コード、機能 | coding-standards, typescript-testing |
-| 修正 | バグ解決 | coding-standards, typescript-testing |
-| リファクタリング | 構造改善 | coding-standards, implementation-approach |
-| 設計 | アーキテクチャ決定 | documentation-criteria, implementation-approach |
-| 品質 | テスト、レビュー | typescript-testing, integration-e2e-testing |
+| implementation | 新規コードまたはユーザーに見える振る舞い | coding-standards, typescript-testing |
+| fix | 不具合またはリグレッションの解消 | coding-standards, typescript-testing |
+| refactoring | 振る舞いを保った構造改善 | coding-standards, implementation-approach |
+| design | アーキテクチャまたは契約の判断 | documentation-criteria, implementation-approach |
+| quality | テスト、レビュー、検証 | typescript-testing, integration-e2e-testing |
+| documentation | PRD、ADR、Design Doc、UI Spec、計画書、指示文 | documentation-criteria |
+| investigation | 実装を伴わない根拠収集 | project-contextとindexから選んだドメインスキル |
+| migration | データ、schema、API、依存、runtimeの移行 | implementation-approach, documentation-criteria |
+| operations | 環境、デプロイ、runtimeの運用 | technical-specとindexから選んだドメインスキル |
+| security | セキュリティ設計またはレビュー | coding-standardsと実装ドメインのスキル |
+| skill | スキル作成、プロンプト品質レビュー、スキルmetadata変更 | skill-optimization, llm-friendly-context |
+
+複数のtypeに該当する場合は、依頼された成果を担うtypeをprimaryとし、残りを`secondaryTypes`に記録する。
 
 ### 4. タグベースのスキルマッチング
 
@@ -83,9 +97,13 @@ skills-index.yamlからのスキルメタデータを含む構造化された分
 ```yaml
 taskAnalysis:
   essence: <string>  # 特定された根本目的
-  type: <implementation|fix|refactoring|design|quality>
+  type: <implementation|fix|refactoring|design|quality|documentation|investigation|migration|operations|security|skill>
+  secondaryTypes: [<task-type>, ...]
   scale: <small|medium|large>
   estimatedFiles: <number>
+  scaleRationale:
+    decidingAxis: <files|outcomes|contracts-data|boundaries|decision-risk>
+    evidence: <string>
   tags: [<string>, ...]  # タスク説明から抽出
 
 selectedSkills:
@@ -101,23 +119,37 @@ selectedSkills:
 
 **注意**: セクション選択（どのセクションが関連するかの選定）は、実際のSKILL.mdファイルを読み込んだ後に別途行う。
 
+## プロセスゲート
+
+1. **意図ゲート**: `essence`、primary `type`、該当する`secondaryTypes`を記録したら規模見積もりへ進む。依頼された成果が曖昧な場合は、必要な成果判断を具体的に記録する。
+2. **規模ゲート**: すべての規模軸について、観測済み、推測、不明のいずれかの根拠があり、`scaleRationale`に決定軸が示されたらスキル照合へ進む。
+3. **選択ゲート**: 選択したスキルがすべて`skills-index.yaml`に存在し、タスクに結び付いた理由があり、metadataを作り出さずそのまま転記できた場合に確定する。
+
+見積もりファイル数または重要な契約・境界の判断が不明な場合は`unknown`とする。観測済みの根拠が示す最も高い規模を使用する。不明点によって規模が上がり、必要なワークフローが変わり得る場合は作業を止め、必要なリポジトリ内の根拠またはユーザー判断を具体的に求める。
+
 ## スキル選択の優先順位
 
 1. **必須** - タスクタイプに直接関連
 2. **品質** - テストと品質保証
 3. **プロセス** - ワークフローとドキュメント
-4. **補助** - リファレンスとベストプラクティス
+4. **補助** - タスクに直接関係する追加の制約または根拠
 
 ## メタ認知質問の設計
 
-タスクの性質に応じて3-5個の質問を生成：
+意図の分類、規模、選択するskill、必須制約、検証方法のいずれかを変え得る質問だけを生成する。リポジトリ内の根拠ですでに解決している場合は質問を返さない。各質問について、それが制御する判断を記録する。
 
 | タスクタイプ | 質問の焦点 |
 |-------------|-----------|
-| 実装 | 設計の妥当性、エッジケース、パフォーマンス |
-| 修正 | 根本原因（5 Whys）、影響範囲、回帰テスト |
-| リファクタリング | 現状の問題、目標状態、段階的計画 |
-| 設計 | 要件の明確性、将来の拡張性、トレードオフ |
+| implementation | 設計の妥当性、エッジケース、パフォーマンス |
+| fix | 根本原因（5 Whys）、影響範囲、回帰テスト |
+| refactoring | 現状の問題、目標状態、段階的計画 |
+| design | 要件の明確性、将来の拡張性、トレードオフ |
+| documentation | 読み手、正規の情報源、承認・利用側の契約 |
+| investigation | 解決する主張、根拠の境界、停止条件 |
+| migration | 互換期間、データ・契約の移行、ロールバック |
+| operations | 対象環境、権限境界、復旧の証跡 |
+| security | 信頼境界、保護対象、脅威・受け入れ条件の情報源 |
+| skill | 発火させる意図、単独実行に必要なコンテキスト、出力の利用側 |
 
 ## 警告パターン
 
@@ -125,7 +157,7 @@ selectedSkills:
 
 | パターン | 警告 | 緩和策 |
 |---------|------|--------|
-| 一度に大規模変更 | 高リスク | フェーズに分割 |
-| テストなしの実装 | 品質リスク | TDDに従う |
-| エラー発見時の即座の修正 | 根本原因の見落とし | 一時停止、分析 |
-| 計画なしのコーディング | スコープクリープ | まず計画 |
+| 1つのステップに独立して検証可能な成果が複数ある | 移行とロールバックのリスク | 観測可能な検証境界で分割 |
+| 振る舞いの変更にテストまたは明記された実行可能な検証がない | リグレッションの証跡がない | 変更した契約を観測できる最も低コストなチェックを追加 |
+| 修正案と失敗の間に観測済みの因果関係がない | 根本原因が推測のまま | 修正を選ぶ前に再現証跡と最初の因果境界を記録 |
+| 中規模・大規模の実装に規模上必要な計画成果物がない | スコープと依存の契約がない | 実装を振り分ける前に必要な成果物を作成 |

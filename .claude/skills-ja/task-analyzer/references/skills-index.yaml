@@ -39,10 +39,11 @@ skills:
     skill: "typescript-rules"
     tags: [implementation, type-safety, async, coding-style, functional-programming, dependency-injection, backend]
     typical-use: "バックエンドTypeScriptコードの作成・修正、クラス使用判断、DI実装"
-    size: small
+    size: medium
     key-references:
       - "Dependency Injection - Martin Fowler"
     sections:
+      - "前提条件の検出"
       - "Backend実装における型安全性"
       - "コーディング規約"
       - "エラーハンドリング"
@@ -52,10 +53,11 @@ skills:
     skill: "typescript-testing"
     tags: [quality, testing, coverage, vitest, backend, implementation]
     typical-use: "バックエンドテスト作成、Vitest設定、カバレッジ方針、テスト品質基準"
-    size: small
+    size: medium
     key-references:
       - "Vitest公式ドキュメント"
     sections:
+      - "前提条件の検出"
       - "テストフレームワーク"
       - "テストの基本方針"
       - "テストの実装規約"
@@ -73,6 +75,7 @@ skills:
       - "ADRフォーマット - Michael Nygard"
       - "単一データソース原則 - Single Source of Truth"
     sections:
+      - "前提条件の検出"
       - "技術スタックの基本方針"
       - "環境変数管理とセキュリティ"
       - "アーキテクチャ設計"
@@ -122,14 +125,14 @@ skills:
       - "メタ認知的戦略選択プロセス"
       - "検証レベル定義"
       - "統合ポイントの定義"
-      - "アンチパターン"
+      - "判断ゲートのチェックリスト"
       - "メタ認知的実行のための指針"
 
   integration-e2e-testing:
     skill: "integration-e2e-testing"
     tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality, playwright]
     typical-use: "統合テスト・E2Eテストのスケルトン生成、テスト実装、テストレビュー、Property-Based Test実装、E2Eテスト設計"
-    size: small
+    size: medium
     key-references:
       - "fast-check - Property-based testing for TypeScript"
       - "Node.js Testing Best Practices - Yoni Goldberg"
@@ -149,7 +152,7 @@ skills:
     skill: "subagents-orchestration-guide"
     tags: [orchestration, subagents, workflow, scale-determination, document-requirements, autonomous-execution]
     typical-use: "サブエージェントのワークフロー調整、規模判定、ドキュメント要件"
-    size: medium
+    size: large
     key-references:
       - "ワークフロー調整パターン"
       - "エージェント連携パターン"
@@ -184,7 +187,7 @@ skills:
     skill: "llm-friendly-context"
     tags: [universal, cross-cutting, prompt, handoff, artifact, clarity, ambiguity-removal, downstream-execution, documentation]
     typical-use: "LLM向けのプロンプト・ハンドオフ・計画成果物・レビュー・レポート・生成指示を記述/改訂し、下流エージェントが推測せず実行できるようにする"
-    size: small
+    size: medium
     key-references:
       - "禁止形より肯定形の実行可能な指示"
       - "エージェント間ハンドオフの観察可能な成功基準"
@@ -206,6 +209,7 @@ skills:
       - "Type guards at external boundaries (unknown narrowing)"
       - "Result type and Error Boundary error handling"
     sections:
+      - "前提条件の検出"
       - "アンチパターンとしきい値"
       - "境界での型安全性"
       - "コンポーネントと状態の設計"
@@ -216,13 +220,14 @@ skills:
     skill: "frontend-typescript-testing"
     tags: [frontend, react, quality, testing, coverage, vitest, react-testing-library, msw, component-testing, implementation, playwright, e2e]
     typical-use: "Reactコンポーネントのテスト作成、React Testing Library、MSW、カバレッジ方針、Co-location、Playwright E2Eテスト"
-    size: small
+    size: medium
     key-references:
       - "React Testing Library - Kent C. Dodds"
       - "MSW (Mock Service Worker) - API Mocking"
       - "Co-location原則"
       - "references/e2e.md - Playwright E2Eパターン"
     sections:
+      - "前提条件の検出"
       - "参照"
       - "テストフレームワーク"
       - "テストの基本方針"
@@ -244,6 +249,7 @@ skills:
       - "Lighthouse - Google Web Performance"
       - "Web.dev - Performance Best Practices"
     sections:
+      - "前提条件の検出"
       - "技術スタックの基本方針"
       - "環境変数管理とセキュリティ"
       - "アーキテクチャ設計"
