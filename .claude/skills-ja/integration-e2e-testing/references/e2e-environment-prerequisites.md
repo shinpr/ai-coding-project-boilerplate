@@ -1,10 +1,10 @@
-# E2E環境前提条件
+# Service-Integration E2E環境前提条件
 
-E2Eテストには、リアルなデータ状態で動作するアプリケーションが必要である。ユニット/統合テストと異なり、環境セットアップはE2Eテスト実装スコープの一部である。
+この前提条件は`service-integration-e2e`レーンだけに適用する。このレーンには、起動済みのローカルアプリケーションスタックと、実データまたはサービスレベルのstubによるデータ状態が必要となる。`fixture-e2e`レーンは実ブラウザとモックバックエンドまたは決定的なfixture loaderを使用するため、稼働中のサービスも実データベースも必要としない。
 
 ## Seed Data Strategy
 
-テストデータはAPI callまたはdatabase seedingで準備する — UI操作によるデータ作成は行わない:
+テストデータはAPI fixtureまたはdatabase seedingで準備し、検証対象の振る舞いからテストジャーニーを開始できるようにする：
 
 ```typescript
 // fixtures/seed.fixture.ts
@@ -55,12 +55,12 @@ export const test = base.extend<{ playerPage: Page }>({
 
 **原則**:
 - アプリケーションの既存認証フローを使用する。auth fixtureは実ユーザーと同じ経路を通ること
-- テスト認証情報は環境変数に格納し、ハードコードしない
+- テスト認証情報は設定済みのテスト環境またはsecret fixtureから読み込む
 - 認証フローに特定のユーザーレコードが必要な場合はfixture内でseedする
 
 ## 環境チェックリスト
 
-E2Eテストがパスするために、以下を確認:
+service-integration-e2eテストが成功するために、以下を確認:
 - [ ] アプリケーションが`baseURL`で起動・アクセス可能
 - [ ] データベースに必要なseed dataがある（テストユーザー、サブスクリプション、コンテンツ）
 - [ ] テスト認証情報で認証フローが動作する

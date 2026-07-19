@@ -15,12 +15,12 @@
 
 ## Prototype Management
 
-Prototype code is an **attachment** to this UI Spec. The canonical specification is always this document + the Design Doc.
+Prototype code is an **attachment** to this UI Spec. This document and the Design Doc are the canonical specification; resolve differences in their favor.
 
 - **Attachment path**: [docs/ui-spec/assets/{feature-name}/]
 - **Version identification**: [commit SHA / tag]
 - **Compliance premise**: [e.g., design system compliance, component library usage]
-- **Relationship to canonical spec**: Differences between prototype and this spec are resolved in favor of this document. Prototype serves as visual/behavioral reference only.
+- **Relationship to canonical spec**: Differences between prototype and this spec are resolved in favor of this document. Use the prototype as a visual/behavioral reference.
 
 ## AC Traceability (Prototype)
 

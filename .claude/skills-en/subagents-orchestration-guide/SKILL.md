@@ -1,6 +1,6 @@
 ---
 name: subagents-orchestration-guide
-description: Coordinates subagent task distribution and collaboration. Controls scale determination and autonomous execution mode.
+description: Coordinates subagents through scale-based planning, approval, implementation, verification, and escalation flows. Use when routing work to subagents, executing an approved work plan, or resuming autonomous execution.
 ---
 
 # Sub-agents Practical Guide - Orchestration Guidelines for Claude (Me)
@@ -12,12 +12,12 @@ This document provides practical behavioral guidelines for me (Claude) to effici
 **Role Definition**: I am an orchestrator, not an executor.
 
 ### Required Actions
-- **New tasks**: ALWAYS start with requirement-analyzer
-- **During flow execution**: STRICTLY follow scale-based flow
-- **Each phase**: DELEGATE to appropriate subagent
-- **Stop points**: ALWAYS wait for user approval
+- **New tasks**: Start with requirement-analyzer and select the flow from its recorded scale result
+- **During flow execution**: Follow the selected scale flow and its transition conditions
+- **Each phase**: Delegate the phase to the agent whose declared responsibility matches its output
+- **Stop points**: Continue only after the required user approval is recorded
 - **Investigation**: Delegate all investigation to requirement-analyzer or codebase-analyzer (Grep/Glob/Read are specialist-internal tools)
-- **Analysis/Design**: Delegate to the appropriate specialist subagent
+- **Analysis/Design**: Delegate to the specialist whose declared responsibilities include the required output
 - **First action**: Pass user requirements to requirement-analyzer before any other step
 
 ### First Action Rule
@@ -31,13 +31,13 @@ When receiving a new task, pass user requirements directly to requirement-analyz
 - Additions of constraints/conditions (data volume limits, permission controls, etc.)
 - Changes in technical requirements (processing methods, output format changes, etc.)
 
-**If any one applies -> Restart from requirement-analyzer with integrated requirements**
+When any condition applies, record the integrated requirements and restart from requirement-analyzer.
 
 ## Subagents I Can Utilize
 
 ### Implementation Support Agents
 1. **quality-fixer**: Self-contained processing for overall quality assurance and fixes until completion
-2. **task-decomposer**: Appropriate task decomposition of work plans
+2. **task-decomposer**: Decompose approved work plans into task-template files with explicit dependencies and target files
 3. **task-executor**: Individual task execution and structured response
 4. **integration-test-reviewer**: Review integration/E2E tests for skeleton compliance
 5. **security-reviewer**: Security compliance review against Design Doc and project coding standards after all tasks complete
@@ -93,8 +93,7 @@ I understand each subagent's responsibilities and assign work appropriately:
 
 **task-executor Responsibilities** (DELEGATE these):
 - Implementation work and test addition
-- Confirmation that ONLY added tests pass (existing tests are NOT in scope)
-- DO NOT delegate quality assurance to task-executor
+- Confirmation that the added tests pass; repository-wide quality assurance remains the quality-fixer responsibility
 
 **quality-fixer Responsibilities** (DELEGATE these):
 - Overall quality assurance (type check, lint, ALL test execution)
@@ -115,9 +114,11 @@ I repeat this cycle for each task to ensure quality.
 
 ## Scale Determination and Document Requirements
 
-| Scale | File Count | PRD | ADR | Design Doc | Work Plan |
-|-------|------------|-----|-----|------------|-----------|
-| Small | 1-2 | Update[^1] | Not needed | Not needed | Single task file in task-template format under `docs/plans/tasks/` (no separate plan document) |
+Select the highest scale triggered by estimated files, observable outcomes, contracts/data, boundaries, or decision risk. The file-count ranges below are baselines; any higher-risk axis raises the confirmed scale and therefore the required-document row.
+
+| Scale | Baseline File Count | PRD | ADR | Design Doc | Work Plan |
+|-------|---------------------|-----|-----|------------|-----------|
+| Small | 1-2 | Update[^1] | Conditional[^2] | Not needed | Single task file in task-template format under `docs/plans/tasks/` (no separate plan document) |
 | Medium | 3-5 | Update[^1] | Conditional[^2] | **Required** | **Required** |
 | Large | 6+ | **Required**[^3] | Conditional[^2] | **Required** | **Required** |
 
@@ -209,10 +210,11 @@ According to scale determination:
 11. document-reviewer → Work plan review (doc_type: WorkPlan; pass the Design Doc path so AC/contract/state coverage is traceable). On `needs_revision`: re-invoke work-planner (update) and re-review until `approved`/`approved_with_conditions` — the plan is a derivation of the Design Doc, so plan-fidelity findings need no user adjudication. On `rejected`: escalate to user. **[Stop: Batch approval]**
 12. task-decomposer → Autonomous execution → Completion report
 
-### Small Scale (1-2 Files) - 2 Steps
+### Small Scale (1-2 Files) - 3 Steps
 
-1. work-planner → Simplified work plan creation. At this scale, work-planner emits a single task-template-format task file directly under `docs/plans/tasks/` instead of a separate work plan + decomposition; that path is what task-executor receives as `task_file`. **[Stop: Batch approval]**
-2. task-executor → quality-fixer → commit (per task) → Completion report
+1. requirement-analyzer → Requirement analysis and confirmed Small scale
+2. work-planner → Simplified work plan creation. At this scale, work-planner emits a single task-template-format task file directly under `docs/plans/tasks/` instead of a separate work plan + decomposition; that path is what task-executor receives as `task_file`. **[Stop: Batch approval]**
+3. task-executor → quality-fixer → commit (per task) → Completion report
 
 Note: At Small scale the implementation step still runs through task-executor with the standard 4-step cycle (`task-executor → escalation judgment → quality-fixer → commit`). Direct orchestrator edits are not used.
 
@@ -222,7 +224,7 @@ For Medium / Large scale, after Batch approval implementation proceeds directly.
 
 ## Cross-Layer Orchestration
 
-When requirement-analyzer determines the feature spans multiple layers (backend + frontend) via `crossLayerScope`, the following extensions apply. Step numbers below follow the large-scale flow. For medium-scale flows where Design Doc creation starts at step 2, apply the same pattern as steps 2a/2b/3/4.
+When requirement-analyzer determines the feature spans multiple layers (backend + frontend) via `crossLayerScope`, the following extensions apply. Step numbers below follow the large-scale flow. For medium-scale cross-layer flows, replace the single codebase-analysis and Design Doc segment with the same backend-first, frontend-second sequence below; use the named phase transitions rather than reusing large-flow step numbers.
 
 ### Design Phase Extensions
 
@@ -306,6 +308,19 @@ Two additional rules:
 - Subagents see only the Agent prompt and files they read. Include required paths, prior JSON, parameters, and scope constraints explicitly.
 - Replace every `[placeholder]` in examples below with concrete values before invoking the Agent tool.
 
+### Completion Report Format
+
+After the selected flow completes, return:
+
+```json
+{
+  "status": "completed | blocked", "scale": "small | medium | large", "completedTasks": [{"taskFile": "path", "status": "completed", "commit": "sha-or-null"}], "filesModified": ["path"],
+  "verification": [{"check": "name", "result": "passed | failed | not_run", "evidence": "command or verifier result"}], "verifiers": [{"name": "agent", "status": "status value"}], "unresolvedItems": [{"item": "decision or evidence", "requiredInput": "input", "escalation": "condition"}]
+}
+```
+
+Set `status` to `completed` only when every required task, quality gate, verifier, and commit step in the selected flow has completed. Set it to `blocked` when an unresolved item prevents the next transition.
+
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
 - description: "Codebase analysis"
@@ -349,7 +364,7 @@ Two additional rules:
    **Gap handling (orchestrator responsibility)**: If work-planner outputs a draft plan containing `gap` entries, the orchestrator MUST:
    1. Present the gap entries to the user with justifications
    2. Keep the plan in draft status until the user confirms each gap
-   3. Do NOT pass the plan to downstream agents (task-decomposer, etc.) until all gaps are resolved or confirmed
+   3. Pass the plan to downstream agents after every gap is resolved or explicitly confirmed
    Unjustified gaps are errors — return to work-planner to add covering tasks or justification.
 
    #### *1 acceptance-test-generator → work-planner
@@ -365,10 +380,10 @@ Two additional rules:
 
 ## Important Constraints
 
-- **Quality check is MANDATORY**: quality-fixer approval REQUIRED before commit
-- **Structured response is MANDATORY**: Information transmission between subagents MUST use JSON format
-- **Approval management**: Document creation -> Execute document-reviewer -> Get user approval BEFORE proceeding
-- **Flow confirmation**: After getting approval, ALWAYS check next step with work planning flow (large/medium/small scale)
+- **Quality check**: A commit is permitted after quality-fixer returns `approved`
+- **Structured response**: Information passed between subagents uses the declared JSON fields
+- **Approval management**: Document creation is followed by document-reviewer and the named user-approval stop before the next phase
+- **Flow confirmation**: After approval, select the next step from the confirmed large/medium/small flow
 - **Consistency verification**: When subagent outputs conflict, apply Decision precedence (see Delegation Boundary section)
 
 ### Progress Tracking
@@ -382,5 +397,4 @@ Register overall phases using TaskCreate. Update each phase with TaskUpdate as i
 | code-verifier | `status` is `consistent` or `mostly_consistent` | `status` is `needs_review` or `inconsistent` | — |
 | security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` → Escalate to user |
 
-**Re-run rule**: After fix cycle, re-run only verifiers that returned **fail**. Verifiers that passed on the previous run are not re-run. Maximum 2 fix cycles — if still failing after 2 cycles, escalate to user with remaining findings.
-
+**Re-run rule**: Run at most 2 fix cycles. After each cycle, re-run the verifiers that returned **fail** and retain the recorded evidence from verifiers that passed. A cycle makes progress only when a previously failing verifier reaches a pass status or its count of named remaining findings decreases. Escalate immediately when a cycle makes no progress or requires external input; after cycle 2, escalate every remaining failure with its findings.

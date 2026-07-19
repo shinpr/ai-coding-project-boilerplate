@@ -7,7 +7,7 @@ description: Clarifies inputs, outputs, success criteria, decisions, and unresol
 
 The goal is stable downstream execution: the next agent should know what to read, what to do, what counts as success, and when to stop or escalate.
 
-This skill governs the clarity of LLM-facing output — prompts, handoffs, and generated artifacts. It does not define which documents to create or their required structure; that is owned by documentation-criteria.
+This skill governs the clarity of LLM-facing output — prompts, handoffs, and generated artifacts. The caller supplies the artifact type and any artifact-specific template or section contract; this skill makes that supplied contract executable for the downstream agent.
 
 ## Core Rules
 

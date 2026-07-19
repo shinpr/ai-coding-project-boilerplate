@@ -7,7 +7,7 @@ description: Detects code smells, anti-patterns, and readability issues. Use whe
 
 ## Technical Anti-patterns (Red Flag Patterns)
 
-Immediately stop and reconsider design when detecting the following patterns:
+When any pattern below is detected, pause implementation and record: the triggered pattern, affected current requirement, smallest compliant alternative, and verification needed to resume. Resume when the alternative removes the pattern or a documented requirement justifies retaining it.
 
 ### Code Quality Anti-patterns
 1. **Writing similar code 3 or more times** - Violates Rule of Three
@@ -27,22 +27,22 @@ Immediately stop and reconsider design when detecting the following patterns:
 
 ## Basic Principles
 
-- **Aggressive Refactoring** - Prevent technical debt and maintain health
-- **No Unused "Just in Case" Code** - Violates YAGNI principle (Kent Beck)
+- **Evidence-Bounded Refactoring** - Refactor code that blocks the current outcome, is changed by the current task, or fails an applicable quality check; use small behavior-preserving steps
+- **Current-Requirement Code Only** - Every added code path serves a current requirement or accepted technical constraint (YAGNI)
 - **Minimum Surface for Required Coverage** - When introducing maintenance-surface-bearing elements (persistent state, public-contract elements or cross-boundary fields/props, behavioral modes/flags/variants, reusable abstractions, or component splits), select the smallest design surface that covers current user-visible requirements and accepted technical constraints (audit, data integrity, compatibility, security, performance, accessibility). Adoption is justified by naming a current requirement or constraint that smaller alternatives fail to cover; value-based arguments (reusable, future-ready, convenient for implementation) serve as tiebreakers only. Distinct from YAGNI: YAGNI is a time-axis check (refuse work for future-only needs); this principle constrains surface area at a fixed coverage point.
 
 ## Comment Writing Rules
 
 - **Code first**: Names, types, and structure are the primary medium; add a comment only when it carries what the code cannot express. When in doubt, improve the name instead of commenting
 - **Comment the "why", not the "what"**: Explain reasoning, trade-offs, constraints/edge cases, or public API contracts
-- **No Historical Information**: Do not record development history
+- **Timeless Content**: Comments contain current reasoning, constraints, edge cases, or API contracts; version control retains development history
 - **Timeless**: Write only content that remains valid whenever read
 - **Conciseness**: Keep explanations to necessary minimum
 
 ## Error Handling Fundamentals
 
 ### Fail-Fast Principle
-Fail quickly on errors to prevent processing continuation in invalid states. Error suppression is prohibited.
+Fail quickly on errors to prevent processing continuation in invalid states. Propagate the failure or return an explicit typed error with the original diagnostic context.
 
 For detailed implementation methods (Result type, custom error classes, layered error handling, etc.), refer to language and framework-specific rules.
 
@@ -64,7 +64,7 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 - Areas likely requiring bulk changes
 - Validation rules
 
-**Cases to Avoid Commonalization**
+**Cases to Keep Separate**
 - Accidental matches (coincidentally same code)
 - Possibility of evolving in different directions
 - Significant readability decrease from commonalization
@@ -80,7 +80,7 @@ When adopting patterns, APIs, or dependencies from existing code:
 - **IF** Grep returns 1-2 files outside the reference → **THEN** investigate whether those files are the canonical implementation or legacy outliers before adopting
 - **IF** Grep returns 0 files outside the reference → **THEN** treat the pattern as local convention; adopt only with explicit justification (e.g., consistency with surrounding code, avoiding breaking changes)
 - **IF** multiple approaches coexist in the repository → **THEN** identify the majority pattern (highest file count) and adopt it; state the reason when choosing a minority pattern
-- **IF** adopting an external dependency (library, plugin, SDK) → **THEN** verify repository-wide usage distribution for the same dependency; if the appropriate version cannot be determined from repository state alone, escalate
+- **IF** adopting an external dependency (library, plugin, SDK) → **THEN** verify repository-wide usage distribution for the same dependency; if its compatible version cannot be resolved from manifests, lockfiles, and existing consumers, escalate
 - **IF** following an existing pattern → **THEN** state the reason for following it when an alternative exists (e.g., consistency with surrounding code, avoiding breaking changes, pending coordinated update)
 
 ### Principle
@@ -101,21 +101,21 @@ Nearby code is a starting point for investigation. Verify repository-wide usage 
 ### Pattern 3: Implementation Without Sufficient Testing
 **Symptom**: Many bugs after implementation
 **Cause**: Ignoring Red-Green-Refactor process
-**Avoidance**: Always start with failing tests
+**Prevention**: Start behavior changes with a failing test that demonstrates the required outcome
 
 ### Pattern 4: Ignoring Technical Uncertainty
 **Symptom**: Frequent unexpected errors when introducing new technology
 **Cause**: Assuming "it should work according to official documentation" without prior investigation
 **Avoidance**:
 - Record certainty evaluation at the beginning of task files
-- For low certainty cases, create minimal verification code first
+- Treat certainty as low when repository evidence, a version-matched primary source, or a runnable local check cannot confirm an outcome-relevant behavior; create the smallest verification that resolves that behavior before implementation
 
 ### Pattern 5: Insufficient Existing Code Investigation
 **Symptom**: Duplicate implementations, architecture inconsistency, integration failures, adopting outdated patterns
 **Cause**: Insufficient understanding of existing code before implementation; referencing only nearby files without verifying representativeness
 **Avoidance Methods**:
-- Before implementation, always search for similar functionality (using domain, responsibility, configuration patterns as keywords)
-- Similar functionality found -> Use that implementation (do not create new implementation)
+- Before implementation, search for similar functionality using domain, responsibility, and configuration-pattern keywords
+- Similar functionality found -> Use or extend that implementation when it satisfies the current contract
 - Similar functionality is technical debt -> Create ADR improvement proposal before implementation
 - No similar functionality exists -> Implement new functionality following existing design philosophy
 - Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
@@ -129,13 +129,7 @@ Nearby code is a starting point for investigation. Verify repository-wide usage 
 3. Identify first line where your code appears
 
 ### 2. 5 Whys - Root Cause Analysis
-```
-Symptom: Build error
-Why1: Type definitions don't match -> Why2: Interface was updated
-Why3: Dependency change -> Why4: Package update impact
-Why5: Major version upgrade with breaking changes
-Root cause: Inappropriate version specification
-```
+Trace each answer to observed evidence until reaching a cause whose correction prevents the original failure. Record each question, evidence, and the final causal link; stop when the next answer would be speculation and name the evidence needed.
 
 ### 3. Minimal Reproduction Code
 To isolate problems, attempt reproduction with minimal code:
@@ -170,8 +164,8 @@ function isUser(value: unknown): value is User {
 ## Refactoring Techniques
 
 **Basic Policy**
-- Small Steps: Maintain always-working state through gradual improvements
-- Safe Changes: Minimize the scope of changes at once
+- Small Steps: Keep the nearest applicable tests and static checks passing after each behavior-preserving refactor
+- Safe Changes: Change one refactoring responsibility at a time and verify its observable behavior before the next responsibility
 - Behavior Guarantee: Ensure existing behavior remains unchanged while proceeding
 
 **Implementation Procedure**: Understand Current State -> Gradual Changes -> Behavior Verification -> Final Validation
@@ -206,26 +200,26 @@ Structured impact report (mandatory):
 ### Processing Flow: Input -> Process1 -> Process2 -> Output
 ```
 
-**Important**: Do not stop at search; execute all 3 stages
+**Completion gate**: Discovery, Understanding, and Identification must all contain the required evidence before implementation begins.
 
 ### Unused Code Deletion Rule
 
-When unused code is detected -> Will it be used?
-- Yes -> Implement immediately (no deferral allowed)
-- No -> Delete immediately (remains in Git history)
+When unused code is detected, ask whether a current requirement and reachable call path use it before task completion.
+- Yes -> connect it to that call path and verify the requirement
+- No -> remove it; version control retains the prior implementation
 
 Target: Code, documentation, configuration files
 
 ## Red-Green-Refactor Process (Test-First Development)
 
-**Recommended Principle**: Always start code changes with tests
+**Recommended Principle**: Start behavior changes with a test that fails for the required reason
 
 **Development Steps**:
 1. **Red**: Write test for expected behavior (it fails)
 2. **Green**: Pass test with minimal implementation
 3. **Refactor**: Improve code while maintaining passing tests
 
-**NG Cases (Test-first not required)**:
+**Direct-verification cases**:
 - Pure configuration file changes (.env, config, etc.)
 - Documentation-only updates (README, comments, etc.)
 - Emergency production incident response (post-incident tests mandatory)
@@ -234,13 +228,13 @@ Target: Code, documentation, configuration files
 
 ### Test Case Structure
 - Tests consist of three stages: "Arrange," "Act," "Assert"
-- Clear naming that shows purpose of each test
+- Test names state the trigger and observable result
 - One test case verifies only one behavior
 
 ### Test Data Management
 - Manage test data in dedicated directories
 - Define test-specific environment variable values
-- Always mock sensitive information
+- Use synthetic, non-sensitive values for credentials, tokens, personal data, and payment data in tests
 - Keep test data minimal, using only data directly related to test case verification purposes
 
 ### Mock and Stub Usage Policy
@@ -249,8 +243,7 @@ Target: Code, documentation, configuration files
 - Merit: Ensures test independence and reproducibility
 - Practice: Mock DB, API, file system, and other external dependencies
 
-**Avoid: Actual external connections in unit tests**
-- Reason: Slows test speed and causes environment-dependent problems
+**Unit-test boundary**: Use deterministic substitutes for external connections; exercise real external boundaries in integration or E2E tests selected for that contract
 
 ### Test Failure Response Decision Criteria
 
@@ -261,8 +254,7 @@ Target: Code, documentation, configuration files
 ## Test Granularity Principles
 
 ### Core Principle: Observable Behavior Only
-**MUST Test**: Public APIs, return values, exceptions, external calls, persisted state
-**MUST NOT Test**: Private methods, internal state, algorithm implementation details
+**Test through observable boundaries**: Public APIs, return values, exceptions, external calls, and persisted state. Reach private methods, internal state, and algorithm details only through those observable boundaries.
 
 ## Security Principles
 

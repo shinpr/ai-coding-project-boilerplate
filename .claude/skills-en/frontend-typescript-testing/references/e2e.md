@@ -155,7 +155,7 @@ test('Dismiss-then-Undo restores card', async ({ page }) => {
 **Principles for fixture-e2e**:
 - Backend is faked, not running. No `npm run start:backend` required to execute these tests
 - Fixtures are versioned in the repo (`tests/e2e/data/`) so tests are deterministic across machines
-- Auth, when needed, is faked too (set a test cookie via `page.context().addCookies()` or use a fixture-mode bypass)
+- When the journey requires an authenticated state but does not verify real authentication, establish auth with a deterministic test cookie or fixture-mode session
 - These tests run in CI without provisioning external infrastructure
 
 ## E2E Environment Prerequisites (service-integration-e2e only)
@@ -174,7 +174,7 @@ When the work plan includes dedicated environment setup tasks (Phase 0), follow 
 ## Locator Strategy
 
 Prefer accessible locators in this order:
-1. `page.getByRole()` — best for accessibility
+1. `page.getByRole()` — targets the accessibility role and user-visible name
 2. `page.getByLabel()` — form elements
 3. `page.getByText()` — visible text
 4. `page.getByTestId()` — last resort
@@ -183,7 +183,7 @@ Prefer accessible locators in this order:
 // Preferred
 await page.getByRole('button', { name: 'Submit' }).click()
 
-// Avoid
+// Brittle implementation-coupled locator
 await page.locator('#submit-btn').click()
 await page.locator('.btn-primary').click()
 ```

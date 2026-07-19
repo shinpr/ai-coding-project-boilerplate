@@ -5,9 +5,13 @@ description: Applies Vitest test design and quality standards. Provides coverage
 
 # TypeScript Testing Rules
 
+## Prerequisite Detection
+
+Inspect `package.json`, the lockfile, test configuration, and existing test imports before selecting a framework or command. Apply Vitest-specific rules only when Vitest is configured; otherwise use the repository's configured TypeScript test harness while preserving the behavior, isolation, and evidence rules below. If no runnable harness is identifiable, report the inspected paths and missing command or configuration.
+
 ## Test Framework
 
-- **Vitest**: This project uses Vitest
+- **Vitest**: Use when selected by repository configuration or existing tests
 - Test imports: `import { describe, it, expect, beforeEach, vi } from 'vitest'`
 - Mock creation: Use `vi.mock()`
 
@@ -16,8 +20,8 @@ description: Applies Vitest test design and quality standards. Provides coverage
 ### Quality Requirements
 - **Coverage**: treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law). Concentrate tests on critical paths, business logic, and behavior whose regression would matter. Any numeric threshold is the project's CI config
 - **Independence**: Each test can run independently without depending on other tests
-- **Reproducibility**: Tests are environment-independent and always return the same results
-- **Readability**: Test code maintains the same quality as production code
+- **Reproducibility**: Control time, randomness, environment values, and external I/O so identical inputs produce the same observable result
+- **Readability**: Each test names one behavior, separates setup/action/assertion, and keeps fixtures limited to values used by that behavior
 
 ### Coverage
 - Prioritize meaningful assertions over the coverage number; raise coverage where a gap leaves a real regression unguarded, not to hit a percentage
@@ -31,14 +35,15 @@ description: Applies Vitest test design and quality standards. Provides coverage
 
 2. **Integration Tests**
    - Verify coordination between multiple components
-   - Use actual dependencies (DB, API, etc.)
-   - Verify major functional flows
+   - Use real in-process components that are part of the behavior under test
+   - For an external I/O boundary, use the real dependency only when that boundary's implementation or contract is the test target; otherwise use a deterministic substitute and verify the boundary request/response contract
+   - Verify flows that implement a primary acceptance criterion or cross an in-process component boundary
 
 3. **Cross-functional Verification in E2E Tests**
    - Mandatory verification of impact on existing features when adding new features
-   - Cover integration points with "High" and "Medium" impact levels from Design Doc's "Integration Point Map"
+   - Cover integration points classified as "High" and "Medium" in the Design Doc's "Integration Point Map"; when no Design Doc exists, classify High as failure of a primary user journey or public contract and Medium as degradation of a secondary observable behavior
    - Verification pattern: Existing feature operation -> Enable new feature -> Verify continuity of existing features
-   - Success criteria: No change in response content, processing time within 5 seconds
+   - Success criteria: Preserve the response fields and observable behavior named by the source acceptance criteria; apply a processing-time threshold only when a requirement or project configuration defines its value and measurement method
    - Designed for automatic execution in CI/CD pipelines
 
 ## Test Implementation Conventions
@@ -62,13 +67,7 @@ src/
 
 ### Test Code Quality Rules
 
-**Recommended: Keep all tests always active**
-- Merit: Guarantees test suite completeness
-- Practice: Fix problematic tests and activate them
-
-**Avoid: test.skip() or commenting out**
-- Reason: Creates test gaps and incomplete quality checks
-- Solution: Completely delete unnecessary tests
+Keep every committed test active. Repair a test that protects current behavior; remove a test only when its behavior is no longer required and the source requirement or implementation contract confirms the removal.
 
 ## Test Quality Criteria
 
@@ -80,7 +79,7 @@ it('throws on negative price', () => expect(() => calc([{price: -1}])).toThrow()
 ```
 
 ### Literal Expected Values
-Use literal values for assertions. Do not replicate implementation logic.
+Use expected values that are independent of the implementation calculation. A literal is preferred when it expresses the contract directly; otherwise derive the expected value from a separate authoritative fixture or specification.
 **Valid test**: Expected value != Mock return value (implementation transforms/processes data)
 ```typescript
 expect(calcTax(100)).toBe(10)  // not: 100 * TAX_RATE
@@ -101,8 +100,8 @@ it('creates user', async () => {
 })
 ```
 
-### Appropriate Mock Scope
-Mock only direct external I/O dependencies. Use real implementations for indirect dependencies.
+### Mock Scope Decision
+Use real implementations for every in-process component whose coordination is under test. Substitute a direct external I/O dependency when the test targets higher-layer behavior; use the real engine or a production-equivalent test instance when the external adapter, query, migration, or service contract itself is the target.
 ```typescript
 vi.mock('./database')  // external I/O only
 ```
@@ -129,10 +128,10 @@ it('reverses twice equals original', () => {
 type TestRepo = Pick<Repository, 'find' | 'save'>
 const mock: TestRepo = { find: vi.fn(), save: vi.fn() }
 
-// Only when absolutely necessary, with clear justification
+// Type only the SDK surface consumed by the subject under test
 const sdkMock = {
   call: vi.fn()
-} as unknown as ExternalSDK // Complex external SDK type structure
+} satisfies Pick<ExternalSDK, 'call'>
 ```
 
 ## Data Layer Testing
@@ -145,7 +144,7 @@ Mocks validate call patterns but cannot verify data layer correctness. The follo
 - Database constraints (NOT NULL, UNIQUE, foreign keys)
 - Migration drift (schema changes that make code out of sync)
 
-### When Mocks Are Appropriate for Data Access
+### Data-Access Tests That Use Mocks
 
 - Testing business logic that receives data from the data layer (mock the repository, test the service)
 - Testing error handling paths (simulating connection failures, timeouts)
@@ -165,7 +164,13 @@ Options for verifying data layer correctness against a real database engine:
 - **In-memory databases** for fast feedback (note: dialect differences may mask issues)
 - **Dedicated test databases** with seed data
 
-The appropriate approach depends on project environment and CI/CD capabilities.
+Select the first option that matches repository evidence:
+1. Use the CI-configured database harness when present.
+2. Otherwise use the same database engine in a container when container execution is available.
+3. Use an in-memory database only when the verified behavior is dialect-independent; record the dialect behavior left unproven.
+4. Use a dedicated test database when the repository already provisions and isolates one.
+
+When none is available and data-layer correctness is the target, stop and report the missing environment prerequisite. A mock-only result is not evidence of query, schema, constraint, or migration correctness.
 
 ### AI-Generated Code and Schema Awareness
 

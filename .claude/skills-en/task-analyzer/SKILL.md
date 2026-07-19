@@ -1,6 +1,6 @@
 ---
 name: task-analyzer
-description: Analyzes task essence and selects appropriate skills. Returns scale estimates and metadata. Use when starting tasks or selecting skills.
+description: Classifies task intent, change risk, and execution scale, then selects skills from the project skills index. Use when starting work, routing a task, estimating scope, or selecting skills.
 ---
 
 # Task Analyzer
@@ -31,11 +31,17 @@ Identify the fundamental purpose beyond surface-level work:
 
 ### 2. Estimate Task Scale
 
-| Scale | File Count | Indicators |
-|-------|------------|------------|
-| Small | 1-2 | Single function/component change |
-| Medium | 3-5 | Multiple related components |
-| Large | 6+ | Cross-cutting concerns, architecture impact |
+File count is one signal, not the deciding rule. Evaluate every axis below and select the highest scale triggered by any observed axis.
+
+| Axis | Small | Medium | Large |
+|------|-------|--------|-------|
+| Estimated files | 1-2 | 3-5 | 6+ |
+| Observable outcomes | One behavior | Multiple related behaviors | Multiple independently verifiable outcomes |
+| Contracts/data | No public contract or persisted-data change | Backward-compatible contract change | Breaking contract, schema migration, or persisted-data migration |
+| Boundaries | One local module/component | Multiple modules in one layer | Cross-layer, cross-service, or external-system boundary |
+| Decision risk | Existing pattern applies directly | One bounded technical decision | Architecture, security, compliance, or irreversible operational decision |
+
+Record which axis determined the final scale. A high file count caused only by mechanical generated-file updates may be reduced when the repository workflow proves the change has one behavior and one verification path; record that evidence in `scaleRationale`.
 
 **Scale affects skill priority:**
 - Larger scale → process/documentation skills more important
@@ -45,11 +51,19 @@ Identify the fundamental purpose beyond surface-level work:
 
 | Type | Characteristics | Key Skills |
 |------|-----------------|------------|
-| Implementation | New code, features | coding-standards, typescript-testing |
-| Fix | Bug resolution | coding-standards, typescript-testing |
-| Refactoring | Structure improvement | coding-standards, implementation-approach |
-| Design | Architecture decisions | documentation-criteria, implementation-approach |
-| Quality | Testing, review | typescript-testing, integration-e2e-testing |
+| implementation | New code or user-visible behavior | coding-standards, typescript-testing |
+| fix | Defect or regression resolution | coding-standards, typescript-testing |
+| refactoring | Behavior-preserving structure improvement | coding-standards, implementation-approach |
+| design | Architecture or contract decisions | documentation-criteria, implementation-approach |
+| quality | Testing, review, verification | typescript-testing, integration-e2e-testing |
+| documentation | PRD, ADR, Design Doc, UI Spec, plan, or instruction content | documentation-criteria |
+| investigation | Evidence gathering without implementation | project-context plus the domain skill selected from the index |
+| migration | Data, schema, API, dependency, or runtime transition | implementation-approach, documentation-criteria |
+| operations | Environment, deployment, or runtime operation | technical-spec plus the domain skill selected from the index |
+| security | Security design or review | coding-standards plus the implementation-domain skill |
+| skill | Skill creation, prompt-quality review, or skill metadata change | skill-optimization, llm-friendly-context |
+
+When multiple types apply, return the primary type that owns the requested outcome and list the remaining values in `secondaryTypes`.
 
 ### 4. Tag-Based Skill Matching
 
@@ -83,9 +97,13 @@ Return structured analysis with skill metadata from skills-index.yaml:
 ```yaml
 taskAnalysis:
   essence: <string>  # Fundamental purpose identified
-  type: <implementation|fix|refactoring|design|quality>
+  type: <implementation|fix|refactoring|design|quality|documentation|investigation|migration|operations|security|skill>
+  secondaryTypes: [<task-type>, ...]
   scale: <small|medium|large>
   estimatedFiles: <number>
+  scaleRationale:
+    decidingAxis: <files|outcomes|contracts-data|boundaries|decision-risk>
+    evidence: <string>
   tags: [<string>, ...]  # Extracted from task description
 
 selectedSkills:
@@ -101,16 +119,24 @@ selectedSkills:
 
 **Note**: Section selection (choosing which sections are relevant) is done separately after reading the actual SKILL.md files.
 
+## Process Gates
+
+1. **Intent gate**: Proceed to scale estimation when `essence`, primary `type`, and any `secondaryTypes` are recorded. If the requested outcome is ambiguous, record the exact outcome decision required.
+2. **Scale gate**: Proceed to skill matching when every scale axis has observed, inferred, or unknown evidence and `scaleRationale` names the deciding axis.
+3. **Selection gate**: Finalize when every selected skill exists in `skills-index.yaml`, has a reason tied to the task, and its metadata is copied without invention.
+
+If estimated file count or a material contract/boundary decision is unknown, classify it as `unknown`. Use the highest scale supported by observed evidence; when an unknown could raise the scale and changes the required workflow, stop and request the exact repository evidence or user decision needed.
+
 ## Skill Selection Priority
 
 1. **Essential** - Directly related to task type
 2. **Quality** - Testing and quality assurance
 3. **Process** - Workflow and documentation
-4. **Supplementary** - Reference and best practices
+4. **Supplementary** - Additional constraints or evidence directly tied to the task
 
 ## Metacognitive Question Design
 
-Generate 3-5 questions according to task nature:
+Generate only questions whose answers can change intent classification, scale, selected skills, a hard constraint, or verification. Return no question when repository evidence already resolves those decisions. For every question, record the decision it controls.
 
 | Task Type | Question Focus |
 |-----------|----------------|
@@ -118,6 +144,12 @@ Generate 3-5 questions according to task nature:
 | Fix | Root cause (5 Whys), impact scope, regression testing |
 | Refactoring | Current problems, target state, phased plan |
 | Design | Requirement clarity, future extensibility, trade-offs |
+| Documentation | Audience, source of truth, approval/consumer contract |
+| Investigation | Claim to resolve, evidence boundary, stopping condition |
+| Migration | Compatibility window, data/contract transition, rollback |
+| Operations | Target environment, authorization boundary, recovery evidence |
+| Security | Trust boundary, protected asset, threat/acceptance source |
+| Skill | Triggering intent, standalone context, output consumer |
 
 ## Warning Patterns
 
@@ -125,7 +157,7 @@ Detect and flag these patterns:
 
 | Pattern | Warning | Mitigation |
 |---------|---------|------------|
-| Large change at once | High risk | Split into phases |
-| Implementation without tests | Quality risk | Follow TDD |
-| Immediate fix on error | Root cause missed | Pause, analyze |
-| Coding without plan | Scope creep | Plan first |
+| One step contains multiple independently verifiable outcomes | Transition and rollback risk | Split at observable verification boundaries |
+| A behavior change has no test or named runnable verification | Regression evidence is missing | Add the cheapest check that observes the changed contract |
+| A proposed fix has no observed causal link to the failure | Root cause remains inferred | Record reproduction evidence and the first causal boundary before selecting the fix |
+| Medium/Large implementation lacks its scale-required planning artifact | Scope and dependency contract is missing | Create the required artifact before implementation routing |

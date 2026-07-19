@@ -7,9 +7,12 @@ description: Evaluates and optimizes skill file quality using 8 content patterns
 
 ## Core Philosophy
 
-1. **Evidence-Based**: Grounded in prompt engineering research, applied to skill authoring
+1. **Finding-Based**: Every change resolves a recorded issue or follows a named project-specific source
 2. **Concrete**: Each pattern provides detection criteria and transform methods
 3. **Structure-Focused**: Optimizes expression and organization; domain knowledge remains unchanged
+4. **Intent-Preserving**: Records the original requirements before changing structure, wording, constraints, context, or examples
+5. **Traceable**: Connects every applied change to a finding or named project source
+6. **Self-Contained**: Keeps every pure skill executable when loaded alone; duplication across independently loaded pure skills is valid when each copy is required for standalone execution
 
 ## Content Optimization Patterns
 
@@ -21,10 +24,10 @@ Issues that directly reduce LLM execution accuracy when consuming the skill.
 
 | Detection | Transform |
 |-----------|-----------|
-| "don't", "do not", "never", "avoid" in skill instructions | Reframe as positive directive with equivalent constraint. **Exception**: Negative form is permitted only when ALL 4 conditions are met: (1) violation destroys state in a single step, (2) caller or subsequent steps cannot normally recover, (3) the constraint is operational/procedural, not a quality policy or role boundary, (4) positive rewording would expand or blur the target scope. If any condition is not met, rewrite in positive form. |
+| "don't", "do not", "never", "avoid" in skill instructions | State the desired action or allowed state first. Preserve an explicit prohibition only when the violation is an irreversible operational action, the caller cannot normally recover it, and a positive-only rewrite would blur the boundary. Pair the prohibition with the safe alternative and the condition that authorizes crossing the boundary. Rewrite reviewable quality policies in positive form. |
 
 **Exception boundary examples**:
-- Permitted: "Do not modify the command", "Do not add flags", "Do not execute destructive operations"
+- Permitted: "Move obsolete records to the recoverable archive. Do not permanently delete them unless the user explicitly authorizes permanent deletion."
 - Rewrite in positive form: "Do not invent issues" → "Base every issue on BP patterns or 9 principles", "Do not skip P1 issues" → "Evaluate all P1 issues in every review mode", "Do not give grade A when P1 exists" → "Assign grade A only when P1 count is zero"
 
 Quality policies, role boundaries, scoring criteria, and general work rules always use positive form. Outputs that the caller validates, overwrites, or discards are never irreversible.
@@ -33,7 +36,7 @@ Quality policies, role boundaries, scoring criteria, and general work rules alwa
 - Before: "Don't use generic variable names"
 - After: "Use descriptive variable names that reflect purpose (e.g., `userId` not `x`)"
 
-**Why critical for skills**: LLM attention mechanisms focus on negated content. Skill instructions with "don't" increase probability of the forbidden behavior.
+**Why critical for skills**: A prohibition alone leaves the executable target state unspecified.
 
 #### BP-002: Vague Instructions → Specific Criteria
 
@@ -56,13 +59,15 @@ Quality policies, role boundaries, scoring criteria, and general work rules alwa
 - After (criteria derived from a named source): "Follow the project error-handling policy (docs/error-handling.md): wrap external API calls, file I/O, and JSON.parse in try-catch; log error.name, error.stack, and timestamp; re-throw with context when the caller must handle it."
 - After (no source available): "Record 'error-handling policy' as the required source instead of inventing try-catch targets, log fields, or thresholds."
 
-**Why critical for skills**: Accounts for ~40% of execution variance. Every vague instruction forces LLM to guess.
+**Why critical for skills**: A vague instruction forces the model to choose an outcome-relevant behavior without a supplied criterion.
 
 #### BP-003: Missing Output Format → Structured Output
 
 | Detection | Transform |
 |-----------|-----------|
 | Skill describes what to do but not the expected deliverable format | Add an output section defining the structure, fields, and ordering required by the output consumer (parsing, routing, comparison, verification), rather than selecting a format by convention |
+
+For a skill review, the output contract contains BP-001 through BP-008 coverage, unique finding IDs, severity, location, quoted evidence, one resolution per finding, preservation requirements, unresolved inputs, and the final grade. For skill creation, the output is the complete `SKILL.md` content plus any required same-directory references or scripts.
 
 **Skill example:**
 - Before: "Analyze the code for issues"
@@ -117,6 +122,11 @@ Issues that reduce skill effectiveness when addressed.
 
 **Key insight**: Goal is externally visible state progression — each step produces evidence that controls whether the next step is valid, not decomposition for its own sake.
 
+For creation and comprehensive review, use three gates in order:
+1. **Analysis gate**: Original requirements are recorded, BP-001 through BP-008 are covered, every issue has evidence, and no unresolved input blocks faithful work.
+2. **Optimization gate**: Every finding has one applied/skipped resolution, each change is traceable, and all preservation requirements remain represented.
+3. **Balance gate**: Intent preservation, decision sufficiency, information density, constraint necessity, and traceability pass before the result is final.
+
 ### P3: Enhancement (Could Fix)
 
 Incremental improvements for specific contexts.
@@ -138,7 +148,7 @@ Incremental improvements for specific contexts.
 
 **Skill example:**
 - Before: "Determine the root cause"
-- After: "Determine the root cause. If root cause is uncertain after 3 investigation cycles, report top 3 hypotheses with confidence levels and evidence for each."
+- After: "Classify the root cause as observed, inferred, or unknown. When missing evidence blocks the next step, stop at the current gate and name the exact evidence or user decision required to continue."
 
 ## 9 Skill Editing Principles
 
@@ -147,14 +157,14 @@ Measurable quality criteria for skill content. Each principle includes a pass/fa
 | # | Principle | Pass Criteria | Fail Example |
 |---|-----------|---------------|--------------|
 | 1 | Context efficiency | Every sentence contributes to LLM decision-making. No filler. | "This is an important skill that helps with..." |
-| 2 | Deduplication | No concept explained twice at the same abstraction level within the skill or across skills. Mentions at different structural roles (e.g., classification framework vs execution detail) are not duplicates, provided the re-mention adds new constraints or criteria | Same error handling rules restated at the same abstraction level in multiple related skills |
+| 2 | Deduplication | No concept is explained twice at the same abstraction level within one skill. Duplication across independently loaded pure skills is valid when each copy is required for standalone execution; evaluate those copies for semantic consistency rather than replacing them with sibling-skill references | The same rule appears twice in one skill without adding a distinct execution role |
 | 3 | Grouping | Related criteria in single section (minimize read operations) | Scattered error handling rules across 4 sections |
 | 4 | Measurability | Criteria name observable evidence, deterministic decision rules, or justified thresholds | "Write clean code" without an observable condition |
 | 5 | Positive form | Instructions state what to do (BP-001 applied) | "Don't use any" instead of "Use only X" |
 | 6 | Consistent notation | Uniform heading levels, list styles, table formats | Mix of `-`, `*`, `1.` in same context |
 | 7 | Explicit prerequisites | Project-specific and non-baseline prerequisites are stated or linked; baseline technical knowledge is left concise | Uses "DI" without defining Dependency Injection |
 | 8 | Priority ordering | Most important items first, exceptions last | Edge cases before common patterns |
-| 9 | Scope boundaries | Explicit coverage: what this skill addresses vs references to other skills | Overlapping guidance with no cross-reference |
+| 9 | Scope boundaries | Explicitly state what the skill covers and the conditions that activate conditional content. A pure skill contains the context required for standalone execution. Cross-skill references are reserved for skills whose role is orchestration or skill selection | A pure skill omits an operative rule because another independently loaded skill also contains it |
 
 ## References
 

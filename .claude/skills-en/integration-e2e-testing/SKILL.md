@@ -8,7 +8,7 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 ## References
 
 - **[references/e2e-design.md](references/e2e-design.md)** - E2E test design principles with Playwright (candidate sources, selection criteria, UI Spec mapping)
-- **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** - E2E environment prerequisites (seed data, auth fixtures, environment checklist)
+- **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** - service-integration-e2e environment prerequisites (seed data, auth fixtures, environment checklist); fixture-e2e requires no live service or real database
 
 ## Test Types and Limits
 
@@ -45,13 +45,13 @@ The two E2E lanes are budgeted independently — having a fixture-e2e for a jour
 
 ### Required Comment Format
 
-The committed skeleton imports only the test framework (for `describe`/`it`/`it.todo`); the module under test is imported by the implementing task, never by the skeleton — a skeleton that references a not-yet-created module can fail gates that type-check, compile, or load test files before implementation begins.
+The committed skeleton imports only the test framework (for `describe`/`it`/`it.todo`). The implementing task adds the module under test after that module exists, so gates that type-check, compile, or load test files can run successfully before implementation begins.
 
 Each test MUST include the following annotations.
 
 ```typescript
 // AC: "[Acceptance criteria original text]"
-// ROI: [0-100] | Business Value: [0-10] | Frequency: [0-10]
+// ROI: [0-120] | Business Value: [0-10] | Frequency: [0-10] | Legal: [0|1] | Defect Detection: [0-10]
 // Behavior: [Trigger] -> [Process] -> [Observable Result]
 // @category: core-functionality | integration | edge-case | ux | fixture-e2e | service-integration-e2e
 // @lane: integration | fixture-e2e | service-integration-e2e
@@ -104,7 +104,18 @@ ROI Score = Business Value × User Frequency + Legal Requirement × 10 + Defect 
               (range: 0–120)
 ```
 
-Higher ROI Score = higher priority within its test type. No normalization or capping is applied — the raw score is used directly for ranking. Deduplication is a separate step that removes candidates entirely; it does not modify scores.
+Score inputs use these rules:
+
+| Input | Range | Evidence rule |
+|-------|-------|---------------|
+| Business Value | 0-10 | 0 = no user/business outcome; 10 = revenue, legal, safety, or primary product outcome |
+| User Frequency | 0-10 | Map observed product analytics or sampled telemetry to the range and record the source. Use a named stakeholder estimate only when observed usage is unavailable, label it inferred, and otherwise mark the input unknown |
+| Legal Requirement | 0 or 1 | 1 only when a named requirement, policy, or regulation requires the behavior |
+| Defect Detection | 0-10 | 0 = already proven at a cheaper boundary; 10 = the candidate uniquely detects a material failure at this lane |
+
+Higher ROI Score = higher priority within its test type. No normalization or capping is applied — the raw score is used directly for ranking. Deduplication is a separate step that removes candidates entirely; it does not modify scores. Break score ties by higher Defect Detection, then higher Business Value, then lower environment/maintenance cost.
+
+When a required score input is unknown and could change selection at the lane budget boundary, stop candidate selection and report the exact usage, requirement, or boundary evidence needed. When it cannot change the selected set, record the unknown and continue.
 
 ### ROI Thresholds by Lane
 
@@ -121,14 +132,12 @@ Reserved slot rules apply per lane and override the threshold (the reserved cand
 
 | Scenario | BV | Freq | Legal | Defect | ROI Score | Test Type | Selection Outcome |
 |----------|----|------|-------|--------|-----------|-----------|-------------------|
-| Core checkout UI flow | 10 | 9 | true | 9 | 109 | fixture-e2e | Selected (reserved slot: user-facing multi-step journey, browser verification with fixtures) |
-| Core checkout against live payment service | 10 | 9 | true | 9 | 109 | service-integration-e2e | Selected (real-service correctness above ROI threshold) |
-| Dismiss button updates UI state | 6 | 7 | false | 8 | 50 | fixture-e2e | Selected (rank 2 of 3 fixture-e2e budget) |
-| Payment error message display (UI) | 5 | 4 | false | 7 | 27 | fixture-e2e | Selected (rank 3 of 3 fixture-e2e budget) |
-| Optional filter toggle | 3 | 4 | false | 2 | 14 | fixture-e2e | Not selected (rank 4, budget full) |
-| Payment retry against real provider | 8 | 3 | false | 7 | 31 | service-integration-e2e | Below ROI threshold (31 < 50), not selected |
-| DB persistence check | 8 | 8 | false | 8 | 72 | Integration | Selected (rank 1 of 3) |
-| Pure data transformation | 5 | 3 | false | 4 | 19 | Integration | Selected (rank 2 of 3) |
+| Core checkout UI flow | 10 | 9 | 1 | 9 | 109 | fixture-e2e | Selected by the reserved user-facing journey rule |
+| Core checkout against live payment service | 10 | 9 | 1 | 9 | 109 | service-integration-e2e | Selected because correctness requires real cross-service behavior |
+| Dismiss button updates UI state | 6 | 7 | 0 | 8 | 50 | fixture-e2e | Selected within the fixture-e2e budget |
+| Payment error message display | 5 | 4 | 0 | 7 | 27 | fixture-e2e | Selected as the third and final fixture-e2e budget slot |
+| Optional filter persistence | 4 | 4 | 0 | 6 | 22 | fixture-e2e | Threshold met, but not selected because three higher-scoring candidates fill the MAX 3 budget |
+| Payment retry against real provider | 8 | 3 | 0 | 7 | 31 | service-integration-e2e | Below the service-integration-e2e threshold |
 
 ## Implementation Rules
 
@@ -139,11 +148,11 @@ When Property annotation exists, fast-check library is required:
 ```typescript
 import fc from 'fast-check'
 
-it('AC2-property: Model name is always gemini-3-pro-image-preview', () => {
+it('AC2-property: normalized identifiers remain stable', () => {
   fc.assert(
-    fc.property(fc.string(), (prompt) => {
-      const result = client.generate(prompt)
-      return result.model === 'gemini-3-pro-image-preview'
+    fc.property(fc.string(), (input) => {
+      const normalized = normalizeIdentifier(input)
+      return normalizeIdentifier(normalized) === normalized
     })
   )
 })

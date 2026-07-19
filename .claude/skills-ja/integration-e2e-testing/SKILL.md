@@ -8,7 +8,7 @@ description: 統合テストとE2Eテストを設計。モック境界と振る�
 ## References
 
 - **[references/e2e-design.md](references/e2e-design.md)** — E2Eテスト設計原則（候補ソース、選定基準、UI Specからのマッピング）
-- **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** — E2E環境前提条件（seed data、auth fixture、環境チェックリスト）
+- **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** — service-integration-e2eの環境前提条件（seed data、auth fixture、環境チェックリスト）。fixture-e2eには稼働中のサービスも実データベースも不要
 
 ## テスト種別と上限
 
@@ -45,13 +45,13 @@ description: 統合テストとE2Eテストを設計。モック境界と振る�
 
 ### 必須コメント形式
 
-コミットするスケルトンは、テストフレームワーク（`describe`/`it`/`it.todo` 用）のみを import する。テスト対象モジュールは実装タスクが import するものであり、スケルトンでは import しない — まだ作成されていないモジュールを参照するスケルトンは、テストファイルを型チェック・コンパイル・ロードするゲートが実装着手前に失敗し得る。
+コミットするスケルトンは、テストフレームワーク（`describe`/`it`/`it.todo`用）のみをimportする。テスト対象moduleが作成された後に、実装タスクでそのmoduleのimportを追加する。これにより、実装開始前でもテストファイルを型チェック・compile・loadするゲートを正常に実行できる。
 
 各テストに以下のアノテーションを含めること。
 
 ```typescript
 // AC: "[受入条件原文]"
-// ROI: [0-100] | ビジネス価値: [0-10] | 頻度: [0-10]
+// ROI: [0-120] | ビジネス価値: [0-10] | 頻度: [0-10] | 法的要件: [0|1] | 欠陥検出力: [0-10]
 // 振る舞い: [トリガー] → [処理] → [観測可能な結果]
 // @category: core-functionality | integration | edge-case | ux | fixture-e2e | service-integration-e2e
 // @lane: integration | fixture-e2e | service-integration-e2e
@@ -105,7 +105,18 @@ ROI Score = Business Value × User Frequency + Legal Requirement × 10 + Defect 
 
 ROI Scoreは**同一テスト種別内での優先順位付け**に使用する（統合テスト同士、E2Eテスト同士）。テスト種別間の比較には使用しない。統合とE2Eの予算は独立して選択されるため、種別間比較は不要。
 
-ROI Scoreが高い = 同一テスト種別内での優先度が高い。正規化やキャッピングは適用しない — 生のスコアをそのままランキングに使用する。重複排除は候補自体を除外する別のステップであり、スコアは変更しない。
+スコアの入力値には以下のルールを適用する：
+
+| 入力 | 範囲 | 根拠のルール |
+|------|------|-------------|
+| ビジネス価値 | 0〜10 | 0 = ユーザー・ビジネス上の成果なし、10 = 収益、法務、安全性、主要な製品成果 |
+| 利用頻度 | 0〜10 | 観測済みの製品分析データまたはサンプリングしたtelemetryを範囲へ対応づけ、情報源を記録する。観測データがない場合に限り、名前を明記したstakeholderの見積もりを推測として使用する。それもなければ不明とする |
+| 法的要件 | 0または1 | 明記された要件、ポリシー、規制で振る舞いが必須の場合のみ1 |
+| 欠陥検出力 | 0〜10 | 0 = より低コストな境界ですでに証明済み、10 = このレーンだけが重大な失敗を検出可能 |
+
+ROI Scoreが高いほど、同一テスト種別内での優先度が高い。正規化や上限処理は行わず、生のスコアをそのまま順位付けに使用する。重複排除は候補自体を除外する別のステップであり、スコアは変更しない。同点の場合は、欠陥検出力、ビジネス価値の順に高い方を優先し、それも同じなら環境・保守コストが低い方を優先する。
+
+必要な入力値が不明で、レーンの予算境界における選定結果が変わり得る場合は候補選定を止め、必要な利用状況、要件、境界の根拠を具体的に報告する。選定結果が変わらない場合は、不明点を記録して継続する。
 
 #### レーン別ROI閾値
 
@@ -122,14 +133,12 @@ ROI Scoreが高い = 同一テスト種別内での優先度が高い。正規�
 
 | シナリオ | BV | Freq | Legal | Defect | ROI Score | テスト種別 | 選択結果 |
 |----------|----|------|-------|--------|-----------|-----------|---------|
-| コア決済UIフロー | 10 | 9 | true | 9 | 109 | fixture-e2e | 選択（予約スロット: ユーザー向けマルチステップジャーニー、フィクスチャによるブラウザ検証） |
-| 実決済サービスへのコア決済 | 10 | 9 | true | 9 | 109 | service-integration-e2e | 選択（実サービスでの正しさ。ROI閾値超過） |
-| Dismissボタンによる UI 状態更新 | 6 | 7 | false | 8 | 50 | fixture-e2e | 選択（fixture-e2e 予算3件中ランク2位） |
-| 決済エラーメッセージ表示（UI） | 5 | 4 | false | 7 | 27 | fixture-e2e | 選択（fixture-e2e 予算3件中ランク3位） |
-| 任意フィルタ切替 | 3 | 4 | false | 2 | 14 | fixture-e2e | 不選択（ランク4位、予算上限到達） |
-| 実プロバイダへの決済リトライ | 8 | 3 | false | 7 | 31 | service-integration-e2e | ROI閾値未満（31 < 50）、不選択 |
-| DB永続化チェック | 8 | 8 | false | 8 | 72 | 統合 | 選択（3件中ランク1位） |
-| 純粋なデータ変換 | 5 | 3 | false | 4 | 19 | 統合 | 選択（3件中ランク2位） |
+| コア決済UIフロー | 10 | 9 | 1 | 9 | 109 | fixture-e2e | ユーザー向けジャーニーの予約ルールにより選択 |
+| 実決済サービスへのコア決済 | 10 | 9 | 1 | 9 | 109 | service-integration-e2e | 実サービス間の振る舞いでなければ正しさを検証できないため選択 |
+| DismissボタンによるUI状態更新 | 6 | 7 | 0 | 8 | 50 | fixture-e2e | fixture-e2e予算内で選択 |
+| 決済エラーメッセージ表示 | 5 | 4 | 0 | 7 | 27 | fixture-e2e | fixture-e2e予算の3枠目として選択 |
+| 任意フィルタの永続化 | 4 | 4 | 0 | 6 | 22 | fixture-e2e | 閾値は満たすが、スコアがより高い3候補で最大3枠が埋まるため不選択 |
+| 実プロバイダーへの決済リトライ | 8 | 3 | 0 | 7 | 31 | service-integration-e2e | service-integration-e2eの閾値未満 |
 
 ## 実装ルール
 
@@ -140,11 +149,11 @@ Property注釈がある場合、fast-checkライブラリ必須:
 ```typescript
 import fc from 'fast-check'
 
-it('AC2-property: モデル名は常にgemini-3-pro-image-preview', () => {
+it('AC2-property: 正規化した識別子は安定している', () => {
   fc.assert(
-    fc.property(fc.string(), (prompt) => {
-      const result = client.generate(prompt)
-      return result.model === 'gemini-3-pro-image-preview'
+    fc.property(fc.string(), (input) => {
+      const normalized = normalizeIdentifier(input)
+      return normalizeIdentifier(normalized) === normalized
     })
   )
 })

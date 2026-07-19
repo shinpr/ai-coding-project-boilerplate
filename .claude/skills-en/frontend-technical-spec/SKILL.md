@@ -1,20 +1,24 @@
 ---
 name: frontend-technical-spec
-description: Defines frontend environment variables, component design, and data flow patterns. Use when configuring React environment.
+description: Defines React environment, component architecture, state/data flow, build verification, and frontend non-functional criteria from repository evidence. Use when configuring or designing a React frontend, its build, or its runtime boundaries.
 ---
 
 # Technical Design Rules (Frontend)
 
+## Prerequisite Detection
+
+Inspect `package.json`, the lockfile, TypeScript/build configuration, CI definitions, and representative components before applying a tool- or framework-specific rule. Treat React, Vite, Next.js, a state library, form library, or script as available only when repository evidence names it. Label surrounding-pattern conclusions as inferred. When a missing decision changes rendering architecture, compatibility, security, or verification, stop and name the exact evidence or user decision required.
+
 ## Basic Technology Stack Policy
-TypeScript-based React application implementation. Architecture patterns should be selected according to project requirements and scale.
+These rules apply when repository configuration confirms a TypeScript-based React application. Select architecture by mapping current requirements and constraints to component responsibilities, state ownership, server/client boundaries, and observable verification points.
 
 ## Environment Variable Management and Security
 
 ### Environment Variable Management
-- **Use build tool's environment variable system**: `process.env` does not work in browser environments
+- **Use the build tool's client-exposure mechanism**: Browser code can read only values explicitly exposed by the configured bundler/framework; server-only environment access remains outside client bundles
 - Centrally manage environment variables through configuration layer
-- Implement proper type safety with TypeScript
-- Properly implement default value settings and mandatory checks
+- Parse exposed values at one typed configuration boundary before application use
+- Give a value a default only when requirements define valid behavior for absence; otherwise fail startup/build validation with the variable name and expected format
 
 ```typescript
 // Build tool environment variables (public values only; client-exposed vars need the VITE_ prefix)
@@ -29,10 +33,9 @@ const apiUrl = process.env.API_URL
 
 ### Security (Client-side Constraints)
 - **CRITICAL**: All frontend code is public and visible in browser
-- **Never store secrets client-side**: No API keys, tokens, or secrets in environment variables
-- Do not include `.env` files in Git (same as backend)
-- Prohibit logging of sensitive information (passwords, tokens, personal data)
-- Do not include sensitive information in error messages
+- **Keep secrets server-side**: Client-exposed configuration contains public values only; a backend or trusted service owns API keys, tokens, and credentials
+- Keep local `.env` files outside version control and provide non-secret example files for required variable names
+- Log and return only fields approved for the current trust boundary; redact passwords, tokens, and personal data
 
 **Correct Approach for Secrets**:
 ```typescript
@@ -54,6 +57,12 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 - **Component Hierarchy**: Atoms -> Molecules -> Organisms -> Templates -> Pages
 - **Props-driven**: Components receive all necessary data via props
 - **Co-location**: Place tests, styles, and related files alongside components
+
+Select a component/state pattern using these rules:
+- Keep state local when one component subtree owns every read and write
+- Use Context when multiple descendants require the same low-frequency state and the provider boundary is explicit
+- Use a server-state library only when the configured dependency exists and caching, deduplication, background refresh, or request lifecycle state is required
+- Introduce an additional state-management dependency only when current requirements cannot be covered by local state, reducer state, existing Context, or the repository's established state mechanism
 
 **State Management Patterns**:
 - **Local State**: `useState` for component-specific state
@@ -82,7 +91,7 @@ Maintain consistent data flow throughout the React application:
   // Immutable state update
   setUsers(prev => [...prev, newUser])
 
-  // Mutable state update (avoid)
+  // Invalid mutable state update
   users.push(newUser)
   setUsers(users)
   ```
@@ -106,7 +115,7 @@ async function fetchUser(id: string): Promise<User> {
 ```
 
 ## Build and Testing
-Use the appropriate run command based on the `packageManager` field in package.json.
+Select the package manager from the `packageManager` field, lockfile, or CI command in that order. Execute only scripts present in the selected manifest.
 
 ### Build Commands
 - Auto-detect and execute the following from package.json scripts:
@@ -128,10 +137,14 @@ Quality checks are mandatory upon implementation completion:
 - `check` - Biome (lint + format)
 - `build` - TypeScript build
 
+**Transition evidence**: every configured lint/format/type/build check exits successfully. A missing required script blocks the next phase until an equivalent repository command is identified.
+
 **Phase 4-5: Tests and Final Confirmation**
 - `test` - Test execution
 - `test:coverage:fresh` - Coverage measurement
 - `check:all` - Overall integrated check
+
+**Completion evidence**: configured tests pass, the production build succeeds, and the integrated check remains clean after test fixes. Record an environment-dependent test as blocked with its exact prerequisite.
 
 ### Coverage
 - Treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law)
@@ -139,5 +152,5 @@ Quality checks are mandatory upon implementation completion:
 - Any enforced numeric threshold is the project's CI/coverage config, not a goal in itself
 
 ### Non-functional Requirements
-- **Browser Compatibility**: Chrome/Firefox/Safari/Edge (latest 2 versions)
-- **Rendering Time**: Within 5 seconds for major pages
+- **Browser Compatibility**: Use the repository's Browserslist/build target or a named product requirement; record the source and test the affected browser-specific behavior
+- **Rendering Performance**: Use the browser matrix and performance thresholds defined by project requirements, CI, or performance configuration. When none exists, report measured conditions as diagnostic evidence without inventing a pass threshold

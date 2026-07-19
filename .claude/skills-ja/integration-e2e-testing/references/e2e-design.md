@@ -92,9 +92,9 @@ UI Specでレスポンシブ動作が定義されている場合、クリティ�
 
 | Breakpoint | 幅 | テスト条件 |
 |-----------|------|-----------|
-| モバイル | 375px | UI Specでモバイル固有のインタラクションが定義されている場合 |
-| タブレット | 768px | UI Specでタブレット用レイアウトの差異が定義されている場合 |
-| デスクトップ | 1280px | デフォルト — 常にテスト |
+| モバイル | UI Specのbreakpointまたは設定済みのmobile project viewport | UI Specでmobile固有のinteractionが定義されている場合 |
+| タブレット | UI Specのbreakpointまたは設定済みのtablet project viewport | UI Specでtablet用layoutの差異が定義されている場合 |
+| デフォルト | Playwright project viewportまたはUI Specのbaseline | 選定した各responsive journeyでテスト |
 
 ## 上限制約
 
