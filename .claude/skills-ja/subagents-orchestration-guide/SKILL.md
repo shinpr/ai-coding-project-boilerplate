@@ -168,6 +168,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 - `"Cannot determine due to unclear specification"` → `blockingIssues[]`で仕様詳細を確認
 - `"Execution prerequisites not met"` → `missingPrerequisites[]`の`resolutionSteps`をユーザーにアクション可能なステップとして提示
+- `"Quality failure outside current task scope"` → `outOfScopeFailures[]`と`needsUserDecision`をユーザーに提示して停止する。ユーザーがタスクスコープを広げて当該失敗を含めた場合にのみ、quality-fixerを再実行する
 
 ## 作業計画時の基本フロー
 
@@ -347,7 +348,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
    #### code-verifier → document-reviewer（Design Docレビュー）
 
    **code-verifierへの入力**: Design Docパス（doc_type: design-doc）。`code_paths`は指定を省略する — verifierがドキュメントからコードスコープを独自に発見する。
-   **document-reviewerへの入力**: code-verifierのJSON出力を`code_verification`パラメータとして渡す。**加えて**、designerに渡したものと同じcodebase-analyzerのJSONを`codebase_analysis`として渡す。reviewerは`codebase_analysis.focusAreas`を使ってFact Disposition Tableのカバレッジを検証する。
+   **document-reviewerへの入力**: code-verifierのJSON出力を`code_verification`として、designerに渡したものと同じcodebase-analyzerのJSONを`codebase_analysis`として渡す。加えて、要件が手元にある場合は、要件（改訂時は今回の変更要求）を`requirements_verbatim`、確認済みスコープとユーザー判断を`confirmed_decisions`として渡す。reviewerは`codebase_analysis.focusAreas`でFact Disposition Tableのカバレッジを検証し、対となる要件入力でAdopted design validityを検証する。対のうち一方だけを渡した場合は`rejected`が返る。
 
    #### code-verifier + document-reviewer → 次レイヤーのtechnical-designer（レイヤー横断フロー時のみ）
 

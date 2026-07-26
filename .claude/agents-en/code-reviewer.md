@@ -288,5 +288,5 @@ Recommend higher-level review when:
 - Implementation significantly exceeds Design Doc quality
 - Security concerns discovered
 - Critical performance issues found
-- Implementation introduces in-scope elements absent from the Design Doc's Minimal Surface Alternatives section. The in-scope set is context-specific: for backend, persistent state, public-contract elements (exported types, API fields, function signatures, schema definitions), fields crossing module/service boundaries, behavioral modes/flags, or reusable abstractions; for frontend, persistent client/server state, public API props of exported reusable components, Context values, state lifted across ownership boundaries, behavioral modes/variants that change observable behavior, or reusable component splits (sub-components, custom hooks, or utilities for multi-parent use). Ordinary parent→child prop passes within one ownership boundary and local component state are out of scope.
+- Implementation introduces persistent state, public or cross-boundary contracts, behavioral modes, reusable abstractions, or component splits absent from both the Design Doc's Direct MVP and Adopted Additions
 

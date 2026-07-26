@@ -81,8 +81,8 @@ The subsections below are not parallel mandates; they form four serial gates: **
    - Search existing code for keywords related to planned component
    - Look for components with same domain, responsibilities, or UI patterns
    - Decision and action:
-     - Similar component found → Use that component (do not create new component)
-     - Similar component is technical debt → Create ADR improvement proposal before implementation
+     - Similar component found → Reuse that component as the implementation path
+     - Similar component is technical debt → Repair it when required for the current outcome or confirmed scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
      - No similar component → Proceed with new implementation
 
 4. **Dependency Existence Verification**
@@ -90,7 +90,7 @@ The subsections below are not parallel mandates; they form four serial gates: **
    - Typical targets include: components, custom hooks, Context definitions, store/state definitions, API endpoints, type definitions, utility functions
    - If found in codebase: record file path and definition location
    - If found outside codebase (external API, separate repository, generated artifact): record the authoritative source and mark as "external dependency"
-   - If not found anywhere: mark as "requires new creation" in the Design Doc and reflect in implementation order dependencies
+   - If not found anywhere: record a failed assumption for Design Convergence to resolve through reuse, repair, or justified creation
 
 5. **Behavioral Claim Verification**
    - For each behavioral or factual claim the design relies on but does not itself define, and whose falsity would invalidate the design approach — framework/library default behavior ("the router preserves scroll by default", "the form library resets on unmount"), a capability assumed already provided ("the hook already debounces", "the context already exposes Z"), or a feature assumed already implemented ("already handled by the parent") — attach one evidence source at design time: a codebase reference (file:line from Grep/Read), an executed command result, or an authoritative doc/spec URL. For a framework/library default, pair the official doc with the resolved package version (from the lockfile or config), since default behavior can differ across versions. Declarative phrasing such as "already", "by default", "defaults to", or "handled by" marks likely starting points (a hint set, not exhaustive).
@@ -102,8 +102,8 @@ The subsections below are not parallel mandates; they form four serial gates: **
 6. **Include in Design Doc**
    - Always include investigation results in "## Existing Codebase Analysis" section
    - Clearly document similar component search results (found components or "none")
-   - Include dependency existence verification results (verified existing / requires new creation)
-   - Record adopted decision (use existing/improvement proposal/new implementation) and rationale
+   - Include dependency existence verification results (verified existing / external dependency / failed assumption)
+   - Record adopted decision (reuse / repair / new implementation) and rationale
 
 ### Fact Disposition [Gate 1 — Required when Codebase Analysis input is provided]
 
@@ -131,44 +131,13 @@ For every entry in `Codebase Analysis.focusAreas`, produce one row in the Design
 
 The Fact Disposition Table is the primary mechanism that binds **structural existing-behavior facts** to the design. Verification Strategy's Output Comparison binds **runtime behavior** (input/output equivalence). Other Design Doc sections that describe existing behavior reference the corresponding Disposition Table row by `fact_id` value.
 
-### Minimal Surface Alternatives [Gate 1 — Required when introducing persistent client/server state, props or fields crossing ownership boundaries (public API props of exported reusable components, Context values, or state lifted across ownership boundaries), behavioral modes/variants that change observable behavior, or reusable component splits]
+### Design Convergence [Gate 1 — Required]
 
-Applies to each maintenance-surface-bearing element the design introduces. Goal: select the smallest design surface that covers the same current requirements. Reference: `coding-standards` skill, "Minimum Surface for Required Coverage".
-
-**In scope**: persistent state (localStorage/sessionStorage/IndexedDB/cookies/server-saved fields — state that survives reload, navigation, or session, or is saved outside component memory); props or fields crossing ownership boundaries (public API props of an exported reusable component, Context values, state lifted across ownership boundaries to a shared ancestor); behavioral modes/variants (component variants, mode props, conditional rendering modes that change observable behavior); reusable component splits (sub-components, custom hooks, or utilities extracted for use by multiple parents).
-
-**Out of scope**: local `useState` / `useReducer` confined to a single component's internal logic (lost on reload); private hooks used by one component; ordinary parent→child prop passes that stay within one ownership boundary; test fixture or mock props; transient render-only state; internal helper functions without external observers.
-
-**Precedence**: when an element matches both an in-scope and an out-of-scope condition (e.g., local `useState` that is now lifted to a Context so additional sibling subtrees can read it — the local-state aspect would be out of scope but the Context aspect is in scope), the in-scope classification wins and the gate applies.
-
-Execute the 5 steps below for each in-scope element. Record the result in the Design Doc's "Minimal Surface Alternatives" section (see design-template.md).
-
-1. **Fix Requirements**
-   - List the current user-visible requirements / ACs / accepted technical constraints (audit, accessibility, performance, security, compatibility) this element serves. Reference each by AC ID, AC heading, EARS clause, or constraint ID from the Design Doc or referenced PRD/UI Spec.
-   - Eligibility: only requirements / constraints inside the current Design Doc's adopted scope qualify.
-
-2. **Diverge** (generate alternatives)
-   - Produce at least 2 alternative realizations covering the same fixed requirements.
-   - At least one alternative is subtractive. Subtractive options are drawn from: derive from existing props/state, lift state to existing parent, reuse existing component or variant, keep at caller / URL / server response, introduce no new mode.
-
-3. **Compare** (record alternatives in a table)
-
-   | Alternative | Current requirements covered (AC reference) | New persistent state (client or server, count) | New props / modes / variants (count) | Crosses component boundary (yes/no) | Breaking change or migration required (yes/no) | Subjective cost notes |
-   |---|---|---|---|---|---|---|
-
-   Resolution priority (later columns are tiebreakers when earlier are equal): (1) new persistent state (lower=smaller); (2) crosses component boundary (no=smaller); (3) new props/modes/variants (lower=smaller); (4) breaking change or migration (no=smaller); (5) subjective cost notes.
-
-4. **Converge** (select)
-   - Select the alternative with the smallest surface that covers all fixed requirements, applying the resolution priority above.
-   - When the selected alternative is not the smallest, name the current requirement (from Step 1) that smaller alternatives fail to satisfy.
-   - "Reusable" / "future-ready" / "convenient for implementation" / "users might want" belong in the Subjective cost notes column only (tiebreakers).
-
-5. **Record Rejected Alternatives**
-   - For each rejected alternative, record 1-2 lines: what it was, why rejected. Keep this in the Design Doc so future iterations or agents avoid re-proposing.
+Apply implementation-approach Phase 2 and record Direct MVP, Failed Items, Adopted Additions, and Rejected Additions in the Design Doc. Proceed to implementation strategy decisions after all four outputs are complete.
 
 ### Implementation Approach Decision [Gate 2 — Required]
 
-1. **Approach selection** (run Phase 1-4 of implementation-approach skill, record selection rationale):
+1. **Approach selection** (run Phases 3-7 of implementation-approach skill, using Gate 1 Existing State Analysis and Design Convergence as the completed Phase 1-2 inputs; record selection rationale):
 
    | Strategy | When to choose |
    |---|---|
@@ -402,8 +371,9 @@ Before modifying the document, inventory the external definitions that the chang
 
 Mode for documenting existing frontend architecture as-is. Used when creating Design Docs from existing implementation.
 
-### What to Skip in Reverse-Engineer Mode
-- ADR creation, option comparison, change impact analysis, latest information research, implementation approach decision
+### Mode Scope
+
+Produce the evidence-backed as-is documentation from the steps below. Future-state decision outputs — ADR and option selection, change impact analysis, Latest Information Research, Implementation Approach Decision, and Design Convergence — are N/A.
 
 ### Reverse-Engineer Mode Execution Steps
 

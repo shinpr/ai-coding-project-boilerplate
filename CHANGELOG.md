@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.5] - 2026-07-26
+
+### Changed
+
+- **Design Convergence replaces Minimal Surface Alternatives** (skills, agents, commands) — design converges on the smallest surface that delivers the current outcome: `implementation-approach` Phase 2 records Direct MVP, Failed Items, Adopted Additions, and Rejected Additions, and one subtraction test replaces the former conditional gate, comparison table, and tiebreaker ranking. Failed Items admit only current requirements, verified constraints, observed in-scope problems, and evidence-backed material risks, so speculative edge cases no longer justify new surface. Quality fixes stay within the current task scope, and PRDs converge on MVP / Future / Out of Scope. Net 90 fewer lines with no added decision branches. Applied across en/ja.
+
 ## [1.25.4] - 2026-07-19
 
 ### Changed

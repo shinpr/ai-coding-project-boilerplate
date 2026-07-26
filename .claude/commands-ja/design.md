@@ -87,7 +87,7 @@ codebase-analyzerのJSONを出典として以下を提示する:
 **[停止]**: ユーザーの選択を待ってから進む。
 
 ### Step 4: 設計書作成
-1. **technical-designer** → 設計書を作成する。ユーザー要件（原文）、codebase-analyzerのJSON、確認済みスコープとユーザー回答を渡す。documentation-criteriaに従い、これはDesign Docであり、設計にアーキテクチャ決定が伴う場合は前提となるADRを先に作成する。少なくとも2つの設計選択肢をトレードオフとともに提示する。
+1. **technical-designer** → 設計書を作成する。ユーザー要件（原文）、codebase-analyzerのJSON、確認済みスコープとユーザー回答を渡す。documentation-criteriaに従い、これはDesign Docであり、設計にアーキテクチャ決定が伴う場合は前提となるADRを先に作成する。ADRは少なくとも2つの選択肢をトレードオフとともに提示し、Design DocはDesign Convergenceを用いる。
 2. **code-verifier** → Design Docを既存コードに対して検証する。
 3. **document-reviewer** → technical-designerが作成した各ドキュメントの品質チェック。Design Docの場合: `doc_type: DesignDoc`、`requirements_verbatim`（ユーザー要件の原文）、`confirmed_decisions`（Step 3の確認済みスコープとユーザー回答）、`codebase_analysis`（codebase-analyzerのJSON）、code-verifier結果を渡す。ADR（作成された場合）の場合: `doc_type: ADR`、`codebase_analysis`を渡す。code-verifier結果はDesign Docにのみ適用する。ADRレビューで修正が必要になった場合、technical-designer(update)がADRを修正し、**かつ**修正後のADRに合わせてDesign Docを再整合させる — Design Docは未レビューまたは古いADRの上に立ってはならない。この再整合でDesign Docが変わった場合は、更新後のDesign Docに対してcode-verifierとDesign Docのdocument-reviewerを再実行し、検証が最終内容を反映するようにする。
 4. **design-sync** → Design Doc間整合性検証。

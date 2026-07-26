@@ -53,9 +53,8 @@ description: PRD、ADR、Design Doc、UI Spec、作業計画書の作成を支�
 - ビジネス要件とユーザー価値
 - 成功指標とKPI（各指標に数値目標、測定方法、期間を明記）
 - ユーザーストーリーとユースケース
-- MoSCoW法による優先順位（Must/Should/Could/Won't）
 - 受入条件（AC）に連番ID（AC-001, AC-002, ...）を付与し、下流でのトレーサビリティを確保
-- MVPとFutureフェーズの分離
+- MVPへの収束 — 価値を届ける最小のまとまった振る舞い・ジャーニーと、除外した機能をFutureまたはOut of Scopeへ理由付きで配置
 - ユーザージャーニー図（必須）
 - スコープ境界図（必須）
 
@@ -119,8 +118,8 @@ description: PRD、ADR、Design Doc、UI Spec、作業計画書の作成を支�
 - **合意事項チェックリスト**（関係者との合意内容）
 - **コード調査エビデンス**（調査時に確認したファイル/関数）
 - **フィールド伝播マップ**（フィールドがコンポーネント境界を越える場合）
-- **データ構造の採用判断**（新規構造導入時）
-- **Minimal Surface Alternatives**（永続状態、公開コントラクト要素または境界を越えるフィールド、振る舞いモード/フラグ、再利用可能な抽象/コンポーネント分割を導入する場合 — design-template.md の5ステップ出力フォーマットを参照）
+- **Design Convergence**（必須） — `Direct MVP`、`Failed Items`、`Adopted Additions`、`Rejected Additions`（design-template.md 参照）
+- **データ構造の採用判断**（収束後の設計が構造を導入・変更する場合）
 - **適用基準**（explicit/implicit分類）
 - **前提となるADR**（共通ADR含む）
 - **検証戦略**（必須）

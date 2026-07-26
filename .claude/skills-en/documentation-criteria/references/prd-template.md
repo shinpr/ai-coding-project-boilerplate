@@ -48,23 +48,29 @@ C4Context
 
 ## Functional Requirements
 
-### Must Have (P1 - MVP)
+### MVP
+
+The smallest coherent behavior or journey that delivers the value stated above. Every requirement here survived removal: taking it out breaks the value or a required legal, contractual, security, or compatibility obligation.
+
 - [ ] Requirement 1: [Detailed description]
   - AC-001: [Acceptance criteria - Given/When/Then format or measurable standard]
   - AC-002: [Acceptance criteria]
+  - Removal result: [What breaks without it — the value or the named obligation]
 - [ ] Requirement 2: [Detailed description]
   - AC-003: [Acceptance criteria]
+  - Removal result: [What breaks without it]
 
-### Should Have (P2)
-- [ ] Requirement 1: [Detailed description]
-  - AC-004: [Acceptance criteria]
+### Future
 
-### Could Have (P3)
-- [ ] Requirement 1: [Detailed description]
+Capabilities removed from MVP because value and required obligations still hold without them.
 
-### Won't Have (this release)
+- Item 1: [Description] — [reason it left MVP]
+
+### Out of Scope
+
+Capabilities not planned for this product direction.
+
 - Item 1: [Description and reason for exclusion]
-- Item 2: [Description and reason for exclusion]
 
 ## Non-Functional Requirements
 
