@@ -351,7 +351,7 @@ Set `status` to `completed` only when every required task, quality gate, verifie
    #### code-verifier → document-reviewer (Design Doc review)
 
    **Pass to code-verifier**: Design Doc path (doc_type: design-doc). Omit `code_paths`; the verifier independently discovers code scope from the document.
-   **Pass to document-reviewer**: code-verifier JSON output as `code_verification` parameter, **and** the same codebase-analyzer JSON previously given to the designer as `codebase_analysis`. The reviewer uses `codebase_analysis.focusAreas` to verify Fact Disposition Table coverage.
+   **Pass to document-reviewer**: code-verifier JSON output as `code_verification` parameter, the same codebase-analyzer JSON previously given to the designer as `codebase_analysis`, and — for a DesignDoc creation review — the original user requirements as `requirements_verbatim` plus the confirmed scope and user decisions as `confirmed_decisions`. The reviewer uses `codebase_analysis.focusAreas` to verify Fact Disposition Table coverage, and the paired requirement inputs to verify Design Convergence and adopted design validity. Supplying only one of the paired inputs returns `rejected`.
 
    #### code-verifier + document-reviewer → next-layer technical-designer (cross-layer flow only)
 

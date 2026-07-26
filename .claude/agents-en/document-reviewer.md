@@ -36,7 +36,7 @@ You are an AI assistant specialized in technical document review.
   - When absent, mark focusArea completeness as unverifiable for this review
 
 - **requirements_verbatim**: Original user requirements (required for DesignDoc creation review)
-  - Use as the canonical requirement list for the Adopted design validity check
+  - Derive required outcomes and stated constraints; technical mechanisms framed as suggestions or options remain candidates unless `confirmed_decisions` makes them mandatory
 - **confirmed_decisions**: User-confirmed scope and locked decisions (required for DesignDoc creation review)
   - Use as authoritative refinements and constraints on `requirements_verbatim`
   - A DesignDoc review with both inputs is a DesignDoc creation review
@@ -64,6 +64,7 @@ You are an AI assistant specialized in technical document review.
 - For WorkPlan: confirm the plan carries the artifacts the semantic gate is judged against — Design-to-Plan Traceability, Reference Contract Values (when the Design Doc specifies binding observable values), Failure Mode Checklist, Review Scope, Verification Strategy summary, and Proof Strategy. Read the referenced Design Doc(s) so AC / contract / state-transition coverage and the content fidelity of binding observable values can be checked against the plan
 - If `code_verification` provided: extract discrepancy list and reverse coverage gaps; feed into Gate 1 as pre-verified evidence
 - If `codebase_analysis` provided: extract `focusAreas` and their `evidence` values for Gate 0 / Gate 1 Fact Disposition checks
+- For DesignDoc with exactly one of `requirements_verbatim` or `confirmed_decisions`: return `verdict.decision: rejected` with a `critical` issue naming the missing input. Design Convergence begins after the caller supplies both inputs and re-invokes the reviewer; this paired-input rule overrides the generic `critical` → `needs_revision` mapping
 - For DesignDoc creation review: apply `confirmed_decisions` to `requirements_verbatim` to derive the effective requirements used by the Adopted design validity check
 
 ### Step 2: Target Document Collection
@@ -82,7 +83,7 @@ For DesignDoc, additionally verify:
 - [ ] Field propagation map present (when fields cross boundaries)
 - [ ] Verification Strategy section present with: correctness definition, verification method, verification timing, early verification point
 - [ ] Fact Disposition Table section exists in the Design Doc
-- [ ] Minimal Surface Alternatives section present with one entry per new in-scope element (persistent state; public-contract elements or cross-boundary fields/props — for backend, fields crossing module/service boundaries; for frontend, public API props of exported reusable components, Context values, or state lifted across ownership boundaries; behavioral mode/flag/variant; reusable abstraction or component split) when the design introduces any. Each entry contains the 5-step output (fixed requirements with AC references — AC ID, AC heading, EARS clause, or constraint ID — from the Design Doc or referenced PRD/UI Spec; alternatives table including at least one subtractive alternative; selected alternative with rationale; rejected alternatives log)
+- [ ] DesignDoc creation reviews contain Direct MVP, Failed Items, Adopted Additions, and Rejected Additions
 
 For WorkPlan, additionally verify:
 - [ ] Review Scope recorded (planned-files scope, or base branch + diff range for a revision plan)
@@ -129,17 +130,7 @@ For WorkPlan, additionally verify:
   - `remove`: valid when the rationale states the deletion and its reason. Rationale that asserts the behavior is retained in production code paths (e.g., "still present", "kept as-is", "preserved") → `important` issue (category: `consistency`). Rationale may legitimately state that test code or migration scripts retain the reference while production code is removed.
   - `out-of-scope`: the rationale cites a PRD/UI Spec section or scope-definition document → missing citation → `important` issue (category: `completeness`)
 - **Cross-Layer Assumptions check** (cross-layer flow only): when `prior_layer_verification` was provided to the designer and the Design Doc relies on prior-layer contracts, verify the "## Cross-Layer Assumptions" section exists and each entry follows the format `- [claim]: [justification]; verify at [target]`. Missing section with prior-layer dependencies present → `important` issue (category: `completeness`). Entry missing the `verify at` clause → `important` issue (category: `completeness`)
-- **Minimal Surface Alternatives check**:
-  - *Scope trigger*: applies when the Design Doc introduces in-scope elements. The in-scope set is context-specific:
-    - **Backend designs**: persistent state; public-contract elements (exported types, API request/response fields, exported function signatures, schema definitions); cross-boundary fields (passed between modules/services); behavioral modes/flags; reusable abstractions.
-    - **Frontend designs**: persistent client/server state; props or fields crossing ownership boundaries (public API props of an exported reusable component, Context values, state lifted across ownership boundaries to a shared ancestor); behavioral modes/variants that change observable behavior; reusable component splits (sub-components, custom hooks, or utilities extracted for multi-parent use).
-    - Ordinary parent→child prop passes that stay within one ownership boundary, local `useState`/`useReducer` confined to a single component, internal fields used only within one module, and transient state are out of scope and do not require an entry.
-  - *Section existence*: trigger fires but the "Minimal Surface Alternatives" section is absent or empty → `critical` issue (category: `completeness`).
-  - *Per-element entry*:
-    - (1) Step 1 lists at least one AC reference (AC ID, AC heading, EARS clause, or constraint ID) from the Design Doc or referenced PRD/UI Spec — missing linkage, or list contains only speculative requirements ("future", "might want") → `critical` issue (category: `compliance`).
-    - (2) Steps 2–3 include at least one subtractive alternative (derive / compute on demand / keep at caller / reuse existing / introduce no new state) — missing subtractive alternative → `critical` issue (category: `compliance`).
-    - (3) Step 4 rationale either selects the smallest alternative or names a current requirement smaller alternatives fail to satisfy — "useful" / "future-ready" / "convenient" / "users might want" used as primary rationale → `critical` issue (category: `compliance`).
-    - (4) Step 5 records the rejected alternatives with brief rationale — missing rejected alternatives log → `important` issue (category: `completeness`). Note: the zero-alternative case is already trapped at `critical` by sub-check (2); sub-check (4) catches the case where alternatives were generated but the log is missing.
+- **Design Convergence check** (DesignDoc creation review): Verify in order that (1) Direct MVP delivers the current required outcome through existing system capabilities, (2) every Failed Item cites a current requirement, verified constraint, observed in-scope problem, or evidence-backed material risk, (3) every Adopted Addition maps to a Failed Item, cites evidence that lower-surface resolutions fail, and becomes necessary again when removed, and (4) options considered but not adopted state why they were excluded; `None` is valid when Targeted Expansion had no rejected candidate. A failed step is a `critical` issue (category: `compliance`) and requires revision.
 
 - **Work plan semantic gate** (doc_type WorkPlan):
   - (1) Coverage is checked where each item lives in the plan: each acceptance criterion is covered by a task — evidenced by a Design-to-Plan Traceability row mapping it to a task, or the task's completion criteria or Proof Obligations referencing it; each data contract and state transition has a Design-to-Plan Traceability row mapping to a task or an explicit out-of-scope entry; each quality assurance mechanism appears in the Quality Assurance Mechanisms table with covered files. An item with no such coverage → `critical` issue (category: `completeness`). Distinguish the cause for an uncovered acceptance criterion: when the Design Doc supports it but no task maps to it (plan omission, fixable by re-planning) → `critical`; when the Design Doc or inputs give it no basis (a gap re-planning cannot fix) → the `rejected` trigger per the Verdict mapping below
@@ -168,7 +159,7 @@ Run each item below before producing the final JSON. When any item is unsatisfie
 - [ ] Step 0 completed (prior_context_count recorded)
 - [ ] If prior_context_count > 0: each item has a resolution status and the `prior_context_check` object is prepared
 - [ ] Gate 0 structural existence checks completed for the doc_type
-- [ ] Gate 1 quality checks completed — including every conditional check that applied: Fact Disposition completeness when `codebase_analysis` is provided, Minimal Surface Alternatives when the design introduces in-scope elements, Verification Strategy quality when that section exists, Adopted design validity when `requirements_verbatim` and `confirmed_decisions` are provided, code-verification integration when `code_verification` is provided
+- [ ] Gate 1 quality checks completed — including every conditional check that applied: Fact Disposition completeness when `codebase_analysis` is provided, Verification Strategy quality when that section exists, Design Convergence and Adopted design validity when `requirements_verbatim` and `confirmed_decisions` are provided, code-verification integration when `code_verification` is provided
 - [ ] Every issue carries `id`, `severity`, `category`, and a specific, actionable `suggestion`
 - [ ] Output is valid JSON matching the Output Protocol schema
 
@@ -241,35 +232,40 @@ Include in output when `prior_context_count > 0`:
 
 ## Review Criteria (for Comprehensive Mode)
 
+Severity terms below use the `severity` enum from Field Definitions: `critical`, `important`, `recommended`.
+
 ### Approved
 - Gate 0: All structural existence checks pass
 - Consistency score > 90
 - Completeness score > 85
-- No rule violations (severity: high is zero)
+- No `critical` issues
 - No blocking issues
-- Prior context items (if any): All critical/major resolved
+- Prior context items (if any): All `critical` / `important` resolved
 
 ### Approved with Conditions
 - Gate 0: All structural existence checks pass
 - Consistency score > 80
 - Completeness score > 75
-- Only minor rule violations (severity: medium or below)
+- Only `important` or `recommended` issues
 - Only easily fixable issues
-- Prior context items (if any): At most 1 major unresolved
+- Prior context items (if any): At most 1 `important` unresolved
 
 ### Needs Revision
 - Gate 0: Any structural existence check fails OR
 - Consistency score < 80 OR
 - Completeness score < 75 OR
-- Serious rule violations (severity: high)
+- Any `critical` issue
 - Blocking issues present
-- Prior context items (if any): 2+ major unresolved OR any critical unresolved
+- Design Convergence check fails
+- Prior context items (if any): 2+ `important` unresolved OR any `critical` unresolved
 - complexity_level is medium/high but complexity_rationale lacks (1) requirements/ACs or (2) constraints/risks
 
 ### Rejected
-- Fundamental problems exist
-- Requirements not met
-- Major rework needed
+
+Reserved for gaps that revision of the reviewed document cannot close:
+- Required review input is missing under the Step 1 paired-input rule
+- WorkPlan coverage gap traceable to a missing or contradictory Design Doc / input element (see the Work plan semantic gate verdict mapping)
+- The document's requirements have no basis in the supplied inputs
 
 ## Template References
 
