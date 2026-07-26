@@ -28,7 +28,24 @@ Historical Context Understanding: Current form rationale, past decision validity
 
 **Transition**: proceed when every strategy-relevant claim is observed, explicitly inferred with evidence, or recorded as unknown.
 
-### Phase 2: Strategy Exploration and Creation
+### Phase 2: Design Convergence
+
+**Core Question**: "What is the smallest design that delivers the current required outcome, and what evidence forces each addition beyond it?"
+
+Complete these steps in order before exploring implementation strategies:
+
+1. **Direct MVP**: Describe the simplest end-to-end design that delivers the current required outcome using existing system capabilities. Explicit user requirements and confirmed decisions are binding; technical mechanisms framed as suggestions or options remain candidates unless confirmed as mandatory.
+2. **Failure Check**: Test the Direct MVP against current requirements, verified constraints, observed problems within confirmed scope or dependencies required for the outcome, and evidence-backed material risks. Record only unmet items as `Failed Items` with their evidence; record `None` when all pass. Report problems outside that boundary separately for a scope decision.
+3. **Targeted Expansion**: For each Failed Item, first test reuse, derivation from existing data, on-demand computation, or responsibility at the current caller or boundary within the existing design surface. When these fail, select the smallest sufficient addition. Record `Adopted Additions` as addition -> Failed Item -> evidence that lower-surface resolutions fail; an addition requires a Failed Item.
+4. **Subtraction Check**: Temporarily remove each Adopted Addition and re-test its Failed Item. Keep the addition when the item becomes unmet again. Record options considered in step 3 but not adopted as `Rejected Additions` with a brief reason; record `None` when step 3 had no rejected candidate.
+
+**Design Doc output**: Direct MVP, Failed Items, Adopted Additions, and Rejected Additions.
+
+**Completion evidence**: all four outputs recorded; every Failed Item carries its evidence; every Adopted Addition names its Failed Item, the lower-surface resolutions that fail, and its subtraction result.
+
+**Transition**: proceed when every supporting claim is observed, explicitly inferred with evidence, or recorded as unknown; when an unknown blocks a step, stop at that step and name the evidence or user decision required.
+
+### Phase 3: Strategy Exploration and Creation
 
 **Core Question**: "When determining before -> after, what implementation patterns or strategies should be referenced?"
 
@@ -59,7 +76,7 @@ Creative Thinking: Strategy combinations, constraint-based design, phase divisio
 
 **Transition**: proceed when candidates are comparable against the same constraint set.
 
-### Phase 3: Risk Assessment and Control
+### Phase 4: Risk Assessment and Control
 
 **Core Question**: "What risks arise when applying this to the existing implementation, and which control measurably reduces likelihood or impact while preserving verification and rollback?"
 
@@ -80,7 +97,7 @@ Incident Response: Rollback procedures, log/metrics preparation, communication s
 
 **Transition**: proceed when no high-impact risk lacks a control or blocking escalation.
 
-### Phase 4: Constraint Compatibility Verification
+### Phase 5: Constraint Compatibility Verification
 
 **Core Question**: "What are this project's constraints?"
 
@@ -96,7 +113,7 @@ Business Constraints: Market launch timing, customer impact, regulatory complian
 
 **Transition**: proceed when remaining unknowns cannot change the valid candidate set, or the user resolves them.
 
-### Phase 5: Implementation Approach Decision
+### Phase 6: Implementation Approach Decision
 
 Select the approach that satisfies all hard constraints and current requirements with the lowest transition risk and smallest verification delay. Use lifecycle cost and implementation effort only as tiebreakers after requirement coverage, compatibility, and risk control are equal.
 
@@ -121,7 +138,7 @@ For Hybrid, assign one explicit L1/L2/L3 verification level and observable compl
 
 **Transition**: proceed to documentation when the selected approach covers every hard constraint and its risks have controls; otherwise return to candidate exploration.
 
-### Phase 6: Decision Rationale Documentation
+### Phase 7: Decision Rationale Documentation
 
 Return the following structure in the Design Doc or planning handoff:
 
@@ -160,10 +177,11 @@ Define integration points according to selected strategy:
 ## Decision Gate Checklist
 
 - [ ] Phase 1 evidence exists before strategy selection
+- [ ] Phase 2 records all four Design Convergence outputs, with evidence for every Failed Item and Adopted Addition
 - [ ] Candidate generation includes combinations when no listed strategy satisfies all hard constraints
 - [ ] Every material risk has a control and verification point
 - [ ] Every hard constraint maps to the selected approach
-- [ ] Phase 6 output records the selection and rejection rationale
+- [ ] Phase 7 output records the selection and rejection rationale
 
 When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence or user decision needed to continue.
 
@@ -172,6 +190,6 @@ When evidence required by a checked item is unknown, stop at that phase and repo
 1. **Leverage Known Patterns**: Use as starting point, explore creative combinations
 2. **Evidence-Ordered Research**: Use repository evidence, version-matched official documentation, maintained OSS examples, then supplementary secondary sources
 3. **Apply 5 Whys**: Pursue root causes to grasp essence
-4. **Multi-perspective Evaluation**: Complete the evidence and transition checks for Phases 1-4
+4. **Multi-perspective Evaluation**: Complete the evidence and transition checks for Phases 1-5
 5. **Strategy Composition**: Combine strategies when one strategy cannot satisfy all hard constraints
-6. **Decision Traceability**: Map every selection reason to evidence in the Phase 6 output
+6. **Decision Traceability**: Map every selection reason to evidence in the Phase 7 output

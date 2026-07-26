@@ -27,9 +27,11 @@ When any pattern below is detected, pause implementation and record: the trigger
 
 ## Basic Principles
 
-- **Evidence-Bounded Refactoring** - Refactor code that blocks the current outcome, is changed by the current task, or fails an applicable quality check; use small behavior-preserving steps
-- **Current-Requirement Code Only** - Every added code path serves a current requirement or accepted technical constraint (YAGNI)
-- **Minimum Surface for Required Coverage** - When introducing maintenance-surface-bearing elements (persistent state, public-contract elements or cross-boundary fields/props, behavioral modes/flags/variants, reusable abstractions, or component splits), select the smallest design surface that covers current user-visible requirements and accepted technical constraints (audit, data integrity, compatibility, security, performance, accessibility). Adoption is justified by naming a current requirement or constraint that smaller alternatives fail to cover; value-based arguments (reusable, future-ready, convenient for implementation) serve as tiebreakers only. Distinct from YAGNI: YAGNI is a time-axis check (refuse work for future-only needs); this principle constrains surface area at a fixed coverage point.
+Explore broadly, then converge on the lowest-lifecycle-cost solution that delivers the required user, operator, or maintainer value while keeping the system correct and maintainable.
+
+- **Evidence-Bounded Refactoring** - Refactor code that blocks the current outcome, is changed by the current task, or fails an applicable quality check; use small behavior-preserving steps. Report other findings with evidence for a scope decision
+- **Current-Requirement Code Only** - Introduce code paths, capabilities, infrastructure, abstractions, or speculative edge-case handling when a current requirement, verified constraint, or evidence-backed material risk requires them (YAGNI)
+- **Design Convergence** - Deliver the current required outcome with the least new design surface. Apply the implementation-approach skill's Phase 2 when selecting persistent state, public or cross-boundary contracts, behavioral modes, reusable abstractions, or component splits
 
 ## Comment Writing Rules
 
@@ -116,7 +118,7 @@ Nearby code is a starting point for investigation. Verify repository-wide usage 
 **Avoidance Methods**:
 - Before implementation, search for similar functionality using domain, responsibility, and configuration-pattern keywords
 - Similar functionality found -> Use or extend that implementation when it satisfies the current contract
-- Similar functionality is technical debt -> Create ADR improvement proposal before implementation
+- Similar functionality is technical debt -> Repair it when it blocks the current outcome, was caused by the current change, or lies in confirmed scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
 - No similar functionality exists -> Implement new functionality following existing design philosophy
 - Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
 - **Reference representativeness check**: See "Reference Representativeness" section above for IF-THEN thresholds

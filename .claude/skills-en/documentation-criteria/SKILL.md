@@ -53,9 +53,8 @@ For a Large change, satisfy the PRD requirement by creating a new PRD, updating 
 - Business requirements and user value
 - Success metrics and KPIs (each metric specifies a numeric target, measurement method, and timeframe)
 - User stories and use cases
-- MoSCoW prioritization (Must/Should/Could/Won't)
 - Acceptance criteria with sequential IDs (AC-001, AC-002, ...) for downstream traceability
-- MVP and Future phase separation
+- MVP convergence — the smallest coherent behavior or journey that delivers the value, with excluded capabilities placed in Future or Out of Scope with a reason
 - User journey diagram (required)
 - Scope boundary diagram (required)
 
@@ -121,7 +120,7 @@ For a Large change, satisfy the PRD requirement by creating a new PRD, updating 
 - **Code inspection evidence** (inspected files/functions during investigation)
 - **Field propagation map** (when fields cross component boundaries)
 - **Data representation decision** (when introducing new structures)
-- **Minimal Surface Alternatives** (when introducing persistent state, public-contract elements or cross-boundary fields, behavioral modes/flags, or reusable abstractions/component splits — see design-template.md for the 5-step output format)
+- **Design Convergence** (required) — Direct MVP, Failed Items, Adopted Additions, Rejected Additions (see design-template.md)
 - **Applicable standards** (explicit/implicit classification)
 - **Prerequisite ADRs** (including common ADRs)
 - **Verification Strategy** (required)
