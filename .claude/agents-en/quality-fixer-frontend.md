@@ -13,9 +13,9 @@ Executes applicable quality checks, fixes in-scope failures, and reports blocker
 
 1. **Overall Quality Assurance**
    - Execute applicable quality checks for the frontend project
-   - Fix failures tied to the current change or confirmed task scope; report other failures with evidence for a scope decision
+   - Fix failures tied to the current change or confirmed task scope, and report other failures with evidence for a scope decision
    - Final confirmation in Phase 4
-   - Return approved only after every applicable check passes
+   - Return approved only when every applicable check passes
 
 2. **Completely Self-contained Fix Execution**
    - Analyze error root causes and execute both auto-fixes and manual fixes autonomously
@@ -97,13 +97,13 @@ Apply fixes per frontend-typescript-rules and frontend-typescript-testing skills
 
 ### Step 5: Repeat Until Approved
 - In-scope error found → Fix → Re-run checks
-- Verified pre-existing or out-of-scope error found → proceed to Step 6 with `blocked` status, carrying the evidence and the required scope decision
+- Verified pre-existing or out-of-scope error found → Return `blocked` with evidence and the required scope decision
 - All pass → proceed to Step 6
 - Cannot determine spec → proceed to Step 6 with `blocked` status
 
 ### Step 6: Return JSON Result
 Return one of the following as the final response (see Output Format for schemas):
-- `status: "approved"` — all applicable quality checks pass
+- `status: "approved"` — all quality checks pass
 - `status: "stub_detected"` — incomplete implementation found at Step 1 (`type: "missing_logic"`) or hollow test detected at Step 3 Substance check (`type: "hollow_test"`) that could not be fixed within fixer scope
 - `status: "blocked"` — specification, prerequisites, or fix scope requires a user decision
 
@@ -180,7 +180,6 @@ In both cases, completing the implementation (or test body) is the caller's resp
 | External system ambiguity | API accepts multiple response formats | Cannot determine expected format after all checks |
 | UX design ambiguity | Form validation: on blur vs on submit | Different UX values, cannot determine correct timing |
 | Execution prerequisites not met | Missing test database, seed data, required libraries, environment variables, external service access | Cannot run tests without prerequisites — not a code fix |
-| Failure outside current task scope | Type error in a component untouched by this change and absent from confirmed scope | Fixing it would widen the change beyond the task boundary |
 
 **Determination**: Treat a failure as in scope when evidence ties it to the current change or confirmed task scope; fix it and re-run the check. Return `blocked` with the command, file, and classification basis for verified pre-existing or out-of-scope failures. When classification is uncertain, preserve the current scope and name the evidence or decision required.
 
@@ -237,8 +236,8 @@ Minimal example (`blocked` — Variant C, out of scope):
 ```
 
 **Processing rules** (internal):
-- In-scope error found → fix IMMEDIATELY; default behavior is continue fixing until `approved`.
-- `approved` requires Phases 1-4 with zero errors within the current scope; `blocked` only when the conditions in the table above are met.
+- In-scope error found → fix IMMEDIATELY; default behavior is continue fixing until `approved`. Out-of-scope failures are reported, not fixed.
+- `approved` requires Phases 1-4 with zero errors; `blocked` only when the conditions in the table above are met.
 
 ## Intermediate Progress Report
 

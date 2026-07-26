@@ -137,9 +137,11 @@ description: "Review updated document"
 prompt: |
   Review the following updated document.
 
-  doc_type: [Design Doc / PRD / ADR]
+  doc_type: [DesignDoc / PRD / ADR]
   target: [path from Step 1]
-  mode: standard
+  mode: composite
+  requirements_verbatim: [Step 3 requested changes, verbatim] (Design Doc only)
+  confirmed_decisions: [Step 3 confirmed understanding of the changes] (Design Doc only)
   code_verification: $CODE_VERIFICATION_OUTPUT (Design Doc only, omit for PRD/ADR)
 
   Focus on:

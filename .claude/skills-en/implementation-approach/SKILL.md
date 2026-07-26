@@ -136,7 +136,7 @@ For Hybrid, assign one explicit L1/L2/L3 verification level and observable compl
 
 **Completion evidence**: one selected approach, its phase boundaries, integration points, and a verification result for every phase.
 
-**Transition**: proceed to documentation when the selected approach covers every hard constraint and its risks have controls; otherwise return to candidate exploration.
+**Transition**: proceed to documentation when the selected approach covers every hard constraint and its risks have controls. Otherwise return to candidate exploration (Phase 3), or to Design Convergence (Phase 2) when a Phase 4-5 result changes the Direct MVP, Failed Items, or Adopted Additions.
 
 ### Phase 7: Decision Rationale Documentation
 

@@ -178,14 +178,6 @@ No Ripple Effect:
 - **Interface**: [APIs and type definitions provided]
 - **Dependencies**: [Relationships with other components]
 
-### Data Representation Decision (When Introducing New Structures)
-Evaluate existing structures: semantic fit, responsibility fit, lifecycle fit, boundary/interop cost.
-- All fit → reuse existing
-- 1-2 fail → extend with adapter
-- 3+ fail → new structure justified
-
-**Decision**: [reuse / extend / new] — [rationale]
-
 ### Design Convergence
 
 In a future-state document, use `None` for empty Failed Items, Adopted Additions, or Rejected Additions. Mark this whole section `N/A — reverse-engineer/as-is document` for a reverse-engineer/as-is document.
@@ -194,6 +186,14 @@ In a future-state document, use `None` for empty Failed Items, Adopted Additions
 2. **Failed Items**: [Unmet item -> requirement, verified constraint, observed problem, or evidence-backed material risk | None]
 3. **Adopted Additions**: [Addition -> Failed Item -> evidence that lower-surface resolutions fail -> item becomes unmet against its evidence when removed | None]
 4. **Rejected Additions**: [Considered option -> brief rejection reason | None]
+
+### Data Representation Decision (When the Converged Design Introduces or Modifies Structures)
+Evaluate existing structures: semantic fit, responsibility fit, lifecycle fit, boundary/interop cost.
+- All fit → reuse existing
+- 1-2 fail → extend with adapter
+- 3+ fail → new structure justified
+
+**Decision**: [reuse / extend / new] — [rationale]
 
 ### Type Definitions
 

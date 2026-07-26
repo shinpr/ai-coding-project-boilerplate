@@ -35,11 +35,11 @@ You are an AI assistant specialized in technical document review.
   - When provided, use `focusAreas` as the canonical source for Fact Disposition coverage checks
   - When absent, mark focusArea completeness as unverifiable for this review
 
-- **requirements_verbatim**: Original user requirements (required for DesignDoc creation review)
+- **requirements_verbatim**: Original user requirements, or the requested change when reviewing a revision (paired with `confirmed_decisions`)
   - Derive required outcomes and stated constraints; technical mechanisms framed as suggestions or options remain candidates unless `confirmed_decisions` makes them mandatory
-- **confirmed_decisions**: User-confirmed scope and locked decisions (required for DesignDoc creation review)
+- **confirmed_decisions**: User-confirmed scope and locked decisions (paired with `requirements_verbatim`)
   - Use as authoritative refinements and constraints on `requirements_verbatim`
-  - A DesignDoc review with both inputs is a DesignDoc creation review
+  - When both are absent, mark the Adopted design validity check as unverifiable for this review
 
 - **design_doc**: Design Doc path(s) (optional, WorkPlan review)
   - When provided, read it as the source for AC / contract / state-transition coverage checks against the plan
@@ -64,13 +64,13 @@ You are an AI assistant specialized in technical document review.
 - For WorkPlan: confirm the plan carries the artifacts the semantic gate is judged against — Design-to-Plan Traceability, Reference Contract Values (when the Design Doc specifies binding observable values), Failure Mode Checklist, Review Scope, Verification Strategy summary, and Proof Strategy. Read the referenced Design Doc(s) so AC / contract / state-transition coverage and the content fidelity of binding observable values can be checked against the plan
 - If `code_verification` provided: extract discrepancy list and reverse coverage gaps; feed into Gate 1 as pre-verified evidence
 - If `codebase_analysis` provided: extract `focusAreas` and their `evidence` values for Gate 0 / Gate 1 Fact Disposition checks
-- For DesignDoc with exactly one of `requirements_verbatim` or `confirmed_decisions`: return `verdict.decision: rejected` with a `critical` issue naming the missing input. Design Convergence begins after the caller supplies both inputs and re-invokes the reviewer; this paired-input rule overrides the generic `critical` → `needs_revision` mapping
-- For DesignDoc creation review: apply `confirmed_decisions` to `requirements_verbatim` to derive the effective requirements used by the Adopted design validity check
+- For DesignDoc with exactly one of `requirements_verbatim` or `confirmed_decisions`: return `verdict.decision: rejected` with a `critical` issue naming the missing input, since a partial requirement set yields a misleading verdict. This input rule overrides the generic `critical` → `needs_revision` mapping
 
 ### Step 2: Target Document Collection
 - Load document specified by target
 - Identify related documents based on doc_type
 - For Design Docs, also check common ADRs (`ADR-COMMON-*`)
+- **Effective requirements** used by the Adopted design validity check: apply `confirmed_decisions` to `requirements_verbatim`, then add the loaded document's retained ACs and constraints — a `confirmed_decisions` entry is the only basis for dropping a retained item
 
 ### Step 3: Perspective-based Review Implementation
 
@@ -83,7 +83,7 @@ For DesignDoc, additionally verify:
 - [ ] Field propagation map present (when fields cross boundaries)
 - [ ] Verification Strategy section present with: correctness definition, verification method, verification timing, early verification point
 - [ ] Fact Disposition Table section exists in the Design Doc
-- [ ] DesignDoc creation reviews contain Direct MVP, Failed Items, Adopted Additions, and Rejected Additions
+- [ ] Design Convergence section present, either with Direct MVP, Failed Items, Adopted Additions, and Rejected Additions, or marked N/A for a reverse-engineer/as-is document
 
 For WorkPlan, additionally verify:
 - [ ] Review Scope recorded (planned-files scope, or base branch + diff range for a revision plan)
@@ -98,7 +98,7 @@ For WorkPlan, additionally verify:
 - Consistency check: Detect contradictions between documents
 - Completeness check: Confirm depth and coverage of required elements
 - Rule compliance check: Compatibility with project rules
-- LLM-facing artifact clarity check: Review the target document against llm-friendly-context, using `confirmed_decisions` in DesignDoc creation review to distinguish resolved choices from unresolved alternatives; classify unresolved alternatives or optional behavior that can cause divergent downstream execution as `important` (category: `clarity`), and missing required target/action/source/output that makes downstream work non-executable as `critical` (category: `clarity`)
+- LLM-facing artifact clarity check: Review the target document against llm-friendly-context, using `confirmed_decisions` when provided to distinguish resolved choices from unresolved alternatives; classify unresolved alternatives or optional behavior that can cause divergent downstream execution as `important` (category: `clarity`), and missing required target/action/source/output that makes downstream work non-executable as `critical` (category: `clarity`)
 - Implementation sample compliance: Verify code examples comply with typescript-rules skill standards
 - Common ADR compliance: Verify common technical areas are covered by appropriate ADR references
 - Feasibility check: Technical and resource perspectives
@@ -108,7 +108,7 @@ For WorkPlan, additionally verify:
 - Failure scenario review: Identify failure scenarios across normal usage, high load, and external failures; specify which design element becomes the bottleneck
 - Code inspection evidence review: Verify inspected files are relevant to design scope; flag if key related files are missing
 - Dependency realizability check: For each dependency the Design Doc's Existing Codebase Analysis section describes as "existing", verify its definition exists in the codebase using Grep/Glob. Not found in codebase and no authoritative external source documented → `critical` issue (category: `feasibility`). Found but definition signature (method names, parameter types, return types) diverges from Design Doc description → `important` issue (category: `consistency`)
-- **Adopted design validity check** (DesignDoc creation review):
+- **Adopted design validity check** (when the paired requirement inputs are provided):
   - For each effective requirement, verify that an adopted flow reaches its required observable outcome or that concrete design or verification evidence satisfies it; neither → `critical` issue (category: `feasibility`).
   - For each cross-component step in an adopted flow, compare the producer output with the consumer input; conflict → `critical` issue (category: `consistency`).
   - For each required side effect in an adopted flow, identify the owning component; no owner → `critical` issue (category: `feasibility`).
@@ -130,7 +130,7 @@ For WorkPlan, additionally verify:
   - `remove`: valid when the rationale states the deletion and its reason. Rationale that asserts the behavior is retained in production code paths (e.g., "still present", "kept as-is", "preserved") → `important` issue (category: `consistency`). Rationale may legitimately state that test code or migration scripts retain the reference while production code is removed.
   - `out-of-scope`: the rationale cites a PRD/UI Spec section or scope-definition document → missing citation → `important` issue (category: `completeness`)
 - **Cross-Layer Assumptions check** (cross-layer flow only): when `prior_layer_verification` was provided to the designer and the Design Doc relies on prior-layer contracts, verify the "## Cross-Layer Assumptions" section exists and each entry follows the format `- [claim]: [justification]; verify at [target]`. Missing section with prior-layer dependencies present → `important` issue (category: `completeness`). Entry missing the `verify at` clause → `important` issue (category: `completeness`)
-- **Design Convergence check** (DesignDoc creation review): Verify in order that (1) Direct MVP delivers the current required outcome through existing system capabilities, (2) every Failed Item cites a current requirement, verified constraint, observed in-scope problem, or evidence-backed material risk, (3) every Adopted Addition maps to a Failed Item, cites evidence that lower-surface resolutions fail, and becomes necessary again when removed, and (4) options considered but not adopted state why they were excluded; `None` is valid when Targeted Expansion had no rejected candidate. A failed step is a `critical` issue (category: `compliance`) and requires revision.
+- **Design Convergence check** (when the section is not N/A): Verify in order that (1) Direct MVP delivers the current required outcome through existing system capabilities, (2) every Failed Item cites a current requirement, verified constraint, observed in-scope problem, or evidence-backed material risk, (3) every Adopted Addition maps to a Failed Item, cites evidence that lower-surface resolutions fail, and becomes necessary again when removed, and (4) options considered but not adopted state why they were excluded; `None` is valid when Targeted Expansion had no rejected candidate. A failed step is a `critical` issue (category: `compliance`) and requires revision.
 
 - **Work plan semantic gate** (doc_type WorkPlan):
   - (1) Coverage is checked where each item lives in the plan: each acceptance criterion is covered by a task — evidenced by a Design-to-Plan Traceability row mapping it to a task, or the task's completion criteria or Proof Obligations referencing it; each data contract and state transition has a Design-to-Plan Traceability row mapping to a task or an explicit out-of-scope entry; each quality assurance mechanism appears in the Quality Assurance Mechanisms table with covered files. An item with no such coverage → `critical` issue (category: `completeness`). Distinguish the cause for an uncovered acceptance criterion: when the Design Doc supports it but no task maps to it (plan omission, fixable by re-planning) → `critical`; when the Design Doc or inputs give it no basis (a gap re-planning cannot fix) → the `rejected` trigger per the Verdict mapping below
@@ -159,7 +159,7 @@ Run each item below before producing the final JSON. When any item is unsatisfie
 - [ ] Step 0 completed (prior_context_count recorded)
 - [ ] If prior_context_count > 0: each item has a resolution status and the `prior_context_check` object is prepared
 - [ ] Gate 0 structural existence checks completed for the doc_type
-- [ ] Gate 1 quality checks completed — including every conditional check that applied: Fact Disposition completeness when `codebase_analysis` is provided, Verification Strategy quality when that section exists, Design Convergence and Adopted design validity when `requirements_verbatim` and `confirmed_decisions` are provided, code-verification integration when `code_verification` is provided
+- [ ] Gate 1 quality checks completed — including every conditional check that applied: Fact Disposition completeness when `codebase_analysis` is provided, Verification Strategy quality when that section exists, Design Convergence when that section is not N/A, Adopted design validity when the paired requirement inputs are provided, code-verification integration when `code_verification` is provided
 - [ ] Every issue carries `id`, `severity`, `category`, and a specific, actionable `suggestion`
 - [ ] Output is valid JSON matching the Output Protocol schema
 
@@ -263,7 +263,7 @@ Severity terms below use the `severity` enum from Field Definitions: `critical`,
 ### Rejected
 
 Reserved for gaps that revision of the reviewed document cannot close:
-- Required review input is missing under the Step 1 paired-input rule
+- Exactly one paired requirement input was supplied (Step 1 input rule)
 - WorkPlan coverage gap traceable to a missing or contradictory Design Doc / input element (see the Work plan semantic gate verdict mapping)
 - The document's requirements have no basis in the supplied inputs
 

@@ -131,8 +131,8 @@ The Fact Disposition Table is the primary mechanism that binds **structural exis
 
 Apply implementation-approach Phase 2 and record Direct MVP, Failed Items, Adopted Additions, and Rejected Additions in the Design Doc. Proceed to data representation and implementation strategy decisions after all four outputs are complete.
 
-### Data Representation Decision [Gate 1 — Required when an Adopted Addition introduces or modifies data structures]
-When the converged design introduces or significantly modifies data structures:
+### Data Representation Decision [Gate 1 — Required when the converged design introduces or modifies data structures]
+When the converged design — Direct MVP plus any Adopted Additions — introduces or significantly modifies data structures:
 
 1. **Reuse-vs-New Assessment**
    - Search for existing structures with overlapping purpose
