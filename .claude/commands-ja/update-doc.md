@@ -137,9 +137,11 @@ description: "更新されたドキュメントをレビュー"
 prompt: |
   以下の更新されたドキュメントをレビューする。
 
-  doc_type: [Design Doc / PRD / ADR]
+  doc_type: [DesignDoc / PRD / ADR]
   target: [ステップ1のパス]
-  mode: standard
+  mode: composite
+  requirements_verbatim: [ステップ3の変更要求（原文）]（Design Docのみ）
+  confirmed_decisions: [ステップ3で確認した変更内容の理解]（Design Docのみ）
   code_verification: $CODE_VERIFICATION_OUTPUT（Design Docのみ、PRD/ADRでは省略）
 
   注力ポイント:

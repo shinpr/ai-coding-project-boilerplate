@@ -35,11 +35,11 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
   - 提供された場合、`focusAreas`をFact Dispositionカバレッジチェックの正典ソースとして使用
   - 未提供の場合、focusAreaの完全性は本レビューでは検証不能として扱う
 
-- **requirements_verbatim**: 元のユーザー要件（DesignDoc作成レビューで必須）
-  - Adopted design validity チェックの正典となる要件リストとして使用
-- **confirmed_decisions**: ユーザーが確認したスコープと確定した決定事項（DesignDoc作成レビューで必須）
+- **requirements_verbatim**: 元のユーザー要件、または改訂レビューの場合は今回の変更要求（`confirmed_decisions` と対で渡す）
+  - 必要な成果と明示された制約を導出する。提案や選択肢として示された技術手段は、`confirmed_decisions` が必須化しない限り候補にとどまる
+- **confirmed_decisions**: ユーザーが確認したスコープと確定した決定事項（`requirements_verbatim` と対で渡す）
   - `requirements_verbatim` を具体化・制約する、正となる情報として使用
-  - 両方の入力があるDesignDocレビューは「DesignDoc作成レビュー」とする
+  - 両方が未提供の場合、Adopted design validity チェックは本レビューでは検証不能として扱う
 
 - **design_doc**: Design Docのパス（任意、WorkPlanレビュー用）
   - 提供された場合、計画に対するAC / コントラクト / 状態遷移のカバレッジチェックのソースとして読み込む
@@ -64,12 +64,13 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 - WorkPlanの場合: セマンティックゲートの判定対象となる成果物が計画に含まれることを確認 — 設計-計画トレーサビリティ、Reference Contract Values（Design Docが拘束的観測値を指定する場合）、故障モードチェックリスト、レビュースコープ、検証戦略の要約、証明戦略。参照されているDesign Docを読み込み、AC / コントラクト / 状態遷移のカバレッジと拘束的観測値の内容忠実性を計画に対して確認できるようにする
 - `code_verification`が提供された場合: 不整合リストと逆方向カバレッジのギャップを抽出し、Gate 1の事前検証エビデンスとして組み込む
 - `codebase_analysis`が提供された場合: `focusAreas`とその`evidence`値を抽出し、Gate 0 / Gate 1のFact Dispositionチェックに使用
-- DesignDoc作成レビューの場合: `confirmed_decisions` を `requirements_verbatim` に適用し、Adopted design validity チェックが使う実効要件を導出する
+- DesignDocで`requirements_verbatim`と`confirmed_decisions`のいずれか一方のみが渡された場合: 不足している入力を明示した`critical`とともに`verdict.decision: rejected`を返す。要件集合が部分的なままでは判定が誤解を招くため。この入力ルールは`critical` → `needs_revision`の一般マッピングより優先する
 
 ### ステップ2: 対象ドキュメントの収集
 - targetで指定されたドキュメントを読み込み
 - doc_typeに基づいて関連ドキュメントも特定
 - Design Docの場合は共通ADR（`ADR-COMMON-*`）も確認
+- **実効要件**（Adopted design validity チェックで使用）: `confirmed_decisions` を `requirements_verbatim` に適用し、そこに読み込んだドキュメントで維持されるACと制約を加える。維持対象を外す根拠となるのは `confirmed_decisions` のエントリのみ
 
 ### ステップ3: 観点別レビューの実施
 
@@ -82,7 +83,7 @@ DesignDocの場合、追加で以下を確認:
 - [ ] フィールド伝播マップの存在（フィールドが境界を越える場合）
 - [ ] 検証戦略セクションの存在（正しさの定義、検証手法、検証タイミング、早期検証ポイント）
 - [ ] Fact Disposition TableセクションがDesign Docに存在する
-- [ ] Minimal Surface Alternatives セクションが存在し、新規に導入される適用対象要素（永続状態 / 公開コントラクト要素または境界を越えるフィールド・Props — バックエンドではモジュール/サービス境界を越えるフィールド、フロントエンドではエクスポートされた再利用可能コンポーネントの公開 API Props・Context 値・所有境界を越えて持ち上げられた状態 / 振る舞いモード・フラグ・バリアント / 再利用可能な抽象またはコンポーネント分割）ごとに1エントリ持つ（適用対象要素を導入する場合）。各エントリには5ステップの結果が含まれる（確定要件 — Design Docまたは参照PRD/UI SpecのAC参照（AC ID、AC見出し、EARS節、または制約ID）、削減的な代替案を1つ以上含む比較表、根拠付きの選定結果、不採用案の記録）
+- [ ] Design Convergence セクションが存在し、`Direct MVP`・`Failed Items`・`Adopted Additions`・`Rejected Additions` を持つ。リバースエンジニアリング／現状記述のドキュメントではN/Aと記載されている
 
 WorkPlanの場合、追加で以下を確認:
 - [ ] レビュースコープが記録されている（変更予定ファイルの範囲、または改訂計画ではベースブランチ + diff範囲）
@@ -97,7 +98,7 @@ WorkPlanの場合、追加で以下を確認:
 - 整合性チェック：ドキュメント間の矛盾を検出
 - 完成度チェック：必須要素の深度と網羅性を確認
 - ルール準拠チェック：プロジェクトルールとの適合性
-- LLM向け成果物の明確さチェック：対象ドキュメントをllm-friendly-contextに照らしてレビューし、DesignDoc作成レビューでは `confirmed_decisions` を用いて確定済みの選択肢と未解決の代替案を区別する。下流の実行を分岐させうる未解決の代替案やoptionalな挙動は `important`（カテゴリ: `clarity`）に、下流作業を実行不能にする必須のtarget/action/source/outputの欠落は `critical`（カテゴリ: `clarity`）に分類する
+- LLM向け成果物の明確さチェック：対象ドキュメントをllm-friendly-contextに照らしてレビューし、`confirmed_decisions` が提供された場合はそれを用いて確定済みの選択肢と未解決の代替案を区別する。下流の実行を分岐させうる未解決の代替案やoptionalな挙動は `important`（カテゴリ: `clarity`）に、下流作業を実行不能にする必須のtarget/action/source/outputの欠落は `critical`（カテゴリ: `clarity`）に分類する
 - 実装サンプル準拠チェック：コード例がtypescript-rulesスキル基準に準拠していることを検証
 - 共通ADR準拠チェック：共通技術領域が適切なADR参照でカバーされていることを検証
 - 実現可能性チェック：技術的・リソース的観点
@@ -107,7 +108,7 @@ WorkPlanの場合、追加で以下を確認:
 - 失敗シナリオ検証：正常系・高負荷・外部障害の失敗シナリオを特定し、どの設計要素がボトルネックになるか指摘
 - コード調査エビデンス検証：調査ファイルが設計スコープに関連するか確認、主要な関連ファイルの漏れを指摘
 - 依存先の実在性検証：Design Docの「既存コードベース分析」セクションが「既存」と記述する依存先について、Grep/Globでコードベース内の定義を確認。コードベースに見つからず公式の外部出典の記載もない → `critical`（カテゴリ: `feasibility`）。存在するが定義のシグネチャ（メソッド名、パラメータ型、戻り値型）がDesign Docの記述と乖離 → `important`（カテゴリ: `consistency`）
-- **Adopted design validity チェック**（DesignDoc作成レビュー）:
+- **Adopted design validity チェック**（対となる要件入力が提供された場合）:
   - 各実効要件について、採用フローがその要件の求める観測可能な結果に到達するか、または具体的な設計・検証エビデンスによって満たされていることが裏づけられるかを検証する。いずれもない → `critical`（カテゴリ: `feasibility`）。
   - 採用フロー内のコンポーネント横断ステップごとに、producer の出力と consumer の入力を突き合わせる。矛盾 → `critical`（カテゴリ: `consistency`）。
   - 採用フロー内で必要な副作用ごとに、それを担うコンポーネントを特定する。担い手が無い → `critical`（カテゴリ: `feasibility`）。
@@ -129,17 +130,7 @@ WorkPlanの場合、追加で以下を確認:
   - `remove`: 削除と理由を述べるRationaleは妥当。Rationaleが本番コードパス上で振る舞いの保持を主張している（例: 「存続」、「そのまま維持」、「保持」）→ `important`（カテゴリ: `consistency`）。テストコードや移行スクリプトでの参照保持は妥当な記述として扱う。
   - `out-of-scope`: RationaleがPRD/UI Specセクションまたはスコープ定義文書を引用していない → `important`（カテゴリ: `completeness`）
 - **Cross-Layer Assumptionsチェック**（レイヤー横断フロー時のみ）: `prior_layer_verification`が設計者に提供され、かつDesign Docが前レイヤーの契約に依存する場合、「## Cross-Layer Assumptions」セクションが存在し、各エントリが `- [主張]: [正当化]; 検証先: [対象]` 形式に従うことを検証する。前レイヤー依存があるのにセクションがない → `important`（カテゴリ: `completeness`）。エントリに`検証先:`節がない → `important`（カテゴリ: `completeness`）
-- **Minimal Surface Alternatives チェック**:
-  - *スコープトリガー*: Design Doc が新規に適用対象要素を導入するときに発火する。適用対象集合はコンテキストごとに異なる:
-    - **バックエンド設計**: 永続状態、公開コントラクト要素（公開型、APIリクエスト/レスポンスフィールド、公開関数シグネチャ、スキーマ定義）、境界を越えるフィールド（モジュール/サービス間を渡るもの）、振る舞いモード/フラグ、再利用可能な抽象。
-    - **フロントエンド設計**: 永続化されるクライアント/サーバー状態、所有境界を越える Props またはフィールド（エクスポートされた再利用可能コンポーネントの公開 API Props、Context 値、所有境界を越えて共有先祖に持ち上げられた状態）、観測可能な振る舞いを変える振る舞いモード/バリアント、再利用可能なコンポーネント分割（複数の親で利用するために抽出されたサブコンポーネント、カスタムフック、ユーティリティ）。
-    - 1つの所有境界内に留まる通常の親→子の Props 伝達、単一コンポーネントに閉じた `useState` / `useReducer`、単一モジュール内のみで使う内部フィールド、一時的状態は適用対象外でありエントリを必要としない。
-  - *セクションの存在*: トリガーが発火するのに「Minimal Surface Alternatives」セクションが存在しない、または空 → `critical`（カテゴリ: `completeness`）。
-  - *要素ごとのエントリ*:
-    - (1) ステップ1 が Design Doc または参照 PRD/UI Spec から少なくとも1つの AC 参照（AC ID、AC見出し、EARS節、または制約ID）を挙げている — リンクの欠落、または投機的要件（「将来」「欲しがるかも」）のみで構成 → `critical`（カテゴリ: `compliance`）。
-    - (2) ステップ2〜3 に少なくとも1つの削減的代替案（既存から導出 / オンデマンド計算 / 呼び出し側に留める / 既存を再利用 / 新規状態を導入しない）が含まれる — 削減的代替案の欠落 → `critical`（カテゴリ: `compliance`）。
-    - (3) ステップ4 の根拠が、最小の代替案を選定するか、より小さい代替案では満たせない現要件を特定している — 「便利」「将来対応」「実装が楽」「ユーザーが欲しがるかも」が主たる根拠として使われている → `critical`（カテゴリ: `compliance`）。
-    - (4) ステップ5 で不採用案が簡潔な根拠とともに記録されている — 不採用案ログの欠落 → `important`（カテゴリ: `completeness`）。注: 代替案ゼロのケースはサブチェック(2)で先に `critical` として検出される。サブチェック(4)は代替案は生成されたが記録が抜けているケースを検出する。
+- **Design Convergence チェック**（セクションがN/Aでない場合）: 次の順に検証する。(1) `Direct MVP` が既存のシステム機能で現行の必要な成果を届けている、(2) `Failed Items` ごとに現行要件、検証済みの制約、確定済みスコープ内で観測された問題、根拠のある重大リスクのいずれかを挙げている、(3) `Adopted Additions` ごとに対応する `Failed Item` があり、より小さいサーフェスでの解決が成立しない根拠を挙げ、その追加を取り除くと対応する Failed Item が再び満たせなくなる、(4) 検討したが採用しなかった選択肢に除外理由が記載されている。的を絞った拡張で不採用の候補がなかった場合は `None` が妥当。いずれかのステップが不合格なら `critical`（カテゴリ: `compliance`）とし、修正を要する。
 
 - **作業計画書セマンティックゲート**（doc_type WorkPlan）:
   - (1) カバレッジは各項目が計画内で存在する場所で確認する: 各ACがタスクでカバーされている — 設計-計画トレーサビリティの行がそのACをタスクにマッピングしているか、タスクの完了基準または Proof Obligations がそのACを参照していることで示される。各データコントラクトと状態遷移は、設計-計画トレーサビリティの行でタスクにマッピングされるか、明示的なスコープ外エントリを持つ。各品質保証メカニズムは、カバー対象ファイルとともに品質保証メカニズム表に現れる。いずれのカバレッジもない項目 → `critical`（カテゴリ: `completeness`）。カバーされないACは原因を区別する: Design Docが裏付けるのにタスクがマッピングされていない（計画の漏れ、再計画で修正可能）→ `critical`、Design Docや入力に裏付けがない（再計画でも修正不能なギャップ）→ 下記Verdictマッピングの`rejected`トリガー
@@ -168,7 +159,7 @@ WorkPlanの場合、追加で以下を確認:
 - [ ] ステップ0完了（prior_context_count記録済み）
 - [ ] prior_context_count > 0の場合: 各項目に解決ステータスがあり、`prior_context_check`オブジェクトが準備済み
 - [ ] doc_typeに対するGate 0の構造的存在チェックが完了
-- [ ] Gate 1の品質チェックが完了 — 適用された各条件付きチェックを含む: `codebase_analysis`が提供された場合のFact Disposition完全性、設計が適用対象要素を導入する場合のMinimal Surface Alternatives、検証戦略セクションが存在する場合の検証戦略の品質、`requirements_verbatim`と`confirmed_decisions`が提供された場合のAdopted design validity、`code_verification`が提供された場合のコード検証連携
+- [ ] Gate 1の品質チェックが完了 — 適用された各条件付きチェックを含む: `codebase_analysis`が提供された場合のFact Disposition完全性、検証戦略セクションが存在する場合の検証戦略の品質、セクションがN/Aでない場合のDesign Convergence、対となる要件入力が提供された場合のAdopted design validity、`code_verification`が提供された場合のコード検証連携
 - [ ] 各issueが`id`、`severity`、`category`、および具体的で実行可能な`suggestion`を持つ
 - [ ] 出力が出力プロトコルのスキーマに一致する有効なJSON
 
@@ -236,35 +227,40 @@ WorkPlanの場合、追加で以下を確認:
 
 ## レビュー基準（総合モード用）
 
+以下の重大度は「フィールド定義」の`severity` enum（`critical`、`important`、`recommended`）を用いる。
+
 ### 承認（Approved）
 - Gate 0: すべての存在チェック通過
 - 整合性スコア > 90
 - 完成度スコア > 85
-- ルール違反なし（重大度: high がゼロ）
+- `critical`なし
 - ブロッキングイシューなし
-- prior context項目（ある場合）: critical/majorすべて解決済み
+- prior context項目（ある場合）: `critical` / `important` すべて解決済み
 
 ### 条件付き承認（Approved with Conditions）
 - Gate 0: すべての存在チェック通過
 - 整合性スコア > 80
 - 完成度スコア > 75
-- 軽微なルール違反のみ（重大度: medium 以下）
+- `important` または `recommended` のみ
 - 修正が簡単な問題のみ
-- prior context項目（ある場合）: major未解決は最大1件
+- prior context項目（ある場合）: `important` 未解決は最大1件
 
 ### 要修正（Needs Revision）
 - Gate 0: いずれかの存在チェック不合格、または
 - 整合性スコア < 80 または
 - 完成度スコア < 75 または
-- 重大なルール違反あり（重大度: high）
+- `critical` あり
 - ブロッキングイシューあり
-- prior context項目（ある場合）: major未解決2件以上またはcritical未解決あり
+- Design Convergence チェックが不合格
+- prior context項目（ある場合）: `important` 未解決2件以上または `critical` 未解決あり
 - complexity_levelがmedium/highだが、complexity_rationaleに(1)要件/ACまたは(2)制約/リスクが欠けている
 
 ### 却下（Rejected）
-- 根本的な問題がある
-- 要件を満たしていない
-- 大幅な作り直しが必要
+
+対象ドキュメントの修正では埋められないギャップに限る:
+- ステップ1の入力ルールにより、対となる要件入力の一方が欠けている
+- Design Doc／入力要素の欠落や矛盾に起因するWorkPlanのカバレッジギャップ（作業計画書セマンティックゲートのVerdictマッピング参照）
+- ドキュメントの要件が、提供された入力に根拠を持たない
 
 ## テンプレート参照
 
