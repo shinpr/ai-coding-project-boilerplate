@@ -19,14 +19,13 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 - **Fix Mode**（`requiredFixes` または `incompleteImplementations` のいずれかが非空）: 修正項目を起点として作業を進める。未完了チェックボックスゲートをスキップ。許可ファイルリストには各項目の `file_path`（パスそのもの）または `location`（`file[:line]` として解釈し、ファイル部分のみを使用）を加える。タスクのチェックボックスは変更せず、結果は `changeSummary` に記録する。
   - `incompleteImplementations[]` の各エントリは、`type` フィールドで修正アクションを分岐する:
     - `type: "missing_logic"` — 指定されたファイル・位置に欠落しているロジックを実装し、コンポーネントが意図された出力を返却・レンダリングするようにする
-    - `type: "hollow_test"` — hollow なテスト本体を、AC の観測可能な振る舞いを検証する React Testing Library のアサーション（少なくとも1つ）に置き換える。実行されるべきテストへの `skip`/`xit` マーカーは外す。テスト対象のコンポーネント本体は、欠落していたアサーションが実装バグを露呈する場合を除き変更しない
+    - `type: "hollow_test"` — hollow なテスト本体を、AC の観測可能な振る舞いを検証する React Testing Library のアサーション（少なくとも1つ）に置き換える。実行されるべきテストへの `skip`/`xit` マーカーは外す。変更はテストに限定し、新しいアサーションがコンポーネントの実際の振る舞いを報告する状態にする。実装バグが露呈した場合はコンポーネント側も修正し、そのバグを `changeSummary` に明記する
     - `type` が未指定の場合は `description` のテキストから推測する。曖昧な場合は `missing_logic` をデフォルトとする
 
 ## フェーズ開始ゲート [BLOCKING]
 
 これは本エージェントの全ステップ実行前に成立すべき事前条件。実行途中の条件（タスクファイル本文、調査対象の読み込み）は後続の Step 完了ゲートで確認する。
 
-☐ [確認済] frontmatterの全必須スキルがロード済み
 ☐ [確認済] task_file パスがプロンプトで提供されている、または本呼び出しで glob によるフォールバック探索が許容される
 
 **強制**: いずれかが未チェックの場合、以降のステップを全てスキップし、構造化レスポンス仕様で定義される JSON 形式で `status: "escalation_needed"` を即座に返却。
@@ -78,7 +77,16 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 □ 型システム回避が必要？（型キャスト、動的型付け強制、型検証無効化）
 □ エラーハンドリング回避が必要？（例外無視、エラー握りつぶし、空 catch ブロック）
 □ テストを実質的でない状態にする変更が必要？（skip 追加、無意味な検証、常に成功するテスト）
-□ 既存テスト変更・削除が必要？
+
+### Step2a: 既存テスト変更チェック
+
+既存テストは決定済みの期待値を符号化しているため、それを変更する行為は、既に下された判断を適用するか、新たに判断を下すかのいずれかになる。
+
+受け入れ済みの出所 — タスクファイル、Design Doc、作業計画書 — が既に述べている契約に期待値を合わせる変更であれば進める。その出所とセクションを Investigation Notes に記録する。
+
+以下の2つの場合はエスカレーションする:
+- **カバレッジが弱まる場合**（アサーションの削除、テストの削除、失敗を避けるためのquery の絞り込み） → `escalation_type: "design_compliance_violation"`。`design_doc_expectation` = 現行テストがカバーするACまたは契約、`actual_situation` = 失われるカバレッジ、`why_cannot_implement` = カバレッジを保ったままACを満たせない理由、`attempted_approaches[]` = 保持を試みた方法、`claude_recommendation` = ブロックを解除する条件
+- **受け入れ済みの出所が述べていない振る舞いが変わる場合** → `escalation_type: "unresolved_input"`（`kind: "requirement-decision"`）。必要入力は、どちらの振る舞いが正しいかを決める出所
 
 ### Step3: 類似コンポーネント重複チェック
 
@@ -170,6 +178,15 @@ task_file パスはオーケストレータが渡す入力。プロンプトで�
 
 ### 3. 実装実行
 
+#### 採用済み追加との対応確認
+
+Design Convergence は設計時に完了している — Direct MVP、Failed Items、Adopted Additions、Rejected Additions は Design Doc が所有する。このステップの範囲は対応確認であり、このタスクが作るものが設計が採用したものと一致していることを確認する。
+
+コードを書く前に、計画している実装が導入する各機構 — 新しい Context、共有ストア、メモ化層、Custom hook、間接層 — を Design Doc の Adopted Addition、またはタスク自身の契約と UI Spec のセクションに対応付ける。その対応を Investigation Notes に記録する。
+
+そうした出所を持たない機構は、スコープの逸脱か、設計が持っていなかった事実のいずれかである。それを必要にしたエビデンスを添えてタスク固有の Failed Item として記録し、上記の必須判断基準に回す: アーキテクチャ変更、新規依存、Target Files 外のファイルを必要とする項目はエスカレーションであり、ここで下す判断ではない。Design Doc の Rejected Addition は、実装時のエビデンスがその却下理由を覆す場合を除き却下のまま維持し、覆す場合はローカルな判断の反転ではなくエスカレーションとする。
+
+
 #### テスト環境チェック
 **TDDサイクル開始前**: **このタスクのテストが依存する**コンポーネントだけを確認する。AC を、テストランナーとレンダリングエントリポイントのみで実行可能なテスト（ライブネットワーク呼び出しや別プロセスのモックサーバ、フィクスチャ、外部サービス、プロジェクトの既定テスト環境を超える本番相当の DOM ポリフィルを必要としない）で実行できる場合は、そちらを優先してエスカレーションを避ける。
 
@@ -203,6 +220,7 @@ task_file パスはオーケストレータが渡す入力。プロンプトで�
    - **Target Files スコープ内** → 残余をこのタスクの失敗するテストと実装に取り込む。
    - **修正を要すると確認できたスコープ外の兄弟ケース** → `out_of_scope_file` エスカレーション（Target Files 外のファイルに触れる際の標準経路）を発行し、ユーザーが Target Files を拡張するか follow-up タスクに切り出すかを判断できるようにする。これにより、確認済みの隣接欠陥は明示的な判断に回される。
    - **修正を要するか確認できない関連残余** → タスクファイルの Investigation Notes に記録し、下流のレビューの隣接ケースチェックが実装に対して検証できるようにする。
+4. 走査のエビデンスを Investigation Notes に記録する: 確認した各ケースとその処理（`incorporated`、欠陥を抱えていないエビデンスを添えた `unchanged`、発行したエスカレーションを添えた `out-of-scope`）。隣接ケースが見つからなかった場合は、走査した範囲 — 調べた経路・契約・永続状態・境界 — を記録し、結果を無言のスキップではなく明示された否定として残す。
 
 #### Binding Decision チェック（タスクファイルに Binding Decisions セクションがある場合は必須）
 
@@ -215,6 +233,19 @@ task_file パスはオーケストレータが渡す入力。プロンプトで�
    - `Y`: 続行する
    - `N`: 実装を中止し、`status: "escalation_needed"` と `escalation_type: "binding_decision_violation"`（`phase: "pre_implementation"`）で最終レスポンスを生成する（エスカレーションレスポンス表を参照）。`N` は計画段階での違反を表す
    - `Unknown`: その行を Investigation Notes に保留として記録し、TDDサイクルに進む。終了ゲートが（このステップで保留された Unknown 行を含む）全行を最終実装に対して再評価し、その時点で `N` または `Unknown` が残る場合はエスカレーションする
+
+#### 未解決項目チェック（タスクファイルに Decisions and Unresolved Items セクションがある場合は必須）
+
+実装前確認の後、Binding Decision チェックと並行して実行する。
+
+1. 解決済みの判断は記載どおりに適用する — 記録された選択またはルールがその判断であり、再評価の余地を示すものではない
+2. 各ブロッキング未解決項目について、その `Kind` で分岐する:
+   - **`requirement-decision`** → 停止し `escalation_type: "unresolved_input"` でエスカレーションする。Iron Rule に従う: 未決なのはシステムが何をすべきかであり、スコープ内のどの構成もそれを供給できない。項目と必要入力をそのまま報告し、振る舞いの選択はその入力を供給する側に委ねる
+   - **`implementation-detail`** → 観測可能な振る舞いは要件、UI Spec のセクションと契約で既に確定しており、開いているのは構成だけである:
+     - Smallest In-Scope Option が記録されており、要求される成果・全 Binding Decision・全 Reference Contract を満たす → それを適用し、適用した旨とどの項目を解決したかを Investigation Notes に記録する
+     - 選択肢が記録されていない → スコープ内の最小の選択肢を導出し Investigation Notes に記録し、同じ条件下で適用する
+     - スコープ内のどの選択肢もすべてを満たさない（`none` と記録されている、または導出しても同じ結果になる） → `escalation_type: "unresolved_input"` でエスカレーションし、スコープ内のどの選択肢も満たせない制約を具体的に示す
+3. `Kind` が不在、またはいずれの値にも一致しない場合は `requirement-decision` として扱う — 振る舞いに関する問いを構成に関する問いと誤分類すると無言で確定させてしまうため、こちらが安全側の解釈である
 
 #### Reference Contract チェック（タスクファイルに Reference Contracts セクションがある場合は必須）
 
@@ -345,6 +376,7 @@ task_file パスはオーケストレータが渡す入力。プロンプトで�
 | `binding_decision_violation` | "Binding decision violation" | `phase: 'pre_implementation' \| 'exit_gate'`; `plannedApproach`; `failures[{source, axis, decision, complianceCheck, evaluation: 'N' \| 'Unknown', rationale}]` | "バインディング決定を満たすよう実装計画を調整" / "ADRを更新（その後、作業計画書のADR BindingsとこのタスクのBinding Decisionsを更新）" / "Unknown評価を解消する追加コンテキストを提供" |
 | `test_environment_not_ready` | "Test environment not ready" | `missingComponent: 'test runner' \| 'DOM/browser environment' \| 'setup file' \| 'mock layer' \| 'other'`; `description`（欠落コンポーネントがテストをブロックする理由） | "欠落コンポーネントをインストールまたは設定してタスクを再実行" / "環境が整ってからタスクを再割り当て" |
 | `out_of_scope_file` | "Out of scope file" | `details: {file_path, allowed_list[], modification_reason}` | "Target Files に追加してリトライ" / "別タスクに分割" / "アプローチを再検討" |
+| `unresolved_input` | "Required decision not resolved" | `unresolvedItems: [{item, kind: 'requirement-decision' \| 'implementation-detail', requiredInput, unmetConstraint}]` — `unmetConstraint` はスコープ内のどの選択肢も満たせない Binding Decision または Reference Contract を示す。`requirement-decision` の場合は `null`。`sourceSection`（項目の記録場所: タスクファイルの Decisions and Unresolved Items、またはそれを発行したチェック） | 「示された判断を供給してタスクを再実行」/「振る舞いが規定されるようDesign DocまたはUI Specを改訂」/「判断を解決した上で再分解」 |
 | `task_file_not_found` / `task_already_completed` / `target_files_missing` | "Task selection precondition failed" | `details: {task_file_path, failure_reason: 'file does not exist' \| 'file unreadable' \| 'all checkboxes already [x]' \| 'Target Files section missing or empty'}` | "正しい task_file パスを提供" / "作業計画を再分解" / "完了済みとしてスキップ" |
 
 最小例（out_of_scope_file）:
@@ -372,6 +404,7 @@ task_file パスはオーケストレータが渡す入力。プロンプトで�
 ☐ Reference Contracts の全 Compliance Check が最終実装に対して `Y` と評価され、その根拠が Investigation Notes に記録されている（タスクファイルに Reference Contracts セクションがある場合）。実装前チェックが通過していても、ここで再評価する
 ☐ テストが roundtrip を検証している — producer が出力する値を consumer が期待どおりの値へパースできる（タスクが作業計画書の Connection Map 由来の roundtrip チェックを伴う Boundary Context を持つ場合）
 ☐ テストエビデンスを引用している場合（タスクがテストを実行した場合）、`runnableCheck.substance` と `runnableCheck.substanceIssue` がフィールド仕様に従って設定されている
+☐ 隣接ケース走査が適用された場合、Investigation Notes に確認した各ケースとその処理、または（隣接ケースが見つからなかった場合は）走査した範囲と該当なしの結果が記録されている
 ☐ 最終レスポンスが `status: "completed"` または `status: "escalation_needed"` の単一 JSON で、構造化レスポンス仕様のスキーマに一致する
 
 **強制**: いずれかが未チェックの場合、構造化レスポンス仕様で定義される JSON 形式で `status: "escalation_needed"` を返却。未チェック項目が Binding Decisions の Compliance Check の場合は、`escalation_type: "binding_decision_violation"`（`phase: "exit_gate"`）を使う。その他の未チェックのゲート項目には `escalation_type: "design_compliance_violation"` を使い、実装前マッピングと同じ粒度でエスカレーションレスポンス表に従って埋める: Reference Contracts の失敗では `details.design_doc_expectation` = Required Observable Value、`details.actual_situation` = 最終実装の振る舞い; roundtrip テストの欠落では `details.design_doc_expectation` = 要求される roundtrip（producer が出力する値を consumer が期待どおりの値へパースできること）、`details.actual_situation` = 欠落または失敗している roundtrip カバレッジ; いずれの場合も `details.why_cannot_implement` / `details.attempted_approaches[]` / `claude_recommendation` は表に従う。

@@ -106,6 +106,8 @@ Security Review: [security-reviewerのstatus]
 
 AskUserQuestionを使用する。デフォルト提示は **「すべての推奨ルートを承認」** — オーケストレーターの推奨が正しい典型ケース向けの単一確認。ユーザーが上書きしたい場合は finding ごとに c/d/s を収集する。すべてに対し `s` を選択した場合: Steps 5-10をスキップしてStep 11へ進む。
 
+**修正パスへ引き継ぐスコープ**: 承認された所見、そのルート、対象となるファイルとセクション、およびユーザーが述べたサイズ予算を、ステップ6〜10 で呼び出す全エージェントに渡す。再検証の前に、各差分ハンクを承認された所見、またはその所見が必要とした整合性の更新に対応付ける。対応付かないハンク、または述べられた予算を超える差分については、修正の一部として受け入れるのではなくスコープ判断を求める。
+
 ### 5. タスクテンプレートの読み込み
 
 documentation-criteriaスキルを読み込み、Step 6用のタスクファイルテンプレート（references/task-template.md）を取得。
@@ -122,7 +124,7 @@ documentation-criteriaスキルを読み込み、Step 6用のタスクファイ�
 2. document-reviewer を呼び出して更新後の Design Doc を検証する:
    - `subagent_type`: "document-reviewer"
    - `description`: "更新後Design Docのレビュー"
-   - `prompt`: "[path]の更新後Design Docの整合性と完成度をレビュー。"
+   - `prompt`: "doc_type: DesignDoc。review_context: update。[path]の更新後Design Docの整合性と完成度をレビュー。"
 
 3. 複数のDesign Docが存在する場合（`ls docs/design/*.md | grep -v template | wc -l > 1`）、design-syncを呼び出す:
    - `subagent_type`: "design-sync"

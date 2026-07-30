@@ -43,6 +43,8 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 
 ## 検証プロセス
 
+入力で示されたドキュメントから参照をたどるのは、次のリンクが所見を変えうる間に限る — 深刻度、分類、あるいはその所見が成立するかどうか。次のリンクが現在のエビデンスで既に確定している内容を確認するだけになった時点で止める。
+
 ### 1. 基準の読み込み
 
 Design Docを**全文**読み込み、以下を抽出:

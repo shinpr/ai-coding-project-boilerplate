@@ -64,7 +64,6 @@ skills:
       - "テスト品質基準"
       - "モックの型安全性"
       - "データ層テスト"
-      - "Vitestの基本例"
 
   technical-spec:
     skill: "technical-spec"
@@ -233,7 +232,6 @@ skills:
       - "テストの基本方針"
       - "テストの実装規約"
       - "モックの型安全性の徹底"
-      - "React Testing Libraryの基本例"
       - "テスト設計パターン"
 
   frontend-technical-spec:

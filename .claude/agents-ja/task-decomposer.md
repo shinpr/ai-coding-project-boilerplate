@@ -107,7 +107,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
    - `## Quality Assurance Mechanisms`（作業計画書ヘッダーから導出 — 下記「品質保証メカニズムの伝播」参照）
    - `## Operation Verification Methods`（作業計画書の Verification Strategy から導出）
    - `## Proof Obligations`（主張ごと — 下記「証明義務の伝播」参照）
-   - `## Decisions and Unresolved Items`（分解時に代替案/optional/placeholderを解決した、または必須の決定が未解決の場合 — 選択・判断ルールまたはブロッキングな未解決項目を task-template に従って記録）
+   - `## Decisions and Unresolved Items`（分解時に代替案/optional/placeholderを解決した、または必須の決定が未解決の場合 — 選択・判断ルールまたはブロッキングな未解決項目を task-template に従って記録）。各ブロッキング項目の `Kind` を分類する: 開いているのが内部の構成だけで観測可能な振る舞いは要件と契約で既に確定している場合は `implementation-detail`、観測可能な振る舞い・プロダクトのルール・セキュリティ姿勢・互換性保証が未決の場合は `requirement-decision`。Smallest In-Scope Option を記録するのは `implementation-detail` の項目のみとし（成果と全 Binding Decision・全 Reference Contract を満たすスコープ内の選択肢がない場合は `none`）、`requirement-decision` の項目には `n/a — stop` を設定する。後者は executor が確定させずエスカレーションする
    - `## Completion Criteria`
 
 6. **Investigation Targets の決定**
@@ -172,6 +172,7 @@ implementation-approachスキルで決定された実装戦略パターンに基
 2. **カテゴリごとに Proof Obligation を追加**: マッチした各タスクに、その `主要な故障モード` をそのカテゴリとする Proof Obligation を持たせ、タスクの対象に即して具体化する（例: `missing-sort-key ordering` → 「このタスクのリストで、ソートキーを持たない行が誤配置されるか非決定的に並び替わる」）。残りの Proof Obligations フィールドは上記「証明義務の伝播」に従いACと対象ファイルから埋める。そのカテゴリをカバーするACがない場合、`主張` をそのタスクが防ぐべき故障モード条件とし、`状態アサーション` はタスクが状態を変更しない限り `N/A` とする。
 3. **既存エントリへの統合**: AC由来の Proof Obligation が既にそのタスクの同じ故障モードをカバーしている場合、並行して追加せず単一エントリのまま保つ。
 4. **提供時のみ適用**: この伝播は、該当するカテゴリを持つ故障モードチェックリストが作業計画書に含まれる場合のみ実行する。
+5. **First-Pass Risk Coverage 行のコピー**: 作業計画書が First-Pass Risk Coverage 表を持つ場合、このタスクを指名している各行を、タスクの First-Pass Risk Coverage セクションへ「カバーするタスク」列を除いてそのままコピーする — 6つの disposition すべてを含め、要約しない。タスクファイルが executor とレビュアが読む契約であるため、ここで落とした disposition は、計画書が下したのに下流の誰も受け取らない判断になる。次に、その行が `blocked` としているhazardごとに、欠けている判断を示した `Kind: requirement-decision` のブロッキング未解決項目を追加し、既存の未解決項目チェック経由で executor が停止するようにする。
 
 ## UI Spec伝播
 

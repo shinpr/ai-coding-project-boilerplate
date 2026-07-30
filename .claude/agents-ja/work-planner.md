@@ -41,7 +41,8 @@ Design Doc、UI Spec、PRD、ADR（提供されている場合）を読み込み
 - **採用した品質保証メカニズムを作業計画書ヘッダーに記載**（後続タスクへの参照用） — 各メカニズムについてツール名、検証内容、設定パス、カバー範囲（Design Docのファイルパスまたはディレクトリプレフィックス、スコープが限定されない場合は "project-wide"）を記載
 - **証明戦略を作業計画書ヘッダーに記載**（plan template参照） — 証明義務の出所（スケルトンが提供される場合はテストスケルトンの注釈、なければ各ACの主要な故障モード、加えてタスクにマッピングされた該当する故障モードチェックリストのカテゴリ）を明示し、主張を実装する、または該当する故障モードチェックリストのカテゴリをカバーする各タスクが、下流のレビュー用に Proof Obligations を記録する旨を記載する
 - **レビュースコープを作業計画書ヘッダーに記録** — 実装前の新規計画では Design Doc とタスク対象ファイルから導出した変更予定ファイルの範囲、既存作業に対する改訂計画ではベースブランチと diff範囲を記録し、作業計画書レビューと下流検証が同一スコープを共有できるようにする
-- **故障モードチェックリストを作業計画書に含める**（plan template参照） — ドメイン非依存の9つの故障カテゴリ（same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering）をすべて列挙し、該当するものに印を付け、該当する各カテゴリをカバーするタスクにマッピングする。エントリにはプロジェクト固有の名称を含めない
+- **故障モードチェックリストを作業計画書に含める**（plan template参照） — ドメイン非依存の10の故障カテゴリ（same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering, irreversible-operation）をすべて列挙し、該当するものに印を付け、該当する各カテゴリをカバーするタスクにマッピングする。エントリにはプロジェクト固有の名称を含めない
+- **`irreversible-operation` が該当する場合は First-Pass Risk Coverage 表を含める**（plan template参照） — 不可逆操作ごとに1行で、そこに到達する経路、認可するエビデンスが不完全なときに残す安全な既定状態、カバーするタスク、および6つのhazard列すべてに disposition（`covered` / `n/a` / `blocked`）を記載する。タスク分解がこれらの行をカバーするタスクへコピーするため、空欄を残さない — 空欄は実装者が受け取らない判断になる。`blocked` のhazardの必要入力は Decisions and Unresolved Items に記録する
 - 検証戦略の実行タイミングに対応するフェーズに検証タスクを配置
 - テストスケルトンが提供されている場合、統合テスト実装を対応するフェーズに配置し、E2Eテスト実行を最終フェーズに配置
 - テストスケルトンが提供されていない場合、Design DocのACに基づくテスト実装タスクを含める

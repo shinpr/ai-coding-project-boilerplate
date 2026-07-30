@@ -1,7 +1,7 @@
 ---
 name: quality-fixer-frontend
 description: Reactプロジェクトを検証し、現在のタスクスコープ内のフロントエンド品質失敗を修正する専門エージェント。コード変更後、または品質/quality/チェック/check/検証/verify/テスト/test/ビルド/build/lint/format/型/type/修正/fix が言及された時に積極的に使用する。
-tools: Bash, Read, Edit, MultiEdit, TaskCreate, TaskUpdate
+tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit, TaskCreate, TaskUpdate
 skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technical-spec, coding-standards, project-context
 ---
 
@@ -27,6 +27,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 - **task_file**（任意）: 検証対象のタスクファイルへのパス。指定された場合、「品質保証メカニズム」セクションを読み込み、品質チェック検出の補助ヒントとして使用する。これはあくまでヒントであり、コード・マニフェスト・設定ベースの一次検出が優先。
 - **filesModified**（任意）: 上流の実装ステップが現在のタスクで変更したファイルパスのリスト。ステップ1の主要スコープとして、かつ現在の変更境界の根拠として使用する。未指定時は `git diff HEAD` にフォールバックする。
 - **runnableCheck**（任意）: 上流の実装ステップから受け取るテスト実行のエビデンス。指定された場合、ステップ3の Substance チェックの一次入力として使う。スキーマ: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。未指定時は、スコープ内のテスト本体を自分で走査して実体性を判定する。
+- **qualityCommand**（任意）: 呼び出し側が把握している場合の、プロジェクトの権威ある品質コマンド（例: frontend-technical-spec やリポジトリの規約由来）。指定された場合、ステップ2はまずこれを実行し、これがカバーしないカテゴリについてのみコマンドを検出する。指定がない場合、ステップ2は従来どおりプロジェクト設定からコマンドを検出する。
 
 ## 初回必須タスク
 
@@ -64,7 +65,9 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 
 ### ステップ2: 品質チェックコマンドの検出
 
-**一次検出**（常に実行）:
+**呼び出し側指定のコマンド**（`qualityCommand` が指定された場合）: まずこれを実行する。あるカテゴリを covered と見なせるのは、その実行の中でそのカテゴリ固有のツール出力を明確に識別できる場合に限る — レポーターのヘッダー、ツール単位のサマリ行、カテゴリ固有の結果件数など。識別できないカテゴリは **未カバー** として扱い、下記の一次検出でそのコマンドを検出・実行する。冗長な二重実行は許容するが、無言でカテゴリをスキップすることは許容しない。コマンドが失敗した場合は、別のコマンドに差し替えず、報告された失敗を修正して同じコマンドを再実行する。`checksPerformed` では各フェーズの `commands[]` に実際に実行されたものを記載する — そのフェーズを明確にカバーした呼び出し側指定のコマンド、または個別に検出したコマンド — これによりどのフェーズが指定コマンドに依拠したかが記録に残る。
+
+**一次検出**（呼び出し側指定のコマンドがカバーしなかった各カテゴリについて実行）:
 ```bash
 # プロジェクトのマニフェストファイルから自動検出
 # プロジェクト構造を特定し品質コマンドを抽出:

@@ -102,21 +102,22 @@ Agentツールでtask-decomposerを呼び出す:
 ## タスク実行サイクル（4ステップサイクル）
 **必須実行サイクル**: `task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit`
 
+最初の反復の前に、本レシピのフェーズを TaskCreate で一度だけ登録する: 「Consumed Task Set の実行」「実装後検証の実行」「消費したタスクファイルのクリーンアップ」「完了報告」。各フェーズは完了時に TaskUpdate で更新する。
+
 Consumed Task Set 内の各タスクで必須：
-1. **TaskCreateでタスク登録**: 作業ステップを登録。必ず含める: 最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」
-2. **Agent tool** (subagent_type: "task-executor-frontend") → タスクファイルパスを prompt に渡し、構造化レスポンスを受け取る
-3. **task-executor-frontend レスポンスをチェック**:
+1. **EXECUTE**: task-executor-frontend を呼び出してタスク実装を実行
+2. **実行結果で分岐**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行
-     - `needs_revision` → ステップ2 に戻り、同じ `task_file` と `requiredFixes[]` 配列を入力として task-executor-frontend を **Fix Mode** で再起動
-     - `approved` → ステップ4 へ
-   - `readyForQualityCheck: true` → ステップ4 へ
-4. **quality-fixer-frontend を呼び出す**: 全品質チェックと修正を実行。`task_file` として現在のタスクファイルパス、`filesModified` として実装ステップの `filesModified` 配列を **必ず渡す**（未完成実装検出を当該タスクの実書き込み集合にスコープする。省略時は quality-fixer が `git diff HEAD` にフォールバック）
-5. **quality-fixer-frontend レスポンスをチェック**:
-   - `stub_detected` → ステップ2 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor-frontend を **Fix Mode** で再起動
-   - `blocked` → 停止してユーザーにエスカレーション
-   - `approved` → ステップ6 へ
-6. **承認後コミット**: git commit を実行
+   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（これがないとレビュアはタスクの Proof Obligations を見られず、証明妥当性が `needs_improvement` で頭打ちになる）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `verdict.decision` で分岐する
+     - `needs_revision` → ステップ1 に戻り、同じ `task_file` と `requiredFixes[]` 配列を入力として task-executor-frontend を **Fix Mode** で再起動
+     - `blocked` → 停止してユーザーにエスカレーションし、`verdict.reason` とレビュアが確立できなかった review basis を報告する
+     - `approved` → ステップ3 へ
+   - `readyForQualityCheck: true` → ステップ3 へ
+3. **QUALITY-FIX**: quality-fixer-frontend を呼び出して全品質チェックと修正を実行。`task_file` として現在のタスクファイルパス、`filesModified` として実装ステップの `filesModified` 配列を **必ず渡す**（未完成実装検出を当該タスクの実書き込み集合にスコープする。省略時は quality-fixer が `git diff HEAD` にフォールバックする）。あわせて実装ステップの `runnableCheck` を渡し、substance チェックが上流のエビデンスを再導出せず読めるようにする。また frontend-technical-spec またはリポジトリの規約がプロジェクトの権威ある品質コマンドを示している場合は `qualityCommand` を渡し、この実行の全タスクが同一コマンドで検証されるようにする。その後レスポンスで分岐する:
+   - `stub_detected` → ステップ1 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor-frontend を **Fix Mode** で再起動
+   - `blocked` → 停止してユーザーにエスカレーション（subagents-orchestration-guide の quality-fixer blockedハンドリングに従い `reason` で判別する）
+   - `approved` → ステップ4 へ
+4. **承認後コミット**: git commit を実行
 
 **重要**: 全サブエージェントレスポンスの status フィールドをパースし、4ステップサイクルの対応ブランチを実行。quality-fixer-frontend が `approved` を返すまで次のタスクに進まない。
 
@@ -139,12 +140,12 @@ Escalate when the required fix or investigation falls outside that scope.
 
 1. **両方を並列で実行** (Agent tool):
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`、Design Docパス、`code_paths`: 実装ファイルリスト（`git diff --name-only main...HEAD`）
-   - security-reviewer (subagent_type: "security-reviewer") → Design Docパス、実装ファイルリスト
+   - security-reviewer (subagent_type: "security-reviewer") → Design Docパス、実装ファイルリスト、および `workPlan`: この実行で使用した作業計画書パス（その故障モードチェックリストと First-Pass Risk Coverage 表が、レビュアが検証する宣言済み disposition になる）
 
 2. **結果の統合** — 合格/不合格の基準はsubagents-orchestration-guideの実装後検証セクション参照。統合検証レポートをユーザーに提示。
 
 3. **修正サイクル**（いずれかの verifier が fail のとき、最大2サイクル）:
-   - task-template を用いて、統合修正タスクファイル（例: `docs/plans/tasks/post-impl-fixes-YYYYMMDD.md`）を作成。Target Files には全 verifier の `requiredFixes[].location` / `discrepancies[].codeLocation` が指すファイルパスの和集合を `file[:line]` として解釈してファイル部分のみ取り出して投入する。これにより、元タスクに依らず影響ファイルすべてが executor の File Scope Constraint に許可される。
+   - task-template を用いて、統合修正タスクファイルを `docs/plans/tasks/review-fixes-{plan-name}-frontend-task-{サイクル番号}.md` に作成。Target Files には全 verifier の `requiredFixes[].location` / `discrepancies[].codeLocation` が指すファイルパスの和集合を `file[:line]` として解釈してファイル部分のみ取り出して投入する。これにより、元タスクに依らず影響ファイルすべてが executor の File Scope Constraint に許可される。
    - task-executor-frontend を起動する前に、**verifier 出力を正規化**して統一的な `requiredFixes[]` にする:
      - `security-reviewer.requiredFixes[]`（既に `{location, issue, fix}` 形式）→ そのまま透過。
      - `code-verifier.discrepancies[]` → 対応可能な各 discrepancy（status が `drift` / `gap` / `conflict`）を `{location: discrepancy.codeLocation, issue: discrepancy.claim, fix: "[Design Doc 整合性回復に必要な具体的修正。discrepancy.classification と evidence から導出]"}` に変換。
@@ -161,6 +162,7 @@ Escalate when the required fix or investigation falls outside that scope.
 
 - Consumed Task Set 内のすべてのファイルを削除する
 - `docs/plans/tasks/{plan-name}-phase*-completion.md` にマッチするすべてのファイルを削除する（task-decomposer が生成した本 `{plan-name}` のフェーズ完了ファイル）
+- `docs/plans/tasks/review-fixes-{plan-name}-frontend-task-*.md` にマッチするファイルすべてを削除する（実装後検証の修正サイクルが作成した統合修正タスクファイル） — 全検証エージェントが合格した後にのみ削除する
 - 該当する `docs/plans/tasks/_overview-{plan-name}.md` が存在する場合は削除する
 - 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
 

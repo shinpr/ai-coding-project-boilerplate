@@ -41,7 +41,7 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 
 ### 5. 規模判定後：TaskCreateでフロー全ステップを登録（必須）
 
-規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTaskCreateで登録**。最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を必ず含める。登録後、TaskListを参照してフローを進める。
+規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTaskCreateで登録**。各タスクは追跡対象のフローステップの名前を用いる。登録後、TaskListを参照してフローを進める。
 
 ### 6. 次のアクション実行
 
@@ -83,11 +83,12 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
 1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）
 2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行
+   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（これがないとレビュアはタスクの Proof Obligations を見られず、証明妥当性が `needs_improvement` で頭打ちになる）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `verdict.decision` で分岐する
      - `needs_revision` → ステップ1 に戻り、同じ `task_file` と `requiredFixes[]` 配列を入力として task-executor を **Fix Mode** で再起動
+     - `blocked` → 停止してユーザーにエスカレーションし、`verdict.reason` とレビュアが確立できなかった review basis を報告する
      - `approved` → ステップ3 へ
    - それ以外 → ステップ3 へ
-3. **quality-fixer を呼び出す**: 全品質チェックと修正を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。`task_file` として現在のタスクファイルパス、`filesModified` として実装ステップの `filesModified` 配列を **必ず渡す**（未完成実装検出を当該タスクの実書き込み集合にスコープする。省略時は quality-fixer が `git diff HEAD` にフォールバック）
+3. **quality-fixer を呼び出す**: 全品質チェックと修正を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。`task_file` として現在のタスクファイルパス、`filesModified` として実装ステップの `filesModified` 配列を **必ず渡す**（未完成実装検出を当該タスクの実書き込み集合にスコープする。省略時は quality-fixer が `git diff HEAD` にフォールバックする）。あわせて実装ステップの `runnableCheck` を渡し、substance チェックが上流のエビデンスを再導出せず読めるようにする。また technical-spec またはリポジトリの規約がプロジェクトの権威ある品質コマンドを示している場合は `qualityCommand` を渡し、この実行の全タスクが同一コマンドで検証されるようにする。
    - `stub_detected` → ステップ1 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor を **Fix Mode** で再起動
    - `blocked` → ユーザーにエスカレーション
    - `approved` → ステップ4 へ
@@ -96,10 +97,10 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
 ### Security Review（全タスク完了後）
 
 全タスクサイクル完了後、完了レポートの前にsecurity-reviewerを実行:
-1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリストを渡す
+1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパス、実装ファイルリスト、および `workPlan`: この実行で使用した作業計画書パス（その故障モードチェックリストと First-Pass Risk Coverage 表が、レビュアが検証する宣言済み disposition になる）を渡す
 2. レスポンスを確認:
    - `approved` または `approved_with_notes` → 完了レポートへ（notesがあれば含める）
-   - `needs_revision` → task-template を用いて、統合修正タスクファイル（`docs/plans/tasks/security-fixes-YYYYMMDD.md`）を作成。Target Files には `requiredFixes[].location` を `file[:line]` として解釈してファイル部分のみ取り出した和集合を投入する（元タスクに依らず影響ファイルすべてが executor の File Scope Constraint に許可される）。続いて、`task_file` には新しい統合修正タスクファイルのパス、`requiredFixes` には `security-reviewer.requiredFixes[]` を設定して task-executor を **Fix Mode** で起動。その後 quality-fixer を実行し、最後に security-reviewer を再起動する。
+   - `needs_revision` → task-template を用いて、統合修正タスクファイルを `docs/plans/tasks/review-fixes-{plan-name}-task-{サイクル番号}.md` に作成。Target Files には `requiredFixes[].location` を `file[:line]` として解釈してファイル部分のみ取り出した和集合を投入する（元タスクに依らず影響ファイルすべてが executor の File Scope Constraint に許可される）。続いて、`task_file` には新しい統合修正タスクファイルのパス、`requiredFixes` には `security-reviewer.requiredFixes[]` を設定して task-executor を **Fix Mode** で起動。その後 quality-fixer を実行し、最後に security-reviewer を再起動する。
    - `blocked` → ユーザーにエスカレーション
 
 ### テスト情報の伝達
@@ -122,6 +123,7 @@ acceptance-test-generator実行後、work-planner（subagent_type: "work-planner
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md`（複層計画のfrontend部分）
 - 上記マッチから、以下のパターンに該当するものは除外する: `*-task-prep-*.md`、`_overview-*.md`、`*-phase*-completion.md`、`review-fixes-*.md`、`integration-tests-*-task-*.md`（これらは他のワークフローフェーズに由来する）
 - `docs/plans/tasks/{plan-name}-phase*-completion.md` にマッチするファイルすべてを削除する（task-decomposerが生成したフェーズ完了ファイル）
+- `docs/plans/tasks/review-fixes-{plan-name}-task-*.md` にマッチするファイルすべてを削除する（実装後検証の修正サイクルが作成した統合修正タスクファイル） — 上記の除外はこれらを実装タスクの照合対象から外すためのもので、この行が全検証エージェント合格後に削除する
 - 該当する `docs/plans/tasks/_overview-{plan-name}.md` が存在する場合は削除する
 - 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
 

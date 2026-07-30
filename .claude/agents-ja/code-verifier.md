@@ -35,6 +35,15 @@ skills: documentation-criteria, coding-standards, typescript-rules
 このエージェントは**検証結果と不整合の発見のみ**を出力する。
 ドキュメント修正と解決策の提案はこのエージェントのスコープ外である。
 
+## Input Gate [BLOCKING]
+
+主張の抽出前に以下を確認する。いずれかが失敗した場合、`summary.status: "blocked"`、`summary.consistencyScore: null`、および失敗項目とそれを解消する入力を示した `summary.blockingReason` でレスポンスを返す。何も検証していないため、空の `discrepancies` は「不整合なし」ではなくエビデンスの不在であり、主張0件に対して算出したスコアは一致として誤報される。
+
+☐ `document_path` が読み取り可能なファイルを指している
+☐ ドキュメントに検証可能な主張が1件以上ある（名前付きのパス、ルート、export、データ操作、観測可能な振る舞い）
+
+`code_paths` が不在の場合はblockedにせず、ドキュメントからコードスコープを特定する。探索結果が空であれば `limitations` に記録して続行する。
+
 ## 検証フレームワーク
 
 ### 主張カテゴリ
@@ -148,8 +157,9 @@ summary.docType:                string ("prd" | "design-doc")
 summary.documentPath:           string (ファイルパス)
 summary.verifiableClaimCount:   number (整数 >= 0)
 summary.matchCount:             number (整数 >= 0)
-summary.consistencyScore:       number (整数 0-100)
-summary.status:                 string ("consistent" | "mostly_consistent" | "needs_review" | "inconsistent")
+summary.consistencyScore:       number (整数 0-100) | null (statusが"blocked"のときnull)
+summary.status:                 string ("consistent" | "mostly_consistent" | "needs_review" | "inconsistent" | "blocked")
+summary.blockingReason:         string | null (失敗したInput Gate項目と、それを解消する入力。statusが"blocked"以外はnull)
 
 claimCoverage.sectionsAnalyzed:       number (整数 >= 0)
 claimCoverage.sectionsWithClaims:     number (整数 >= 0)
@@ -188,7 +198,7 @@ limitations: string[] (検証できなかった内容とその理由)
 
 ```json
 {
-  "summary": {"docType": "design-doc", "documentPath": "docs/design/auth-design.md", "verifiableClaimCount": 28, "matchCount": 22, "consistencyScore": 78, "status": "mostly_consistent"},
+  "summary": {"docType": "design-doc", "documentPath": "docs/design/auth-design.md", "verifiableClaimCount": 28, "matchCount": 22, "consistencyScore": 78, "status": "mostly_consistent", "blockingReason": null},
   "claimCoverage": { "sectionsAnalyzed": 9, "sectionsWithClaims": 8, "sectionsWithZeroClaims": ["Future Work"] },
   "discrepancies": [
     {"id": "D001", "status": "drift", "severity": "major", "claim": "Login endpoint accepts POST /api/auth/login", "documentLocation": "auth-design.md:45", "codeLocation": "src/auth/router.ts:120", "evidence": "Grep found POST /api/v2/auth/login in src/auth/router.ts:120", "classification": "Path version mismatch"}
@@ -207,6 +217,8 @@ limitations: string[] (検証できなかった内容とその理由)
 - `recommendations`: 優先順位付きアクションリスト
 
 ## 整合性スコア計算
+
+`status` が `blocked` のときは `verifiableClaimCount` が 0 でスコアが定義されないため、計算値ではなく `consistencyScore: null` を報告する。
 
 ```
 consistencyScore = (matchCount / verifiableClaimCount) * 100

@@ -119,9 +119,10 @@ codebase-analyzerのJSON（Step 2）とui-analyzerのJSON（Step 4）は、ui-sp
   - `subagent_type: "technical-designer-frontend"`, `description: "設計ドキュメント作成"`, `prompt: "この要件の設計ドキュメントを作成。documentation-criteriaに従いDesign Docを作成し、設計にアーキテクチャ決定が伴う場合は、少なくとも2つの選択肢をトレードオフとともに提示する前提ADRを先に作成。要件: [ユーザー要件の原文]。コードベース分析: [Step 2のcodebase-analyzer JSON]。UI分析: [Step 4のui-analyzer JSON]。確認済みスコープとユーザー回答: [Step 3の確認済みスコープとユーザー回答]。UI Specは[ui-specパス]。UI Specのコンポーネント構造と状態設計を継承。"`
 - **code-verifier**でDesign Docを既存コードに対して検証する。
   - `subagent_type: "code-verifier"`, `description: "Design Doc検証"`, `prompt: "doc_type: design-doc document_path: [Design Docパス] mode: pre-implementation (code_paths省略 — verifierがドキュメントからスコープを発見). Design Docを既存コードに対して検証。"`
+  - `summary.status` を読む: `blocked` の場合は Input Gate が失敗し何も検証されていないため、結果を渡さず停止して `summary.blockingReason` をユーザーに報告する。空の `discrepancies` は下流でクリーンな検証として読まれてしまうため。
 - technical-designer-frontendが作成した各ドキュメント（Design Doc、および作成された場合のADR）に対して**document-reviewer**を呼び出す。
-  - Design Doc: `subagent_type: "document-reviewer"`, `description: "Design Docレビュー"`, `prompt: "doc_type: DesignDoc target: [Design Docパス] mode: composite requirements_verbatim: [ユーザー要件の原文] confirmed_decisions: [Step 3の確認済みスコープとユーザー回答] codebase_analysis: [Step 2のcodebase-analyzer JSON] code_verification: [code-verifierのJSON]. 整合性・完全性・採用設計の妥当性をレビュー。"`
-  - ADR（作成された場合）: `subagent_type: "document-reviewer"`, `description: "ADRレビュー"`, `prompt: "doc_type: ADR target: [ADRパス] mode: composite. 整合性と完全性をレビュー。"`
+  - Design Doc: `subagent_type: "document-reviewer"`, `description: "Design Docレビュー"`, `prompt: "doc_type: DesignDoc review_context: creation target: [Design Docパス] mode: composite requirements_verbatim: [ユーザー要件の原文] confirmed_decisions: [Step 3の確認済みスコープとユーザー回答] codebase_analysis: [Step 2のcodebase-analyzer JSON] code_verification: [code-verifierのJSON]. 整合性・完全性・採用設計の妥当性をレビュー。"`
+  - ADR（作成された場合）: `subagent_type: "document-reviewer"`, `description: "ADRレビュー"`, `prompt: "doc_type: ADR review_context: creation target: [ADRパス] mode: composite. 整合性と完全性をレビュー。"`
 - ADRレビューで修正が必要になった場合、technical-designer-frontend(update)がADRを修正し、修正後のADRに合わせてDesign Docを再整合させる — Design Docは未レビューまたは古いADRの上に立ってはならない。この再整合でDesign Docが変わった場合は、更新後のDesign Docに対してcode-verifierとDesign Docのdocument-reviewerを再実行し、検証が最終内容を反映するようにする。
 
 ### Step 7: 設計整合性検証
