@@ -6,8 +6,8 @@ E2E tests in this workflow split into two lanes:
 
 | Lane | Backend setup | Use these patterns |
 |------|---------------|-------------------|
-| **fixture-e2e** | Mocked via `page.route()` or fixture loaders; no live services | Page Object Pattern, Locator Strategy, Assertions, the **Fixture-Based Backend** section below |
-| **service-integration-e2e** | Live local stack with real services | All patterns above PLUS a real auth fixture against the application's login flow and seeded test data |
+| **fixture-e2e** | Mocked via `page.route()` or fixture loaders; no live services | Test Structure Rules, Locator Strategy, What to Assert, the **Fixture-Based Backend** section below |
+| **service-integration-e2e** | Live local stack with real services | All sections above PLUS **E2E Environment Prerequisites**, a real auth fixture against the application's login flow, and seeded test data |
 
 The skeleton's `@lane:` annotation declares which lane the test belongs to. Choose implementation patterns to match.
 
@@ -17,140 +17,33 @@ The skeleton's `@lane:` annotation declares which lane the test belongs to. Choo
 
 ## Test Structure
 
-### Directory Layout
-```
-tests/
-└── e2e/
-    ├── pages/                       # Page objects (shared across lanes)
-    │   ├── login.page.ts
-    │   └── dashboard.page.ts
-    ├── fixtures/                    # Test fixtures (auth, seed)
-    │   └── auth.fixture.ts
-    ├── data/                        # Static fixture data for fixture-e2e
-    │   └── *.fixture.json
-    ├── *.fixture-e2e.test.ts        # fixture-e2e test files
-    └── *.service-e2e.test.ts        # service-integration-e2e test files
-```
+### Directory Layout and Naming
 
-### Naming Conventions
+Everything lives under `tests/e2e/`: test files at its root, page objects in `pages/` (shared across lanes), fixtures in `fixtures/`, and static fixture data for fixture-e2e in `data/`.
+
 - fixture-e2e files: `{FeatureName}.fixture-e2e.test.ts`
 - service-integration-e2e files: `{FeatureName}.service-e2e.test.ts`
 - Page objects: `{PageName}.page.ts`
 - Fixtures: `{Purpose}.fixture.ts`
 - Static fixture data: `{scenario}.fixture.json`
 
-## Page Object Pattern
+## Test Structure Rules
 
-Encapsulate page interactions for reusability and maintainability:
+- Extract a page object per the Rule of Three in coding-standards: keep interactions inline on first use, consider extracting on the second, and extract on the third substantially shared interaction. Extract earlier only when the shared interaction is itself complex (multi-step, waits on intermediate state) or when a representative page object for that page already exists — then follow it.
+- Put shared setup that every test in a file needs — authentication in particular — in a fixture rather than repeating the steps per test, so a test body contains only the behavior it verifies.
 
-```typescript
-import { type Page, type Locator } from '@playwright/test'
+## What to Assert
 
-export class LoginPage {
-  readonly emailInput: Locator
-  readonly passwordInput: Locator
-  readonly submitButton: Locator
+Assert the state the user can observe after the journey, not the steps taken to get there:
 
-  constructor(private page: Page) {
-    this.emailInput = page.getByLabel('Email')
-    this.passwordInput = page.getByLabel('Password')
-    this.submitButton = page.getByRole('button', { name: 'Sign in' })
-  }
-
-  async login(email: string, password: string) {
-    await this.emailInput.fill(email)
-    await this.passwordInput.fill(password)
-    await this.submitButton.click()
-  }
-}
-```
-
-## Test Patterns
-
-### Basic Test
-```typescript
-import { test, expect } from '@playwright/test'
-
-test('user can navigate to dashboard after login', async ({ page }) => {
-  // Arrange
-  await page.goto('/login')
-
-  // Act
-  await page.getByLabel('Email').fill('user@example.com')
-  await page.getByLabel('Password').fill('password')
-  await page.getByRole('button', { name: 'Sign in' }).click()
-
-  // Assert
-  await expect(page).toHaveURL('/dashboard')
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
-})
-```
-
-### With Page Objects
-```typescript
-import { test, expect } from '@playwright/test'
-import { LoginPage } from './pages/login.page'
-import { DashboardPage } from './pages/dashboard.page'
-
-test('user completes purchase flow', async ({ page }) => {
-  const loginPage = new LoginPage(page)
-  const dashboardPage = new DashboardPage(page)
-
-  await page.goto('/login')
-  await loginPage.login('user@example.com', 'password')
-  await expect(dashboardPage.heading).toBeVisible()
-})
-```
-
-### Auth Fixture
-```typescript
-import { test as base } from '@playwright/test'
-
-export const test = base.extend<{ authenticatedPage: Page }>({
-  authenticatedPage: async ({ page }, use) => {
-    await page.goto('/login')
-    await page.getByLabel('Email').fill('user@example.com')
-    await page.getByLabel('Password').fill('password')
-    await page.getByRole('button', { name: 'Sign in' }).click()
-    await page.waitForURL('/dashboard')
-    await use(page)
-  },
-})
-```
+- **Navigation** — the URL or the landmark that identifies the destination, not both as separate proofs of the same transition.
+- **Rendered outcome** — the specific content the journey was supposed to produce, identified by role and accessible name. A visibility check on a container proves the container rendered, not that it holds the right thing.
+- **Absence** — when the expectation is that something is gone or was never shown, assert absence explicitly rather than asserting that something else is present.
+- **Persisted effect** — when a requirement or contract states that the change survives a reload or a fresh navigation, assert it there too, since an in-page update can pass while persistence fails. Transient state with no such contract — filter selections, modal open/close, wizard progress — is asserted in place; adding a reload assertion there would test a guarantee the feature never made.
 
 ## Fixture-Based Backend (fixture-e2e)
 
-fixture-e2e tests run a real browser against deterministic fixtures — no live backend, no DB, no external services. Use one of these patterns to fake the network:
-
-### Pattern A: page.route() interception
-
-```typescript
-import { test, expect } from '@playwright/test'
-import cardsFixture from './data/cards.fixture.json'
-
-test('Dismiss-then-Undo restores card', async ({ page }) => {
-  // Arrange: intercept all backend calls with deterministic responses
-  await page.route('**/api/cards', async (route) => {
-    await route.fulfill({ json: cardsFixture })
-  })
-  await page.route('**/api/cards/*/dismiss', async (route) => {
-    await route.fulfill({ status: 204 })
-  })
-
-  await page.goto('/cards')
-  await page.getByRole('button', { name: 'Dismiss' }).first().click()
-  await page.getByRole('button', { name: 'Undo' }).click()
-
-  await expect(page.getByText(cardsFixture[0].title)).toBeVisible()
-})
-```
-
-### Pattern B: Fixture loader injection
-
-```typescript
-// data/cards-with-dismiss.fixture.json — committed alongside the test
-// Loaded via a route helper or app-level test mode
-```
+fixture-e2e tests run a real browser against deterministic fixtures — no live backend, no DB, no external services. Fake the network either by intercepting every backend call the journey makes with `page.route()` and fulfilling it from a committed fixture, or by loading that fixture through a route helper or an app-level test mode. Intercept every call the journey reaches, not only the first — an unintercepted route silently hits the real network and makes the test environment-dependent.
 
 **Principles for fixture-e2e**:
 - Backend is faked, not running. No `npm run start:backend` required to execute these tests
@@ -177,56 +70,13 @@ Prefer accessible locators in this order:
 1. `page.getByRole()` — targets the accessibility role and user-visible name
 2. `page.getByLabel()` — form elements
 3. `page.getByText()` — visible text
-4. `page.getByTestId()` — last resort
+4. `page.getByTestId()` — last resort; record in the test why no perceivable attribute identifies the element
 
-```typescript
-// Preferred
-await page.getByRole('button', { name: 'Submit' }).click()
-
-// Brittle implementation-coupled locator
-await page.locator('#submit-btn').click()
-await page.locator('.btn-primary').click()
-```
-
-## Assertions
-
-```typescript
-// Visibility
-await expect(page.getByText('Success')).toBeVisible()
-await expect(page.getByText('Error')).not.toBeVisible()
-
-// Navigation
-await expect(page).toHaveURL('/dashboard')
-await expect(page).toHaveTitle('Dashboard')
-
-// Element state
-await expect(page.getByRole('button')).toBeEnabled()
-await expect(page.getByRole('button')).toBeDisabled()
-
-// Content
-await expect(page.getByRole('heading')).toHaveText('Welcome')
-```
+Selecting by CSS id or class couples the test to markup rather than to what the user perceives; use a locator from the list above instead.
 
 ## Viewport Testing
 
-When UI Spec defines responsive behavior:
-
-```typescript
-test.describe('responsive navigation', () => {
-  test('shows hamburger menu on mobile', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-    await page.goto('/')
-    await expect(page.getByRole('button', { name: 'Menu' })).toBeVisible()
-    await expect(page.getByRole('navigation')).not.toBeVisible()
-  })
-
-  test('shows full navigation on desktop', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 })
-    await page.goto('/')
-    await expect(page.getByRole('navigation')).toBeVisible()
-  })
-})
-```
+When the UI Spec defines responsive behavior, assert it at each viewport the UI Spec names — both the element that appears and the element that is absent at that size, since a breakpoint bug usually shows as both surfaces rendering at once.
 
 ## Test Isolation
 
@@ -242,7 +92,7 @@ E2E test skeletons follow the same annotation format as integration tests, with 
 ```typescript
 // AC: [Original acceptance criteria text]
 // Behavior: [User action] → [System response] → [Observable result]
-// @category: fixture-e2e | service-integration-e2e
+// @category: core-functionality | integration | edge-case | ux | fixture-e2e | service-integration-e2e
 // @lane: fixture-e2e | service-integration-e2e
 // @dependency: full-ui (mocked backend) | full-system
 // @complexity: high

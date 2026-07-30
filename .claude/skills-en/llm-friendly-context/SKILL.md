@@ -15,6 +15,7 @@ This skill governs the clarity of LLM-facing output — prompts, handoffs, and g
    - State what the next agent should do.
    - Convert quality policies into positive criteria.
    - Example: "Preserve existing public API behavior across the documented compatibility cases."
+   - Keep a prohibition only when it protects an irreversible boundary or a shipped contract; then name the protected condition and the allowed action alongside it.
 
 2. **Make vague instructions concrete**
    - Replace subjective terms with observable conditions, paths, commands, schemas, examples, or decision rules.
@@ -27,6 +28,7 @@ This skill governs the clarity of LLM-facing output — prompts, handoffs, and g
 4. **Provide necessary context**
    - Include the purpose, source artifacts, hard constraints, accepted decisions, and unresolved conditions.
    - Prefer concrete file paths and section hints over broad module names.
+   - Follow references while they can still change an in-scope decision; stop when the next link only confirms what is already decided.
 
 5. **Decompose complex work into verifiable steps**
    - Split work with 3+ objectives or sequential dependencies into ordered steps.
@@ -40,6 +42,7 @@ This skill governs the clarity of LLM-facing output — prompts, handoffs, and g
 7. **Keep constraints proportionate**
    - Add only constraints that reduce ambiguity or preserve a real requirement.
    - Keep simple downstream tasks lightweight when the target action, context, and success criteria are already clear.
+   - Treat a stated size expectation — `minimal`, `a few lines`, an explicit line or file estimate — as one budget over the whole completed diff, not per file or per step. When the work cannot fit it, report the overrun and the reason instead of silently exceeding it.
 
 ## Rewrite Patterns
 
@@ -67,6 +70,7 @@ Before sending a prompt or artifact to another agent, verify:
 - [ ] Output format or expected status fields are specified.
 - [ ] Success criteria are observable.
 - [ ] Ambiguous expressions have been rewritten or marked as unresolved.
+- [ ] Any stated size expectation is expressed as one budget over the completed diff, with the overrun-reporting condition named.
 - [ ] The next agent can complete its scope with explicit choices, decision rules, or blocking unresolved items.
 
 ## Generated Artifact Checklist
@@ -77,4 +81,5 @@ Before writing or finalizing a generated document:
 - [ ] Every executable instruction names the target, action, and expected result.
 - [ ] Verification steps say what to run or observe and what result proves success.
 - [ ] If an artifact is derived from another artifact, copied decisions stay consistent in wording and meaning.
+- [ ] Any stated size expectation is expressed as one budget over the completed artifact, with the overrun-reporting condition named.
 - [ ] If downstream work is blocked by missing information, the artifact records the missing input and escalation condition.

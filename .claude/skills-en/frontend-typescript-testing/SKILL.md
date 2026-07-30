@@ -34,9 +34,7 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 - **Readability**: Each test names one user-visible behavior, separates setup/action/assertion, and keeps fixtures limited to values used by that behavior
 
 ### Where to concentrate test rigor
-For shared components, custom hooks, and utilities reused across features, cover their public branches, error states, and boundary contracts because their regression blast radius is wider. Verify page-level composition through integration/E2E tests when the behavior depends on multiple rendered units. Any numeric threshold is the project's CI config.
-
-**Metrics** (what coverage reports break down): Statements, Branches, Functions, Lines
+For shared components, custom hooks, and utilities reused across features, cover their public branches, error states, and boundary contracts because their regression blast radius is wider. Verify page-level composition through integration/E2E tests when the behavior depends on multiple rendered units.
 
 ### Test Types and Scope
 1. **Unit Tests (React Testing Library)**
@@ -60,22 +58,8 @@ For shared components, custom hooks, and utilities reused across features, cover
 
 ## Test Implementation Conventions
 
-### Directory Structure (Co-location Principle)
-```
-src/
-└── components/
-    └── Button/
-        ├── Button.tsx
-        ├── Button.test.tsx  # Co-located with component
-        └── index.ts
-```
-
-**Rationale**:
-- Keeps component behavior tests discoverable beside the implementation they cover
-- Co-location principle: tests live alongside the implementation they cover
-- Easy to find and maintain tests alongside implementation
-
-### Naming Conventions
+### Directory Structure and Naming
+- Co-locate a component's test in the component's own directory, so implementation and test move together
 - Test files: `{ComponentName}.test.tsx`
 - Integration test files: `{FeatureName}.integration.test.tsx`
 - Test suites: Names describing target components or features
@@ -87,68 +71,14 @@ Keep every committed test active. Repair a test that protects current behavior; 
 
 ## Mock Type Safety Enforcement
 
-### MSW (Mock Service Worker) Setup
-```typescript
-// Type-safe MSW handler (MSW v2)
-import { http, HttpResponse } from 'msw'
+Constrain an MSW handler's response body with `satisfies` against the domain type it stands for, so a fixture that drifts from the contract fails at compile time rather than producing a passing test against a shape the app never receives.
 
-const handlers = [
-  http.get('/api/users/:id', () => {
-    return HttpResponse.json({ id: '1', name: 'John' } satisfies User)
-  })
-]
-```
-
-### Component Mock Type Safety
-```typescript
-// Only required parts
-type TestProps = Pick<ButtonProps, 'label' | 'onClick'>
-const mockProps: TestProps = { label: 'Click', onClick: vi.fn() }
-
-// Type only the router surface consumed by the subject under test
-const mockRouter = {
-  push: vi.fn()
-} satisfies Pick<Router, 'push'>
-```
-
-## Basic React Testing Library Example
-
-```typescript
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { Button } from './Button'
-
-describe('Button', () => {
-  it('should call onClick when clicked', async () => {
-    const user = userEvent.setup()
-    const onClick = vi.fn()
-    render(<Button label="Click me" onClick={onClick} />)
-    await user.click(screen.getByRole('button', { name: 'Click me' }))
-    expect(onClick).toHaveBeenCalledOnce()
-  })
-})
-```
+Type a component or dependency mock to the surface the subject under test actually consumes — `Pick<Props, 'usedProp'>`, `Pick<Router, 'push'>` — rather than the full interface, and constrain the literal with `satisfies` so an extra or misnamed member fails at compile time.
 
 ## Test Design Patterns
 
-Test user-visible results, not implementation details. Query by accessibility (`getByRole`/`getByLabelText`/`getByText`), not `getByTestId` or `container.querySelector`. Cover empty, error, and loading/async states, not only the happy path; await async UI with `findBy*`.
+Test user-visible results, not implementation details. Query by the role and accessible name the user perceives (`getByRole`/`getByLabelText`/`getByText`), not `getByTestId` or `container.querySelector`. Drive interactions through `userEvent` with `userEvent.setup()` per test rather than firing raw events, so the test reproduces the browser's event sequence. `await` every interaction and async assertion — an unawaited interaction asserts against the pre-update render, so use `findBy*` for async UI.
+
+Cover empty, error, and loading/async states, not only the happy path. Produce an error state by overriding the MSW handler for that single test rather than changing the shared handler set.
 
 When the required UI state, accessibility name, or external contract is unknown, stop test design for that assertion and name the UI Spec, acceptance criterion, implementation contract, or user decision needed. Continue with independent assertions whose expected behavior is observed.
-
-```typescript
-// Test the user-visible result
-it('increments count when clicked', async () => {
-  const user = userEvent.setup()
-  render(<Counter />)
-  await user.click(screen.getByRole('button', { name: '+' }))
-  expect(screen.getByText('Count: 1')).toBeInTheDocument()
-})
-
-// Error state: override the handler for one test
-it('shows an error message on API failure', async () => {
-  server.use(http.get('/api/users', () => new HttpResponse(null, { status: 500 })))
-  render(<UserList />)
-  expect(await screen.findByText('Something went wrong')).toBeInTheDocument()
-})
-```

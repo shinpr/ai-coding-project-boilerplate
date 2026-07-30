@@ -125,19 +125,8 @@ Nearby code is a starting point for investigation. Verify repository-wide usage 
 
 ## Debugging Techniques
 
-### 1. Error Analysis Procedure
-1. Read error message (first line) accurately
-2. Focus on first and last of stack trace
-3. Identify first line where your code appears
-
-### 2. 5 Whys - Root Cause Analysis
+### 5 Whys - Root Cause Analysis
 Trace each answer to observed evidence until reaching a cause whose correction prevents the original failure. Record each question, evidence, and the final causal link; stop when the next answer would be speculation and name the evidence needed.
-
-### 3. Minimal Reproduction Code
-To isolate problems, attempt reproduction with minimal code:
-- Remove unrelated parts
-- Replace external dependencies with mocks
-- Create minimal configuration that reproduces problem
 
 ## Type Safety Fundamentals
 
@@ -251,7 +240,7 @@ Target: Code, documentation, configuration files
 
 **Fix tests**: Wrong expected values, references to non-existent features, dependence on implementation details, implementation only for tests
 **Fix implementation**: Valid specifications, business logic, important edge cases
-**When in doubt**: Confirm with user
+**Both readings remain compatible with the available requirements**: Return the unresolved behavior decision — state the two candidate behaviors, the source that would settle which is correct, and the condition for stopping rather than picking one
 
 ## Test Granularity Principles
 

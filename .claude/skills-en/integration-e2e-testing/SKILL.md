@@ -143,22 +143,7 @@ Reserved slot rules apply per lane and override the threshold (the reserved cand
 
 ### Property-Based Test Implementation
 
-When Property annotation exists, fast-check library is required:
-
-```typescript
-import fc from 'fast-check'
-
-it('AC2-property: normalized identifiers remain stable', () => {
-  fc.assert(
-    fc.property(fc.string(), (input) => {
-      const normalized = normalizeIdentifier(input)
-      return normalizeIdentifier(normalized) === normalized
-    })
-  )
-})
-```
-
-**Requirements**:
+When a Property annotation exists, fast-check is required:
 - Write in `fc.assert(fc.property(...))` format
 - Reflect skeleton's `// fast-check:` comment directly in implementation
 - When failure case discovered, add as concrete unit test (regression prevention)
@@ -185,17 +170,15 @@ it('AC2-property: normalized identifiers remain stable', () => {
 
 ### Integration Test Mock Boundaries
 
-| Judgment Criteria | Mock | Actual |
-|-------------------|------|--------|
-| Part of test target? | No -> Can mock | Yes -> Actual required |
-| Is call verification target of test? | No -> Can mock | Yes -> Actual or verifiable mock |
-| External network communication? | Yes -> Mock required | No -> Actual recommended |
+Take the first row that matches the claim under review:
 
-**Judgment Flow**:
-1. External API (HTTP communication) -> Mock required
-2. Component interaction under test -> Actual required
-3. Log output verification needed -> Use verifiable mock (vi.fn())
-4. Log output verification not needed -> Actual or ignore
+| Condition | Boundary to use |
+|---|---|
+| The external adapter, query, migration, or service contract itself is under test | The real boundary, or a service-level stub in the `service-integration-e2e` lane — a mock cannot prove the contract it stands in for |
+| External API or network call not under test | Mock |
+| Component interaction under test | Real in-process components |
+| The call itself is what the test verifies (e.g., log output) | A verifiable mock (`vi.fn()`) |
+| Neither the call nor its target is under test | Real, or ignore |
 
 ### E2E Test Execution Conditions
 
@@ -227,3 +210,19 @@ it('AC2-property: normalized identifiers remain stable', () => {
 | Independence | State sharing between tests, execution order dependency |
 | Reproducibility | Depends on date/random, results vary |
 | Readability | Test name and verification content don't match |
+
+### Route Parity for Shared Mutations
+
+When multiple routes reach the same mutation — a CLI path and an HTTP handler, a scheduled job and a manual trigger, a batch and a single-item endpoint — compare them along four axes: validation, classification, resource bounds, and the order of read, parse, mutation, and reporting.
+
+A difference is permitted only by a source that decides intent: a requirement, the Design Doc, an ADR, or a Binding Decision. Tests sit downstream of that decision — they record the behavior that exists, so an existing test covering the permissive route confirms the bypass rather than permitting it. Once a difference is permitted, a test verifies that it behaves as decided.
+
+When a difference has no permitting source, require a test that exposes the bypass: drive the mutation through the route that skips the check and assert the state the skipped check was protecting.
+
+| Check | Failure Condition |
+|-------|-------------------|
+| Validation parity | One route validates an input the other accepts unchecked, with no requirement or contract permitting the difference |
+| Classification parity | The same failure is classified differently per route, changing what the caller observes |
+| Resource-bound parity | One route enforces a size, count, or timeout bound the other omits |
+| Operation-order parity | Routes differ in read/parse/mutation/reporting order such that one can mutate before validating or report before persisting |
+| Bypass coverage | An unexplained difference has no test driving the mutation through the permissive route |

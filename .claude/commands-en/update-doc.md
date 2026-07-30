@@ -96,6 +96,8 @@ Use AskUserQuestion to clarify what changes are needed:
 
 Confirm understanding of changes with user before proceeding.
 
+**Scope carried into the update**: Pass the confirmed sections, the reason for the change, and any size budget the user stated to the update agent. Before document review, map each changed section to a confirmed change or to a consistency update that change required; request a scope decision for any section changed outside that set or for an update that exceeds a stated budget.
+
 ### Step 4: Document Update
 
 Invoke the update agent determined in Step 2:
@@ -128,6 +130,8 @@ prompt: |
   integrity in the updated sections (paths, endpoints, type names, config keys).
 ```
 
+Read `summary.status` before continuing: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `summary.blockingReason` to the user rather than passing the result to document-reviewer, because its empty `discrepancies` would read as a clean verification.
+
 **Store output as**: `$CODE_VERIFICATION_OUTPUT`
 
 Invoke document-reviewer:
@@ -138,6 +142,7 @@ prompt: |
   Review the following updated document.
 
   doc_type: [DesignDoc / PRD / ADR]
+  review_context: update
   target: [path from Step 1]
   mode: composite
   requirements_verbatim: [Step 3 requested changes, verbatim] (Design Doc only)

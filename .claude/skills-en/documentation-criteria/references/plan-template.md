@@ -61,7 +61,7 @@ Include this section when the Design Doc specifies a **binding observable value*
 
 ## Failure Mode Checklist
 
-Domain-independent failure categories this implementation must guard against. Enumerate all nine categories, mark each in the Applies? column as yes/no, and list a covering task for each that applies; keep entries free of project-specific names.
+Domain-independent failure categories this implementation must guard against. Enumerate all ten categories, mark each in the Applies? column as yes/no, and list a covering task for each that applies; keep entries free of project-specific names.
 
 | Category | Applies? | Covered By Task(s) |
 |---|---|---|
@@ -74,6 +74,21 @@ Domain-independent failure categories this implementation must guard against. En
 | shared-state dependency | yes/no | |
 | rollback-only visibility | yes/no | |
 | missing-sort-key ordering | yes/no | |
+| irreversible-operation | yes/no | |
+
+## First-Pass Risk Coverage
+
+Include this section when `irreversible-operation` is marked yes. One row per irreversible operation the implementation performs — deletion, overwrite, external publication, payment, notification, or any state change the recipe cannot undo.
+
+One column per hazard, each `covered`, `n/a`, or `blocked`. Task decomposition copies these rows into the covering task, so a disposition left blank here is a decision no implementer receives.
+
+| Operation | Reaching Routes | Safe Default On Incomplete Evidence | mutation | partial-evidence | retry | concurrency | identity | input-route | Covered By Task(s) |
+|---|---|---|---|---|---|---|---|---|---|
+| [e.g., delete consumed task files] | [every route that reaches it — e.g., recipe cleanup step, API handler, scheduled job] | [the state the operation leaves when authorizing evidence is incomplete — e.g., "retain the file and report the failure"] | covered / n/a / blocked | | | | | | [Phase X Task Y] |
+
+Each hazard names the question it settles: **mutation** (the change is bounded to the intended target and its irreversibility is accepted), **partial-evidence** (behavior when only some authorizing evidence is present), **retry** (a repeated execution is safe or guarded), **concurrency** (two routes reaching it at once cannot produce an unintended state), **identity** (the target is resolved unambiguously first), **input-route** (every route applies the same validation before it runs).
+
+Mark a hazard `blocked` when the disposition cannot be determined from the Design Doc or the requirements, and record the required input in Decisions and Unresolved Items.
 
 ## UI Spec Component → Task Mapping
 

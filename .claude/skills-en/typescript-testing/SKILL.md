@@ -18,14 +18,10 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 ## Basic Testing Policy
 
 ### Quality Requirements
-- **Coverage**: treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law). Concentrate tests on critical paths, business logic, and behavior whose regression would matter. Any numeric threshold is the project's CI config
+- **Coverage**: treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law). Concentrate tests on critical paths, business logic, and behavior whose regression would matter. Raise coverage where a gap leaves a real regression unguarded, not to hit a percentage. Any numeric threshold is the project's CI config
 - **Independence**: Each test can run independently without depending on other tests
 - **Reproducibility**: Control time, randomness, environment values, and external I/O so identical inputs produce the same observable result
 - **Readability**: Each test names one behavior, separates setup/action/assertion, and keeps fixtures limited to values used by that behavior
-
-### Coverage
-- Prioritize meaningful assertions over the coverage number; raise coverage where a gap leaves a real regression unguarded, not to hit a percentage
-- **Metrics** (what coverage reports break down): Statements, Branches, Functions, Lines
 
 ### Test Types and Scope
 1. **Unit Tests**
@@ -35,8 +31,7 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 
 2. **Integration Tests**
    - Verify coordination between multiple components
-   - Use real in-process components that are part of the behavior under test
-   - For an external I/O boundary, use the real dependency only when that boundary's implementation or contract is the test target; otherwise use a deterministic substitute and verify the boundary request/response contract
+   - Use real in-process components that are part of the behavior under test; for external I/O see Mock Scope Decision
    - Verify flows that implement a primary acceptance criterion or cross an in-process component boundary
 
 3. **Cross-functional Verification in E2E Tests**
@@ -48,18 +43,8 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 
 ## Test Implementation Conventions
 
-### Directory Structure
-```
-src/
-└── application/
-    └── services/
-        ├── __tests__/
-        │   ├── service.test.ts      # Unit tests
-        │   └── service.int.test.ts  # Integration tests
-        └── service.ts
-```
-
-### Naming Conventions
+### Directory Structure and Naming
+- Tests live in a `__tests__/` directory beside the module under test
 - Test files: `{target-file-name}.test.ts`
 - Integration test files: `{target-file-name}.int.test.ts`
 - Test suites: Names describing target features or situations
@@ -73,89 +58,49 @@ Keep every committed test active. Repair a test that protects current behavior; 
 
 ### Boundary and Error Case Coverage
 Include boundary values and error cases alongside happy paths.
-```typescript
-it('returns 0 for empty array', () => expect(calc([])).toBe(0))
-it('throws on negative price', () => expect(() => calc([{price: -1}])).toThrow())
-```
 
 ### Literal Expected Values
-Use expected values that are independent of the implementation calculation. A literal is preferred when it expresses the contract directly; otherwise derive the expected value from a separate authoritative fixture or specification.
-**Valid test**: Expected value != Mock return value (implementation transforms/processes data)
-```typescript
-expect(calcTax(100)).toBe(10)  // not: 100 * TAX_RATE
-```
+Use expected values that are independent of the implementation calculation: state the contract's value directly as a literal, or take it from a separate authoritative fixture or specification. An expectation computed from the same constants or formula as the subject passes even when both are wrong. When a mock supplies the input, the expected value differs from the mock's return value wherever the implementation transforms it.
 
 ### Result-Based Verification
 Verify results, not invocation order or count.
-```typescript
-expect(mock).toHaveBeenCalledWith('a')  // not: toHaveBeenNthCalledWith
-```
 
 ### Meaningful Assertions
-Each test must include at least one verification.
-```typescript
-it('creates user', async () => {
-  const user = await createUser({name: 'test'})
-  expect(user.id).toBeDefined()
-})
-```
+Each test asserts the property its consumer depends on and the state the operation established, not merely that a value came back.
+
+### Capability Probe Postconditions
+A probe that checks whether something works passes only when it uses the consumer's boundary and asserts the exact property the consumer needs.
+
+Command exit status, successful import, and object existence show the thing is reachable, so treat them as the probe's preconditions and put the consumer-facing property in the assertion.
+
+| Probe intent | Setup evidence (insufficient alone) | Assert instead |
+|---|---|---|
+| The module is usable | `import` resolves, `expect(mod).toBeDefined()` | Call the exported function through the consumer's entry point and assert its returned value or effect |
+| The command works | Exit code 0 | The output, file, or state change the caller consumes |
+| The config is applied | The config file parses | The observable behavior the config is supposed to change |
+| The migration ran | The command reported success | A query through the real engine returns the migrated shape |
 
 ### Mock Scope Decision
-Use real implementations for every in-process component whose coordination is under test. Substitute a direct external I/O dependency when the test targets higher-layer behavior; use the real engine or a production-equivalent test instance when the external adapter, query, migration, or service contract itself is the target.
-```typescript
-vi.mock('./database')  // external I/O only
-```
+Use real implementations for every in-process component whose coordination is under test. Substitute a direct external I/O dependency when the test targets higher-layer behavior; use the real engine or a production-equivalent test instance when the external adapter, query, migration, or service contract itself is the target. When substituting, still assert the request the subject sends and the response shape it accepts, so the boundary contract stays verified.
 
 ### Property-based Testing (fast-check)
-Use fast-check when verifying invariants or properties.
-```typescript
-import fc from 'fast-check'
-
-it('reverses twice equals original', () => {
-  fc.assert(fc.property(fc.array(fc.integer()), (arr) => {
-    return JSON.stringify(arr.reverse().reverse()) === JSON.stringify(arr)
-  }))
-})
-```
-
-**Usage condition**: Use when Property annotations are assigned to ACs in Design Doc.
+Use fast-check in `fc.assert(fc.property(...))` form when a Design Doc AC carries a Property annotation.
 
 ## Mock Type Safety Enforcement
 
-### Minimal Type Definition Requirements
-```typescript
-// Only required parts
-type TestRepo = Pick<Repository, 'find' | 'save'>
-const mock: TestRepo = { find: vi.fn(), save: vi.fn() }
-
-// Type only the SDK surface consumed by the subject under test
-const sdkMock = {
-  call: vi.fn()
-} satisfies Pick<ExternalSDK, 'call'>
-```
+Type a mock to the surface the subject under test actually consumes — `Pick<T, 'usedMethod'>` — rather than the full interface, so an unused method changing shape does not break the test and a consumed one does. Constrain mock object literals with `satisfies` against that picked type so an extra or misnamed property fails at compile time.
 
 ## Data Layer Testing
 
-### Mock Limitations for Data Layer
+### What Mocks Cannot Verify
 
-Mocks validate call patterns but cannot verify data layer correctness. The following pass through undetected with mock-only testing:
+Mocks validate call patterns, so these data-layer properties pass through undetected under mock-only testing:
 - Schema mismatches (table names, column names, data types)
 - Query correctness (joins, filters, aggregations, grouping)
 - Database constraints (NOT NULL, UNIQUE, foreign keys)
-- Migration drift (schema changes that make code out of sync)
+- Migration compatibility (schema changes that leave code out of sync)
 
-### Data-Access Tests That Use Mocks
-
-- Testing business logic that receives data from the data layer (mock the repository, test the service)
-- Testing error handling paths (simulating connection failures, timeouts)
-- Unit tests where data access is a dependency, not the subject under test
-
-### When Mocks Are Insufficient for Data Access
-
-- Testing repository or data access implementations themselves
-- Verifying query correctness (joins, filters, aggregations, grouping)
-- Testing data integrity constraints
-- Testing migration compatibility
+**Routing rule**: when one of these properties is the target — including the repository or data-access implementation itself — verify against a real engine per the ladder below. When data access is a dependency rather than the subject, mocks are correct: business logic receiving data (mock the repository, test the service), error-handling paths (connection failures, timeouts), and unit tests where the data layer is not under test.
 
 ### Real Database Testing (Environment-Dependent)
 
@@ -174,26 +119,5 @@ When none is available and data-layer correctness is the target, stop and report
 
 ### AI-Generated Code and Schema Awareness
 
-- AI-generated data access code has heightened schema hallucination risk
-- Generated queries may use correct syntax but reference nonexistent schema elements
-- Mock-based tests pass regardless of schema accuracy
-- Mitigation: Design Docs should include explicit schema references so that documented schemas can be cross-checked against data access code during review
+Generated data-access code can be syntactically correct while referencing schema elements that do not exist, and mock-based tests pass either way. Design Docs therefore carry explicit schema references, so review can cross-check documented schema against the data-access code.
 
-## Basic Vitest Example
-
-```typescript
-import { describe, it, expect, vi } from 'vitest'
-
-vi.mock('./userService', () => ({
-  getUserById: vi.fn(),
-  updateUser: vi.fn()
-}))
-
-describe('ComponentName', () => {
-  it('should follow AAA pattern', () => {
-    const input = 'test'
-    const result = someFunction(input)
-    expect(result).toBe('expected')
-  })
-})
-```

@@ -62,9 +62,9 @@ export const test = base.extend<{ playerPage: Page }>({
 
 Before service-integration-e2e tests can pass, verify:
 - [ ] Application is running and accessible at `baseURL`
-- [ ] Database has required seed data (test users, subscriptions, content)
-- [ ] Authentication flow works with test credentials
+- [ ] Database has required seed data (test users, required records)
+- [ ] Authentication flow works with test credentials against the real auth flow
 - [ ] Environment variables are set (`E2E_*` prefixed)
-- [ ] External services are either available or mocked via `page.route()`
+- [ ] External services are either available or stubbed at the service level
 
-When the work plan includes dedicated environment setup tasks (Phase 0), follow those tasks. When no setup tasks exist in the plan, address missing prerequisites as part of the E2E test implementation task itself.
+When the work plan includes dedicated environment setup tasks (Phase 0), follow those tasks. When no setup tasks exist in the plan, address missing prerequisites as part of the E2E test implementation task itself, or move the verification to the `fixture-e2e` lane when the behavior under test does not require a live service.
