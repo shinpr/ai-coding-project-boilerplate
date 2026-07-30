@@ -61,7 +61,7 @@ Design Docが、実装が正確に再現すべき**拘束的観測値**を指定
 
 ## 故障モードチェックリスト
 
-この実装が防ぐべきドメイン非依存の故障カテゴリ。9カテゴリすべてを列挙し、各カテゴリの該当列に yes/no を記入し、該当する各カテゴリにカバーするタスクを挙げる。エントリにはプロジェクト固有の名称を含めない。
+この実装が防ぐべきドメイン非依存の故障カテゴリ。10カテゴリすべてを列挙し、各カテゴリの該当列に yes/no を記入し、該当する各カテゴリにカバーするタスクを挙げる。エントリにはプロジェクト固有の名称を含めない。
 
 | カテゴリ | 該当? | カバーするタスク |
 |---|---|---|
@@ -74,6 +74,21 @@ Design Docが、実装が正確に再現すべき**拘束的観測値**を指定
 | shared-state dependency | yes/no | |
 | rollback-only visibility | yes/no | |
 | missing-sort-key ordering | yes/no | |
+| irreversible-operation | yes/no | |
+
+## First-Pass Risk Coverage
+
+`irreversible-operation` を yes とした場合にこのセクションを含める。この実装が行う不可逆操作 — 削除、上書き、外部公開、決済、通知、その他レシピが取り消せない状態変更 — ごとに1行。
+
+hazardごとに1列で、各列は `covered`、`n/a`、`blocked` のいずれか。タスク分解がこれらの行をカバーするタスクへコピーするため、ここで空欄のままにした disposition は実装者が受け取らない判断になる。
+
+| 操作 | 到達する経路 | エビデンス不完全時の安全な既定状態 | mutation | partial-evidence | retry | concurrency | identity | input-route | カバーするタスク |
+|---|---|---|---|---|---|---|---|---|---|
+| [例: 消費済みタスクファイルの削除] | [そこに到達する全経路 — 例: レシピのクリーンアップステップ、APIハンドラ、スケジュールジョブ] | [認可するエビデンスが不完全なときに操作が残す状態 — 例: 「ファイルを保持し失敗を報告する」] | covered / n/a / blocked | | | | | | [Phase X タスクY] |
+
+各hazardが解決する問いは次のとおり: **mutation**（状態変更が意図した対象に限定され、その不可逆性が受け入れられている）、**partial-evidence**（認可するエビデンスが一部しかない場合の振る舞い）、**retry**（再実行が安全、または防がれている）、**concurrency**（2つの経路が同時に到達しても意図しない状態にならない）、**identity**（実行前に対象が一意に解決される）、**input-route**（各経路が実行前に同じ検証を適用する）。
+
+disposition が Design Doc や要件から判断できない場合はそのhazardを `blocked` とし、必要入力を Decisions and Unresolved Items に記録する。
 
 ## UI Specコンポーネント → タスクマッピング
 

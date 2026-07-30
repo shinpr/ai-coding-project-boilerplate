@@ -34,9 +34,7 @@ description: リポジトリで設定済みのReactテスト・ブラウザハ�
 - **可読性**: 各テストはユーザーから見える振る舞いを1つだけ名前で示し、setup・action・assertionを分け、その振る舞いで使用する値だけをfixtureに含める
 
 ### テストの重点配分
-複数の機能で再利用される共有コンポーネント、Custom hook、utilityは、リグレッションの影響範囲が広いため、公開分岐、error state、境界の契約を検証する。振る舞いが複数のrender済みユニットに依存するページ単位の構成は、統合/E2Eテストで検証する。数値しきい値はプロジェクトのCI設定に従う。
-
-**指標**（カバレッジレポートの内訳）: Statements（文）、Branches（分岐）、Functions（関数）、Lines（行）
+複数の機能で再利用される共有コンポーネント、Custom hook、utilityは、リグレッションの影響範囲が広いため、公開分岐、error state、境界の契約を検証する。振る舞いが複数のrender済みユニットに依存するページ単位の構成は、統合/E2Eテストで検証する。
 
 ### テストの種類と範囲
 1. **単体テスト（React Testing Library）**
@@ -60,22 +58,8 @@ description: リポジトリで設定済みのReactテスト・ブラウザハ�
 
 ## テストの実装規約
 
-### ディレクトリ構造（Co-location原則）
-```
-src/
-└── components/
-    └── Button/
-        ├── Button.tsx
-        ├── Button.test.tsx  # コンポーネントと同じ場所に配置
-        └── index.ts
-```
-
-**理由**:
-- 対象のコンポーネントの振る舞いを検証するテストを、対応する実装の近くで見つけられる
-- Co-location原則: テストはそれがカバーする実装と同じ場所に置く
-- 実装と一緒にテストを見つけやすく、保守しやすい
-
-### 命名規則
+### ディレクトリ構造と命名規則
+- コンポーネントのテストはそのコンポーネント自身のディレクトリに置き、実装とテストが一緒に移動する状態を保つ（Co-location原則）
 - テストファイル: `{ComponentName}.test.tsx`
 - 統合テストファイル: `{FeatureName}.integration.test.tsx`
 - テストスイート: 対象のコンポーネントや機能を説明する名前
@@ -87,68 +71,14 @@ src/
 
 ## モックの型安全性の徹底
 
-### MSW（Mock Service Worker）セットアップ
-```typescript
-// 型安全なMSWハンドラー（MSW v2）
-import { http, HttpResponse } from 'msw'
+MSWハンドラーのresponse bodyは、それが代表するドメイン型に対して `satisfies` で制約する。契約から乖離したfixtureをコンパイル時に落とし、アプリが実際には受け取らない形に対してテストが通ってしまう状態を防ぐ。
 
-const handlers = [
-  http.get('/api/users/:id', () => {
-    return HttpResponse.json({ id: '1', name: 'John' } satisfies User)
-  })
-]
-```
-
-### コンポーネントモックの型安全性
-```typescript
-// 必要な部分のみ
-type TestProps = Pick<ButtonProps, 'label' | 'onClick'>
-const mockProps: TestProps = { label: 'Click', onClick: vi.fn() }
-
-// テスト対象が使用するRouterの範囲だけを型付けする
-const mockRouter = {
-  push: vi.fn()
-} satisfies Pick<Router, 'push'>
-```
-
-## React Testing Libraryの基本例
-
-```typescript
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { Button } from './Button'
-
-describe('Button', () => {
-  it('should call onClick when clicked', async () => {
-    const user = userEvent.setup()
-    const onClick = vi.fn()
-    render(<Button label="Click me" onClick={onClick} />)
-    await user.click(screen.getByRole('button', { name: 'Click me' }))
-    expect(onClick).toHaveBeenCalledOnce()
-  })
-})
-```
+コンポーネントや依存のモックには、テスト対象が実際に消費する範囲だけを型付けする（`Pick<Props, '使用するprop'>`、`Pick<Router, 'push'>`）。インターフェース全体は型付けせず、リテラルは `satisfies` で制約して余分なメンバーや誤った名前をコンパイル時に落とす。
 
 ## テスト設計パターン
 
-実装詳細ではなくユーザーから見える結果を検証する。クエリはアクセシビリティ優先（`getByRole`/`getByLabelText`/`getByText`）で、`getByTestId` や `container.querySelector` に依存しない。正常系だけでなく空・エラー・ローディング/非同期の状態も網羅し、非同期UIは `findBy*` で待機する。
+実装詳細ではなくユーザーから見える結果を検証する。クエリはユーザーが知覚するroleとaccessible name（`getByRole`/`getByLabelText`/`getByText`）で行い、`getByTestId` や `container.querySelector` に依存しない。操作は生のイベント発火ではなく、テストごとに `userEvent.setup()` した `userEvent` 経由で行い、ブラウザのイベント列を再現する。操作と非同期アサーションはすべて `await` する — awaitしない操作は更新前のrender結果に対してアサーションすることになるため、非同期UIは `findBy*` で待機する。
+
+正常系だけでなく空・エラー・ローディング/非同期の状態も網羅する。error stateは共有ハンドラ集合を変更せず、そのテスト1件だけMSWハンドラを上書きして作る。
 
 必要なUI state、accessible name、外部契約が不明な場合は、そのアサーションのテスト設計を止め、必要なUI Spec、受け入れ基準、実装契約、ユーザー判断を具体的に示す。期待する振る舞いを確認済みの独立したアサーションは継続する。
-
-```typescript
-// ユーザーから見える結果を検証
-it('increments count when clicked', async () => {
-  const user = userEvent.setup()
-  render(<Counter />)
-  await user.click(screen.getByRole('button', { name: '+' }))
-  expect(screen.getByText('Count: 1')).toBeInTheDocument()
-})
-
-// エラー状態: 1テストだけハンドラを上書き
-it('shows an error message on API failure', async () => {
-  server.use(http.get('/api/users', () => new HttpResponse(null, { status: 500 })))
-  render(<UserList />)
-  expect(await screen.findByText('エラーが発生しました')).toBeInTheDocument()
-})
-```

@@ -134,15 +134,16 @@ Execute one task file at a time through Steps 4→5→6→7 before starting the 
 Invoke integration-test-reviewer using Agent tool:
 - `subagent_type`: "integration-test-reviewer"
 - `description`: "Review test quality"
-- `prompt`: "Review test quality. Test files: [paths from Step 4 testsAdded]. Skeleton files: [layer-specific paths from Step 2 generatedFiles matching current task's layer]"
+- `prompt`: "Review test quality. Test files: [paths from Step 4 testsAdded]. taskFiles: [the same task file path used in Step 4]. diffBase: HEAD. Skeleton files: [layer-specific paths from Step 2 generatedFiles matching current task's layer]"
 
-**Expected output**: `status` (approved/needs_revision), `requiredFixes`
+**Expected output**: `verdict.decision` (approved/needs_revision/blocked), `verdict.reason`, `requiredFixes[]`
 
 ### Step 6: Apply Review Fixes
 
-Check Step 5 result:
-- `status: approved` → Mark complete, proceed to Step 7
-- `status: needs_revision` → Re-invoke the routed task-executor in **Fix Mode** with the same `task_file` and `requiredFixes[]` (see prompt detail below), then return to Step 5
+Check Step 5 result, branching on `verdict.decision`:
+- `approved` → Mark complete, proceed to Step 7
+- `needs_revision` → Re-invoke the routed task-executor in **Fix Mode** with the same `task_file` and `requiredFixes[]` (see prompt detail below), then return to Step 5
+- `blocked` → STOP and escalate to user, reporting `verdict.reason` and the review basis the reviewer could not establish. Re-invoke integration-test-reviewer only after the user supplies the missing basis
 
 Invoke task-executor routed by task filename pattern:
 - `*-backend-task-*` → `subagent_type`: "task-executor"

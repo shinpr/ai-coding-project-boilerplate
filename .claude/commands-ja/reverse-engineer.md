@@ -124,6 +124,8 @@ prompt: |
 
 注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見することで、scope-discovererの出力に制約されない独立した検証を実現する。
 
+続行する前に `summary.status` を読む: `blocked` の場合は Input Gate が失敗し何も検証されていないため、結果を渡さず停止して `summary.blockingReason` をユーザーに報告する。空の `discrepancies` は下流でクリーンな検証として読まれてしまうため。
+
 **出力を保存**: `$STEP_3_OUTPUT`
 
 **品質ゲート**:
@@ -293,6 +295,8 @@ prompt: |
 
 注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見する。
 
+続行する前に `summary.status` を読む: `blocked` の場合は、その Design Doc について停止し `summary.blockingReason` を報告する。document-reviewer に結果を渡さない。
+
 **出力を保存**: `$STEP_8_OUTPUT`
 
 #### ステップ9: レビュー
@@ -306,6 +310,7 @@ prompt: |
   コード検証結果を考慮してDesign Docをレビューする。
 
   doc_type: DesignDoc
+  review_context: as-is
   target: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
   mode: composite
   code_verification: $STEP_8_OUTPUT

@@ -124,6 +124,8 @@ prompt: |
 
 Note: `code_paths` is intentionally NOT provided. The verifier independently discovers code scope from the document, ensuring independent verification not constrained by scope-discoverer's output.
 
+Read `summary.status` before continuing: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `summary.blockingReason` to the user rather than passing the result on, because its empty `discrepancies` would read downstream as a clean verification.
+
 **Store output as**: `$STEP_3_OUTPUT`
 
 **Quality Gate**:
@@ -293,6 +295,8 @@ prompt: |
 
 Note: `code_paths` is intentionally NOT provided. The verifier independently discovers code scope from the document.
 
+Read `summary.status` before continuing: when it is `blocked`, stop and report `summary.blockingReason` for that Design Doc rather than passing the result to document-reviewer.
+
 **Store output as**: `$STEP_8_OUTPUT`
 
 #### Step 9: Review
@@ -306,6 +310,7 @@ prompt: |
   Review the following Design Doc considering code verification findings.
 
   doc_type: DesignDoc
+  review_context: as-is
   target: $STEP_7_OUTPUT or $STEP_7_FRONTEND_OUTPUT
   mode: composite
   code_verification: $STEP_8_OUTPUT

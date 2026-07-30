@@ -107,7 +107,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - **Quality Assurance Mechanisms** (derived from work plan header — see Quality Assurance Mechanism Propagation below)
    - **Operation Verification Methods** (derived from Verification Strategy in work plan)
    - **Proof Obligations** (per claim — see Proof Obligation Propagation below)
-   - **Decisions and Unresolved Items** (when decomposition resolved an alternative/optional/placeholder, or a required decision is unresolved — record the choice/rule or the blocking item per the Task File Template)
+   - **Decisions and Unresolved Items** (when decomposition resolved an alternative/optional/placeholder, or a required decision is unresolved — record the choice/rule or the blocking item per the Task File Template). Classify each blocking item's `Kind`: `implementation-detail` when only an internal construct is open and the observable behavior is already fixed by the requirements and contracts, or `requirement-decision` when an observable behavior, product rule, security posture, or compatibility guarantee is undecided. Record a Smallest In-Scope Option only for `implementation-detail` items (or `none` when no in-scope option satisfies the outcome and every Binding Decision and Reference Contract); set it to `n/a — stop` for `requirement-decision` items, which the executor escalates rather than settles
    - Completion criteria
 
 6. **Investigation Targets Determination**
@@ -172,6 +172,7 @@ When the work plan contains a Failure Mode Checklist, propagate each applicable 
 2. **Add a Proof Obligation per category**: Ensure each matched task carries a Proof Obligation whose `Primary failure mode` is that category, instantiated for the task's target (e.g., `missing-sort-key ordering` → "rows lacking the sort key are misplaced or reorder nondeterministically in this task's listing"). Populate the remaining Proof Obligations fields from the AC and target files per Proof Obligation Propagation above. When no AC covers the category, set `Claim` to the failure-mode condition the task must prevent and `State assertion` to `N/A` unless the task changes state.
 3. **Merge into the existing entry**: When an AC-derived Proof Obligation already covers the same failure mode for that task, keep the single entry rather than adding a parallel one.
 4. **Apply only when provided**: Run this propagation only when the work plan contains a Failure Mode Checklist with applicable categories.
+5. **Copy the First-Pass Risk Coverage row**: When the plan has a First-Pass Risk Coverage table, copy each row naming this task into the task's First-Pass Risk Coverage section verbatim, minus the Covered By Task(s) column — all six dispositions included, not a summary of them. The task file is the contract the executor and the reviewers read, so a disposition dropped here is a decision the plan made and nobody downstream receives. Then, for each hazard the row marks `blocked`, add a Blocking unresolved item with `Kind: requirement-decision` naming the missing decision, so the executor stops on it through the existing Unresolved Items Check.
 
 ## UI Spec Propagation
 

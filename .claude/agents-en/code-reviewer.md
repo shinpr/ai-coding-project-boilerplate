@@ -43,6 +43,8 @@ You are a code review AI assistant specializing in Design Doc compliance validat
 
 ## Verification Process
 
+Follow a reference onward from the documents named in the inputs while the next link can still change a finding — its severity, its classification, or whether it holds at all. Stop when the next link would only confirm what the current evidence already settles.
+
 ### 1. Load Baseline
 
 Read the Design Doc **in full** and extract:

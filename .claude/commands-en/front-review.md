@@ -110,6 +110,8 @@ Resolve discrepancies — confirm or override the recommended route per finding:
 
 Use AskUserQuestion. The default offer is **"accept all recommended routes"** — a single confirmation for the typical case where the orchestrator's recommendations are correct. When the user wants to override, collect per-finding c/d/s decisions instead. If the user selects `s` for everything: skip Steps 5-10, proceed to Step 11.
 
+**Scope carried into the fix path**: Pass the approved findings, their routes, the files and sections they cover, and any size budget the user stated to every agent invoked from Steps 6-10. Before re-validation, map each diff hunk to an approved finding or to a consistency update that finding required; request a scope decision for any unmapped hunk or for a diff that exceeds a stated budget, rather than accepting it as part of the fix.
+
 ### Step 5: Load Task Template
 
 Read documentation-criteria skill to obtain the task file template (references/task-template.md) for Step 6.
@@ -126,7 +128,7 @@ Run this step only when the user routed at least one finding to `d`. When all ro
 2. Invoke document-reviewer to verify the updated Design Doc:
    - `subagent_type`: "document-reviewer"
    - `description`: "Document review of updated Design Doc"
-   - `prompt`: "Review updated Design Doc at [path] for consistency and completeness."
+   - `prompt`: "doc_type: DesignDoc. review_context: update. Review updated Design Doc at [path] for consistency and completeness."
 
 3. When multiple Design Docs exist (`ls docs/design/*.md | grep -v template | wc -l > 1`), invoke design-sync:
    - `subagent_type`: "design-sync"

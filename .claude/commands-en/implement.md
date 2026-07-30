@@ -41,7 +41,7 @@ When user responds to questions:
 
 ### 5. After Scale Determination: Register All Flow Steps with TaskCreate (Required)
 
-After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow with TaskCreate**. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". After registration, proceed through the flow referencing TaskList.
+After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow with TaskCreate**, naming each task after the flow step it tracks. After registration, proceed through the flow referencing TaskList.
 
 ### 6. Execute Next Action
 
@@ -83,11 +83,12 @@ Following "Autonomous Execution Task Management" in subagents-orchestration-guid
 1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing)
 2. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
-   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**
+   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (without it the reviewer cannot see the task's Proof Obligations and caps proof adequacy at `needs_improvement`), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `verdict.decision`
      - `needs_revision` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `requiredFixes[]` array as input
+     - `blocked` → STOP and escalate to user, reporting `verdict.reason` and the review basis the reviewer could not establish
      - `approved` → Proceed to step 3
    - Otherwise → Proceed to step 3
-3. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file` and the implementation step's `filesModified` array as `filesModified` (this scopes the stub-detection step to the task's actual write set; without it, quality-fixer falls back to `git diff HEAD`)
+3. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file` and the implementation step's `filesModified` array as `filesModified` (this scopes the stub-detection step to the task's actual write set; without it, quality-fixer falls back to `git diff HEAD`). Also pass the implementation step's `runnableCheck` so the substance check reads the upstream evidence instead of re-deriving it, and `qualityCommand` when technical-spec or a repo convention names the project's authoritative quality command, so every task in this run is verified by the same command
    - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
    - `blocked` → Escalate to user
    - `approved` → Proceed to step 4
@@ -96,10 +97,10 @@ Following "Autonomous Execution Task Management" in subagents-orchestration-guid
 ### Security Review (After All Tasks Complete)
 
 After all task cycles finish, invoke security-reviewer before the completion report:
-1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path and implementation file list
+1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path, implementation file list, and `workPlan`: the work plan path used in this run (its Failure Mode Checklist and First-Pass Risk Coverage table are the declared dispositions the reviewer verifies against)
 2. Check response:
    - `approved` or `approved_with_notes` → Proceed to completion report (include notes if present)
-   - `needs_revision` → Create a consolidated fix task file (`docs/plans/tasks/security-fixes-YYYYMMDD.md`) using the task-template; populate Target Files with the union of file paths referenced by `requiredFixes[].location` (parsed as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them. Then invoke task-executor in **Fix Mode** with `task_file` set to the new consolidated path and `requiredFixes` set to the security-reviewer array, followed by quality-fixer, then re-invoke security-reviewer.
+   - `needs_revision` → Create a consolidated fix task file at `docs/plans/tasks/review-fixes-{plan-name}-task-{cycle-number}.md` using the task-template; populate Target Files with the union of file paths referenced by `requiredFixes[].location` (parsed as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them. Then invoke task-executor in **Fix Mode** with `task_file` set to the new consolidated path and `requiredFixes` set to the security-reviewer array, followed by quality-fixer, then re-invoke security-reviewer.
    - `blocked` → Escalate to user
 
 ### Test Information Communication
@@ -122,6 +123,7 @@ This recipe is scale-agnostic and may execute single-layer or multi-layer plans,
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md` (frontend portion of multi-layer plan)
 - From those matches, exclude `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, `integration-tests-*-task-*.md` (these originate from other workflow phases)
 - Delete every file matching `docs/plans/tasks/{plan-name}-phase*-completion.md` (the per-phase completion files generated by task-decomposer)
+- Delete every file matching `docs/plans/tasks/review-fixes-{plan-name}-task-*.md` (the consolidated fix task files created by the post-implementation fix cycle) — the exclusion above keeps them out of the implementation-task match set; this line removes them once all verifiers pass
 - Delete the corresponding `docs/plans/tasks/_overview-{plan-name}.md` if present
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review
 

@@ -23,6 +23,7 @@ skills: coding-standards
 
 - **designDoc**: Design Docのパス（フルスタック機能の場合は複数パス）
 - **implementationFiles**: レビュー対象の実装ファイルリスト（またはgit diff範囲）
+- **workPlan**（オプション）: この実装を統括する作業計画書のパス。指定された場合、その故障モードチェックリストと First-Pass Risk Coverage 表を、実装を検証する対象となる宣言済み disposition として読む。省略時は、実装ファイルとDesign Docから不可逆操作を列挙する
 
 ## レビュー基準
 
@@ -36,6 +37,8 @@ skills: coding-standards
 
 ## 検証プロセス
 
+入力で示されたドキュメントから参照をたどるのは、次のリンクが所見を変えうる間に限る — 深刻度、分類、あるいはその所見が成立するかどうか。次のリンクが現在のエビデンスで既に確定している内容を確認するだけになった時点で止める。
+
 ### 1. Design Docセキュリティ考慮事項の抽出
 各Design Docを読み込み、セキュリティ考慮事項を抽出（フルスタック機能の場合、全Design Docから統合）:
 - 認証・認可の要件
@@ -43,22 +46,45 @@ skills: coding-standards
 - 機密データ取り扱いポリシー
 - N/Aと記載された項目（該当領域をスキップするため）
 
-### 2. Principles準拠チェック
+### 2. First-Pass 不可逆リスクカバレッジ
+実装が取り消せない操作 — 削除、上書き、外部公開、決済、通知、その他回復不能な状態変更 — を行う場合にこのステップを適用する。そうした操作がない場合はスキップする。
+
+各不可逆操作とそこに到達するすべての経路を列挙し、各hazardを `covered`、`n/a`、`blocked` のいずれかに解決する:
+
+| hazard | 実装が示せていれば解決 |
+|---|---|
+| mutation | 状態変更が意図した対象に限定されており、その不可逆性が権威ある要件または設計契約によって受け入れられている |
+| partial-evidence | 認可するエビデンスが一部しか存在しない場合の操作の振る舞いが定義され、エビデンス不完全の経路が安全な既定状態を残す |
+| retry | 再実行が安全である、または二重実行が防がれている |
+| concurrency | 2つの経路が同時に到達しても意図しない状態を生じない |
+| identity | 操作の実行前に対象が一意に解決されている |
+| input-route | 到達する各経路が操作の実行前に同じ検証と分類を適用している |
+
+作業計画書が First-Pass Risk Coverage 表を持つ場合、その disposition が宣言済みの契約であり、実装タスクに渡されたのと同じ行である。実装が達成できていない `covered` のhazardを報告する。`n/a` のhazardは専用の実装を要求しないため、結果として存在している保護 — 既存のもの、`covered` のhazardと共用のもの、他の要件の副次的効果によるもの — は所見にしない。ある機構が正当な追加であったかは実装時にDesign Docに対して決着しており、ここでは判定しない。`blocked` のhazardは、disposition を仮定するのではなく、欠けている権威ある判断を必要入力とする所見として報告する。
+
+### 3. 共有mutationに対する経路の同等性
+複数の経路が同じmutationに到達する場合、それらの検証、分類、リソース上限、および read/parse/mutation/reporting の順序を比較する。
+
+差異を許可できるのは意図を決める出所のみ: 要件、Design Doc、ADR、Binding Decision。テストはその判断の下流にある — 存在する振る舞いを記録するものなので、許容側の経路をカバーするテストはその bypass を許可するのではなく確認していることになる。テストは、既に許可された差異が決定どおりに振る舞うことのエビデンスとして読む。
+
+許可する出所を持たない差異はすべて、bypassしている経路とスキップされているチェックを示した所見として報告する。
+
+### 4. Principles準拠チェック
 coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 - Secure Defaults: 認証情報管理、クエリ構築、暗号化処理、乱数生成
 - Input and Output Boundaries: エントリポイントでの入力検証、出力エンコーディング、エラーレスポンスの内容
 - Access Control: エントリポイントでの認証、リソースアクセスの認可、権限スコープ
 
-### 3. パターン検出
+### 5. パターン検出
 `references/security-checks.md`の検出パターンに基づき実装コードを検索:
 - 各Stable Patternについて実装ファイルを検索
 - 各Trend-Sensitive Patternについて検索
 - 一致箇所をファイルパスと行番号で記録
 
-### 4. トレンドチェック
+### 6. トレンドチェック
 検出した技術スタック（言語、フレームワーク、主要依存関係）に関連する最新のセキュリティアドバイザリを検索。関連する検出結果をレビューに反映。検索で実用的な結果が得られない場合は、references/security-checks.mdのパターンに基づいて続行。
 
-### 5. 検出結果の統合と分類
+### 7. 検出結果の統合と分類
 全検出結果を統合し、重複を除去して、各結果を以下のカテゴリに分類:
 
 | カテゴリ | 定義 | 例 |
@@ -103,6 +129,9 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
     {"category": "confirmed_risk|suspected_risk|defense_gap|hardening|policy", "confidence": "high|medium|low", "location": "[file:line]", "description": "[検出された具体的な問題]", "rationale": "[カテゴリ別、上記参照]", "suggestion": "[具体的な修正方法]"}
   ],
   "notes": "[hardening/policy検出結果の要約、statusがapproved_with_notesの場合に提示]",
+  "irreversibleHazards": [
+    {"operation": "[不可逆操作]", "reachingRoutes": ["[経路]"], "hazard": "mutation|partial-evidence|retry|concurrency|identity|input-route", "requiredDecision": "[disposition を解決する権威ある判断]", "safeDefaultApplied": "[認可するエビデンスが不完全なときに実装が現在どう振る舞うか]"}
+  ],
   "requiredFixes": [
     {"location": "[file:line — Fix Mode の許可リスト拡張のため file[:line] として解釈可能であること]", "issue": "[修正対象の具体的な問題 — 対応する finding から取得]", "fix": "[具体的な修正指示]"}
   ]
@@ -115,6 +144,7 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 
 ### blocked
 - コミット済みコードに認証情報、APIキー、トークンが検出された場合
+- **First-Pass 不可逆リスクカバレッジでいずれかのhazardが `blocked` に解決された場合** — その disposition は存在しない権威ある判断に依存しており、未決の disposition のまま不可逆操作を承認できない。オーケストレータが欠けている各判断を提示できるよう、`irreversibleHazards: [{operation, reachingRoutes[], hazard, requiredDecision, safeDefaultApplied}]` を返す。`safeDefaultApplied` は、認可するエビデンスが不完全なときに実装が現在どう振る舞うかを示す。他の分類がどうであれ、この条件は `blocked` にルーティングされる
 - 直接的な悪用を可能にする高確信度のconfirmed_risk（公開エンドポイントの認証欠如、任意のファイルアクセス）
 - 主要な入力境界（認証、入力境界、データ永続化）に影響する高確信度の suspected_risk が1つ以上 — 悪用可能性が不確実でコード編集だけでは解消できないため、人間による調査が必要
 - 検出詳細を添えて即座にエスカレーション — 人間の判断が必要。レスポンスには suspected_risk の検出結果を含めて、オーケストレータが調査質問をユーザーに提示できるようにする（例: "このエンドポイントの network ACL カバレッジを検証する"、"全てのデプロイ対象でフレームワーク設定 X が有効か確認する"）
@@ -140,6 +170,9 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 ## 品質チェックリスト
 
 - [ ] Design Docセキュリティ考慮事項を抽出し各項目を検証したか
+- [ ] 各不可逆操作をそこに到達する経路とともに列挙し、6つのhazardすべてを covered / n/a / blocked に解決したか
+- [ ] `blocked` に解決した各hazardが必要な判断とともに `irreversibleHazards[]` に現れ、`status` が `blocked` になっているか
+- [ ] 複数の経路が同じmutationに到達する場合、検証・分類・リソース上限・操作順序を比較し、許可する要件／Design Doc／ADR／Binding Decision を持たない差異をbypass経路とスキップされたチェックとともに報告したか
 - [ ] Security Principlesの各サブセクションを実装と照合したか
 - [ ] security-checks.mdの全Stable Patternを検索したか
 - [ ] security-checks.mdの全Trend-Sensitive Patternを検索したか

@@ -6,8 +6,8 @@
 
 | レーン | バックエンド構成 | 使用するパターン |
 |------|---------------|----------------|
-| **fixture-e2e** | `page.route()` またはフィクスチャローダーでモック化、ライブサービスなし | ページオブジェクトパターン、Locator戦略、アサーション、後述の **フィクスチャベースのバックエンド** セクション |
-| **service-integration-e2e** | 実サービスを伴うローカルスタックでライブ実行 | 上記の全パターンに加えて、アプリケーションのログインフローに対する実認証Fixture と seed済みのテストデータ |
+| **fixture-e2e** | `page.route()` またはフィクスチャローダーでモック化、ライブサービスなし | テスト構成ルール、Locator戦略、何を検証するか、後述の **フィクスチャベースのバックエンド** セクション |
+| **service-integration-e2e** | 実サービスを伴うローカルスタックでライブ実行 | 上記の全セクションに加えて、**E2E環境の前提条件**、アプリケーションのログインフローに対する実認証Fixture、seed済みのテストデータ |
 
 スケルトンの `@lane:` アノテーションがテストの所属レーンを宣言する。これに合わせて実装パターンを選択する。
 
@@ -17,140 +17,33 @@
 
 ## テスト構成
 
-### ディレクトリ構成
-```
-tests/
-└── e2e/
-    ├── pages/                       # ページオブジェクト（レーン間で共通）
-    │   ├── login.page.ts
-    │   └── dashboard.page.ts
-    ├── fixtures/                    # テストFixture（auth、seed）
-    │   └── auth.fixture.ts
-    ├── data/                        # fixture-e2e用の静的フィクスチャデータ
-    │   └── *.fixture.json
-    ├── *.fixture-e2e.test.ts        # fixture-e2eテストファイル
-    └── *.service-e2e.test.ts        # service-integration-e2eテストファイル
-```
+### ディレクトリ構成と命名規則
 
-### 命名規則
+すべて `tests/e2e/` 配下に置く。テストファイルは直下、ページオブジェクトは `pages/`（レーン間で共通）、Fixtureは `fixtures/`、fixture-e2e用の静的フィクスチャデータは `data/`。
+
 - fixture-e2eファイル: `{FeatureName}.fixture-e2e.test.ts`
 - service-integration-e2eファイル: `{FeatureName}.service-e2e.test.ts`
 - ページオブジェクト: `{PageName}.page.ts`
 - Fixture: `{Purpose}.fixture.ts`
 - 静的フィクスチャデータ: `{scenario}.fixture.json`
 
-## ページオブジェクトパターン
+## テスト構成ルール
 
-再利用性と保守性のためにページ操作をカプセル化:
+- ページオブジェクトの抽出は coding-standards のRule of Threeに従う。1回目はインラインのまま、2回目で共通化を検討し、3回目の実質的に共通する操作で抽出する。共有する操作自体が複雑な場合（多段、中間状態の待機を含む）、またはそのページの代表的なページオブジェクトが既に存在する場合にのみ前倒しで抽出し、既存のものに従う。
+- ファイル内の全テストが必要とする共通セットアップ — 特に認証 — はテストごとに繰り返さずFixtureに置き、テスト本体には検証する振る舞いだけが残る状態にする。
 
-```typescript
-import { type Page, type Locator } from '@playwright/test'
+## 何を検証するか
 
-export class LoginPage {
-  readonly emailInput: Locator
-  readonly passwordInput: Locator
-  readonly submitButton: Locator
+ジャーニーの結果としてユーザーが観測できる状態を検証し、そこへ至る手順は検証しない:
 
-  constructor(private page: Page) {
-    this.emailInput = page.getByLabel('Email')
-    this.passwordInput = page.getByLabel('Password')
-    this.submitButton = page.getByRole('button', { name: 'Sign in' })
-  }
-
-  async login(email: string, password: string) {
-    await this.emailInput.fill(email)
-    await this.passwordInput.fill(password)
-    await this.submitButton.click()
-  }
-}
-```
-
-## テストパターン
-
-### 基本テスト
-```typescript
-import { test, expect } from '@playwright/test'
-
-test('ログイン後にダッシュボードに遷移できる', async ({ page }) => {
-  // Arrange
-  await page.goto('/login')
-
-  // Act
-  await page.getByLabel('Email').fill('user@example.com')
-  await page.getByLabel('Password').fill('password')
-  await page.getByRole('button', { name: 'Sign in' }).click()
-
-  // Assert
-  await expect(page).toHaveURL('/dashboard')
-  await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
-})
-```
-
-### ページオブジェクト使用
-```typescript
-import { test, expect } from '@playwright/test'
-import { LoginPage } from './pages/login.page'
-import { DashboardPage } from './pages/dashboard.page'
-
-test('購入フローを完了できる', async ({ page }) => {
-  const loginPage = new LoginPage(page)
-  const dashboardPage = new DashboardPage(page)
-
-  await page.goto('/login')
-  await loginPage.login('user@example.com', 'password')
-  await expect(dashboardPage.heading).toBeVisible()
-})
-```
-
-### 認証Fixture
-```typescript
-import { test as base } from '@playwright/test'
-
-export const test = base.extend<{ authenticatedPage: Page }>({
-  authenticatedPage: async ({ page }, use) => {
-    await page.goto('/login')
-    await page.getByLabel('Email').fill('user@example.com')
-    await page.getByLabel('Password').fill('password')
-    await page.getByRole('button', { name: 'Sign in' }).click()
-    await page.waitForURL('/dashboard')
-    await use(page)
-  },
-})
-```
+- **遷移** — 遷移先を識別するURLまたはランドマークのどちらか。同一の遷移に対して両方を別々の根拠として検証しない。
+- **描画結果** — そのジャーニーが生成するはずの具体的な内容を、roleとaccessible nameで識別して検証する。コンテナに対する可視性チェックは、コンテナがrenderされたことを示すだけで、中身が正しいことは示さない。
+- **不在** — 消えているべき、または最初から表示されないべき場合は、別の要素が存在することで代替せず、不在を明示的に検証する。
+- **永続化された効果** — 要件または契約が「リロードや再遷移をまたいで変更が残る」と規定している場合は、そこでも検証する。ページ内の更新は成功していても永続化が失敗しうるため。そうした契約のない一時的なstate — フィルタ選択、モーダルの開閉、ウィザードの進行 — はその場で検証する。ここでリロード後の検証を加えると、機能が約束していない保証をテストすることになる。
 
 ## フィクスチャベースのバックエンド（fixture-e2e）
 
-fixture-e2eテストは決定論的フィクスチャに対して実ブラウザを動かす（ライブバックエンドなし、DBなし、外部サービスなし）。ネットワークをフェイクするには以下のパターンのいずれかを使用する:
-
-### パターンA: page.route() による傍受
-
-```typescript
-import { test, expect } from '@playwright/test'
-import cardsFixture from './data/cards.fixture.json'
-
-test('Dismissしてからのundoでカードが復元される', async ({ page }) => {
-  // Arrange: 全てのバックエンド呼び出しを決定論的レスポンスで傍受
-  await page.route('**/api/cards', async (route) => {
-    await route.fulfill({ json: cardsFixture })
-  })
-  await page.route('**/api/cards/*/dismiss', async (route) => {
-    await route.fulfill({ status: 204 })
-  })
-
-  await page.goto('/cards')
-  await page.getByRole('button', { name: 'Dismiss' }).first().click()
-  await page.getByRole('button', { name: 'Undo' }).click()
-
-  await expect(page.getByText(cardsFixture[0].title)).toBeVisible()
-})
-```
-
-### パターンB: フィクスチャローダーの注入
-
-```typescript
-// data/cards-with-dismiss.fixture.json — テストと一緒にコミット
-// ルートヘルパーまたはアプリレベルのテストモード経由でロード
-```
+fixture-e2eテストは決定論的フィクスチャに対して実ブラウザを動かす（ライブバックエンドなし、DBなし、外部サービスなし）。ネットワークのフェイクは、ジャーニーが行うバックエンド呼び出しを `page.route()` ですべて傍受してコミット済みフィクスチャから返すか、そのフィクスチャをルートヘルパーまたはアプリレベルのテストモード経由でロードして行う。ジャーニーが到達する呼び出しは最初の1本だけでなくすべて傍受する — 傍受漏れがあるとその経路は実ネットワークに出て、テストが環境依存になる。
 
 **fixture-e2e の原則**:
 - バックエンドはフェイクされ、稼働していない。これらのテストの実行に `npm run start:backend` は不要
@@ -177,56 +70,13 @@ service-integration-e2eテストがパスする前に確認すべき項目:
 1. `page.getByRole()` — accessibility roleとユーザーに見える名前を対象にする
 2. `page.getByLabel()` — フォーム要素
 3. `page.getByText()` — 表示テキスト
-4. `page.getByTestId()` — 最終手段
+4. `page.getByTestId()` — 最終手段。知覚可能な属性で要素を識別できない理由をテスト内に記録する
 
-```typescript
-// 推奨
-await page.getByRole('button', { name: 'Submit' }).click()
-
-// 実装に結合した壊れやすいlocator
-await page.locator('#submit-btn').click()
-await page.locator('.btn-primary').click()
-```
-
-## Assertion
-
-```typescript
-// 表示確認
-await expect(page.getByText('Success')).toBeVisible()
-await expect(page.getByText('Error')).not.toBeVisible()
-
-// ナビゲーション
-await expect(page).toHaveURL('/dashboard')
-await expect(page).toHaveTitle('Dashboard')
-
-// 要素状態
-await expect(page.getByRole('button')).toBeEnabled()
-await expect(page.getByRole('button')).toBeDisabled()
-
-// コンテンツ
-await expect(page.getByRole('heading')).toHaveText('Welcome')
-```
+CSSのidやclassによる選択はユーザーが知覚するものではなくマークアップにテストを結合させるため、上記の一覧からLocatorを選ぶ。
 
 ## Viewportテスト
 
-UI Specでレスポンシブ動作が定義されている場合:
-
-```typescript
-test.describe('レスポンシブナビゲーション', () => {
-  test('モバイルでハンバーガーメニューを表示', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 667 })
-    await page.goto('/')
-    await expect(page.getByRole('button', { name: 'Menu' })).toBeVisible()
-    await expect(page.getByRole('navigation')).not.toBeVisible()
-  })
-
-  test('デスクトップでフルナビゲーションを表示', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 720 })
-    await page.goto('/')
-    await expect(page.getByRole('navigation')).toBeVisible()
-  })
-})
-```
+UI Specでレスポンシブ動作が定義されている場合、UI Specが挙げる各viewportで検証する。そのサイズで表示される要素と表示されない要素の両方を検証する — breakpointの不具合は両方の面が同時にrenderされる形で現れることが多い。
 
 ## テスト分離
 
@@ -241,8 +91,8 @@ E2Eテストスケルトンは統合テストと同じアノテーション形�
 
 ```typescript
 // AC: [元の受入条件テキスト]
-// Behavior: [ユーザーアクション] → [システムレスポンス] → [観測可能な結果]
-// @category: fixture-e2e | service-integration-e2e
+// 振る舞い: [ユーザーアクション] → [システムレスポンス] → [観測可能な結果]
+// @category: core-functionality | integration | edge-case | ux | fixture-e2e | service-integration-e2e
 // @lane: fixture-e2e | service-integration-e2e
 // @dependency: full-ui (mocked backend) | full-system
 // @complexity: high

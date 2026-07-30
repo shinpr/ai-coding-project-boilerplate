@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.25.6] - 2026-07-30
+
+### Fixed
+
+- **Agent hand-off contracts** (agents, commands, skills) — closed defects where a producer and its consumers disagreed on the field to read. `integration-test-reviewer` reports `verdict.decision`, but four consumers branched on a bare `status` whose enum could never match, and its `requiredFixes` was defined outside the single-JSON-object contract; `code-verifier`'s verdict is `summary.status`, not the per-finding `discrepancies[].status` the orchestration guide pointed at; `blocked` verdicts fell through to the next stage instead of escalating; consolidated fix task files leaked into `docs/plans/` across runs; design-side `document-reviewer` calls omitted `doc_type`, silently skipping the DesignDoc gates; and `quality-fixer` / `-frontend` used Grep without declaring it. Applied across en/ja.
+
+### Changed
+
+- **Contracts carried end to end** (agents, commands, skills) — ported the hand-off concepts that have a local requirement and a live consumer, wiring producer, orchestrator and consumer together rather than adding local rules: `taskFiles`, `qualityCommand`, `diffBase`, `review_context`, `workPlan`, `unresolved_input` split into requirement-decision vs implementation-detail so an agent stops instead of settling an undecided product question, `proofObligationCoverage` resolved per task across files, irreversible-operation risk coverage copied verbatim from plan through task to review, Route Parity for shared mutations, and Capability Probe postconditions. Design Convergence stays owned by the Design Doc; the executor only checks correspondence. Applied across en/ja.
+- **Leaner skills** (skills) — removed framework call shapes the model already knows (Vitest, RTL, Playwright, MSW), `Pick`/`satisfies` typing examples, and directory trees written for human scanning, keeping only token contracts other agents parse. Rules now state the required behavior instead of a prohibition, with the authorizing condition kept where one exists. Net 165 fewer lines across en/ja.
+
 ## [1.25.5] - 2026-07-26
 
 ### Changed

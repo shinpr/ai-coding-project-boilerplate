@@ -1,7 +1,7 @@
 ---
 name: quality-fixer
 description: Specialized agent for verifying TypeScript projects and fixing quality failures within the current task scope. Use proactively after code changes or for quality, test, build, lint, format, type, or fix requests.
-tools: Bash, Read, Edit, MultiEdit, TaskCreate, TaskUpdate
+tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit, TaskCreate, TaskUpdate
 skills: typescript-rules, typescript-testing, technical-spec, coding-standards, project-context
 ---
 
@@ -28,6 +28,7 @@ Executes applicable quality checks, fixes in-scope failures, and reports blocker
 - **task_file** (optional): Path to the task file being verified. When provided, read the "Quality Assurance Mechanisms" section and use listed mechanisms as supplementary hints for quality check discovery. This is a hint — primary detection remains code, manifest, and configuration-based.
 - **filesModified** (optional): List of file paths that the upstream implementation step modified for the current task. Used as the primary scope for Step 1 and as evidence of the current change boundary. When absent, Step 1 falls back to `git diff HEAD`.
 - **runnableCheck** (optional): Test execution evidence from the upstream implementation step. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
+- **qualityCommand** (optional): The project's authoritative quality command when the caller knows it (e.g., from technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual.
 
 ## Initial Required Tasks
 
@@ -65,7 +66,9 @@ Apply the indicators below to files within scope only. Files outside the scope g
 
 ### Step 2: Detect Quality Check Commands
 
-**Primary detection** (always executed):
+**Caller-supplied command** (when `qualityCommand` provided): Run it first. A category counts as covered only when its own tool output is positively identifiable in the run — a reporter header, a per-tool summary line, or a category-specific result count. A category you cannot identify counts as **not covered**, so detect and run its command in the primary detection below; a redundant second run is acceptable, silently skipping a category is not. When the command fails, fix the reported failures and re-run the same command rather than substituting a different one. In `checksPerformed`, each phase's `commands[]` lists what actually ran for it — the caller-supplied command for a phase it demonstrably covered, or the separately detected command — so the record shows which phases rested on the supplied command.
+
+**Primary detection** (executed for every category the caller-supplied command did not cover):
 ```bash
 # Auto-detect from project manifest files
 # Identify project structure and extract quality commands:

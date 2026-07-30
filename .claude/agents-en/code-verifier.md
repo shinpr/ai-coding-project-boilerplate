@@ -35,6 +35,15 @@ You are an AI assistant specializing in document-code consistency verification.
 This agent outputs **verification results and discrepancy findings only**.
 Document modification and solution proposals are out of scope for this agent.
 
+## Input Gate [BLOCKING]
+
+Confirm these before extracting any claim. When an item fails, produce the response with `summary.status: "blocked"`, `summary.consistencyScore: null`, and `summary.blockingReason` naming the failed item and the input that resolves it. Nothing was verified, so the empty `discrepancies` is absent evidence rather than a clean result — a score computed over zero claims would misreport as agreement.
+
+☐ `document_path` resolves to a readable file
+☐ The document contains at least one verifiable claim (a named path, route, export, data operation, or observable behavior)
+
+When `code_paths` is absent, discover the code scope from the document rather than blocking; record an empty discovery result in `limitations` and continue.
+
 ## Verification Framework
 
 ### Claim Categories
@@ -148,8 +157,9 @@ summary.docType:                string ("prd" | "design-doc")
 summary.documentPath:           string (file path)
 summary.verifiableClaimCount:   number (integer >= 0)
 summary.matchCount:             number (integer >= 0)
-summary.consistencyScore:       number (integer 0-100)
-summary.status:                 string ("consistent" | "mostly_consistent" | "needs_review" | "inconsistent")
+summary.consistencyScore:       number (integer 0-100) | null (null when status is "blocked")
+summary.status:                 string ("consistent" | "mostly_consistent" | "needs_review" | "inconsistent" | "blocked")
+summary.blockingReason:         string | null (the failed Input Gate item and the input that resolves it; null unless status is "blocked")
 
 claimCoverage.sectionsAnalyzed:       number (integer >= 0)
 claimCoverage.sectionsWithClaims:     number (integer >= 0)
@@ -188,7 +198,7 @@ Minimal shape example:
 
 ```json
 {
-  "summary": {"docType": "design-doc", "documentPath": "docs/design/auth-design.md", "verifiableClaimCount": 28, "matchCount": 22, "consistencyScore": 78, "status": "mostly_consistent"},
+  "summary": {"docType": "design-doc", "documentPath": "docs/design/auth-design.md", "verifiableClaimCount": 28, "matchCount": 22, "consistencyScore": 78, "status": "mostly_consistent", "blockingReason": null},
   "claimCoverage": { "sectionsAnalyzed": 9, "sectionsWithClaims": 8, "sectionsWithZeroClaims": ["Future Work"] },
   "discrepancies": [
     {"id": "D001", "status": "drift", "severity": "major", "claim": "Login endpoint accepts POST /api/auth/login", "documentLocation": "auth-design.md:45", "codeLocation": "src/auth/router.ts:120", "evidence": "Grep found POST /api/v2/auth/login in src/auth/router.ts:120", "classification": "Path version mismatch"}
@@ -207,6 +217,8 @@ Includes additional fields:
 - `recommendations`: Prioritized list of actions
 
 ## Consistency Score Calculation
+
+When `status` is `blocked`, `verifiableClaimCount` is 0 and the score is undefined — report `consistencyScore: null` rather than a computed value.
 
 ```
 consistencyScore = (matchCount / verifiableClaimCount) * 100

@@ -108,21 +108,22 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
 ## Task Execution Cycle (4-Step Cycle)
 **MANDATORY EXECUTION CYCLE**: `task-executor → escalation check → quality-fixer → commit`
 
+Before the first iteration, register this recipe's phases once using TaskCreate: "Execute consumed task set", "Run post-implementation verification", "Clean up consumed task files", "Report completion". Update each with TaskUpdate as it completes.
+
 For EACH task in the Consumed Task Set, YOU MUST:
-1. **Register tasks using TaskCreate**: Register work steps. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON"
-2. **INVOKE task-executor**: Execute the task implementation (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)
-3. **CHECK task-executor response**:
+1. **EXECUTE**: Invoke task-executor to implement the task (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)
+2. **BRANCH ON EXECUTOR RESULT**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
-   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**
-     - `needs_revision` → Return to step 2 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `requiredFixes[]` array as input
-     - `approved` → Proceed to step 4
-   - `readyForQualityCheck: true` → Proceed to step 4
-4. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file` and the implementation step's `filesModified` array as `filesModified` (this scopes the stub-detection step to the task's actual write set; without it, quality-fixer falls back to `git diff HEAD`)
-5. **CHECK quality-fixer response**:
-   - `stub_detected` → Return to step 2 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
-   - `blocked` → STOP and escalate to user
-   - `approved` → Proceed to step 6
-6. **COMMIT on approval**: Execute git commit
+   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (without it the reviewer cannot see the task's Proof Obligations and caps proof adequacy at `needs_improvement`), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `verdict.decision`
+     - `needs_revision` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `requiredFixes[]` array as input
+     - `blocked` → STOP and escalate to user, reporting `verdict.reason` and the review basis the reviewer could not establish
+     - `approved` → Proceed to step 3
+   - `readyForQualityCheck: true` → Proceed to step 3
+3. **QUALITY-FIX**: Invoke quality-fixer to execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file` and the implementation step's `filesModified` array as `filesModified` (this scopes the stub-detection step to the task's actual write set; without it, quality-fixer falls back to `git diff HEAD`). Also pass the implementation step's `runnableCheck` so the substance check reads the upstream evidence instead of re-deriving it, and `qualityCommand` when technical-spec or a repo convention names the project's authoritative quality command, so every task in this run is verified by the same command. Then branch on its response:
+   - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
+   - `blocked` → STOP and escalate to user (discriminate by `reason` per quality-fixer blocked handling in subagents-orchestration-guide)
+   - `approved` → Proceed to step 4
+4. **COMMIT on approval**: Execute git commit
 
 **CRITICAL**: Parse every sub-agent response for status fields. Execute the matching branch in the 4-step cycle. Proceed to next task only after quality-fixer returns `approved`.
 
@@ -145,12 +146,12 @@ After all task cycles finish, run verification agents **in parallel** before the
 
 1. **Invoke both in parallel** using Agent tool:
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list (`git diff --name-only main...HEAD`)
-   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path, implementation file list
+   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path, implementation file list, and `workPlan`: the work plan path used in this run (its Failure Mode Checklist and First-Pass Risk Coverage table are the declared dispositions the reviewer verifies against)
 
 2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
 
 3. **Fix cycle** (when any verifier failed, max 2 cycles):
-   - Create a consolidated fix task file (e.g., `docs/plans/tasks/post-impl-fixes-YYYYMMDD.md`) using the task-template; populate Target Files with the union of file paths referenced by all verifiers' `requiredFixes[].location` / `discrepancies[].codeLocation` (parse as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them.
+   - Create a consolidated fix task file at `docs/plans/tasks/review-fixes-{plan-name}-task-{cycle-number}.md` using the task-template; populate Target Files with the union of file paths referenced by all verifiers' `requiredFixes[].location` / `discrepancies[].codeLocation` (parse as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them. This name is already excluded from the Consumed Task Set by the `review-fixes-*.md` pattern, so it is never picked up as an implementation task, and Final Cleanup deletes it.
    - **Normalize verifier outputs** into a unified `requiredFixes[]` before invoking task-executor:
      - `security-reviewer.requiredFixes[]` (already `{location, issue, fix}`) → pass through as-is.
      - `code-verifier.discrepancies[]` → convert each actionable discrepancy (status `drift` / `gap` / `conflict`) to `{location: discrepancy.codeLocation, issue: discrepancy.claim, fix: "[specific correction needed to restore Design Doc consistency, derived from discrepancy.classification and evidence]"}`.
@@ -167,6 +168,7 @@ Before the completion report, delete the implementation task files this recipe c
 
 - Delete every file in the Consumed Task Set
 - Delete every file matching `docs/plans/tasks/{plan-name}-phase*-completion.md` (the per-phase completion files generated by task-decomposer for this `{plan-name}`)
+- Delete every file matching `docs/plans/tasks/review-fixes-{plan-name}-task-*.md` (the consolidated fix task files created by the Post-Implementation Verification fix cycle) — delete these only after all verifiers pass
 - Delete the corresponding `docs/plans/tasks/_overview-{plan-name}.md` if present
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review
 

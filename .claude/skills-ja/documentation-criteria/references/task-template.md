@@ -42,6 +42,21 @@ Metadata:
 |---|---|---|---|
 | [対応する作業計画書のReference Contract Values行からコピーしたDesign Docパス (§ セクション)] | [作業計画書の行からコピーしたContract Type: structure-order / derived-display / state-lifecycle-negative] | [作業計画書の行から逐語コピーしたRequired Observable Value] | [計画中/最終の実装が値を再現するかをY/Nで判定できる肯定述語] |
 
+## First-Pass Risk Coverage
+（作業計画書の First-Pass Risk Coverage 表がこのタスクを指名している場合に本セクションを記載する。該当行を「カバーするタスク」列を除いてそのままコピーする。それ以外の場合は省略する。）
+
+| 操作 | 到達する経路 | エビデンス不完全時の安全な既定状態 | mutation | partial-evidence | retry | concurrency | identity | input-route |
+|---|---|---|---|---|---|---|---|---|
+| [計画書の行からコピー] | [コピー] | [コピー] | covered / n/a / blocked | | | | | |
+
+各 disposition は既に下された判断であり、その値がこのタスクでのhazardの扱いを確定する:
+
+- `covered` — そのhazardの防止結果がここで必要。実装し検証可能な状態にする。上記の対応する Proof Obligation が下流のレビューでの照合対象になる
+- `n/a` — このhazardは専用の実装も自身の Proof Obligation も要求しない。既に存在する保護、`covered` のhazardと共用の保護、他の要件の副次的効果として得られた保護はそのまま残す。レビューはそれをそのまま受け入れる
+- `blocked` — まだ判断が存在しないため、この行は下記 Decisions and Unresolved Items にも `Kind: requirement-decision` として現れる。実行はそこで停止し、振る舞いを選ばない
+
+このタスクが導入する機構が正当な追加かどうかは、この表からではなく Design Doc に対する採用済み追加との対応確認で判定する。
+
 ## Decisions and Unresolved Items
 （タスク分解時に代替案・optionalな挙動・placeholderを解決した場合、または分解時点で必須の決定が未解決の場合に本セクションを記載する。該当項目がない場合は省略する。）
 
@@ -51,11 +66,16 @@ Metadata:
 |---|---|---|
 | [代替案・optionalな挙動・placeholder] | [選択した選択肢、またはそれを選ぶ決定的な判断ルール。placeholderの場合は正確な暫定出力・許容される依存・検証の期待値] | [作業計画書 / Design Doc / UI Spec / ADR のセクション、または判断ルールの根拠] |
 
-ブロッキングな未解決項目 — 分解時点では決定できず実行をブロックする決定:
+ブロッキングな未解決項目 — 分解時点では決定できず実行をブロックする決定。`Kind` が、executor が項目を確定してよいか停止すべきかを決める:
 
-| Item | Required Input | Escalation Condition |
-|---|---|---|
-| [未解決の決定] | [解決に必要な入力] | [誰/何にエスカレーションするか、および executor が推測せず停止すべき地点] |
+- `implementation-detail` — 開いているのは内部の構成だけ（対象ファイル内での配置、局所的な構造、命名、処理順序）。観測可能な振る舞いは要件と上記の契約で既に確定している。
+- `requirement-decision` — 観測可能な振る舞い、プロダクトのルール、セキュリティ姿勢、互換性保証が未決。問いが「どう作るか」ではなく「システムが何をすべきか」なので、スコープ内のどの選択肢でも確定できない。
+
+| Item | Kind | Required Input | Smallest In-Scope Option | Escalation Condition |
+|---|---|---|---|---|
+| [未解決の決定] | implementation-detail / requirement-decision | [解決に必要な入力] | [`implementation-detail` の場合: 要求される成果と全 Binding Decision・全 Reference Contract を満たす、このタスクの Target Files 内で最小の選択肢。すべてを満たすスコープ内の選択肢がない場合は `none`。`requirement-decision` の場合: `n/a — stop`] | [誰/何にエスカレーションするか、および executor が推測せず停止すべき地点] |
+
+`implementation-detail` の項目では、executor が判断全体をエスカレーションせず適用できるよう Smallest In-Scope Option を記録する。`requirement-decision` の項目では executor が停止する — ここに候補を記録すると、要件が下していない判断を executor に確定させることになる。
 
 ## Investigation Notes
 （実装観察事項を実装開始前にここへ追記する。Binding Decisionsがある場合、計画した実装アプローチと各Compliance Check結果をここに記録する。）

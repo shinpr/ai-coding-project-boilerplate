@@ -35,17 +35,11 @@ skills:
 
   typescript-rules:
     skill: "typescript-rules"
-    tags: [implementation, type-safety, async, refactoring, coding-style, functional-programming, dependency-injection, branded-types, backend]
-    typical-use: "Backend TypeScript code creation, modification, refactoring, modern type features utilization"
+    tags: [implementation, type-safety, async, coding-style, dependency-injection, error-handling, backend]
+    typical-use: "Backend TypeScript code creation and modification, class-vs-function decisions, DI implementation, error handling"
     size: medium
     key-references:
-      - "YAGNI Principle - Kent Beck"
       - "Clean Code - Robert C. Martin"
-      - "DRY Principle - The Pragmatic Programmer"
-      - "Refactoring - Martin Fowler"
-      - "TypeScript 4.9 satisfies Operator - Microsoft"
-      - "Branded Types - TypeScript Community"
-      - "Effect-TS / fp-ts - Functional Programming"
       - "Dependency Injection - Martin Fowler"
       - "Avoiding fallback in distributed systems - AWS Builders' Library"
     sections:
@@ -73,7 +67,6 @@ skills:
       - "Test Quality Criteria"
       - "Mock Type Safety Enforcement"
       - "Data Layer Testing"
-      - "Basic Vitest Example"
 
   technical-spec:
     skill: "technical-spec"
@@ -244,7 +237,6 @@ skills:
       - "Basic Testing Policy"
       - "Test Implementation Conventions"
       - "Mock Type Safety Enforcement"
-      - "Basic React Testing Library Example"
       - "Test Design Patterns"
 
   frontend-technical-spec:

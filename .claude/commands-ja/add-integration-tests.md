@@ -134,15 +134,16 @@ type: test-implementation
 Agentツールでintegration-test-reviewerを呼び出す:
 - `subagent_type`: "integration-test-reviewer"
 - `description`: "テスト品質レビュー"
-- `prompt`: "テスト品質をレビュー。テストファイル: [ステップ4のtestsAdded]。スケルトンファイル: [ステップ2のgeneratedFilesから現在のタスクのレイヤーに該当するパス]"
+- `prompt`: "テスト品質をレビュー。テストファイル: [ステップ4のtestsAdded]。taskFiles: [ステップ4で使用したものと同じタスクファイルパス]。diffBase: HEAD。スケルトンファイル: [ステップ2のgeneratedFilesから現在のタスクのレイヤーに該当するパス]"
 
-**期待される出力**: `status` (approved/needs_revision), `requiredFixes`
+**期待される出力**: `verdict.decision` (approved/needs_revision/blocked)、`verdict.reason`、`requiredFixes[]`
 
 ### ステップ6: レビュー修正の適用
 
-ステップ5の結果を確認:
-- `status: approved` → 完了としてマーク、ステップ7へ進む
-- `status: needs_revision` → ルーティング先の task-executor を **Fix Mode** で再起動。同じ `task_file` と `requiredFixes[]` を渡す（プロンプト詳細は下記）。その後ステップ5に戻る
+ステップ5の結果を `verdict.decision` で分岐して確認:
+- `approved` → 完了としてマーク、ステップ7へ進む
+- `needs_revision` → ルーティング先の task-executor を **Fix Mode** で再起動。同じ `task_file` と `requiredFixes[]` を渡す（プロンプト詳細は下記）。その後ステップ5に戻る
+- `blocked` → 停止してユーザーにエスカレーションし、`verdict.reason` とレビュアが確立できなかった review basis を報告する。欠けている basis がユーザーから供給された後にのみ integration-test-reviewer を再実行する
 
 タスクファイル名パターンでルーティングしてtask-executorを呼び出す:
 - `*-backend-task-*` → `subagent_type`: "task-executor"
