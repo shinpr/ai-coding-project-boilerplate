@@ -1,5 +1,5 @@
 ---
-description: Execute frontend implementation in autonomous execution mode
+description: Execute materialized frontend task files in autonomous execution mode
 ---
 
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
@@ -30,10 +30,10 @@ Before any task processing, locate the work plan.
 1. List task files in `docs/plans/tasks/` matching this recipe's only consumable pattern (per subagents-orchestration-guide "Layer-Aware Agent Routing", `task-executor-frontend` owns this filename suffix and no other):
    - `{plan-name}-frontend-task-*.md`
    - The bare `{plan-name}-task-*.md` is **not** consumable — that filename is reserved for backend by the routing table and is owned by the backend build recipe. `{plan-name}-backend-task-*.md` is also not consumable for the same reason.
-2. From the matched files, also exclude every file matching any of these patterns — they originate from other workflow phases and are not implementation tasks for this run's plan: `*-task-prep-*.md` (readiness preflight tasks), `_overview-*.md` (decomposition overview file), `*-phase*-completion.md` (per-phase completion files), `review-fixes-*.md` (post-implementation review fixes), `integration-tests-*-task-*.md` (integration-test add-on scaffolding)
+2. From the matched files, also exclude every file matching any of these patterns — they originate from other workflow phases and are not implementation tasks for this run's plan: `*-task-prep-*.md` (readiness preflight tasks), `_overview-*.md` (materialization overview file), `*-phase*-completion.md` (per-phase completion files), `review-fixes-*.md` (post-implementation review fixes), `integration-tests-*-task-*.md` (integration-test add-on scaffolding)
 3. For each remaining file, extract `{plan-name}` by stripping the trailing `-frontend-task-{NN}.md` suffix
 4. When at least one task file matches, the work plan is `docs/plans/{plan-name}.md` for the prefix that has the most recent task-file mtime; ties broken by the lexicographically last `{plan-name}`
-5. When no `*-frontend-task-*.md` is found AND a non-template work plan exists in `docs/plans/`, do not assume the most-recent plan applies — frontend tasks must be explicitly named. Stop and report: "No `*-frontend-task-*.md` found in `docs/plans/tasks/`. If you intended to run this recipe on a frontend plan, either re-run task-decomposer so it emits frontend-named task files, or pass the work plan path as `$ARGUMENTS`. If the plan is backend, use the backend build recipe instead."
+5. When no `*-frontend-task-*.md` is found AND a non-template work plan exists in `docs/plans/`, treat frontend tasks as requiring an explicit name — the most-recent plan does not stand in for one. Stop and report: "No `*-frontend-task-*.md` found in `docs/plans/tasks/`. If you intended to run this recipe on a frontend plan, either correct the affected work plan task entries to `Executor lane: frontend` and regenerate the task files, or pass the work plan path as `$ARGUMENTS`. If the plan is backend, use the backend build recipe instead." Filenames follow the plan's declared lanes, so re-running task materialization alone leaves them unchanged.
 
 ### Consumed Task Set
 
@@ -51,13 +51,13 @@ Analyze the Consumed Task Set and determine the action required. Note: when `$AR
 | State | Criteria | Next Action |
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
-| No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | Confirm with user → run task-decomposer (which will emit `*-frontend-task-*.md` per the frontend naming rule) |
-| Neither exists + Design Doc exists + `$ARGUMENTS` provided | `$ARGUMENTS` provided, no plan, no Consumed Task Set, but docs/design/*.md exists | Invoke work-planner to create work plan from Design Doc, then run **Work Plan Review** (see below) before task decomposition |
+| No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | Confirm with user → run task-decomposer (which emits `*-frontend-task-*.md` for every task entry declaring `Executor lane: frontend`) |
+| Neither exists + Design Doc exists + `$ARGUMENTS` provided | `$ARGUMENTS` provided, no plan, no Consumed Task Set, but docs/design/*.md exists | Invoke work-planner to create work plan from Design Doc, then run **Work Plan Review** (see below) before task materialization |
 | Neither exists | No `$ARGUMENTS`, no plan, no Consumed Task Set, no Design Doc | Report missing prerequisites to user and stop |
 
 ## Work Plan Review (when this recipe created the plan)
 
-When the decision flow above created the work plan from a Design Doc, review it before decomposition:
+When the decision flow above created the work plan from a Design Doc, review it before materialization:
 
 1. Invoke document-reviewer using Agent tool:
    - `subagent_type`: "document-reviewer"
@@ -65,10 +65,10 @@ When the decision flow above created the work plan from a Design Doc, review it 
    - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [the Design Doc path]. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Failure Mode Checklist, and Review Scope."
 2. Branch on the reviewer's `verdict.decision`:
    - `needs_revision` → re-invoke work-planner (update) with the findings and re-review until `approved`/`approved_with_conditions`
-   - `rejected` → stop before task decomposition and escalate to the user
-3. Present the reviewed plan for batch approval before task decomposition.
+   - `rejected` → stop before task materialization and escalate to the user
+3. Present the reviewed plan for batch approval before task materialization.
 
-## Task Decomposition Phase (Conditional)
+## Task Materialization Phase (Conditional)
 
 When the Consumed Task Set is empty:
 
@@ -80,11 +80,11 @@ Work plan: docs/plans/[plan-name].md
 Generate tasks from the work plan? (y/n):
 ```
 
-### 2. Task Decomposition (if approved)
+### 2. Task Materialization (if approved)
 Invoke task-decomposer using Agent tool:
 - `subagent_type`: "task-decomposer"
-- `description`: "Decompose work plan"
-- `prompt`: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable"
+- `description`: "Materialize work plan tasks"
+- `prompt`: "Read work plan at docs/plans/[plan-name].md and output one single-commit task file per work plan implementation item in docs/plans/tasks/, selecting each filename from the item's Executor lane."
 
 ### 3. Verify Generation
 Recompute the Consumed Task Set using the same restricted pattern from the Consumed Task Set section above. Confirm it is now non-empty. If it is still empty, escalate to the user — task-decomposer either failed silently or produced files that don't match the expected pattern.
@@ -171,7 +171,7 @@ If task files cannot be deleted (filesystem error), report the failure but do no
 ## Completion Report Contract
 
 Final report must include:
-- Task decomposition status
+- Task materialization status
 - Implemented task count
 - Quality check result
 - Commit count

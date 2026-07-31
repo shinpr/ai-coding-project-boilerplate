@@ -64,13 +64,15 @@ The smallest coherent behavior or journey that delivers the value stated above. 
 
 Capabilities removed from MVP because value and required obligations still hold without them.
 
-- Item 1: [Description] — [reason it left MVP]
+`Origin` distinguishes an exclusion the user authored (`user`) from one the requirement analysis judged (`analysis`). Record `None — user confirmed there are none` when the user considered exclusions and found none.
+
+- Item 1: [Description] — [reason it left MVP] — Origin: user | analysis
 
 ### Out of Scope
 
-Capabilities not planned for this product direction.
+Capabilities not planned for this product direction. `Origin` follows the same rule as Future above.
 
-- Item 1: [Description and reason for exclusion]
+- Item 1: [Description and reason for exclusion] — Origin: user | analysis
 
 ## Non-Functional Requirements
 
@@ -96,6 +98,8 @@ Capabilities not planned for this product direction.
 - Known constraints: [e.g., external library limitations]
 
 ## Success Criteria
+
+**Outcome**: [the one observable result this feature must produce — every metric below measures progress toward it]
 
 ### Quantitative Metrics
 1. [Metric name]: [numeric target] measured by [method] within [timeframe]

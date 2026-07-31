@@ -33,6 +33,15 @@ unknowns:
 - [docs/adr/ADR-XXXX.md]: [Related decision items]
 - Reference common technical ADRs when applicable
 
+### Requirement Convergence
+
+Records exclusions **the user decided** at requirement time. Exclusions this design decided belong in `Future Extensibility`. Mark the first three bullets `N/A — covered by PRD [path]` when a PRD holds them, or the whole section `N/A — reverse-engineer/as-is document`. Open questions stay here in every case, because design readiness depends on them.
+
+- **Outcome**: [one observable result this change must produce]
+- **Non-Goals**: [capability the user excluded | None — user confirmed there are none]
+- **Speculative**: [idea the user raised without deciding on -> deferral reason | None]
+- **Open questions**: [field the user agreed to leave unresolved | None]
+
 ### Agreement Checklist
 
 #### Scope
@@ -360,9 +369,15 @@ Mark as N/A with brief rationale when the design introduces entirely new behavio
 
 ## Future Extensibility
 
-This section records capabilities **excluded** from the current design surface. Limit entries to capabilities tied to a current requirement, a current consumer, or a documented constraint; route purely speculative future plans into a separate proposal document.
+This section records capabilities **this design** excluded from the current design surface. Limit entries to capabilities tied to a current requirement, a current consumer, or a documented constraint; route purely speculative future plans into a separate proposal document.
 
-Distinguish from "Design Convergence → Rejected Additions": Rejected Additions record options considered while resolving a specific Failed Item; this section records capability-level items not bound to a Failed Item (broader scope considered but excluded).
+Three sections record exclusions, separated by who decided and at what scope:
+
+| Section | Records | Decided by |
+|---|---|---|
+| `Requirement Convergence` | Non-goals and speculative requirements | The user, at requirement time |
+| `Design Convergence → Rejected Additions` | Options considered while resolving one specific Failed Item | This design, bound to a Failed Item |
+| this section | Capability-level exclusions not bound to a Failed Item | This design, at capability scope |
 
 - **Deferred possibilities**: [Capabilities considered during design and explicitly excluded from the current design surface. Each entry names the current requirement it would have served]
 - **Intentional limitations**: [What was deliberately kept small and why]

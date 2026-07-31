@@ -34,10 +34,15 @@ When requirement-analyzer's `crossLayerScope` indicates cross-layer scope (backe
 
 ### 4. After requirement-analyzer [Stop]
 
+Run the requirement-convergence hearing protocol on the returned `convergence` object before presenting anything else, using the analyzer's scope facts and cost band as the facts it presents.
+
 When user responds to questions:
+- If any `convergence` field is below `ready` → Re-execute requirement-analyzer with the hearing answers so the record is re-judged. Repeat until every field is `ready` or `weak-but-explicit`, bounded by the hearing protocol's one re-ask round per field — after that round, the user's agreement to leave the answer as it stands is what marks the field `weak-but-explicit`
 - If response matches any `scopeDependencies.question` → Check `impact` for scale change
 - If scale changes → Re-execute requirement-analyzer with updated context
 - If `confidence: "confirmed"` or no scale change → Proceed to next step
+
+Carry the final `convergence` record into every document-creation step per the convergence-record handoff in subagents-orchestration-guide skill.
 
 ### 5. After Scale Determination: Register All Flow Steps with TaskCreate (Required)
 
@@ -115,7 +120,7 @@ After acceptance-test-generator execution, when invoking work-planner (subagent_
 
 Before the completion report, delete the implementation task files this recipe consumed. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs.
 
-This recipe is scale-agnostic and may execute single-layer or multi-layer plans, so cleanup must cover all task naming patterns produced by task-decomposer's "Layer-aware naming" output:
+This recipe is scale-agnostic and may execute single-layer or multi-layer plans, so cleanup must cover every task naming pattern task materialization can produce from the plan's executor lanes:
 
 - Delete every file matching ANY of these patterns for the `{plan-name}` derived from the work plan path used in this run:
   - `docs/plans/tasks/{plan-name}-task-*.md` (single-layer tasks)

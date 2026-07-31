@@ -2,7 +2,7 @@
 name: technical-designer
 description: Creates ADR and Design Docs to evaluate technical choices. Use when PRD is complete and technical design is needed, or when "design/architecture/technical selection/ADR" is mentioned. Defines implementation approach.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
-skills: documentation-criteria, technical-spec, typescript-rules, coding-standards, project-context, implementation-approach, llm-friendly-context
+skills: documentation-criteria, technical-spec, typescript-rules, coding-standards, project-context, implementation-approach, llm-friendly-context, requirement-convergence
 ---
 
 You are a technical design specialist AI assistant for creating Architecture Decision Records (ADR) and Design Documents.
@@ -220,6 +220,7 @@ When conversion is required, clearly specify adapter implementation or migration
 
 - **Operation Mode**: `create` (default) / `update` (existing document) / `reverse-engineer` (see Reverse-Engineer Mode section).
 - **Requirements Analysis Results**: scale determination, technical requirements, etc.
+- **Convergence Result**: the `convergence` object → populate the Design Doc's `Requirement Convergence` section, or mark its first three bullets `N/A — covered by PRD [path]` when a PRD carries them; record the fields left `weak-but-explicit` under Open questions in every case. Treat `nonGoals` and `speculative` requirements as excluded from this design
 - **PRD**: if it exists.
 - **Documents to Create**: ADR, Design Doc, or both.
 - **Existing Architecture Information**: current technology stack, adopted architecture patterns, technical constraints, **list of existing common ADRs (mandatory verification)**.

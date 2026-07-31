@@ -69,9 +69,13 @@ This step locates seed files only. Reading files in full, tracing dependencies, 
   - `prompt`: include `requirements` (the user requirements verbatim) and `requirement_analysis` — a JSON object with `affectedFiles` (Step 1 seed), `purpose` (the user requirements), `scale` (provisional value from the Scale Determination table applied to the seed file count), `technicalConsiderations` (`{ constraints: [], risks: [], dependencies: [] }`)
 
 ### Step 3: Scope Confirmation
-After codebase-analyzer returns, confirm the design scope with the user before any design work. Use AskUserQuestion.
+After codebase-analyzer returns, confirm the design scope with the user before any design work.
 
-Present, sourced from the codebase-analyzer JSON:
+First run the requirement-convergence hearing protocol, using the codebase-analyzer findings as the facts it presents. This command has no requirement-analyzer, so the orchestrator both elicits and judges the fields, recording the result as the skill's `convergence` object (`outcome`, `requirements[]` with layer labels, `nonGoals[]`, plus a readiness label per field). `cost` does not apply here: the orchestrator cannot search the repository, and entering this command already decided to design. Carry that object into Step 4 so technical-designer persists it to the Design Doc.
+
+The hearing completes when every applicable field is `ready` or `weak-but-explicit`; that recorded object is what permits the scope presentation below to start.
+
+Then present, sourced from the codebase-analyzer JSON, using AskUserQuestion:
 - **Target files/modules**: `analysisScope.filesAnalyzed` and the modules they belong to
 - **Affected layers**: layers touched, derived from `analysisScope.categoriesDetected` and `focusAreas`
 - **Unknowns/assumptions**: `limitations` plus any assumptions codebase-analyzer recorded
@@ -87,7 +91,7 @@ After the user confirms the scope, count the confirmed target files and set the 
 **[STOP]**: Wait for the user's choice before proceeding.
 
 ### Step 4: Design Document Creation
-1. **technical-designer** → create the design documentation. Pass the user requirements (verbatim), the codebase-analyzer JSON, and the confirmed scope and user answers. Per documentation-criteria this is a Design Doc, preceded by a prerequisite ADR when the design involves an architecture decision. The ADR presents at least two alternatives with trade-offs; the Design Doc uses Design Convergence.
+1. **technical-designer** → create the design documentation. Pass the user requirements (verbatim), the codebase-analyzer JSON, the confirmed scope and user answers, and the Step 3 `convergence` object as the Convergence Result. Per documentation-criteria this is a Design Doc, preceded by a prerequisite ADR when the design involves an architecture decision. The ADR presents at least two alternatives with trade-offs; the Design Doc uses Design Convergence.
 2. **code-verifier** → Verify the Design Doc against existing code, passing `doc_type: design-doc` and the Design Doc path as `document_path`. Read `summary.status`: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `summary.blockingReason` to the user rather than passing the result on, because its empty `discrepancies` would read downstream as a clean verification.
 3. **document-reviewer** → Quality check of each document technical-designer produced. For the Design Doc: `doc_type: DesignDoc`, `review_context: creation`, pass `requirements_verbatim` (the user requirements verbatim), `confirmed_decisions` (the confirmed scope and user answers from Step 3), `codebase_analysis` (the codebase-analyzer JSON), and the code-verifier results. For the ADR (when one was created): `doc_type: ADR`, `review_context: creation`, pass `codebase_analysis`; code-verifier results apply to the Design Doc only. When the ADR review requires changes, technical-designer(update) revises the ADR **and** re-aligns the Design Doc with the corrected ADR — the Design Doc stands only on a reviewed, current ADR. When this re-alignment changes the Design Doc, re-run code-verifier and the Design Doc document-reviewer on the updated Design Doc so its verification reflects the final content.
 4. **design-sync** → Design Doc consistency verification.
@@ -99,6 +103,7 @@ After the user confirms the scope, count the confirmed target files and set the 
 
 - [ ] Built the Step 1 scope bootstrap seed (or obtained target files from the user when the search returned none)
 - [ ] Executed codebase-analyzer with a populated `requirement_analysis`
+- [ ] Ran the requirement-convergence hearing and carried its result into design
 - [ ] Confirmed the design scope with the user and set the scale from the confirmed target files
 - [ ] Created the Design Doc with technical-designer, preceded by a prerequisite ADR when the design involved an architecture decision
 - [ ] Executed code-verifier on the Design Doc and passed results to document-reviewer

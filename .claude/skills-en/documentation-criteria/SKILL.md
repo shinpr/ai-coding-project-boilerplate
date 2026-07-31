@@ -15,7 +15,15 @@ Evaluate rows by confirmed scale, then add the conditional documents named in th
 | Medium (3-5 files or medium-risk axis) | Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies; update an existing PRD when the feature scope changes | PRD update (if applicable) -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
 | Small (1-2 files with no higher-risk axis) | One task file in task-template format | ADR when any ADR condition applies; update an existing PRD when the feature scope changes | PRD update (if applicable) -> ADR (if applicable) -> task file |
 
-For a Large change, satisfy the PRD requirement by creating a new PRD, updating the relevant PRD, or creating a reverse PRD when no current product document exists. File count is one scale signal; contract, data, boundary, and decision risk can raise the scale.
+For a Large change, satisfy the PRD requirement by creating a new PRD, updating the relevant PRD, or creating a reverse PRD when no current product document exists.
+
+### Structural Escalation
+
+File count measures size, not structural impact, so a two-file change can still reshape a contract or a data flow. This rule is what the matrix's "higher-risk axis" resolves to.
+
+When any ADR Creation Condition below applies, the confirmed scale is **Medium at minimum** — Design Doc and Work Plan required — regardless of file count. Escalation only raises a level; a file count that already reaches Medium or Large stands. Record the applied condition as the deciding axis.
+
+Scale decides which documents a change requires. Task boundaries within a Work Plan are decided separately, by implementation outcome, rollback boundary, and executor lane (see plan-template).
 
 ## ADR Creation Conditions (Required if Any Apply)
 
@@ -54,7 +62,7 @@ For a Large change, satisfy the PRD requirement by creating a new PRD, updating 
 - Success metrics and KPIs (each metric specifies a numeric target, measurement method, and timeframe)
 - User stories and use cases
 - Acceptance criteria with sequential IDs (AC-001, AC-002, ...) for downstream traceability
-- MVP convergence — the smallest coherent behavior or journey that delivers the value, with excluded capabilities placed in Future or Out of Scope with a reason
+- MVP convergence — the smallest coherent behavior or journey that delivers the value, with excluded capabilities placed in Future or Out of Scope with a reason and an origin marking whether the user authored the exclusion or the requirement analysis judged it
 - User journey diagram (required)
 - Scope boundary diagram (required)
 
@@ -119,6 +127,7 @@ For a Large change, satisfy the PRD requirement by creating a new PRD, updating 
 - **Agreement checklist** (agreements with stakeholders)
 - **Code inspection evidence** (inspected files/functions during investigation)
 - **Field propagation map** (when fields cross component boundaries)
+- **Requirement Convergence** (required) — the outcome, the non-goals and speculative requirements the user excluded, and the fields the user left unresolved; the first three are marked N/A with the PRD path when a PRD carries them (see design-template.md)
 - **Design Convergence** (required) — Direct MVP, Failed Items, Adopted Additions, Rejected Additions (see design-template.md)
 - **Data representation decision** (when the converged design introduces or modifies structures)
 - **Applicable standards** (explicit/implicit classification)
@@ -134,7 +143,8 @@ For a Large change, satisfy the PRD requirement by creating a new PRD, updating 
 **Purpose**: Implementation task management and progress tracking
 
 **Includes**:
-- Task breakdown and dependencies (maximum 2 levels)
+- One task entry per implementation outcome, each carrying a stable `Phase X Task Y` ID, Target Files, a rollback boundary, and an executor lane (see plan-template.md)
+- Task dependencies declared by those stable IDs (maximum 2 levels)
 - Schedule and duration estimates
 - **Include test skeleton file paths** (integration and E2E)
 - **Verification Strategy summary** (extracted from Design Doc)
