@@ -253,3 +253,19 @@ skills:
       - "アーキテクチャ設計"
       - "データフロー統一原則"
       - "ビルドとテスト"
+
+  requirement-convergence:
+    skill: "requirement-convergence"
+    tags: [cross-cutting, requirements, scope, non-goals, outcome, rough-estimate, trade-off, hearing-protocol, convergence]
+    typical-use: "設計前に何を作るかを収束させる。成果と要件レイヤーの分離、ユーザーが挙げた非ゴールの記録、振る舞いではなく構造からのコストのバンド付け"
+    size: small
+    key-references:
+      - "references/criteria.md"
+    sections:
+      - "目的"
+      - "収束フィールド"
+      - "ヒアリングプロトコル"
+      - "保存プロトコル"
+      - "参照プロトコル（下流の消費者向け）"
+      - "品質チェックリスト"
+      - "References"

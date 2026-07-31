@@ -75,9 +75,13 @@ codebase-analyzerは値の入った`requirement_analysis.affectedFiles`を必要
   - `prompt`: `requirements`（ユーザー要件の原文）と`requirement_analysis`（`affectedFiles`（Step 1のシード）、`purpose`（ユーザー要件）、`scale`（シードファイル数にScale Determination表を当てた暫定値）、`technicalConsiderations`（`{ constraints: [], risks: [], dependencies: [] }`）を含むJSONオブジェクト）を含める。フロントエンド設計ガイダンスのため既存コードベースを分析する。
 
 ### Step 3: スコープ確認
-codebase-analyzerが返ったら、設計作業の前にユーザーとスコープを確認する。AskUserQuestionを使う。
+codebase-analyzerが返ったら、設計作業の前にユーザーとスコープを確認する。
 
-codebase-analyzerのJSONを出典として以下を提示する:
+まず requirement-convergence のヒアリングプロトコルを実行する。提示する事実にはcodebase-analyzerの所見を用いる。本コマンドにはrequirement-analyzerがいないため、フィールドの聞き出しと判定の両方をオーケストレーターが担い、結果を同スキルの `convergence` オブジェクト（`outcome`、レイヤーラベル付きの `requirements[]`、`nonGoals[]`、およびフィールドごとの readiness ラベル）として記録する。`cost` はここでは適用しない: オーケストレーターはリポジトリを検索できず、本コマンドに入った時点で設計するという判断は済んでいるためである。このオブジェクトをStep 5とStep 6へ引き継ぎ、ui-spec-designerが非ゴールを尊重し、technical-designer-frontendがDesign Docへ永続化できるようにする。
+
+ヒアリングは、該当する全フィールドが `ready` または `weak-but-explicit` になった時点で完了する。その記録されたオブジェクトが、以下のスコープ提示を開始してよい根拠になる。
+
+次に、codebase-analyzerのJSONを出典として、AskUserQuestionで以下を提示する:
 - **対象ファイル/モジュール**: `analysisScope.filesAnalyzed`と、それらが属するモジュール
 - **影響を受けるレイヤー**: `analysisScope.categoriesDetected`と`focusAreas`から導出される、影響を受けるレイヤー
 - **不明点/前提**: `limitations`と、codebase-analyzerが記録した前提
@@ -109,14 +113,14 @@ codebase-analyzerのJSON（Step 2）とui-analyzerのJSON（Step 4）は、ui-sp
 その後、UI Specを作成する:
 - Agentツールで**ui-spec-designer**を呼び出す
   - `subagent_type: "ui-spec-designer"`, `description: "UI Spec作成"`
-  - 以下を含めてプロンプトを構築する: ソース（この機能の既存PRDが`docs/prd/`にあればそれ。なければ、ユーザー要件にStep 2のcodebase-analyzer JSONとStep 3の確認済みスコープを添えたもの）、`ui_analysis`（Step 4のui-analyzer JSON）、提供された場合のプロトタイプパス。プロトタイプは`docs/ui-spec/assets/{feature-name}/`に配置する。
+  - 以下を含めてプロンプトを構築する: ソース（この機能の既存PRDが`docs/prd/`にあればそれ。なければ、ユーザー要件にStep 2のcodebase-analyzer JSONとStep 3の確認済みスコープを添えたもの）、Step 3の `convergence` オブジェクトの `nonGoals` と `speculative` 要件（UI Specが対象に含めない機能・能力として）、`ui_analysis`（Step 4のui-analyzer JSON）、提供された場合のプロトタイプパス。プロトタイプは`docs/ui-spec/assets/{feature-name}/`に配置する。
 - **document-reviewer**でUI Specを検証する
   - `subagent_type: "document-reviewer"`, `description: "UI Specレビュー"`, `prompt: "doc_type: UISpec target: [ui-specパス] 整合性と完全性をレビュー"`
 - **[停止]**: UI Specをユーザーに提示し承認を取得する
 
 ### Step 6: 設計ドキュメント作成フェーズ
 - Agentツールで**technical-designer-frontend**を呼び出し、設計ドキュメントを作成する。documentation-criteriaに従いDesign Docを作成する。設計にアーキテクチャ決定（アーキテクチャ変更、新技術、データフロー変更）が伴う場合は、前提となるADRを先に作成する。ADRは少なくとも2つの選択肢をトレードオフとともに提示し、Design DocはDesign Convergenceを用いる。
-  - `subagent_type: "technical-designer-frontend"`, `description: "設計ドキュメント作成"`, `prompt: "この要件の設計ドキュメントを作成。documentation-criteriaに従いDesign Docを作成し、設計にアーキテクチャ決定が伴う場合は、少なくとも2つの選択肢をトレードオフとともに提示する前提ADRを先に作成。要件: [ユーザー要件の原文]。コードベース分析: [Step 2のcodebase-analyzer JSON]。UI分析: [Step 4のui-analyzer JSON]。確認済みスコープとユーザー回答: [Step 3の確認済みスコープとユーザー回答]。UI Specは[ui-specパス]。UI Specのコンポーネント構造と状態設計を継承。"`
+  - `subagent_type: "technical-designer-frontend"`, `description: "設計ドキュメント作成"`, `prompt: "この要件の設計ドキュメントを作成。documentation-criteriaに従いDesign Docを作成し、設計にアーキテクチャ決定が伴う場合は、少なくとも2つの選択肢をトレードオフとともに提示する前提ADRを先に作成。要件: [ユーザー要件の原文]。コードベース分析: [Step 2のcodebase-analyzer JSON]。UI分析: [Step 4のui-analyzer JSON]。確認済みスコープとユーザー回答: [Step 3の確認済みスコープとユーザー回答]。収束結果: [Step 3の `convergence` オブジェクト]。UI Specは[ui-specパス]。UI Specのコンポーネント構造と状態設計を継承。"`
 - **code-verifier**でDesign Docを既存コードに対して検証する。
   - `subagent_type: "code-verifier"`, `description: "Design Doc検証"`, `prompt: "doc_type: design-doc document_path: [Design Docパス] mode: pre-implementation (code_paths省略 — verifierがドキュメントからスコープを発見). Design Docを既存コードに対して検証。"`
   - `summary.status` を読む: `blocked` の場合は Input Gate が失敗し何も検証されていないため、結果を渡さず停止して `summary.blockingReason` をユーザーに報告する。空の `discrepancies` は下流でクリーンな検証として読まれてしまうため。
@@ -134,6 +138,7 @@ codebase-analyzerのJSON（Step 2）とui-analyzerのJSON（Step 4）は、ui-sp
 
 - [ ] Step 1のスコープブートストラップのシードを構築した（または検索結果が0件のときユーザーから対象ファイルを取得した）
 - [ ] 値の入った`requirement_analysis`でcodebase-analyzerを実行した
+- [ ] requirement-convergenceのヒアリングを実施し、その結果をUI Specと設計へ引き継いだ
 - [ ] ユーザーと設計スコープを確認し、確認済みの対象ファイルから規模を設定した
 - [ ] ui-analyzerを実行した。codebase-analyzer（Step 2）とui-analyzer（Step 4）の出力はui-spec-designerとtechnical-designer-frontendで再利用される
 - [ ] ui-spec-designerでUI Specを作成した

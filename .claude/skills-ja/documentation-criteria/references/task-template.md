@@ -1,9 +1,12 @@
 # Task: [タスク名]
 
 Metadata:
+- Source Work Plan Task: [Phase X タスクY — このタスクが実体化する作業計画書項目の安定ID]
 - Dependencies: task-01 -> Deliverable: docs/plans/analysis/research-results.md
 - Provides: docs/plans/analysis/api-spec.md（調査・設計タスクの場合）
-- Size: 小規模（1-2ファイル）
+- Implementation outcome: [このタスクが完成させる、観測可能な振る舞い・契約・マイグレーション・下流が消費できる成果物]
+- Rollback boundary: [1コミットでまとめて元に戻す振る舞い・契約・マイグレーション・永続状態]
+- Executor lane: [backend | frontend]
 
 ## Implementation Content
 [このタスクで達成すること]
@@ -15,10 +18,10 @@ Metadata:
 
 ## Investigation Targets
 実装開始前に読むべきファイル（ファイルパス、任意でサーチヒント付き）:
-- [例: src/orders/checkout (processOrder関数) — タスクの性質に基づきタスク分解時に決定]
+- [例: src/orders/checkout (processOrder関数) — タスクの性質に基づきタスク実体化時に決定]
 
 ## Change Category
-（タスクがバグ修正・リグレッション・状態変更・境界変更の場合のみ本フィールドを記載する。設定はタスク分解時に行う。それ以外は省略する。）
+（タスクがバグ修正・リグレッション・状態変更・境界変更の場合のみ本フィールドを記載する。設定はタスク実体化時に行う。それ以外は省略する。）
 
 `Change Category: <bug-fix, regression, state-change, boundary-change のうち該当するものをカンマ区切りで>`
 
@@ -43,7 +46,7 @@ Metadata:
 | [対応する作業計画書のReference Contract Values行からコピーしたDesign Docパス (§ セクション)] | [作業計画書の行からコピーしたContract Type: structure-order / derived-display / state-lifecycle-negative] | [作業計画書の行から逐語コピーしたRequired Observable Value] | [計画中/最終の実装が値を再現するかをY/Nで判定できる肯定述語] |
 
 ## First-Pass Risk Coverage
-（作業計画書の First-Pass Risk Coverage 表がこのタスクを指名している場合に本セクションを記載する。該当行を「カバーするタスク」列を除いてそのままコピーする。それ以外の場合は省略する。）
+（作業計画書の First-Pass Risk Coverage 表のいずれかの行が、その「カバーするタスク」列にこのタスクの`Source Work Plan Task`を挙げている場合に本セクションを記載する。該当行をその列を除いてそのままコピーする。それ以外の場合は省略する。）
 
 | 操作 | 到達する経路 | エビデンス不完全時の安全な既定状態 | mutation | partial-evidence | retry | concurrency | identity | input-route |
 |---|---|---|---|---|---|---|---|---|
@@ -58,15 +61,15 @@ Metadata:
 このタスクが導入する機構が正当な追加かどうかは、この表からではなく Design Doc に対する採用済み追加との対応確認で判定する。
 
 ## Decisions and Unresolved Items
-（タスク分解時に代替案・optionalな挙動・placeholderを解決した場合、または分解時点で必須の決定が未解決の場合に本セクションを記載する。該当項目がない場合は省略する。）
+（タスク実体化時に代替案・optionalな挙動・placeholderを解決した場合、または実体化時点で必須の決定が未解決の場合に本セクションを記載する。該当項目がない場合は省略する。）
 
-解決済みの決定 — 分解が明示的な選択に確定した、各代替案・optionalな挙動・placeholder:
+解決済みの決定 — 実体化が明示的な選択に確定した、各代替案・optionalな挙動・placeholder:
 
 | Item | Decision | Source / Rule |
 |---|---|---|
 | [代替案・optionalな挙動・placeholder] | [選択した選択肢、またはそれを選ぶ決定的な判断ルール。placeholderの場合は正確な暫定出力・許容される依存・検証の期待値] | [作業計画書 / Design Doc / UI Spec / ADR のセクション、または判断ルールの根拠] |
 
-ブロッキングな未解決項目 — 分解時点では決定できず実行をブロックする決定。`Kind` が、executor が項目を確定してよいか停止すべきかを決める:
+ブロッキングな未解決項目 — 実体化時点では決定できず実行をブロックする決定。`Kind` が、executor が項目を確定してよいか停止すべきかを決める:
 
 - `implementation-detail` — 開いているのは内部の構成だけ（対象ファイル内での配置、局所的な構造、命名、処理順序）。観測可能な振る舞いは要件と上記の契約で既に確定している。
 - `requirement-decision` — 観測可能な振る舞い、プロダクトのルール、セキュリティ姿勢、互換性保証が未決。問いが「どう作るか」ではなく「システムが何をすべきか」なので、スコープ内のどの選択肢でも確定できない。

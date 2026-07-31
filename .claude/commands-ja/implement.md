@@ -34,10 +34,15 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 
 ### 4. requirement-analyzer後に停止
 
+他の内容を提示する前に、返された `convergence` オブジェクトに対して requirement-convergence のヒアリングプロトコルを実行する。提示する事実には、アナライザーが出したスコープの事実とコストのバンドを用いる。
+
 ユーザーが質問に回答した時：
+- `convergence` のいずれかのフィールドが `ready` に達していない → ヒアリングの回答を添えてrequirement-analyzerを再実行し、記録を再判定させる。全フィールドが `ready` または `weak-but-explicit` になるまで繰り返す（ヒアリングプロトコルのフィールドごと1回の聞き直しを上限とする — その回の後は、回答のままでよいというユーザーの同意がそのフィールドを `weak-but-explicit` にする）
 - 回答が`scopeDependencies.question`のいずれかに該当 → `impact`で規模変更をチェック
 - 規模が変更 → 更新されたコンテキストでrequirement-analyzerを再実行
 - `confidence: "confirmed"` または規模変更なし → 次のステップへ進む
+
+最終的な `convergence` 記録は、subagents-orchestration-guideスキルの収束記録の受け渡しに従い、各ドキュメント作成ステップへ引き継ぐ。
 
 ### 5. 規模判定後：TaskCreateでフロー全ステップを登録（必須）
 
@@ -115,7 +120,7 @@ acceptance-test-generator実行後、work-planner（subagent_type: "work-planner
 
 完了レポートの前に、本レシピが消費した実装タスクファイルを削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である。
 
-本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップはtask-decomposerの「Layer-aware naming」が出力するすべてのタスク命名パターンを対象とする:
+本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップは、計画書の Executor lane からタスク実体化が生成しうるすべてのタスク命名パターンを対象とする:
 
 - 本実行で使用した作業計画書パスから導出した `{plan-name}` について、以下のいずれかにマッチするファイルすべてを削除する:
   - `docs/plans/tasks/{plan-name}-task-*.md`（単層タスク）

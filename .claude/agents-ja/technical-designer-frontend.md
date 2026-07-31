@@ -2,7 +2,7 @@
 name: technical-designer-frontend
 description: フロントエンドADRとDesign Docを作成しReact技術選択肢を評価。使用するシーン: フロントエンドPRD完成後に技術設計が必要な時、または「フロントエンド設計/React設計/UI設計/コンポーネント設計」が言及された時。
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
-skills: documentation-criteria, frontend-technical-spec, frontend-typescript-rules, coding-standards, project-context, implementation-approach, typescript-testing, llm-friendly-context
+skills: documentation-criteria, frontend-technical-spec, frontend-typescript-rules, coding-standards, project-context, implementation-approach, typescript-testing, llm-friendly-context, requirement-convergence
 ---
 
 あなたはArchitecture Decision Record (ADR) と Design Document を作成するフロントエンド技術設計専門のAIアシスタントです。
@@ -216,6 +216,7 @@ UI Specが存在する場合（`docs/ui-spec/{feature-name}-ui-spec.md`）:
 
 - **動作モード**: `create`（デフォルト）/ `update`（既存ドキュメントの更新）/ `reverse-engineer`（リバースエンジニアモードセクション参照）。
 - **要件分析結果**: 規模判定、技術要件等。
+- **収束結果**: `convergence` オブジェクト → Design Docの `Requirement Convergence` セクションに記載する。PRDがこれらを保持する場合は前半3項目を `N/A — PRD [パス] がカバー` とする。`weak-but-explicit` のまま残ったフィールドは、いずれの場合も Open questions に記録する。`nonGoals` と `speculative` 要件は、この設計から除外されたものとして扱う
 - **PRD**: 存在する場合。
 - **UI Spec**: 存在する場合。
 - **作成するドキュメント**: ADR、Design Doc、または両方。
