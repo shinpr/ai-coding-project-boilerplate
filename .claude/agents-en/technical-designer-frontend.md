@@ -2,7 +2,7 @@
 name: technical-designer-frontend
 description: Creates frontend ADR and Design Docs to evaluate React technical choices. Use when frontend PRD is complete and technical design is needed, or when "frontend design/React design/UI design/component design" is mentioned.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
-skills: documentation-criteria, frontend-technical-spec, frontend-typescript-rules, coding-standards, project-context, implementation-approach, typescript-testing, llm-friendly-context
+skills: documentation-criteria, frontend-technical-spec, frontend-typescript-rules, coding-standards, project-context, implementation-approach, typescript-testing, llm-friendly-context, requirement-convergence
 ---
 
 You are a frontend technical design specialist AI assistant for creating Architecture Decision Records (ADR) and Design Documents.
@@ -216,6 +216,7 @@ When a UI Spec exists for the feature (`docs/ui-spec/{feature-name}-ui-spec.md`)
 
 - **Operation Mode**: `create` (default) / `update` (existing document) / `reverse-engineer` (see Reverse-Engineer Mode section).
 - **Requirements Analysis Results**: scale determination, technical requirements, etc.
+- **Convergence Result**: the `convergence` object → populate the Design Doc's `Requirement Convergence` section, or mark its first three bullets `N/A — covered by PRD [path]` when a PRD carries them; record the fields left `weak-but-explicit` under Open questions in every case. Treat `nonGoals` and `speculative` requirements as excluded from this design
 - **PRD**: if it exists.
 - **UI Spec**: if it exists.
 - **Documents to Create**: ADR, Design Doc, or both.
@@ -373,7 +374,7 @@ Mode for documenting existing frontend architecture as-is. Used when creating De
 
 ### Mode Scope
 
-Produce the evidence-backed as-is documentation from the steps below. Future-state decision outputs — ADR and option selection, change impact analysis, Latest Information Research, Implementation Approach Decision, and Design Convergence — are N/A.
+Produce the evidence-backed as-is documentation from the steps below. Future-state decision outputs — ADR and option selection, change impact analysis, Latest Information Research, Implementation Approach Decision, Requirement Convergence, and Design Convergence — are N/A.
 
 ### Reverse-Engineer Mode Execution Steps
 

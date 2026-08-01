@@ -69,9 +69,11 @@ codebase-analyzerは値の入った`requirement_analysis.affectedFiles`を必要
   - `prompt`: `requirements`（ユーザー要件の原文）と`requirement_analysis`（`affectedFiles`（Step 1のシード）、`purpose`（ユーザー要件）、`scale`（シードファイル数にScale Determination表を当てた暫定値）、`technicalConsiderations`（`{ constraints: [], risks: [], dependencies: [] }`）を含むJSONオブジェクト）を含める
 
 ### Step 3: スコープ確認
-codebase-analyzerが返ったら、設計作業の前にユーザーとスコープを確認する。AskUserQuestionを使う。
+codebase-analyzerが返ったら、設計作業の前にユーザーとスコープを確認する。
 
-codebase-analyzerのJSONを出典として以下を提示する:
+まず requirement-convergence のヒアリングプロトコルを実行する。提示する事実にはcodebase-analyzerの所見を用いる。本コマンドにはrequirement-analyzerがいないため、フィールドの聞き出しと判定の両方をオーケストレーターが担い、結果を同スキルの `convergence` オブジェクト（`outcome`、レイヤーラベル付きの `requirements[]`、`nonGoals[]`、およびフィールドごとの readiness ラベル）として記録する。`cost` はここでは適用しない: 本コマンドは調査を codebase-analyzer に委譲しており、変更のコストを自分で見積もることはしない。加えて、本コマンドに入った時点で設計するという判断は済んでいる。Step 1 のキーワード検索はその分析のためのシードファイル特定であって、コストの入力ではない。このオブジェクトをStep 4へ引き継ぎ、technical-designerがDesign Docへ永続化できるようにする。
+
+次に、codebase-analyzerのJSONを出典として、AskUserQuestionで以下を提示する:
 - **対象ファイル/モジュール**: `analysisScope.filesAnalyzed`と、それらが属するモジュール
 - **影響を受けるレイヤー**: `analysisScope.categoriesDetected`と`focusAreas`から導出される、影響を受けるレイヤー
 - **不明点/前提**: `limitations`と、codebase-analyzerが記録した前提
@@ -87,7 +89,7 @@ codebase-analyzerのJSONを出典として以下を提示する:
 **[停止]**: ユーザーの選択を待ってから進む。
 
 ### Step 4: 設計書作成
-1. **technical-designer** → 設計書を作成する。ユーザー要件（原文）、codebase-analyzerのJSON、確認済みスコープとユーザー回答を渡す。documentation-criteriaに従い、これはDesign Docであり、設計にアーキテクチャ決定が伴う場合は前提となるADRを先に作成する。ADRは少なくとも2つの選択肢をトレードオフとともに提示し、Design DocはDesign Convergenceを用いる。
+1. **technical-designer** → 設計書を作成する。ユーザー要件（原文）、codebase-analyzerのJSON、確認済みスコープとユーザー回答、およびStep 3の `convergence` オブジェクトを収束結果として渡す。documentation-criteriaに従い、これはDesign Docであり、設計にアーキテクチャ決定が伴う場合は前提となるADRを先に作成する。ADRは少なくとも2つの選択肢をトレードオフとともに提示し、Design DocはDesign Convergenceを用いる。
 2. **code-verifier** → Design Docを既存コードに対して検証する。`doc_type: design-doc` と Design Doc パスを `document_path` として渡す。`summary.status` を読む: `blocked` の場合は Input Gate が失敗し何も検証されていないため、結果を渡さず停止して `summary.blockingReason` をユーザーに報告する
 3. **document-reviewer** → technical-designerが作成した各ドキュメントの品質チェック。Design Docの場合: `doc_type: DesignDoc`、`review_context: creation`、`requirements_verbatim`（ユーザー要件の原文）、`confirmed_decisions`（Step 3の確認済みスコープとユーザー回答）、`codebase_analysis`（codebase-analyzerのJSON）、code-verifier結果を渡す。ADR（作成された場合）の場合: `doc_type: ADR`、`codebase_analysis`を渡す。code-verifier結果はDesign Docにのみ適用する。ADRレビューで修正が必要になった場合、technical-designer(update)がADRを修正し、**かつ**修正後のADRに合わせてDesign Docを再整合させる — Design Docは未レビューまたは古いADRの上に立ってはならない。この再整合でDesign Docが変わった場合は、更新後のDesign Docに対してcode-verifierとDesign Docのdocument-reviewerを再実行し、検証が最終内容を反映するようにする。
 4. **design-sync** → Design Doc間整合性検証。
@@ -99,6 +101,7 @@ codebase-analyzerのJSONを出典として以下を提示する:
 
 - [ ] Step 1のスコープブートストラップのシードを構築した（または検索結果が0件のときユーザーから対象ファイルを取得した）
 - [ ] 値の入った`requirement_analysis`でcodebase-analyzerを実行した
+- [ ] requirement-convergenceのヒアリングを実施し、その結果を設計へ引き継いだ
 - [ ] ユーザーと設計スコープを確認し、確認済みの対象ファイルから規模を設定した
 - [ ] technical-designerでDesign Docを作成した。設計にアーキテクチャ決定が伴う場合は前提となるADRを先に作成した
 - [ ] Design Docに対してcode-verifierを実行し、結果をdocument-reviewerに渡した

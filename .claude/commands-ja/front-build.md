@@ -1,5 +1,5 @@
 ---
-description: フロントエンド実装を自律実行モードで実行
+description: 実体化済みフロントエンドタスクファイルを自律実行モードで実行
 ---
 
 Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
@@ -30,10 +30,10 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 1. `docs/plans/tasks/`内で本レシピが消費可能な唯一のパターンに一致するタスクファイルを列挙する（subagents-orchestration-guideの「Layer-Aware Agent Routing」により、`task-executor-frontend` が所有するファイル名サフィックスはこの形のみ）:
    - `{plan-name}-frontend-task-*.md`
    - 素の `{plan-name}-task-*.md` は消費**しない** — ルーティング表により backend 予約のファイル名で、backend build レシピが所有する。`{plan-name}-backend-task-*.md` も同様に消費しない。
-2. マッチしたファイルから、以下のいずれかにマッチするものを除外する。これらは本実行の実装タスクではなく、他のワークフローフェーズに由来する: `*-task-prep-*.md`（readiness preflight タスク）、`_overview-*.md`（分解overviewファイル）、`*-phase*-completion.md`（フェーズ完了ファイル）、`review-fixes-*.md`（実装後レビュー修正）、`integration-tests-*-task-*.md`（統合テスト追加用スキャフォールディング）
+2. マッチしたファイルから、以下のいずれかにマッチするものを除外する。これらは本実行の実装タスクではなく、他のワークフローフェーズに由来する: `*-task-prep-*.md`（readiness preflight タスク）、`_overview-*.md`（実体化overviewファイル）、`*-phase*-completion.md`（フェーズ完了ファイル）、`review-fixes-*.md`（実装後レビュー修正）、`integration-tests-*-task-*.md`（統合テスト追加用スキャフォールディング）
 3. 残った各ファイルから、末尾の `-frontend-task-{NN}.md` を取り除いて `{plan-name}` を抽出する
 4. 少なくとも1つのタスクファイルがマッチした場合、最も新しい mtime を持つ `{plan-name}` の `docs/plans/{plan-name}.md` を作業計画書とする。タイは辞書順最大の `{plan-name}` で解決する
-5. `*-frontend-task-*.md` が見つからず、かつ `docs/plans/`に非テンプレートの作業計画書が存在する場合、最も新しい計画書を自動採用してはならない — frontend タスクは明示的に命名されている必要がある。停止して報告する: 「`docs/plans/tasks/`に `*-frontend-task-*.md` が見つかりませんでした。本レシピを frontend 計画に対して実行する意図であれば、task-decomposer を再実行して frontend 命名のタスクファイルを出力させるか、作業計画書のパスを `$ARGUMENTS` で指定してください。計画が backend ならば、backend build レシピを使用してください。」
+5. `*-frontend-task-*.md` が見つからず、かつ `docs/plans/`に非テンプレートの作業計画書が存在する場合、frontend タスクは明示的な命名を要するものとして扱う — 最も新しい計画書がその代わりにはならない。停止して報告する: 「`docs/plans/tasks/`に `*-frontend-task-*.md` が見つかりませんでした。本レシピを frontend 計画に対して実行する意図であれば、作業計画書の該当タスクエントリを `Executor lane: frontend` に修正してタスクファイルを再生成するか、作業計画書のパスを `$ARGUMENTS` で指定してください。計画が backend ならば、backend build レシピを使用してください。」ファイル名は計画書が宣言した lane に従うため、タスク実体化を再実行するだけではファイル名は変わらない。
 
 ### Consumed Task Set
 
@@ -51,13 +51,13 @@ Consumed Task Set を確認し、適切な対応を決定する。注: `$ARGUMEN
 | 状態 | 基準 | 次のアクション |
 |------|------|--------------|
 | タスク存在 | Consumed Task Set が非空 | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
-| タスクなし + `$ARGUMENTS`で計画書指定 | `$ARGUMENTS`が提供され Consumed Task Set が空 | ユーザーに確認 → task-decomposer実行（frontend命名ルールにより `*-frontend-task-*.md` を出力する） |
-| どちらもなし＋Design Docあり + `$ARGUMENTS`提供 | `$ARGUMENTS`が提供され、計画書なし、Consumed Task Setなし、ただし docs/design/*.md が存在 | work-plannerでDesign Docから作業計画書を作成し、タスク分解の前に**作業計画書レビュー**（下記参照）を行う |
+| タスクなし + `$ARGUMENTS`で計画書指定 | `$ARGUMENTS`が提供され Consumed Task Set が空 | ユーザーに確認 → task-decomposer実行（`Executor lane: frontend` を宣言する各タスクエントリについて `*-frontend-task-*.md` を出力する） |
+| どちらもなし＋Design Docあり + `$ARGUMENTS`提供 | `$ARGUMENTS`が提供され、計画書なし、Consumed Task Setなし、ただし docs/design/*.md が存在 | work-plannerでDesign Docから作業計画書を作成し、タスク実体化の前に**作業計画書レビュー**（下記参照）を行う |
 | どちらもなし | `$ARGUMENTS`なし、計画書なし、Consumed Task Setなし、Design Docなし | 前提条件未達成をユーザーに報告して停止 |
 
 ## 作業計画書レビュー（本レシピが計画書を作成した場合）
 
-上記の判断フローでDesign Docから作業計画書を作成した場合、タスク分解の前にレビューする:
+上記の判断フローでDesign Docから作業計画書を作成した場合、タスク実体化の前にレビューする:
 
 1. Agentツールでdocument-reviewerを呼び出す:
    - `subagent_type`: "document-reviewer"
@@ -65,10 +65,10 @@ Consumed Task Set を確認し、適切な対応を決定する。注: `$ARGUMEN
    - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [Design Docのパス]。Design Docへの意味的トレーサビリティ、早期検証の配置、実境界での検証カバレッジ、故障モードチェックリスト、レビュースコープをレビューする。"
 2. reviewerの `verdict.decision` で分岐する:
    - `needs_revision` → 所見を渡してwork-plannerをupdateモードで再実行し、`approved`/`approved_with_conditions` になるまで再レビューする
-   - `rejected` → タスク分解の前に停止しユーザーにエスカレーションする
-3. レビュー済みの計画書をタスク分解の前にバッチ承認のため提示する。
+   - `rejected` → タスク実体化の前に停止しユーザーにエスカレーションする
+3. レビュー済みの計画書をタスク実体化の前にバッチ承認のため提示する。
 
-## タスク分解フェーズ（条件付き）
+## タスク実体化フェーズ（条件付き）
 
 Consumed Task Set が空の場合：
 
@@ -80,11 +80,11 @@ Consumed Task Set にタスクファイルがありません。
 作業計画書からタスクを生成しますか？ (y/n):
 ```
 
-### 2. タスク分解（承認された場合）
+### 2. タスク実体化（承認された場合）
 Agentツールでtask-decomposerを呼び出す:
 - `subagent_type`: "task-decomposer"
-- `description`: "作業計画をタスクに分解"
-- `prompt`: "作業計画を読み込み、アトミックなタスクに分解。入力: docs/plans/[plan-name].md。出力: docs/plans/tasks/配下に個別タスクファイル。粒度: 1タスク = 1コミット = 独立実行可能"
+- `description`: "作業計画書のタスクを実体化"
+- `prompt`: "docs/plans/[plan-name].md の作業計画書を読み込み、実装項目ごとに1コミット粒度のタスクファイル1つを docs/plans/tasks/ 配下に出力する。各ファイル名はその項目の Executor lane から選ぶ。"
 
 ### 3. 生成確認
 上記「Consumed Task Set」セクションの制限パターンを使って Consumed Task Set を再計算し、非空であることを確認する。依然として空の場合はユーザーにエスカレーション — task-decomposer が静かに失敗したか、想定パターンに合致しないファイルを生成した可能性がある。
@@ -140,7 +140,7 @@ Escalate when the required fix or investigation falls outside that scope.
 
 1. **両方を並列で実行** (Agent tool):
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`、Design Docパス、`code_paths`: 実装ファイルリスト（`git diff --name-only main...HEAD`）
-   - security-reviewer (subagent_type: "security-reviewer") → Design Docパス、実装ファイルリスト、および `workPlan`: この実行で使用した作業計画書パス（その故障モードチェックリストと First-Pass Risk Coverage 表が、レビュアが検証する宣言済み disposition になる）
+   - security-reviewer (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリスト
 
 2. **結果の統合** — 合格/不合格の基準はsubagents-orchestration-guideの実装後検証セクション参照。統合検証レポートをユーザーに提示。
 
@@ -171,7 +171,7 @@ Escalate when the required fix or investigation falls outside that scope.
 ## 完了レポートコントラクト
 
 最終レポートには以下を含めること:
-- タスク分解のステータス
+- タスク実体化のステータス
 - 実装したタスク数
 - 品質チェック結果
 - コミット数

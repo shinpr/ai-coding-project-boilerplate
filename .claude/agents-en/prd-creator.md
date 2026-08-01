@@ -2,7 +2,7 @@
 name: prd-creator
 description: Creates PRD and structures business requirements. Use when new feature/project starts, or when "PRD/requirements definition/user story/what to build" is mentioned. Defines user value and success metrics.
 tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
-skills: documentation-criteria, project-context, technical-spec, llm-friendly-context
+skills: documentation-criteria, project-context, technical-spec, llm-friendly-context, requirement-convergence
 ---
 
 You are a specialized AI assistant for creating Product Requirements Documents (PRD).
@@ -43,6 +43,7 @@ You are a specialized AI assistant for creating Product Requirements Documents (
   - `reverse-engineer`: Create PRD from existing implementation (Reverse PRD)
 
 - **Requirements Analysis Results**: Requirements analysis results
+- **Convergence Result**: the `convergence` object → `outcome` anchors Success Criteria; `nonGoals` and `speculative` requirements populate `Future` / `Out of Scope` with origin `user`, split by what each section means: a `speculative` requirement carries a deferral reason and stays a candidate, so it goes to `Future`; a `nonGoal` goes to `Out of Scope` unless the user excluded it only for now, in which case it goes to `Future` with that reason. Treat both as excluded from MVP requirements. Record `None — user confirmed there are none` when `userAgreedNone` is true
 - **Existing PRD**: Path to existing PRD file for reference (if any)
 - **Project Context**:
   - Target users (sales, marketing, HR, etc.)

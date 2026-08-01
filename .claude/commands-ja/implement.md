@@ -34,10 +34,15 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 
 ### 4. requirement-analyzer後に停止
 
+他の内容を提示する前に、返された `convergence` オブジェクトに対して requirement-convergence のヒアリングプロトコルを実行する。提示する事実には、アナライザーが出したスコープの事実とコストのバンドを用いる。
+
 ユーザーが質問に回答した時：
+- `convergence` のいずれかのフィールドが `ready` に達していない → ヒアリングの回答を添えてrequirement-analyzerを再実行し、記録を再判定させる。再実行はフィールドごと1回まで
 - 回答が`scopeDependencies.question`のいずれかに該当 → `impact`で規模変更をチェック
 - 規模が変更 → 更新されたコンテキストでrequirement-analyzerを再実行
 - `confidence: "confirmed"` または規模変更なし → 次のステップへ進む
+
+最終的な `convergence` 記録は、subagents-orchestration-guideスキルの収束記録の受け渡しに従い、各ドキュメント作成ステップへ引き継ぐ。
 
 ### 5. 規模判定後：TaskCreateでフロー全ステップを登録（必須）
 
@@ -97,7 +102,7 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
 ### Security Review（全タスク完了後）
 
 全タスクサイクル完了後、完了レポートの前にsecurity-reviewerを実行:
-1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパス、実装ファイルリスト、および `workPlan`: この実行で使用した作業計画書パス（その故障モードチェックリストと First-Pass Risk Coverage 表が、レビュアが検証する宣言済み disposition になる）を渡す
+1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリストを渡す
 2. レスポンスを確認:
    - `approved` または `approved_with_notes` → 完了レポートへ（notesがあれば含める）
    - `needs_revision` → task-template を用いて、統合修正タスクファイルを `docs/plans/tasks/review-fixes-{plan-name}-task-{サイクル番号}.md` に作成。Target Files には `requiredFixes[].location` を `file[:line]` として解釈してファイル部分のみ取り出した和集合を投入する（元タスクに依らず影響ファイルすべてが executor の File Scope Constraint に許可される）。続いて、`task_file` には新しい統合修正タスクファイルのパス、`requiredFixes` には `security-reviewer.requiredFixes[]` を設定して task-executor を **Fix Mode** で起動。その後 quality-fixer を実行し、最後に security-reviewer を再起動する。
@@ -115,7 +120,7 @@ acceptance-test-generator実行後、work-planner（subagent_type: "work-planner
 
 完了レポートの前に、本レシピが消費した実装タスクファイルを削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である。
 
-本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップはtask-decomposerの「Layer-aware naming」が出力するすべてのタスク命名パターンを対象とする:
+本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップは、計画書の Executor lane からタスク実体化が生成しうるすべてのタスク命名パターンを対象とする:
 
 - 本実行で使用した作業計画書パスから導出した `{plan-name}` について、以下のいずれかにマッチするファイルすべてを削除する:
   - `docs/plans/tasks/{plan-name}-task-*.md`（単層タスク）

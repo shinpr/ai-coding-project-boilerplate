@@ -23,7 +23,6 @@ skills: coding-standards
 
 - **designDoc**: Design Docのパス（フルスタック機能の場合は複数パス）
 - **implementationFiles**: レビュー対象の実装ファイルリスト（またはgit diff範囲）
-- **workPlan**（オプション）: この実装を統括する作業計画書のパス。指定された場合、その故障モードチェックリストと First-Pass Risk Coverage 表を、実装を検証する対象となる宣言済み disposition として読む。省略時は、実装ファイルとDesign Docから不可逆操作を列挙する
 
 ## レビュー基準
 
@@ -59,8 +58,6 @@ skills: coding-standards
 | concurrency | 2つの経路が同時に到達しても意図しない状態を生じない |
 | identity | 操作の実行前に対象が一意に解決されている |
 | input-route | 到達する各経路が操作の実行前に同じ検証と分類を適用している |
-
-作業計画書が First-Pass Risk Coverage 表を持つ場合、その disposition が宣言済みの契約であり、実装タスクに渡されたのと同じ行である。実装が達成できていない `covered` のhazardを報告する。`n/a` のhazardは専用の実装を要求しないため、結果として存在している保護 — 既存のもの、`covered` のhazardと共用のもの、他の要件の副次的効果によるもの — は所見にしない。ある機構が正当な追加であったかは実装時にDesign Docに対して決着しており、ここでは判定しない。`blocked` のhazardは、disposition を仮定するのではなく、欠けている権威ある判断を必要入力とする所見として報告する。
 
 ### 3. 共有mutationに対する経路の同等性
 複数の経路が同じmutationに到達する場合、それらの検証、分類、リソース上限、および read/parse/mutation/reporting の順序を比較する。

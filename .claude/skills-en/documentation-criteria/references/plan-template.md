@@ -76,20 +76,6 @@ Domain-independent failure categories this implementation must guard against. En
 | missing-sort-key ordering | yes/no | |
 | irreversible-operation | yes/no | |
 
-## First-Pass Risk Coverage
-
-Include this section when `irreversible-operation` is marked yes. One row per irreversible operation the implementation performs — deletion, overwrite, external publication, payment, notification, or any state change the recipe cannot undo.
-
-One column per hazard, each `covered`, `n/a`, or `blocked`. Task decomposition copies these rows into the covering task, so a disposition left blank here is a decision no implementer receives.
-
-| Operation | Reaching Routes | Safe Default On Incomplete Evidence | mutation | partial-evidence | retry | concurrency | identity | input-route | Covered By Task(s) |
-|---|---|---|---|---|---|---|---|---|---|
-| [e.g., delete consumed task files] | [every route that reaches it — e.g., recipe cleanup step, API handler, scheduled job] | [the state the operation leaves when authorizing evidence is incomplete — e.g., "retain the file and report the failure"] | covered / n/a / blocked | | | | | | [Phase X Task Y] |
-
-Each hazard names the question it settles: **mutation** (the change is bounded to the intended target and its irreversibility is accepted), **partial-evidence** (behavior when only some authorizing evidence is present), **retry** (a repeated execution is safe or guarded), **concurrency** (two routes reaching it at once cannot produce an unintended state), **identity** (the target is resolved unambiguously first), **input-route** (every route applies the same validation before it runs).
-
-Mark a hazard `blocked` when the disposition cannot be determined from the Design Doc or the requirements, and record the required input in Decisions and Unresolved Items.
-
 ## UI Spec Component → Task Mapping
 
 Include this section when a UI Spec is among the inputs. Maps each component documented in the UI Spec to the task(s) that implement it. This table is read in a downstream step to populate each task's Investigation Targets with the corresponding UI Spec section. Omit the section when no UI Spec exists.
@@ -150,6 +136,15 @@ See documentation-criteria skill for detailed Phase Division Criteria.
 All quality checks follow the project's standard Quality Check Workflow.
 For a hybrid approach, retain Option C. The final plan contains only the selected option.
 
+Each `Phase X Task Y` checkbox entry in a non-QA phase's `Tasks` section is one implementation item of this plan. `Phase X Task Y` is its stable ID, and it is the key every `Covered By Task(s)` column above refers to.
+
+- [ ] Phase X Task Y: [Observable behavior, contract, migration, or downstream-consumable deliverable completed by this item]
+  - **Target Files**: [Concrete planned paths or path prefixes]
+  - **Rollback boundary**: [Behavior, contract, migration, or persisted state reverted together in one commit]
+  - **Executor lane**: [backend | frontend — selects the executor and quality-fixer pair per the Layer-Aware Agent Routing table in subagents-orchestration-guide skill]
+
+Add one entry per implementation outcome. Create separate entries whenever the implementation outcome, rollback boundary, or executor lane differs. Select exactly one executor lane per entry. Keep the wiring or registration, tests, generated artifacts, and user documentation that an outcome needs in the entry whose outcome they complete or prove. Record staged quality checks and per-phase test runs under `Phase Checks`; they are phase-level checks rather than implementation items.
+
 ### Option A: Vertical Slice Phase Structure
 
 Use when implementation approach is Vertical Slice. Each phase = one value unit with verification.
@@ -159,8 +154,12 @@ Use when implementation approach is Vertical Slice. Each phase = one value unit 
 **Verification**: [From Verification Strategy: early verification point]
 
 ##### Tasks
-- [ ] Task 1: Implementation
-- [ ] Task 2: Verification per Verification Strategy
+- [ ] Phase 1 Task 1: [First value unit, including its wiring and the verification that proves it]
+  - **Target Files**: [path(s)]
+  - **Rollback boundary**: [changes reverted together in one commit]
+  - **Executor lane**: [backend | frontend]
+
+##### Phase Checks
 - [ ] Quality check (staged)
 
 ##### Phase Completion Criteria
@@ -172,8 +171,12 @@ Use when implementation approach is Vertical Slice. Each phase = one value unit 
 **Verification**: [From Verification Strategy]
 
 ##### Tasks
-- [ ] Task 1: Implementation
-- [ ] Task 2: Verification per Verification Strategy
+- [ ] Phase 2 Task 1: [Subsequent value unit, including its wiring and the verification that proves it]
+  - **Target Files**: [path(s)]
+  - **Rollback boundary**: [changes reverted together in one commit]
+  - **Executor lane**: [backend | frontend]
+
+##### Phase Checks
 - [ ] Quality check
 
 ##### Phase Completion Criteria
@@ -188,44 +191,56 @@ Use when implementation approach is Horizontal Slice. Phases follow Foundation �
 **Purpose**: Contract definitions, interfaces, test preparation
 
 ##### Tasks
-- [ ] Task 1: Specific work content
-- [ ] Task 2: Specific work content
+- [ ] Phase 1 Task 1: [Foundation outcome and the verification that proves it]
+  - **Target Files**: [path(s)]
+  - **Rollback boundary**: [changes reverted together in one commit]
+  - **Executor lane**: [backend | frontend]
+
+##### Phase Checks
 - [ ] Quality check (staged)
-- [ ] Unit tests: All related tests pass
 
 ##### Phase Completion Criteria
 - [ ] [Functional completion criteria]
+- [ ] All related unit tests pass
 - [ ] [Quality completion criteria]
 
 #### Phase 2: [Core Feature] (Estimated commits: X)
 **Purpose**: Business logic, unit tests
 
 ##### Tasks
-- [ ] Task 1: Specific work content
-- [ ] Task 2: Specific work content
+- [ ] Phase 2 Task 1: [Core feature outcome and the verification that proves it]
+  - **Target Files**: [path(s)]
+  - **Rollback boundary**: [changes reverted together in one commit]
+  - **Executor lane**: [backend | frontend]
+
+##### Phase Checks
 - [ ] Quality check (staged)
-- [ ] Integration tests: Verify overall feature functionality
 
 ##### Phase Completion Criteria
 - [ ] [Functional completion criteria]
+- [ ] Integration tests verify overall feature functionality
 - [ ] [Quality completion criteria]
 
 #### Phase 3: [Integration] (Estimated commits: X)
 **Purpose**: External connections, presentation layer
 
 ##### Tasks
-- [ ] Task 1: Specific work content
-- [ ] Task 2: Specific work content
+- [ ] Phase 3 Task 1: [Integration outcome and the verification that proves it]
+  - **Target Files**: [path(s)]
+  - **Rollback boundary**: [changes reverted together in one commit]
+  - **Executor lane**: [backend | frontend]
+
+##### Phase Checks
 - [ ] Quality check (staged)
-- [ ] Integration tests: Verify component coordination
 
 ##### Phase Completion Criteria
 - [ ] [Functional completion criteria]
+- [ ] Integration tests verify component coordination
 - [ ] [Quality completion criteria]
 
 ### Option C: Hybrid Phase Structure
 
-Use when implementation approach is Hybrid. Combine vertical and horizontal phases as defined in Design Doc implementation approach. Structure phases per Design Doc specification, ensuring each phase has Tasks, Verification, and Phase Completion Criteria sections matching the format above.
+Use when implementation approach is Hybrid. Combine vertical and horizontal phases as defined in Design Doc implementation approach. Use the same per-phase section structure as Option A/B: Tasks with `Phase X Task Y` entries, Phase Checks, and Phase Completion Criteria.
 
 ### Final Phase: Quality Assurance (Required) (Estimated commits: 1)
 
@@ -239,7 +254,7 @@ This phase is required for ALL implementation approaches.
 - [ ] Quality checks (types, lint, format)
 - [ ] Execute all tests (including integration/E2E from test skeletons, when provided)
 - [ ] Coverage reviewed as a gap signal on critical paths (any enforced threshold per project CI config)
-- [ ] Document updates
+- [ ] Documentation updates required by the implementation outcomes are complete
 
 ### Quality Assurance
 - [ ] Quality check (staged)

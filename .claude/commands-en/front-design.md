@@ -75,9 +75,11 @@ This step locates seed files only. Reading files in full, tracing dependencies, 
   - `prompt`: include `requirements` (the user requirements verbatim) and `requirement_analysis` — a JSON object with `affectedFiles` (Step 1 seed), `purpose` (the user requirements), `scale` (provisional value from the Scale Determination table applied to the seed file count), `technicalConsiderations` (`{ constraints: [], risks: [], dependencies: [] }`). Analyze the existing codebase for frontend design guidance.
 
 ### Step 3: Scope Confirmation
-After codebase-analyzer returns, confirm the design scope with the user before any design work. Use AskUserQuestion.
+After codebase-analyzer returns, confirm the design scope with the user before any design work.
 
-Present, sourced from the codebase-analyzer JSON:
+First run the requirement-convergence hearing protocol, using the codebase-analyzer findings as the facts it presents. This command has no requirement-analyzer, so the orchestrator both elicits and judges the fields, recording the result as the skill's `convergence` object (`outcome`, `requirements[]` with layer labels, `nonGoals[]`, plus a readiness label per field). `cost` does not apply here: this command delegates investigation to codebase-analyzer rather than costing the change itself, and entering it already decided to design. The Step 1 keyword search locates seed files for that analysis; it is not a cost input. Carry that object into Steps 5 and 6 so ui-spec-designer respects the non-goals and technical-designer-frontend persists it to the Design Doc.
+
+Then present, sourced from the codebase-analyzer JSON, using AskUserQuestion:
 - **Target files/modules**: `analysisScope.filesAnalyzed` and the modules they belong to
 - **Affected layers**: layers touched, derived from `analysisScope.categoriesDetected` and `focusAreas`
 - **Unknowns/assumptions**: `limitations` plus any assumptions codebase-analyzer recorded
@@ -109,14 +111,14 @@ Ask the user about prototype code.
 Then create the UI Specification:
 - Invoke **ui-spec-designer** using Agent tool
   - `subagent_type: "ui-spec-designer"`, `description: "UI Spec creation"`
-  - Build the prompt by including: the source (an existing PRD in `docs/prd/` when one exists for this feature; otherwise the user requirements with the Step 2 codebase-analyzer JSON and the Step 3 confirmed scope), `ui_analysis` (ui-analyzer JSON from Step 4), and the prototype path when provided. Place prototype in `docs/ui-spec/assets/{feature-name}/`.
+  - Build the prompt by including: the source (an existing PRD in `docs/prd/` when one exists for this feature; otherwise the user requirements with the Step 2 codebase-analyzer JSON and the Step 3 confirmed scope), the Step 3 `convergence` object's `nonGoals` and `speculative` requirements as capabilities the UI Spec leaves out, `ui_analysis` (ui-analyzer JSON from Step 4), and the prototype path when provided. Place prototype in `docs/ui-spec/assets/{feature-name}/`.
 - Invoke **document-reviewer** to verify UI Spec
   - `subagent_type: "document-reviewer"`, `description: "UI Spec review"`, `prompt: "doc_type: UISpec target: [ui-spec path] Review for consistency and completeness"`
 - **[STOP]**: Present UI Spec for user approval
 
 ### Step 6: Design Document Creation Phase
 - Invoke **technical-designer-frontend** using Agent tool to create the design documentation. Per documentation-criteria it produces a Design Doc; when the design involves an architecture decision (architecture change, new technology, or data flow change) it first creates the prerequisite ADR. The ADR presents at least two alternatives with trade-offs; the Design Doc uses Design Convergence.
-  - `subagent_type: "technical-designer-frontend"`, `description: "Design documentation creation"`, `prompt: "Create the design documentation for this requirement. Per documentation-criteria, produce a Design Doc; when the design involves an architecture decision, first create the prerequisite ADR presenting at least two alternatives with trade-offs. Requirements: [user requirements verbatim]. Codebase analysis: [codebase-analyzer JSON from Step 2]. UI analysis: [ui-analyzer JSON from Step 4]. Confirmed scope and user answers: [Step 3 confirmed scope and user answers]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec."`
+  - `subagent_type: "technical-designer-frontend"`, `description: "Design documentation creation"`, `prompt: "Create the design documentation for this requirement. Per documentation-criteria, produce a Design Doc; when the design involves an architecture decision, first create the prerequisite ADR presenting at least two alternatives with trade-offs. Requirements: [user requirements verbatim]. Codebase analysis: [codebase-analyzer JSON from Step 2]. UI analysis: [ui-analyzer JSON from Step 4]. Confirmed scope and user answers: [Step 3 confirmed scope and user answers]. Convergence Result: [Step 3 `convergence` object]. UI Spec is at [ui-spec path]. Inherit component structure and state design from UI Spec."`
 - Invoke **code-verifier** to verify the Design Doc against existing code.
   - `subagent_type: "code-verifier"`, `description: "Design Doc verification"`, `prompt: "doc_type: design-doc document_path: [Design Doc path] mode: pre-implementation (code_paths omitted — verifier discovers scope from document). Verify Design Doc against existing code."`
   - Read `summary.status`: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `summary.blockingReason` to the user rather than passing the result on, because its empty `discrepancies` would read downstream as a clean verification.
@@ -134,6 +136,7 @@ Then create the UI Specification:
 
 - [ ] Built the Step 1 scope bootstrap seed (or obtained target files from the user when the search returned none)
 - [ ] Executed codebase-analyzer with a populated `requirement_analysis`
+- [ ] Ran the requirement-convergence hearing and carried its result into the UI Spec and design
 - [ ] Confirmed the design scope with the user and set the scale from the confirmed target files
 - [ ] Executed ui-analyzer; codebase-analyzer (Step 2) and ui-analyzer (Step 4) outputs reused by ui-spec-designer and technical-designer-frontend
 - [ ] Created the UI Specification with ui-spec-designer

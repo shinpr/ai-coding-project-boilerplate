@@ -178,6 +178,6 @@ Gaps resolved: [N]
 - [ ] Readiness scan run with per-criterion result and evidence recorded
 - [ ] No-op exit when all `pass`, OR resolution tasks generated, approved, and executed via the 4-step cycle
 - [ ] Re-scan run after the last resolution task commits
-- [ ] Committed Phase 0 tasks checked off (`[x]`) in the work plan so downstream decomposition skips them
+- [ ] Committed Phase 0 tasks checked off (`[x]`) in the work plan so downstream materialization skips them
 - [ ] Prep task files (and Phase 0 phase-completion file when generated) deleted from `docs/plans/tasks/`
 - [ ] Final report presented to the user

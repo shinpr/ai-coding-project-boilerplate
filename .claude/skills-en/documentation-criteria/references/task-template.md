@@ -1,9 +1,16 @@
 # Task: [Task Name]
 
 Metadata:
-- Dependencies: task-01 -> Deliverable: docs/plans/analysis/research-results.md
+- Source Work Plan Task: [Phase X Task Y — the stable ID of the work plan item this task materializes]
+- Dependencies: Phase 1 Task 1 (docs/plans/tasks/{plan-name}-task-01.md) -> Deliverable: docs/plans/analysis/research-results.md
 - Provides: docs/plans/analysis/api-spec.md (for research/design tasks)
-- Size: Small (1-2 files)
+- Implementation outcome: [Observable behavior, contract, migration, or downstream-consumable deliverable completed by this task]
+- Rollback boundary: [Behavior, contract, migration, or persisted state reverted together in one commit]
+- Executor lane: [backend | frontend]
+
+A dependency names the prerequisite by its stable ID, the task file that carries it, and the deliverable path the executor reads — the executor resolves paths from this section, so the path stays alongside the ID. The file's `-task-{number}` sequence is independent of the `Phase X Task Y` numbering; the two match only by coincidence, which is why the filename is written out.
+
+A task file produced outside work-plan materialization (review fix, readiness preflight, integration-test add-on, small-scale task) sets `Source Work Plan Task: N/A — <what produced it>` and omits `Executor lane` when the producing flow already fixes the executor.
 
 ## Implementation Content
 [What this task will achieve]
@@ -15,10 +22,10 @@ Metadata:
 
 ## Investigation Targets
 Files to read before starting implementation (file path, with optional search hint):
-- [e.g., src/orders/checkout (processOrder function) — determined during task decomposition based on task nature]
+- [e.g., src/orders/checkout (processOrder function) — determined during task materialization based on task nature]
 
 ## Change Category
-(Include this field only when the task is a bug fix, regression, state-change, or boundary-change — populated during task decomposition. Omit otherwise.)
+(Include this field only when the task is a bug fix, regression, state-change, or boundary-change — populated during task materialization. Omit otherwise.)
 
 `Change Category: <one or more of bug-fix, regression, state-change, boundary-change — comma-separated>`
 
@@ -42,31 +49,16 @@ Each row is a DD-derived observable contract the implementation in this task mus
 |---|---|---|---|
 | [Design Doc path (§ Section) copied from the matching work plan Reference Contract Values row] | [structure-order / derived-display / state-lifecycle-negative, copied from the work plan row] | [Required Observable Value copied verbatim from the work plan row] | [Y/N-answerable positive predicate that evaluates whether the planned/final implementation reproduces the value] |
 
-## First-Pass Risk Coverage
-(Include this section when the work plan's First-Pass Risk Coverage table names this task. Copy the row verbatim, minus its Covered By Task(s) column. Omit the section otherwise.)
-
-| Operation | Reaching Routes | Safe Default On Incomplete Evidence | mutation | partial-evidence | retry | concurrency | identity | input-route |
-|---|---|---|---|---|---|---|---|---|
-| [copied from the plan row] | [copied] | [copied] | covered / n/a / blocked | | | | | |
-
-Each disposition is a decision already made, and its value fixes how this task treats the hazard:
-
-- `covered` — the hazard's prevention outcome is required here. Implement it and leave it verifiable; the matching Proof Obligation above is what downstream review checks it against, and its absence is the defect to find
-- `n/a` — this hazard requires no dedicated implementation and no Proof Obligation of its own. Leave in place any safety that is already present, shared with a `covered` hazard, or obtained as a side effect of another requirement; review accepts it as-is
-- `blocked` — no decision exists yet, so this row also appears in Decisions and Unresolved Items below with `Kind: requirement-decision`. Execution stops there rather than choosing a behavior
-
-Whether a mechanism this task introduces is a justified addition is decided in Adopted Additions Correspondence against the Design Doc, not from this table.
-
 ## Decisions and Unresolved Items
-(Include this section when task decomposition resolved an alternative, optional behavior, or placeholder, or when a required decision is unresolved at decomposition time. Omit when the task carries no such items.)
+(Include this section when task materialization resolved an alternative, optional behavior, or placeholder, or when a required decision is unresolved at materialization time. Omit when the task carries no such items.)
 
-Resolved decisions — each alternative, optional behavior, or placeholder the decomposition fixed to an explicit choice:
+Resolved decisions — each alternative, optional behavior, or placeholder the materialization fixed to an explicit choice:
 
 | Item | Decision | Source / Rule |
 |---|---|---|
 | [the alternative, optional behavior, or placeholder] | [the selected choice or the deterministic rule that selects it; for a placeholder, the exact temporary output, allowed dependencies, and verification expectation] | [work plan / Design Doc / UI Spec / ADR section, or the basis of the decision rule] |
 
-Blocking unresolved items — decisions that cannot be made at decomposition time and block execution. `Kind` determines whether the executor may settle the item or must stop:
+Blocking unresolved items — decisions that cannot be made at materialization time and block execution. `Kind` determines whether the executor may settle the item or must stop:
 
 - `implementation-detail` — only an internal construct is undecided (placement within the target files, local structure, naming, processing order). The observable behavior is already fixed by the requirements and the contracts above.
 - `requirement-decision` — an observable behavior, product rule, security posture, or compatibility guarantee is undecided. No in-scope option can settle it, because the question is what the system should do, not how to build it.

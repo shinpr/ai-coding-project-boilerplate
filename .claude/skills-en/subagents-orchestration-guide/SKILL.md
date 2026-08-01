@@ -24,6 +24,8 @@ This document provides practical behavioral guidelines for me (Claude) to effici
 
 When receiving a new task, pass user requirements directly to requirement-analyzer. Determine the workflow based on its scale assessment result.
 
+requirement-analyzer returns a `convergence` object. Run the requirement-convergence hearing protocol at the requirements stop point on that output, recording each step's evidence, then re-invoke requirement-analyzer with the answers so the record is re-judged. The hearing runs in the orchestrator because it requires AskUserQuestion, and runs after the analysis because the orchestrator investigates nothing itself.
+
 ### Requirement Change Detection During Flow
 
 **During flow execution**, if detecting the following in user response, stop flow and go to requirement-analyzer:
@@ -37,7 +39,7 @@ When any condition applies, record the integrated requirements and restart from 
 
 ### Implementation Support Agents
 1. **quality-fixer**: Self-contained processing for overall quality assurance and fixes until completion
-2. **task-decomposer**: Decompose approved work plans into task-template files with explicit dependencies and target files
+2. **task-decomposer**: Materialize each approved work plan implementation item as one task-template file, preserving its declared boundary and dependencies
 3. **task-executor**: Individual task execution and structured response
 4. **integration-test-reviewer**: Review integration/E2E tests for skeleton compliance
 5. **security-reviewer**: Security compliance review against Design Doc and project coding standards after all tasks complete
@@ -114,11 +116,11 @@ I repeat this cycle for each task to ensure quality.
 
 ## Scale Determination and Document Requirements
 
-Select the highest scale triggered by estimated files, observable outcomes, contracts/data, boundaries, or decision risk. The file-count ranges below are baselines; any higher-risk axis raises the confirmed scale and therefore the required-document row.
+The file-count ranges below set the floor. documentation-criteria skill's Structural Escalation raises the confirmed scale — and therefore the required-document row — when any ADR Creation Condition applies, and it only raises a level.
 
 | Scale | Baseline File Count | PRD | ADR | Design Doc | Work Plan |
 |-------|---------------------|-----|-----|------------|-----------|
-| Small | 1-2 | Update[^1] | Conditional[^2] | Not needed | Single task file in task-template format under `docs/plans/tasks/` (no separate plan document) |
+| Small | 1-2 | Update[^1] | Not needed | Not needed | Single task file in task-template format under `docs/plans/tasks/` (no separate plan document) |
 | Medium | 3-5 | Update[^1] | Conditional[^2] | **Required** | **Required** |
 | Large | 6+ | **Required**[^3] | Conditional[^2] | **Required** | **Required** |
 
@@ -153,7 +155,7 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 
 | Agent | Key Fields | Decision Logic |
 |-------|-----------|----------------|
-| requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions | Select flow by scale; check adrRequired for ADR step |
+| requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions, convergence (four fields, each with a readiness label; a field below `ready` also returns as a `convergence` question) | Select flow by scale — the value already includes Structural Escalation; check adrRequired for ADR step; run the requirement-convergence hearing on `convergence` before proceeding |
 | codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, qualityAssurance (mechanisms[], domainConstraints[]), focusAreas[], existingElements count, limitations | Pass focusAreas to technical-designer as context |
 | ui-analyzer | externalResources (status, per-axis fetch_status), componentStructure[], propsPatterns[], cssLayout[], stateDisplay[], focusAreas[], candidateWriteSet[], limitations | Pass the ui-analyzer JSON to ui-spec-designer and technical-designer-frontend; each consumes the fields named in its own input declaration |
 | code-verifier | summary.status (consistent/mostly_consistent/needs_review/inconsistent/blocked), summary.blockingReason, summary.consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). Read the verdict from `summary.status` — `discrepancies[].status` is a per-finding field (drift/gap/conflict) and is not the verdict. Pre-implementation: verifies Design Doc claims against existing codebase. Post-implementation: verifies implementation consistency against Design Doc (pass `code_paths` scoped to changed files) | Flag discrepancies for document-reviewer |
@@ -162,7 +164,7 @@ Subagents respond in JSON format. Key fields for orchestrator decisions:
 | document-reviewer | Input: `doc_type`, `target`, `review_context` (`creation` for a newly authored document, `update` for a revision of an approved one, `as-is` for a reverse-engineered document — declares why the review was requested so legitimately absent paired inputs are not read as defects), plus the doc_type-specific inputs. Output: verdict.decision (approved/approved_with_conditions/needs_revision/rejected), recommendations (includes an entry naming the checks that did not run when paired inputs were absent, and the absence of code verification when `code_verification` came back `blocked`) | Proceed on approved/approved_with_conditions; request fixes on needs_revision; escalate on rejected. Read the recommendations for skipped checks before treating an approval as full-scope |
 | design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | On CONFLICTS_FOUND: present conflicts to user before proceeding |
 | integration-test-reviewer | Input: `testFile` (one or more paths — pass every test file the change touched, from the implementation step's `testsAdded`), `diffBase` (optional — the revision the tests are compared against, so review scope is the change rather than the whole file), `designDocPath` (optional), `taskFiles` (optional). Output: verdict.decision (approved/needs_revision/blocked), verdict.reason, testFiles[], fileResults[] (one entry per reviewed file, each carrying its own `reviewBasis` of skeleton/proof_obligations/prompt_claims/none plus that file's compliance counts and quality issues), proofObligationCoverage[] (task-scoped, spanning all reviewed files — one task's obligations may be split across files, so this is where coverage is resolved), requiredFixes[] (each `location` begins with the file path). `blocked` has two causes: a reviewed file whose `reviewBasis` is `none`, or a contradiction between the basis and the Design Doc. Branch on `verdict.decision` — top-level `status` is the verification outcome axis (passed/failed/needs_improvement) and is not the routing decision | On needs_revision: re-invoke the routed executor in Fix Mode with the same task_file and requiredFixes[]. On blocked: escalate with verdict.reason |
-| security-reviewer | Input: `designDoc`, `implementationFiles`, `workPlan` (optional — pass the run's work plan path so the reviewer verifies the implementation against the plan's declared Failure Mode Checklist and First-Pass Risk Coverage dispositions; omit for review flows with no governing plan). Output: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, irreversibleHazards[] (non-empty when an irreversible-operation hazard is `blocked` — each entry names the required decision, which forces status `blocked`), requiredFixes | On needs_revision: create a consolidated fix task file with the affected file paths from `requiredFixes[].location` populated into Target Files, then invoke the routed executor in Fix Mode with that task_file and the `requiredFixes[]` array, then quality-fixer, then re-invoke security-reviewer to verify resolution. On blocked: escalate to user with the blocking findings — fix is not within the agent layer's authority |
+| security-reviewer | Input: `designDoc`, `implementationFiles`. Output: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, irreversibleHazards[] (non-empty when an irreversible-operation hazard is `blocked` — each entry names the required decision, which forces status `blocked`), requiredFixes | On needs_revision: create a consolidated fix task file with the affected file paths from `requiredFixes[].location` populated into Target Files, then invoke the routed executor in Fix Mode with that task_file and the `requiredFixes[]` array, then quality-fixer, then re-invoke security-reviewer to verify resolution. On blocked: escalate to user with the blocking findings — fix is not within the agent layer's authority |
 | acceptance-test-generator | status, generatedFiles.{integration,fixtureE2e,serviceE2e} (path\|null per lane), budgetUsage per lane, e2eAbsenceReason per E2E lane (null when emitted; reason enum is owned by acceptance-test-generator and integration-e2e-testing skill) | Verify each non-null file path exists, pass per-lane paths and absence reasons to work-planner |
 
 ### quality-fixer Blocked Handling
@@ -179,8 +181,8 @@ According to scale determination:
 
 ### Large Scale (6+ Files) - 14 Steps (backend) / 16 Steps (frontend/fullstack)
 
-1. requirement-analyzer → Requirement analysis + Check existing PRD **[Stop]**
-2. prd-creator → PRD creation
+1. requirement-analyzer → Requirement analysis + Check existing PRD → requirement-convergence hearing, re-invoking requirement-analyzer with the answers **[Stop]**
+2. prd-creator → PRD creation (receives the convergence record)
 3. document-reviewer → PRD review **[Stop: PRD Approval]**
 4. **(frontend/fullstack only)** Ask user for prototype code → ui-spec-designer → UI Spec creation
 5. **(frontend/fullstack only)** document-reviewer → UI Spec review **[Stop: UI Spec Approval]**
@@ -198,7 +200,7 @@ According to scale determination:
 
 ### Medium Scale (3-5 Files) - 10 Steps (backend) / 12 Steps (frontend/fullstack)
 
-1. requirement-analyzer → Requirement analysis **[Stop]**
+1. requirement-analyzer → Requirement analysis → requirement-convergence hearing, re-invoking requirement-analyzer with the answers **[Stop]**
 2. **(frontend/fullstack only)** Ask user for prototype code → ui-spec-designer → UI Spec creation (UI Spec informs component structure for technical design)
 3. **(frontend/fullstack only)** document-reviewer → UI Spec review **[Stop: UI Spec Approval]**
 4. codebase-analyzer → Codebase analysis (pass requirement-analyzer output)
@@ -213,7 +215,7 @@ According to scale determination:
 
 ### Small Scale (1-2 Files) - 3 Steps
 
-1. requirement-analyzer → Requirement analysis and confirmed Small scale
+1. requirement-analyzer → Requirement analysis and confirmed Small scale → requirement-convergence hearing, re-invoking requirement-analyzer with the answers **[Stop]**. The hearing runs at every scale, because `nonGoals` is user-authored and no agent can supply it. When Structural Escalation raises the scale, switch to the Medium flow from this point
 2. work-planner → Simplified work plan creation. At this scale, work-planner emits a single task-template-format task file directly under `docs/plans/tasks/` instead of a separate work plan + decomposition; that path is what task-executor receives as `task_file`. **[Stop: Batch approval]**
 3. task-executor → quality-fixer → commit (per task) → Completion report
 
@@ -258,12 +260,14 @@ Pass all Design Docs to work-planner with vertical slicing instruction:
 
 ### Layer-Aware Agent Routing
 
-During autonomous execution, route agents by task filename pattern:
+During autonomous execution, route agents by task filename pattern. This table also defines the two executor lanes a work plan task entry selects between:
 
-| Filename Pattern | Executor | Quality Fixer |
-|---|---|---|
-| `*-task-*` or `*-backend-task-*` | task-executor | quality-fixer |
-| `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
+| Executor lane | Filename Pattern | Executor | Quality Fixer |
+|---|---|---|---|
+| `backend` | `*-task-*` or `*-backend-task-*` | task-executor | quality-fixer |
+| `frontend` | `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
+
+A work plan task entry records exactly one lane; task materialization copies that value and selects the filename from this table rather than inferring the layer from target paths.
 
 ## Autonomous Execution Mode
 
@@ -343,9 +347,17 @@ Set `status` to `completed` only when every required task, quality gate, verifie
    - Compose commit messages from changeSummary -> **Execute git commit with Bash**
    - Explicitly integrate initial and additional requirements when requirements change
 
+   #### convergence record → the agent that carries it
+
+   **Pass**: the `convergence` object from the last requirement-analyzer invocation (or, in a flow with no requirement-analyzer, the orchestrator's own judged record) to whichever agent carries it forward. Pass it unchanged; each field's readiness label travels with it.
+   - **prd-creator** (when a PRD is created or updated): persists `outcome` to `Success Criteria`, and `nonGoals` plus `speculative` requirements to `Future` / `Out of Scope` with origin `user`
+   - **technical-designer / technical-designer-frontend**: persists the same to the Design Doc's `Requirement Convergence` when no PRD exists, and always records the fields left `weak-but-explicit` there
+   - **ui-spec-designer** (frontend/fullstack): treats `nonGoals` and `speculative` requirements as capabilities the UI Spec leaves out
+   - **work-planner**: treats `nonGoals` and `speculative` requirements as excluded from every task entry. At Small scale no PRD or Design Doc exists, so the `weak-but-explicit` fields stay in the orchestrator's own context per the storage protocol rather than becoming blocking items in the task file
+
    #### codebase-analyzer → technical-designer
 
-   **Pass to codebase-analyzer**: requirement-analyzer JSON output, PRD path (if exists), original user requirements
+   **Pass to codebase-analyzer**: requirement-analyzer JSON output (including `convergence`), PRD path (if exists), original user requirements
    **Pass to technical-designer**: codebase-analyzer JSON output as additional context in the Design Doc creation prompt. Required downstream uses:
    - `focusAreas` → canonical disposition-target list for the Fact Disposition Table (one row per focusArea, carrying through `fact_id` and `evidence` verbatim)
    - `dataModel`, `dataTransformationPipelines`, `qualityAssurance` → Existing Codebase Analysis, Verification Strategy, and Quality Assurance Mechanisms sections

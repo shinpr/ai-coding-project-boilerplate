@@ -34,10 +34,15 @@ When requirement-analyzer's `crossLayerScope` indicates cross-layer scope (backe
 
 ### 4. After requirement-analyzer [Stop]
 
+Run the requirement-convergence hearing protocol on the returned `convergence` object before presenting anything else, using the analyzer's scope facts and cost band as the facts it presents.
+
 When user responds to questions:
+- If any `convergence` field is below `ready` → Re-execute requirement-analyzer with the hearing answers so the record is re-judged. Re-invoke at most once per field
 - If response matches any `scopeDependencies.question` → Check `impact` for scale change
 - If scale changes → Re-execute requirement-analyzer with updated context
 - If `confidence: "confirmed"` or no scale change → Proceed to next step
+
+Carry the final `convergence` record into every document-creation step per the convergence-record handoff in subagents-orchestration-guide skill.
 
 ### 5. After Scale Determination: Register All Flow Steps with TaskCreate (Required)
 
@@ -97,7 +102,7 @@ Following "Autonomous Execution Task Management" in subagents-orchestration-guid
 ### Security Review (After All Tasks Complete)
 
 After all task cycles finish, invoke security-reviewer before the completion report:
-1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path, implementation file list, and `workPlan`: the work plan path used in this run (its Failure Mode Checklist and First-Pass Risk Coverage table are the declared dispositions the reviewer verifies against)
+1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path and implementation file list
 2. Check response:
    - `approved` or `approved_with_notes` → Proceed to completion report (include notes if present)
    - `needs_revision` → Create a consolidated fix task file at `docs/plans/tasks/review-fixes-{plan-name}-task-{cycle-number}.md` using the task-template; populate Target Files with the union of file paths referenced by `requiredFixes[].location` (parsed as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them. Then invoke task-executor in **Fix Mode** with `task_file` set to the new consolidated path and `requiredFixes` set to the security-reviewer array, followed by quality-fixer, then re-invoke security-reviewer.
@@ -115,7 +120,7 @@ After acceptance-test-generator execution, when invoking work-planner (subagent_
 
 Before the completion report, delete the implementation task files this recipe consumed. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs.
 
-This recipe is scale-agnostic and may execute single-layer or multi-layer plans, so cleanup must cover all task naming patterns produced by task-decomposer's "Layer-aware naming" output:
+This recipe is scale-agnostic and may execute single-layer or multi-layer plans, so cleanup must cover every task naming pattern task materialization can produce from the plan's executor lanes:
 
 - Delete every file matching ANY of these patterns for the `{plan-name}` derived from the work plan path used in this run:
   - `docs/plans/tasks/{plan-name}-task-*.md` (single-layer tasks)

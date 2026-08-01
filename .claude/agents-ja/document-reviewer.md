@@ -66,7 +66,7 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 - doc_typeに基づく特化した検証
 - DesignDocの場合:「適用基準」セクションの存在をexplicit/implicit分類付きで確認
   - 欠落・不完全 → `critical`、implicit基準の未確認 → `important`
-- WorkPlanの場合: セマンティックゲートの判定対象となる成果物が計画に含まれることを確認 — 設計-計画トレーサビリティ、Reference Contract Values（Design Docが拘束的観測値を指定する場合）、故障モードチェックリスト、First-Pass Risk Coverage（チェックリストが `irreversible-operation` を yes としている場合）、レビュースコープ、検証戦略の要約、証明戦略。参照されているDesign Docを読み込み、AC / コントラクト / 状態遷移のカバレッジと拘束的観測値の内容忠実性を計画に対して確認できるようにする
+- WorkPlanの場合: セマンティックゲートの判定対象となる成果物が計画に含まれることを確認 — 設計-計画トレーサビリティ、Reference Contract Values（Design Docが拘束的観測値を指定する場合）、故障モードチェックリスト、レビュースコープ、検証戦略の要約、証明戦略。参照されているDesign Docを読み込み、AC / コントラクト / 状態遷移のカバレッジと拘束的観測値の内容忠実性を計画に対して確認できるようにする
 - `code_verification`が提供された場合: まず `summary.status` を読む。`blocked` のときは検証が何も行われていないため、空の `discrepancies` と `coverage` をクリーンな結果ではなくエビデンスの不在として扱い、事前検証エビデンスなしで Gate 1 を実行し、その不在と `summary.blockingReason` を `recommendations` に記録して、判定がコード検証済みと読まれないようにする。それ以外の場合は不整合リストと逆方向カバレッジのギャップを抽出し、Gate 1の事前検証エビデンスとして組み込む
 - `codebase_analysis`が提供された場合: `focusAreas`とその`evidence`値を抽出し、Gate 0 / Gate 1のFact Dispositionチェックに使用
 - DesignDocで`requirements_verbatim`と`confirmed_decisions`のいずれか一方のみが渡された場合: 不足している入力を明示した`critical`とともに`verdict.decision: rejected`を返す。要件集合が部分的なままでは判定が誤解を招くため。この入力ルールはどの `review_context` でも適用される — ペアが片方だけの状態はレビューを依頼した理由に関わらず誤解を招くため。この入力ルールは`critical` → `needs_revision`の一般マッピングより優先する
@@ -90,6 +90,7 @@ DesignDocの場合、追加で以下を確認:
 - [ ] 検証戦略セクションの存在（正しさの定義、検証手法、検証タイミング、早期検証ポイント）
 - [ ] Fact Disposition TableセクションがDesign Docに存在する
 - [ ] Design Convergence セクションが存在し、`Direct MVP`・`Failed Items`・`Adopted Additions`・`Rejected Additions` を持つ。リバースエンジニアリング／現状記述のドキュメントではN/Aと記載されている
+- [ ] Requirement Convergence セクションが存在する: 将来状態のドキュメントではOpen questionsが記入されている。Outcome・Non-Goals・Speculativeが記入されているか、それらを保持するPRDのパスを添えてN/Aとされている。リバースエンジニアリング／現状記述のドキュメントではセクション全体がN/A
 
 WorkPlanの場合、追加で以下を確認:
 - [ ] レビュースコープが記録されている（変更予定ファイルの範囲、または改訂計画ではベースブランチ + diff範囲）
@@ -144,7 +145,6 @@ WorkPlanの場合、追加で以下を確認:
   - (3) 境界横断・公開境界・永続状態の各変更が、それを実境界経由で検証するタスクを特定している — 欠落 → `important`（カテゴリ: `completeness`）
   - (4) 存在する各トレーサビリティ表（設計-計画、UI Specコンポーネント、Connection Map、ADR Bindings）が対象タスクを解決できる粒度で埋められている — 粒度不足の行 → `important`（カテゴリ: `completeness`）
   - (5) 故障モードチェックリストが計画の該当するドメイン非依存カテゴリ（same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering, irreversible-operation）をカバーしている — 該当カテゴリの欠落 → `recommended`（カテゴリ: `completeness`）
-  - (5a) `irreversible-operation` が yes とされている場合、First-Pass Risk Coverage 表が不可逆操作ごとに1行を持ち、その操作の到達経路、エビデンス不完全時の安全な既定状態、`カバーするタスク` の値、および6つのhazard列（mutation, partial-evidence, retry, concurrency, identity, input-route）すべてに disposition を備えている — 表の欠落、hazardセルの空欄、Decisions and Unresolved Items に対応エントリのない `blocked` のhazard → `important`（カテゴリ: `completeness`）。ここで捕まえるべき欠陥は空欄のセルである。タスク分解がこれらの行を下流へコピーするため、この段階で欠けた disposition は実装者に永久に届かない
   - (6) 拘束的観測値がカバレッジだけでなく内容忠実性をもって保持されている: 拘束的値をエンコードする各Design Doc観測可能契約（列/ラベルの集合と順序、派生表示ルール、状態ライフサイクルの否定条件）について、計画のReference Contract Values表がその値をDesign Docから逐語で転記し、カバーするタスクにマッピングしている。各値をDesign Docから再導出して計画と比較する; Design Docが指定しているのに値がラベルに縮約・要約・欠落している場合は内容忠実性のギャップ → `critical`（カテゴリ: `completeness`）
   - Verdictマッピング（WorkPlan）: セマンティックゲートの`critical`はいずれもverdictを最低でも`needs_revision`にする — ただしDesign Doc/入力要素の欠落や矛盾に起因するカバレッジギャップ（再計画で修正不能）→ `rejected`、`important`のみの場合はverdictを`approved_with_conditions`までに制限する
 

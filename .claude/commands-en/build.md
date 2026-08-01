@@ -1,5 +1,5 @@
 ---
-description: Execute decomposed tasks in autonomous execution mode
+description: Execute materialized task files in autonomous execution mode
 ---
 
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
@@ -31,10 +31,10 @@ Before any task processing, locate the work plan.
    - `{plan-name}-task-*.md` (single-layer; reserved for backend by the routing table)
    - `{plan-name}-backend-task-*.md` (backend portion of a multi-layer plan)
    - `{plan-name}-frontend-task-*.md` is **not** consumable by this recipe — it routes to `task-executor-frontend` and is owned by the frontend build recipe
-2. From the matched files, also exclude every file matching any of these patterns — they originate from other workflow phases and are not implementation tasks for this run's plan: `*-task-prep-*.md` (readiness preflight tasks), `_overview-*.md` (decomposition overview file), `*-phase*-completion.md` (per-phase completion files), `review-fixes-*.md` (post-implementation review fixes), `integration-tests-*-task-*.md` (integration-test add-on scaffolding)
+2. From the matched files, also exclude every file matching any of these patterns — they originate from other workflow phases and are not implementation tasks for this run's plan: `*-task-prep-*.md` (readiness preflight tasks), `_overview-*.md` (materialization overview file), `*-phase*-completion.md` (per-phase completion files), `review-fixes-*.md` (post-implementation review fixes), `integration-tests-*-task-*.md` (integration-test add-on scaffolding)
 3. For each remaining file, extract `{plan-name}` by stripping the trailing `-task-{NN}.md` or `-backend-task-{NN}.md` suffix
 4. When at least one task file matches, the work plan is `docs/plans/{plan-name}.md` for the prefix that has the most recent task-file mtime; ties broken by the lexicographically last `{plan-name}`
-5. **When the consumable patterns find no matches but `*-frontend-task-*.md` files exist in `docs/plans/tasks/`**: stop and report: "Only frontend-named task files were found. If you intended to run the frontend build recipe, switch to it. If the plan is backend, re-run task-decomposer so it emits backend-named task files, or pass the work plan path as `$ARGUMENTS`."
+5. **When the consumable patterns find no matches but `*-frontend-task-*.md` files exist in `docs/plans/tasks/`**: stop and report: "Only frontend-named task files were found. If you intended to run the frontend build recipe, switch to it. If the plan is backend, correct the affected work plan task entries to `Executor lane: backend` and regenerate the task files, or pass the work plan path as `$ARGUMENTS`." Filenames follow the plan's declared lanes, so re-running task materialization alone leaves them unchanged.
 6. When neither consumable patterns nor `*-frontend-task-*.md` match, fall back to the most-recent-mtime non-template `.md` in `docs/plans/` ONLY after **positively verifying the plan is a backend plan**. Absence of frontend markers is not enough — many plan templates include layer-neutral paths (e.g., `src/presentation`, `src/app`) that match neither marker set, so a confirmed backend signal is required. Read the plan and check:
 
    **Backend signals (need at least one)**:
@@ -50,7 +50,7 @@ Before any task processing, locate the work plan.
 
    **Decision**:
    - At least one backend signal AND zero frontend signals → plan is acceptable; proceed
-   - Otherwise (no backend signal found, OR any frontend signal present, OR layer-neutral paths only) → stop and report: "Cannot positively verify the most-recent work plan at `[path]` is a backend plan (signals examined: [list of signals checked and their results]). Pass the intended backend plan path as `$ARGUMENTS`, or run task-decomposer first to populate `docs/plans/tasks/` with backend-named task files."
+   - Otherwise (no backend signal found, OR any frontend signal present, OR layer-neutral paths only) → stop and report: "Cannot positively verify the most-recent work plan at `[path]` is a backend plan (signals examined: [list of signals checked and their results]). Pass the intended backend plan path as `$ARGUMENTS`, or run task-decomposer first on a plan whose task entries declare `Executor lane: backend`, so `docs/plans/tasks/` receives backend-named task files."
 7. When no plan exists at all in `docs/plans/`, stop and report: "No work plan found. Pass a work plan path as `$ARGUMENTS`, or complete the planning phase first."
 
 ### Consumed Task Set
@@ -74,7 +74,7 @@ Analyze the Consumed Task Set and determine the action required. Reaching this s
 
 To bootstrap from a Design Doc when no plan exists yet, run the planning recipe first to produce a work plan, then re-invoke this recipe — Work Plan Resolution above intentionally requires a resolved work plan rather than auto-creating one, to keep the layer decision explicit.
 
-## Task Decomposition Phase (Conditional)
+## Task Materialization Phase (Conditional)
 
 When the Consumed Task Set is empty:
 
@@ -86,11 +86,11 @@ Work plan: docs/plans/[plan-name].md
 Generate tasks from the work plan? (y/n):
 ```
 
-### 2. Task Decomposition (if approved)
+### 2. Task Materialization (if approved)
 Invoke task-decomposer using Agent tool:
 - `subagent_type`: "task-decomposer"
-- `description`: "Decompose work plan"
-- `prompt`: "Read work plan at docs/plans/[plan-name].md and decompose into atomic tasks. Output: Individual task files in docs/plans/tasks/. Granularity: 1 task = 1 commit = independently executable"
+- `description`: "Materialize work plan tasks"
+- `prompt`: "Read work plan at docs/plans/[plan-name].md and output one single-commit task file per work plan implementation item in docs/plans/tasks/, selecting each filename from the item's Executor lane."
 
 ### 3. Verify Generation
 Recompute the Consumed Task Set using the same restricted pattern from the Consumed Task Set section above. Confirm it is now non-empty. If it is still empty, escalate to the user — task-decomposer either failed silently or produced files that don't match the expected pattern.
@@ -146,7 +146,7 @@ After all task cycles finish, run verification agents **in parallel** before the
 
 1. **Invoke both in parallel** using Agent tool:
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list (`git diff --name-only main...HEAD`)
-   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path, implementation file list, and `workPlan`: the work plan path used in this run (its Failure Mode Checklist and First-Pass Risk Coverage table are the declared dispositions the reviewer verifies against)
+   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path and implementation file list
 
 2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
 
@@ -177,7 +177,7 @@ If task files cannot be deleted (filesystem error), report the failure but do no
 ## Completion Report Contract
 
 Final report must include:
-- Task decomposition status
+- Task materialization status
 - Implemented task count
 - Quality check result
 - Commit count
@@ -185,5 +185,5 @@ Final report must include:
 - Escalation or blocking summary, if any
 
 **Responsibility Boundary**:
-- IN SCOPE: Task decomposition to implementation completion
+- IN SCOPE: Task materialization to implementation completion
 - OUT OF SCOPE: Design phase, planning phase

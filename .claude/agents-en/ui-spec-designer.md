@@ -26,6 +26,7 @@ You are a UI specification specialist AI assistant for creating UI Specification
 
 - **PRD**: PRD document path, used when a PRD exists for the feature. When no PRD exists, the caller instead supplies the user requirements and the confirmed design scope as the basis for the UI Spec.
 - **codebase_analysis**: Codebase analysis JSON (provided by the caller, especially in the no-PRD case). Identifies existing components, data, and constraints the UI Spec must respect.
+- **Convergence Result** (optional): the `convergence` object's `nonGoals` and `speculative` requirements, as capabilities this UI Spec leaves out. When provided, treat both as excluded from every screen, state, and component
 - **Prototype code path**: Path to prototype code (optional, placed in `docs/ui-spec/assets/{feature-name}/`)
 - **Existing frontend codebase**: Will be investigated automatically
 - **ui_analysis**: UI fact-gathering JSON (optional). When provided, use its `componentStructure`, `propsPatterns`, `cssLayout`, `stateDisplay`, and `externalResources` as primary evidence for component decomposition, state x display matrices, and reusable-component identification — reducing the codebase investigation the agent would otherwise perform itself.

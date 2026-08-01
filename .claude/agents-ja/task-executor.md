@@ -212,9 +212,9 @@ Design Convergence は設計時に完了している — Direct MVP、Failed Ite
 
 #### 隣接ケース走査（タスクファイルの `Change Category` フィールドが `bug-fix` / `regression` / `state-change` / `boundary-change` のいずれかに設定されている場合は必須）
 
-実装前確認の後、Binding Decision チェックの前に実行する。このステップはタスク分解が書き込んだフィールド値で発火する — フィールド値を読み、走査を適用するかの判断はそれを正本とする。
+実装前確認の後、Binding Decision チェックの前に実行する。このステップはタスク実体化が書き込んだフィールド値で発火する — フィールド値を読み、走査を適用するかの判断はそれを正本とする。
 
-1. Investigation Targets（分解時に隣接ファイルが既に追加されている）から、変更と同一の経路・契約・永続状態・外部境界を共有するケースを特定する — 変更に関連するフォールバックの振る舞い、stale な状態、リトライ、外部呼び出しなど。
+1. Investigation Targets（実体化時に隣接ファイルが既に追加されている）から、変更と同一の経路・契約・永続状態・外部境界を共有するケースを特定する — 変更に関連するフォールバックの振る舞い、stale な状態、リトライ、外部呼び出しなど。
 2. それぞれが、このタスクが修正するのと同一クラスの欠陥を抱えているか確認する。
 3. 各残余をスコープに応じて処理する:
    - **Target Files スコープ内** → 残余をこのタスクの失敗するテストと実装に取り込む。
@@ -379,8 +379,8 @@ Design Convergence は設計時に完了している — Direct MVP、Failed Ite
 | `binding_decision_violation` | "Binding decision violation" | `phase: 'pre_implementation' \| 'exit_gate'`; `plannedApproach`; `failures[{source, axis, decision, complianceCheck, evaluation: 'N' \| 'Unknown', rationale}]` | "バインディング決定を満たすよう実装計画を調整" / "ADRを更新（その後、作業計画書のADR BindingsとこのタスクのBinding Decisionsを更新）" / "Unknown評価を解消する追加コンテキストを提供" |
 | `out_of_scope_file` | "Out of scope file" | `details: {file_path, allowed_list[], modification_reason}` | "Target Files に追加してリトライ" / "別タスクに分割" / "アプローチを再検討" |
 | `test_environment_not_ready` | "Test environment not ready" | `missingComponent: 'test runner' \| 'fixtures' \| 'mock server' \| 'setup file' \| 'other'`; `description`（欠落コンポーネントがテストをブロックする理由） | "欠落コンポーネントをインストールまたは設定してタスクを再実行" / "環境が整ってからタスクを再割り当て" |
-| `unresolved_input` | "Required decision not resolved" | `unresolvedItems: [{item, kind: 'requirement-decision' \| 'implementation-detail', requiredInput, unmetConstraint}]` — `unmetConstraint` はスコープ内のどの選択肢も満たせない Binding Decision または Reference Contract を示す。`requirement-decision` の場合は `null`。`sourceSection`（項目の記録場所: タスクファイルの Decisions and Unresolved Items、またはそれを発行したチェック） | 「示された判断を供給してタスクを再実行」/「振る舞いが規定されるようDesign Docを改訂」/「判断を解決した上で再分解」 |
-| `task_file_not_found` / `task_already_completed` / `target_files_missing` | "Task selection precondition failed" | `details: {task_file_path, failure_reason: 'file does not exist' \| 'file unreadable' \| 'all checkboxes already [x]' \| 'Target Files section missing or empty'}` | "正しい task_file パスを提供" / "作業計画を再分解" / "完了済みとしてスキップ" |
+| `unresolved_input` | "Required decision not resolved" | `unresolvedItems: [{item, kind: 'requirement-decision' \| 'implementation-detail', requiredInput, unmetConstraint}]` — `unmetConstraint` はスコープ内のどの選択肢も満たせない Binding Decision または Reference Contract を示す。`requirement-decision` の場合は `null`。`sourceSection`（項目の記録場所: タスクファイルの Decisions and Unresolved Items、またはそれを発行したチェック） | 「示された判断を供給してタスクを再実行」/「振る舞いが規定されるようDesign Docを改訂」/「作業計画書の該当項目に判断を記録した上でタスクファイルを再生成」 |
+| `task_file_not_found` / `task_already_completed` / `target_files_missing` | "Task selection precondition failed" | `details: {task_file_path, failure_reason: 'file does not exist' \| 'file unreadable' \| 'all checkboxes already [x]' \| 'Target Files section missing or empty'}` | "正しい task_file パスを提供" / "作業計画書からタスクファイルを再生成" / "完了済みとしてスキップ" |
 
 最小例（out_of_scope_file）:
 

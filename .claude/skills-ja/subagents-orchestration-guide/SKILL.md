@@ -24,6 +24,8 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 新しいタスクを受け取ったら、ユーザー要件をrequirement-analyzerに直接渡す。その規模判定結果に基づいてワークフローを決定する。
 
+requirement-analyzer は `convergence` オブジェクトを返す。要件の停止ポイントでその出力に対して requirement-convergence のヒアリングプロトコルを実行し、各ステップの根拠を記録したうえで、回答を添えて requirement-analyzer を再実行して記録を再判定させる。ヒアリングは AskUserQuestion を要するためオーケストレーターが担い、オーケストレーター自身は何も調査しないため分析の後に実行する。
+
 ### フロー実行中の要件変更検知
 
 **フロー実行中**にユーザーレスポンスで以下を検知したら、フローを停止してrequirement-analyzerへ：
@@ -37,7 +39,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 ### 実装支援エージェント
 1. **quality-fixer**: 全体品質保証と修正完了まで自己完結処理
-2. **task-decomposer**: 承認済み作業計画書を、依存関係と対象ファイルが明示されたtask-template形式のファイルへ分解
+2. **task-decomposer**: 承認済み作業計画書の各実装項目を、宣言された境界と依存関係を保ったままtask-template形式のファイル1つとして実体化
 3. **task-executor**: 個別タスクの実行と構造化レスポンス
 4. **integration-test-reviewer**: 統合テスト/E2Eテストのスケルトン準拠レビュー
 5. **security-reviewer**: 全タスク完了後のDesign Docおよびプロジェクトのコーディング規約に対するセキュリティ準拠レビュー
@@ -112,11 +114,11 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 ## 規模判定とドキュメント要件
 
-見積もりファイル数、観測可能な成果、契約・データ、境界、判断リスクのいずれかが示す最も高い規模を選択する。以下のファイル数は基準値であり、より高いリスク軸がある場合は確定規模と必要ドキュメントの行を引き上げる。
+以下のファイル数が下限を定める。documentation-criteriaスキルの構造的エスカレーションが、ADR作成条件のいずれかに該当する場合に確定規模と必要ドキュメントの行を引き上げる（引き上げるだけで下げることはない）。
 
 | 規模 | 基準ファイル数 | PRD | ADR | Design Doc | 作業計画書 |
 |------|---------------|-----|-----|------------|-----------|
-| 小規模 | 1-2 | 更新※1 | 条件付き※2 | 不要 | task-template 形式の単一タスクファイル（`docs/plans/tasks/` 直下、計画書ファイルは別途作成しない） |
+| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | task-template 形式の単一タスクファイル（`docs/plans/tasks/` 直下、計画書ファイルは別途作成しない） |
 | 中規模 | 3-5 | 更新※1 | 条件付き※2 | **必須** | **必須** |
 | 大規模 | 6以上 | **必須**※3 | 条件付き※2 | **必須** | **必須** |
 
@@ -151,7 +153,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 | Agent | 主要フィールド | 判断ロジック |
 |-------|---------------|-------------|
-| requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions | scaleでフローを選択。adrRequiredでADRステップ要否を判断 |
+| requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions, convergence（4フィールドとそれぞれの readiness ラベル。`ready` に達していないフィールドは `convergence` の質問としても返る） | scaleでフローを選択 — この値には構造的エスカレーションが既に反映されている。adrRequiredでADRステップ要否を判断。先に進む前に `convergence` に対して requirement-convergence のヒアリングを実行 |
 | codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, qualityAssurance (mechanisms[], domainConstraints[]), focusAreas[], existingElements count, limitations | focusAreasをtechnical-designerにコンテキストとして渡す |
 | ui-analyzer | externalResources (status, per-axis fetch_status), componentStructure[], propsPatterns[], cssLayout[], stateDisplay[], focusAreas[], candidateWriteSet[], limitations | ui-analyzerのJSONをui-spec-designerとtechnical-designer-frontendに渡す。各エージェントは自身の入力宣言に記載されたフィールドを使う |
 | code-verifier | summary.status (consistent/mostly_consistent/needs_review/inconsistent/blocked), summary.blockingReason, summary.consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). 判定は `summary.status` から読む — `discrepancies[].status` は所見ごとのフィールド（drift/gap/conflict）で判定ではない。実装前: Design Docの主張を既存コードに対して検証。実装後: 実装のDesign Doc整合性を検証（`code_paths`で変更ファイルにスコープ） | discrepanciesをdocument-reviewerに連携 |
@@ -160,7 +162,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 | document-reviewer | 入力: `doc_type`、`target`、`review_context`（新規作成の文書は `creation`、承認済み文書の改訂は `update`、リバースエンジニアリングで得た文書は `as-is` — レビューを依頼した理由を宣言することで、正当に不在なペア入力を欠陥として読ませない）、および doc_type 固有の入力。出力: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)、recommendations（ペア入力が不在で実行されなかったチェック、および `code_verification` が `blocked` で返った場合はコード検証の不在を項目として含む） | approved/approved_with_conditionsで次へ。needs_revisionで修正依頼。rejectedでエスカレーション。approvedを全スコープの承認として扱う前に、スキップされたチェックのrecommendationsを読む |
 | design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | CONFLICTS_FOUND時: 矛盾をユーザーに提示してから進む |
 | integration-test-reviewer | 入力: `testFile`（1つ以上のパス — 変更が触れたテストファイルすべてを、実装ステップの `testsAdded` から渡す）、`diffBase`（任意 — テストを比較する基準リビジョン。レビュー範囲をファイル全体ではなく変更分にする）、`designDocPath`（任意）、`taskFiles`（任意）。出力: verdict.decision (approved/needs_revision/blocked)、verdict.reason、testFiles[]、fileResults[]（レビュー対象ファイルごとに1エントリ。各々が自身の `reviewBasis`（skeleton/proof_obligations/prompt_claims/none）と、そのファイルの充足カウントおよび品質課題を持つ）、proofObligationCoverage[]（タスク単位で全レビュー対象ファイルに跨る — 1タスクの obligation は複数ファイルに分かれうるため、カバレッジはここで解決する）、requiredFixes[]（各 `location` はファイルパスで始まる）。`blocked` の原因は2つ: レビュー対象ファイルの `reviewBasis` が `none`、または basis と Design Doc の矛盾。分岐は `verdict.decision` で行う — トップレベルの `status` は検証結果の軸（passed/failed/needs_improvement）でルーティング判定ではない | needs_revision時: 同じ task_file と requiredFixes[] を渡してルーティング先の executor を Fix Mode で再実行。blocked時: verdict.reason を添えてエスカレーション |
-| security-reviewer | 入力: `designDoc`、`implementationFiles`、`workPlan`（任意 — この実行の作業計画書パスを渡すと、計画書が宣言した Failure Mode Checklist と First-Pass Risk Coverage の disposition に対して実装を検証する。統括する計画書がないレビューフローでは省略）。出力: status (approved/approved_with_notes/needs_revision/blocked)、findings、notes、irreversibleHazards[]（`irreversible-operation` のhazardが `blocked` のとき非空。各エントリが必要な判断を示し、status を `blocked` に確定させる）、requiredFixes | needs_revision時: `requiredFixes[].location` から影響ファイルパスを抽出して Target Files に投入した統合修正タスクファイルを作成し、その task_file と `requiredFixes[]` 配列を渡してルーティング先の executor を Fix Mode で起動。続いて quality-fixer を実行し、最後に security-reviewer を再起動して解消を検証する。blocked 時: ブロッキング findings を添えてユーザーにエスカレーション — エージェント層の権限外の修正である |
+| security-reviewer | 入力: `designDoc`、`implementationFiles`。出力: status (approved/approved_with_notes/needs_revision/blocked)、findings、notes、irreversibleHazards[]（`irreversible-operation` のhazardが `blocked` のとき非空。各エントリが必要な判断を示し、status を `blocked` に確定させる）、requiredFixes | needs_revision時: `requiredFixes[].location` から影響ファイルパスを抽出して Target Files に投入した統合修正タスクファイルを作成し、その task_file と `requiredFixes[]` 配列を渡してルーティング先の executor を Fix Mode で起動。続いて quality-fixer を実行し、最後に security-reviewer を再起動して解消を検証する。blocked 時: ブロッキング findings を添えてユーザーにエスカレーション — エージェント層の権限外の修正である |
 | acceptance-test-generator | status, generatedFiles.{integration,fixtureE2e,serviceE2e}（レーンごとに path\|null）, budgetUsage（レーン別）, e2eAbsenceReason（E2Eレーンごと。出力時は null。reason の enum 定義は acceptance-test-generator と integration-e2e-testing スキルが所有） | 非nullの各 `generatedFiles.<lane>` パスがディスク上に存在することを確認し、レーン別のパスと不在理由を work-planner に渡す |
 
 ### quality-fixer blockedハンドリング
@@ -174,8 +176,8 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 
 ### 大規模（6ファイル以上） - 14ステップ（バックエンド） / 16ステップ（フロントエンド/フルスタック）
 
-1. requirement-analyzer → 要件分析 + 既存PRD確認 **[停止]**
-2. prd-creator → PRD作成
+1. requirement-analyzer → 要件分析 + 既存PRD確認 → requirement-convergence のヒアリングを実施し、回答を添えて requirement-analyzer を再実行 **[停止]**
+2. prd-creator → PRD作成（収束記録を受け取る）
 3. document-reviewer → PRDレビュー **[停止: PRD承認]**
 4. **（フロントエンド/フルスタックのみ）** プロトタイプコードの有無を確認 → ui-spec-designer → UI Spec作成
 5. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
@@ -193,7 +195,7 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 
 ### 中規模（3-5ファイル） - 10ステップ（バックエンド） / 12ステップ（フロントエンド/フルスタック）
 
-1. requirement-analyzer → 要件分析 **[停止]**
+1. requirement-analyzer → 要件分析 → requirement-convergence のヒアリングを実施し、回答を添えて requirement-analyzer を再実行 **[停止]**
 2. **（フロントエンド/フルスタックのみ）** プロトタイプコードの有無を確認 → ui-spec-designer → UI Spec作成（コンポーネント構造が技術設計に反映されるため先に実施）
 3. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
 4. codebase-analyzer → コードベース分析（要件分析結果を入力）
@@ -208,7 +210,7 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 
 ### 小規模（1-2ファイル） - 3ステップ
 
-1. requirement-analyzer → 要件分析と小規模判定の確定
+1. requirement-analyzer → 要件分析と小規模判定の確定 → requirement-convergence のヒアリングを実施し、回答を添えて requirement-analyzer を再実行 **[停止]**。ヒアリングは全スケールで実行する — `nonGoals` はユーザーが挙げるものであり、どのエージェントも代わりに用意できないためである。構造的エスカレーションで規模が上がった場合は、この時点から中規模のフローへ切り替える
 2. work-planner → 簡易作業計画作成。本スケールでは作業計画書とタスク分解ステップを分けず、`docs/plans/tasks/` 直下に task-template 形式の単一タスクファイルを直接出力する。task-executor にはそのパスを `task_file` として渡す **[停止: 一括承認]**
 3. task-executor → quality-fixer → commit（タスクごと）→ 完了報告
 
@@ -253,12 +255,14 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
 
 ### レイヤー別エージェントルーティング
 
-自律実行中、タスクファイル名パターンに基づいてエージェントを選択:
+自律実行中、タスクファイル名パターンに基づいてエージェントを選択する。この表は、作業計画書のタスクエントリが選ぶ2つの Executor lane も定義している:
 
-| ファイル名パターン | Executor | Quality Fixer |
-|---|---|---|
-| `*-task-*` または `*-backend-task-*` | task-executor | quality-fixer |
-| `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
+| Executor lane | ファイル名パターン | Executor | Quality Fixer |
+|---|---|---|---|
+| `backend` | `*-task-*` または `*-backend-task-*` | task-executor | quality-fixer |
+| `frontend` | `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
+
+作業計画書のタスクエントリは lane をちょうど1つ記録する。タスク実体化はその値をコピーし、対象パスからレイヤーを推論するのではなく、この表からファイル名を選ぶ。
 
 ## 自律実行モード
 
@@ -339,9 +343,17 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
    - changeSummaryからコミットメッセージを作成 → **Bashでgit commit実行**
    - 要件変更時は初期要件と追加要件を明示的に統合
 
+   #### 収束記録 → それを引き継ぐエージェント
+
+   **渡すもの**: 最後の requirement-analyzer 実行が返した `convergence` オブジェクト（requirement-analyzer を持たないフローでは、オーケストレーター自身が判定した記録）を、それを引き継ぐエージェントへ渡す。内容は変更せずに渡し、各フィールドの readiness ラベルも一緒に運ぶ。
+   - **prd-creator**（PRDを新規作成または更新する場合）: `outcome` を `成功基準` へ、`nonGoals` と `speculative` 要件を origin `user` として `Future` / `Out of Scope` へ永続化する
+   - **technical-designer / technical-designer-frontend**: PRDがない場合は同じ内容を Design Doc の `Requirement Convergence` へ永続化し、`weak-but-explicit` のまま残ったフィールドは常にそこへ記録する
+   - **ui-spec-designer**（フロントエンド/フルスタック）: `nonGoals` と `speculative` 要件を、UI Specが対象に含めない機能・能力として扱う
+   - **work-planner**: `nonGoals` と `speculative` 要件を全タスクエントリから除外されたものとして扱う。小規模ではPRDもDesign Docも存在しないため、`weak-but-explicit` のフィールドは保存プロトコルに従いオーケストレーター自身のコンテキストに留め、タスクファイルのブロッキング項目にはしない
+
    #### codebase-analyzer → technical-designer
 
-   **codebase-analyzerへの入力**: 要件分析JSON出力、PRDパス（存在する場合）、元のユーザー要件
+   **codebase-analyzerへの入力**: 要件分析JSON出力（`convergence` を含む）、PRDパス（存在する場合）、元のユーザー要件
    **technical-designerへの入力**: codebase-analyzerのJSON出力をDesign Doc作成プロンプトの追加コンテキストとして渡す。必須の使い道:
    - `focusAreas` → Fact Disposition Tableの正典となるdisposition targetリスト（各focusAreaを1行に展開し、`fact_id`と`evidence`をそのまま引き継ぐ）
    - `dataModel`、`dataTransformationPipelines`、`qualityAssurance` → 「既存コードベース分析」「検証戦略」「品質保証メカニズム」の各セクションに反映

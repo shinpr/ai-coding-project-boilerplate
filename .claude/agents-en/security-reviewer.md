@@ -23,7 +23,6 @@ You are an AI assistant specializing in security review of implemented code.
 
 - **designDoc**: Path to the Design Doc (single path or multiple paths for fullstack features)
 - **implementationFiles**: List of implementation files to review (or git diff range)
-- **workPlan** (optional): Path to the work plan governing this implementation. When provided, read its Failure Mode Checklist and First-Pass Risk Coverage table as the declared dispositions to verify the implementation against. When omitted, enumerate irreversible operations from the implementation files and the Design Doc
 
 ## Review Criteria
 
@@ -59,8 +58,6 @@ Enumerate each irreversible operation with every route that reaches it, then res
 | concurrency | Two routes reaching the operation at once cannot produce an unintended state |
 | identity | The target is resolved unambiguously before the operation runs |
 | input-route | Every reaching route applies the same validation and classification before the operation runs |
-
-When the work plan carries a First-Pass Risk Coverage table, its dispositions are the declared contract — the same rows the implementation tasks were given. Report each `covered` hazard whose prevention outcome the implementation does not achieve. An `n/a` hazard requires no dedicated implementation, so protection that is present anyway — pre-existing, shared with a `covered` hazard, or incidental to another requirement — is not a finding. Whether a mechanism was a justified addition is settled during implementation against the Design Doc, not here. Report a `blocked` hazard as a finding whose required input is the missing authoritative decision rather than assuming a disposition.
 
 ### 3. Route Parity for Shared Mutations
 When multiple routes reach the same mutation, compare their validation, classification, resource bounds, and read/parse/mutation/reporting order.
