@@ -37,7 +37,7 @@ When requirement-analyzer's `crossLayerScope` indicates cross-layer scope (backe
 Run the requirement-convergence hearing protocol on the returned `convergence` object before presenting anything else, using the analyzer's scope facts and cost band as the facts it presents.
 
 When user responds to questions:
-- If any `convergence` field is below `ready` → Re-execute requirement-analyzer with the hearing answers so the record is re-judged. Stop re-invoking after the hearing protocol's one re-ask round per field: the user's agreement to leave the second answer as it stands marks the field `weak-but-explicit`, and a field the user neither resolves nor agrees to leave stays `weak` and is carried forward as a recorded open question
+- If any `convergence` field is below `ready` → Re-execute requirement-analyzer with the hearing answers so the record is re-judged. Re-invoke at most once per field
 - If response matches any `scopeDependencies.question` → Check `impact` for scale change
 - If scale changes → Re-execute requirement-analyzer with updated context
 - If `confidence: "confirmed"` or no scale change → Proceed to next step
@@ -102,7 +102,7 @@ Following "Autonomous Execution Task Management" in subagents-orchestration-guid
 ### Security Review (After All Tasks Complete)
 
 After all task cycles finish, invoke security-reviewer before the completion report:
-1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path, implementation file list, and `workPlan`: the work plan path used in this run (its Failure Mode Checklist and First-Pass Risk Coverage table are the declared dispositions the reviewer verifies against)
+1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path and implementation file list
 2. Check response:
    - `approved` or `approved_with_notes` → Proceed to completion report (include notes if present)
    - `needs_revision` → Create a consolidated fix task file at `docs/plans/tasks/review-fixes-{plan-name}-task-{cycle-number}.md` using the task-template; populate Target Files with the union of file paths referenced by `requiredFixes[].location` (parsed as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them. Then invoke task-executor in **Fix Mode** with `task_file` set to the new consolidated path and `requiredFixes` set to the security-reviewer array, followed by quality-fixer, then re-invoke security-reviewer.

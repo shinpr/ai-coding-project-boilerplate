@@ -86,8 +86,6 @@ The work plan owns these boundaries. A boundary that looks wrong is reported to 
    | `backend` | `{plan-name}-task-{number}.md` when every task entry in the plan is `backend`; otherwise `{plan-name}-backend-task-{number}.md` |
    | `frontend` | `{plan-name}-frontend-task-{number}.md` (REQUIRED — the bare `*-task-*` form is reserved for backend) |
 
-   The Executor lane, the Target Files, and the backend/frontend filename segment must agree, judged by the same Target-Files-to-lane rule the work plan applied (see work-planner's task-entry step, which classifies paths per the technical-spec skill). When they do not agree, report the mismatch to the caller instead of choosing one.
-
    Examples: `20250122-refactor-types-task-01.md` (all entries backend), `20250122-dashboard-frontend-task-01.md` (frontend entry), `20250122-auth-backend-task-01.md` + `20250122-auth-frontend-task-02.md` (plan whose entries span both lanes).
    - **Phase Completion Task Auto-generation (Required)**:
      - Based on "Phase X" notation in work plan, generate after each phase's final task
@@ -172,7 +170,6 @@ When the work plan contains a Failure Mode Checklist, propagate each applicable 
 2. **Add a Proof Obligation per category**: Ensure each matched task carries a Proof Obligation whose `Primary failure mode` is that category, instantiated for the task's target (e.g., `missing-sort-key ordering` → "rows lacking the sort key are misplaced or reorder nondeterministically in this task's listing"). Populate the remaining Proof Obligations fields from the AC and target files per Proof Obligation Propagation above. When no AC covers the category, set `Claim` to the failure-mode condition the task must prevent and `State assertion` to `N/A` unless the task changes state.
 3. **Merge into the existing entry**: When an AC-derived Proof Obligation already covers the same failure mode for that task, keep the single entry rather than adding a parallel one.
 4. **Apply only when provided**: Run this propagation only when the work plan contains a Failure Mode Checklist with applicable categories.
-5. **Copy the First-Pass Risk Coverage row**: When the plan has a First-Pass Risk Coverage table, copy each row whose `Covered By Task(s)` contains a generated task's `Source Work Plan Task` into that task's First-Pass Risk Coverage section verbatim, minus the Covered By Task(s) column — all six dispositions included, not a summary of them. The task file is the contract the executor and the reviewers read, so a disposition dropped here is a decision the plan made and nobody downstream receives. Then, for each hazard the row marks `blocked`, add a Blocking unresolved item with `Kind: requirement-decision` naming the missing decision, so the executor stops on it through the existing Unresolved Items Check.
 
 ## UI Spec Propagation
 

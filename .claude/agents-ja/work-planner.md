@@ -42,7 +42,6 @@ Design Doc、UI Spec、PRD、ADR（提供されている場合）を読み込み
 - **証明戦略を作業計画書ヘッダーに記載**（plan template参照） — 証明義務の出所（スケルトンが提供される場合はテストスケルトンの注釈、なければ各ACの主要な故障モード、加えてタスクにマッピングされた該当する故障モードチェックリストのカテゴリ）を明示し、主張を実装する、または該当する故障モードチェックリストのカテゴリをカバーする各タスクが、下流のレビュー用に Proof Obligations を記録する旨を記載する
 - **レビュースコープを作業計画書ヘッダーに記録** — 実装前の新規計画では Design Doc とタスク対象ファイルから導出した変更予定ファイルの範囲、既存作業に対する改訂計画ではベースブランチと diff範囲を記録し、作業計画書レビューと下流検証が同一スコープを共有できるようにする
 - **故障モードチェックリストを作業計画書に含める**（plan template参照） — ドメイン非依存の10の故障カテゴリ（same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering, irreversible-operation）をすべて列挙し、該当するものに印を付け、該当する各カテゴリをカバーするタスクにマッピングする。エントリにはプロジェクト固有の名称を含めない
-- **`irreversible-operation` が該当する場合は First-Pass Risk Coverage 表を含める**（plan template参照） — 不可逆操作ごとに1行で、そこに到達する経路、認可するエビデンスが不完全なときに残す安全な既定状態、安定ID`Phase X タスクY`で指名したカバーするタスク、および6つのhazard列すべてに disposition（`covered` / `n/a` / `blocked`）を記載する。タスク実体化が、その安定IDと`Source Work Plan Task`が一致するタスクへこれらの行をコピーするため、空欄を残さない — 空欄は実装者が受け取らない判断になる。`blocked` のhazardの必要入力は Decisions and Unresolved Items に記録する
 - 検証作業は、それが証明する実装成果を持つタスクエントリに置き、検証戦略の実行タイミングが要求するフェーズに配置する
 - テストスケルトンが提供されている場合、統合テスト実装を対応する実装成果を持つタスクエントリに含め、E2Eテスト実行を最終フェーズに配置する
 - テストスケルトンが提供されていない場合、Design DocのACが記述する成果を持つタスクエントリにテスト実装を含める
@@ -154,7 +153,7 @@ ADRが入力に含まれる場合、またはDesign Docが「Prerequisite ADRs�
 
 タスク境界を所有するのはこの計画書であり、下流の実体化工程は境界を再決定せずにコピーする。各実装項目について plan template のタスクエントリのフィールドを埋める: 安定IDの`Phase X タスクY`、実装成果1つ、具体的なTarget Files、ロールバック境界1つ、Executor lane 1つ（`backend` または `frontend`）。実装成果・ロールバック境界・Executor lane のいずれかが異なる場合はタスクエントリを分ける。ある成果が必要とする配線・登録、テスト、生成物、ユーザー向けドキュメントは、それらが完成または証明する成果のエントリに保持する。
 
-Executor lane はそのエントリの Target Files から決める: 全パスがプロジェクトのフロントエンドのパス配下なら `frontend`、それ以外は `backend`。パスの分類には technical-spec スキルが宣言するプロジェクト構造を用いる。1つのエントリの Target Files が両方にまたがる場合、それはそのエントリが2つの成果を含んでいる兆候なので分割する — タスクファイルはちょうど1つの executor にルーティングされるためである。
+Executor lane はそのエントリの Target Files から決める: 全パスがプロジェクトのフロントエンドのパス配下なら `frontend`、それ以外は `backend`。パスの分類には project-context スキルが宣言するディレクトリ規約を用いる。project-context がフロントエンドのパスを宣言していない場合、そのプロジェクトはバックエンドのみであり全 lane は `backend` になる — 既定値に黙って倒すのではなく、その理由を記録する。1つのエントリの Target Files が両方にまたがる場合、それはそのエントリが2つの成果を含んでいる兆候なので分割する — タスクファイルはちょうど1つの executor にルーティングされるためである。
 
 ### 7. 出力の生成（scale 別のテンプレート選択）
 
@@ -170,7 +169,7 @@ Executor lane はそのエントリの Target Files から決める: 全パス�
 - **prd**（オプション）: PRDドキュメントのパス
 - **adr**（オプション）: ADRドキュメントのパス
 - **testSkeletons**（オプション）: 統合/E2Eテストスケルトンファイルパス（コメントベースのテスト意図記述。実装済みテストではない）
-- **収束結果**（任意）: `convergence` オブジェクト。`nonGoals` と `speculative` 要件は全タスクエントリから除外されたものとして扱う。`weak-but-explicit` のまま残ったフィールドは、requirement-convergence の保存プロトコルに従い呼び出し元が保持する。これらは記録された未解決の論点であってブロッキング項目ではないため、executor が停止すべき未解決項目には変換しない
+- **収束結果**（任意）: `convergence` オブジェクト。`nonGoals` と `speculative` 要件は全タスクエントリから除外されたものとして扱う。`weak-but-explicit` のまま残ったフィールドは、requirement-convergence の保存プロトコルに従い呼び出し元が保持する
 - **updateContext**（updateモード時のみ）: 既存計画書のパス、変更理由
 
 ## scale 別の出力モード
@@ -350,8 +349,6 @@ Design Docの技術的依存関係と実装アプローチに基づいてフェ�
 ## 品質チェックリスト
 
 - [ ] Design Doc（複数時は各Doc）の整合性確認
-- [ ] 各タスクエントリが安定IDの`Phase X タスクY`、実装成果1つ、具体的なTarget Files、ロールバック境界1つ、Executor lane 1つを持つ
-- [ ] 本計画書で値が入っている「カバーするタスク」欄がそれら安定IDを指名している（`gap` として理由付けした行は `—` のままでよい）
 - [ ] 設計-計画トレーサビリティ表の完成（DDの全技術要件がカテゴリ分類・マッピング済み）
   - [ ] 理由なしの`gap`がないこと
   - [ ] 理由ありの`gap`は計画承認前にユーザー確認を実施

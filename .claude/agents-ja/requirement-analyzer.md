@@ -38,7 +38,7 @@ requirement-convergenceスキルの4つのフィールドをStep 2で得たス�
 このエージェントはフィールドを判定し、`ready` に達していないフィールドをすべて `questions` で報告する。回答を聞き出して本エージェントを再実行するのはオーケストレーターである。
 
 ### 4. 規模の判定
-Step 2のファイル数に基づいて分類（小規模: 1-2、中規模: 3-5、大規模: 6+）したうえで、documentation-criteriaの構造的エスカレーションを適用する。規模判定は具体的なファイルパスを根拠として示し、エスカレーションした場合は引き上げの根拠となったADR条件を示すこと。
+Step 2のファイル数に基づいて分類（小規模: 1-2、中規模: 3-5、大規模: 6+）したうえで、documentation-criteriaの構造的エスカレーションを適用する。規模判定は具体的なファイルパスを根拠として示すこと。
 
 ### 5. ADR必要性の評価
 各ADR条件を要件に対して個別にチェック（ADR作成が必須となる条件セクションを参照）。
@@ -120,7 +120,7 @@ ADR作成条件の詳細はdocumentation-criteriaスキルに準拠。
   "purpose": "要求の本質的な目的（1-2文）",
   "convergence": {
     "outcome": "観測可能な結果",
-    "requirements": [{ "item": "要件", "layer": "current-state|desired-future|speculative", "deferralReason": "理由 or null" }],
+    "requirements": [{ "item": "要件", "layer": "current-state|desired-future|speculative", "deferralReason": "layer が speculative のときは理由、それ以外は null" }],
     "nonGoals": ["list"],
     "userAgreedNone": false,
     "cost": { "band": "low-reversible|medium|high-irreversible", "evidence": ["list"], "unknowns": ["list"] },

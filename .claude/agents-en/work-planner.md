@@ -42,7 +42,6 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 - **Include a Proof Strategy in the work plan header** (see plan template) — name the proof obligation source (test skeleton annotations when skeletons are provided, otherwise each AC's primary failure mode, plus any applicable Failure Mode Checklist categories mapped to tasks) and state that every task that implements a claim or covers an applicable Failure Mode Checklist category records Proof Obligations for downstream review
 - **Record the Review Scope in the work plan header** — for a fresh pre-implementation plan, the planned-files scope derived from the Design Doc and task target files; for a revision plan over existing work, the base branch and diff range — so the work plan review and downstream verification share one scope
 - **Include a Failure Mode Checklist in the work plan** (see plan template) — enumerate all ten domain-independent failure categories (same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering, irreversible-operation), mark which apply, and map each applicable one to its covering task(s), keeping entries free of project-specific names
-- **Include a First-Pass Risk Coverage table when `irreversible-operation` applies** (see plan template) — one row per irreversible operation with its reaching routes, the safe default it leaves when authorizing evidence is incomplete, a covering task named by its stable `Phase X Task Y` ID, and a disposition (`covered` / `n/a` / `blocked`) in every one of the six hazard columns. Task materialization copies these rows to the task whose `Source Work Plan Task` matches that ID, so fill every cell — a blank one is a decision the implementer never receives. Record any `blocked` hazard's required input in Decisions and Unresolved Items
 - Place verification work in the task entry whose implementation outcome it proves, and in the phase required by Verification Strategy's verification timing
 - When test skeletons are provided, include integration test implementation in the task entry carrying the corresponding implementation outcome, and E2E test execution in the final phase
 - When test skeletons are not provided, include test implementation in the task entry whose outcome the Design Doc acceptance criteria describe
@@ -160,7 +159,7 @@ For each task, derive completion criteria from Design Doc acceptance criteria an
 
 This plan owns the task boundaries; the downstream materialization step copies them without re-deciding. Populate the plan template's task-entry fields for every implementation item: a stable `Phase X Task Y` ID, one Implementation outcome, concrete Target Files, one Rollback boundary, and one Executor lane (`backend` or `frontend`). Create separate task entries whenever the Implementation outcome, Rollback boundary, or Executor lane differs. Keep the wiring or registration, tests, generated artifacts, and user documentation an outcome needs in the entry whose outcome they complete or prove.
 
-Set Executor lane from the entry's Target Files: `frontend` when every path is under the project's frontend paths, `backend` otherwise. Use the project structure declared in the technical-spec skill to classify a path. When one entry's Target Files span both, that is a signal the entry covers two outcomes — split it, since a task file routes to exactly one executor.
+Set Executor lane from the entry's Target Files: `frontend` when every path is under the project's frontend paths, `backend` otherwise. Classify paths using the directory conventions the project-context skill declares. When project-context declares no frontend paths, the project is backend-only and every lane is `backend` — record that as the reason rather than letting the fallback decide silently. When one entry's Target Files span both, that is a signal the entry covers two outcomes; split it, since a task file routes to exactly one executor.
 
 ### 7. Produce Output (template selection by scale)
 
@@ -172,7 +171,7 @@ Set Executor lane from the entry's Target Files: `frontend` when every path is u
 - **mode**: `create` (default) | `update`
 - **scale**: `small` | `medium` | `large` (taken from the requirements-analysis result; controls output mode — see "Output Mode by Scale" below)
 - **designDoc**: Path to Design Doc(s) (may be multiple for cross-layer features). At `scale: small` Design Doc may be absent; in that case derive the task directly from the requirements-analysis output and PRD update notes.
-- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` and `speculative` requirements as excluded from every task entry. Fields left `weak-but-explicit` stay with the caller per the requirement-convergence storage protocol; they are recorded open questions, not blocking items, so do not convert them into unresolved items the executor must stop on.
+- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` and `speculative` requirements as excluded from every task entry. Fields left `weak-but-explicit` stay with the caller per the requirement-convergence storage protocol.
 - **uiSpec** (optional): Path to UI Specification (frontend/fullstack features)
 - **prd** (optional): Path to PRD document
 - **adr** (optional): Path to ADR document
@@ -358,8 +357,6 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 ## Quality Checklist
 
 - [ ] Design Doc(s) consistency verification
-- [ ] Every task entry carries a stable `Phase X Task Y` ID, one Implementation outcome, concrete Target Files, one Rollback boundary, and one Executor lane
-- [ ] Every populated `Covered By Task(s)` cell in this plan names those stable IDs (rows justified as `gap` leave the cell as `—`)
 - [ ] Design-to-Plan Traceability table complete (all DD technical requirements categorized and mapped)
   - [ ] No `gap` entries without justification
   - [ ] All justified `gap` entries flagged for user confirmation before plan approval

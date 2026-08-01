@@ -86,8 +86,6 @@ implementation-approachスキルで定義された検証レベル（L1/L2/L3）�
    | `backend` | 計画書の全タスクエントリが `backend` の場合は `{plan-name}-task-{number}.md`。それ以外は `{plan-name}-backend-task-{number}.md` |
    | `frontend` | `{plan-name}-frontend-task-{number}.md`（必須 — 素の `*-task-*` 形式はbackend予約） |
 
-   Executor lane、Target Files、ファイル名のbackend/frontendセグメントは一致していなければならない。判定には作業計画書が適用したものと同じ Target Files → lane の規則を用いる（work-planner のタスクエントリ手順を参照。パスの分類は technical-spec スキルに従う）。一致しない場合は、どちらかを選ばずに呼び出し元へ不一致を報告する。
-
    例: `20250122-refactor-types-task-01.md`（全エントリがbackend）、`20250122-dashboard-frontend-task-01.md`（frontendエントリ）、`20250122-auth-backend-task-01.md` + `20250122-auth-frontend-task-02.md`（エントリが両laneにまたがる計画書）。
    - **フェーズ完了タスクの自動生成（必須）**:
      - 作業計画書の「Phase X」表記を基準に、各フェーズ最終タスクの後に生成
@@ -172,7 +170,6 @@ implementation-approachスキルで定義された検証レベル（L1/L2/L3）�
 2. **カテゴリごとに Proof Obligation を追加**: マッチした各タスクに、その `主要な故障モード` をそのカテゴリとする Proof Obligation を持たせ、タスクの対象に即して具体化する（例: `missing-sort-key ordering` → 「このタスクのリストで、ソートキーを持たない行が誤配置されるか非決定的に並び替わる」）。残りの Proof Obligations フィールドは上記「証明義務の伝播」に従いACと対象ファイルから埋める。そのカテゴリをカバーするACがない場合、`主張` をそのタスクが防ぐべき故障モード条件とし、`状態アサーション` はタスクが状態を変更しない限り `N/A` とする。
 3. **既存エントリへの統合**: AC由来の Proof Obligation が既にそのタスクの同じ故障モードをカバーしている場合、並行して追加せず単一エントリのまま保つ。
 4. **提供時のみ適用**: この伝播は、該当するカテゴリを持つ故障モードチェックリストが作業計画書に含まれる場合のみ実行する。
-5. **First-Pass Risk Coverage 行のコピー**: 作業計画書が First-Pass Risk Coverage 表を持つ場合、「カバーするタスク」に生成済みタスクの `Source Work Plan Task` を含む各行を、そのタスクの First-Pass Risk Coverage セクションへ「カバーするタスク」列を除いてそのままコピーする — 6つの disposition すべてを含め、要約しない。タスクファイルが executor とレビュアが読む契約であるため、ここで落とした disposition は、計画書が下したのに下流の誰も受け取らない判断になる。次に、その行が `blocked` としているhazardごとに、欠けている判断を示した `Kind: requirement-decision` のブロッキング未解決項目を追加し、既存の未解決項目チェック経由で executor が停止するようにする。
 
 ## UI Spec伝播
 

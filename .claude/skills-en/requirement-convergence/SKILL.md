@@ -36,11 +36,9 @@ Register these steps before starting and record each step's evidence as it compl
 |------|--------|---------------------|
 | 1 | State the scope facts the analysis produced, then separately what they imply for the requirement | Facts listed with the analysis output they came from |
 | 2 | Ask about the fields below `ready`, at most two questions per message | One question per field below `ready` |
-| 3 | Record each answer as that field's value | The value uses wording the user supplied, not wording the hearing offered |
+| 3 | Record each answer as that field's value | The value is the option the user selected or the wording the user supplied |
 | 4 | Re-ask once when a recorded value still fails its pass condition, then mark the field `weak-but-explicit` when the user agrees to leave the second answer as it stands | Two recorded answers, or the user's agreement to stop |
 | 5 | Hand the record to the step that judges the fields | An updated record returned from that step |
-
-Step 3's evidence is what keeps the hearing reviewable: a value restating the hearing's own candidates fails it, so the user's judgment survives however the question was put.
 
 ## Storage Protocol
 

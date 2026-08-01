@@ -7,13 +7,13 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 
 ## Creation Decision Matrix
 
-Evaluate rows by confirmed scale, then add the conditional documents named in the same row. ADR Creation Conditions override scale: when any ADR condition applies, create or update the ADR even for a 1-2 file change.
+Evaluate rows by confirmed scale, then add the conditional documents named in the same row.
 
 | Confirmed Scale | Required Documents | Conditional Additions | Creation Order |
 |-----------------|--------------------|-----------------------|----------------|
 | Large (6+ files or large-risk axis) | PRD, Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies | PRD -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
 | Medium (3-5 files or medium-risk axis) | Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies; update an existing PRD when the feature scope changes | PRD update (if applicable) -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
-| Small (1-2 files with no higher-risk axis) | One task file in task-template format | ADR when any ADR condition applies; update an existing PRD when the feature scope changes | PRD update (if applicable) -> ADR (if applicable) -> task file |
+| Small (1-2 files with no higher-risk axis) | One task file in task-template format | Update an existing PRD when the feature scope changes | PRD update (if applicable) -> task file |
 
 For a Large change, satisfy the PRD requirement by creating a new PRD, updating the relevant PRD, or creating a reverse PRD when no current product document exists.
 
@@ -22,8 +22,6 @@ For a Large change, satisfy the PRD requirement by creating a new PRD, updating 
 File count measures size, not structural impact, so a two-file change can still reshape a contract or a data flow.
 
 When any ADR Creation Condition below applies, the confirmed scale is **Medium at minimum** — Design Doc and Work Plan required — regardless of file count. Escalation only raises a level; a file count that already reaches Medium or Large stands. Record the applied condition as the deciding axis.
-
-Scale decides which documents a change requires. Task boundaries within a Work Plan are decided separately, by implementation outcome, rollback boundary, and executor lane (see plan-template).
 
 ## ADR Creation Conditions (Required if Any Apply)
 

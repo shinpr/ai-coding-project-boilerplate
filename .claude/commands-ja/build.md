@@ -146,7 +146,7 @@ Escalate when the required fix or investigation falls outside that scope.
 
 1. **両方を並列で実行** (Agent tool):
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`、Design Docパス、`code_paths`: 実装ファイルリスト（`git diff --name-only main...HEAD`）
-   - security-reviewer (subagent_type: "security-reviewer") → Design Docパス、実装ファイルリスト、および `workPlan`: この実行で使用した作業計画書パス（その故障モードチェックリストと First-Pass Risk Coverage 表が、レビュアが検証する宣言済み disposition になる）
+   - security-reviewer (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリスト
 
 2. **結果の統合** — 合格/不合格の基準はsubagents-orchestration-guideの実装後検証セクション参照。統合検証レポートをユーザーに提示。
 

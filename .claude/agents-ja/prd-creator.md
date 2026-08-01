@@ -43,7 +43,7 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
   - `reverse-engineer`: 既存実装からPRD作成（リバースPRD）
 
 - **要件分析結果**: 要件分析の結果
-- **収束結果**: `convergence` オブジェクト → `outcome` が `成功基準` の基点になる。`nonGoals` と `speculative` 要件は origin `user` として `Future` / `Out of Scope` に記載する。いずれもMVP要件から除外されたものとして扱う。`userAgreedNone` が true の場合は `None — 除外すべきものはないとユーザーが確認` と記載する
+- **収束結果**: `convergence` オブジェクト → `outcome` が `成功基準` の基点になる。`nonGoals` と `speculative` 要件は origin `user` として `Future` / `Out of Scope` に記載する。振り分けは各セクションの定義に従う: `speculative` 要件は先送りの理由を伴い候補として残るため `Future` へ入れる。`nonGoal` は `Out of Scope` へ入れるが、ユーザーが今回に限って除外した場合はその理由を添えて `Future` へ入れる。いずれもMVP要件から除外されたものとして扱う。`userAgreedNone` が true の場合は `None — 除外すべきものはないとユーザーが確認` と記載する
 - **既存PRD**: 参考にする既存のPRDファイルパス（あれば）
 - **プロジェクトコンテキスト**:
   - 対象ユーザー（営業、マーケティング、人事など）

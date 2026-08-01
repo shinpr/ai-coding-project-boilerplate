@@ -146,7 +146,7 @@ After all task cycles finish, run verification agents **in parallel** before the
 
 1. **Invoke both in parallel** using Agent tool:
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list (`git diff --name-only main...HEAD`)
-   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path, implementation file list, and `workPlan`: the work plan path used in this run (its Failure Mode Checklist and First-Pass Risk Coverage table are the declared dispositions the reviewer verifies against)
+   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path and implementation file list
 
 2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
 

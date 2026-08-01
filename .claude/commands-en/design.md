@@ -73,8 +73,6 @@ After codebase-analyzer returns, confirm the design scope with the user before a
 
 First run the requirement-convergence hearing protocol, using the codebase-analyzer findings as the facts it presents. This command has no requirement-analyzer, so the orchestrator both elicits and judges the fields, recording the result as the skill's `convergence` object (`outcome`, `requirements[]` with layer labels, `nonGoals[]`, plus a readiness label per field). `cost` does not apply here: this command delegates investigation to codebase-analyzer rather than costing the change itself, and entering it already decided to design. The Step 1 keyword search locates seed files for that analysis; it is not a cost input. Carry that object into Step 4 so technical-designer persists it to the Design Doc.
 
-The hearing completes when every applicable field is `ready` or `weak-but-explicit`; that recorded object is what permits the scope presentation below to start.
-
 Then present, sourced from the codebase-analyzer JSON, using AskUserQuestion:
 - **Target files/modules**: `analysisScope.filesAnalyzed` and the modules they belong to
 - **Affected layers**: layers touched, derived from `analysisScope.categoriesDetected` and `focusAreas`

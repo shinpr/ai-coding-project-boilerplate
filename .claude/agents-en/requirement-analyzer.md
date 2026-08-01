@@ -38,7 +38,7 @@ Run the solution-in-disguise test when the requirement names a mechanism rather 
 This agent judges the fields and reports every field below `ready` through `questions`. The orchestrator elicits the answers and re-invokes this agent with them.
 
 ### 4. Determine Scale
-Classify based on the file count from Step 2 (small: 1-2, medium: 3-5, large: 6+), then apply documentation-criteria Structural Escalation. Scale determination must cite specific file paths as evidence, and an escalation must cite the ADR condition that raised it.
+Classify based on the file count from Step 2 (small: 1-2, medium: 3-5, large: 6+), then apply documentation-criteria Structural Escalation. Scale determination must cite specific file paths as evidence.
 
 ### 5. Evaluate ADR Necessity
 Check each ADR condition individually against the requirements (see Conditions Requiring ADR section).
@@ -120,7 +120,7 @@ Final message: exactly one JSON object matching the schema below (begins with `{
   "purpose": "Essential purpose of request (1-2 sentences)",
   "convergence": {
     "outcome": "observable result",
-    "requirements": [{ "item": "requirement", "layer": "current-state|desired-future|speculative", "deferralReason": "reason or null" }],
+    "requirements": [{ "item": "requirement", "layer": "current-state|desired-future|speculative", "deferralReason": "reason when layer is speculative, else null" }],
     "nonGoals": ["list"],
     "userAgreedNone": false,
     "cost": { "band": "low-reversible|medium|high-irreversible", "evidence": ["list"], "unknowns": ["list"] },

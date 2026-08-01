@@ -42,8 +42,6 @@
 
 Design Docの各技術要件をカバーするタスクへのマッピング。抽出した項目ごとに1行。各行には対応タスクが少なくとも1つ必要。タスクがない場合は明示的なギャップ理由が必要。
 
-本計画書で値が入っている「カバーするタスク」欄は、本表以下すべての表において、実装フェーズで定義される安定IDの`Phase X タスクY`でタスクを指名する。これにより、下流のタスク実体化が対象を再導出せずに解決できる。ギャップステータスが`gap`の行は、この欄を`—`のままにする。
-
 | Design Doc | DDセクション | DD項目 | カテゴリ | カバーするタスク | ギャップステータス | 備考 |
 |---|---|---|---|---|---|---|
 | [docs/design/XXX.md — 上記の関連ドキュメントのいずれか] | [DDのセクション名] | [具体的な項目] | impl-target / connection-switching / contract-change / verification / prerequisite | [Phase X タスクY] | covered | |
@@ -77,20 +75,6 @@ Design Docが、実装が正確に再現すべき**拘束的観測値**を指定
 | rollback-only visibility | yes/no | |
 | missing-sort-key ordering | yes/no | |
 | irreversible-operation | yes/no | |
-
-## First-Pass Risk Coverage
-
-`irreversible-operation` を yes とした場合にこのセクションを含める。この実装が行う不可逆操作 — 削除、上書き、外部公開、決済、通知、その他レシピが取り消せない状態変更 — ごとに1行。
-
-hazardごとに1列で、各列は `covered`、`n/a`、`blocked` のいずれか。タスク実体化が、この行の「カバーするタスク」と`Source Work Plan Task`が一致するタスクへこれらの行をコピーするため、ここで空欄のままにした disposition は実装者が受け取らない判断になる。
-
-| 操作 | 到達する経路 | エビデンス不完全時の安全な既定状態 | mutation | partial-evidence | retry | concurrency | identity | input-route | カバーするタスク |
-|---|---|---|---|---|---|---|---|---|---|
-| [例: 消費済みタスクファイルの削除] | [そこに到達する全経路 — 例: レシピのクリーンアップステップ、APIハンドラ、スケジュールジョブ] | [認可するエビデンスが不完全なときに操作が残す状態 — 例: 「ファイルを保持し失敗を報告する」] | covered / n/a / blocked | | | | | | [Phase X タスクY] |
-
-各hazardが解決する問いは次のとおり: **mutation**（状態変更が意図した対象に限定され、その不可逆性が受け入れられている）、**partial-evidence**（認可するエビデンスが一部しかない場合の振る舞い）、**retry**（再実行が安全、または防がれている）、**concurrency**（2つの経路が同時に到達しても意図しない状態にならない）、**identity**（実行前に対象が一意に解決される）、**input-route**（各経路が実行前に同じ検証を適用する）。
-
-disposition が Design Doc や要件から判断できない場合はそのhazardを `blocked` とし、必要入力を Decisions and Unresolved Items に記録する。
 
 ## UI Specコンポーネント → タスクマッピング
 

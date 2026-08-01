@@ -369,15 +369,7 @@ Mark as N/A with brief rationale when the design introduces entirely new behavio
 
 ## Future Extensibility
 
-This section records capabilities **this design** excluded from the current design surface. Limit entries to capabilities tied to a current requirement, a current consumer, or a documented constraint; route purely speculative future plans into a separate proposal document.
-
-Three sections record exclusions, separated by who decided and at what scope:
-
-| Section | Records | Decided by |
-|---|---|---|
-| `Requirement Convergence` | Non-goals and speculative requirements | The user, at requirement time |
-| `Design Convergence → Rejected Additions` | Options considered while resolving one specific Failed Item | This design, bound to a Failed Item |
-| this section | Capability-level exclusions not bound to a Failed Item | This design, at capability scope |
+This section records capabilities **this design** excluded from the current design surface. Exclusions the user decided at requirement time belong in `Requirement Convergence`. Limit entries to capabilities tied to a current requirement, a current consumer, or a documented constraint; route purely speculative future plans into a separate proposal document.
 
 - **Deferred possibilities**: [Capabilities considered during design and explicitly excluded from the current design surface. Each entry names the current requirement it would have served]
 - **Intentional limitations**: [What was deliberately kept small and why]

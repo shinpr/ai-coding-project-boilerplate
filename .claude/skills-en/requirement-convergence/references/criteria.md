@@ -22,7 +22,7 @@ Flattening these three into one requirement list is what makes a bloated plan lo
 
 Capabilities deliberately excluded from this change, authored by the user.
 
-Present the cost band and its unknowns first, then ask what to leave out. `userAgreedNone` records that the user considered exclusions and found none; only the user sets it.
+Present the cost band and its unknowns first — or, when cost is not banded, the scope facts the analysis returned — then ask what to leave out. `userAgreedNone` records that the user considered exclusions and found none; only the user sets it.
 
 An adjacent capability the agent noticed is a question for the user, not a non-goal.
 
@@ -41,7 +41,7 @@ Cost follows structure and count, not behavior, so it is decided from these inpu
 
 Reading what the code *does* answers whether the change is correct, not what it costs, and belongs to the codebase analysis that precedes design.
 
-Record `cost` as one band, the inputs above that place it, and the remaining unknowns. A flow declares `cost` out of scope only where its own steps say so.
+Record `cost` as one band, the inputs above that place it, and the remaining unknowns. Skip `cost` only where it is explicitly declared out of scope; absent that declaration, band it.
 
 ## Challenge intensity
 
@@ -57,6 +57,6 @@ Report an unknown that would move the band up as a blocking question rather than
 
 ## Solution-in-disguise test
 
-When the requirement names a mechanism rather than an outcome ("add a cache layer", "introduce a queue"), state three materially different ways to reach the same outcome.
+When the requirement names a mechanism rather than an outcome ("add a cache layer", "introduce a queue"), state the materially different ways to reach the same outcome, up to three.
 
-When three exist, the named mechanism is one option among several — present them for a user decision. When the mechanism is genuinely the only route, record that and proceed.
+When an alternative exists, the named mechanism is one option among several — present them for a user decision. When none exists, record the mechanism as the only route and proceed.

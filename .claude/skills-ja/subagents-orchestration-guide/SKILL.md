@@ -114,11 +114,11 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 
 ## 規模判定とドキュメント要件
 
-以下のファイル数が下限を定める。documentation-criteriaスキルの構造的エスカレーションが、ADR作成条件のいずれかに該当する場合に確定規模と必要ドキュメントの行を引き上げる（引き上げるだけで下げることはない）。同スキルには、この表とタスク境界の関係も記載されている — タスク境界は別の判断である。
+以下のファイル数が下限を定める。documentation-criteriaスキルの構造的エスカレーションが、ADR作成条件のいずれかに該当する場合に確定規模と必要ドキュメントの行を引き上げる（引き上げるだけで下げることはない）。
 
 | 規模 | 基準ファイル数 | PRD | ADR | Design Doc | 作業計画書 |
 |------|---------------|-----|-----|------------|-----------|
-| 小規模 | 1-2 | 更新※1 | 条件付き※2 | 不要 | task-template 形式の単一タスクファイル（`docs/plans/tasks/` 直下、計画書ファイルは別途作成しない） |
+| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | task-template 形式の単一タスクファイル（`docs/plans/tasks/` 直下、計画書ファイルは別途作成しない） |
 | 中規模 | 3-5 | 更新※1 | 条件付き※2 | **必須** | **必須** |
 | 大規模 | 6以上 | **必須**※3 | 条件付き※2 | **必須** | **必須** |
 
@@ -162,7 +162,7 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 | document-reviewer | 入力: `doc_type`、`target`、`review_context`（新規作成の文書は `creation`、承認済み文書の改訂は `update`、リバースエンジニアリングで得た文書は `as-is` — レビューを依頼した理由を宣言することで、正当に不在なペア入力を欠陥として読ませない）、および doc_type 固有の入力。出力: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)、recommendations（ペア入力が不在で実行されなかったチェック、および `code_verification` が `blocked` で返った場合はコード検証の不在を項目として含む） | approved/approved_with_conditionsで次へ。needs_revisionで修正依頼。rejectedでエスカレーション。approvedを全スコープの承認として扱う前に、スキップされたチェックのrecommendationsを読む |
 | design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | CONFLICTS_FOUND時: 矛盾をユーザーに提示してから進む |
 | integration-test-reviewer | 入力: `testFile`（1つ以上のパス — 変更が触れたテストファイルすべてを、実装ステップの `testsAdded` から渡す）、`diffBase`（任意 — テストを比較する基準リビジョン。レビュー範囲をファイル全体ではなく変更分にする）、`designDocPath`（任意）、`taskFiles`（任意）。出力: verdict.decision (approved/needs_revision/blocked)、verdict.reason、testFiles[]、fileResults[]（レビュー対象ファイルごとに1エントリ。各々が自身の `reviewBasis`（skeleton/proof_obligations/prompt_claims/none）と、そのファイルの充足カウントおよび品質課題を持つ）、proofObligationCoverage[]（タスク単位で全レビュー対象ファイルに跨る — 1タスクの obligation は複数ファイルに分かれうるため、カバレッジはここで解決する）、requiredFixes[]（各 `location` はファイルパスで始まる）。`blocked` の原因は2つ: レビュー対象ファイルの `reviewBasis` が `none`、または basis と Design Doc の矛盾。分岐は `verdict.decision` で行う — トップレベルの `status` は検証結果の軸（passed/failed/needs_improvement）でルーティング判定ではない | needs_revision時: 同じ task_file と requiredFixes[] を渡してルーティング先の executor を Fix Mode で再実行。blocked時: verdict.reason を添えてエスカレーション |
-| security-reviewer | 入力: `designDoc`、`implementationFiles`、`workPlan`（任意 — この実行の作業計画書パスを渡すと、計画書が宣言した Failure Mode Checklist と First-Pass Risk Coverage の disposition に対して実装を検証する。統括する計画書がないレビューフローでは省略）。出力: status (approved/approved_with_notes/needs_revision/blocked)、findings、notes、irreversibleHazards[]（`irreversible-operation` のhazardが `blocked` のとき非空。各エントリが必要な判断を示し、status を `blocked` に確定させる）、requiredFixes | needs_revision時: `requiredFixes[].location` から影響ファイルパスを抽出して Target Files に投入した統合修正タスクファイルを作成し、その task_file と `requiredFixes[]` 配列を渡してルーティング先の executor を Fix Mode で起動。続いて quality-fixer を実行し、最後に security-reviewer を再起動して解消を検証する。blocked 時: ブロッキング findings を添えてユーザーにエスカレーション — エージェント層の権限外の修正である |
+| security-reviewer | 入力: `designDoc`、`implementationFiles`。出力: status (approved/approved_with_notes/needs_revision/blocked)、findings、notes、irreversibleHazards[]（`irreversible-operation` のhazardが `blocked` のとき非空。各エントリが必要な判断を示し、status を `blocked` に確定させる）、requiredFixes | needs_revision時: `requiredFixes[].location` から影響ファイルパスを抽出して Target Files に投入した統合修正タスクファイルを作成し、その task_file と `requiredFixes[]` 配列を渡してルーティング先の executor を Fix Mode で起動。続いて quality-fixer を実行し、最後に security-reviewer を再起動して解消を検証する。blocked 時: ブロッキング findings を添えてユーザーにエスカレーション — エージェント層の権限外の修正である |
 | acceptance-test-generator | status, generatedFiles.{integration,fixtureE2e,serviceE2e}（レーンごとに path\|null）, budgetUsage（レーン別）, e2eAbsenceReason（E2Eレーンごと。出力時は null。reason の enum 定義は acceptance-test-generator と integration-e2e-testing スキルが所有） | 非nullの各 `generatedFiles.<lane>` パスがディスク上に存在することを確認し、レーン別のパスと不在理由を work-planner に渡す |
 
 ### quality-fixer blockedハンドリング

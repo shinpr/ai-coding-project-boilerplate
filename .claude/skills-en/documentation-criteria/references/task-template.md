@@ -2,15 +2,15 @@
 
 Metadata:
 - Source Work Plan Task: [Phase X Task Y — the stable ID of the work plan item this task materializes]
-- Dependencies: Phase 1 Task 2 (docs/plans/tasks/{plan-name}-task-01.md) -> Deliverable: docs/plans/analysis/research-results.md
+- Dependencies: Phase 1 Task 1 (docs/plans/tasks/{plan-name}-task-01.md) -> Deliverable: docs/plans/analysis/research-results.md
 - Provides: docs/plans/analysis/api-spec.md (for research/design tasks)
 - Implementation outcome: [Observable behavior, contract, migration, or downstream-consumable deliverable completed by this task]
 - Rollback boundary: [Behavior, contract, migration, or persisted state reverted together in one commit]
 - Executor lane: [backend | frontend]
 
-A dependency names the prerequisite by its stable ID, the task file that carries it, and the deliverable path the executor reads — the executor resolves paths from this section, so the path stays alongside the ID.
+A dependency names the prerequisite by its stable ID, the task file that carries it, and the deliverable path the executor reads — the executor resolves paths from this section, so the path stays alongside the ID. The file's `-task-{number}` sequence is independent of the `Phase X Task Y` numbering; the two match only by coincidence, which is why the filename is written out.
 
-A task file produced outside work-plan materialization — a review fix, a readiness preflight task, an integration-test add-on, or a small-scale task written directly — has no work plan item behind it. Set `Source Work Plan Task: N/A — <what produced it>` and fill the remaining fields from the task itself; omit `Executor lane` when the producing flow already fixes the executor.
+A task file produced outside work-plan materialization (review fix, readiness preflight, integration-test add-on, small-scale task) sets `Source Work Plan Task: N/A — <what produced it>` and omits `Executor lane` when the producing flow already fixes the executor.
 
 ## Implementation Content
 [What this task will achieve]
@@ -48,21 +48,6 @@ Each row is a DD-derived observable contract the implementation in this task mus
 | Source | Contract Type | Required Observable Value | Compliance Check |
 |---|---|---|---|
 | [Design Doc path (§ Section) copied from the matching work plan Reference Contract Values row] | [structure-order / derived-display / state-lifecycle-negative, copied from the work plan row] | [Required Observable Value copied verbatim from the work plan row] | [Y/N-answerable positive predicate that evaluates whether the planned/final implementation reproduces the value] |
-
-## First-Pass Risk Coverage
-(Include this section when a work plan First-Pass Risk Coverage row lists this task's `Source Work Plan Task` in its Covered By Task(s) column. Copy the row verbatim, minus that column. Omit the section otherwise.)
-
-| Operation | Reaching Routes | Safe Default On Incomplete Evidence | mutation | partial-evidence | retry | concurrency | identity | input-route |
-|---|---|---|---|---|---|---|---|---|
-| [copied from the plan row] | [copied] | [copied] | covered / n/a / blocked | | | | | |
-
-Each disposition is a decision already made, and its value fixes how this task treats the hazard:
-
-- `covered` — the hazard's prevention outcome is required here. Implement it and leave it verifiable; the matching Proof Obligation above is what downstream review checks it against, and its absence is the defect to find
-- `n/a` — this hazard requires no dedicated implementation and no Proof Obligation of its own. Leave in place any safety that is already present, shared with a `covered` hazard, or obtained as a side effect of another requirement; review accepts it as-is
-- `blocked` — no decision exists yet, so this row also appears in Decisions and Unresolved Items below with `Kind: requirement-decision`. Execution stops there rather than choosing a behavior
-
-Whether a mechanism this task introduces is a justified addition is decided in Adopted Additions Correspondence against the Design Doc, not from this table.
 
 ## Decisions and Unresolved Items
 (Include this section when task materialization resolved an alternative, optional behavior, or placeholder, or when a required decision is unresolved at materialization time. Omit when the task carries no such items.)

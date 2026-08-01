@@ -77,9 +77,7 @@ codebase-analyzerは値の入った`requirement_analysis.affectedFiles`を必要
 ### Step 3: スコープ確認
 codebase-analyzerが返ったら、設計作業の前にユーザーとスコープを確認する。
 
-まず requirement-convergence のヒアリングプロトコルを実行する。提示する事実にはcodebase-analyzerの所見を用いる。本コマンドにはrequirement-analyzerがいないため、フィールドの聞き出しと判定の両方をオーケストレーターが担い、結果を同スキルの `convergence` オブジェクト（`outcome`、レイヤーラベル付きの `requirements[]`、`nonGoals[]`、およびフィールドごとの readiness ラベル）として記録する。`cost` はここでは適用しない: オーケストレーターはリポジトリを検索できず、本コマンドに入った時点で設計するという判断は済んでいるためである。このオブジェクトをStep 5とStep 6へ引き継ぎ、ui-spec-designerが非ゴールを尊重し、technical-designer-frontendがDesign Docへ永続化できるようにする。
-
-ヒアリングは、該当する全フィールドが `ready` または `weak-but-explicit` になった時点で完了する。その記録されたオブジェクトが、以下のスコープ提示を開始してよい根拠になる。
+まず requirement-convergence のヒアリングプロトコルを実行する。提示する事実にはcodebase-analyzerの所見を用いる。本コマンドにはrequirement-analyzerがいないため、フィールドの聞き出しと判定の両方をオーケストレーターが担い、結果を同スキルの `convergence` オブジェクト（`outcome`、レイヤーラベル付きの `requirements[]`、`nonGoals[]`、およびフィールドごとの readiness ラベル）として記録する。`cost` はここでは適用しない: 本コマンドは調査を codebase-analyzer に委譲しており、変更のコストを自分で見積もることはしない。加えて、本コマンドに入った時点で設計するという判断は済んでいる。Step 1 のキーワード検索はその分析のためのシードファイル特定であって、コストの入力ではない。このオブジェクトをStep 5とStep 6へ引き継ぎ、ui-spec-designerが非ゴールを尊重し、technical-designer-frontendがDesign Docへ永続化できるようにする。
 
 次に、codebase-analyzerのJSONを出典として、AskUserQuestionで以下を提示する:
 - **対象ファイル/モジュール**: `analysisScope.filesAnalyzed`と、それらが属するモジュール
