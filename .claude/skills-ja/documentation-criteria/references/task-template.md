@@ -2,11 +2,15 @@
 
 Metadata:
 - Source Work Plan Task: [Phase X タスクY — このタスクが実体化する作業計画書項目の安定ID]
-- Dependencies: task-01 -> Deliverable: docs/plans/analysis/research-results.md
+- Dependencies: Phase 1 タスク2 (docs/plans/tasks/{plan-name}-task-01.md) -> Deliverable: docs/plans/analysis/research-results.md
 - Provides: docs/plans/analysis/api-spec.md（調査・設計タスクの場合）
 - Implementation outcome: [このタスクが完成させる、観測可能な振る舞い・契約・マイグレーション・下流が消費できる成果物]
 - Rollback boundary: [1コミットでまとめて元に戻す振る舞い・契約・マイグレーション・永続状態]
 - Executor lane: [backend | frontend]
+
+依存関係は、前提タスクを安定ID、それを収めたタスクファイル、executor が読む成果物パスの3点で示す。executor はこのセクションからパスを解決するため、パスは安定IDと併記したまま残す。
+
+作業計画書の実体化以外で生成されたタスクファイル — レビュー修正、readiness の事前タスク、統合テストの追加分、小規模で直接書いたタスク — には対応する作業計画書項目が存在しない。`Source Work Plan Task: N/A — <生成元>` とし、残りのフィールドはそのタスク自身から埋める。生成元のフローが executor を既に固定している場合は `Executor lane` を省略する。
 
 ## Implementation Content
 [このタスクで達成すること]

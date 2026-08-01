@@ -37,7 +37,7 @@ When requirement-analyzer's `crossLayerScope` indicates cross-layer scope (backe
 Run the requirement-convergence hearing protocol on the returned `convergence` object before presenting anything else, using the analyzer's scope facts and cost band as the facts it presents.
 
 When user responds to questions:
-- If any `convergence` field is below `ready` → Re-execute requirement-analyzer with the hearing answers so the record is re-judged. Repeat until every field is `ready` or `weak-but-explicit`, bounded by the hearing protocol's one re-ask round per field — after that round, the user's agreement to leave the answer as it stands is what marks the field `weak-but-explicit`
+- If any `convergence` field is below `ready` → Re-execute requirement-analyzer with the hearing answers so the record is re-judged. Stop re-invoking after the hearing protocol's one re-ask round per field: the user's agreement to leave the second answer as it stands marks the field `weak-but-explicit`, and a field the user neither resolves nor agrees to leave stays `weak` and is carried forward as a recorded open question
 - If response matches any `scopeDependencies.question` → Check `impact` for scale change
 - If scale changes → Re-execute requirement-analyzer with updated context
 - If `confidence: "confirmed"` or no scale change → Proceed to next step

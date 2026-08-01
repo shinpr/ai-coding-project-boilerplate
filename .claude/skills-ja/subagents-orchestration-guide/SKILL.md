@@ -349,7 +349,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
    - **prd-creator**（PRDを新規作成または更新する場合）: `outcome` を `成功基準` へ、`nonGoals` と `speculative` 要件を origin `user` として `Future` / `Out of Scope` へ永続化する
    - **technical-designer / technical-designer-frontend**: PRDがない場合は同じ内容を Design Doc の `Requirement Convergence` へ永続化し、`weak-but-explicit` のまま残ったフィールドは常にそこへ記録する
    - **ui-spec-designer**（フロントエンド/フルスタック）: `nonGoals` と `speculative` 要件を、UI Specが対象に含めない機能・能力として扱う
-   - **work-planner**: `nonGoals` と `speculative` 要件を全タスクエントリから除外されたものとして扱う。小規模ではPRDもDesign Docも存在しないため最後の引き継ぎ先となり、`weak-but-explicit` のまま残った各フィールドを、出力するタスクファイルのブロッキングな未解決項目として記録する
+   - **work-planner**: `nonGoals` と `speculative` 要件を全タスクエントリから除外されたものとして扱う。小規模ではPRDもDesign Docも存在しないため、`weak-but-explicit` のフィールドは保存プロトコルに従いオーケストレーター自身のコンテキストに留め、タスクファイルのブロッキング項目にはしない
 
    #### codebase-analyzer → technical-designer
 

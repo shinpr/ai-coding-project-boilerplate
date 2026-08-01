@@ -154,6 +154,8 @@ ADRが入力に含まれる場合、またはDesign Docが「Prerequisite ADRs�
 
 タスク境界を所有するのはこの計画書であり、下流の実体化工程は境界を再決定せずにコピーする。各実装項目について plan template のタスクエントリのフィールドを埋める: 安定IDの`Phase X タスクY`、実装成果1つ、具体的なTarget Files、ロールバック境界1つ、Executor lane 1つ（`backend` または `frontend`）。実装成果・ロールバック境界・Executor lane のいずれかが異なる場合はタスクエントリを分ける。ある成果が必要とする配線・登録、テスト、生成物、ユーザー向けドキュメントは、それらが完成または証明する成果のエントリに保持する。
 
+Executor lane はそのエントリの Target Files から決める: 全パスがプロジェクトのフロントエンドのパス配下なら `frontend`、それ以外は `backend`。パスの分類には technical-spec スキルが宣言するプロジェクト構造を用いる。1つのエントリの Target Files が両方にまたがる場合、それはそのエントリが2つの成果を含んでいる兆候なので分割する — タスクファイルはちょうど1つの executor にルーティングされるためである。
+
 ### 7. 出力の生成（scale 別のテンプレート選択）
 
 - **`scale: medium` / `scale: large`**: documentation-criteria スキルの **plan-template** に従って作業計画書を記述。フェーズ構成図とタスク依存関係図（mermaid）を含める。
@@ -168,7 +170,7 @@ ADRが入力に含まれる場合、またはDesign Docが「Prerequisite ADRs�
 - **prd**（オプション）: PRDドキュメントのパス
 - **adr**（オプション）: ADRドキュメントのパス
 - **testSkeletons**（オプション）: 統合/E2Eテストスケルトンファイルパス（コメントベースのテスト意図記述。実装済みテストではない）
-- **収束結果**（`scale: small` では必須、それ以外は任意）: `convergence` オブジェクト。`nonGoals` と `speculative` 要件は全タスクエントリから除外されたものとして扱う。`scale: small` ではPRDもDesign Docも記録を保持しないため、`weak-but-explicit` のまま残った各フィールドを、タスクファイルの Decisions and Unresolved Items に `Kind: requirement-decision` のブロッキングな未解決項目として記録する — そうしないと、ユーザーが未解決のまま残すことに同意した論点が誰にも届かず、executor がそれを確定してよいことになってしまう
+- **収束結果**（任意）: `convergence` オブジェクト。`nonGoals` と `speculative` 要件は全タスクエントリから除外されたものとして扱う。`weak-but-explicit` のまま残ったフィールドは、requirement-convergence の保存プロトコルに従い呼び出し元が保持する。これらは記録された未解決の論点であってブロッキング項目ではないため、executor が停止すべき未解決項目には変換しない
 - **updateContext**（updateモード時のみ）: 既存計画書のパス、変更理由
 
 ## scale 別の出力モード
@@ -178,7 +180,7 @@ ADRが入力に含まれる場合、またはDesign Docが「Prerequisite ADRs�
 | `small` | **task-template 形式**の単一タスクファイル（documentation-criteria スキル参照） | `docs/plans/tasks/{feature-name}-task-YYYYMMDD.md` | 1-2 ファイル規模ではタスク実体化ステップを分けず、実行工程へ `task_file` として渡すパスを本エージェントが直接生成する |
 | `medium` / `large` | **plan-template 形式**の作業計画書 | `docs/plans/{feature-name}-plan.md` | 個別タスクファイルへの実体化は下流の工程が実施する |
 
-`small` モードではフェーズ構成（Step 4）と設計-計画トレーサビリティ表（Step 5）をスキップし、タスクファイルに `## Target Files`、`## Investigation Targets`、`## Investigation Notes`、`## Implementation Steps (TDD: Red-Green-Refactor)`、`## Quality Assurance Mechanisms`、`## Operation Verification Methods`、`## Completion Criteria` の各セクション、収束結果に `weak-but-explicit` のフィールドがある場合または代替案をここで解決した場合は `## Decisions and Unresolved Items`、および `Metadata:` ブロック（`Dependencies:`、`Provides:`、`Implementation outcome:`、`Rollback boundary:`、`Executor lane:`）を出力する。`Source Work Plan Task: N/A — 小規模で直接生成` とする（照合対象となる作業計画書が存在しないため）。本スケールではこのタスクファイルが唯一の計画成果物である。
+`small` モードではフェーズ構成（Step 4）と設計-計画トレーサビリティ表（Step 5）をスキップし、タスクファイルに `## Target Files`、`## Investigation Targets`、`## Investigation Notes`、`## Implementation Steps (TDD: Red-Green-Refactor)`、`## Quality Assurance Mechanisms`、`## Operation Verification Methods`、`## Completion Criteria` の各セクション、および `Metadata:` ブロック（`Dependencies:`、`Provides:`、`Implementation outcome:`、`Rollback boundary:`）を出力する。`Source Work Plan Task: N/A — 小規模で直接生成` とし（照合対象となる作業計画書が存在しないため）、`Executor lane:` は省略する — 本スケールは単一の executor にルーティングされるため、このフィールドには消費者がいない。本スケールではこのタスクファイルが唯一の計画成果物である。
 
 ## 作業計画書出力形式（medium / large のみ）
 
@@ -349,7 +351,7 @@ Design Docの技術的依存関係と実装アプローチに基づいてフェ�
 
 - [ ] Design Doc（複数時は各Doc）の整合性確認
 - [ ] 各タスクエントリが安定IDの`Phase X タスクY`、実装成果1つ、具体的なTarget Files、ロールバック境界1つ、Executor lane 1つを持つ
-- [ ] 本計画書のすべての「カバーするタスク」欄がそれら安定IDを指名している
+- [ ] 本計画書で値が入っている「カバーするタスク」欄がそれら安定IDを指名している（`gap` として理由付けした行は `—` のままでよい）
 - [ ] 設計-計画トレーサビリティ表の完成（DDの全技術要件がカテゴリ分類・マッピング済み）
   - [ ] 理由なしの`gap`がないこと
   - [ ] 理由ありの`gap`は計画承認前にユーザー確認を実施

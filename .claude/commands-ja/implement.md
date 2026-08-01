@@ -37,7 +37,7 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 他の内容を提示する前に、返された `convergence` オブジェクトに対して requirement-convergence のヒアリングプロトコルを実行する。提示する事実には、アナライザーが出したスコープの事実とコストのバンドを用いる。
 
 ユーザーが質問に回答した時：
-- `convergence` のいずれかのフィールドが `ready` に達していない → ヒアリングの回答を添えてrequirement-analyzerを再実行し、記録を再判定させる。全フィールドが `ready` または `weak-but-explicit` になるまで繰り返す（ヒアリングプロトコルのフィールドごと1回の聞き直しを上限とする — その回の後は、回答のままでよいというユーザーの同意がそのフィールドを `weak-but-explicit` にする）
+- `convergence` のいずれかのフィールドが `ready` に達していない → ヒアリングの回答を添えてrequirement-analyzerを再実行し、記録を再判定させる。ヒアリングプロトコルのフィールドごと1回の聞き直しをもって再実行を打ち切る: 2度目の回答のままでよいというユーザーの同意がそのフィールドを `weak-but-explicit` にし、ユーザーが解決も保留の同意もしなかったフィールドは `weak` のまま、記録された未解決の論点として引き継ぐ
 - 回答が`scopeDependencies.question`のいずれかに該当 → `impact`で規模変更をチェック
 - 規模が変更 → 更新されたコンテキストでrequirement-analyzerを再実行
 - `confidence: "confirmed"` または規模変更なし → 次のステップへ進む

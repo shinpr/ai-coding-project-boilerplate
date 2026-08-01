@@ -374,7 +374,7 @@ Mode for documenting existing frontend architecture as-is. Used when creating De
 
 ### Mode Scope
 
-Produce the evidence-backed as-is documentation from the steps below. Future-state decision outputs — ADR and option selection, change impact analysis, Latest Information Research, Implementation Approach Decision, and Design Convergence — are N/A.
+Produce the evidence-backed as-is documentation from the steps below. Future-state decision outputs — ADR and option selection, change impact analysis, Latest Information Research, Implementation Approach Decision, Requirement Convergence, and Design Convergence — are N/A.
 
 ### Reverse-Engineer Mode Execution Steps
 

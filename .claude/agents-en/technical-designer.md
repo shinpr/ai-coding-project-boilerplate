@@ -376,7 +376,7 @@ Mode for documenting existing architecture as-is. Used when creating Design Docs
 
 ### Mode Scope
 
-Produce the evidence-backed as-is documentation from the steps below. Future-state decision outputs — ADR and option selection, Change Impact Map, Field Propagation Map, Implementation Approach Decision, Latest Information Research, and Design Convergence — are N/A.
+Produce the evidence-backed as-is documentation from the steps below. Future-state decision outputs — ADR and option selection, Change Impact Map, Field Propagation Map, Implementation Approach Decision, Latest Information Research, Requirement Convergence, and Design Convergence — are N/A.
 
 ### Reverse-Engineer Mode Execution Steps
 

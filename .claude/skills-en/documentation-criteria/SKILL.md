@@ -19,7 +19,7 @@ For a Large change, satisfy the PRD requirement by creating a new PRD, updating 
 
 ### Structural Escalation
 
-File count measures size, not structural impact, so a two-file change can still reshape a contract or a data flow. This rule is what the matrix's "higher-risk axis" resolves to.
+File count measures size, not structural impact, so a two-file change can still reshape a contract or a data flow.
 
 When any ADR Creation Condition below applies, the confirmed scale is **Medium at minimum** — Design Doc and Work Plan required — regardless of file count. Escalation only raises a level; a file count that already reaches Medium or Large stands. Record the applied condition as the deciding axis.
 

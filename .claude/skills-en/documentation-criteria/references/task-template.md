@@ -2,11 +2,15 @@
 
 Metadata:
 - Source Work Plan Task: [Phase X Task Y — the stable ID of the work plan item this task materializes]
-- Dependencies: task-01 -> Deliverable: docs/plans/analysis/research-results.md
+- Dependencies: Phase 1 Task 2 (docs/plans/tasks/{plan-name}-task-01.md) -> Deliverable: docs/plans/analysis/research-results.md
 - Provides: docs/plans/analysis/api-spec.md (for research/design tasks)
 - Implementation outcome: [Observable behavior, contract, migration, or downstream-consumable deliverable completed by this task]
 - Rollback boundary: [Behavior, contract, migration, or persisted state reverted together in one commit]
 - Executor lane: [backend | frontend]
+
+A dependency names the prerequisite by its stable ID, the task file that carries it, and the deliverable path the executor reads — the executor resolves paths from this section, so the path stays alongside the ID.
+
+A task file produced outside work-plan materialization — a review fix, a readiness preflight task, an integration-test add-on, or a small-scale task written directly — has no work plan item behind it. Set `Source Work Plan Task: N/A — <what produced it>` and fill the remaining fields from the task itself; omit `Executor lane` when the producing flow already fixes the executor.
 
 ## Implementation Content
 [What this task will achieve]

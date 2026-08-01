@@ -16,7 +16,7 @@ This skill converges **what to build**. How to build it, and which documents the
 | Field | Pass condition |
 |-------|----------------|
 | `outcome` | One observable result. A requirement that does not serve it is excess. |
-| `requirements[]` | Every item labeled `current-state`, `desired-future`, or `speculative`. |
+| `requirements[]` | Every item labeled `current-state`, `desired-future`, or `speculative`. `speculative` is one of these layer labels, not a separate field; "speculative requirements" means the items carrying it. |
 | `nonGoals[]` | Authored by the user, or the user stated there are none. |
 | `cost` | A band with the structural evidence that places it, plus the unknowns that remain. |
 
@@ -49,7 +49,6 @@ Step 3's evidence is what keeps the hearing reviewable: a value restating the he
 | The convergence record in the judging step's output | Every field with its readiness label | Whichever step judged them |
 | PRD `Success Criteria` and `Future` / `Out of Scope` | `outcome`; `nonGoals` and `speculative` requirements with origin `user` | The agent that owns the PRD |
 | Design Doc `Requirement Convergence` | The same when no PRD exists, and the fields left `weak-but-explicit` in every case | The agent that owns the Design Doc |
-| Task file `Decisions and Unresolved Items` (Small scale, where no PRD or Design Doc exists) | Each field left `weak-but-explicit`, as a blocking unresolved item with `Kind: requirement-decision` | The agent that owns the work plan |
 
 A flow that produces neither document carries the record in its own context to the next step.
 

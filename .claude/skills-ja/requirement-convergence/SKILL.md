@@ -16,7 +16,7 @@ description: 変更が生むべき成果と、そこへ至るために提案さ�
 | フィールド | 通過条件 |
 |-----------|---------|
 | `outcome` | 観測可能な結果が1つ。それに寄与しない要件は余剰である。 |
-| `requirements[]` | 各項目に `current-state`、`desired-future`、`speculative` のいずれかのラベルが付いている。 |
+| `requirements[]` | 各項目に `current-state`、`desired-future`、`speculative` のいずれかのラベルが付いている。`speculative` はこのレイヤーラベルの1つであり独立したフィールドではない。「投機的要件」とはそのラベルを持つ項目を指す。 |
 | `nonGoals[]` | ユーザーが挙げたもの。または、除外すべきものはないとユーザーが述べたこと。 |
 | `cost` | バンド1つと、それを決めた構造上の根拠、および残っている不明点。 |
 
@@ -49,7 +49,6 @@ description: 変更が生むべき成果と、そこへ至るために提案さ�
 | 判定ステップの出力に含まれる収束記録 | 全フィールドとその readiness ラベル | フィールドを判定したステップ |
 | PRD の `成功基準` と `Future` / `Out of Scope` | `outcome`、および origin を `user` とした `nonGoals` と `speculative` 要件 | PRD を所有するエージェント |
 | Design Doc の `Requirement Convergence` | PRD がない場合は上と同じ内容。加えて `weak-but-explicit` のまま残ったフィールドは常にここへ記録する | Design Doc を所有するエージェント |
-| タスクファイルの `Decisions and Unresolved Items`（PRDもDesign Docも存在しない小規模で） | `weak-but-explicit` のまま残った各フィールドを、`Kind: requirement-decision` のブロッキングな未解決項目として | 作業計画書を所有するエージェント |
 
 どちらのドキュメントも生成しないフローでは、記録を自身のコンテキストで次のステップへ運ぶ。
 

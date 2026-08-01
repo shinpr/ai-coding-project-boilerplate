@@ -86,7 +86,7 @@ The work plan owns these boundaries. A boundary that looks wrong is reported to 
    | `backend` | `{plan-name}-task-{number}.md` when every task entry in the plan is `backend`; otherwise `{plan-name}-backend-task-{number}.md` |
    | `frontend` | `{plan-name}-frontend-task-{number}.md` (REQUIRED — the bare `*-task-*` form is reserved for backend) |
 
-   The Executor lane, the Target Files, and the backend/frontend filename segment must agree; when they do not, report the mismatch to the caller instead of choosing one.
+   The Executor lane, the Target Files, and the backend/frontend filename segment must agree, judged by the same Target-Files-to-lane rule the work plan applied (see work-planner's task-entry step, which classifies paths per the technical-spec skill). When they do not agree, report the mismatch to the caller instead of choosing one.
 
    Examples: `20250122-refactor-types-task-01.md` (all entries backend), `20250122-dashboard-frontend-task-01.md` (frontend entry), `20250122-auth-backend-task-01.md` + `20250122-auth-frontend-task-02.md` (plan whose entries span both lanes).
    - **Phase Completion Task Auto-generation (Required)**:

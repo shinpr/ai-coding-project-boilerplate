@@ -42,7 +42,7 @@ Adopted quality gates for the change area. Each task in this plan must satisfy t
 
 Maps each Design Doc technical requirement to the covering task(s). One row per extracted item. Every row must have at least one covering task, or an explicit gap justification.
 
-Every `Covered By Task(s)` cell in this plan — here and in the tables below — names a task by the stable `Phase X Task Y` ID defined under Implementation Phases, so downstream materialization resolves the target without re-deriving it.
+Every populated `Covered By Task(s)` cell in this plan — here and in the tables below — names a task by the stable `Phase X Task Y` ID defined under Implementation Phases, so downstream materialization resolves the target without re-deriving it. A row whose Gap Status is `gap` leaves the cell as `—` instead.
 
 | Design Doc | DD Section | DD Item | Category | Covered By Task(s) | Gap Status | Notes |
 |---|---|---|---|---|---|---|

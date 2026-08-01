@@ -86,7 +86,7 @@ implementation-approachスキルで定義された検証レベル（L1/L2/L3）�
    | `backend` | 計画書の全タスクエントリが `backend` の場合は `{plan-name}-task-{number}.md`。それ以外は `{plan-name}-backend-task-{number}.md` |
    | `frontend` | `{plan-name}-frontend-task-{number}.md`（必須 — 素の `*-task-*` 形式はbackend予約） |
 
-   Executor lane、Target Files、ファイル名のbackend/frontendセグメントは一致していなければならない。一致しない場合は、どちらかを選ばずに呼び出し元へ不一致を報告する。
+   Executor lane、Target Files、ファイル名のbackend/frontendセグメントは一致していなければならない。判定には作業計画書が適用したものと同じ Target Files → lane の規則を用いる（work-planner のタスクエントリ手順を参照。パスの分類は technical-spec スキルに従う）。一致しない場合は、どちらかを選ばずに呼び出し元へ不一致を報告する。
 
    例: `20250122-refactor-types-task-01.md`（全エントリがbackend）、`20250122-dashboard-frontend-task-01.md`（frontendエントリ）、`20250122-auth-backend-task-01.md` + `20250122-auth-frontend-task-02.md`（エントリが両laneにまたがる計画書）。
    - **フェーズ完了タスクの自動生成（必須）**:

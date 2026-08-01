@@ -160,6 +160,8 @@ For each task, derive completion criteria from Design Doc acceptance criteria an
 
 This plan owns the task boundaries; the downstream materialization step copies them without re-deciding. Populate the plan template's task-entry fields for every implementation item: a stable `Phase X Task Y` ID, one Implementation outcome, concrete Target Files, one Rollback boundary, and one Executor lane (`backend` or `frontend`). Create separate task entries whenever the Implementation outcome, Rollback boundary, or Executor lane differs. Keep the wiring or registration, tests, generated artifacts, and user documentation an outcome needs in the entry whose outcome they complete or prove.
 
+Set Executor lane from the entry's Target Files: `frontend` when every path is under the project's frontend paths, `backend` otherwise. Use the project structure declared in the technical-spec skill to classify a path. When one entry's Target Files span both, that is a signal the entry covers two outcomes — split it, since a task file routes to exactly one executor.
+
 ### 7. Produce Output (template selection by scale)
 
 - **`scale: medium` / `scale: large`**: Write a work plan following the **plan-template** from documentation-criteria skill. Include Phase Structure Diagram and Task Dependency Diagram (mermaid).
@@ -170,7 +172,7 @@ This plan owns the task boundaries; the downstream materialization step copies t
 - **mode**: `create` (default) | `update`
 - **scale**: `small` | `medium` | `large` (taken from the requirements-analysis result; controls output mode — see "Output Mode by Scale" below)
 - **designDoc**: Path to Design Doc(s) (may be multiple for cross-layer features). At `scale: small` Design Doc may be absent; in that case derive the task directly from the requirements-analysis output and PRD update notes.
-- **Convergence Result** (required at `scale: small`, otherwise optional): the `convergence` object. Treat `nonGoals` and `speculative` requirements as excluded from every task entry. At `scale: small` no PRD or Design Doc carries the record, so record each field left `weak-but-explicit` as a blocking unresolved item with `Kind: requirement-decision` in the task file's Decisions and Unresolved Items section — otherwise the open question the user agreed to leave reaches no one, and the executor would be invited to settle it.
+- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` and `speculative` requirements as excluded from every task entry. Fields left `weak-but-explicit` stay with the caller per the requirement-convergence storage protocol; they are recorded open questions, not blocking items, so do not convert them into unresolved items the executor must stop on.
 - **uiSpec** (optional): Path to UI Specification (frontend/fullstack features)
 - **prd** (optional): Path to PRD document
 - **adr** (optional): Path to ADR document
@@ -184,7 +186,7 @@ This plan owns the task boundaries; the downstream materialization step copies t
 | `small` | A single task file in **task-template format** (per documentation-criteria skill) | `docs/plans/tasks/{feature-name}-task-YYYYMMDD.md` | At 1-2 files there is no separate materialization step; the task file passed to the execution step as `task_file` is produced directly here. |
 | `medium` / `large` | A work plan in **plan-template format** | `docs/plans/{feature-name}-plan.md` | Materialization into individual task files is performed in a downstream step. |
 
-In `small` mode, skip the multi-phase composition (Step 4) and the Design-to-Plan Traceability mapping (Step 5); produce the task file with `## Target Files`, `## Investigation Targets`, `## Investigation Notes`, `## Implementation Steps (TDD: Red-Green-Refactor)`, `## Quality Assurance Mechanisms`, `## Operation Verification Methods`, and `## Completion Criteria` sections, plus `## Decisions and Unresolved Items` when the Convergence Result carries a `weak-but-explicit` field or an alternative was resolved here, plus the `Metadata:` block (`Dependencies:`, `Provides:`, `Implementation outcome:`, `Rollback boundary:`, `Executor lane:`). Set `Source Work Plan Task: N/A — produced directly at small scale`, since no work plan exists to key against. This task file is the only planning output at this scale.
+In `small` mode, skip the multi-phase composition (Step 4) and the Design-to-Plan Traceability mapping (Step 5); produce the task file with `## Target Files`, `## Investigation Targets`, `## Investigation Notes`, `## Implementation Steps (TDD: Red-Green-Refactor)`, `## Quality Assurance Mechanisms`, `## Operation Verification Methods`, and `## Completion Criteria` sections, plus the `Metadata:` block (`Dependencies:`, `Provides:`, `Implementation outcome:`, `Rollback boundary:`). Set `Source Work Plan Task: N/A — produced directly at small scale`, since no work plan exists to key against, and omit `Executor lane:` — this scale routes to a single executor, so the field would have no consumer. This task file is the only planning output at this scale.
 
 ## Work Plan Output Format (medium / large only)
 
@@ -357,7 +359,7 @@ When creating work plans, **Phase Structure Diagrams** and **Task Dependency Dia
 
 - [ ] Design Doc(s) consistency verification
 - [ ] Every task entry carries a stable `Phase X Task Y` ID, one Implementation outcome, concrete Target Files, one Rollback boundary, and one Executor lane
-- [ ] Every `Covered By Task(s)` cell in this plan names those stable IDs
+- [ ] Every populated `Covered By Task(s)` cell in this plan names those stable IDs (rows justified as `gap` leave the cell as `—`)
 - [ ] Design-to-Plan Traceability table complete (all DD technical requirements categorized and mapped)
   - [ ] No `gap` entries without justification
   - [ ] All justified `gap` entries flagged for user confirmation before plan approval

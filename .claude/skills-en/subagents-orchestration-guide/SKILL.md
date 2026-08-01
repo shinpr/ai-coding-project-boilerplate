@@ -353,7 +353,7 @@ Set `status` to `completed` only when every required task, quality gate, verifie
    - **prd-creator** (when a PRD is created or updated): persists `outcome` to `Success Criteria`, and `nonGoals` plus `speculative` requirements to `Future` / `Out of Scope` with origin `user`
    - **technical-designer / technical-designer-frontend**: persists the same to the Design Doc's `Requirement Convergence` when no PRD exists, and always records the fields left `weak-but-explicit` there
    - **ui-spec-designer** (frontend/fullstack): treats `nonGoals` and `speculative` requirements as capabilities the UI Spec leaves out
-   - **work-planner**: treats `nonGoals` and `speculative` requirements as excluded from every task entry. At Small scale it is the last carrier — no PRD or Design Doc exists — so it records each `weak-but-explicit` field as a blocking unresolved item in the task file it emits
+   - **work-planner**: treats `nonGoals` and `speculative` requirements as excluded from every task entry. At Small scale no PRD or Design Doc exists, so the `weak-but-explicit` fields stay in the orchestrator's own context per the storage protocol rather than becoming blocking items in the task file
 
    #### codebase-analyzer → technical-designer
 
