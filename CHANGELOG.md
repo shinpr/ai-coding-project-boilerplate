@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.26.0] - 2026-08-01
+
+### Added
+
+- **Requirement convergence before design** (skills, agents, commands) — a new `requirement-convergence` skill separates the outcome a change must produce from the requirements proposed to reach it, labels each requirement `current-state` / `desired-future` / `speculative`, records user-authored non-goals, and bands cost from structure rather than behavior. `requirement-analyzer` judges the four fields with readiness labels, the orchestrator runs the hearing at the requirements stop point, and the record persists to the PRD's Success Criteria and Future / Out of Scope or to the Design Doc's new Requirement Convergence section. Structural Escalation raises the confirmed scale to Medium at minimum whenever an ADR Creation Condition applies, so a two-file contract change no longer skips the Design Doc and work plan. Applied across en/ja.
+
+### Changed
+
+- **Work plan owns task boundaries** (skills, agents, commands) — task granularity is decided once, in the work plan, from implementation outcome, rollback boundary, and executor lane instead of file counts. Each entry carries a stable `Phase X Task Y` ID; materialization emits exactly one task file per entry and keys every plan-to-task propagation on `Source Work Plan Task` instead of matching by name. Applied across en/ja.
+- **Leaner planning and review surface** (skills, agents, commands) — dropped the plan-side First-Pass Risk Coverage machinery, since `security-reviewer` already enumerates irreversible operations itself; removed `security-reviewer`'s unused `workPlan` input; and cut reviewer gates, checklist echoes, and clarifications that restated rules held elsewhere. Applied across en/ja.
+
 ## [1.25.6] - 2026-07-30
 
 ### Fixed
