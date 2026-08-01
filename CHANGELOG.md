@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Work plan owns task boundaries** (skills, agents, commands) — task granularity is decided once, in the work plan, from implementation outcome, rollback boundary, and executor lane instead of file counts. Each entry carries a stable `Phase X Task Y` ID; materialization emits exactly one task file per entry and keys every plan-to-task propagation on `Source Work Plan Task` instead of matching by name. Applied across en/ja.
-- **Leaner planning and review surface** (skills, agents, commands) — dropped the plan-side First-Pass Risk Coverage machinery, since `security-reviewer` already enumerates irreversible operations itself; removed `security-reviewer`'s unused `workPlan` input; and cut reviewer gates, checklist echoes, and clarifications that restated rules held elsewhere. Applied across en/ja.
+- **Leaner planning and review surface** (skills, agents, commands) — dropped the plan-side First-Pass Risk Coverage machinery, since `security-reviewer` already enumerates irreversible operations itself; removed `security-reviewer`'s unused `workPlan` input; and cut reviewer gates, checklist echoes, and clarifications that restated rules held elsewhere. Skills state their criteria inline rather than pointing at other skills. Applied across en/ja.
 
 ## [1.25.6] - 2026-07-30
 

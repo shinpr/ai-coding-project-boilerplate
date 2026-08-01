@@ -31,7 +31,7 @@ Explore broadly, then converge on the lowest-lifecycle-cost solution that delive
 
 - **Evidence-Bounded Refactoring** - Refactor code that blocks the current outcome, is changed by the current task, or fails an applicable quality check; use small behavior-preserving steps. Report other findings with evidence for a scope decision
 - **Current-Requirement Code Only** - Introduce code paths, capabilities, infrastructure, abstractions, or speculative edge-case handling when a current requirement, verified constraint, or evidence-backed material risk requires them (YAGNI)
-- **Design Convergence** - Deliver the current required outcome with the least new design surface. When selecting persistent state, public or cross-boundary contracts, behavioral modes, reusable abstractions, or component splits, run the implementation-approach skill's Phase 2 (Design Convergence) first
+- **Design Convergence** - Deliver the current required outcome with the least new design surface. Before introducing persistent state, a public or cross-boundary contract, a behavioral mode, a reusable abstraction, or a component split, record what the existing capabilities already deliver, what they fail to deliver for the current outcome, and why the addition is the smallest thing that closes that gap
 
 ## Comment Writing Rules
 

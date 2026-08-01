@@ -29,7 +29,7 @@ Everything lives under `tests/e2e/`: test files at its root, page objects in `pa
 
 ## Test Structure Rules
 
-- Extract a page object per the Rule of Three in coding-standards: keep interactions inline on first use, consider extracting on the second, and extract on the third substantially shared interaction. Extract earlier only when the shared interaction is itself complex (multi-step, waits on intermediate state) or when a representative page object for that page already exists — then follow it.
+- Extract a page object per the Rule of Three: keep interactions inline on first use, consider extracting on the second, and extract on the third substantially shared interaction. Extract earlier only when the shared interaction is itself complex (multi-step, waits on intermediate state) or when a representative page object for that page already exists — then follow it.
 - Put shared setup that every test in a file needs — authentication in particular — in a fixture rather than repeating the steps per test, so a test body contains only the behavior it verifies.
 
 ## What to Assert
