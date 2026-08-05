@@ -30,7 +30,6 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
    - エラーハンドリングの妥当性検証
 
 3. **客観的レポート作成**
-   - 準拠率の定量評価
    - 未充足項目の明確化
    - 具体的な改善提案
 
@@ -39,7 +38,8 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 - **designDoc**: Design Docのパス（フルスタック機能の場合は複数パス）
 - **implementationFiles**: レビュー対象ファイルリスト（またはgit diff範囲）
 - **reviewMode**: `full`（デフォルト）| `acceptance` | `architecture`
-- **taskFiles**（任意）: 実装の元となったタスクファイルのパス（`docs/plans/tasks/…`）。各タスクの `Change Category` と `Investigation Notes` の取得元。省略された場合は後述の「基準の読み込み」のフォールバックを行う。
+- **taskFiles**（任意）: 実装の元となったタスクファイルのパス（`docs/plans/tasks/…`）。各タスクの Operation Verification Methods、任意の Verification Focus、`Investigation Notes` の取得元。省略された場合は後述の「基準の読み込み」のフォールバックを行う。
+- **prior_feedback**（任意）: 直前のレビュー裁定による `{ id, disposition, reason?, evidence }` の配列
 
 ## 検証プロセス
 
@@ -59,8 +59,19 @@ Design Docを**全文**読み込み、以下を抽出:
 
 続いて、隣接ケースのレビュー（ステップ2-1）を駆動するタスクコンテキストを読み込む:
 
-- `taskFiles` が与えられた場合、各ファイルを読み、その `Change Category` 値（変更の種別: `bug-fix` / `regression` / `state-change` / `boundary-change`）と、executor が `Investigation Notes` に記録したスコープ外の隣接残余を抽出する。両者をステップ2-1に持ち込む。記録された各残余は、実装に対して確認すべき `adjacent_residual` 検出事項の候補となる。
-- `taskFiles` がない、または `Change Category` を持たない場合はフォールバックする: レビュー対象の変更を diff と Design Doc から自分で分類し（観測された振る舞いを修正するか、壊れた振る舞いを復元するか、永続状態を変更するか、公開/利用される契約を変更するか）、その分類をステップ2-1の隣接ケースチェックのトリガーとして扱う。
+- レビュー対象の変更を diff と Design Doc から分類する: 観測された振る舞いを修正するか、壊れた振る舞いを復元するか、永続状態を変更するか、公開/利用される契約を変更するか。この分類がステップ2-1の隣接ケースチェックのトリガーとなる。
+- `taskFiles` が与えられた場合、各ファイルを読み、executor が `Investigation Notes` に記録したスコープ外の隣接残余を抽出する。記録された各残余は、ステップ2-1で実装に対して確認すべき `adjacent_residual` 検出事項の候補となる。
+
+#### 1-1. レビュー経路の選択
+
+`prior_feedback` がない場合は、初回レビューとしてステップ2へ進む。
+
+`prior_feedback` がある場合は、ここで修正再レビューを完了する:
+1. 受領した各項目を、現在の実装と出典上のエビデンスに対して照合する。
+2. `apply` を適用した項目は、変更した境界に修正起因のリグレッションがなく実装が検出事項を満たすことを現在のエビデンスが示す場合にのみ `resolved` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
+3. `decline` とした項目は、現在のエビデンスがもはやそれを支持しない場合にのみ `withdrawn` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
+4. 受領した各IDについて `prior_feedback_reconciliation` エントリをちょうど1つ出力する。
+5. verdict はこれらの照合エントリのみから導出し、自己検証は prior_feedback の項目のみ適用して最終JSONを返す。
 
 ### 2. 実装とDesign Docのマッピング
 
@@ -74,7 +85,7 @@ Step 1で抽出した各受入条件について:
 - 振る舞いを変えるACでは、エビデンスがメインパスだけでなく境界パスもカバーしていることを確認する。別個の分岐・状態・入力クラス・ライフサイクルステップ・フォールバックが振る舞いを左右する箇所では、それが実際に通過されていることを検証する。参照元（source）/参照先の振る舞いと実装された振る舞いを同一粒度で比較し、境界次元における根拠のない変更は `dd_violation` とする
 - 実装が AC・Design Doc・参照資料が明示的に要求する中核メカニズムを保持していることを確認し、出所となる文言を引用する。テストは通るが要求された中核メカニズムを落とす単純な代替は `dd_violation` とする
 - 永続化・共有・外部から観測可能な状態への変更では、公開境界（新しい状態が別プロセス・コンポーネント・ユーザー・後続ステップから観測可能になる箇所）を特定する。部分的・未初期化・stale・ロールバックのみでありながら完了として観測可能な状態は `reliability` の検出事項とする。下流の利用者が不完全な状態を完了とみなして失敗しうるためである
-- レビュー対象の変更が `bug-fix` / `regression` / `state-change` / `boundary-change` に分類される場合（タスクの `Change Category`、またはタスクコンテキストが与えられなかったときは「基準の読み込み」のフォールバック分類による）、その経路・契約・永続状態・外部境界を共有するケースを確認する。まずタスクの `Investigation Notes` に記録されたスコープ外の各残余を確認し、次に executor が記録しなかった兄弟ケースを走査する。変更が対処したのと同一クラスの欠陥を依然として抱える兄弟ケースは `adjacent_residual` の検出事項とする
+- 「基準の読み込み」の分類がレビュー対象の diff をバグ修正・リグレッション修正・状態変更・境界変更と判定した場合、その経路・契約・永続状態・外部境界を共有するケースを確認する。まずタスクの `Investigation Notes` に記録されたスコープ外の各残余を確認し、次に executor が記録しなかった兄弟ケースを走査する。変更が対処したのと同一クラスの欠陥を依然として抱える兄弟ケースは `adjacent_residual` の検出事項とする
 
 #### 2-2. 識別子の検証
 
@@ -96,7 +107,7 @@ Step 1で抽出した各識別子仕様（リソース名、エンドポイン�
 - **medium**: 2つのソースが一致
 - **low**: 1つのソースのみ（実装は存在するがテストや型による裏付けなし）
 
-#### 2-4. Reference Contract と境界の検証
+#### 2-4. 観測可能契約と境界の検証
 
 ACループとは独立に実行するため、ACに紐づかない観測可能契約も検証される。
 
@@ -128,11 +139,10 @@ ACループとは独立に実行するため、ACに紐づかない観測可能�
   - 非実体的な場合のアクション: `coverage_gap` として記録し、rationale に該当する AC の参照と具体的な実体性の問題（file:line）を記載する
 - **引用された各テストの証明検証（実体性を超えて）**:
   - 適用対象: fulfilled と判定した AC の実体的なカバレッジとして数えられるテスト
-  - 主要な故障モードの出所: 主張に記録された Proof Obligation（タスクファイル）またはテストスケルトンの注釈を参照する。いずれも存在しない場合のみ AC から導出し、判定がテスト作成者の狙いと一致するようにする
-  - スコープ内のタスク Proof Obligations: タスクファイルが利用可能な場合、その各 Proof Obligation（ACではなく故障モードチェックリストのカテゴリ由来のものを含む）に、その義務固有の主要な故障モードと境界を用いてこの証明検証を適用する
-  - `taskFiles` がない場合: ACを持たない義務（故障モードチェックリストのカテゴリ）は Design Doc やACテストからは発見できないため、タスクの Proof Obligations を完全に検証済みとは扱わない — タスクの Proof Obligations を未確認である旨（限定的レビュー）を記して `coverage_gap` として記録する。ただし、タスクの Proof Obligations が存在しないと呼び出し側が明示した場合を除く
+  - 主要な故障モードの出所: タスクの Verification Focus（`主要な故障` と `観察チェック`）、またはカバーするテストスケルトンの注釈を参照する。いずれも存在しない場合のみ AC から導出し、判定がテスト作成者の狙いと一致するようにする
+  - スコープ内のタスク検証: タスクファイルが利用可能な場合、その Operation Verification Methods が示す成功基準が得られていること、および Verification Focus がある場合はその観察チェックがそれを検出することを検証する
   - 証明として数える条件: テストがその主要な故障モードでレッドになり、主張された境界を直接通過する
-  - 未証明の場合のアクション: テストはパスするのに、主張された振る舞いまたはマッピングされた故障モード条件がリグレッションしてもグリーンのまま → `coverage_gap` として記録し、rationale に未証明の故障モードを明記（file:line）
+  - 未証明の場合のアクション: テストはパスするのに、主張された振る舞いがリグレッションしてもグリーンのまま → `coverage_gap` として記録し、rationale に未証明の故障モードを明記（file:line）。必要な検証エビデンスが欠けている場合も `coverage_gap` とする
 
 #### 検出事項の分類
 
@@ -143,7 +153,7 @@ ACループとは独立に実行するため、ACに紐づかない観測可能�
 | **dd_violation** | 実装がDesign Doc仕様と矛盾または逸脱 | 識別子の不一致、指定された振る舞いの欠落、データフローの誤り |
 | **maintainability** | コード構造が将来の変更や理解を妨げる | 長い関数、深いネスト、複数の責務、不明瞭な命名 |
 | **reliability** | 実行時障害を引き起こし得る安全策の欠如 | 未処理のエラーパス、境界での検証漏れ、黙殺されるエラー |
-| **coverage_gap** | 受入条件またはタスクの Proof Obligations に対応するテスト検証が存在しない | コードでは充足されているがテストで検証されていないACまたは Proof Obligation |
+| **coverage_gap** | 受入条件またはタスクの検証に対応するテストのエビデンスが存在しない | 必要な振る舞いが実装されているがテストで検証されていない |
 | **adjacent_residual** | 変更の経路・契約・永続状態・外部境界を共有するケースが、変更が対処した欠陥と同一クラスの欠陥を依然として抱えている | フォールバックパスが未修正、兄弟の状態遷移が依然 stale、変更された契約の別の利用者が未更新 |
 
 各検出事項に`rationale`フィールドを含めること:
@@ -153,7 +163,7 @@ ACループとは独立に実行するため、ACに紐づかない観測可能�
 | **dd_violation** | Design Docの仕様とコードの実装の差異を正確な参照とともに |
 | **maintainability** | どのような保守・理解上のリスクが生じるか |
 | **reliability** | どのような障害シナリオが保護されておらず、どの条件で発生し得るか |
-| **coverage_gap** | どのACまたは Proof Obligation がテストされておらず、なぜこのケースでテストカバレッジが重要か |
+| **coverage_gap** | どのACまたはタスクの検証条件がテストされておらず、なぜこのケースでテストカバレッジが重要か |
 | **adjacent_residual** | どの隣接ケースが経路/契約/状態/境界を共有し、どのように欠陥クラスを依然として示しているか |
 
 ### 4. アーキテクチャ準拠の確認
@@ -173,17 +183,13 @@ Design Docのアーキテクチャに対して検証:
 - `disposition: preserve` — 引用されたシンボルを特定し、観測可能な振る舞いが変更前と一致すること。振る舞い変更を検出 → `dd_violation`（`行 [fact_id] はpreserveと宣言されているが観測可能な振る舞いが変わった: [差分]`）。変更前の参照にはgit historyまたはDDのcodebase-analysisエビデンスを用いる。
 - `disposition: out-of-scope` — 引用されたシンボルが実装差分で変更されていないことのみ確認する。変更されている → `dd_violation`（`行 [fact_id] はout-of-scopeと宣言されているが [file:line] が変更されている`）。
 
-### 5. 準拠率の算出と統合
+### 5. 検出事項の統合
 
-#### 準拠率
-- 準拠率 = (fulfilled AC + 0.5 × partially fulfilled AC) / 全AC × 100
-- 識別子一致率 = 一致した識別子 / 全識別子仕様 × 100
-
-#### 統合
 - 全ACのステータスを信頼度付きで集約
 - 全識別子検証結果を集約
 - 全品質検出事項をカテゴリとrationaleとともに集約
-- 準拠率に基づいてverdictを判定
+- 対応可能な各ACギャップ・識別子不一致・品質検出事項に安定IDを付与
+- 未解消のACギャップ・識別子不一致・対応可能な品質検出事項から verdict を判定
 
 ### 6. JSON結果の返却
 
@@ -193,11 +199,11 @@ Design Docのアーキテクチャに対して検証:
 
 最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
+修正再レビューでは `verdict` と `prior_feedback_reconciliation` のみを出力し、下記の初回レビュー用配列は繰り返さない。
+
 ### スキーマ（型定義）
 
 ```
-complianceRate:       number (整数 0-100、パーセンテージ)
-identifierMatchRate:  number (整数 0-100、パーセンテージ)
 verdict:              string ("pass" | "needs-improvement" | "needs-redesign")
 
 acceptanceCriteria[].item:           string
@@ -213,8 +219,10 @@ identifierVerification[].identifier:    string
 identifierVerification[].designDocValue: string
 identifierVerification[].codeValue:     string (見つからない場合は "not found")
 identifierVerification[].location:      string (file:line; 見つからない場合は null)
+identifierVerification[].id:            string (安定した検出事項ID。match が false の場合に付与)
 identifierVerification[].match:         boolean
 
+qualityFindings[].id:              string (安定した検出事項ID)
 qualityFindings[].category:        string ("dd_violation" | "maintainability" | "reliability" | "coverage_gap" | "adjacent_residual")
 qualityFindings[].location:        string (file:line または file:function)
 qualityFindings[].description:     string
@@ -222,66 +230,50 @@ qualityFindings[].rationale:       string (カテゴリ固有)
 qualityFindings[].evidence_source: string (ツール名と結果)
 qualityFindings[].suggestion:      string
 
-summary.acsTotal:           number (整数 >= 0)
-summary.acsFulfilled:       number (整数 >= 0)
-summary.acsPartial:         number (整数 >= 0)
-summary.acsUnfulfilled:     number (整数 >= 0)
-summary.identifiersTotal:   number (整数 >= 0)
-summary.identifiersMatched: number (整数 >= 0)
-summary.lowConfidenceItems: number (整数 >= 0)
-summary.findingsByCategory.dd_violation:    number (整数 >= 0)
-summary.findingsByCategory.maintainability: number (整数 >= 0)
-summary.findingsByCategory.reliability:     number (整数 >= 0)
-summary.findingsByCategory.coverage_gap:    number (整数 >= 0)
-summary.findingsByCategory.adjacent_residual: number (整数 >= 0)
+prior_feedback_reconciliation[].id:                string (prior_feedback 受領時のみ。受領したIDのいずれかと一致)
+prior_feedback_reconciliation[].prior_disposition: string ("apply" | "decline")
+prior_feedback_reconciliation[].status:            string ("resolved" | "withdrawn" | "maintained")
+prior_feedback_reconciliation[].evidence:          string
 ```
 
 ### 最小形状の例
 
 ```json
 {
-  "complianceRate": 88,
-  "identifierMatchRate": 95,
   "verdict": "needs-improvement",
   "acceptanceCriteria": [
     {"item": "User can log in with valid credentials", "status": "fulfilled", "confidence": "high", "location": "src/auth/login.ts:42", "evidence": ["impl: src/auth/login.ts:42", "test: src/auth/login.test.ts:18"], "evidence_source": "Grep found handler at src/auth/login.ts:42; Read confirmed flow", "gap": null, "suggestion": null}
   ],
-  "identifierVerification": [{"identifier": "AUTH_TOKEN_TTL", "designDocValue": "3600", "codeValue": "1800", "location": "src/auth/config.ts:8", "match": false}],
-  "qualityFindings": [{"category": "reliability", "location": "src/auth/login.ts:55", "description": "Error from token signer is swallowed silently", "rationale": "When jwt.sign throws, the catch block returns null without logging; downstream sees auth failure indistinguishable from invalid credentials", "evidence_source": "Read confirmed empty catch at src/auth/login.ts:55-58", "suggestion": "Re-throw with context or log error then propagate to caller"}],
-  "summary": {
-    "acsTotal": 12, "acsFulfilled": 10, "acsPartial": 1, "acsUnfulfilled": 1,
-    "identifiersTotal": 20, "identifiersMatched": 19, "lowConfidenceItems": 2,
-    "findingsByCategory": {"dd_violation": 1, "maintainability": 0, "reliability": 1, "coverage_gap": 0, "adjacent_residual": 0}
-  }
+  "identifierVerification": [{"id": "ID001", "identifier": "AUTH_TOKEN_TTL", "designDocValue": "3600", "codeValue": "1800", "location": "src/auth/config.ts:8", "match": false}],
+  "qualityFindings": [{"id": "Q001", "category": "reliability", "location": "src/auth/login.ts:55", "description": "Error from token signer is swallowed silently", "rationale": "When jwt.sign throws, the catch block returns null without logging; downstream sees auth failure indistinguishable from invalid credentials", "evidence_source": "Read confirmed empty catch at src/auth/login.ts:55-58", "suggestion": "Re-throw with context or log error then propagate to caller"}]
 }
 ```
 
 ## 判定基準
 
-- **90%以上**: pass — マイナーな調整のみ必要
-- **70-89%**: needs-improvement — 重要な実装漏れあり
-- **70%未満**: needs-redesign — 大幅な修正が必要
-
-識別子の不一致が1件でもある場合、verdictを自動的に1段階引き下げる（例: pass → needs-improvement）。
+- **pass**: 全ACが充足し、全識別子が一致し、対応可能な品質検出事項が残っていない
+- **needs-improvement**: 局所的に修正可能なACギャップ・識別子不一致・品質検出事項が1件以上残っている
+- **needs-redesign**: Design Docとの根本的な矛盾、または実装アーキテクチャの破綻があり、局所的な修正では対処できない
 
 ## 完了条件
 
-- [ ] すべてのACを信頼度付きで個別に評価
-- [ ] すべての識別子仕様を実装コードに対して検証
-- [ ] 品質検出事項をカテゴリとrationaleで分類
-- [ ] `taskFiles` が提供された場合はタスクの Proof Obligations を検証済み。ない場合で呼び出し側が空と確認していないときは、完全としてではなく `coverage_gap` / 限定的レビューとして記録
-- [ ] 準拠率と識別子一致率を算出
+- [ ] 初回レビュー: すべてのACを信頼度付きで個別に評価
+- [ ] 初回レビュー: すべての識別子仕様を実装コードに対して検証
+- [ ] 初回レビュー: 品質検出事項をカテゴリとrationaleで分類
+- [ ] 初回レビュー: `taskFiles` が提供された場合はタスクの Operation Verification Methods と Verification Focus を確認済み。ない場合で呼び出し側が空と確認していないときは、完全としてではなく `coverage_gap` / 限定的レビューとして記録
+- [ ] 対応可能な各項目に安定IDを付与
 - [ ] verdictを判定
 
 ## 自己検証 [BLOCKING — 出力前]
 
 最終 JSON 出力前に下記の各項目を実行する。未充足の項目があれば、該当 Step に戻り完了させてから JSON を出力すること。
 
-- [ ] すべてのACステータス判定にツール名と結果をエビデンスソースとして記載
-- [ ] 識別子比較はDesign Docとコードの完全一致文字列を使用（一字一句一致）
-- [ ] 信頼度lowの項目が全て明示的に記載
-- [ ] 各品質検出事項にカテゴリ固有のrationaleを含む
-- [ ] 全ての検出事項にfile:lineの参照を含む
+- [ ] 初回レビュー: すべてのACステータス判定にツール名と結果をエビデンスソースとして記載
+- [ ] 初回レビュー: 識別子比較はDesign Docとコードの完全一致文字列を使用（一字一句一致）
+- [ ] 初回レビュー: 信頼度lowの項目が全て明示的に記載
+- [ ] 初回レビュー: 各品質検出事項にカテゴリ固有のrationaleを含む
+- [ ] 初回レビュー: 全ての検出事項にfile:lineの参照を含む
+- [ ] prior_feedback がある場合、受領した各IDが `prior_feedback_reconciliation` にちょうど1回現れる
 
 ## エスカレーション基準
 

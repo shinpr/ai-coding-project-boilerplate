@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.0] - 2026-08-05
+
+### Added
+
+- **Review Resolution contract** (skills, agents, commands) — a new `subagents-orchestration-guide` reference defines `apply` / `decline` / `user_decision_required` per finding, verbatim hand-off of applied findings, `prior_feedback` reconciliation, and the convergence and escalation conditions. The four reviewers gain a correction re-review scoped to the findings they received. Applied across en/ja.
+
+### Changed
+
+- **Plans cite sources instead of copying them** (skills, agents, commands) — work plans and task files carry Governing Sources, Operation Verification Methods, and an optional Verification Focus; the traceability, reference-contract, failure-mode, ADR-binding, connection-map, and proof-obligation tables are gone. Task decomposition becomes a one-to-one hand-off, and executors accept an explicit prompt as execution scope. Applied across en/ja.
+- **Review scoring dropped** (agents, commands) — compliance percentages, review scores, and `approved_with_conditions` give way to verdicts stated as conditions on the remaining findings. The orchestration guide keeps only the signal to branch on and the action each value selects. Applied across en/ja.
+
+### Removed
+
+- **`/prepare-implementation`** (commands) — **BREAKING**: its readiness criteria read plan sections this release removes. Use `/plan` to create and review a work plan, or `/build` to execute an approved one. Small scale now produces no work plan and no task file. Applied across en/ja.
+
 ## [1.26.0] - 2026-08-01
 
 ### Added

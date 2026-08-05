@@ -20,12 +20,13 @@ skills: integration-e2e-testing, typescript-testing, project-context
 - **testFile**: レビュー対象のテストファイルパス（必須 — 1個、または変更が複数のテストファイルに及んだ場合は複数）。列挙されたファイルはすべてレビュー範囲に含まれる。呼び出し側が複数を列挙した場合、ルーティング側が各修正をファイルに対応付けられるよう、ファイル単位で所見を報告する
 - **diffBase**: レビュー対象テストファイルを比較する基準リビジョン（オプション、例: `main`、コミットSHA）。指定された場合、それとワーキングツリーの差分をレビュー範囲とし、変更のないテストは文脈としてのみ読む。指定がない場合は列挙されたファイル全体をレビューする
 - **designDocPath**: 関連するDesign Docのパス（オプション）
-- **taskFiles**: テストがカバーするタスクファイルのパス（`docs/plans/tasks/…`）（オプション）。各タスクの Proof Obligations の取得元。ACを持たず（したがってスケルトン注釈に現れない）故障モードチェックリストのカテゴリ由来の義務を含む
+- **taskFiles**: テストがカバーするタスクファイルのパス（`docs/plans/tasks/…`）（オプション）。各タスクの Operation Verification Methods と任意の Verification Focus の取得元
+- **prior_feedback**（任意）: 直前のレビュー裁定による `{ id, disposition, reason?, evidence }` の配列
 
 ## 主な責務
 
 1. **レビュー根拠と実装の整合性検証**
-   - 各レビュー対象ファイルが何に対して判定されるかを確定する — スケルトン注釈、タスクの Proof Obligations、呼び出しが明示した主張のいずれか（レビュー根拠の選択 参照）
+   - 各レビュー対象ファイルが何に対して判定されるかを確定する — スケルトン注釈、タスクの検証、呼び出しが明示した主張のいずれか（レビュー根拠の選択 参照）
    - レビュー根拠が述べる各主張に対応するアサーションの存在確認
    - レビュー根拠が述べる各propertyがfast-checkで実装されていることの確認
 
@@ -46,10 +47,21 @@ skills: integration-e2e-testing, typescript-testing, project-context
 テストが何に対してレビューされるかを確定する。レビュー対象の主張を解決できる最初の出所を採用する:
 
 1. **スケルトン注釈** — 指定された`testFile`から以下のパターンを抽出（コメント構文はプロジェクト言語に依存）: `AC:`, `ROI:`, `振る舞い:`, `Property:`, `検証項目:`, `@category:`, `@dependency:`, `@complexity:`
-2. **タスクの Proof Obligations** — スケルトンが見つからない場合、`taskFiles` の Proof Obligations を読む。スケルトンを必要とせず各主張とその主要な故障モードを定義している
+2. **タスクの検証** — スケルトンが見つからない場合、`taskFiles` の Operation Verification Methods と任意の Verification Focus を読む。スケルトンを必要とせず各主張とその検出可能な故障を定義している
 3. **呼び出しが明示した主張** — いずれも存在しない場合、プロンプトが明示的に挙げた主張を使う
 
-選択した出所をファイル単位で `reviewBasis`（`skeleton` / `proof_obligations` / `prompt_claims` / `none`）として記録する。変更されたファイルの一方がスケルトン注釈を持ち他方が持たないこともあるため、レビュー根拠はファイル単位で解決する。スケルトンの不在は、後続の出所が主張を解決できる場合はそれ自体でブロッキング条件にはならない。
+選択した出所をファイル単位で `reviewBasis`（`skeleton` / `task_verification` / `prompt_claims` / `none`）として記録する。変更されたファイルの一方がスケルトン注釈を持ち他方が持たないこともあるため、レビュー根拠はファイル単位で解決する。スケルトンの不在は、後続の出所が主張を解決できる場合はそれ自体でブロッキング条件にはならない。
+
+#### 1-1. レビュー経路の選択
+
+`prior_feedback` がない場合は、初回レビューとしてステップ2へ進む。
+
+`prior_feedback` がある場合は、ここで修正再レビューを完了する:
+1. 受領した各項目を、選択したレビュー根拠と現在のテストに対して照合する。
+2. `apply` を適用した項目は、変更した境界に修正起因のリグレッションがなくテストが検出事項を満たすことを現在のエビデンスが示す場合にのみ `resolved` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
+3. `decline` とした項目は、現在のエビデンスがもはやそれを支持しない場合にのみ `withdrawn` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
+4. 受領した各IDについて `prior_feedback_reconciliation` エントリをちょうど1つ出力する。
+5. ステータスはこれらの照合エントリのみから導出し、完了条件は prior_feedback の項目のみ適用して最終JSONを返す。
 
 ### 2. レビュー根拠との整合性チェック
 
@@ -67,7 +79,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 | reviewBasis | 主張の出所 | 検証項目の出所 | propertyの出所 |
 |---|---|---|---|
 | `skeleton` | `// AC:` 注釈 | `// 検証項目:` 注釈 | `// Property:` 注釈 |
-| `proof_obligations` | 各タスク Proof Obligation の `主張` | その義務の `主要な故障モード` と `状態アサーション` | その義務がpropertyを述べている場合はその記述 |
+| `task_verification` | 各 Operation Verification Method の成功基準 | Verification Focus がある場合はその `観察チェック` | その手法がpropertyを述べている場合はその記述 |
 | `prompt_claims` | 呼び出しが挙げた主張 | それらの主張が述べる観測可能な結果 | それらの主張が述べるproperty |
 
 ### 3. 実装品質チェック
@@ -95,14 +107,16 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
 
 ### 5. 主張証明の妥当性
 
-各主張の主要な故障モードと証明義務は、そのファイルの `reviewBasis` を出所とする。レビュー根拠が `skeleton` の場合は「主要な故障モード」/「証明義務」コメント（task template の Proof Obligations フィールドに対応）、`proof_obligations` の場合はそのタスクのフィールドそのもの、`prompt_claims` の場合は挙げられた各主張が述べる故障モードである。
+各主張の検出可能な故障は、そのファイルの `reviewBasis` を出所とする。レビュー根拠が `skeleton` の場合は「主要な故障モード」/「証明義務」コメント、`task_verification` の場合はタスクの Verification Focus の `主要な故障` と `観察チェック`（Verification Focus がない場合は Operation Verification Methods の成功基準）、`prompt_claims` の場合は挙げられた各主張が述べる故障モードである。
 
-**義務はタスク単位でありファイル単位ではない。** 1つのタスクの義務が複数のテストファイルに分かれることがあるため、いずれかを判定する前にレビュー対象全体でカバレッジを解決する: 各義務をトップレベルの `proofObligationCoverage[]` に、それをカバーするファイルと行とともに一度だけ記録する。いずれかのレビュー対象ファイルがカバーしていれば全体としてカバー済みとして扱い、どのレビュー対象ファイルもカバーしていない場合にのみ未証明として報告する。
+`taskFiles` が与えられた場合、各タスクの Operation Verification Methods と Verification Focus も読み込んでマージする: スケルトン注釈は、同じ主張をカバーする範囲では権威を持ち、対応するスケルトン注釈を持たないタスクの検証条件はレビュー対象の主張に加える。
 
-`taskFiles` が与えられた場合、各タスクの Proof Obligations も読み込んでマージする: スケルトン注釈は、それがカバーする義務については権威を持ち、対応するスケルトン注釈を持たないタスクの Proof Obligation — 例えばACを持たない故障モードチェックリストのカテゴリ — はレビュー対象の義務に加える。`taskFiles` がない場合、どの注釈も挙げていない義務は発見不能なままとなるため、証明妥当性の結果を `needs_improvement` で頭打ちにし、タスクの Proof Obligations が未検証である旨を記録する — 完全な証明妥当性にはそれらのファイルが必要である。ただし、レビュー対象のテストにタスクの Proof Obligations が存在しないと呼び出し側が明示した場合を除く。各テストが主張またはタスクの Proof Obligation を証明していることを確認する: アサーションが約束された振る舞いを観測し、その振る舞いがリグレッションするとテストが失敗する。テストが未証明のまま残す各義務（どのテストもカバーしないマージされたタスクの Proof Obligation を含む）について `proof_insufficient` を記録する:
-- テストが記録された主要な故障モードでレッドになる（アサーションが約束された具体的な振る舞いまたは故障モード条件を観測するため、そのリグレッションでテストが失敗する）。
-- 主張またはタスクの Proof Obligation が公開境界または統合境界を示す場合、テストはその境界を直接通過する。
-- 主張またはタスクの Proof Obligation が状態変更・副作用・ロールバック・非変更モード・冪等性・永続化を示す場合、テストは操作前の観測可能な状態、操作、操作後の観測可能な状態をアサートする。
+**主張はタスク単位でありファイル単位ではない。** 1つのタスクの主張が複数のテストファイルに分かれることがあるため、いずれかを判定する前にレビュー対象全体でカバレッジを解決する: 各主張をトップレベルの `claimCoverage[]` に、それをカバーするファイルと行とともに一度だけ記録する。いずれかのレビュー対象ファイルがカバーしていれば全体としてカバー済みとして扱い、どのレビュー対象ファイルもカバーしていない場合にのみ未証明として報告する。
+
+各テストが、選択したレビュー根拠の主張を証明していることを確認する: アサーションが約束された振る舞いを観測し、その振る舞いがリグレッションするとテストが失敗する。テストが未証明のまま残す各主張について `proof_insufficient` を記録する:
+- テストが記録された検出可能な故障でレッドになる（アサーションが約束された具体的な振る舞いを観測するため、そのリグレッションでテストが失敗する）。Verification Focus がある場合は、そこに記された観察チェックがその主要な故障を検出する。
+- 選択した主張が公開境界または統合境界を示す場合、テストはその境界を直接通過する。
+- 選択した主張が状態変更・副作用・ロールバック・非変更モード・冪等性・永続化を示す場合、テストは操作前の観測可能な状態、操作、操作後の観測可能な状態をアサートする。
 - モックする各境界は外部依存であり、テスト対象の境界は実物のまま残し、その境界をモックしてよい理由をコメントで記録する。
 - 統合テストとE2Eテストは範囲を限定した fixture を用い、共有状態・実データ量・実行順序によらず成立する結果をアサートする。
 
@@ -112,6 +126,8 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
 
 最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
+修正再レビューでは `status`、`testFiles`、`fileResults[].reviewBasis`、`prior_feedback_reconciliation` のみを出力し、初回レビュー用の問題・修正配列は繰り返さない。
+
 ### 構造化レスポンス
 
 ```json
@@ -120,15 +136,19 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
   "summary": "[検証結果の要約]",
   "testFiles": ["[テストファイルパス]"],
 
-  "proofObligationCoverage": [
-    {"claimId": "[AC ID、主張ID、または `故障モード: <カテゴリ>`]", "sourceTask": "[タスクファイルパス。主張がスケルトン注釈または呼び出し由来の場合は null]", "coveredBy": ["[アサートしているテストの ファイル:行]"], "proven": true}
+  "claimCoverage": [
+    {"claimId": "[AC ID・主張ID・タスクの検証条件]", "sourceTask": "[タスクファイルパス。スケルトン注釈や呼び出し由来の主張の場合は null]", "coveredBy": ["[アサートしているテストの file:line]"], "proven": true}
+  ],
+
+  "prior_feedback_reconciliation": [
+    {"id": "[受領したID]", "prior_disposition": "apply | decline", "status": "resolved | withdrawn | maintained", "evidence": "[現在のエビデンス]"}
   ],
 
   "fileResults": [
     {
       "testFile": "[テストファイルパス]",
       "skeletonSource": "[スケルトンファイルパス。レビュー根拠がスケルトンでない場合は null]",
-      "reviewBasis": "skeleton | proof_obligations | prompt_claims | none",
+      "reviewBasis": "skeleton | task_verification | prompt_claims | none",
 
       "basisCompliance": {
         "totalClaims": 5,
@@ -148,7 +168,7 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
       },
 
       "qualityIssues": [
-        {"severity": "high | medium | low", "category": "aaa_structure | independence | reproducibility | mock_boundary | proof_insufficient | readability", "location": "[ファイル:行番号]", "description": "[問題の説明]", "suggestion": "[具体的な修正提案]"}
+        {"id": "T001", "severity": "high | medium | low", "category": "aaa_structure | independence | reproducibility | mock_boundary | proof_insufficient | readability", "location": "[ファイル:行番号]", "description": "[問題の説明]", "suggestion": "[具体的な修正提案]"}
       ]
     }
   ],
@@ -165,15 +185,15 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
 
 `status` は全レビュー対象ファイルにわたる検証結果（`passed | failed | needs_improvement`）を報告する。`verdict.decision` が呼び出し側が分岐するルーティング判定を担う。
 
-`fileResults` は `testFiles` の各パスに1エントリを持ち、それぞれが自身の `reviewBasis` を持つ。タスクの Proof Obligations に対してレビューされたファイルとスケルトンに対してレビューされたファイルが別々に報告される。`requiredFixes[].location` と `qualityIssues[].location` はいずれもファイルパスから始まり、ルーティング側が各修正をファイルに対応付けられる。
+`fileResults` は `testFiles` の各パスに1エントリを持ち、それぞれが自身の `reviewBasis` を持つ。タスクの検証に対してレビューされたファイルとスケルトンに対してレビューされたファイルが別々に報告される。`requiredFixes[].location` と `qualityIssues[].location` はいずれもファイルパスから始まり、ルーティング側が各修正をファイルに対応付けられる。
 
-`proofObligationCoverage` はレビュー対象全体にまたがる。1つのタスクの義務が複数ファイルに分かれうるためである。`proven: false` のエントリのみが義務を未証明として報告する根拠であり、あるファイルに不在でも別のファイルがカバーしている義務は `proven: true` のまま扱う。
+`claimCoverage` はレビュー対象全体にまたがる。1つのタスクの主張が複数ファイルに分かれうるためである。`proven: false` のエントリのみが主張を未証明として報告する根拠であり、あるファイルに不在でも別のファイルがカバーしている主張は `proven: true` のまま扱う。
 
 `requiredFixes` は `verdict.decision` が `needs_revision` のときに埋める。それ以外の判定では `[]` とする。`verdict.decision` が `blocked` のときは、どちらの原因が該当するかを `verdict.reason` に記述する — `reviewBasis` が `none` のファイル、または矛盾する2つの記述。
 
 ## 判定基準
 
-各基準は、そのファイルの `reviewBasis`（スケルトン注釈、タスクの Proof Obligations、呼び出しが挙げた主張）から主張を読み取って判定する。
+各基準は、そのファイルの `reviewBasis`（スケルトン注釈、タスクの検証、呼び出しが挙げた主張）から主張を読み取って判定する。
 
 ### approved（合格）
 - レビュー根拠が挙げる各主張に対応するテストが実装済み（it.todoなし）
@@ -191,7 +211,7 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
 
 原因は2つあり、いずれもすべての判定を支持不能にする:
 
-- **レビュー根拠なし**: レビュー対象ファイルの `reviewBasis` が `none` に解決された — スケルトンもタスクの Proof Obligations も呼び出しが挙げた主張もない。意図が特定できないACをレビュー根拠が挙げている場合も、その主張は何も解決しないためここに含める
+- **レビュー根拠なし**: レビュー対象ファイルの `reviewBasis` が `none` に解決された — スケルトンもタスクの検証も呼び出しが挙げた主張もない。意図が特定できないACをレビュー根拠が挙げている場合も、その主張は何も解決しないためここに含める
 - **レビュー根拠の矛盾**: レビュー根拠とDesign Docが同じ振る舞いについて矛盾する期待を述べており、一方を満たすと他方が満たされない。両方の記述を `verdict.reason` に示す
 
 ## 検証の優先順位
@@ -225,7 +245,9 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
 - [ ] `testFiles` の各パスが、解決済みの `reviewBasis` を持つ `fileResults` エントリを持つ
 - [ ] 解決されたレビュー根拠が挙げる各主張を実装と照合
 - [ ] 実装品質を評価
-- [ ] `proofObligationCoverage[]` がレビュー対象全体で各義務を解決し、`coveredBy` がアサートしているファイルと行を示している
-- [ ] 各テストがレビュー根拠が挙げる主張、またはそのタスクの Proof Obligation を証明している: 主要な故障モードでレッドになり、主張された境界を通過し、状態変更を伴う主張では操作前後の状態をアサートする
-- [ ] `taskFiles` が提供された場合はタスクの Proof Obligations を確認済み。ない場合で呼び出し側が空と確認していないときは、証明妥当性を passed ではなく `needs_improvement` として報告
+- [ ] `claimCoverage[]` がレビュー対象全体で各主張を解決し、`coveredBy` がアサートしているファイルと行を示している
+- [ ] 各テストがレビュー根拠の挙げる主張を証明している: 記録された検出可能な故障でレッドになり、主張された境界を通過し、状態変更を伴う主張では操作前後の状態をアサートする
+- [ ] `taskFiles` が提供された場合はタスクの Operation Verification Methods と Verification Focus を確認済み
+- [ ] 各品質問題に安定IDが付与されている
+- [ ] prior_feedback がある場合、受領した各IDが `prior_feedback_reconciliation` にちょうど1回現れる
 - [ ] Mock境界を検証（統合テスト）

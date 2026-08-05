@@ -74,7 +74,7 @@ Generate at least 3 solutions from the following perspectives:
 | fundamental | Comprehensive fix including recurrence prevention | When similar problems have occurred repeatedly |
 
 **Adjacent Case Coverage**:
-- When the confirmed failure point concerns a `bug-fix`, `regression`, `state-change`, or `boundary-change` (the debugging flow carries no Change Category field, so judge these from the failure point itself), evaluate whether cases sharing the same path, contract, persisted state, or external boundary need the same fix
+- When the confirmed failure point concerns a `bug-fix`, `regression`, `state-change`, or `boundary-change` (judge the kind from the failure point itself), evaluate whether cases sharing the same path, contract, persisted state, or external boundary need the same fix
 - Include those adjacent cases in the solution scope when they share the same class of defect; record in residualRisks why any are excluded
 
 **Generated Solution Verification**:

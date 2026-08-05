@@ -24,7 +24,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 ## 入力パラメータ
 
-- **task_file**（任意）: 検証対象のタスクファイルへのパス。指定された場合、「品質保証メカニズム」セクションを読み込み、品質チェック検出の補助ヒントとして使用する。これはあくまでヒントであり、コード・マニフェスト・設定ベースの一次検出が優先。
+- **task_file**（任意）: 検証対象のタスクファイルへのパス。指定された場合、その Operation Verification Methods を、コード・マニフェスト・設定から検出したチェックと併せてタスク固有のチェックとして使用する。
 - **filesModified**（任意）: 上流の実装ステップが現在のタスクで変更したファイルパスのリスト。ステップ1の主要スコープとして、かつ現在の変更境界の根拠として使用する。未指定時は `git diff HEAD` にフォールバックする。
 - **runnableCheck**（任意）: 上流の実装ステップから受け取るテスト実行のエビデンス。指定された場合、ステップ3の Substance チェックの一次入力として使う。スキーマ: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。未指定時は、スコープ内のテスト本体を自分で走査して実体性を判定する。
 - **qualityCommand**（任意）: 呼び出し側が把握している場合の、プロジェクトの権威ある品質コマンド（例: frontend-technical-spec やリポジトリの規約由来）。指定された場合、ステップ2はまずこれを実行し、これがカバーしないカテゴリについてのみコマンドを検出する。指定がない場合、ステップ2は従来どおりプロジェクト設定からコマンドを検出する。
@@ -75,11 +75,11 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 # - ビルド設定 → build/checkコマンドを抽出
 ```
 
-**補助検出**（task_file指定時）:
-- タスクファイルの「品質保証メカニズム」セクションを読み込む
-- `executable_check`: ツールが利用可能で設定ファイルが存在することを確認し、品質チェックコマンドリストに追加
-- `passive_constraint`: コマンドリストには追加しない — 全品質フェーズ完了後、変更コードが制約に違反していないことを確認する（例: 命名規約をGrepで検証、文字数制限を変更ファイルで確認）
-- 見つからない・実行できないメカニズムは出力に記録し、次のメカニズムに進む
+**タスク固有のチェック**（task_file指定時）:
+- タスクファイルの「Operation Verification Methods」セクションを読み込む
+- コマンドとして実行可能な検証手法は、プロジェクトのマニフェストと設定から検出したチェックと併せて実行する
+- 実行可能でない成功基準は、全品質フェーズ完了後に変更コードに対して確認する（例: 命名規約をGrepで検証、文字数制限を変更ファイルで確認）
+- 見つからない・実行できない検証手法は出力に記録し、次の手法に進む
 
 ### ステップ3: 品質チェックの実行
 frontend-technical-specスキルの「品質チェック要件」セクションに従う:
@@ -200,10 +200,10 @@ package.json からフロントエンドビルドコマンドを自動検出し�
 
 ### 共通エンベロープとステータス別フィールド
 
-全レスポンスは `status` を共有し、`task_file` 提供時には `taskFileMechanisms` オブジェクトを含める:
+全レスポンスは `status` を共有し、`task_file` 提供時には `taskVerification` オブジェクトを含める:
 
 ```json
-"taskFileMechanisms": {"provided": true, "executed": ["mechanism names that were found and executed"], "skipped": [{"mechanism": "mechanism name", "reason": "tool not found | config not found | not executable"}]}
+"taskVerification": {"provided": true, "executed": ["verification methods that were found and executed"], "skipped": [{"method": "verification method", "reason": "tool not found | config not found | not executable"}]}
 ```
 `task_file` が指定されなかった場合は `"provided": false` とし、`executed`/`skipped` は省略。
 
@@ -215,7 +215,7 @@ package.json からフロントエンドビルドコマンドを自動検出し�
 | `blocked`（missing_prerequisites） | `reason: "Execution prerequisites not met"`, `missingPrerequisites[{type: seed_data\|library\|environment_variable\|running_service\|other, description, affectedTests[], resolutionSteps[]}]`, `testsSkipped`, `testsPassedWithoutPrerequisites` | 本エージェントのスコープ外の環境不足によりテスト実行不可 |
 | `blocked`（out_of_scope） | `reason: "Quality failure outside current task scope"`, `outOfScopeFailures[{command, file, evidence}]`, `needsUserDecision` | 検証の結果、既存または今回の変更と確定済みタスクスコープの外にあると判明した失敗 |
 
-最小例（`stub_detected`; 簡潔のため `taskFileMechanisms` は省略 — `task_file` 提供時は必ず含める）:
+最小例（`stub_detected`; 簡潔のため `taskVerification` は省略 — `task_file` 提供時は必ず含める）:
 
 ```json
 { "status": "stub_detected", "reason": "Incomplete implementation detected in changed files", "incompleteImplementations": [{ "file_path": "src/components/Order/Total.tsx", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items", "type": "missing_logic" }] }

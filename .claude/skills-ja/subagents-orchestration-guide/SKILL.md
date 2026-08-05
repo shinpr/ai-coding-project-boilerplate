@@ -89,6 +89,10 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 
 サブエージェントがリポジトリの状態や成果物から実行方法を判断できない場合、blockedステータスでエスカレーションする。その詳細をユーザーに伝える。
 
+### レビュー裁定（Review Resolution）
+
+対応可能な成果物レビューの検出事項には `references/review-resolution.md` を適用する。処理方針の決定、結果の検証、作業のルーティングはオーケストレーターが行い、成果物の作成・変更は指名した専門エージェントが行う。検出事項単位の修正ループ — 処理方針の割り当て、`apply` の逐語ハンドオフ、`prior_feedback` による再レビュー、収束とエスカレーションの条件 — は、この参照先が最初から最後まで持つ。
+
 ### 責務分離を意識した振り分け
 
 **task-executorの責務**:
@@ -118,7 +122,7 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 
 | 規模 | 基準ファイル数 | PRD | ADR | Design Doc | 作業計画書 |
 |------|---------------|-----|-----|------------|-----------|
-| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | task-template 形式の単一タスクファイル（`docs/plans/tasks/` 直下、計画書ファイルは別途作成しない） |
+| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | 不要 — task-executor が明示プロンプトから実行する |
 | 中規模 | 3-5 | 更新※1 | 条件付き※2 | **必須** | **必須** |
 | 大規模 | 6以上 | **必須**※3 | 条件付き※2 | **必須** | **必須** |
 
@@ -149,21 +153,21 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 
 ### サブエージェント応答形式
 
-サブエージェントはJSON形式で応答。オーケストレーター判断に必要なフィールド：
+サブエージェントはJSON形式で応答する。各エージェントは自身の入出力契約を宣言しているため、呼び出しを組み立てる際はその契約をエージェント側で読む。この表が持つのは、分岐に使う信号と、各値が選ぶ行動だけである。
 
-| Agent | 主要フィールド | 判断ロジック |
-|-------|---------------|-------------|
-| requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions, convergence（4フィールドとそれぞれの readiness ラベル。`ready` に達していないフィールドは `convergence` の質問としても返る） | scaleでフローを選択 — この値には構造的エスカレーションが既に反映されている。adrRequiredでADRステップ要否を判断。先に進む前に `convergence` に対して requirement-convergence のヒアリングを実行 |
-| codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, qualityAssurance (mechanisms[], domainConstraints[]), focusAreas[], existingElements count, limitations | focusAreasをtechnical-designerにコンテキストとして渡す |
-| ui-analyzer | externalResources (status, per-axis fetch_status), componentStructure[], propsPatterns[], cssLayout[], stateDisplay[], focusAreas[], candidateWriteSet[], limitations | ui-analyzerのJSONをui-spec-designerとtechnical-designer-frontendに渡す。各エージェントは自身の入力宣言に記載されたフィールドを使う |
-| code-verifier | summary.status (consistent/mostly_consistent/needs_review/inconsistent/blocked), summary.blockingReason, summary.consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). 判定は `summary.status` から読む — `discrepancies[].status` は所見ごとのフィールド（drift/gap/conflict）で判定ではない。実装前: Design Docの主張を既存コードに対して検証。実装後: 実装のDesign Doc整合性を検証（`code_paths`で変更ファイルにスコープ） | discrepanciesをdocument-reviewerに連携 |
-| task-executor | 入力: `task_file`（オーケストレーションフローでは必須）; 任意の Fix Mode シグナル `requiredFixes` または `incompleteImplementations` — いずれかが非空の場合、`task_already_completed` チェックをスキップし、各項目の `file_path` / `location`（`location` は `file[:line]` として解釈）で許可リストを拡張する。`incompleteImplementations[]` の各エントリは `type: "missing_logic" \| "hollow_test"` を持ち得て、executor は `type` で修正アクションを分岐する。出力: status (escalation_needed/completed), filesModified[], testsAdded, requiresTestReview, runnableCheck{level, executed, command, result, substance, substanceIssue, reason}, escalation_type ∈ {task_file_not_found, task_already_completed, target_files_missing, design_compliance_violation, similar_function_found, similar_component_found, investigation_target_not_found, out_of_scope_file, dependency_version_uncertain, binding_decision_violation, test_environment_not_ready, unresolved_input} | escalation_needed時: escalation_type別に対応。`unresolved_input` 時: `unresolvedItems[]` をユーザーに提示する — `requirement-decision` の項目はタスク再実行前にその判断の供給が必要、`implementation-detail` の項目はスコープ内のどの選択肢も満たせない制約を示している |
-| quality-fixer | 入力: `task_file`（現在のタスクファイルパス — オーケストレーションフローでは常に渡す）、`filesModified`（上流の実装ステップのレスポンスから抽出 — 当該タスクの書き込み集合を未完成実装検出の主要スコープとして渡す。省略時は `git diff HEAD` にフォールバック）、`runnableCheck`（上流の実装ステップのレスポンスから抽出 — `substance` と `substanceIssue` を含むテスト実行のエビデンスを渡し、Substance チェックが実行時のシグナルを受け取れるようにする。上流がテストを実行していない場合は省略可）、`qualityCommand`（レシピまたはtechnical-specがプロジェクトの権威ある品質コマンドを示している場合に渡す。この実行の全タスクが同一コマンドで検証されるようにする。省略時はfixerがプロジェクト設定からコマンドを検出する）。Status: approved/stub_detected/blocked。`stub_detected` → `incompleteImplementations[]` の各エントリは `type: "missing_logic" \| "hollow_test"` を持ち、`type` で executor 側の修正アクションを分岐させた上で上流の実装ステップに差し戻し、本実装完了後にquality-fixerを再実行。`blocked` → 下記quality-fixer blockedハンドリング参照 | stub_detected: 実装ステップを再実行。blocked: 下記参照 |
-| document-reviewer | 入力: `doc_type`、`target`、`review_context`（新規作成の文書は `creation`、承認済み文書の改訂は `update`、リバースエンジニアリングで得た文書は `as-is` — レビューを依頼した理由を宣言することで、正当に不在なペア入力を欠陥として読ませない）、および doc_type 固有の入力。出力: verdict.decision (approved/approved_with_conditions/needs_revision/rejected)、recommendations（ペア入力が不在で実行されなかったチェック、および `code_verification` が `blocked` で返った場合はコード検証の不在を項目として含む） | approved/approved_with_conditionsで次へ。needs_revisionで修正依頼。rejectedでエスカレーション。approvedを全スコープの承認として扱う前に、スキップされたチェックのrecommendationsを読む |
-| design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | CONFLICTS_FOUND時: 矛盾をユーザーに提示してから進む |
-| integration-test-reviewer | 入力: `testFile`（1つ以上のパス — 変更が触れたテストファイルすべてを、実装ステップの `testsAdded` から渡す）、`diffBase`（任意 — テストを比較する基準リビジョン。レビュー範囲をファイル全体ではなく変更分にする）、`designDocPath`（任意）、`taskFiles`（任意）。出力: verdict.decision (approved/needs_revision/blocked)、verdict.reason、testFiles[]、fileResults[]（レビュー対象ファイルごとに1エントリ。各々が自身の `reviewBasis`（skeleton/proof_obligations/prompt_claims/none）と、そのファイルの充足カウントおよび品質課題を持つ）、proofObligationCoverage[]（タスク単位で全レビュー対象ファイルに跨る — 1タスクの obligation は複数ファイルに分かれうるため、カバレッジはここで解決する）、requiredFixes[]（各 `location` はファイルパスで始まる）。`blocked` の原因は2つ: レビュー対象ファイルの `reviewBasis` が `none`、または basis と Design Doc の矛盾。分岐は `verdict.decision` で行う — トップレベルの `status` は検証結果の軸（passed/failed/needs_improvement）でルーティング判定ではない | needs_revision時: 同じ task_file と requiredFixes[] を渡してルーティング先の executor を Fix Mode で再実行。blocked時: verdict.reason を添えてエスカレーション |
-| security-reviewer | 入力: `designDoc`、`implementationFiles`。出力: status (approved/approved_with_notes/needs_revision/blocked)、findings、notes、irreversibleHazards[]（`irreversible-operation` のhazardが `blocked` のとき非空。各エントリが必要な判断を示し、status を `blocked` に確定させる）、requiredFixes | needs_revision時: `requiredFixes[].location` から影響ファイルパスを抽出して Target Files に投入した統合修正タスクファイルを作成し、その task_file と `requiredFixes[]` 配列を渡してルーティング先の executor を Fix Mode で起動。続いて quality-fixer を実行し、最後に security-reviewer を再起動して解消を検証する。blocked 時: ブロッキング findings を添えてユーザーにエスカレーション — エージェント層の権限外の修正である |
-| acceptance-test-generator | status, generatedFiles.{integration,fixtureE2e,serviceE2e}（レーンごとに path\|null）, budgetUsage（レーン別）, e2eAbsenceReason（E2Eレーンごと。出力時は null。reason の enum 定義は acceptance-test-generator と integration-e2e-testing スキルが所有） | 非nullの各 `generatedFiles.<lane>` パスがディスク上に存在することを確認し、レーン別のパスと不在理由を work-planner に渡す |
+| Agent | 分岐に使う信号 | 各値での行動 |
+|---|---|---|
+| requirement-analyzer | `scale`、`adrRequired`、`convergence` | `scale` でフローを選ぶ — 構造的エスカレーションは既に反映済み。`adrRequired` ならADRステップを追加。進む前に `convergence` に対して requirement-convergence ヒアリングを実行 |
+| codebase-analyzer / ui-analyzer | — | JSON全体をそのまま次の専門エージェントへ渡す。各エージェントは自身の入力宣言が挙げるフィールドを消費する |
+| task-executor / task-executor-frontend | `status`、`escalation_type`、`requiresTestReview` | `completed` → サイクルを継続。`escalation_needed` → エージェントが定義する `escalation_type` に従って処理し、ユーザー判断が要る項目は提示する。`requiresTestReview: true` → quality-fixer の前に integration-test-reviewer を実行 |
+| quality-fixer / quality-fixer-frontend | `status` | `approved` → コミット。`stub_detected` → `incompleteImplementations[]` を実装ステップに戻し再実行。`blocked` → 後述の quality-fixer blockedハンドリング |
+| document-reviewer | `verdict.decision` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`rejected` → エスカレーション。approvedを全スコープの承認として扱う前に、スキップされたチェックの `recommendations` を読む |
+| integration-test-reviewer | `verdict.decision` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`blocked` → `verdict.reason` を添えてエスカレーション。トップレベルの `status` は検証結果の軸であり、ルーティング判断ではない |
+| code-verifier / security-reviewer | `summary.status` / `status` | 「実装後検証の合否基準」を参照。不可逆操作のハザードによる security の `blocked` は必要な判断を名指しし、エージェント層の権限の外にある |
+| design-sync | `sync_status` | `CONFLICTS_FOUND` → 矛盾をユーザーに提示してから進む |
+| acceptance-test-generator | レーン別の `generatedFiles`、レーン別の `e2eAbsenceReason` | null でない各パスの存在を確認し、レーン別のパスと不在理由を work-planner へ渡す |
+
+**オーケストレーターが持つエージェント間の配線**: 実装ステップの `filesModified` と `runnableCheck` を後続の quality-fixer 呼び出しへ引き継ぐ。レシピまたは technical-spec がプロジェクトの正典となる品質コマンドを示している場合は `qualityCommand` として渡す。
 
 ### quality-fixer blockedハンドリング
 
@@ -190,7 +194,7 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 12. design-sync → 整合性検証 **[停止: Design Doc承認]**
 13. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
 14. work-planner → 作業計画書作成
-15. document-reviewer → 作業計画書レビュー（doc_type: WorkPlan。AC/コントラクト/状態のカバレッジをトレースできるようDesign Docのパスを渡す）。`needs_revision` の場合: work-plannerを（updateで）再実行し `approved`/`approved_with_conditions` になるまで再レビューする — 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘にユーザー裁定は不要。`rejected` の場合: ユーザーにエスカレーション。 **[停止: 一括承認]**
+15. document-reviewer → 作業計画書レビュー（doc_type: WorkPlan。AC/コントラクト/状態のカバレッジをトレースできるようDesign Docのパスを渡す）。`needs_revision` の場合: レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には work-planner を update モードで用いる。`rejected` の場合: ユーザーにエスカレーション。 **[停止: 一括承認]**
 16. task-decomposer → 自律実行 → 完了報告
 
 ### 中規模（3-5ファイル） - 10ステップ（バックエンド） / 12ステップ（フロントエンド/フルスタック）
@@ -205,20 +209,15 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 8. design-sync → 整合性検証 **[停止: Design Doc承認]**
 9. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
 10. work-planner → 作業計画書作成
-11. document-reviewer → 作業計画書レビュー（doc_type: WorkPlan。AC/コントラクト/状態のカバレッジをトレースできるようDesign Docのパスを渡す）。`needs_revision` の場合: work-plannerを（updateで）再実行し `approved`/`approved_with_conditions` になるまで再レビューする — 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘にユーザー裁定は不要。`rejected` の場合: ユーザーにエスカレーション。 **[停止: 一括承認]**
+11. document-reviewer → 作業計画書レビュー（doc_type: WorkPlan。AC/コントラクト/状態のカバレッジをトレースできるようDesign Docのパスを渡す）。`needs_revision` の場合: レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には work-planner を update モードで用いる。`rejected` の場合: ユーザーにエスカレーション。 **[停止: 一括承認]**
 12. task-decomposer → 自律実行 → 完了報告
 
-### 小規模（1-2ファイル） - 3ステップ
+### 小規模（1-2ファイル） - 2ステップ
 
-1. requirement-analyzer → 要件分析と小規模判定の確定 → requirement-convergence のヒアリングを実施し、回答を添えて requirement-analyzer を再実行 **[停止]**。ヒアリングは全スケールで実行する — `nonGoals` はユーザーが挙げるものであり、どのエージェントも代わりに用意できないためである。構造的エスカレーションで規模が上がった場合は、この時点から中規模のフローへ切り替える
-2. work-planner → 簡易作業計画作成。本スケールでは作業計画書とタスク分解ステップを分けず、`docs/plans/tasks/` 直下に task-template 形式の単一タスクファイルを直接出力する。task-executor にはそのパスを `task_file` として渡す **[停止: 一括承認]**
-3. task-executor → quality-fixer → commit（タスクごと）→ 完了報告
+1. requirement-analyzer → 要件分析と小規模判定の確定 → requirement-convergence のヒアリングを実施し、回答を添えて requirement-analyzer を再実行 **[停止]**。ヒアリングは全スケールで実行する — `nonGoals` はユーザーが挙げるものであり、どのエージェントも代わりに用意できないためである。構造的エスカレーションで規模が上がった場合は、この時点から中規模のフローへ切り替える。確定した成果、影響パス、検証条件を提示する **[停止: 一括承認]**
+2. task-executor → quality-fixer → commit → 完了報告
 
-注: 小規模スケールでも実装ステップは task-executor を介して標準の4ステップサイクル（`task-executor → エスカレーション判定 → quality-fixer → commit`）で実行する。オーケストレーターによる直接編集は行わない。
-
-### 任意の事前検証（Optional Preflight）
-
-Medium / Large規模では、一括承認後、実装はそのまま進行する。計画がエンドツーエンドで実装可能か（検証戦略の参照、fixture、UI 描画面、E2E/ローカルレーン環境）の検証は、ユーザーが任意に prepare-implementation レシピで実行する事前検証であり、readiness 基準が既に満たされていれば no-op で終了する。本ガイドはエージェント層の上位にあるオーケストレーターを呼び出さない。
+注: 小規模スケールでは作業計画書もタスクファイルも作成しない。実装ステップは task-executor を介して標準の4ステップサイクル（`task-executor → エスカレーション判定 → quality-fixer → commit`）で実行し、確定した成果・出典・影響パス・検証条件を明示プロンプトとして受け取る。オーケストレーターによる直接編集は行わない。
 
 ## レイヤー横断オーケストレーション
 
@@ -356,7 +355,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
    **codebase-analyzerへの入力**: 要件分析JSON出力（`convergence` を含む）、PRDパス（存在する場合）、元のユーザー要件
    **technical-designerへの入力**: codebase-analyzerのJSON出力をDesign Doc作成プロンプトの追加コンテキストとして渡す。必須の使い道:
    - `focusAreas` → Fact Disposition Tableの正典となるdisposition targetリスト（各focusAreaを1行に展開し、`fact_id`と`evidence`をそのまま引き継ぐ）
-   - `dataModel`、`dataTransformationPipelines`、`qualityAssurance` → 「既存コードベース分析」「検証戦略」「品質保証メカニズム」の各セクションに反映
+   - `dataModel`、`dataTransformationPipelines`、`qualityAssurance` → 「既存コードベース分析」「検証戦略」の各セクションに反映
 
    #### code-verifier → document-reviewer（Design Docレビュー）
 
@@ -369,7 +368,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
 
    #### technical-designer → work-planner
 
-   **work-plannerへの入力**: Design Docパス。work-plannerがDDの全セクションをスキャンし、Step 5のカテゴリ（impl-target, connection-switching, contract-change, verification, prerequisite）に沿って技術要件を抽出した上で、設計-計画トレーサビリティ表を作成する。
+   **work-plannerへの入力**: Design Docパス。work-plannerは出典セクションとACを実装タスクへマッピングする。カバーされていない義務は修正すべき計画の漏れであり、作業計画書はカバー漏れや設計内容の不足をユーザー確認項目に変換しない。
 
    **ギャップ発生時の制御（オーケストレーターの責務）**: work-plannerが`gap`を含むドラフト計画書を出力した場合、オーケストレーターは以下を実行する:
    1. ギャップ項目と理由をユーザーに提示する
@@ -408,3 +407,7 @@ TaskCreateで全体フェーズを登録。各フェーズ完了時にTaskUpdate
 | security-reviewer | `status`が`approved`または`approved_with_notes` | `status`が`needs_revision` | `status`が`blocked` → ユーザーにエスカレーション |
 
 **再実行ルール**: 修正サイクルは最大2回とする。各サイクル後に**Fail**を返した検証エージェントを再実行し、Passした検証エージェントの記録済み証跡は維持する。以前Failだった検証エージェントがPassになるか、名前付きの残存指摘件数が減った場合にのみ進捗ありと判定する。進捗がない、または外部入力が必要な場合は直ちにエスカレーションする。2回目のサイクル後は、残るすべての不合格を指摘内容とともにエスカレーションする。
+
+このルールが制限するのは検証エージェント群である。検出事項単位の修正ループは `references/review-resolution.md` セクション3が別途制限し、先に到達した方でエスカレーションする。
+
+**修正サイクルのハンドオフ**: レビュー裁定を適用し、必要な各 executor には `apply` の検出事項オブジェクト全体を逐語で、処理方針のみ付加して渡す。照合を受け付けるレビュアー入力には `prior_feedback` を引き継ぐ。

@@ -135,7 +135,6 @@ Essential commands for Claude Code:
 | `/task` | Single task with skill-based precision | Bug fixes, small changes |
 | `/design` | Create design docs only | Architecture planning |
 | `/plan` | Create work plan from design | After design approval |
-| `/prepare-implementation` | Get the plan ready for `/build` (verify readiness and resolve gaps) | Before `/build` to ensure the plan is implementable |
 | `/build` | Execute from existing plan | Resume work |
 | `/review` | Check code compliance | Post-implementation |
 | `/diagnose` | Problem diagnosis workflow | Debugging, troubleshooting |

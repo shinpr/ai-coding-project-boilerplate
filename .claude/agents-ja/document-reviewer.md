@@ -46,9 +46,19 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
   - `requirements_verbatim` を具体化・制約する、正となる情報として使用
   - 両方が未提供の場合、Adopted design validity チェックは本レビューでは検証不能として扱う
 
+- **prior_feedback**（任意）: 直前のレビュー裁定による `{ id, disposition, reason?, evidence }` の配列
+
 - **design_doc**: Design Docのパス（任意、WorkPlanレビュー用）
-  - 提供された場合、計画に対するAC / コントラクト / 状態遷移のカバレッジチェックのソースとして読み込む
-  - 未提供の場合、作業計画書の「関連ドキュメント」セクションからDesign Docを解決する
+  - 提供された場合、計画が引用するセクションとACのアンカーが実在することの確認に使用する
+  - 未提供の場合、作業計画書の「出典ドキュメント」セクションからDesign Docを解決する
+
+## レビュー境界
+
+選択された `doc_type` の適用チェックは、それで網羅されている。検出事項を作るのは、その文書種別に対して挙げられた対象成果物の性質についてのみとする。
+
+出典ドキュメントは、その対象成果物の性質を評価するためにのみ読む。出典ドキュメント自体の正しさ・網羅性・内部整合性は本レビューの対象外であり、検出事項・提案・verdictの変更・エスカレーションのいずれも生まない。
+
+WorkPlanでは、レビュー対象面は対象文書自身の実装スコープ、タスク、完了条件、および引用された正確なセクション/AC参照である。出典ドキュメントに挙げられたパスは引用先を与えるものであり、そのドキュメントの引用されていない内容をレビュー範囲に入れるものではない。
 
 ## 作業フロー
 
@@ -57,8 +67,11 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 1. **プロンプトをスキャン**: JSONブロック、検証結果、不整合、prior feedback
 2. **アクション項目を抽出**（ゼロの場合あり）
    - 各項目を正規化: `{ id, description, location, severity }`
-3. **記録**: `prior_context_count: <N>`
-4. ステップ1へ進む
+3. **prior feedback 項目を抽出**（ゼロの場合あり）
+   - 各項目を正規化: `{ id, prior_disposition, reason, evidence }`
+4. **記録**: `prior_context_count: <N>`、および `prior_feedback_count` を受領した `prior_feedback` 配列の正確な長さ（フィールドがない場合は `0`）として記録
+   - `prior_feedback` フィールドが存在するが配列でない場合、不正な入力を名指しした `critical` 問題とともに `verdict.decision: rejected` を返す
+5. ステップ1へ進む
 
 ### ステップ1: パラメータ解析
 - modeが`composite`または未指定を確認
@@ -66,7 +79,7 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 - doc_typeに基づく特化した検証
 - DesignDocの場合:「適用基準」セクションの存在をexplicit/implicit分類付きで確認
   - 欠落・不完全 → `critical`、implicit基準の未確認 → `important`
-- WorkPlanの場合: セマンティックゲートの判定対象となる成果物が計画に含まれることを確認 — 設計-計画トレーサビリティ、Reference Contract Values（Design Docが拘束的観測値を指定する場合）、故障モードチェックリスト、レビュースコープ、検証戦略の要約、証明戦略。参照されているDesign Docを読み込み、AC / コントラクト / 状態遷移のカバレッジと拘束的観測値の内容忠実性を計画に対して確認できるようにする
+- WorkPlanの場合: 引用された正確なパス・セクション・AC識別子を確認する。タスクのカバレッジ・境界・依存関係・実行順序は、対象文書自身の記述から導出する。リポジトリの成果物は、対象文書が宣言するパスとコマンドの検証にのみ参照する
 - `code_verification`が提供された場合: まず `summary.status` を読む。`blocked` のときは検証が何も行われていないため、空の `discrepancies` と `coverage` をクリーンな結果ではなくエビデンスの不在として扱い、事前検証エビデンスなしで Gate 1 を実行し、その不在と `summary.blockingReason` を `recommendations` に記録して、判定がコード検証済みと読まれないようにする。それ以外の場合は不整合リストと逆方向カバレッジのギャップを抽出し、Gate 1の事前検証エビデンスとして組み込む
 - `codebase_analysis`が提供された場合: `focusAreas`とその`evidence`値を抽出し、Gate 0 / Gate 1のFact Dispositionチェックに使用
 - DesignDocで`requirements_verbatim`と`confirmed_decisions`のいずれか一方のみが渡された場合: 不足している入力を明示した`critical`とともに`verdict.decision: rejected`を返す。要件集合が部分的なままでは判定が誤解を招くため。この入力ルールはどの `review_context` でも適用される — ペアが片方だけの状態はレビューを依頼した理由に関わらず誤解を招くため。この入力ルールは`critical` → `needs_revision`の一般マッピングより優先する
@@ -74,9 +87,15 @@ skills: documentation-criteria, technical-spec, project-context, typescript-rule
 
 ### ステップ2: 対象ドキュメントの収集
 - targetで指定されたドキュメントを読み込み
-- doc_typeに基づいて関連ドキュメントも特定
+- WorkPlanの場合は、その正確な出典アンカーと、宣言されたパス・コマンドの検証に必要なリポジトリ成果物のみを収集する
+- それ以外の文書種別では、doc_typeに基づいて関連ドキュメントも特定
 - Design Docの場合は共通ADR（`ADR-COMMON-*`）も確認
 - **実効要件**（Adopted design validity チェックで使用）: `confirmed_decisions` を `requirements_verbatim` に適用し、そこに読み込んだドキュメントで維持されるACと制約を加える。維持対象を外す根拠となるのは `confirmed_decisions` のエントリのみ
+
+### ステップ2-1: レビュー経路の選択
+
+- `prior_feedback_count` が `0` の場合は、初回レビューとしてステップ3へ進む。
+- `0` より大きい場合は、修正再レビューとしてステップ4-1へ進む。
 
 ### ステップ3: 観点別レビューの実施
 
@@ -93,15 +112,14 @@ DesignDocの場合、追加で以下を確認:
 - [ ] Requirement Convergence セクションが存在する: 将来状態のドキュメントではOpen questionsが記入されている。Outcome・Non-Goals・Speculativeが記入されているか、それらを保持するPRDのパスを添えてN/Aとされている。リバースエンジニアリング／現状記述のドキュメントではセクション全体がN/A
 
 WorkPlanの場合、追加で以下を確認:
-- [ ] レビュースコープが記録されている（変更予定ファイルの範囲、または改訂計画ではベースブランチ + diff範囲）
-- [ ] 設計-計画トレーサビリティ表が存在し、各行がタスクにマッピングされているか正当化されたギャップを持つ
-- [ ] 検証戦略の要約と証明戦略が存在する
-- [ ] 故障モードチェックリストが存在する
-- [ ] 最終フェーズに品質保証が含まれる（ACの達成、全テストのパス）
+- [ ] 出典ドキュメントのパスが記録されている
+- [ ] 各タスクが実装成果、出典セクションまたはAC引用、範囲、依存関係、Executor lane、ロールバック境界、実行可能な検証を持つ
+- [ ] 計画レビューのステータスが存在する
 
 #### Gate 1: 品質評価（Gate 0通過後のみ実施）
 
 **総合レビューモード**:
+- documentation-criteria において、選択した `doc_type` が所有する内容に関わるチェックのみを適用する。WorkPlanでは、以下の汎用的な技術・設計チェックをスキップし、作業計画書の意味的ゲートのみを適用する。
 - 整合性チェック：ドキュメント間の矛盾を検出
 - 完成度チェック：必須要素の深度と網羅性を確認
 - ルール準拠チェック：プロジェクトルールとの適合性
@@ -140,13 +158,13 @@ WorkPlanの場合、追加で以下を確認:
 - **Design Convergence チェック**（セクションがN/Aでない場合）: 次の順に検証する。(1) `Direct MVP` が既存のシステム機能で現行の必要な成果を届けている、(2) `Failed Items` ごとに現行要件、検証済みの制約、確定済みスコープ内で観測された問題、根拠のある重大リスクのいずれかを挙げている、(3) `Adopted Additions` ごとに対応する `Failed Item` があり、より小さいサーフェスでの解決が成立しない根拠を挙げ、その追加を取り除くと対応する Failed Item が再び満たせなくなる、(4) 検討したが採用しなかった選択肢に除外理由が記載されている。的を絞った拡張で不採用の候補がなかった場合は `None` が妥当。いずれかのステップが不合格なら `critical`（カテゴリ: `compliance`）とし、修正を要する。
 
 - **作業計画書セマンティックゲート**（doc_type WorkPlan）:
-  - (1) カバレッジは各項目が計画内で存在する場所で確認する: 各ACがタスクでカバーされている — 設計-計画トレーサビリティの行がそのACをタスクにマッピングしているか、タスクの完了基準または Proof Obligations がそのACを参照していることで示される。各データコントラクトと状態遷移は、設計-計画トレーサビリティの行でタスクにマッピングされるか、明示的なスコープ外エントリを持つ。各品質保証メカニズムは、カバー対象ファイルとともに品質保証メカニズム表に現れる。いずれのカバレッジもない項目 → `critical`（カテゴリ: `completeness`）。カバーされないACは原因を区別する: Design Docが裏付けるのにタスクがマッピングされていない（計画の漏れ、再計画で修正可能）→ `critical`、Design Docや入力に裏付けがない（再計画でも修正不能なギャップ）→ 下記Verdictマッピングの`rejected`トリガー
-  - (2) 早期検証ポイントが最終フェーズではなく早期フェーズに置かれている — 最終フェーズへの後回し → `important`（カテゴリ: `consistency`）
-  - (3) 境界横断・公開境界・永続状態の各変更が、それを実境界経由で検証するタスクを特定している — 欠落 → `important`（カテゴリ: `completeness`）
-  - (4) 存在する各トレーサビリティ表（設計-計画、UI Specコンポーネント、Connection Map、ADR Bindings）が対象タスクを解決できる粒度で埋められている — 粒度不足の行 → `important`（カテゴリ: `completeness`）
-  - (5) 故障モードチェックリストが計画の該当するドメイン非依存カテゴリ（same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering, irreversible-operation）をカバーしている — 該当カテゴリの欠落 → `recommended`（カテゴリ: `completeness`）
-  - (6) 拘束的観測値がカバレッジだけでなく内容忠実性をもって保持されている: 拘束的値をエンコードする各Design Doc観測可能契約（列/ラベルの集合と順序、派生表示ルール、状態ライフサイクルの否定条件）について、計画のReference Contract Values表がその値をDesign Docから逐語で転記し、カバーするタスクにマッピングしている。各値をDesign Docから再導出して計画と比較する; Design Docが指定しているのに値がラベルに縮約・要約・欠落している場合は内容忠実性のギャップ → `critical`（カテゴリ: `completeness`）
-  - Verdictマッピング（WorkPlan）: セマンティックゲートの`critical`はいずれもverdictを最低でも`needs_revision`にする — ただしDesign Doc/入力要素の欠落や矛盾に起因するカバレッジギャップ（再計画で修正不能）→ `rejected`、`important`のみの場合はverdictを`approved_with_conditions`までに制限する
+  - 作業計画書の実装スコープまたは完了条件に記された各実装成果・検証条件が、少なくとも1つのタスクにマッピングされている。このチェックには引用された正確なアンカーを用いる — 出典ドキュメントへの広い参照は、引用されていない義務を生まない
+  - 各タスクがリポジトリ上の実装成果を1つ述べ、実在する出典アンカーを少なくとも1つ引用している。成果または引用の欠落 → `critical`（カテゴリ: `compliance`）
+  - タスク境界が、依存関係・executorルート・独立して完成できる成果のいずれかを計画内の言葉で示している。計画内で裏づけのない分割・統合 → `important`（カテゴリ: `clarity`）
+  - 宣言された依存関係とフェーズ順序が内部で整合し、計画が特定する早期検証タスクがその依存側より前にある。順序の破綻 → `important`（カテゴリ: `feasibility`）
+  - 検証がリポジトリの成果物またはそのタスク自身の出力から実行できる。実行不能な検証エントリ → `important`（カテゴリ: `feasibility`）
+  - 設計詳細が作業計画書に転記されず、出典パスとセクションで引用されている。転記または新たに選択された技術的振る舞い → `critical`（カテゴリ: `compliance`）。その修正は、出典参照を残して重複内容を削除することである
+  - 外部セットアップ、資格情報、組織的承認、リリース実行、デプロイ実行、本番運用、およびレビューのみの最終QAフェーズは、引用された出典セクションがチェックイン対象のリポジトリ変更を要求しない限りタスク集合の外にある。含まれている外部活動 → `important`（カテゴリ: `compliance`）
 
 **観点特化モード**:
 - 指定されたmodeとfocusに基づいてレビューを実施
@@ -159,11 +177,25 @@ WorkPlanの場合、追加で以下を確認:
 3. 分類: `resolved` / `partially_resolved` / `unresolved`
 4. evidenceを記録（何が変わったか、または変わっていないか）
 
+### ステップ4-1: prior feedback 照合
+
+修正再レビュー（`prior_feedback_count > 0`）では、適用された修正を評価する一環として、Gate 0 の必須要素がすべて引き続き存在することを確認する。
+
+ステップ0で抽出した各 prior feedback 項目について（`prior_feedback_count: 0` の場合はスキップ）:
+1. 参照されたドキュメントセクションを特定する
+2. `apply` を適用した項目は現在のドキュメントを、`decline` とした項目はその理由を、出典ドキュメントに照らして確認する
+3. `apply` を適用した項目は、変更した境界に修正起因のリグレッションがなくドキュメントが検出事項を満たすことを現在のエビデンスが示す場合にのみ `resolved` とする。それ以外は現在のエビデンスを添えて `maintained` とする
+4. `decline` とした項目は、現在のエビデンスがもはやそれを支持しない場合にのみ `withdrawn` とする。それ以外は現在のエビデンスを添えて `maintained` とする
+5. 受領した各IDについて `prior_feedback_reconciliation` エントリをちょうど1つ出力する
+
+修正再レビューでは、verdict はこれらの照合エントリのみから導出する。
+
 ### ステップ5: 自己検証 [BLOCKING — 出力前]
 
 最終JSONを生成する前に下記の各項目を実行する。未充足の項目があれば、該当ステップに戻り完了させてから出力する。
 
-- [ ] ステップ0完了（prior_context_count記録済み）
+- [ ] ステップ0完了（`prior_context_count` と `prior_feedback_count` を記録済み）
+- [ ] prior_feedback_count > 0の場合: 受領した各IDが `prior_feedback_reconciliation` にちょうど1回現れる
 - [ ] prior_context_count > 0の場合: 各項目に解決ステータスがあり、`prior_context_check`オブジェクトが準備済み
 - [ ] doc_typeに対するGate 0の構造的存在チェックが完了
 - [ ] Gate 1の品質チェックが完了 — 適用された各条件付きチェックを含む: `codebase_analysis`が提供された場合のFact Disposition完全性、検証戦略セクションが存在する場合の検証戦略の品質、セクションがN/Aでない場合のDesign Convergence、対となる要件入力が提供された場合のAdopted design validity、`code_verification`が提供された場合のコード検証連携
@@ -176,26 +208,30 @@ WorkPlanの場合、追加で以下を確認:
 
 最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
+修正再レビューでは `metadata`、`gate0`、`verdict`、`prior_feedback_reconciliation` を出力し、初回レビュー用の issue・recommendation 配列は繰り返さない。
+
 ### フィールド定義
 
 | フィールド | 値 |
 |-----------|-----|
 | severity | `critical`, `important`, `recommended` |
 | category | `consistency`, `completeness`, `compliance`, `clarity`, `feasibility` |
-| decision | `approved`, `approved_with_conditions`, `needs_revision`, `rejected` |
+| decision | `approved`, `needs_revision`, `rejected` |
 
 ### 総合レビューモード
 
 ```json
 {
   "metadata": {"review_mode": "comprehensive", "doc_type": "DesignDoc", "target_path": "/path/to/document.md"},
-  "scores": {"consistency": 85, "completeness": 80, "rule_compliance": 90, "clarity": 75},
   "gate0": {"status": "pass|fail", "missing_elements": []},
-  "verdict": {"decision": "approved_with_conditions", "conditions": ["FileUtilの不整合を解消", "不足しているテストファイルを追加"]},
+  "verdict": {"decision": "needs_revision"},
   "issues": [
     {"id": "I001", "severity": "critical", "category": "consistency", "location": "セクション3.2", "description": "FileUtilメソッドの不一致", "suggestion": "実際のFileUtil使用状況を反映するようドキュメントを更新"}
   ],
   "recommendations": ["承認前に優先修正が必要", "ドキュメントと実装の整合"],
+  "prior_feedback_reconciliation": [
+    {"id": "[受領したID]", "prior_disposition": "apply|decline", "status": "resolved|withdrawn|maintained", "evidence": "[現在のエビデンス]"}
+  ],
   "prior_context_check": {"items_received": 0, "resolved": 0, "partially_resolved": 0, "unresolved": 0, "items": []}
 }
 ```
@@ -205,7 +241,7 @@ WorkPlanの場合、追加で以下を確認:
 ```json
 {
   "metadata": {"review_mode": "perspective", "focus": "implementation", "doc_type": "DesignDoc", "target_path": "/path/to/document.md"},
-  "analysis": {"summary": "分析結果の説明", "scores": {}},
+  "analysis": {"summary": "分析結果の説明"},
   "issues": [],
   "checklist": [
     {"item": "チェック項目の説明", "status": "pass|fail|na"}
@@ -216,7 +252,7 @@ WorkPlanの場合、追加で以下を確認:
 
 ### Prior Context Check
 
-`prior_context_count > 0`の場合に出力に含める:
+`prior_context_count > 0`の場合に出力に含める。同様に、`prior_feedback_count > 0`の場合は `prior_feedback_reconciliation` を出力に含める:
 
 ```json
 {
@@ -238,28 +274,16 @@ WorkPlanの場合、追加で以下を確認:
 
 ### 承認（Approved）
 - Gate 0: すべての存在チェック通過
-- 整合性スコア > 90
-- 完成度スコア > 85
-- `critical`なし
-- ブロッキングイシューなし
+- `critical` および `important` なし
+- 対応が必要な問題が残っていない（対応不要の `recommended` は報告してよい）
 - prior context項目（ある場合）: `critical` / `important` すべて解決済み
-
-### 条件付き承認（Approved with Conditions）
-- Gate 0: すべての存在チェック通過
-- 整合性スコア > 80
-- 完成度スコア > 75
-- `important` または `recommended` のみ
-- 修正が簡単な問題のみ
-- prior context項目（ある場合）: `important` 未解決は最大1件
 
 ### 要修正（Needs Revision）
 - Gate 0: いずれかの存在チェック不合格、または
-- 整合性スコア < 80 または
-- 完成度スコア < 75 または
-- `critical` あり
-- ブロッキングイシューあり
+- `critical` が1件以上
+- 対応が必要な `important` が1件以上
 - Design Convergence チェックが不合格
-- prior context項目（ある場合）: `important` 未解決2件以上または `critical` 未解決あり
+- prior context項目（ある場合）: `critical` または `important` に未解決あり
 - complexity_levelがmedium/highだが、complexity_rationaleに(1)要件/ACまたは(2)制約/リスクが欠けている
 
 ### 却下（Rejected）

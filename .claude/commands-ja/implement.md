@@ -88,7 +88,7 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
 1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）
 2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（これがないとレビュアはタスクの Proof Obligations を見られず、証明妥当性が `needs_improvement` で頭打ちになる）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `verdict.decision` で分岐する
+   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `verdict.decision` で分岐する
      - `needs_revision` → ステップ1 に戻り、同じ `task_file` と `requiredFixes[]` 配列を入力として task-executor を **Fix Mode** で再起動
      - `blocked` → 停止してユーザーにエスカレーションし、`verdict.reason` とレビュアが確立できなかった review basis を報告する
      - `approved` → ステップ3 へ
@@ -105,7 +105,7 @@ subagents-orchestration-guideスキルの「自律実行中のタスク管理」
 1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリストを渡す
 2. レスポンスを確認:
    - `approved` または `approved_with_notes` → 完了レポートへ（notesがあれば含める）
-   - `needs_revision` → task-template を用いて、統合修正タスクファイルを `docs/plans/tasks/review-fixes-{plan-name}-task-{サイクル番号}.md` に作成。Target Files には `requiredFixes[].location` を `file[:line]` として解釈してファイル部分のみ取り出した和集合を投入する（元タスクに依らず影響ファイルすべてが executor の File Scope Constraint に許可される）。続いて、`task_file` には新しい統合修正タスクファイルのパス、`requiredFixes` には `security-reviewer.requiredFixes[]` を設定して task-executor を **Fix Mode** で起動。その後 quality-fixer を実行し、最後に security-reviewer を再起動する。
+   - `needs_revision` → 各検出事項にレビュー裁定を適用し、`apply` の検出事項オブジェクトを逐語で載せた明示プロンプト、`requiredFixes[].location` を `file[:line]` として解釈しファイル部分のみ取り出した影響パスの和集合、および観察可能な検証条件を渡して task-executor を **Fix Mode** で起動する。`requiredFixes` には security-reviewer の配列を設定する。続いて quality-fixer、その後 `prior_feedback` を添えて security-reviewer を再実行する。
    - `blocked` → ユーザーにエスカレーション
 
 ### テスト情報の伝達
@@ -126,10 +126,7 @@ acceptance-test-generator実行後、work-planner（subagent_type: "work-planner
   - `docs/plans/tasks/{plan-name}-task-*.md`（単層タスク）
   - `docs/plans/tasks/{plan-name}-backend-task-*.md`（複層計画のbackend部分）
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md`（複層計画のfrontend部分）
-- 上記マッチから、以下のパターンに該当するものは除外する: `*-task-prep-*.md`、`_overview-*.md`、`*-phase*-completion.md`、`review-fixes-*.md`、`integration-tests-*-task-*.md`（これらは他のワークフローフェーズに由来する）
-- `docs/plans/tasks/{plan-name}-phase*-completion.md` にマッチするファイルすべてを削除する（task-decomposerが生成したフェーズ完了ファイル）
-- `docs/plans/tasks/review-fixes-{plan-name}-task-*.md` にマッチするファイルすべてを削除する（実装後検証の修正サイクルが作成した統合修正タスクファイル） — 上記の除外はこれらを実装タスクの照合対象から外すためのもので、この行が全検証エージェント合格後に削除する
-- 該当する `docs/plans/tasks/_overview-{plan-name}.md` が存在する場合は削除する
+- 上記マッチから、以下のパターンに該当するものは除外する: `integration-tests-*-task-*.md`（他のワークフローフェーズに由来する）
 - 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
 
 タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが完了レポートをブロックしない。

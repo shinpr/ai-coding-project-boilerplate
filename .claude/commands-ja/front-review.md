@@ -10,7 +10,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 **コアアイデンティティ**: 「私はオーケストレーターである。」（subagents-orchestration-guideスキル参照）
 
-**初回アクション**: 実行前にTaskCreateでStep 1-11を登録する。
+**初回アクション**: 実行前にTaskCreateでStep 1-10を登録する。
 
 ## 実行方法
 
@@ -54,9 +54,9 @@ Agent toolでsecurity-reviewerを呼び出す:
 
 **security-reviewerが`blocked`を返した場合**: 即座に停止。blockedの検出結果を報告しユーザーにエスカレーション。修正ステップには進まない。
 
-**コード準拠基準（プロジェクト段階を考慮）**:
-- プロトタイプ: 70%以上で合格
-- 本番実装: 90%以上推奨
+**コードレビュー基準**:
+- `pass` → 合格
+- `needs-improvement` / `needs-redesign` → 以下で残った finding をルーティングする
 
 **セキュリティ基準**:
 - `approved` または `approved_with_notes` → 合格
@@ -64,7 +64,7 @@ Agent toolでsecurity-reviewerを呼び出す:
 
 **両方の結果をサブエージェントの出力フィールドのみを使用して独立に報告**（サブエージェントのレスポンスにないフィールドを追加しない）。
 
-**早期終了（ルーティング対象なし）**: code-reviewer の `verdict` が `pass` かつ `acceptanceCriteria[]` のすべてのエントリが `status: "fulfilled"` かつ `identifierMismatches[]` が空かつ `qualityFindings[]` が空かつ security-reviewer の `findings[]` が空の場合、Steps 5-10 をスキップして直接 Step 11 へ進む — ルーティング対象がないため。クリーンな結果をユーザーに提示する。
+**早期終了（ルーティング対象なし）**: code-reviewer の `verdict` が `pass` かつ `acceptanceCriteria[]` のすべてのエントリが `status: "fulfilled"` かつ `identifierMismatches[]` が空かつ `qualityFindings[]` が空かつ security-reviewer の `findings[]` が空の場合、Steps 5-9 をスキップして直接 Step 10 へ進む — ルーティング対象がないため。クリーンな結果をユーザーに提示する。
 
 それ以外の場合、ユーザー提示の前に、オーケストレーターは以下のルールで finding ごとに推奨ルートを計算する（このルール自体は内部用 — ユーザー向けプロンプトには含めない）。ルールは code-reviewer の既存構造化フィールドのみを参照する。「DDの意図」のような解釈は不安定な推論を避けるため意図的に行わない:
 
@@ -82,9 +82,7 @@ Agent toolでsecurity-reviewerを呼び出す:
 ユーザーへの提示形式（finding ごとに推奨ルートをラベル付け、ルートでグルーピング）:
 
 ```
-Code Compliance: [code-reviewerのcomplianceRate]
-  Verdict: [code-reviewerのverdict]
-  Identifier Match Rate: [code-reviewerのidentifierMatchRate]
+Code Review: [code-reviewerのverdict]
   Acceptance Criteria:
   - [fulfilled] [item] (confidence: [high/medium/low])
   - [partially_fulfilled] [item]: [gap] — [suggestion] [recommended: c | d]
@@ -108,15 +106,13 @@ Security Review: [security-reviewerのstatus]
   s) スキップ     — 現状を受け入れて変更しない
 ```
 
-AskUserQuestionを使用する。デフォルト提示は **「すべての推奨ルートを承認」** — オーケストレーターの推奨が正しい典型ケース向けの単一確認。ユーザーが上書きしたい場合は finding ごとに c/d/s を収集する。すべてに対し `s` を選択した場合: Steps 5-10をスキップしてStep 11へ進む。
+AskUserQuestionを使用する。デフォルト提示は **「すべての推奨ルートを承認」** — オーケストレーターの推奨が正しい典型ケース向けの単一確認。ユーザーが上書きしたい場合は finding ごとに c/d/s を収集する。すべてに対し `s` を選択した場合: Steps 5-9をスキップしてStep 10へ進む。
 
-**修正パスへ引き継ぐスコープ**: 承認された所見、そのルート、対象となるファイルとセクション、およびユーザーが述べたサイズ予算を、ステップ6〜10 で呼び出す全エージェントに渡す。再検証の前に、各差分ハンクを承認された所見、またはその所見が必要とした整合性の更新に対応付ける。対応付かないハンク、または述べられた予算を超える差分については、修正の一部として受け入れるのではなくスコープ判断を求める。
+ユーザーのルート決定が、レビュー裁定（subagents-orchestration-guideスキルの `references/review-resolution.md`）におけるその finding の処理方針となる: `c` と `d` はコード側・設計側の `apply`、`s` は `decline`。ルートを処理方針として記録し、レビュアーの finding オブジェクトはそのまま引き継ぐ。
 
-### Step 5: タスクテンプレートの読み込み
+**修正パスへ引き継ぐスコープ**: 承認された finding、そのルート、対象となるファイルとセクション、およびユーザーが述べたサイズ予算を、ステップ5〜9 で呼び出す全エージェントに渡す。再検証の前に、各差分ハンクを承認された finding、またはその finding が必要とした整合性の更新に対応付ける。対応付かないハンク、または述べられた予算を超える差分については、修正の一部として受け入れるのではなくスコープ判断を求める。
 
-documentation-criteriaスキルを読み込み、Step 6用のタスクファイルテンプレート（references/task-template.md）を取得。
-
-### Step 5d: 設計側更新
+### Step 5: 設計側更新
 
 ユーザーが少なくとも1つのfindingを `d` にルーティングした場合のみ、本ステップを実行する。すべてのルートが `c` または `s` の場合は、Step 6 へ直接スキップする。
 
@@ -129,72 +125,67 @@ documentation-criteriaスキルを読み込み、Step 6用のタスクファイ�
    - `subagent_type`: "document-reviewer"
    - `description`: "更新後Design Docのレビュー"
    - `prompt`: "doc_type: DesignDoc。review_context: update。[path]の更新後Design Docの整合性と完成度をレビュー。"
+   - レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には technical-designer-frontend を用いる。収束条件に達したときのみ先へ進む。
 
 3. 複数のDesign Docが存在する場合（`ls docs/design/*.md | grep -v template | wc -l > 1`）、design-syncを呼び出す:
    - `subagent_type`: "design-sync"
    - `description`: "DD間整合性チェック"
    - `prompt`: "source_design: [更新後DDのパス]。更新後の全Design Doc間の矛盾を検出。"
-   - `sync_status: conflicts_found` の場合: 矛盾をユーザーに提示し、影響を受けるDDに対して technical-designer-frontend を再起動して解消する。
+   - `sync_status: CONFLICTS_FOUND` の場合: 矛盾をユーザーに提示し、影響を受けるDDに対して technical-designer-frontend を再起動して解消する。
 
-4. Step 5d 完了後:
-   - ユーザーが選択した `c` ルートがゼロの場合（すべて `d`、すべて `s`、または `c` を含まない `d` + `s` の混在）→ Steps 6-8 をスキップし、Step 9 で再検証へ進む
+4. Step 5 完了後:
+   - ユーザーが選択した `c` ルートがゼロの場合（すべて `d`、すべて `s`、または `c` を含まない `d` + `s` の混在）→ Steps 6-7 をスキップし、Step 8 で再検証へ進む
    - `d` と `c` の両方が選択された場合 → 更新後のDDに対して `c` ルートのfindingsを再評価し、DD改訂で満たされたものは除外する。残った `c` ルートのfindings で Step 6 へ進む
 
-### Step 6: タスクファイル作成
-
-`docs/plans/tasks/review-fixes-YYYYMMDD.md` にタスクファイルを作成。
-コード準拠の問題とセキュリティのrequiredFixesの両方を含める。
-
-### Step 7: 修正実行
+### Step 6: 修正実行
 Agent toolでtask-executor-frontendを呼び出す:
 - `subagent_type`: "task-executor-frontend"
 - `description`: "レビュー修正の実行"
-- `prompt`: "Task file: docs/plans/tasks/review-fixes-YYYYMMDD.md. 段階的修正を適用（5ファイルで停止）。"
+- `prompt`: "承認されたコード側の finding を直接適用する: [レビュアーの finding オブジェクト全体を逐語で、オーケストレーターの処理方針のみ付加]。承認されたルートと述べられた総サイズ予算の範囲に変更を収める（5ファイルで停止）。"
 
-### Step 8: 品質チェック
+### Step 7: 品質チェック
 Agent toolでquality-fixer-frontendを呼び出す:
 - `subagent_type`: "quality-fixer-frontend"
 - `description`: "品質ゲートチェック"
-- `prompt`: "修正ファイルの品質ゲート通過を確認。task_file: docs/plans/tasks/review-fixes-YYYYMMDD.md。filesModified: [直前の実装ステップのレスポンスから抽出]。"
+- `prompt`: "修正ファイルの品質ゲート通過を確認。filesModified: [直前の実装ステップのレスポンスから抽出]。"
 
-### Step 9: code-reviewer再検証
+### Step 8: code-reviewer再検証
 
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
 - `description`: "準拠の再検証"
-- `prompt`: "修正後のDesign Doc準拠を再検証。Design Doc: [path]. Implementation files: [file list]. 前回の準拠問題: $STEP_2_OUTPUT。各問題が解決されたこと（コード側または設計側いずれかで）を確認。"
+- `prompt`: "修正後にDesign Doc準拠を再検証。Design Doc: [path]。実装ファイル: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
 
-### Step 10: security-reviewer再検証
+### Step 9: security-reviewer再検証
 
 Agent toolでsecurity-reviewerを呼び出す（セキュリティ修正が実行された場合のみ）:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティの再検証"
-- `prompt`: "修正後のセキュリティを再検証。前回の検出結果: $STEP_3_OUTPUT。Design Doc: [path]. Implementation files: [file list]。"
+- `prompt`: "修正後にセキュリティを再検証。Design Doc: [path]。実装ファイル: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
 
-### Step 11: 最終クリーンアップとレポート
+### Step 10: 最終レポート
 
-本レシピが作成したreview-fix用タスクファイル（存在すれば）を削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である:
-
-- `docs/plans/tasks/review-fixes-YYYYMMDD.md` が存在すれば削除する
-
-タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが最終レポートをブロックしない。
+ステップ8とステップ9の各結果にレビュー裁定を適用する。その `maintained` の遷移に従い、差し戻した修正の後は該当する検証を繰り返し、エスカレーション条件で停止し、収束条件で先へ進む。
 
 その後、最終レポートを提示する:
 
 ```
-Code Compliance:
-  初回: [X]%
-  最終: [Y]%（修正実行時）
+Code Review:
+  初回: [code-reviewerのverdict]
+  修正レビュー: [再レビュー範囲のverdict]（修正実行時）
+  照合: [finding IDごとの resolved / withdrawn / maintained]
 
 Security Review:
   初回: [status]
-  最終: [status]（修正実行時）
+  修正レビュー: [再レビュー範囲のstatus]（修正実行時）
+  照合: [finding IDごとの resolved / withdrawn / maintained]
   Notes: [approved_with_notesのnotes、存在する場合]
+
+decline とした finding:
+- [ID] — [出典上の理由とエビデンス]
 
 残存課題:
 - [手動対応が必要な項目]
-
-クリーンアップ: review-fixesタスクファイルを削除済み
 ```
 
 ## 自動修正可能な項目（コード側パス）
