@@ -71,7 +71,7 @@ For an `implementation-detail` item, record the smallest in-scope option so the 
 
 - **Verification method**: [Governing verification method or repository command]
 - **Success criteria**: [Observable result tied to the cited ACs]
-- **Verification level**: [L1 unit/local | L2 integration | L3 end-to-end]
+- **Verification level**: [L1: functional operation as an end-user feature / L2: new tests added and passing / L3: code builds without errors — per implementation-approach skill]
 
 ## Verification Focus
 

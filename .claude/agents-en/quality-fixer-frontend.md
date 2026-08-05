@@ -199,10 +199,10 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 
 ### Common envelope and per-status fields
 
-All responses share `status` plus a `taskFileMechanisms` object when `task_file` is provided:
+All responses share `status` plus a `taskVerification` object when `task_file` is provided:
 
 ```json
-"taskFileMechanisms": {"provided": true, "executed": ["mechanism names that were found and executed"], "skipped": [{"mechanism": "mechanism name", "reason": "tool not found | config not found | not executable"}]}
+"taskVerification": {"provided": true, "executed": ["verification methods that were found and executed"], "skipped": [{"method": "verification method", "reason": "tool not found | config not found | not executable"}]}
 ```
 When `task_file` is not provided, set `"provided": false` and omit `executed`/`skipped`.
 
@@ -214,7 +214,7 @@ When `task_file` is not provided, set `"provided": false` and omit `executed`/`s
 | `blocked` (missing_prerequisites) | `reason: "Execution prerequisites not met"`, `missingPrerequisites[{type: seed_data\|library\|environment_variable\|running_service\|other, description, affectedTests[], resolutionSteps[]}]`, `testsSkipped`, `testsPassedWithoutPrerequisites` | Tests cannot run due to missing environment that is outside this agent's scope |
 | `blocked` (out_of_scope) | `reason: "Quality failure outside current task scope"`, `outOfScopeFailures[{command, file, evidence}]`, `needsUserDecision` | A failure is verified pre-existing or otherwise outside the current change and confirmed task scope |
 
-Minimal example (`stub_detected`; omits `taskFileMechanisms` for brevity — include it whenever `task_file` is provided):
+Minimal example (`stub_detected`; omits `taskVerification` for brevity — include it whenever `task_file` is provided):
 
 ```json
 { "status": "stub_detected", "reason": "Incomplete implementation detected in changed files", "incompleteImplementations": [{ "file_path": "src/components/Order/Total.tsx", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items", "type": "missing_logic" }] }

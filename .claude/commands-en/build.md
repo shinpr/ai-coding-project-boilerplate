@@ -35,23 +35,9 @@ Before any task processing, locate the work plan.
 3. For each remaining file, extract `{plan-name}` by stripping the trailing `-task-{NN}.md` or `-backend-task-{NN}.md` suffix
 4. When at least one task file matches, the work plan is `docs/plans/{plan-name}.md` for the prefix that has the most recent task-file mtime; ties broken by the lexicographically last `{plan-name}`
 5. **When the consumable patterns find no matches but `*-frontend-task-*.md` files exist in `docs/plans/tasks/`**: stop and report: "Only frontend-named task files were found. If you intended to run the frontend build recipe, switch to it. If the plan is backend, correct the affected work plan task entries to `Executor lane: backend` and regenerate the task files, or pass the work plan path as `$ARGUMENTS`." Filenames follow the plan's declared lanes, so re-running task materialization alone leaves them unchanged.
-6. When neither consumable patterns nor `*-frontend-task-*.md` match, fall back to the most-recent-mtime non-template `.md` in `docs/plans/` ONLY after **positively verifying the plan is a backend plan**. Absence of frontend markers is not enough — many plan templates include layer-neutral paths (e.g., `src/presentation`, `src/app`) that match neither marker set, so a confirmed backend signal is required. Read the plan and check:
-
-   **Backend signals (need at least one)**:
-   - Every task's `Executor lane` is `backend`
-   - Task `Scope` entries exclusively match backend markers: `**/api/**`, `**/server/**`, `**/services/**`, `**/backend/**`, `**/handlers/**`, `**/repositories/**`, or the project's backend-equivalent paths declared in `technical-spec` skill
-   - The plan's `## Governing Documents` references a Design Doc whose filename explicitly identifies it as backend (e.g., `*-backend-design.md`, `backend-*-design.md`)
-   - The plan title or `## Implementation Scope` explicitly identifies the work as backend (e.g., "backend implementation", "API endpoint", "database migration", "server-side")
-
-   **Frontend signals (any disqualifies, even if a backend signal is also present)**:
-   - Any task's `Executor lane` is `frontend`
-   - `## Governing Documents` entry pointing to `docs/ui-spec/*`
-   - Task `Scope` entries exclusively under frontend paths (`**/components/**`, `**/pages/**`, `**/web/**`, `**/*.tsx`, `**/*.jsx`)
-   - Plan title or `## Implementation Scope` explicitly mentions React, UI components, screens, or frontend
-
-   **Decision**:
-   - At least one backend signal AND zero frontend signals → plan is acceptable; proceed
-   - Otherwise (no backend signal found, OR any frontend signal present, OR layer-neutral paths only) → stop and report: "Cannot positively verify the most-recent work plan at `[path]` is a backend plan (signals examined: [list of signals checked and their results]). Pass the intended backend plan path as `$ARGUMENTS`, or run task-decomposer first on a plan whose task entries declare `Executor lane: backend`, so `docs/plans/tasks/` receives backend-named task files."
+6. When neither consumable patterns nor `*-frontend-task-*.md` match, read the most-recent-mtime non-template `.md` in `docs/plans/` and decide from the `Executor lane` every task entry declares:
+   - Every task is `backend` → the plan is a backend plan; proceed
+   - Any task is `frontend`, or any task omits the lane → stop and report: "Cannot confirm the most-recent work plan at `[path]` is a backend plan from its task `Executor lane` values. Pass the intended backend plan path as `$ARGUMENTS`, or run task-decomposer so `docs/plans/tasks/` receives backend-named task files."
 7. When no plan exists at all in `docs/plans/`, stop and report: "No work plan found. Pass a work plan path as `$ARGUMENTS`, or complete the planning phase first."
 
 ### Consumed Task Set
@@ -71,7 +57,7 @@ Analyze the Consumed Task Set and determine the action required. Reaching this s
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
 | No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | Confirm with user → run task-decomposer |
-| No tasks + plan auto-resolved | Consumed Task Set empty AND plan came from auto-resolution AND Step 6 confirmed at least one backend signal with zero frontend signals | Confirm with user → run task-decomposer (the layer verification in Step 6 already excluded frontend and ambiguous plans, so this is safe) |
+| No tasks + plan auto-resolved | Consumed Task Set empty AND plan came from auto-resolution AND Step 6 confirmed every task declares `Executor lane: backend` | Confirm with user → run task-decomposer (Step 6 already excluded frontend and lane-less plans, so this is safe) |
 
 To bootstrap from a Design Doc when no plan exists yet, run the planning recipe first to produce a work plan, then re-invoke this recipe — Work Plan Resolution above intentionally requires a resolved work plan rather than auto-creating one, to keep the layer decision explicit.
 

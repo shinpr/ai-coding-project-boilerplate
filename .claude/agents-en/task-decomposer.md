@@ -38,12 +38,13 @@ Extract each Work Plan task's:
 
 Generate exactly one implementation task file per Work Plan task. Copy dependency task IDs unchanged.
 
-Assign `NN` as the zero-padded ordinal of the task's appearance in the Work Plan:
+Assign `NN` as the zero-padded ordinal of the task's appearance in the Work Plan, then take the filename from the task's executor lane. The build recipes consume by filename, so the lane decides which executor receives the task:
 
-| Plan shape | Filename |
+| Executor lane | Filename |
 |---|---|
-| Single layer | `{plan-name}-task-{NN}.md` |
-| Spans backend and frontend | `{plan-name}-backend-task-{NN}.md` / `{plan-name}-frontend-task-{NN}.md`, selected from each task's executor lane |
+| `backend`, and every task in the plan is `backend` | `{plan-name}-task-{NN}.md` |
+| `backend`, in a plan that also has `frontend` tasks | `{plan-name}-backend-task-{NN}.md` |
+| `frontend` | `{plan-name}-frontend-task-{NN}.md` |
 
 Execution order comes from dependency task IDs, not filenames — the `NN` ordinal and the `PN-TN` ID coincide only by accident, so each task file names both.
 

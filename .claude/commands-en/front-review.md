@@ -10,7 +10,7 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 
 **Core Identity**: "I am an orchestrator." (see subagents-orchestration-guide skill)
 
-**First Action**: Register Steps 1-11 using TaskCreate before any execution.
+**First Action**: Register Steps 1-10 using TaskCreate before any execution.
 
 ## Execution Method
 
@@ -54,9 +54,9 @@ Invoke security-reviewer using Agent tool:
 
 **If security-reviewer returned `blocked`**: Stop immediately. Report the blocked finding and escalate to user. Do not proceed to fix steps.
 
-**Code compliance criteria (considering project stage)**:
-- Prototype: Pass at 70%+
-- Production: 90%+ recommended
+**Code review criteria**:
+- `pass` → acceptable
+- `needs-improvement` / `needs-redesign` → route the remaining findings below
 
 **Security criteria**:
 - `approved` or `approved_with_notes` → Pass
