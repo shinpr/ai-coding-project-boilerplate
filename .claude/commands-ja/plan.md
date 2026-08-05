@@ -63,10 +63,10 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
    document-reviewerを呼び出し作業計画書をレビューする:
    - `subagent_type`: "document-reviewer"
    - `description`: "作業計画書レビュー"
-   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [ステップ1で選択したDesign Docのパス]。Design Docへの意味的トレーサビリティ、早期検証の配置、実境界での検証カバレッジ、故障モードチェックリスト、レビュースコープをレビューする。"
+   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [ステップ1で選択した Design Doc のパス]。作業計画書自身の実装スコープ、タスク、完了条件、依存関係、実行順序、引用アンカーの実在、実行可能な検証をレビューする。検出事項と提案は、対象文書自身が引用している内容に限定する — 出典ドキュメントのパスは引用先を与えるだけである。"
    - 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘はユーザー入力なしで解消する。reviewerの `verdict.decision` で分岐する:
-     - `needs_revision`: 所見を渡してwork-plannerをupdateモードで再実行し、`approved`/`approved_with_conditions` になるまで再レビューを繰り返す
-     - `approved` / `approved_with_conditions`: ステップ5へ進む
+     - `needs_revision`: レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には work-planner を update モードで用いる
+     - `approved`、またはレビュー裁定が収束条件に達した場合: ステップ5へ進む
      - `rejected`: ユーザーにエスカレーションする
 
 5. **承認のための提示**
@@ -87,7 +87,3 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 実装は別途ご指示ください。
 ```
 
-承認された計画が次のいずれかを含む場合 — E2Eテストスケルトン；コードベースにまだ存在しないコマンド・ファイル・関数・エンドポイントを参照する検証戦略；視覚状態を描画する fixture エントリや開発用ルートを持たない UI コンポーネント；エンドツーエンドでの動作が未確認のローカルレーン — 応答の最終行として次の1行を追加する（該当しなければ省略する）:
-```
-任意の事前検証: `/prepare-implementation docs/plans/[plan-name].md` で、ビルド前にこれらが実装可能かを検証できる（readiness 基準がすべて満たされていれば no-op で終了）。
-```

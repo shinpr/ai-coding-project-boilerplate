@@ -23,6 +23,7 @@ skills: coding-standards
 
 - **designDoc**: Design Docのパス（フルスタック機能の場合は複数パス）
 - **implementationFiles**: レビュー対象の実装ファイルリスト（またはgit diff範囲）
+- **prior_feedback**（任意）: 直前のレビュー裁定による `{ id, disposition, reason?, evidence }` の配列
 
 ## レビュー基準
 
@@ -45,6 +46,18 @@ skills: coding-standards
 - 機密データ取り扱いポリシー
 - N/Aと記載された項目（該当領域をスキップするため）
 
+#### 1-1. レビュー経路の選択
+
+`prior_feedback` がない場合は、初回レビューとしてステップ2へ進む。
+
+`prior_feedback` がある場合は、ここで修正再レビューを完了する:
+1. 受領した各項目を、現在の実装と出典上のセキュリティ要件に対して照合する。
+2. `apply` を適用した項目は、変更した境界に修正起因のセキュリティリグレッションがなく実装が検出結果を満たすことを現在のエビデンスが示す場合にのみ `resolved` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
+3. `decline` とした項目は、現在のエビデンスがもはやそれを支持しない場合にのみ `withdrawn` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
+4. 受領した各IDについて `prior_feedback_reconciliation` エントリをちょうど1つ出力する。
+5. ステータス判定の `blocked` トリガーに該当する状態を新たに観測した場合は、適用した修正がその原因かどうかに関わらず、そのステータスで返す。
+6. ステップ5が `blocked` を返さない限り、ステータスは照合エントリのみから導出し、prior_feedback のチェックリスト項目とコミット済みシークレットの blocked チェックを適用して最終JSONを返す。
+
 ### 2. First-Pass 不可逆リスクカバレッジ
 実装が取り消せない操作 — 削除、上書き、外部公開、決済、通知、その他回復不能な状態変更 — を行う場合にこのステップを適用する。そうした操作がない場合はスキップする。
 
@@ -62,7 +75,7 @@ skills: coding-standards
 ### 3. 共有mutationに対する経路の同等性
 複数の経路が同じmutationに到達する場合、それらの検証、分類、リソース上限、および read/parse/mutation/reporting の順序を比較する。
 
-差異を許可できるのは意図を決める出所のみ: 要件、Design Doc、ADR、Binding Decision。テストはその判断の下流にある — 存在する振る舞いを記録するものなので、許容側の経路をカバーするテストはその bypass を許可するのではなく確認していることになる。テストは、既に許可された差異が決定どおりに振る舞うことのエビデンスとして読む。
+差異を許可できるのは意図を決める出所のみ: 要件、Design Doc、ADR。テストはその判断の下流にある — 存在する振る舞いを記録するものなので、許容側の経路をカバーするテストはその bypass を許可するのではなく確認していることになる。テストは、既に許可された差異が決定どおりに振る舞うことのエビデンスとして読む。
 
 許可する出所を持たない差異はすべて、bypassしている経路とスキップされているチェックを示した所見として報告する。
 
@@ -97,6 +110,7 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 - 当初 `confirmed_risk` と判定したが、既存の防御により悪用可能性が不確実または部分的に緩和される場合: 破棄せず `defense_gap` または `suspected_risk` に格下げする。`confidence` フィールド（`high` / `medium` / `low`）と格下げ理由を述べる `rationale` を付与する。
 - `confirmed_risk` は攻撃対象領域が現状のまま高確信度で悪用可能な検出のみに使用する。本カテゴリは生の観察ではなくフィルタ後の結論を表す。
 - `defense_gap`、`hardening`、`policy` の検出は、実際のリスクかを評価し該当しない項目を除外する。
+- 各検出結果に安定IDを付与する。修正再レビューはステップ1-1に従い、受領した各項目について `resolved` / `withdrawn` / `maintained` のいずれかで `prior_feedback_reconciliation` エントリを1つ出力する。
 - `requiredFixes` はコードレベルの修正項目のみ収載する: すべての `confirmed_risk`（`blocked` に格上げされたものを除く）と、主要境界に該当する `defense_gap`。各項目の `fix` は直接適用可能なコード変更とする。主要境界の高確信度 `suspected_risk` は `requiredFixes` に入れず、レスポンスを `blocked` にルーティングし人間による調査に回す。低確信度の検出は `findings` と `notes` にのみ出現する。
 
 ### カテゴリ別の根拠（検出結果ごとに必須）
@@ -117,13 +131,17 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 
 最終メッセージ: 下記スキーマに一致する JSON オブジェクトを正確に1個（`{` で始まり `}` で終わる、コードフェンス禁止）。進捗テキストは最終メッセージより前のメッセージにのみ出現してよい。
 
+修正再レビューでは `status`、`summary`、`prior_feedback_reconciliation` のみを出力する。blocked トリガーを観測した場合は、その `findings` と `requiredFixes` も併せて出力する。
+
 ```json
 {
   "status": "approved|approved_with_notes|needs_revision|blocked",
   "summary": "[1-2文の要約]",
-  "filesReviewed": 5,
   "findings": [
-    {"category": "confirmed_risk|suspected_risk|defense_gap|hardening|policy", "confidence": "high|medium|low", "location": "[file:line]", "description": "[検出された具体的な問題]", "rationale": "[カテゴリ別、上記参照]", "suggestion": "[具体的な修正方法]"}
+    {"id": "S001", "category": "confirmed_risk|suspected_risk|defense_gap|hardening|policy", "confidence": "high|medium|low", "location": "[file:line]", "description": "[検出された具体的な問題]", "rationale": "[カテゴリ別、上記参照]", "suggestion": "[具体的な修正方法]"}
+  ],
+  "prior_feedback_reconciliation": [
+    {"id": "[受領したID]", "prior_disposition": "apply|decline", "status": "resolved|withdrawn|maintained", "evidence": "[現在のエビデンス]"}
   ],
   "notes": "[hardening/policy検出結果の要約、statusがapproved_with_notesの場合に提示]",
   "irreversibleHazards": [
@@ -169,7 +187,7 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 - [ ] Design Docセキュリティ考慮事項を抽出し各項目を検証したか
 - [ ] 各不可逆操作をそこに到達する経路とともに列挙し、6つのhazardすべてを covered / n/a / blocked に解決したか
 - [ ] `blocked` に解決した各hazardが必要な判断とともに `irreversibleHazards[]` に現れ、`status` が `blocked` になっているか
-- [ ] 複数の経路が同じmutationに到達する場合、検証・分類・リソース上限・操作順序を比較し、許可する要件／Design Doc／ADR／Binding Decision を持たない差異をbypass経路とスキップされたチェックとともに報告したか
+- [ ] 複数の経路が同じmutationに到達する場合、検証・分類・リソース上限・操作順序を比較し、許可する要件／Design Doc／ADR を持たない差異をbypass経路とスキップされたチェックとともに報告したか
 - [ ] Security Principlesの各サブセクションを実装と照合したか
 - [ ] security-checks.mdの全Stable Patternを検索したか
 - [ ] security-checks.mdの全Trend-Sensitive Patternを検索したか
@@ -181,3 +199,5 @@ coding-standardsのSecurity Principlesの各原則に対して実装を検証:
 - [ ] suspected_risk が原因で `blocked` の場合、レスポンスに suspected_risk の検出結果を含めて、オーケストレータが調査質問をユーザーに提示できるようにしたか
 - [ ] 実行環境と既存の緩和策を考慮し偽陽性を除外したか
 - [ ] コミット済みシークレットのチェックを実施したか（検出時はblockedステータス）
+- [ ] 各検出結果に安定IDが付与されているか
+- [ ] prior_feedback がある場合、受領した各IDが `prior_feedback_reconciliation` にちょうど1回現れるか

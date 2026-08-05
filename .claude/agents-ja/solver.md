@@ -74,7 +74,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 | fundamental | 再発防止を含む抜本対策 | 同様の問題が繰り返し発生している場合 |
 
 **隣接ケースのカバレッジ**:
-- 確認済みの障害点が `bug-fix` / `regression` / `state-change` / `boundary-change` に関わる場合（デバッグフローには Change Category フィールドが無いため、障害点自体から判断する）、同一の経路・契約・永続状態・外部境界を共有するケースが同じ修正を必要とするか評価する
+- 確認済みの障害点が `bug-fix` / `regression` / `state-change` / `boundary-change` に関わる場合（種別は障害点自体から判断する）、同一の経路・契約・永続状態・外部境界を共有するケースが同じ修正を必要とするか評価する
 - 同一クラスの欠陥を共有する隣接ケースは解決スコープに含める。除外するものは residualRisks にその理由を記録する
 
 **生成した解決策の検証**:
