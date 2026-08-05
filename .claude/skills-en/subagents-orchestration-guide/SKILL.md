@@ -89,6 +89,10 @@ When two specialists conflict, or when a specialist conflicts with my expectatio
 
 When a specialist cannot determine execution method from repo state and artifacts, the specialist escalates as blocked. I then escalate to the user with the specialist's blocked details.
 
+### Review Resolution
+
+Apply `references/review-resolution.md` to actionable deliverable-review findings. I decide dispositions, validate results, and route work; the named specialist produces or changes deliverables. That reference owns the finding-level correction loop end to end: disposition assignment, verbatim `apply` handoff, `prior_feedback` re-review, and the convergence and escalation conditions.
+
 ### Task Assignment with Responsibility Separation
 
 I understand each subagent's responsibilities and assign work appropriately:
@@ -120,7 +124,7 @@ The file-count ranges below set the floor. documentation-criteria skill's Struct
 
 | Scale | Baseline File Count | PRD | ADR | Design Doc | Work Plan |
 |-------|---------------------|-----|-----|------------|-----------|
-| Small | 1-2 | Update[^1] | Not needed | Not needed | Single task file in task-template format under `docs/plans/tasks/` (no separate plan document) |
+| Small | 1-2 | Update[^1] | Not needed | Not needed | Not needed — task-executor runs from an explicit prompt |
 | Medium | 3-5 | Update[^1] | Conditional[^2] | **Required** | **Required** |
 | Large | 6+ | **Required**[^3] | Conditional[^2] | **Required** | **Required** |
 
@@ -151,21 +155,21 @@ All implementation work (Edit, Write, MultiEdit) is performed by subagents, not 
 
 ### Subagent Response Format
 
-Subagents respond in JSON format. Key fields for orchestrator decisions:
+Subagents respond in JSON. Each agent declares its own input and output contract — read that contract from the agent when composing a call. This table carries only the signal I branch on and the action each value selects.
 
-| Agent | Key Fields | Decision Logic |
-|-------|-----------|----------------|
-| requirement-analyzer | scale, confidence, adrRequired, crossLayerScope, scopeDependencies, questions, convergence (four fields, each with a readiness label; a field below `ready` also returns as a `convergence` question) | Select flow by scale — the value already includes Structural Escalation; check adrRequired for ADR step; run the requirement-convergence hearing on `convergence` before proceeding |
-| codebase-analyzer | analysisScope.categoriesDetected, dataModel.detected, qualityAssurance (mechanisms[], domainConstraints[]), focusAreas[], existingElements count, limitations | Pass focusAreas to technical-designer as context |
-| ui-analyzer | externalResources (status, per-axis fetch_status), componentStructure[], propsPatterns[], cssLayout[], stateDisplay[], focusAreas[], candidateWriteSet[], limitations | Pass the ui-analyzer JSON to ui-spec-designer and technical-designer-frontend; each consumes the fields named in its own input declaration |
-| code-verifier | summary.status (consistent/mostly_consistent/needs_review/inconsistent/blocked), summary.blockingReason, summary.consistencyScore, discrepancies[], reverseCoverage (dataOperationsInCode, testBoundariesSectionPresent). Read the verdict from `summary.status` — `discrepancies[].status` is a per-finding field (drift/gap/conflict) and is not the verdict. Pre-implementation: verifies Design Doc claims against existing codebase. Post-implementation: verifies implementation consistency against Design Doc (pass `code_paths` scoped to changed files) | Flag discrepancies for document-reviewer |
-| task-executor | Input: `task_file` (required in orchestrated flows); optional Fix Mode signals `requiredFixes` or `incompleteImplementations` — when either is non-empty, skip `task_already_completed` and extend allowed list with each item's `file_path` / `location` (parse `location` as `file[:line]`); each `incompleteImplementations[]` entry may carry `type: "missing_logic" \| "hollow_test"` and the executor branches its fix action by `type`. Output: status (escalation_needed/completed), filesModified[], testsAdded, requiresTestReview, runnableCheck{level, executed, command, result, substance, substanceIssue, reason}, escalation_type ∈ {task_file_not_found, task_already_completed, target_files_missing, design_compliance_violation, similar_function_found, similar_component_found, investigation_target_not_found, out_of_scope_file, dependency_version_uncertain, binding_decision_violation, test_environment_not_ready, unresolved_input}. | On escalation_needed: handle by escalation_type. On `unresolved_input`: present `unresolvedItems[]` to the user — a `requirement-decision` item needs the named decision before the task can re-run; an `implementation-detail` item names the constraint no in-scope option satisfies |
-| quality-fixer | Input: `task_file` (path to current task file — always pass this in orchestrated flows), `filesModified` (extract from the upstream implementation step's response — passes the task's write set as the primary scope for stub-detection; falls back to `git diff HEAD` when omitted), `runnableCheck` (extract from the upstream implementation step's response — passes the test execution evidence including `substance` and `substanceIssue` so the substance check has the runtime signal; omit when the upstream did not run tests), `qualityCommand` (pass the project's authoritative quality command when the recipe or technical-spec names one, so every task in the run is verified by the same command; omit to let the fixer discover commands from the project configuration). Status: approved/stub_detected/blocked. `stub_detected` → `incompleteImplementations[]` items carry `type: "missing_logic" \| "hollow_test"`; route back to the implementation step (which branches its fix action on `type`), then re-run quality-fixer. `blocked` → see quality-fixer blocked handling below | On stub_detected: re-invoke the implementation step. On blocked: see handling below |
-| document-reviewer | Input: `doc_type`, `target`, `review_context` (`creation` for a newly authored document, `update` for a revision of an approved one, `as-is` for a reverse-engineered document — declares why the review was requested so legitimately absent paired inputs are not read as defects), plus the doc_type-specific inputs. Output: verdict.decision (approved/approved_with_conditions/needs_revision/rejected), recommendations (includes an entry naming the checks that did not run when paired inputs were absent, and the absence of code verification when `code_verification` came back `blocked`) | Proceed on approved/approved_with_conditions; request fixes on needs_revision; escalate on rejected. Read the recommendations for skipped checks before treating an approval as full-scope |
-| design-sync | sync_status (NO_CONFLICTS/CONFLICTS_FOUND) | On CONFLICTS_FOUND: present conflicts to user before proceeding |
-| integration-test-reviewer | Input: `testFile` (one or more paths — pass every test file the change touched, from the implementation step's `testsAdded`), `diffBase` (optional — the revision the tests are compared against, so review scope is the change rather than the whole file), `designDocPath` (optional), `taskFiles` (optional). Output: verdict.decision (approved/needs_revision/blocked), verdict.reason, testFiles[], fileResults[] (one entry per reviewed file, each carrying its own `reviewBasis` of skeleton/proof_obligations/prompt_claims/none plus that file's compliance counts and quality issues), proofObligationCoverage[] (task-scoped, spanning all reviewed files — one task's obligations may be split across files, so this is where coverage is resolved), requiredFixes[] (each `location` begins with the file path). `blocked` has two causes: a reviewed file whose `reviewBasis` is `none`, or a contradiction between the basis and the Design Doc. Branch on `verdict.decision` — top-level `status` is the verification outcome axis (passed/failed/needs_improvement) and is not the routing decision | On needs_revision: re-invoke the routed executor in Fix Mode with the same task_file and requiredFixes[]. On blocked: escalate with verdict.reason |
-| security-reviewer | Input: `designDoc`, `implementationFiles`. Output: status (approved/approved_with_notes/needs_revision/blocked), findings, notes, irreversibleHazards[] (non-empty when an irreversible-operation hazard is `blocked` — each entry names the required decision, which forces status `blocked`), requiredFixes | On needs_revision: create a consolidated fix task file with the affected file paths from `requiredFixes[].location` populated into Target Files, then invoke the routed executor in Fix Mode with that task_file and the `requiredFixes[]` array, then quality-fixer, then re-invoke security-reviewer to verify resolution. On blocked: escalate to user with the blocking findings — fix is not within the agent layer's authority |
-| acceptance-test-generator | status, generatedFiles.{integration,fixtureE2e,serviceE2e} (path\|null per lane), budgetUsage per lane, e2eAbsenceReason per E2E lane (null when emitted; reason enum is owned by acceptance-test-generator and integration-e2e-testing skill) | Verify each non-null file path exists, pass per-lane paths and absence reasons to work-planner |
+| Agent | I branch on | Action per value |
+|---|---|---|
+| requirement-analyzer | `scale`, `adrRequired`, `convergence` | Select the flow by `scale` — it already includes Structural Escalation. Add the ADR step when `adrRequired`. Run the requirement-convergence hearing on `convergence` before proceeding |
+| codebase-analyzer / ui-analyzer | — | Pass the full JSON unchanged to the next specialist; each consumes the fields its own input declaration names |
+| task-executor / task-executor-frontend | `status`, `escalation_type`, `requiresTestReview` | `completed` → continue the cycle. `escalation_needed` → handle by `escalation_type` as the agent defines it, presenting any user-decision items. `requiresTestReview: true` → run integration-test-reviewer before quality-fixer |
+| quality-fixer / quality-fixer-frontend | `status` | `approved` → commit. `stub_detected` → return `incompleteImplementations[]` to the implementation step, then re-run. `blocked` → see quality-fixer Blocked Handling below |
+| document-reviewer | `verdict.decision` | `approved` → proceed. `needs_revision` → run Review Resolution. `rejected` → escalate. Read `recommendations` for checks that did not run before treating an approval as full-scope |
+| integration-test-reviewer | `verdict.decision` | `approved` → proceed. `needs_revision` → run Review Resolution. `blocked` → escalate with `verdict.reason`. Top-level `status` is the verification outcome axis, not the routing decision |
+| code-verifier / security-reviewer | `summary.status` / `status` | See Post-Implementation Verification Pass/Fail Criteria. A security `blocked` raised by an irreversible-operation hazard names the decision it requires and sits outside the agent layer's authority |
+| design-sync | `sync_status` | `CONFLICTS_FOUND` → present the conflicts to the user before proceeding |
+| acceptance-test-generator | per-lane `generatedFiles`, per-lane `e2eAbsenceReason` | Verify each non-null path exists, then pass the per-lane paths and absence reasons to work-planner |
+
+**Cross-agent wiring I own**: carry the implementation step's `filesModified` and `runnableCheck` into the following quality-fixer call, and the project's authoritative quality command as `qualityCommand` when the recipe or technical-spec names one.
 
 ### quality-fixer Blocked Handling
 
@@ -195,7 +199,7 @@ According to scale determination:
 12. design-sync → Consistency verification **[Stop: Design Doc Approval]**
 13. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
 14. work-planner → Work plan creation
-15. document-reviewer → Work plan review (doc_type: WorkPlan; pass the Design Doc path so AC/contract/state coverage is traceable). On `needs_revision`: re-invoke work-planner (update) and re-review until `approved`/`approved_with_conditions` — the plan is a derivation of the Design Doc, so plan-fidelity findings need no user adjudication. On `rejected`: escalate to user. **[Stop: Batch approval]**
+15. document-reviewer → Work plan review (doc_type: WorkPlan; pass the Design Doc path so AC/contract/state coverage is traceable). Run Review Resolution through its correction re-review, escalation, and convergence transitions, using work-planner in update mode for rerouted corrections. On `rejected`: escalate to user. **[Stop: Batch approval]**
 16. task-decomposer → Autonomous execution → Completion report
 
 ### Medium Scale (3-5 Files) - 10 Steps (backend) / 12 Steps (frontend/fullstack)
@@ -210,20 +214,15 @@ According to scale determination:
 8. design-sync → Consistency verification **[Stop: Design Doc Approval]**
 9. acceptance-test-generator → Test skeleton generation, pass to work-planner (*1)
 10. work-planner → Work plan creation
-11. document-reviewer → Work plan review (doc_type: WorkPlan; pass the Design Doc path so AC/contract/state coverage is traceable). On `needs_revision`: re-invoke work-planner (update) and re-review until `approved`/`approved_with_conditions` — the plan is a derivation of the Design Doc, so plan-fidelity findings need no user adjudication. On `rejected`: escalate to user. **[Stop: Batch approval]**
+11. document-reviewer → Work plan review (doc_type: WorkPlan; pass the Design Doc path so AC/contract/state coverage is traceable). Run Review Resolution through its correction re-review, escalation, and convergence transitions, using work-planner in update mode for rerouted corrections. On `rejected`: escalate to user. **[Stop: Batch approval]**
 12. task-decomposer → Autonomous execution → Completion report
 
-### Small Scale (1-2 Files) - 3 Steps
+### Small Scale (1-2 Files) - 2 Steps
 
-1. requirement-analyzer → Requirement analysis and confirmed Small scale → requirement-convergence hearing, re-invoking requirement-analyzer with the answers **[Stop]**. The hearing runs at every scale, because `nonGoals` is user-authored and no agent can supply it. When Structural Escalation raises the scale, switch to the Medium flow from this point
-2. work-planner → Simplified work plan creation. At this scale, work-planner emits a single task-template-format task file directly under `docs/plans/tasks/` instead of a separate work plan + decomposition; that path is what task-executor receives as `task_file`. **[Stop: Batch approval]**
-3. task-executor → quality-fixer → commit (per task) → Completion report
+1. requirement-analyzer → Requirement analysis and confirmed Small scale → requirement-convergence hearing, re-invoking requirement-analyzer with the answers **[Stop]**. The hearing runs at every scale, because `nonGoals` is user-authored and no agent can supply it. When Structural Escalation raises the scale, switch to the Medium flow from this point. Present the confirmed outcome, affected paths, and verification condition **[Stop: Batch approval]**
+2. task-executor → quality-fixer → commit → Completion report
 
-Note: At Small scale the implementation step still runs through task-executor with the standard 4-step cycle (`task-executor → escalation judgment → quality-fixer → commit`). Direct orchestrator edits are not used.
-
-### Optional Preflight
-
-For Medium / Large scale, after Batch approval implementation proceeds directly. Verifying the plan is implementable end-to-end (verification-strategy references, fixtures, UI rendering surface, E2E/local lane environment) is an optional preflight the user runs at their discretion via the prepare-implementation recipe, which exits no-op when readiness criteria already pass. This guide does not invoke any orchestrator above the agent layer.
+Note: At Small scale no Work Plan and no task file are produced. The implementation step still runs through task-executor with the standard 4-step cycle (`task-executor → escalation judgment → quality-fixer → commit`), receiving the confirmed outcome, governing sources, affected paths, and verification condition as an explicit prompt. Direct orchestrator edits are not used.
 
 ## Cross-Layer Orchestration
 
@@ -353,14 +352,14 @@ Set `status` to `completed` only when every required task, quality gate, verifie
    - **prd-creator** (when a PRD is created or updated): persists `outcome` to `Success Criteria`, and `nonGoals` plus `speculative` requirements to `Future` / `Out of Scope` with origin `user`
    - **technical-designer / technical-designer-frontend**: persists the same to the Design Doc's `Requirement Convergence` when no PRD exists, and always records the fields left `weak-but-explicit` there
    - **ui-spec-designer** (frontend/fullstack): treats `nonGoals` and `speculative` requirements as capabilities the UI Spec leaves out
-   - **work-planner**: treats `nonGoals` and `speculative` requirements as excluded from every task entry. At Small scale no PRD or Design Doc exists, so the `weak-but-explicit` fields stay in the orchestrator's own context per the storage protocol rather than becoming blocking items in the task file
+   - **work-planner**: treats `nonGoals` and `speculative` requirements as excluded from every task entry. At Small scale no Work Plan is produced, so the `weak-but-explicit` fields stay in the orchestrator's own context per the storage protocol rather than becoming blocking items in the executor prompt
 
    #### codebase-analyzer → technical-designer
 
    **Pass to codebase-analyzer**: requirement-analyzer JSON output (including `convergence`), PRD path (if exists), original user requirements
    **Pass to technical-designer**: codebase-analyzer JSON output as additional context in the Design Doc creation prompt. Required downstream uses:
    - `focusAreas` → canonical disposition-target list for the Fact Disposition Table (one row per focusArea, carrying through `fact_id` and `evidence` verbatim)
-   - `dataModel`, `dataTransformationPipelines`, `qualityAssurance` → Existing Codebase Analysis, Verification Strategy, and Quality Assurance Mechanisms sections
+   - `dataModel`, `dataTransformationPipelines`, `qualityAssurance` → Existing Codebase Analysis and Verification Strategy sections
 
    #### code-verifier → document-reviewer (Design Doc review)
 
@@ -373,7 +372,7 @@ Set `status` to `completed` only when every required task, quality gate, verifie
 
    #### technical-designer → work-planner
 
-   **Pass to work-planner**: Design Doc path. Work-planner scans all DD sections and extracts technical requirements per its Step 5 categories (impl-target, connection-switching, contract-change, verification, prerequisite), then produces a Design-to-Plan Traceability table.
+   **Pass to work-planner**: Design Doc path. Work-planner maps governing sections and ACs to implementation tasks. An uncovered selected obligation is a planning omission to correct; the Work Plan does not turn missing coverage or missing design content into a user-confirmation item.
 
    **Gap handling (orchestrator responsibility)**: If work-planner outputs a draft plan containing `gap` entries, the orchestrator MUST:
    1. Present the gap entries to the user with justifications
@@ -412,3 +411,7 @@ Register overall phases using TaskCreate. Update each phase with TaskUpdate as i
 | security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` → Escalate to user |
 
 **Re-run rule**: Run at most 2 fix cycles. After each cycle, re-run the verifiers that returned **fail** and retain the recorded evidence from verifiers that passed. A cycle makes progress only when a previously failing verifier reaches a pass status or its count of named remaining findings decreases. Escalate immediately when a cycle makes no progress or requires external input; after cycle 2, escalate every remaining failure with its findings.
+
+This rule bounds the verifier set. The per-finding correction loop is bounded separately by `references/review-resolution.md` section 3, and whichever limit triggers first escalates.
+
+**Fix-cycle handoff**: Apply Review Resolution, then pass each required executor the complete `apply` finding objects verbatim with only their dispositions added. Carry `prior_feedback` to reviewer inputs that support reconciliation.

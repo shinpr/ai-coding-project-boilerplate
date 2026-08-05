@@ -13,7 +13,7 @@ Evaluate rows by confirmed scale, then add the conditional documents named in th
 |-----------------|--------------------|-----------------------|----------------|
 | Large (6+ files or large-risk axis) | PRD, Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies | PRD -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
 | Medium (3-5 files or medium-risk axis) | Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies; update an existing PRD when the feature scope changes | PRD update (if applicable) -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
-| Small (1-2 files with no higher-risk axis) | One task file in task-template format | Update an existing PRD when the feature scope changes | PRD update (if applicable) -> task file |
+| Small (1-2 files with no higher-risk axis) | None — the confirmed outcome, affected paths, and verification condition are passed to the executor as an explicit prompt | Update an existing PRD when the feature scope changes | PRD update (if applicable) -> implementation |
 
 For a Large change, satisfy the PRD requirement by creating a new PRD, updating the relevant PRD, or creating a reverse PRD when no current product document exists.
 
@@ -138,18 +138,9 @@ When any ADR Creation Condition below applies, the confirmed scale is **Medium a
 
 ### Work Plan
 
-**Purpose**: Implementation task management and progress tracking
+**Purpose**: Implementation task management and progress tracking.
 
-**Includes**:
-- One task entry per implementation outcome, each carrying a stable `Phase X Task Y` ID, Target Files, a rollback boundary, and an executor lane (see plan-template.md)
-- Task dependencies declared by those stable IDs (maximum 2 levels)
-- Schedule and duration estimates
-- **Include test skeleton file paths** (integration and E2E)
-- **Verification Strategy summary** (extracted from Design Doc)
-- **Final Quality Assurance Phase (required)**
-- Progress records (checkbox format)
-
-**Scope**: Task breakdown, dependencies, schedule, verification strategy summary, and progress tracking only. Technical rationale belongs in ADR, design details in Design Doc.
+**Scope**: Repository implementation outcomes from approved Design Docs, task dependencies, source section and acceptance-criteria references, executable verification, optional task-level false-green focus, and progress tracking only. The Work Plan references governing documents instead of reproducing their design details.
 
 **Phase Division Criteria** (adapt to implementation approach from Design Doc):
 
@@ -165,12 +156,7 @@ When any ADR Creation Condition below applies, the confirmed scale is **Medium a
 **When Hybrid selected**:
 - Combine vertical and horizontal as defined in Design Doc implementation approach
 
-**All approaches**: The final phase is Quality Assurance: verify acceptance criteria, configured tests, and applicable quality checks. Each phase's verification method follows the Verification Strategy from the Design Doc.
-
-**Three Elements of Task Completion Definition**:
-1. **Implementation Complete**: Code is functional
-2. **Quality Complete**: Tests, type checks, linting pass
-3. **Integration Complete**: Verified connection with other components
+**All approaches**: Each phase ends at a repository-observable verification point. Whole-repository quality assurance remains a separate execution responsibility.
 
 ## Creation Process
 
@@ -198,7 +184,7 @@ When any ADR Creation Condition below applies, the confirmed scale is **Medium a
 | UI Spec Assets | `docs/ui-spec/assets/{feature-name}/` | Prototype code files | - |
 | Design Doc | `docs/design/` | `[feature-name]-design.md` | See design-template.md |
 | Work Plan | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | See plan-template.md |
-| Task File | `docs/plans/tasks/` | `{plan-name}-task-{number}.md` | See task-template.md |
+| Task File | `docs/plans/tasks/` | See the task-decomposer filename table | See task-template.md |
 
 *Note: Work plans are excluded by `.gitignore`
 
@@ -220,7 +206,6 @@ Required diagrams for each document (using mermaid notation):
 | ADR | Option comparison diagram when 2+ material options have relationships or trade-offs that are easier to compare visually | Visualize trade-offs |
 | UI Spec | Screen transition diagram, Component tree diagram | Clarify screen flow and component structure |
 | Design Doc | Architecture diagram, Data flow diagram | Understand technical structure |
-| Work Plan | Phase structure diagram, Task dependency diagram | Clarify implementation order |
 
 ## Common ADR Relationships
 1. **At creation**: Identify common technical areas (logging, error handling, async processing, etc.), reference existing common ADRs

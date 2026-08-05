@@ -67,10 +67,10 @@ Invoke work-planner using Agent tool:
 Invoke document-reviewer to review the work plan:
 - `subagent_type`: "document-reviewer"
 - `description`: "Work plan review"
-- `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [the Design Doc path selected in Step 1]. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Failure Mode Checklist, and Review Scope."
+- `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [the Design Doc path selected in Step 1]. Review the Work Plan's own Implementation Scope, tasks, Completion Criteria, dependencies, execution order, exact source-anchor existence, executable verification. Confine findings and recommendations to content the target itself cites; Governing Documents paths supply citation locations only."
 - The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`:
-  - `needs_revision`: re-invoke work-planner in update mode with the findings and re-review, repeating until `approved` or `approved_with_conditions`
-  - `approved` / `approved_with_conditions`: proceed to Step 5
+  - `needs_revision`: run Review Resolution through its correction re-review, escalation, and convergence transitions, using work-planner in update mode for rerouted corrections
+  - `approved`, or Review Resolution reaching its convergence condition: proceed to Step 5
   - `rejected`: escalate to the user
 
 ### Step 5: Present for Approval

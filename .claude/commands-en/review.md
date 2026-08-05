@@ -60,7 +60,7 @@ Invoke security-reviewer using Agent tool:
 
 **Report both results independently using subagent output fields only** (do not add fields that are not in the subagent response).
 
-**Early exit (no findings to route)**: When code-reviewer's `verdict` is `pass` AND every entry in `acceptanceCriteria[]` has `status: "fulfilled"` AND `identifierMismatches[]` is empty AND `qualityFindings[]` is empty AND security-reviewer's `findings[]` is empty, skip Steps 5-10 and proceed directly to Step 11 — there is nothing to route. Present the clean result to the user.
+**Early exit (no findings to route)**: When code-reviewer's `verdict` is `pass` AND every entry in `acceptanceCriteria[]` has `status: "fulfilled"` AND `identifierMismatches[]` is empty AND `qualityFindings[]` is empty AND security-reviewer's `findings[]` is empty, skip Steps 5-9 and proceed directly to Step 10 — there is nothing to route. Present the clean result to the user.
 
 Otherwise, before presenting to the user, the orchestrator computes a recommended route per finding using the rule below (this rule is internal — do not include it in the user-facing prompt). The rule keys off code-reviewer's existing structured fields only — interpretation of "DD intent" is intentionally avoided to prevent unstable inference:
 
@@ -78,9 +78,7 @@ The user can override any recommendation per finding. AC items with `status: "fu
 Then present to the user (label each finding with its recommended route, grouped by route):
 
 ```
-Code Compliance: [complianceRate from code-reviewer]
-  Verdict: [verdict from code-reviewer]
-  Identifier Match Rate: [identifierMatchRate from code-reviewer]
+Code Review: [verdict from code-reviewer]
   Acceptance Criteria:
   - [fulfilled] [item] (confidence: [high/medium/low])
   - [partially_fulfilled] [item]: [gap] — [suggestion] [recommended: c | d]
@@ -104,15 +102,13 @@ Resolve discrepancies — confirm or override the recommended route per finding:
   s) Skip                — accept current state without changes
 ```
 
-Use AskUserQuestion. The default offer is **"accept all recommended routes"** — a single confirmation for the typical case where the orchestrator's recommendations are correct. When the user wants to override, collect per-finding c/d/s decisions instead. If the user selects `s` for everything: skip Steps 5-10, proceed to Step 11.
+Use AskUserQuestion. The default offer is **"accept all recommended routes"** — a single confirmation for the typical case where the orchestrator's recommendations are correct. When the user wants to override, collect per-finding c/d/s decisions instead. If the user selects `s` for everything: skip Steps 5-9, proceed to Step 10.
 
-**Scope carried into the fix path**: Pass the approved findings, their routes, the files and sections they cover, and any size budget the user stated to every agent invoked from Steps 6-10. Before re-validation, map each diff hunk to an approved finding or to a consistency update that finding required; request a scope decision for any unmapped hunk or for a diff that exceeds a stated budget, rather than accepting it as part of the fix.
+The user's route decision is the finding's disposition under Review Resolution (the subagents-orchestration-guide skill's `references/review-resolution.md`): `c` and `d` are `apply` on the code side and the design side, `s` is `decline`. Record the route as the disposition and carry the reviewer's finding objects on unchanged.
 
-### 5. Load Task Template
+**Scope carried into the fix path**: Pass the approved findings, their routes, the files and sections they cover, and any size budget the user stated to every agent invoked from Steps 5-9. Before re-validation, map each diff hunk to an approved finding or to a consistency update that finding required; request a scope decision for any unmapped hunk or for a diff that exceeds a stated budget, rather than accepting it as part of the fix.
 
-Read documentation-criteria skill to obtain the task file template (references/task-template.md) for Step 6.
-
-### 5d. Design-Side Update
+### 5. Design-Side Update
 
 Run this step only when the user routed at least one finding to `d`. When all routes are `c` or `s`, skip directly to Step 6.
 
@@ -125,74 +121,69 @@ Run this step only when the user routed at least one finding to `d`. When all ro
    - `subagent_type`: "document-reviewer"
    - `description`: "Document review of updated Design Doc"
    - `prompt`: "doc_type: DesignDoc. review_context: update. Review updated Design Doc at [path] for consistency and completeness."
+   - Run Review Resolution through its correction re-review, escalation, and convergence transitions, using technical-designer for rerouted corrections. Proceed only at its convergence condition.
 
 3. When multiple Design Docs exist (`ls docs/design/*.md | grep -v template | wc -l > 1`), invoke design-sync:
    - `subagent_type`: "design-sync"
    - `description`: "Cross-DD consistency check"
    - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
-   - When `sync_status: conflicts_found`: present conflicts to the user; resolution requires re-invoking technical-designer for affected DDs.
+   - When `sync_status: CONFLICTS_FOUND`: present conflicts to the user; resolution requires re-invoking technical-designer for affected DDs.
 
-4. After Step 5d completes:
-   - If the user selected zero `c` routes (whether all `d`, all `s`, or a `d` + `s` mix with no `c`) → skip Steps 6-8, proceed to Step 9 for re-validation
+4. After Step 5 completes:
+   - If the user selected zero `c` routes (whether all `d`, all `s`, or a `d` + `s` mix with no `c`) → skip Steps 6-7, proceed to Step 8 for re-validation
    - If the user selected both `d` and `c` → re-evaluate the `c`-routed findings against the updated DD and drop any that are now satisfied by the DD revision; then proceed to Step 6 with the remaining `c` findings
 
-### 6. Create Task File
-
-Create task file at `docs/plans/tasks/review-fixes-YYYYMMDD.md`
-Include both code compliance issues and security requiredFixes.
-
-### 7. Execute Fixes
+### 6. Execute Fixes
 
 Invoke task-executor using Agent tool:
 - `subagent_type`: "task-executor"
 - `description`: "Execute review fixes"
-- `prompt`: "Task file: docs/plans/tasks/review-fixes-YYYYMMDD.md. Apply staged fixes (stops at 5 files)."
+- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Keep the change within the approved routes and stated total size budget (stops at 5 files)."
 
-### 8. Quality Check
+### 7. Quality Check
 
 Invoke quality-fixer using Agent tool:
 - `subagent_type`: "quality-fixer"
 - `description`: "Quality gate check"
-- `prompt`: "Confirm quality gate passage for fixed files. task_file: docs/plans/tasks/review-fixes-YYYYMMDD.md. filesModified: [extract from the prior implementation step's response]."
+- `prompt`: "Confirm quality gate passage for fixed files. filesModified: [extract from the prior implementation step's response]."
 
-### 9. Re-validate code-reviewer
+### 8. Re-validate code-reviewer
 
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
 - `description`: "Re-validate compliance"
-- `prompt`: "Re-validate Design Doc compliance after fixes. Design Doc: [path]. Implementation files: [file list]. Prior compliance issues: $STEP_2_OUTPUT. Verify each prior issue is resolved (whether resolved code-side or design-side)."
+- `prompt`: "Re-validate Design Doc compliance after fixes. Design Doc: [path]. Implementation files: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
 
-### 10. Re-validate security-reviewer
+### 9. Re-validate security-reviewer
 
 Invoke security-reviewer using Agent tool (only if security fixes were applied):
 - `subagent_type`: "security-reviewer"
 - `description`: "Re-validate security"
-- `prompt`: "Re-validate security after fixes. Prior findings: $STEP_3_OUTPUT. Design Doc: [path]. Implementation files: [file list]."
+- `prompt`: "Re-validate security after fixes. Design Doc: [path]. Implementation files: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
 
-### 11. Final Cleanup and Report
+### 10. Final Report
 
-Delete the review-fix task file this recipe created (if any). Its work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
-
-- Delete `docs/plans/tasks/review-fixes-YYYYMMDD.md` if it exists
-
-If the file cannot be deleted (filesystem error), report the failure but do not block the final report.
+Apply Review Resolution to every Step 8 and Step 9 result. Follow its `maintained` transitions, repeat the affected verification after a rerouted correction, stop at its escalation conditions, and proceed at its convergence condition.
 
 Then present the final report:
 
 ```
-Code Compliance:
-  Initial: [X]%
-  Final: [Y]% (if fixes executed)
+Code Review:
+  Initial: [verdict from code-reviewer]
+  Correction review: [verdict for the re-review scope] (if fixes executed)
+  Reconciliation: [resolved / withdrawn / maintained by finding ID]
 
 Security Review:
   Initial: [status]
-  Final: [status] (if fixes executed)
+  Correction review: [status for the re-review scope] (if fixes executed)
+  Reconciliation: [resolved / withdrawn / maintained by finding ID]
   Notes: [notes from approved_with_notes, if any]
+
+Declined findings:
+- [ID] — [governing reason and evidence]
 
 Remaining issues:
 - [items requiring manual intervention]
-
-Cleanup: review-fixes task file removed
 ```
 
 ## Auto-fixable Items (code-side path)

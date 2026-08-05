@@ -215,7 +215,7 @@ Take the first row that matches the claim under review:
 
 When multiple routes reach the same mutation — a CLI path and an HTTP handler, a scheduled job and a manual trigger, a batch and a single-item endpoint — compare them along four axes: validation, classification, resource bounds, and the order of read, parse, mutation, and reporting.
 
-A difference is permitted only by a source that decides intent: a requirement, the Design Doc, an ADR, or a Binding Decision. Tests sit downstream of that decision — they record the behavior that exists, so an existing test covering the permissive route confirms the bypass rather than permitting it. Once a difference is permitted, a test verifies that it behaves as decided.
+A difference is permitted only by a source that decides intent: a requirement, the Design Doc, or an ADR. Tests sit downstream of that decision — they record the behavior that exists, so an existing test covering the permissive route confirms the bypass rather than permitting it. Once a difference is permitted, a test verifies that it behaves as decided.
 
 When a difference has no permitting source, require a test that exposes the bypass: drive the mutation through the route that skips the check and assert the state the skipped check was protecting.
 

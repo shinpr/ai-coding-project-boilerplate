@@ -31,22 +31,23 @@ Before any task processing, locate the work plan.
    - `{plan-name}-task-*.md` (single-layer; reserved for backend by the routing table)
    - `{plan-name}-backend-task-*.md` (backend portion of a multi-layer plan)
    - `{plan-name}-frontend-task-*.md` is **not** consumable by this recipe — it routes to `task-executor-frontend` and is owned by the frontend build recipe
-2. From the matched files, also exclude every file matching any of these patterns — they originate from other workflow phases and are not implementation tasks for this run's plan: `*-task-prep-*.md` (readiness preflight tasks), `_overview-*.md` (materialization overview file), `*-phase*-completion.md` (per-phase completion files), `review-fixes-*.md` (post-implementation review fixes), `integration-tests-*-task-*.md` (integration-test add-on scaffolding)
+2. From the matched files, also exclude every file matching any of these patterns — they originate from other workflow phases and are not implementation tasks for this run's plan: `integration-tests-*-task-*.md` (integration-test add-on scaffolding)
 3. For each remaining file, extract `{plan-name}` by stripping the trailing `-task-{NN}.md` or `-backend-task-{NN}.md` suffix
 4. When at least one task file matches, the work plan is `docs/plans/{plan-name}.md` for the prefix that has the most recent task-file mtime; ties broken by the lexicographically last `{plan-name}`
 5. **When the consumable patterns find no matches but `*-frontend-task-*.md` files exist in `docs/plans/tasks/`**: stop and report: "Only frontend-named task files were found. If you intended to run the frontend build recipe, switch to it. If the plan is backend, correct the affected work plan task entries to `Executor lane: backend` and regenerate the task files, or pass the work plan path as `$ARGUMENTS`." Filenames follow the plan's declared lanes, so re-running task materialization alone leaves them unchanged.
 6. When neither consumable patterns nor `*-frontend-task-*.md` match, fall back to the most-recent-mtime non-template `.md` in `docs/plans/` ONLY after **positively verifying the plan is a backend plan**. Absence of frontend markers is not enough — many plan templates include layer-neutral paths (e.g., `src/presentation`, `src/app`) that match neither marker set, so a confirmed backend signal is required. Read the plan and check:
 
    **Backend signals (need at least one)**:
-   - Target Files in `## Impact Scope > ### Target Files` (or equivalent) exclusively match backend markers: `**/api/**`, `**/server/**`, `**/services/**`, `**/backend/**`, `**/handlers/**`, `**/repositories/**`, or the project's backend-equivalent paths declared in `technical-spec` skill
-   - The plan's `## Related Documents` references a Design Doc whose filename explicitly identifies it as backend (e.g., `*-backend-design.md`, `backend-*-design.md`)
-   - The plan title, `## Objective`, or `## Background` section explicitly identifies the work as backend (e.g., "backend implementation", "API endpoint", "database migration", "server-side")
+   - Every task's `Executor lane` is `backend`
+   - Task `Scope` entries exclusively match backend markers: `**/api/**`, `**/server/**`, `**/services/**`, `**/backend/**`, `**/handlers/**`, `**/repositories/**`, or the project's backend-equivalent paths declared in `technical-spec` skill
+   - The plan's `## Governing Documents` references a Design Doc whose filename explicitly identifies it as backend (e.g., `*-backend-design.md`, `backend-*-design.md`)
+   - The plan title or `## Implementation Scope` explicitly identifies the work as backend (e.g., "backend implementation", "API endpoint", "database migration", "server-side")
 
    **Frontend signals (any disqualifies, even if a backend signal is also present)**:
-   - `## Related Documents` entry pointing to `docs/ui-spec/*`
-   - An `## UI Spec Component → Task Mapping` section
-   - Target Files exclusively under frontend paths (`**/components/**`, `**/pages/**`, `**/web/**`, `**/*.tsx`, `**/*.jsx`)
-   - Plan title or objective explicitly mentions React, UI components, screens, or frontend
+   - Any task's `Executor lane` is `frontend`
+   - `## Governing Documents` entry pointing to `docs/ui-spec/*`
+   - Task `Scope` entries exclusively under frontend paths (`**/components/**`, `**/pages/**`, `**/web/**`, `**/*.tsx`, `**/*.jsx`)
+   - Plan title or `## Implementation Scope` explicitly mentions React, UI components, screens, or frontend
 
    **Decision**:
    - At least one backend signal AND zero frontend signals → plan is acceptable; proceed
@@ -58,7 +59,7 @@ Before any task processing, locate the work plan.
 Compute the **Consumed Task Set** for this run — the exact files this recipe owns, executes, and later deletes. Use the same consumable patterns as Work Plan Resolution:
 
 1. List task files in `docs/plans/tasks/` matching `{plan-name}-task-*.md` OR `{plan-name}-backend-task-*.md` for the `{plan-name}` resolved by Work Plan Resolution. `{plan-name}-frontend-task-*.md` is excluded — it is owned by the frontend build recipe
-2. Exclude every file matching: `*-task-prep-*.md`, `_overview-*.md`, `*-phase*-completion.md`, `review-fixes-*.md`, `integration-tests-*-task-*.md` (these originate from other workflow phases)
+2. Exclude every file matching: `integration-tests-*-task-*.md` (this originates from another workflow phase)
 
 Every subsequent reference to "task files" in this recipe — Task Generation Decision Flow, Task Execution Cycle iteration, and Final Cleanup — uses this set, not the unrestricted `docs/plans/tasks/*.md` glob.
 
@@ -114,7 +115,7 @@ For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke task-executor to implement the task (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)
 2. **BRANCH ON EXECUTOR RESULT**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
-   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (without it the reviewer cannot see the task's Proof Obligations and caps proof adequacy at `needs_improvement`), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `verdict.decision`
+   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `verdict.decision`
      - `needs_revision` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `requiredFixes[]` array as input
      - `blocked` → STOP and escalate to user, reporting `verdict.reason` and the review basis the reviewer could not establish
      - `approved` → Proceed to step 3
@@ -151,12 +152,11 @@ After all task cycles finish, run verification agents **in parallel** before the
 2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
 
 3. **Fix cycle** (when any verifier failed, max 2 cycles):
-   - Create a consolidated fix task file at `docs/plans/tasks/review-fixes-{plan-name}-task-{cycle-number}.md` using the task-template; populate Target Files with the union of file paths referenced by all verifiers' `requiredFixes[].location` / `discrepancies[].codeLocation` (parse as `file[:line]`, take only the file part) so the executor's File Scope Constraint admits all affected files regardless of which original task introduced them. This name is already excluded from the Consumed Task Set by the `review-fixes-*.md` pattern, so it is never picked up as an implementation task, and Final Cleanup deletes it.
-   - **Normalize verifier outputs** into a unified `requiredFixes[]` before invoking task-executor:
+   - Apply Review Resolution to every actionable finding, then **normalize verifier outputs** into a unified `requiredFixes[]` before invoking task-executor. Forward each `apply` finding object verbatim with only its disposition added:
      - `security-reviewer.requiredFixes[]` (already `{location, issue, fix}`) → pass through as-is.
      - `code-verifier.discrepancies[]` → convert each actionable discrepancy (status `drift` / `gap` / `conflict`) to `{location: discrepancy.codeLocation, issue: discrepancy.claim, fix: "[specific correction needed to restore Design Doc consistency, derived from discrepancy.classification and evidence]"}`.
-     - When a `discrepancy.codeLocation` is `null` (claim is unimplemented), set `location` to the planned target file path and add that file to the consolidated task's Target Files. If no target file can be determined, escalate to user instead of invoking Fix Mode.
-   - Invoke task-executor in **Fix Mode** with `task_file` set to the consolidated path and `requiredFixes` set to the normalized array.
+     - When a `discrepancy.codeLocation` is `null` (claim is unimplemented), set `location` to the planned target file path. If no target file can be determined, escalate to user instead of invoking Fix Mode.
+   - Invoke task-executor in **Fix Mode** with an explicit prompt naming the affected paths and the observable verification condition, and `requiredFixes` set to the normalized array. No fix task file is created — the finding objects are the execution scope.
    - Then quality-fixer, then re-run only the failed verifiers.
    - If still failing after 2 cycles → Escalate to user with remaining findings
 
@@ -167,9 +167,6 @@ After all task cycles finish, run verification agents **in parallel** before the
 Before the completion report, delete the implementation task files this recipe consumed. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
 
 - Delete every file in the Consumed Task Set
-- Delete every file matching `docs/plans/tasks/{plan-name}-phase*-completion.md` (the per-phase completion files generated by task-decomposer for this `{plan-name}`)
-- Delete every file matching `docs/plans/tasks/review-fixes-{plan-name}-task-*.md` (the consolidated fix task files created by the Post-Implementation Verification fix cycle) — delete these only after all verifiers pass
-- Delete the corresponding `docs/plans/tasks/_overview-{plan-name}.md` if present
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review
 
 If task files cannot be deleted (filesystem error), report the failure but do not block the completion report.

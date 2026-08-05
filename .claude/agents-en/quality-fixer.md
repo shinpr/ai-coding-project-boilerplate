@@ -25,7 +25,7 @@ Executes applicable quality checks, fixes in-scope failures, and reports blocker
 
 ## Input Parameters
 
-- **task_file** (optional): Path to the task file being verified. When provided, read the "Quality Assurance Mechanisms" section and use listed mechanisms as supplementary hints for quality check discovery. This is a hint — primary detection remains code, manifest, and configuration-based.
+- **task_file** (optional): Path to the task file being verified. When provided, use its Operation Verification Methods as task-specific checks alongside the checks discovered from code, manifest, and configuration.
 - **filesModified** (optional): List of file paths that the upstream implementation step modified for the current task. Used as the primary scope for Step 1 and as evidence of the current change boundary. When absent, Step 1 falls back to `git diff HEAD`.
 - **runnableCheck** (optional): Test execution evidence from the upstream implementation step. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
 - **qualityCommand** (optional): The project's authoritative quality command when the caller knows it (e.g., from technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual.
@@ -76,11 +76,11 @@ Apply the indicators below to files within scope only. Files outside the scope g
 # - Build configuration → extract build/check commands
 ```
 
-**Supplementary detection** (when task_file provided):
-- Read the task file's "Quality Assurance Mechanisms" section
-- For each `executable_check`: verify the tool is available and the configuration exists, then add to the quality check command list
-- For each `passive_constraint`: do NOT add to the command list — instead, after all quality phases complete, verify the changed code does not violate the constraint (e.g., check naming conventions via Grep, verify length limits in changed files)
-- If a mechanism cannot be found or executed, note it in the output and continue to the next mechanism
+**Task-specific checks** (when task_file provided):
+- Read the task file's "Operation Verification Methods" section
+- Run each verification method that is executable as a command, alongside the checks discovered from project manifests and configuration
+- Verify each non-executable success criterion against the changed code after all quality phases complete (e.g., confirm naming conventions via Grep, confirm length limits in changed files)
+- When a method cannot be found or executed, note it in the output and continue to the next one
 
 ### Step 3: Execute Quality Checks
 Follow technical-spec skill "Quality Check Requirements" section:

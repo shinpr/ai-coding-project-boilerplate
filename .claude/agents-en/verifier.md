@@ -61,7 +61,7 @@ Check the input `pathMap` for completeness:
 
 1. **Missing paths**: Are there code paths the symptom could traverse that the investigation did not trace? (e.g., error handling branches, async forks, fallback paths)
 2. **Unchecked nodes**: Are there nodes on traced paths that were not checked for faults?
-3. **Adjacent cases**: When the investigation concerns a `bug-fix`, `regression`, `state-change`, or `boundary-change` (the debugging flow carries no Change Category field, so judge these from the investigation itself), are there cases sharing the same path, contract, persisted state, or external boundary that could carry the same fault? Trace all plausible adjacent cases, or explicitly justify any left untraced
+3. **Adjacent cases**: When the investigation concerns a `bug-fix`, `regression`, `state-change`, or `boundary-change` (judge the kind from the investigation itself), are there cases sharing the same path, contract, persisted state, or external boundary that could carry the same fault? Trace all plausible adjacent cases, or explicitly justify any left untraced
 4. **Additional failure points**: If missing paths, unchecked nodes, or adjacent cases reveal new faults, record them
 
 The goal is to verify that the investigation's path coverage is sufficient.
