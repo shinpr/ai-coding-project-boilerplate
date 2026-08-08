@@ -102,17 +102,12 @@ skills:
       - "Design Doc Culture - Google Engineering Practices"
       - "Single Source of Truth"
     sections:
+      - "What Each Document Fixes"
       - "Creation Decision Matrix"
       - "Structural Scale"
       - "ADR Decision Filters"
-      - "Detailed Document Definitions"
-      - "Creation Process"
       - "Storage Locations"
-      - "ADR Status"
-      - "AI Automation Rules"
-      - "Diagram Requirements"
-      - "Common ADR Relationships"
-      - "Templates"
+      - "References"
 
   implementation-approach:
     skill: "implementation-approach"

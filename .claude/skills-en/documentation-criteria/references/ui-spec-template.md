@@ -32,6 +32,8 @@ Map confirmed acceptance criteria to prototype references, preserving existing A
 
 ## Screen List and Transitions
 
+Add a screen-transition or component-tree Mermaid diagram only when the material interaction or hierarchy remains unclear in the tables below.
+
 ### Screen List
 
 | Screen ID | Screen Name | Description | Entry Condition |
