@@ -66,7 +66,7 @@ Preserve historical safeguards in the returned facts: dependency existence, beha
 
 ### Step 4: Return JSON
 
-Return exactly one JSON object matching this shape:
+Return exactly one JSON object as the final message (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages. It matches this shape:
 
 ```json
 {

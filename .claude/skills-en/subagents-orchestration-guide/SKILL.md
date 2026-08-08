@@ -85,7 +85,7 @@ I pass **what to accomplish** and **where to work**. Each specialist determines 
 
 When two specialists conflict, or when a specialist conflicts with my expectation, I apply the precedence order above. I verify against objective repo state (item 3). I follow specialist output when it aligns with items 1 and 2. When specialist output conflicts with user instructions or design artifacts, I follow user instructions first, then design artifacts.
 
-When a specialist returns `blocked`, first repair discoverable input or routing problems within the approved scope. Escalate only when progress requires a user-owned outcome, authority, or irreversible external decision.
+When a specialist returns `blocked`, first repair discoverable input or routing problems within the approved scope. Attempt that repair once. Escalate when the repeat call still returns `blocked`, or when progress requires a user-owned outcome, authority, or irreversible external decision.
 
 ### Review Resolution
 
@@ -160,7 +160,7 @@ Subagents respond in JSON. Each agent declares its own input and output contract
 | task-executor / task-executor-frontend | `status`, `escalation_type`, `requiresTestReview` | `completed` → continue the cycle. `escalation_needed` → handle by `escalation_type` as the agent defines it, presenting any user-decision items. `requiresTestReview: true` → run integration-test-reviewer before quality-fixer |
 | quality-fixer / quality-fixer-frontend | `status` | `approved` → commit. `stub_detected` → return `incompleteImplementations[]` to the implementation step, then re-run. `blocked` → see quality-fixer Blocked Handling below |
 | document-reviewer | `verdict.decision` | `approved` → proceed. `needs_revision` → run Review Resolution. `rejected` → resolve the governing-source conflict or escalate when user authority is required |
-| integration-test-reviewer | `status` | `approved` → proceed. `needs_revision` → run Review Resolution. `blocked` → repair the invocation by resolving changed test paths; if no test exists, return that defect to the executor |
+| integration-test-reviewer | `status` | `approved` → proceed. `needs_revision` → run Review Resolution. `blocked` → repair the invocation once by resolving changed test paths; if no test exists, return that defect to the executor; if it returns `blocked` again, record the review as not run and carry that unproven state into the completion report |
 | code-verifier / security-reviewer | `summary.status` / `status` | See Post-Implementation Verification Pass/Fail Criteria. A security `blocked` raised by an irreversible-operation hazard names the decision it requires and sits outside the agent layer's authority |
 | design-sync | `sync_status` | `CONFLICTS_FOUND` → present the conflicts to the user before proceeding |
 | acceptance-test-generator | per-lane `generatedFiles`, per-lane `e2eAbsenceReason` | Verify each non-null path exists, then pass the per-lane paths and absence reasons to work-planner |
@@ -263,7 +263,7 @@ A work plan task entry records exactly one lane; task materialization copies tha
 - `status: escalation_needed` or `status: blocked` -> Escalate to user
 - `requiresTestReview` is `true` -> Execute **integration-test-reviewer**
   - If `status` is `needs_revision` -> Apply Review Resolution and re-invoke the routed executor (task-executor or task-executor-frontend per Layer-Aware Agent Routing) in **Fix Mode** with the same `task_file` and the complete `apply` quality-issue objects verbatim
-  - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor in **Fix Mode**
+  - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor in **Fix Mode**. If it returns `blocked` again, record the review as not run and proceed to quality-fixer
   - If `status` is `approved` -> Proceed to quality-fixer
 
 ### Conditions for Stopping Autonomous Execution

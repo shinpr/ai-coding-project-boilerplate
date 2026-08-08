@@ -61,17 +61,9 @@ Escalate in these two cases:
 
 ### Step3: Similar Component Duplication Check
 
-Five indicators — evaluate each against existing components/hooks in the same domain/responsibility:
-- (a) same domain/responsibility (same UI pattern, same business domain)
-- (b) same input/output pattern (Props type/structure)
-- (c) same rendering content (JSX structure, event handlers, state management)
-- (d) same placement (same component directory or functionally related feature)
-- (e) naming similarity (component/hook names share keywords/patterns)
+Search the same domain and responsibility for an existing component or hook that already produces the required behavior. Reuse or extend it when it does; implement new when it does not. Record the decision and the searched surface in the available execution record.
 
-Escalation thresholds:
-- 3+ indicators match → Escalation
-- Exactly the pair (a+c) or (b+c) → Escalation; any other 2-indicator combination → Continue
-- 1 or fewer indicators match → Continue implementation
+Escalate only when reuse would require a change the task cannot make on its own — an interface change, a layer or dependency-direction change, a new external dependency, or a write outside the allowed scope. Those route through the checks below, not through a separate discovery escalation.
 
 ### Step4: Core Mechanism Preservation Check (Any YES → Immediate Escalation)
 Preserve the core mechanism the task, AC, Design Doc, or UI Spec requires. Implementation details (variable names, internal logic order, local structure) stay free to change; the required mechanism itself stays intact.
@@ -99,7 +91,7 @@ Internal detail optimization (variable names, logic order); specs not in Design 
 
 **Downstream responsibilities**: Overall quality checks belong to quality-fixer-frontend and commit creation follows quality approval. An unsatisfied Design Doc or UI Spec contract returns through escalation.
 
-**Escalate (do not force)**: Design deviation or shortcut fixes (see Mandatory Judgment Criteria); similar component/hook discovery (Pattern 5); files outside the allowed list (out_of_scope_file).
+**Escalate (do not force)**: Design deviation or shortcut fixes (see Mandatory Judgment Criteria); files outside the allowed list (out_of_scope_file).
 
 **Basic policy**: Start implementation immediately upon invocation (user approval is assumed by the orchestration); escalate only when a hard rule above is hit.
 
@@ -116,16 +108,16 @@ Execute the scope supplied in the prompt. When it names a task file, read and us
 ☐ [VERIFIED] Target paths or scope extracted from the execution instructions
 
 **ENFORCEMENT**: When any gate item is unchecked, produce the final response in the JSON format defined in Structured Response Specification with `status: "escalation_needed"` and the `escalation_type` matching the failure:
-- A named task file is missing or unreadable → `task_file_not_found`
+- A named task file is missing or unreadable → resolve the moved or renamed path from `docs/plans/tasks/` and continue; escalate as `task_file_not_found` only when no task file resolves
 - A provided task file has no incomplete item outside Fix Mode → `task_already_completed`
-- Target paths or scope cannot be resolved → `target_files_missing`
+- Target paths or scope cannot be resolved from the execution instructions or the task file → `target_files_missing`
 
 ### 2. Task Background Understanding
 #### Investigation Targets (When a task file provides them)
 1. Extract file paths from task file "Investigation Targets" section
 2. Read each file with Read tool **before any implementation**. When a search hint is provided (e.g., `(§ Auth Flow)` or `(authenticateUser function)`), locate and focus on that section
 3. Append a brief note to the task file's "Investigation Notes" section (use Edit/MultiEdit on the task file). Record the key interfaces or function signatures, control/data flow, state transitions, and side effects observed in each Investigation Target. These notes guide the implementation in Step 3 and are referenced by the Exit Gate's consistency check.
-4. If an Investigation Target file does not exist or the path is stale, escalate with `escalation_type: "investigation_target_not_found"` per the Escalation Response table.
+4. When an Investigation Target file does not exist or the path is stale, resolve the moved or renamed path from the repository and read it. Record the resolved path in the available execution record. Escalate only when the target cannot be resolved and its content is required to preserve a governing contract.
 
 #### Dependency Deliverables (When a task file provides them)
 1. Extract paths from task file "Dependencies" section
@@ -140,7 +132,7 @@ Execute the scope supplied in the prompt. When it names a task file, read and us
 
 This gate runs only when a provided task file's "Investigation Targets" section lists at least one concrete file path.
 
-☐ [VERIFIED] All listed Investigation Target files read — when a search hint is provided, the targeted section plus surrounding context; otherwise the full file. Missing paths escalate as `investigation_target_not_found`.
+☐ [VERIFIED] All listed Investigation Target files read — when a search hint is provided, the targeted section plus surrounding context; otherwise the full file. Unresolvable paths are recorded with the surface searched.
 ☐ [VERIFIED] Investigation Notes appended to the task file's "Investigation Notes" section
 
 **ENFORCEMENT**: When the gate triggers and any item is unchecked, produce the final response in the JSON format defined in Structured Response Specification with `status: "escalation_needed"`.
@@ -209,10 +201,10 @@ A per-adoption check applied each time a pattern, hook, or library is referenced
 
 □ **Repository-wide verification**: Grep the pattern across the repository and branch on the count of files using it outside the reference:
   - 3+ files across different directories → adopt
-  - 1-2 files → investigate whether those files are canonical or legacy outliers; adopt when canonical, escalate via `escalation_type: "dependency_version_uncertain"` when uncertain
+  - 1-2 files → investigate whether those files are canonical or legacy outliers; adopt the canonical one, and record the basis when the evidence is thin
   - 0 files → treat the pattern as local convention; adopt only with explicit justification (consistency with surrounding code, avoiding breaking changes, pending coordinated update) recorded in Investigation Notes when a task file exists, otherwise in `changeSummary`
-□ **Coexistence resolution**: when multiple libraries or patterns coexist for the same concern (routing, server-state, forms, styling, etc.), follow the dominant choice in the **changed feature area** — the surrounding feature folder, or the nearest parent directory containing siblings using the same concern. When no dominant choice is clear, escalate via `escalation_type: "dependency_version_uncertain"` (also covers library/pattern choice uncertainty) instead of introducing another option
-□ **New option discipline**: route any new library/pattern decision for a concern the repository already addresses through the `dependency_version_uncertain` escalation instead of adopting it directly
+□ **Coexistence resolution**: when multiple libraries or patterns coexist for the same concern (routing, server-state, forms, styling, etc.), follow the dominant choice in the **changed feature area** — the surrounding feature folder, or the nearest parent directory containing siblings using the same concern. When no dominant choice is clear, adopt the repository-wide majority and record the ambiguity instead of introducing another option
+□ **New option discipline**: adopting a library or pattern the repository does not already use for that concern is a new external dependency — route it through the Mandatory Judgment Criteria instead of adopting it directly
 
 #### Implementation Flow (TDD Compliant)
 
@@ -247,7 +239,7 @@ Task complete when every execution item is complete and the applicable operation
 ### 5. Return JSON Result
 Return one of the following as the final response (see Structured Response Specification for schemas):
 - `status: "completed"` — task fully implemented
-- `status: "escalation_needed"` — design deviation or similar component discovered
+- `status: "escalation_needed"` — a boundary the task cannot cross on its own
 
 ## Structured Response Specification
 
@@ -309,9 +301,7 @@ Per-type contract (set `escalation_type`, `reason`, type-specific fields, and `s
 | escalation_type | reason | type-specific fields | suggested_options |
 |---|---|---|---|
 | `design_compliance_violation` | "Design Doc deviation" | `details: {design_doc_expectation, actual_situation, why_cannot_implement, attempted_approaches[]}`; `claude_recommendation` | "Modify Design Doc to match reality" / "Implement missing components first" / "Reconsider requirements" |
-| `similar_component_found` | "Similar component/hook discovered" | `similar_components[{file_path, component_name, similarity_reason, code_snippet, technical_debt_assessment: high\|medium\|low\|unknown}]`; `search_details: {keywords_used[], files_searched, matches_found}`; `claude_recommendation` | "Extend existing component" / "Refactor existing then use" / "New as technical debt (create ADR)" / "New with differentiation" |
-| `investigation_target_not_found` | "Investigation target not found" | `missingTargets[{path, searchHint, searchAttempts[]}]` | "Provide correct path" / "Remove this Investigation Target" / "Update task file with current paths" |
-| `dependency_version_uncertain` | "Dependency version uncertain" | `dependency: {name (library or pattern concern, e.g., routing/server-state/forms), candidatesFound[] (coexisting choices found), filesChecked[], ambiguityReason}` | "Follow choice X (dominant in adjacent feature area)" / "Follow choice Y (matches a specific repository convention)" / "Defer the choice and split the task" |
+| `investigation_target_not_found` | "Investigation target unresolvable" | `missingTargets[{path, searchHint, searchAttempts[]}]` | "Provide correct path" / "Remove this Investigation Target" / "Update task file with current paths" |
 | `test_environment_not_ready` | "Test environment not ready" | `missingComponent: 'test runner' \| 'DOM/browser environment' \| 'setup file' \| 'mock layer' \| 'other'`; `description` (why the missing component blocks tests) | "Install or configure the missing component, then re-run the task" / "Reassign the task once the environment is ready" |
 | `out_of_scope_file` | "Out of scope file" | `details: {file_path, allowed_list[], modification_reason}` | "Add to Target files and retry" / "Split into separate task" / "Reconsider approach" |
 | `task_file_not_found` / `task_already_completed` / `target_files_missing` | "Task selection precondition failed" | `details: {task_file_path, failure_reason: 'file does not exist' \| 'file unreadable' \| 'all checkboxes already [x]' \| 'Target Files section missing or empty'}` | "Provide correct task file path" / "Regenerate the task files from the work plan" / "Mark complete and skip" |

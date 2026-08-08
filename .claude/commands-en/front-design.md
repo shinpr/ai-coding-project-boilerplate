@@ -62,7 +62,7 @@ Judge all four convergence fields. Assign `cost` from Step 2 structural evidence
 
 Determine Structural Scale from outcomes and responsibility boundaries; file count is supporting evidence only. Resolve candidate decision points against the governing source, `reuse`, and `invalidations`; applicable UI facts may support or contradict the remaining options. Apply documentation-criteria Choice and Durability filters only after this convergence and record passing points as `adrDecisionPoints`; an empty list is valid.
 
-Present the confirmed outcome and requirements, cost evidence and unknowns, exclusions, affected responsibilities, Structural Scale, UI Spec applicability, and qualifying ADR points or none. Offer proceed, or correct and re-run. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
+Present what the user decides on: the outcome and the requirements to build, the exclusions, and the responsibilities the change targets. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, UI Spec applicability, ADR qualification, and cost evidence stay in the orchestrator record — the UI Spec, ADR batch, and Design Doc have their own approval stops. Offer proceed, or correct and re-run. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
 
 ## Step 5: Create and Approve the UI Spec
 

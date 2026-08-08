@@ -136,20 +136,20 @@ Agentツールでintegration-test-reviewerを呼び出す:
 - `description`: "テスト品質レビュー"
 - `prompt`: "テスト品質をレビュー。テストファイル: [ステップ4のtestsAdded]。taskFiles: [ステップ4で使用したものと同じタスクファイルパス]。diffBase: HEAD。スケルトンファイル: [ステップ2のgeneratedFilesから現在のタスクのレイヤーに該当するパス]"
 
-**期待される出力**: `verdict.decision` (approved/needs_revision/blocked)、`verdict.reason`、`requiredFixes[]`
+**期待される出力**: `status`（approved/needs_revision/blocked）、`blockingReason`、および唯一の修正リストである `qualityIssues[]`
 
 ### ステップ6: レビュー修正の適用
 
-ステップ5の結果を `verdict.decision` で分岐して確認:
+ステップ5の結果を `status` で分岐して確認:
 - `approved` → 完了としてマーク、ステップ7へ進む
-- `needs_revision` → ルーティング先の task-executor を **Fix Mode** で再起動。同じ `task_file` と `requiredFixes[]` を渡す（プロンプト詳細は下記）。その後ステップ5に戻る
-- `blocked` → 停止してユーザーにエスカレーションし、`verdict.reason` とレビュアが確立できなかった review basis を報告する。欠けている basis がユーザーから供給された後にのみ integration-test-reviewer を再実行する
+- `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を渡してルーティング先の task-executor を **Fix Mode** で再起動する。その後ステップ5に戻る
+- `blocked` → 現在の diff から移動・リネームされたテストパスを解決してレビューを**1回だけ**再実行する。変更されたテストが存在しない場合はステップ4に戻り、実装結果を是正する。再実行でも `blocked` が返る場合は、テストレビュー未実施を `blockingReason` とともに記録してステップ7へ進む
 
 タスクファイル名パターンでルーティングしてtask-executorを呼び出す:
 - `*-backend-task-*` → `subagent_type`: "task-executor"
 - `*-frontend-task-*` → `subagent_type`: "task-executor-frontend"
 - `description`: "レビュー指摘の修正"
-- `prompt`: "task_file: [ステップ4で使用したのと同じタスクファイルパス]。requiredFixes: [ステップ5の requiredFixes 配列]。Fix Mode を適用（タスクのチェックボックスはステップ4で既に `[x]` になっている）。"
+- `prompt`: "task_file: [ステップ4で使用したのと同じタスクファイルパス]。requiredFixes: [ステップ5の `apply` の quality-issue オブジェクト一式。処理方針のみ付加して逐語でコピー]。Fix Mode を適用（タスクのチェックボックスはステップ4で既に `[x]` になっている）。"
 
 ### ステップ7: 品質チェック
 
@@ -157,7 +157,7 @@ Agentツールでintegration-test-reviewerを呼び出す:
 - `*-backend-task-*` → `subagent_type`: "quality-fixer"
 - `*-frontend-task-*` → `subagent_type`: "quality-fixer-frontend"
 - `description`: "最終品質保証"
-- `prompt`: "このワークフローで追加されたテストファイルの最終品質保証。全テストを実行しカバレッジを確認。task_file: [タスクファイルパス]。filesModified: [直近の実装ステップのレスポンスから抽出 — 通常はステップ4、修正再実行が走った場合はステップ4とステップ6の和集合]。"
+- `prompt`: "現在の未コミットのワークツリー全体に対する最終品質保証。該当する全チェックを実行する。task_file: [タスクファイルパス]。"
 
 **期待される出力**: `status` (approved/stub_detected/blocked)
 

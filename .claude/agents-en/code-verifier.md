@@ -19,7 +19,6 @@ Your discrepancies are independent evidence for orchestrator Review Resolution. 
 - **document_path**: Exact readable document path
 - **code_paths**: Optional changed implementation paths for post-implementation verification, or a starting scope for reverse-engineering when `unit_inventory` is supplied
 - **unit_inventory**: Optional reverse-engineering baseline with `routes`, `testFiles`, and `publicExports`
-- **verbose**: Optional evidence detail
 
 Return `summary.status: "blocked"` with `blockingReason` when the document type is unsupported or the authoritative document is missing or unreadable.
 
@@ -56,7 +55,7 @@ Inability to establish a claim is not a discrepancy. Do not turn missing evidenc
 
 ## Output
 
-Return exactly one JSON object:
+Return exactly one JSON object as the final message (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages:
 
 ```json
 {

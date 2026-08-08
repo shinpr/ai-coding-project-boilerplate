@@ -1,117 +1,109 @@
 ---
-description: コードベース分析から設計書作成まで実行
+description: コードベース起点の分析から、必要に応じたADR決定を経て、Design Doc承認までを実行
 ---
 
-Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+ドキュメントのルーティングや作成の前に、`documentation-criteria`スキルを実行する。
+Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキルを実行する。
+エージェントの呼び出しや検出事項の裁定の前に、`subagents-orchestration-guide`スキルを実行する。
 
-**コマンドコンテキスト**: このコマンドは設計フェーズ専用である。
+## 成果と所有範囲
 
-## オーケストレーター定義
+リポジトリのエビデンスから承認済みDesign Docまでの設計フェーズを統括する。要件の収束、構造スケール（Structural Scale）、ADRの適格性判定、エビデンスの選択、レビュー裁定はオーケストレーターが持つ。意味的な調査と成果物の執筆は、名指しされた各スペシャリストが持つ。
 
-**コアアイデンティティ**: 「私は作業者ではない。オーケストレーターである。」（subagents-orchestration-guideスキル参照）
-
-**実行プロトコル**:
-1. **全作業をAgentツールでサブエージェントに委譲** — サブエージェントの呼び出し、データの受け渡し、結果の報告（許可ツール: subagents-orchestration-guideスキル「オーケストレーターの許可ツール」参照）。唯一の例外はStep 1のスコープブートストラップで、シードファイルの特定に限定したレシピ内オーケストレータータスク。
-2. **以下の設計フローを順に実行** — 分岐のない固定の線形シーケンス:
-   - 実行: スコープブートストラップ → codebase-analyzer → [停止: スコープ確認] → technical-designer → code-verifier → document-reviewer → design-sync
-   - technical-designerは、設計にアーキテクチャ決定が伴う場合（documentation-criteriaに従う）に前提となるADRを作成する。ADRはDesign Docを置き換えない — フローは常にDesign Doc作成と検証チェーン全体を通過する
-   - **`[停止: ...]`マーカーで必ず停止** → 次に進む前にユーザー承認を待つ
-3. **スコープ**: 設計書が承認されたら完了
-
-**subagents-orchestration-guideの利用**: オーケストレーション原則（Delegation Boundary、Decision precedence、許可ツール）とScale Determination表を参照する。このコマンドは独自の開始順序を定義する — ガイドのrequirement-analyzer起点フローはここでは適用しない。
-
-**重要**: document-reviewer、design-sync（Design Docの場合）、停止ポイントは決してスキップしない — 各々が品質ゲートとして機能する。
-
-## ワークフロー概要
-
-```
-要件 → スコープブートストラップ → codebase-analyzer → [停止: スコープ確認]
-                                                            ↓
-                                                    technical-designer
-                                                            ↓
-                                                    code-verifier → document-reviewer
-                                                            ↓
-                                                       design-sync → [停止: 設計承認]
-```
-
-## スコープ境界
-
-**実行内容**:
-- スコープブートストラップ: codebase-analyzerが値の入った入力を得られるようシードファイルを特定する
-- codebase-analyzerによるコードベース分析（設計フェーズの入口）
-- codebase-analyzerの所見に基づくユーザーとのスコープ確認
-- ADR作成（アーキテクチャ変更、新技術、データフロー変更が伴う場合、Design Docの前提として）
-- technical-designerによるDesign Doc作成
-- code-verifierによるDesign Doc検証（ドキュメントレビューの前に実施）
-- document-reviewerによるドキュメントレビュー
-- design-syncによるDesign Doc間整合性検証
-
-**責務境界**: このコマンドは設計書承認で責務完了。
-
-## 実行フロー
+Medium/Large の作業では、Design Doc が常に完全な実装設計である。適格なADRバッチは Design Doc の前に技術的な選択を絞り込むが、完全なフローと実装境界は Design Doc が保持する。
 
 要件: $ARGUMENTS
 
-### Step 1: スコープブートストラップ
-codebase-analyzerは値の入った`requirement_analysis.affectedFiles`を必要とする。そのシードを、軽量なオーケストレーター内タスクで構築する — ファイルの特定のみで、深い読み込みや設計判断は行わない:
+## フロー
 
-1. ユーザー要件から候補キーワード（機能名、ドメイン名詞、識別子）を抽出する。
-2. Bash（`rg`、`rg`が使えない場合は`grep`）で、それらのキーワードに一致するファイルをリポジトリ内で検索する。
-3. 一致したファイルパスをシード`affectedFiles`として収集する。
-4. **検索結果が0件の場合**: 設計対象のファイルまたはモジュールをユーザーに確認し（AskUserQuestion）、その回答を`affectedFiles`とする。関連コードが存在しないとユーザーが確認した場合は、コードベース起点の設計が適用できない旨を報告し、進め方をユーザーと確認する。
-5. **検索結果が約20件を超える場合**: キーワードが広すぎる。最も関連性の高い候補をユーザーに提示し（AskUserQuestion）、シード`affectedFiles`を確認してから進む。
+```text
+要件ソース -> codebase-analyzer -> スコープ/決定の確認 [停止]
+                                          |
+                          任意のADRバッチ -> バッチレビュー [停止]
+                                          |
+              Design Doc -> code-verifier -> レビュー裁定
+                                          |
+                  document-reviewer -> design-sync -> 承認 [停止]
+```
 
-このステップはシードファイルの特定のみを行う。ファイルの全文読み込み、依存関係の追跡、分析はcodebase-analyzerの責務である。
+依存する各ステップは、その前提エビデンスが揃ってから実行する。verifier・reviewer・design-sync の対応可能な各検出事項にはレビュー裁定を適用する。各 `[停止]` ではユーザーの明示的な確認を待つ。
 
-### Step 2: コードベース分析
-- Agentツールで**codebase-analyzer**を呼び出す
-  - `subagent_type: "codebase-analyzer"`, `description: "コードベース分析"`
-  - `prompt`: `requirements`（ユーザー要件の原文）と`requirement_analysis`（`affectedFiles`（Step 1のシード）、`purpose`（ユーザー要件）、`scale`（シードファイル数にScale Determination表を当てた暫定値）、`technicalConsiderations`（`{ constraints: [], risks: [], dependencies: [] }`）を含むJSONオブジェクト）を含める
+以下の各 Agent 呼び出しでは、プロンプトを機械的な抽出として組み立てる。名指しされたソースの値を指定フィールドへコピーし、宣言されたシリアライズのみを適用して、直ちに呼び出す。
 
-### Step 3: スコープ確認
-codebase-analyzerが返ったら、設計作業の前にユーザーとスコープを確認する。
+## ステップ1: 出典となる要件ソースの選択
 
-まず requirement-convergence のヒアリングプロトコルを実行する。提示する事実にはcodebase-analyzerの所見を用いる。本コマンドにはrequirement-analyzerがいないため、フィールドの聞き出しと判定の両方をオーケストレーターが担い、結果を同スキルの `convergence` オブジェクト（`outcome`、レイヤーラベル付きの `requirements[]`、`nonGoals[]`、およびフィールドごとの readiness ラベル）として記録する。`cost` はここでは適用しない: 本コマンドは調査を codebase-analyzer に委譲しており、変更のコストを自分で見積もることはしない。加えて、本コマンドに入った時点で設計するという判断は済んでいる。Step 1 のキーワード検索はその分析のためのシードファイル特定であって、コストの入力ではない。このオブジェクトをStep 4へ引き継ぎ、technical-designerがDesign Docへ永続化できるようにする。
+承認済みPRDが存在する場合はそのパスを用いる。存在しない場合は確認済み要件の原文を用いる。
 
-次に、codebase-analyzerのJSONを出典として、AskUserQuestionで以下を提示する:
-- **対象ファイル/モジュール**: `analysisScope.filesAnalyzed`と、それらが属するモジュール
-- **影響を受けるレイヤー**: `analysisScope.categoriesDetected`と`focusAreas`から導出される、影響を受けるレイヤー
-- **不明点/前提**: `limitations`と、codebase-analyzerが記録した前提
-- **設計前の質問事項**: 設計を進める前にユーザーの回答が必要な未解決点
+`confirmed_requirement_context` には承認済みPRDのパスをそのまま設定する。承認済みPRDが存在しない場合に限り、オーケストレーターが確認した収束記録をそのまま用いる。
 
-ユーザーに以下から1つを選んでもらう:
-- **このスコープで設計を進める** — Step 4へ進む
-- **スコープを修正して再実行** — 修正したスコープでStep 1に戻る。ユーザーが修正後のファイルまたはモジュールを指定した場合は、検索で導出し直さず、それをStep 1のシードとして直接使う
-- **追加ヒアリングののち進める** — 不足している回答を集めてからStep 4へ進む
+## ステップ2: 判断材料の収集
 
-ユーザーがスコープを確認したら、確認済みの対象ファイル数を数え、Scale Determination表から規模を設定する。この確認済みの規模はStep 2の暫定値に優先する。
+確認済みスコープ全体に対して `codebase-analyzer` を1回呼び出す。入力は `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [確認済み要件の原文]` のいずれか一方のみとする。
 
-**[停止]**: ユーザーの選択を待ってから進む。
+妥当なJSON結果を1つ要求し、影響パス・責務境界・レイヤーをまたぐ契約の発見はアナライザーに任せる。その focus area は既存の振る舞いの安全策として扱い、新しい要件としては扱わない。
 
-### Step 4: 設計書作成
-1. **technical-designer** → 設計書を作成する。ユーザー要件（原文）、codebase-analyzerのJSON、確認済みスコープとユーザー回答、およびStep 3の `convergence` オブジェクトを収束結果として渡す。documentation-criteriaに従い、これはDesign Docであり、設計にアーキテクチャ決定が伴う場合は前提となるADRを先に作成する。ADRは少なくとも2つの選択肢をトレードオフとともに提示し、Design DocはDesign Convergenceを用いる。
-2. **code-verifier** → Design Docを既存コードに対して検証する。`doc_type: design-doc` と Design Doc パスを `document_path` として渡す。`summary.status` を読む: `blocked` の場合は Input Gate が失敗し何も検証されていないため、結果を渡さず停止して `summary.blockingReason` をユーザーに報告する
-3. **document-reviewer** → technical-designerが作成した各ドキュメントの品質チェック。Design Docの場合: `doc_type: DesignDoc`、`review_context: creation`、`requirements_verbatim`（ユーザー要件の原文）、`confirmed_decisions`（Step 3の確認済みスコープとユーザー回答）、`codebase_analysis`（codebase-analyzerのJSON）、code-verifier結果を渡す。ADR（作成された場合）の場合: `doc_type: ADR`、`codebase_analysis`を渡す。code-verifier結果はDesign Docにのみ適用する。ADRレビューで修正が必要になった場合、technical-designer(update)がADRを修正し、**かつ**修正後のADRに合わせてDesign Docを再整合させる — Design Docは未レビューまたは古いADRの上に立ってはならない。この再整合でDesign Docが変わった場合は、更新後のDesign Docに対してcode-verifierとDesign Docのdocument-reviewerを再実行し、検証が最終内容を反映するようにする。
-4. **design-sync** → Design Doc間整合性検証。
-   - 矛盾あり → ユーザーに報告 → 修正指示待ち → technical-designer(update)で修正
-   - 矛盾なし → 次へ進む
-5. ユーザー承認 — Design Doc を design-sync の結果とともに提示し、承認を待つ。
+## ステップ3: スコープとADR決定の確認
+
+`requirement-convergence` を実行する。ユーザーの依頼とステップ2のエビデンスから収束記録を構築し判定するのはオーケストレーターである。
+
+4つの収束フィールドをすべて判定する。`cost` はステップ2の構造的エビデンスから割り当て、その未知を記録する。ヒアリングは `ready` に達していないフィールドについてのみ実施する。
+
+構造スケールは成果と責務境界から判定する。ファイル数は補助的なエビデンスにとどまる。
+
+`decisionMaterials.candidateDecisionPoints` を、出典となる要件ソース・`reuse`・`invalidations` に照らして解決する。それらのエビデンスで既に1つの十分なアプローチに収束する決定ポイントは除外する。残った各項目に、documentation-criteria のフィルタを順に適用する:
+
+1. 選択（Choice）: 確認済みスコープ内に、妥当かつ実質的に異なる選択肢が2つ以上あり、判断を要する。
+2. 持続性（Durability）: その選択が持続的で実質的な影響を持つ。
+
+通過した項目をすべて `adrDecisionPoints` として記録する。空リストの場合はそのまま Design Doc へ進む。
+
+ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務。未知を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・ADR適格性・コストのエビデンスはオーケストレーターの記録に留める — ADRバッチと Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
+
+## ステップ4: 必要な場合のADRバッチ作成と承認
+
+`adrDecisionPoints` が非空の場合:
+
+1. `technical-designer` を1回呼び出す。`document_to_create: ADRBatch`、`confirmed_requirement_context`、順序付きの `decision_points`、およびステップ2からそのままコピーした対応する `decision_materials` を渡す。
+2. `document-reviewer` を1回呼び出す。`doc_type: ADRBatch`、`targets: [返却された全パス]`、`confirmed_requirement_context` を渡す。
+3. まず verdict でルーティングする。`approved` は次へ進む。`needs_revision` はレビュー裁定を適用し、パスごとに1つのADRを順に更新してから、バッチ全体を再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。
+4. バッチの判断をユーザーに提示するのは、レビューが approved になった後のみとする。`[停止: ADRバッチ承認]`。
+5. ユーザー承認後、各ADRのステータスを `Accepted` に更新し、その変更を確認する。
+
+## ステップ5: Design Docの作成
+
+`technical-designer` を以下の入力ちょうどで呼び出す:
+
+- `document_to_create: DesignDoc`
+- `confirmed_requirement_context`
+- `structural_scale`
+- `adr_paths: [受理済みパス、または []]`
+- `codebase_analysis: [ステップ2のJSON全体をそのまま]`
+
+Design Doc は完全な実装設計を所有し、documentation-criteria テンプレートにおいて該当するすべての下流保証を保持する。
+
+## ステップ6: リポジトリ上の主張の検証と裁定
+
+`code-verifier` を `doc_type: design-doc` と Design Doc のパスで呼び出す。将来の振る舞いを意図のまま扱い、現状側の前提と実現可能性を検証させるため、`code_paths` は指定しない。
+
+ドキュメントレビューの前に、各 discrepancy にレビュー裁定を適用する。technical-designer の update モードへ渡すのは `apply` の検出事項のみとし、修正後は code-verifier を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。続行するのは、未解決の `apply` または `user_decision_required` の項目が残っていない場合に限る。
+
+## ステップ7: レビューと承認
+
+`document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6の `verification_evidence` で呼び出す。
+
+- `approved`: 次へ進む。
+- `needs_revision`: レビュー裁定を適用し、technical-designer 経由で更新した上で、影響を受けた境界についてステップ6〜7を再実行する。
+- `rejected`: 出典ソースの衝突を解消する。ユーザーに尋ねるのは、プロダクトの成果または承認済みの主要な設計判断が変わる場合のみとする。
+
+他のDesign Doc との整合性のために `design-sync` を呼び出し、対応可能な矛盾にはレビュー裁定を適用する。Design Doc が1つしか存在しない場合は `SKIPPED` として明確に報告する。
+
+Design Doc、受理済みADRのパス、記録した decline、design-sync の結果を提示する。`[停止: 設計承認]`。
 
 ## 完了条件
 
-- [ ] Step 1のスコープブートストラップのシードを構築した（または検索結果が0件のときユーザーから対象ファイルを取得した）
-- [ ] 値の入った`requirement_analysis`でcodebase-analyzerを実行した
-- [ ] requirement-convergenceのヒアリングを実施し、その結果を設計へ引き継いだ
-- [ ] ユーザーと設計スコープを確認し、確認済みの対象ファイルから規模を設定した
-- [ ] technical-designerでDesign Docを作成した。設計にアーキテクチャ決定が伴う場合は前提となるADRを先に作成した
-- [ ] Design Docに対してcode-verifierを実行し、結果をdocument-reviewerに渡した
-- [ ] 作成した各ドキュメント（Design Doc、および作成された場合のADR）に対してdocument-reviewerを実行し、フィードバックに対応した
-- [ ] design-syncで整合性検証を実行した
-- [ ] 設計書のユーザー承認を取得した
-
-## 出力例
-設計フェーズが完了しました。
-- 設計書: docs/design/[ドキュメント名].md
-- 整合性: 他Design Docと矛盾なし（または修正完了）
-
-**責務境界**: 本コマンドは設計承認＋整合性確認で終了。作業計画以降はスコープ外。
+- スコープと構造スケールを、成果と責務境界から確認した。
+- ADRは両方のフィルタを通過した決定ポイントに対してのみ存在し、バッチ全体が1回のレビューと承認を受けた。
+- ADRの要否にかかわらず、Design Doc が存在する。
+- 該当する既存の振る舞い・契約・前提・等価性・検証の安全策が Design Doc に到達した。
+- レビュー裁定が `needs_revision` の issue のみを修正作業へ回した。
+- すべての停止点でユーザーの明示的な確認を得た。

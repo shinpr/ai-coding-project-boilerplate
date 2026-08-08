@@ -119,7 +119,6 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  verbose: false
 ```
 
 Note: `code_paths` is intentionally NOT provided. The verifier independently discovers code scope from the document, ensuring independent verification not constrained by scope-discoverer's output.
@@ -256,7 +255,6 @@ prompt: |
 
   doc_type: design-doc
   document_path: $STEP_7_OUTPUT or $STEP_7_FRONTEND_OUTPUT
-  verbose: false
 ```
 
 Note: `code_paths` is intentionally NOT provided. The verifier independently discovers code scope from the document.

@@ -89,7 +89,7 @@ Following "Autonomous Execution Task Management" in subagents-orchestration-guid
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor in **Fix Mode**
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to step 3; carry that unproven state into the completion report
      - `approved` → Proceed to step 3
    - Otherwise → Proceed to step 3
 3. **INVOKE quality-fixer**: Execute all quality checks and fixes against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Medium/Large also pass the current `task_file`; Small passes the direct execution scope. Pass the implementation step's `runnableCheck` and `qualityCommand` when the governing source or repository convention names one.

@@ -112,7 +112,7 @@ The reviewer determines readiness for approval; the user owns PRD, ADR, UI Spec,
 
 ## Output
 
-Return exactly one JSON object:
+Return exactly one JSON object as the final message (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages:
 
 ```json
 {

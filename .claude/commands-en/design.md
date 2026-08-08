@@ -57,7 +57,7 @@ Resolve `decisionMaterials.candidateDecisionPoints` against the governing requir
 
 Record every passing item as `adrDecisionPoints`; an empty list routes directly to the Design Doc.
 
-Present the confirmed outcome and requirements, cost evidence and unknowns, exclusions, target responsibilities, Structural Scale with rationale, qualifying ADR decision points or `none`, and only material unknowns. Offer proceed, or correct scope and re-run analysis. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
+Present what the user decides on: the outcome and the requirements to build, the exclusions, and the responsibilities the change targets. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, ADR qualification, and cost evidence stay in the orchestrator record — the ADR batch and the Design Doc have their own approval stops. Offer proceed, or correct scope and re-run analysis. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
 
 ## Step 4: Create and Approve an ADR Batch When Needed
 

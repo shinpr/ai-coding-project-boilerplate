@@ -63,7 +63,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
    document-reviewerを呼び出し作業計画書をレビューする:
    - `subagent_type`: "document-reviewer"
    - `description`: "作業計画書レビュー"
-   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [ステップ1で選択した Design Doc のパス]。作業計画書自身の実装スコープ、タスク、完了条件、依存関係、実行順序、引用アンカーの実在、実行可能な検証をレビューする。検出事項と提案は、対象文書自身が引用している内容に限定する — 出典ドキュメントのパスは引用先を与えるだけである。"
+   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md。作業計画書自身の実装スコープ、タスク、完了条件、依存関係、実行順序、引用アンカーの実在、実行可能な検証をレビューする。出典ソースは対象文書の Governing Documents から解決する。"
    - 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘はユーザー入力なしで解消する。reviewerの `verdict.decision` で分岐する:
      - `needs_revision`: レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には work-planner を update モードで用いる
      - `approved`、またはレビュー裁定が収束条件に達した場合: ステップ5へ進む

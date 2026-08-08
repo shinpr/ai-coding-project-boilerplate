@@ -38,7 +38,7 @@ Stop expanding when another file or call site cannot change one of those outcome
 
 ## Output
 
-Return exactly one JSON object:
+Return exactly one JSON object as the final message (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages:
 
 ```json
 {
@@ -57,12 +57,22 @@ Return exactly one JSON object:
   "propsPatterns": [
     {"component": "ComponentName", "callSite": "path:line", "props": {"variant": "primary"}, "computedProps": ["onClick"], "groupKey": "primary"}
   ],
-  "cssLayout": [],
-  "stateDisplay": [],
-  "displayConditions": [],
-  "i18n": null,
-  "accessibility": [],
-  "generatedArtifacts": [],
+  "cssLayout": [
+    {"filePath": "path/to/styles.module.css", "classNamingConvention": "camelCase|kebab-case|BEM", "layouts": [{"selector": ".className", "display": "flex|grid|block", "direction": "row|column", "gap": "8px|none", "stateSelectors": ["[data-state=active]"]}], "responsiveBreakpoints": ["768px"]}
+  ],
+  "stateDisplay": [
+    {"component": "ComponentName", "states": [{"name": "loading|empty|error|ready", "trigger": "what causes it", "renders": "rendered outcome"}], "unsupportedStates": ["state the component cannot express"]}
+  ],
+  "displayConditions": [
+    {"component": "ComponentName", "condition": "feature_flag|role|route|region|tenant|page_context", "predicateLocation": "path:line", "predicate": "expression", "gatedSubtree": "affected subtree"}
+  ],
+  "i18n": {"format": "csv|json|code-catalog|other", "keyNamingConvention": "pattern with examples", "locales": ["ja-JP"], "localeGaps": ["key present in one locale only"], "generatedTypings": {"command": "generator command", "outputPath": "path"}},
+  "accessibility": [
+    {"component": "ComponentName", "ariaAttributes": ["role=button"], "keyboardHandling": "keys mapped to actions", "focusStyling": "focus-visible outline", "testCoverage": "present|absent"}
+  ],
+  "generatedArtifacts": [
+    {"kind": "css-module-typings|message-catalog-typings|route-typings|other", "command": "generator command", "trigger": "on change|manual", "consumers": ["typecheck", "test", "build", "runtime"]}
+  ],
   "focusAreas": [
     {"fact_id": "src/components/Card.tsx:Card", "area": "coherent UI behavior", "evidence": "path:line or external resource", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "facts to preserve, transform, remove, or exclude", "risk": "observable inconsistency if omitted", "decisionEffect": "UI Spec, contract, or verification decision"}
   ],

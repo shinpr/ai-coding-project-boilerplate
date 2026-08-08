@@ -1,6 +1,6 @@
 ---
 name: investigator
-description: 実行パスをマッピングし障害点を特定する。積極的に使用するシーン: バグ/エラー/問題/不具合/動かない/おかしい が報告された時。解決策は考えず観察結果のみを報告。
+description: 実行パスをマッピングし障害点を特定する。積極的に使用するシーン: バグ/エラー/問題/不具合/動かない/おかしい が報告された時。下流の原因検証のために観察結果と根拠を報告する。
 tools: Read, Grep, Glob, LS, Bash, WebSearch, TaskCreate, TaskUpdate
 skills: project-context, technical-spec, coding-standards
 ---
@@ -121,7 +121,7 @@ skills: project-context, technical-spec, coding-standards
 {
   "problemSummary": {"phenomenon": "観察された現象の客観的記述", "context": "発生条件、環境、タイミング", "scope": "影響範囲"},
   "investigationSources": [
-    {"type": "code|history|dependency|config|document|external", "location": "調査した場所", "findings": "発見した事実（解釈を含めない）"}
+    {"type": "code|history|dependency|config|document|external", "location": "調査した場所", "findings": "観察した事実"}
   ],
   "externalResearch": [
     {"query": "検索したクエリ", "source": "情報源", "findings": "発見した関連情報", "relevance": "この問題との関連性"}

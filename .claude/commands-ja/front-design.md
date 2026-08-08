@@ -1,153 +1,121 @@
 ---
-description: コードベース分析からフロントエンド設計ドキュメント作成まで実行
+description: リポジトリのエビデンスから、該当するUI Specと必要に応じたADR決定を経て、フロントエンドDesign Doc承認までを実行
 ---
 
-Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+ドキュメントのルーティングや作成の前に、`documentation-criteria`スキルを実行する。
+Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキルを実行する。
+エージェントの呼び出しや検出事項の裁定の前に、`subagents-orchestration-guide`スキルを実行する。
 
-**コマンドコンテキスト**: このコマンドはフロントエンド設計フェーズ専用である。
+## 成果と所有範囲
 
-## オーケストレーター定義
+Medium/Large のフロントエンド設計を、エビデンスから該当するUI Specと承認済みDesign Docまで統括する。要件の収束、構造スケール（Structural Scale）、ドキュメントルーティング、ADRの適格性判定、エビデンスの選択、レビュー裁定はオーケストレーターが持つ。意味的な調査と成果物は、名指しされた各スペシャリストが持つ。
 
-**コアアイデンティティ**: 「私はオーケストレーターである。」（subagents-orchestration-guideスキル参照）
-
-**実行プロトコル**:
-1. **全ての作業をサブエージェントに委譲** — サブエージェントを呼び出し、データを受け渡し、結果を報告する。唯一の例外はStep 1のスコープブートストラップで、シードファイルの特定に限定したレシピ内オーケストレータータスク。
-2. **以下のフロントエンド設計フローを順に実行**（このコマンドは中規模/大規模のフロントエンドを対象） — 分岐のない固定の線形シーケンス:
-   - 実行: スコープブートストラップ → codebase-analyzer → [停止: スコープ確認] → ui-analyzer → ui-spec-designer → technical-designer-frontend → code-verifier → document-reviewer → design-sync
-   - technical-designer-frontendは、設計にアーキテクチャ決定が伴う場合（documentation-criteriaに従う）に前提となるADRを作成する。ADRはDesign Docを置き換えない — フローは常にDesign Doc作成と検証チェーン全体を通過する
-   - **`[停止: ...]`マーカーごとに停止** → 次に進む前にユーザー承認を待つ
-3. **スコープ**: 設計ドキュメントが承認されたら完了
-
-**subagents-orchestration-guideの利用**: オーケストレーション原則とScale Determination表を参照する。このコマンドは独自の開始順序を定義する — ガイドのrequirement-analyzer起点フローはここでは適用しない。
-
-**重要**: document-reviewer、design-sync（Design Docの場合）、全ての停止ポイントを実行する — 各々が品質ゲートとして機能する。スキップは検出されない不整合のリスクにつながる。
-
-## ワークフロー概要
-
-```
-要件 → スコープブートストラップ → codebase-analyzer → [停止: スコープ確認]
-                                                            ↓
-                                                       ui-analyzer
-                                                            ↓
-                                              ui-spec-designer → [停止: UI Spec承認]
-                                                            ↓
-                                              technical-designer-frontend
-                                                            ↓
-                                              code-verifier → document-reviewer
-                                                            ↓
-                                                 design-sync → [停止: 設計承認]
-```
-
-## スコープ境界
-
-**実行内容**:
-- スコープブートストラップ: codebase-analyzerが値の入った入力を得られるようシードファイルを特定する
-- codebase-analyzerによるコードベース分析（フロントエンド設計フェーズの入口）
-- codebase-analyzerの所見に基づくユーザーとのスコープ確認
-- ui-analyzerによるUI事実収集
-- ui-spec-designerによるUI Spec作成（プロトタイプコード確認を含む）
-- ADR作成（アーキテクチャ変更、新技術、データフロー変更が伴う場合、Design Docの前提として）
-- technical-designer-frontendによるDesign Doc作成
-- code-verifierによるDesign Doc検証（ドキュメントレビューの前に実施）
-- document-reviewerによるドキュメントレビュー
-- design-syncによるDesign Doc間整合性検証
-
-**責務境界**: このコマンドはフロントエンド設計ドキュメント（UI Spec/ADR/Design Doc）の承認で責務完了。作業計画以降はスコープ外。
-
-## 実行フロー
+フロントエンドDesign Doc は常に完全な実装設計を担う。ADRバッチは適格な技術的選択を絞り込み、該当するUI Spec はこれから設計するUIの構造と振る舞いを所有する。
 
 要件: $ARGUMENTS
 
-### Step 1: スコープブートストラップ
-codebase-analyzerは値の入った`requirement_analysis.affectedFiles`を必要とする。そのシードを、軽量なオーケストレーター内タスクで構築する — ファイルの特定のみで、深い読み込みや設計判断は行わない:
+## フロー
 
-1. ユーザー要件から候補キーワード（機能名、ドメイン名詞、識別子）を抽出する。
-2. Bash（`rg`、`rg`が使えない場合は`grep`）で、それらのキーワードに一致するファイルをリポジトリ内で検索する。
-3. 一致したファイルパスをシード`affectedFiles`として収集する。
-4. **検索結果が0件の場合**: 設計対象のファイルまたはモジュールをユーザーに確認し（AskUserQuestion）、その回答を`affectedFiles`とする。関連コードが存在しないとユーザーが確認した場合は、コードベース起点の設計が適用できない旨を報告し、進め方をユーザーと確認する。
-5. **検索結果が約20件を超える場合**: キーワードが広すぎる。最も関連性の高い候補をユーザーに提示し（AskUserQuestion）、シード`affectedFiles`を確認してから進む。
+```text
+要件ソース -> codebase-analyzer -> スコープ/ドキュメントルーティングの確認 [停止]
+                                        |
+                       条件付きのUI分析 -> UI Specレビュー [停止]
+                                        |
+                             任意のADRバッチ/レビュー [停止]
+                                        |
+        Design Doc -> code-verifier/レビュー裁定 -> document-reviewer
+                                        |
+                          design-sync -> 承認 [停止]
+```
 
-このステップはシードファイルの特定のみを行う。ファイルの全文読み込み、依存関係の追跡、分析はcodebase-analyzerの責務である。
+対応可能な各検出事項にはレビュー裁定を適用する。各 `[停止]` ではユーザーの明示的な確認を待つ。
 
-### Step 2: コードベース分析
-- Agentツールで**codebase-analyzer**を呼び出す
-  - `subagent_type: "codebase-analyzer"`, `description: "コードベース分析"`
-  - `prompt`: `requirements`（ユーザー要件の原文）と`requirement_analysis`（`affectedFiles`（Step 1のシード）、`purpose`（ユーザー要件）、`scale`（シードファイル数にScale Determination表を当てた暫定値）、`technicalConsiderations`（`{ constraints: [], risks: [], dependencies: [] }`）を含むJSONオブジェクト）を含める。フロントエンド設計ガイダンスのため既存コードベースを分析する。
+以下の各 Agent 呼び出しでは、プロンプトを機械的な抽出として組み立てる。名指しされたソースの値を指定フィールドへコピーし、宣言されたシリアライズのみを適用して、直ちに呼び出す。
 
-### Step 3: スコープ確認
-codebase-analyzerが返ったら、設計作業の前にユーザーとスコープを確認する。
+## ステップ1: 出典となる要件ソースの選択
 
-まず requirement-convergence のヒアリングプロトコルを実行する。提示する事実にはcodebase-analyzerの所見を用いる。本コマンドにはrequirement-analyzerがいないため、フィールドの聞き出しと判定の両方をオーケストレーターが担い、結果を同スキルの `convergence` オブジェクト（`outcome`、レイヤーラベル付きの `requirements[]`、`nonGoals[]`、およびフィールドごとの readiness ラベル）として記録する。`cost` はここでは適用しない: 本コマンドは調査を codebase-analyzer に委譲しており、変更のコストを自分で見積もることはしない。加えて、本コマンドに入った時点で設計するという判断は済んでいる。Step 1 のキーワード検索はその分析のためのシードファイル特定であって、コストの入力ではない。このオブジェクトをStep 5とStep 6へ引き継ぎ、ui-spec-designerが非ゴールを尊重し、technical-designer-frontendがDesign Docへ永続化できるようにする。
+承認済みPRDが存在する場合はそのパスを用いる。存在しない場合は確認済み要件の原文を用いる。
 
-次に、codebase-analyzerのJSONを出典として、AskUserQuestionで以下を提示する:
-- **対象ファイル/モジュール**: `analysisScope.filesAnalyzed`と、それらが属するモジュール
-- **影響を受けるレイヤー**: `analysisScope.categoriesDetected`と`focusAreas`から導出される、影響を受けるレイヤー
-- **不明点/前提**: `limitations`と、codebase-analyzerが記録した前提
-- **設計前の質問事項**: 設計を進める前にユーザーの回答が必要な未解決点
+`confirmed_requirement_context` には承認済みPRDのパスをそのまま設定する。承認済みPRDが存在しない場合に限り、オーケストレーターが確認した収束記録をそのまま用いる。
 
-ユーザーに以下から1つを選んでもらう:
-- **このスコープで設計を進める** — Step 4へ進む
-- **スコープを修正して再実行** — 修正したスコープでStep 1に戻る。ユーザーが修正後のファイルまたはモジュールを指定した場合は、検索で導出し直さず、それをStep 1のシードとして直接使う
-- **追加ヒアリングののち進める** — 不足している回答を集めてからStep 4へ進む
+## ステップ2: リポジトリ側の判断材料の収集
 
-ユーザーがスコープを確認したら、確認済みの対象ファイル数を数え、Scale Determination表から規模を設定する。この確認済みの規模はStep 2の暫定値に優先する。
+確認済みスコープ全体に対して `codebase-analyzer` を1回呼び出す。入力は `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [確認済み要件の原文]` のいずれか一方のみとする。
 
-**[停止]**: ユーザーの選択を待ってから進む。
+妥当なJSON結果を1つ要求し、影響パス・責務境界・レイヤーをまたぐ契約の発見はアナライザーに任せる。`focusAreas` は要件ではなく既存の振る舞いの安全策として扱う。
 
-### Step 4: UI事実収集
-- Agentツールで**ui-analyzer**を呼び出す
-  - `subagent_type: "ui-analyzer"`, `description: "UI事実収集"`
-  - `prompt`: `requirements`（ユーザー要件）と`requirement_analysis`（`affectedFiles`（Step 2のcodebase-analyzer出力の`analysisScope.filesAnalyzed`・`analysisScope.tracedDependencies`・`focusAreas[].relatedFiles`のパスの和集合）、`purpose`（ユーザー要件）、`scale`（Step 3の確認済み規模）、`technicalConsiderations`（`{ constraints: [], risks: [], dependencies: [] }`）を含むJSONオブジェクト）を含める。ui-analyzerはproject-contextのExternal Resourcesセクションを読み、宣言されたアクセス手段で外部UIソースを取得し、既存のUIコードベースを分析する。
+## ステップ3: UI Specの要否判定とUIエビデンスの解決
 
-codebase-analyzerのJSON（Step 2）とui-analyzerのJSON（Step 4）は、ui-spec-designerとtechnical-designer-frontendで再利用される。
+documentation-criteria の UI Spec 作成条件を適用する。該当しない場合は、UI分析とステップ5をスキップする。
 
-### Step 5: UI Specフェーズ
-プロトタイプコードについてユーザーに確認する。
+UI Spec が該当する場合、project-context の外部リソースを選択するのは、それが現在のUI方針・コンポーネント契約・検証境界のいずれかを変えうる場合に限る。それ以外は `external_resource_refs: []` を用いる。
 
-**ユーザーに確認**: 「この機能のプロトタイプコードはありますか？ある場合はコードへのパスを教えてください。プロトタイプはUI Specの参考資料として`docs/ui-spec/assets/`に配置されます。」
+プロトタイプコードを求めるのは、それが未解決の承認済みUI判断を供給する場合、または要件・リポジトリのUI・記録済みリソースからは対象を決定できない場合に限る。任意のプロトタイプが存在しないことは停止条件ではない。
 
-- **[停止]**: プロトタイプコードの有無についてユーザーの回答を待つ
+`ui-analyzer` を、出典ソースちょうど1つで呼び出す: `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [確認済み要件の原文]`。これに加えて渡すのは、既存の `ui_spec_path`、判断に影響する `prototype_path`、選択した `external_resource_refs`（または `[]`）のみとする。
 
-その後、UI Specを作成する:
-- Agentツールで**ui-spec-designer**を呼び出す
-  - `subagent_type: "ui-spec-designer"`, `description: "UI Spec作成"`
-  - 以下を含めてプロンプトを構築する: ソース（この機能の既存PRDが`docs/prd/`にあればそれ。なければ、ユーザー要件にStep 2のcodebase-analyzer JSONとStep 3の確認済みスコープを添えたもの）、Step 3の `convergence` オブジェクトの `nonGoals` と `speculative` 要件（UI Specが対象に含めない機能・能力として）、`ui_analysis`（Step 4のui-analyzer JSON）、提供された場合のプロトタイプパス。プロトタイプは`docs/ui-spec/assets/{feature-name}/`に配置する。
-- **document-reviewer**でUI Specを検証する
-  - `subagent_type: "document-reviewer"`, `description: "UI Specレビュー"`, `prompt: "doc_type: UISpec target: [ui-specパス] 整合性と完全性をレビュー"`
-- **[停止]**: UI Specをユーザーに提示し承認を取得する
+## ステップ4: スコープとADR決定の確認
 
-### Step 6: 設計ドキュメント作成フェーズ
-- Agentツールで**technical-designer-frontend**を呼び出し、設計ドキュメントを作成する。documentation-criteriaに従いDesign Docを作成する。設計にアーキテクチャ決定（アーキテクチャ変更、新技術、データフロー変更）が伴う場合は、前提となるADRを先に作成する。ADRは少なくとも2つの選択肢をトレードオフとともに提示し、Design DocはDesign Convergenceを用いる。
-  - `subagent_type: "technical-designer-frontend"`, `description: "設計ドキュメント作成"`, `prompt: "この要件の設計ドキュメントを作成。documentation-criteriaに従いDesign Docを作成し、設計にアーキテクチャ決定が伴う場合は、少なくとも2つの選択肢をトレードオフとともに提示する前提ADRを先に作成。要件: [ユーザー要件の原文]。コードベース分析: [Step 2のcodebase-analyzer JSON]。UI分析: [Step 4のui-analyzer JSON]。確認済みスコープとユーザー回答: [Step 3の確認済みスコープとユーザー回答]。収束結果: [Step 3の `convergence` オブジェクト]。UI Specは[ui-specパス]。UI Specのコンポーネント構造と状態設計を継承。"`
-- **code-verifier**でDesign Docを既存コードに対して検証する。
-  - `subagent_type: "code-verifier"`, `description: "Design Doc検証"`, `prompt: "doc_type: design-doc document_path: [Design Docパス] mode: pre-implementation (code_paths省略 — verifierがドキュメントからスコープを発見). Design Docを既存コードに対して検証。"`
-  - `summary.status` を読む: `blocked` の場合は Input Gate が失敗し何も検証されていないため、結果を渡さず停止して `summary.blockingReason` をユーザーに報告する。空の `discrepancies` は下流でクリーンな検証として読まれてしまうため。
-- technical-designer-frontendが作成した各ドキュメント（Design Doc、および作成された場合のADR）に対して**document-reviewer**を呼び出す。
-  - Design Doc: `subagent_type: "document-reviewer"`, `description: "Design Docレビュー"`, `prompt: "doc_type: DesignDoc review_context: creation target: [Design Docパス] mode: composite requirements_verbatim: [ユーザー要件の原文] confirmed_decisions: [Step 3の確認済みスコープとユーザー回答] codebase_analysis: [Step 2のcodebase-analyzer JSON] code_verification: [code-verifierのJSON]. 整合性・完全性・採用設計の妥当性をレビュー。"`
-  - ADR（作成された場合）: `subagent_type: "document-reviewer"`, `description: "ADRレビュー"`, `prompt: "doc_type: ADR review_context: creation target: [ADRパス] mode: composite. 整合性と完全性をレビュー。"`
-- ADRレビューで修正が必要になった場合、technical-designer-frontend(update)がADRを修正し、修正後のADRに合わせてDesign Docを再整合させる — Design Docは未レビューまたは古いADRの上に立ってはならない。この再整合でDesign Docが変わった場合は、更新後のDesign Docに対してcode-verifierとDesign Docのdocument-reviewerを再実行し、検証が最終内容を反映するようにする。
+`requirement-convergence` を実行する。出典となる要件ソース、リポジトリ分析、該当するUI分析から収束記録を構築し判定する。
 
-### Step 7: 設計整合性検証
-- Agentツールで**design-sync**を呼び出す。
-  - `subagent_type: "design-sync"`, `description: "設計整合性チェック"`, `prompt: "docs/design/配下の全Design Doc間の整合性をチェック。矛盾と重複を報告。"`
-- **[停止]**: 設計ドキュメント（Design Docの場合はdesign-sync結果も）を提示し、ユーザー承認を取得する
+4つの収束フィールドをすべて判定する。`cost` はステップ2の構造的エビデンスから割り当て、その未知を記録する。ヒアリングは `ready` に達していないフィールドについてのみ実施する。
+
+構造スケールは成果と責務境界から判定し、ファイル数は補助的なエビデンスにとどめる。候補となる決定ポイントを、出典ソース・`reuse`・`invalidations` に照らして解決する。該当するUIの事実は、残った選択肢を支持することも否定することもある。documentation-criteria の 選択（Choice）フィルタと持続性（Durability）フィルタは、この収束の後にのみ適用し、通過した決定ポイントを `adrDecisionPoints` として記録する。空リストも妥当である。
+
+ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務。未知を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・UI Spec の要否・ADR適格性・コストのエビデンスはオーケストレーターの記録に留める — UI Spec・ADRバッチ・Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「修正して再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
+
+## ステップ5: UI Specの作成と承認
+
+このステップは、ステップ3で UI Spec が該当すると判定した場合にのみ実行する。
+
+`ui-spec-designer` を、`confirmed_requirement_context`、変更していない `ui_analysis` と `codebase_analysis` の全体、存在する場合は判断に影響する `prototype_path`、選択した `external_resource_refs`（または `[]`）で呼び出す。
+
+`document-reviewer` を `doc_type: UISpec` と、返却されたUI Spec のパスを `target` として呼び出す。`approved` の場合はUI Spec を提示する。`needs_revision` はレビュー裁定を適用し、修正後に再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。`[停止: UI Spec承認]`。
+
+## ステップ6: 必要な場合のADRバッチ作成と承認
+
+`adrDecisionPoints` が非空の場合:
+
+1. 共有／バックエンドが所有する決定ポイントを先に technical-designer へ、続いてフロントエンドが所有する決定ポイントを technical-designer-frontend へルーティングする。各担当を、`document_to_create: ADRBatch`、`confirmed_requirement_context`、その順序付き `decision_points`、対応する変更していない `decision_materials` で呼び出す。`ui_spec_path` は、承認済みUI Spec がその決定を拘束する場合にのみ渡す。
+2. 返却された全パスを集約し、`document-reviewer` を1回、`doc_type: ADRBatch`、`targets: [全パス]`、`confirmed_requirement_context` で呼び出す。
+3. まず verdict でルーティングする。`approved` は次へ進む。`needs_revision` はレビュー裁定を適用し、パスごとに1つのADRを順に更新してから、バッチ全体を再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。
+4. バッチの判断をユーザーに提示するのは、レビューが approved になった後のみとする。`[停止: ADRバッチ承認]`。
+5. ユーザー承認後、各ADRのステータスを `Accepted` に設定し、その変更を確認する。
+
+## ステップ7: フロントエンドDesign Docの作成
+
+`technical-designer-frontend` を以下で呼び出す:
+
+- `document_to_create: DesignDoc`
+- `confirmed_requirement_context`
+- `structural_scale`
+- 該当する承認済みの `ui_spec_path` と、選択した外部リソース記録
+- `adr_paths: [受理済みパス、または []]`
+- 変更していないステップ2の `codebase_analysis` 全体
+- 存在する場合は、変更していないステップ3の `ui_analysis` 全体
+
+Design Doc はコンポーネントからサービスまでの完全な実装を所有し、該当するすべての下流保証を保持する。
+
+## ステップ8: 検証・レビュー・承認
+
+`code-verifier` を `doc_type: design-doc` と返却された Design Doc のパスで呼び出し、`code_paths` は指定しない。ドキュメントレビューの前にレビュー裁定を適用する。修正を適用した場合は technical-designer-frontend 経由で更新し、検証を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。残るすべての discrepancy に処理方針が付いた時点で次へ進む。
+
+`document-reviewer` を、`doc_type: DesignDoc`、返却された Design Doc のパス、`review_context: creation`、ユーザー要件の原文、`confirmed_requirement_context`、設計者に渡したものと同じ変更していない分析入力、`verification_evidence` で呼び出す。
+
+- `approved`: 次へ進む。
+- `needs_revision`: レビュー裁定を適用し、technical-designer-frontend 経由で更新した上で、影響を受けた境界について検証とレビューを再実行する。
+- `rejected`: 出典ソースの衝突を解消する。ユーザーに尋ねるのは、プロダクトの成果または承認済みの主要な設計判断を変更しなければならない場合のみとする。
+
+返却された Design Doc をソースとして `design-sync` を呼び出し、対応可能な矛盾にはレビュー裁定を適用する。Design Doc が1つしか存在しない場合は `SKIPPED` として明確に報告する。
+
+該当するUI Spec、Design Doc、受理済みADRのパス、記録した decline、sync 結果を提示する。`[停止: 設計承認]`。
 
 ## 完了条件
 
-- [ ] Step 1のスコープブートストラップのシードを構築した（または検索結果が0件のときユーザーから対象ファイルを取得した）
-- [ ] 値の入った`requirement_analysis`でcodebase-analyzerを実行した
-- [ ] requirement-convergenceのヒアリングを実施し、その結果をUI Specと設計へ引き継いだ
-- [ ] ユーザーと設計スコープを確認し、確認済みの対象ファイルから規模を設定した
-- [ ] ui-analyzerを実行した。codebase-analyzer（Step 2）とui-analyzer（Step 4）の出力はui-spec-designerとtechnical-designer-frontendで再利用される
-- [ ] ui-spec-designerでUI Specを作成した
-- [ ] technical-designer-frontendでDesign Docを作成した。設計にアーキテクチャ決定が伴う場合は前提となるADRを先に作成した
-- [ ] Design Docに対してcode-verifierを実行し、結果をdocument-reviewerに渡した
-- [ ] 作成した各ドキュメント（Design Doc、および作成された場合のADR）に対してdocument-reviewerを実行し、フィードバックに対応した
-- [ ] design-syncで整合性検証を実行した
-- [ ] 設計ドキュメントのユーザー承認を取得した
-
-## 出力例
-フロントエンド設計フェーズ完了。
-- UI Spec: docs/ui-spec/[機能名]-ui-spec.md
-- 設計ドキュメント: docs/design/[ドキュメント名].md または docs/adr/[ドキュメント名].md
-- 承認ステータス: ユーザー承認済み
+- 外部リソースとプロトタイプのエビデンスは、現在の判断を左右する場合にのみ要求した。
+- スコープと構造スケールを、成果と責務境界から確認した。
+- ADRは両方のフィルタを通過した決定ポイントに対してのみ存在し、バッチが1回のレビューと承認を受けた。
+- ADRの要否にかかわらず、該当するUI Spec と完全なフロントエンドDesign Doc が存在する。
+- 該当する既存のUIの振る舞い・契約・前提・状態・等価性・検証の安全策が Design Doc に到達した。
+- レビュー裁定が `needs_revision` の issue のみを修正作業へ回した。
+- すべての停止点でユーザーの明示的な確認を得た。

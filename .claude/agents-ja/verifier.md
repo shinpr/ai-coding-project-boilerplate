@@ -40,7 +40,7 @@ skills: project-context, technical-spec, coding-standards
 - 未調査と明記された領域を把握
 
 **impactAnalysisの妥当性確認**:
-- 各障害点のimpactAnalysisの論理的妥当性を確認（追加検索は行わない）
+- 各障害点のimpactAnalysisの論理的妥当性を、与えられた調査エビデンスを用いて確認する。追加の検索はステップ2で行う
 
 ### ステップ2: Triangulation補完
 調査の`investigationSources`でカバーされていないソースタイプを特定し、少なくとも1つを調査する:
@@ -92,7 +92,7 @@ skills: project-context, technical-spec, coding-standards
 - 例:「実装がおかしい」→ design_gapを検討したか
 - 整合しない場合、「調査の焦点がユーザー報告とずれている可能性」を明示
 
-**結論**: 各障害点を個別に評価する。複数の障害点が同時に有効でありうる — 単一の根本原因への収束を強制しない。確認された障害点のペアごとにその関係性（independent / dependent / same_chain）を判定し、`failurePointRelationships`に記録する
+**結論**: 各障害点を個別に評価し、独立して有効な原因はすべて残す。確認された障害点のペアごとにその関係性（independent / dependent / same_chain）を判定し、`failurePointRelationships`に記録する。
 
 ## カバレッジ評価基準
 

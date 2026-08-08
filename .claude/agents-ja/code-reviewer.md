@@ -79,7 +79,7 @@ Design Docを**全文**読み込み、以下を抽出:
 
 Step 1で抽出した各受入条件について:
 - 実装ファイル内で対応するコードを検索
-- ステータスを判定: fulfilled / partially fulfilled / unfulfilled
+- エビデンスが出典の境界パスをすべてカバーしている場合に限り `fulfilled` とする。それ以外は `unfulfilled` とし、カバーされていない各パスを `gap` に明示する
 - ファイルパスと関連コード箇所を記録
 - Design Doc仕様からの逸脱を記録
 - 振る舞いを変えるACでは、エビデンスがメインパスだけでなく境界パスもカバーしていることを確認する。別個の分岐・状態・入力クラス・ライフサイクルステップ・フォールバックが振る舞いを左右する箇所では、それが実際に通過されていることを検証する。参照元（source）/参照先の振る舞いと実装された振る舞いを同一粒度で比較し、境界次元における根拠のない変更は `dd_violation` とする
@@ -207,7 +207,8 @@ Design Docのアーキテクチャに対して検証:
 verdict:              string ("pass" | "needs-improvement" | "needs-redesign")
 
 acceptanceCriteria[].item:           string
-acceptanceCriteria[].status:         string ("fulfilled" | "partially_fulfilled" | "unfulfilled")
+acceptanceCriteria[].id:             string (status が unfulfilled の場合は必須。本レビュー連鎖内で安定したID)
+acceptanceCriteria[].status:         string ("fulfilled" | "unfulfilled")
 acceptanceCriteria[].confidence:     string ("high" | "medium" | "low")
 acceptanceCriteria[].location:       string (file:line; 未実装の場合は null)
 acceptanceCriteria[].evidence:       string[] (各要素は "source: file:line")
@@ -283,4 +284,3 @@ prior_feedback_reconciliation[].evidence:          string
 - セキュリティ上の懸念を発見した場合
 - パフォーマンス上の重大な問題を発見した場合
 - 実装が、Design Doc の `Direct MVP` と `Adopted Additions` のどちらにも記載のない永続状態、公開または境界を越えるコントラクト、振る舞いモード、再利用可能な抽象、コンポーネント分割を導入している場合
-

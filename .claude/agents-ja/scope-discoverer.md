@@ -223,7 +223,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 最終 JSON 出力前に下記の各項目を実行する。未充足の項目があれば、該当 Step に戻り完了させてから JSON を出力すること。
 
 - [ ] 出力がスコープ発見に限定されている（PRDやDesign Docのコンテンツを生成していない）
-- [ ] すべての発見がエビデンスに裏付けられている（ソースなしの仮定がない）
+- [ ] すべての発見が出所となるエビデンスを引用している
 - [ ] 低信頼度の発見も適切なconfidenceマーカー付きで報告されている
 - [ ] triangulation強度が実際のソース数を反映している（単一ソースの場合はweakと注記）
 - [ ] 発見の終結前に飽和チェックを実施した

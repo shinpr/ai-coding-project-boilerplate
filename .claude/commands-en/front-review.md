@@ -55,51 +55,40 @@ Invoke security-reviewer using Agent tool:
 
 **If security-reviewer returned `blocked`**: Stop at this gate, report the blocking reason and any returned finding, then escalate to the user.
 
-Apply Review Resolution to both outputs before reporting or routing them. Finding dispositions determine routing. Ask the user only for `user_decision_required` items or for implementation authority after the proposed `apply` set is known.
+Apply Review Resolution to both outputs. Its dispositions determine what happens next: `apply` findings become code corrections, `user_decision_required` findings carry a decision only the user can make, `decline` findings are recorded with their reason. Each finding already names its code location, so no further routing classification is needed.
 
-For each `apply` or `user_decision_required` finding, compute a proposed route:
-
-| Finding pattern | Recommended route |
-|-----------------|-------------------|
-| `dd_violation` where code matches the original requirement but the Design Doc captured a different design | `d` (Design-side update) |
-| `dd_violation` where code drifted from a still-correct Design Doc | `c` (Code-side fix) |
-| `reliability`, `security`, or `maintainability` finding | `c` (Code-side fix) |
-
-Present the adjudicated result. Group `apply` and `user_decision_required` findings by proposed route and list declined IDs with reasons separately:
+Present the adjudicated result:
 
 ```
 Code Review: [verdict from code-reviewer]
   Acceptance Criteria:
   - [fulfilled] [item] (confidence: [high/medium/low])
-  - [unfulfilled] [item]: [gap] — [suggestion] [recommended: c | d]
+  - [unfulfilled] [item]: [gap] — [suggestion]
   Identifier Mismatches:
-  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location] [recommended: c | d]
+  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location]
   Quality Findings:
-  - [category] [location]: [description] — [rationale] [recommended: c]
+  - [category] [location]: [description] — [rationale]
 
 Security Review: [status from security-reviewer]
   Findings by category:
-  - [confirmed_risk] [location]: [description] — [rationale] [recommended: c]
-  - [defense_gap] [location]: [description] — [rationale] [recommended: c]
+  - [confirmed_risk] [location]: [description] — [rationale]
+  - [defense_gap] [location]: [description] — [rationale]
 
-Approve the proposed changes or decide unresolved items:
-  c) Code-side fix       — code violates Design Doc; modify code to match
-  d) Design-side update  — code is correct; Design Doc is stale, revise it
-  s) Decline             — record the governing reason and accept current state
+Declined: [ID] — [governing reason]
 ```
 
-This review command authorizes analysis; obtain separate user authority before applying changes. The batch option is "approve all proposed `apply` routes". Collect an explicit decision for each `user_decision_required` item. When the approved change set is empty, proceed to Step 10.
+Ask the user for two things only: authority to apply the proposed `apply` set, and a decision on each `user_decision_required` item. For a `user_decision_required` item the user may decide that the code is correct and the Design Doc is stale; those items go to Step 5. When no approved change remains, proceed to Step 10.
 
-**Scope carried into the fix path**: Pass the approved findings, their routes, the files and sections they cover, and any size budget the user stated to every agent invoked from Steps 5-9. Before re-validation, map each diff hunk to an approved finding or to a consistency update that finding required; request a scope decision for any unmapped hunk or for a diff that exceeds a stated budget, rather than accepting it as part of the fix.
+**Scope carried into the fix path**: Pass the approved findings, the files and sections they cover, and any size budget the user stated to every agent invoked from Steps 5-9. Before re-validation, map each diff hunk to an approved finding or to a consistency update that finding required; request a scope decision for any unmapped hunk or for a diff that exceeds a stated budget, rather than accepting it as part of the fix.
 
 ### Step 5: Design-Side Update
 
-Run this step only when the user routed at least one finding to `d`. When all routes are `c` or `s`, skip directly to Step 6.
+Run this step only for `user_decision_required` items the user resolved by ratifying the current code in the design.
 
 1. Invoke technical-designer-frontend in update mode using Agent tool:
    - `subagent_type`: "technical-designer-frontend"
    - `description`: "Design Doc update from review findings"
-   - `prompt`: "Update Design Doc at [path] in update mode. The implementation has diverged in the following ways that the team has decided to ratify in the design rather than in the code: [list of `d`-routed findings with codeLocation and designDocValue from $STEP_2_OUTPUT]. Reflect the current code behavior in the relevant sections and add a history entry."
+   - `prompt`: "Update Design Doc at [path] in update mode. The implementation has diverged in the following ways that the user decided to ratify in the design rather than in the code: [complete finding objects with the recorded user decision]. Reflect the current code behavior in the relevant sections and add a history entry."
 
 2. Invoke document-reviewer to verify the updated Design Doc:
    - `subagent_type`: "document-reviewer"
@@ -113,15 +102,13 @@ Run this step only when the user routed at least one finding to `d`. When all ro
    - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
    - When `sync_status: CONFLICTS_FOUND`: present conflicts to the user; resolution requires re-invoking technical-designer-frontend for affected DDs.
 
-4. After Step 5 completes:
-   - If the user selected zero `c` routes (whether all `d`, all `s`, or a `d` + `s` mix with no `c`) → skip Steps 6-7, proceed to Step 8 for re-validation
-   - If the user selected both `d` and `c` → re-evaluate the `c`-routed findings against the updated DD and drop any that are now satisfied by the DD revision; then proceed to Step 6 with the remaining `c` findings
+4. Re-evaluate the approved `apply` findings against the updated Design Doc and drop any the revision already satisfies. When none remains, skip Steps 6-7 and proceed to Step 8.
 
 ### Step 6: Execute Fixes
 Invoke task-executor-frontend using Agent tool:
 - `subagent_type`: "task-executor-frontend"
 - `description`: "Execute review fixes"
-- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Keep the change within the approved routes and stated total size budget."
+- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Keep the change within the approved findings and stated total size budget."
 
 ### Step 7: Quality Check
 Invoke quality-fixer-frontend using Agent tool:
@@ -166,26 +153,7 @@ Remaining issues:
 - [items requiring manual intervention]
 ```
 
-## Auto-fixable Items (code-side path)
-- Simple unimplemented acceptance criteria
-- Error handling additions
-- Contract definition fixes
-- Function splitting (length/complexity improvements)
-- Security confirmed_risk and defense_gap fixes (input validation, auth checks, output encoding)
-
-## Non-fixable Items
-- Fundamental business logic changes
-- Architecture-level modifications
-- Committed secrets (blocked → human intervention)
-
-## Design-Side Update Triggers
-Discrepancies suitable for the design-side path (code is correct, DD became stale):
-- Identifier renames where the new identifier reflects the team's current naming
-- Behavioral changes that match the original requirement intent better than what the DD captured
-- Component splits or merges where the new structure is sound and the DD documented the prior structure
-- New ACs that the implementation already satisfies but the DD never enumerated
-
-**Scope**: Design Doc compliance validation, security review, code-side auto-fixes, and design-side update routing.
+**Scope**: Design Doc compliance validation, security review, code-side auto-fixes, and design-side updates the user ratifies.
 
 ## Scope Boundary for Subagents
 

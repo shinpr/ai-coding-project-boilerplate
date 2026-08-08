@@ -143,7 +143,7 @@ Invoke integration-test-reviewer using Agent tool:
 Check Step 5 result, branching on `status`:
 - `approved` → Mark complete, proceed to Step 7
 - `needs_revision` → Apply Review Resolution, re-invoke the routed task-executor in **Fix Mode** with the complete `apply` quality-issue objects, then return to Step 5
-- `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review. If no changed test exists, return to Step 4 and correct the implementation result
+- `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists, return to Step 4 and correct the implementation result. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to Step 7
 
 Invoke task-executor routed by task filename pattern:
 - `*-backend-task-*` → `subagent_type`: "task-executor"
