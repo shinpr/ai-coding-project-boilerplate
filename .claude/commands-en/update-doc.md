@@ -15,20 +15,19 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 **Execution Protocol**:
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Execute update flow**:
-   - Identify target → Clarify changes → Update document → Review → Consistency check
-   - **Stop at every `[Stop: ...]` marker** → Wait for user approval before proceeding
+   - Identify target → resolve outcome-changing ambiguity → update document → review → consistency check → final approval
 3. **Scope**: Complete when updated document receives approval
 
-**CRITICAL**: NEVER skip document-reviewer or stopping points.
+**CRITICAL**: Complete document-reviewer and the final approval gate.
 
 ## Workflow Overview
 
 ```
-Target document → [Stop: Confirm changes]
+Target document → resolve required input when needed
                         ↓
               technical-designer / technical-designer-frontend / prd-creator (update mode)
                         ↓ (Design Doc only)
-              code-verifier → document-reviewer → [Stop: Review approval]
+              code-verifier → document-reviewer
                         ↓ (Design Doc only)
               design-sync → [Stop: Final approval]
 ```
@@ -54,10 +53,7 @@ Target document: $ARGUMENTS
 
 ### Step 1: Target Document Identification
 
-```bash
-# Check existing documents
-ls docs/design/*.md docs/prd/*.md docs/adr/*.md 2>/dev/null | grep -v template
-```
+Resolve an explicit path first. Otherwise inspect repository documentation locations and conventions, then select files whose content and metadata match Design Doc, PRD, or ADR responsibilities. Treat conventional directories as discovery hints and resolve moved or renamed documents before reporting absence.
 
 **Decision flow**:
 
@@ -87,14 +83,11 @@ Read the document and determine its layer from content signals:
 - **Minor changes** (clarification, typo fix, small scope adjustment): Update the existing ADR file
 - **Major changes** (decision reversal, significant scope change): Create a new ADR that supersedes the original
 
-### Step 3: Change Content Clarification [Stop]
+### Step 3: Change Content Resolution
 
-Use AskUserQuestion to clarify what changes are needed:
-- What sections need updating
-- Reason for the change (bug fix findings, spec change, review feedback, etc.)
-- Expected outcome after the update
+Extract the requested outcome, reason, and affected document responsibilities from `$ARGUMENTS` and the current document. Continue directly when those inputs determine the update. Use AskUserQuestion only for a missing decision whose alternatives would materially change document meaning or scope.
 
-Confirm understanding of changes with user before proceeding.
+Record the resolved changes as the update contract.
 
 **Scope carried into the update**: Pass the confirmed sections, the reason for the change, and any size budget the user stated to the update agent. Before document review, map each changed section to a confirmed change or to a consistency update that change required; request a scope decision for any section changed outside that set or for an update that exceeds a stated budget.
 
@@ -115,7 +108,7 @@ prompt: |
   Add change history entry.
 ```
 
-### Step 5: Document Review [Stop]
+### Step 5: Document Review
 
 **For Design Doc updates only**: Before document-reviewer, invoke code-verifier:
 ```
@@ -164,11 +157,9 @@ prompt: |
 
 Follow Review Resolution convergence and escalation conditions.
 
-Present review result to user for approval.
+### Step 6: Consistency Verification and Final Approval [Stop]
 
-### Step 6: Consistency Verification (Design Doc only) [Stop]
-
-**Skip condition**: Document type is PRD or ADR → Proceed to completion.
+For PRD or ADR, proceed from the approved document review to the final approval below.
 
 For Design Doc, invoke design-sync:
 ```
@@ -181,29 +172,31 @@ prompt: |
 ```
 
 **On consistency result**:
-- No conflicts → Present result to user for final approval
+- No conflicts → include the result in the final approval summary
 - Conflicts detected → Present conflicts to user with AskUserQuestion:
   - A: Return to Step 4 to resolve conflicts in this document
   - B: End command and address conflicts separately
+
+Present the reviewed update and, for a Design Doc, its consistency result for one final user approval. This is the command's single approval gate.
 
 ## Error Handling
 
 | Error | Action |
 |-------|--------|
 | Target document not found | Report and end (document creation is out of scope) |
-| Sub-agent update fails | Log failure, present error to user, retry once |
+| Sub-agent update fails | Repair discoverable input or routing errors and retry when the invocation materially changes; otherwise report the failure evidence |
 | Reviewer returns `rejected` | Resolve the governing-source conflict or escalate when user authority is required |
 | design-sync detects conflicts | Present to user for resolution decision |
 
 ## Completion Criteria
 
 - [ ] Identified target document
-- [ ] Clarified change content with user
+- [ ] Resolved change content from the request, document, or a necessary user answer
 - [ ] Updated document with appropriate agent (update mode)
 - [ ] Executed code-verifier before document-reviewer (Design Doc only)
 - [ ] Executed document-reviewer and addressed feedback
 - [ ] Executed design-sync for consistency verification (Design Doc only)
-- [ ] Obtained user approval for updated document
+- [ ] Obtained one final user approval for the reviewed update
 
 ## Output Example
 Document update completed.

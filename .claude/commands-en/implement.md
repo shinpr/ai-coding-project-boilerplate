@@ -60,7 +60,7 @@ After scale determination, **register all steps of the applicable subagents-orch
 - [ ] Recognized stopping points → **Use AskUserQuestion for confirmation at all Stop points**
 - [ ] codebase-analyzer included before each Design Doc creation
 - [ ] code-verifier included before document-reviewer for each Design Doc
-- [ ] Understood the 4-step cycle after task execution (task-executor → escalation judgment/follow-up → quality-fixer → commit)
+- [ ] Understood the 4-step cycle after task execution (task-executor → user-boundary judgment/follow-up → quality-fixer → commit boundary check)
 
 **Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TaskCreate/TaskUpdate
 
@@ -70,9 +70,10 @@ Append the following block to every subagent prompt invoked from this recipe:
 
 ```
 Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+Deliver the task outcome consistently across the repository responsibility that owns it.
+Treat referenced paths as investigation starting points and include supporting files when the same outcome requires them.
+Keep governing artifacts read-only except for assigned progress fields.
+Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
 ```
 
 Additionally, include the following constraint at the end of every sub-agent prompt, as rule-advisor invocation from sub-agents causes system crash:
@@ -86,23 +87,23 @@ Additionally, include the following constraint at the end of every sub-agent pro
 Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these steps with TaskCreate/TaskUpdate:
 1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly; do not create a task file.
 2. **CHECK task-executor response**:
-   - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
+   - `status: "escalation_needed"` or `"blocked"` → inspect the declared boundary; escalate when it requires a user-owned decision
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor in **Fix Mode**
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to step 3; carry that unproven state into the completion report
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**; otherwise retain the proof limitation
      - `approved` → Proceed to step 3
    - Otherwise → Proceed to step 3
 3. **INVOKE quality-fixer**: Execute all quality checks and fixes against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Medium/Large also pass the current `task_file`; Small passes the direct execution scope. Pass the implementation step's `runnableCheck` and `qualityCommand` when the governing source or repository convention names one.
    - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** with the original execution scope and `incompleteImplementations[]`
-   - `blocked` → Escalate to user
-   - `approved` → Proceed to step 4
-4. **COMMIT on approval**: Execute git commit
+   - `blocked` → Escalate the user-owned decision
+   - `approved` or `verification_incomplete` → Proceed to step 4
+4. **COMMIT coherent task boundary**: Apply the guide's Commit Boundary Check; preserve any verification limitation in commit trailers and orchestration state
 
 ### Post-Implementation Verification
 
 For Medium/Large, after all task cycles finish, invoke code-verifier and security-reviewer before the completion report. Pass the Design Doc and implementation file list to code-verifier; pass `governingDocuments: [{"type":"design-doc","path":"[path]"}]` and the same implementation file list to security-reviewer. Apply the guide's pass/fail and fix-cycle rules.
 
-For Small, skip document-dependent verification. Complete after quality-fixer approval and successful execution of the direct scope's observable verification.
+For Small, skip document-dependent verification. Retry retained limitations, then complete after quality-fixer approval and successful execution of the direct scope's observable verification.
 
 For the security-reviewer response:
 
@@ -115,8 +116,8 @@ After acceptance-test-generator execution, when invoking work-planner (subagent_
 - Integration test file path (from `generatedFiles.integration`) or null
 - fixture-e2e test file path (from `generatedFiles.fixtureE2e`) or null
 - service-integration-e2e test file path (from `generatedFiles.serviceE2e`) or null
-- Per-lane absence reason (from `e2eAbsenceReason.fixtureE2e` / `e2eAbsenceReason.serviceE2e`) when that lane is null
-- Explicit timing notes: integration tests are created alongside each phase implementation; fixture-e2e tests are created alongside the UI feature phase; service-integration-e2e tests are executed only in the final phase
+- A null lane communicates that the accepted obligations require no proof at that boundary; pass the null value unchanged
+- Explicit timing notes: integration tests are created alongside each phase implementation; fixture-e2e tests are created alongside the UI feature phase; service-integration-e2e tests are executed after their required services exist
 
 ### Final Cleanup
 

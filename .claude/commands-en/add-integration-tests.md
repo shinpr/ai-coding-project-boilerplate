@@ -36,25 +36,15 @@ Execute Skill: documentation-criteria (for task file template in Step 3)
 
 ### Step 1: Discover and Validate Documents
 
-```bash
-# Verify at least one document path was provided
-test -n "$ARGUMENTS" || { echo "ERROR: No document paths provided"; exit 1; }
+Resolve every explicit path in `$ARGUMENTS`, including moved or renamed paths. Then inspect repository documentation locations and metadata for related Design Docs and UI Specs. Conventional `docs/design/` and `docs/ui-spec/` locations are discovery hints rather than required layout.
 
-# Verify provided paths exist
-ls $ARGUMENTS
+Classify discovered documents from their declared scope and content:
+- backend contracts, persistence, or service responsibilities → **Design Doc (backend)**
+- components, UI state, browser behavior, or frontend responsibilities → **Design Doc (frontend)**
+- screen/state/interaction specification responsibility → **UI Spec** (optional)
+- one responsibility with an ambiguous lane → **single-layer Design Doc** (resolve its executor lane from referenced code and repository ownership)
 
-# Discover additional documents
-ls docs/design/*.md 2>/dev/null | grep -v template
-ls docs/ui-spec/*.md 2>/dev/null
-```
-
-Classify discovered documents by filename:
-- Filename contains `backend` → **Design Doc (backend)**
-- Filename contains `frontend` → **Design Doc (frontend)**
-- Located in `docs/ui-spec/` → **UI Spec** (optional)
-- None of the above → **single-layer Design Doc** (layer TBD in gate below)
-
-**[GATE] Present classification results to user as candidates and ask for confirmation before proceeding.** The user may exclude irrelevant documents discovered by the automatic search. If a single-layer Design Doc is detected, ask the user whether it targets backend or frontend to determine correct agent routing.
+Continue with documents explicitly named by the user and semantically related artifacts they reference. Ask for confirmation only when multiple plausible document sets or executor lanes would materially change the generated tests.
 
 ### Step 2: Skeleton Generation
 
@@ -71,8 +61,8 @@ For each Design Doc from Step 1:
 
 **Pre-check**: For each Step 2 invocation result, inspect `generatedFiles.integration`:
 - When `integration` is a path → proceed to task creation for that layer
-- When `integration` is `null` → skip task creation for that layer; record the layer and the generator's `e2eAbsenceReason` (when applicable) for the final report
-- When all layers return `integration: null` → skip Steps 4–7 entirely, report "No integration test skeletons generated for any layer" with each layer's reason, and exit
+- When `integration` is `null` → skip task creation for that layer; no uncovered integration-boundary proof obligation exists
+- When all layers return `integration: null` → skip Steps 4–7 entirely, report that existing or cheaper tests cover the accepted obligations, and exit
 
 Create one task file per layer that has a non-null `integration` path, using the monorepo-flow.md naming convention for deterministic agent routing:
 - Backend Design Doc → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
@@ -143,7 +133,7 @@ Invoke integration-test-reviewer using Agent tool:
 Check Step 5 result, branching on `status`:
 - `approved` → Mark complete, proceed to Step 7
 - `needs_revision` → Apply Review Resolution, re-invoke the routed task-executor in **Fix Mode** with the complete `apply` quality-issue objects, then return to Step 5
-- `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists, return to Step 4 and correct the implementation result. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to Step 7
+- `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the corrected input changes the review target. If the executor produced no readable changed test, return to Step 4 and correct its result; otherwise retain the unproved review for final reporting
 
 Invoke task-executor routed by task filename pattern:
 - `*-backend-task-*` → `subagent_type`: "task-executor"
@@ -159,25 +149,26 @@ Invoke quality-fixer routed by task filename pattern:
 - `description`: "Final quality assurance"
 - `prompt`: "Final quality assurance for the complete current uncommitted worktree. Run all applicable checks. task_file: [task file path]."
 
-**Expected output**: `status` (approved/stub_detected/blocked)
+**Expected output**: `status` (approved/verification_incomplete/stub_detected/blocked)
 
 Check quality-fixer response:
 - `stub_detected` → Return to Step 4 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array, then re-execute Steps 4→5→6→7
-- `blocked` → Escalate to user
-- `approved` → Proceed to Step 8
+- `blocked` → Escalate the user-owned decision reported by quality-fixer
+- `approved` or `verification_incomplete` → Proceed to Step 8
 
 ### Step 8: Commit
 
-On `approved` from quality-fixer:
-- Commit test files with appropriate message using Bash
+Apply the subagents-orchestration-guide Commit Boundary Check and commit the coherent test task. For `verification_incomplete`, add the limitation trailers and retain the structured limitations for retry before completion.
 
 ### Step 9: Final Cleanup
+
+Retry every retained verification limitation whose prerequisite may now be available. A remaining limitation produces a `blocked` completion result naming the unproved test claim and retry condition; committed task checkpoints remain intact.
 
 After all task files have been processed and committed, delete the task files this recipe created. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
 
 - Delete every file matching `docs/plans/tasks/integration-tests-backend-task-*.md` and `docs/plans/tasks/integration-tests-frontend-task-*.md` created during this run
 
-If task files cannot be deleted (filesystem error), report the failure but do not block completion.
+If a filesystem error leaves task files behind, continue completion with that cleanup failure recorded.
 
 ## Scope Boundary for Subagents
 
@@ -185,8 +176,8 @@ Append the following block to every subagent prompt invoked from this recipe:
 
 ```
 Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-New files derived from the requested deliverable are in scope (e.g., test skeleton files specified by the recipe).
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+Deliver the accepted test proof consistently across the repository responsibility that owns it.
+Treat referenced paths as investigation starting points and include supporting test-harness files when the same proof requires them.
+Keep governing artifacts read-only except for assigned progress fields.
+Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
 ```

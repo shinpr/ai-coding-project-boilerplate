@@ -5,11 +5,7 @@ description: Coordinates subagents through scale-based planning, approval, imple
 
 # Sub-agents Practical Guide - Orchestration Guidelines for Claude (Me)
 
-This document provides practical behavioral guidelines for me (Claude) to efficiently process tasks by utilizing subagents.
-
 ## Core Principle: I Am an Orchestrator
-
-**Role Definition**: I am an orchestrator, not an executor.
 
 ### Required Actions
 - **New tasks**: Start with requirement-analyzer, then converge requirements and select the Structural Scale from its evidence
@@ -62,7 +58,7 @@ When any condition applies, record the integrated requirements and restart from 
 I pass **what to accomplish** and **where to work**. Each specialist determines **how to execute** autonomously.
 
 **I pass to specialists** (what/where/constraints):
-- Task file path — executor agents (task-executor, task-decomposer) receive a task file path; broader scope requires explicit user request
+- Task file path — executor agents use it as the outcome and investigation entry point; repository ownership determines the complete consistent change set
 - Target directory or package scope — for discovery/review agents (codebase-analyzer, code-verifier, security-reviewer, integration-test-reviewer)
 - Acceptance criteria and hard constraints from the user or design artifacts
 
@@ -85,7 +81,11 @@ I pass **what to accomplish** and **where to work**. Each specialist determines 
 
 When two specialists conflict, or when a specialist conflicts with my expectation, I apply the precedence order above. I verify against objective repo state (item 3). I follow specialist output when it aligns with items 1 and 2. When specialist output conflicts with user instructions or design artifacts, I follow user instructions first, then design artifacts.
 
-When a specialist returns `blocked`, first repair discoverable input or routing problems within the approved scope. Attempt that repair once. Escalate when the repeat call still returns `blocked`, or when progress requires a user-owned outcome, authority, or irreversible external decision.
+When a specialist returns `blocked`, first repair discoverable input or routing problems from repository evidence and re-invoke it when the repaired input materially changes the call. Escalate only when progress requires a user-owned outcome, authority, or irreversible external decision.
+
+### Specialist Result Acceptance
+
+Branch on the semantic content the specialist declares, accepting equivalent labels and prose when the routing meaning is unambiguous. Require only fields used by the next transition. Before treating a response as blocked, resolve moved paths, available repository facts, and contract-equivalent local choices. Preserve proof limitations as evidence for later retry; approval questions remain reserved for user-owned decisions.
 
 ### Review Resolution
 
@@ -103,11 +103,11 @@ I understand each subagent's responsibilities and assign work appropriately:
 - Overall quality assurance (type check, lint, ALL test execution)
 - Complete execution of quality error fixes
 - Self-contained processing until fix completion
-- Final approved judgment (ONLY after all fixes are complete)
+- Final quality judgment after fixes and every available check complete
 
 ### Standard Flow I Manage
 
-**Basic Cycle**: I manage the 4-step cycle of `task-executor -> escalation judgment/follow-up -> quality-fixer -> commit`.
+**Basic Cycle**: I manage the 4-step cycle of `task-executor -> user-boundary judgment/follow-up -> quality-fixer -> commit boundary check`.
 I repeat this cycle for each task to ensure quality.
 
 **Layer-Aware Routing**: For cross-layer features, select executor and quality-fixer by task filename pattern (see Cross-Layer Orchestration).
@@ -158,21 +158,20 @@ Subagents respond in JSON. Each agent declares its own input and output contract
 | requirement-analyzer | `requestSignals`, `scopeEvidence`, `costEvidence`, `questions` | Converge requirements, assign Structural Scale, and determine whether deeper codebase evidence is required |
 | codebase-analyzer / ui-analyzer | — | Pass the full JSON unchanged to the next specialist; each consumes the fields its own input declaration names |
 | task-executor / task-executor-frontend | `status`, `escalation_type`, `requiresTestReview` | `completed` → continue the cycle. `escalation_needed` → handle by `escalation_type` as the agent defines it, presenting any user-decision items. `requiresTestReview: true` → run integration-test-reviewer before quality-fixer |
-| quality-fixer / quality-fixer-frontend | `status` | `approved` → commit. `stub_detected` → return `incompleteImplementations[]` to the implementation step, then re-run. `blocked` → see quality-fixer Blocked Handling below |
+| quality-fixer / quality-fixer-frontend | `status` | `approved` → commit. `verification_incomplete` → commit with limitation trailers and retain the limitation for final retry. `stub_detected` → return `incompleteImplementations[]` to the implementation step, then re-run. `blocked` → see quality-fixer Result Handling below |
 | document-reviewer | `verdict.decision` | `approved` → proceed. `needs_revision` → run Review Resolution. `rejected` → resolve the governing-source conflict or escalate when user authority is required |
 | integration-test-reviewer | `status` | `approved` → proceed. `needs_revision` → run Review Resolution. `blocked` → repair the invocation once by resolving changed test paths; if no test exists, return that defect to the executor; if it returns `blocked` again, record the review as not run and carry that unproven state into the completion report |
 | code-verifier / security-reviewer | `summary.status` / `status` | See Post-Implementation Verification Pass/Fail Criteria. A security `blocked` raised by an irreversible-operation hazard names the decision it requires and sits outside the agent layer's authority |
 | design-sync | `sync_status` | `CONFLICTS_FOUND` → present the conflicts to the user before proceeding |
-| acceptance-test-generator | per-lane `generatedFiles`, per-lane `e2eAbsenceReason` | Verify each non-null path exists, then pass the per-lane paths and absence reasons to work-planner |
+| acceptance-test-generator | `status`, per-lane `generatedFiles` | Verify each non-null path exists, then pass the per-lane paths to work-planner. A null lane means no uncovered proof obligation required it |
 
 **Cross-agent wiring I own**: ask quality-fixer to inspect the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Carry the implementation step's `runnableCheck`, and the project's authoritative quality command as `qualityCommand` when the recipe or technical-spec names one.
 
-### quality-fixer Blocked Handling
+### quality-fixer Result Handling
 
-When quality-fixer returns `status: "blocked"`, discriminate by `reason`:
-- `"Cannot determine due to unclear specification"` → read `blockingIssues[]` for specification details
-- `"Execution prerequisites not met"` → read `missingPrerequisites[]` with `resolutionSteps` and present to user as actionable next steps
-- `"Quality failure outside current task scope"` → present `outOfScopeFailures[]` and `needsUserDecision` to the user and stop. Re-invoke quality-fixer only when the user expands the task scope to include the failure
+- `blocked` identifies an unresolved product or approved-contract decision. Present `blockingIssues[]` and the exact required input.
+- `verification_incomplete` identifies proof that the current environment could not establish. Retain every `verificationLimitations[]` entry, commit the completed task boundary, and retry the affected checks before final verification.
+- A failure in the same owning responsibility is a fix input even when the original task omitted its path. A verified failure in another responsibility stays in the limitation record.
 
 ## My Basic Flow: Planning and Implementation
 
@@ -260,18 +259,21 @@ A work plan task entry records exactly one lane; task materialization copies tha
 - quality-fixer: Fix authority (automatic quality error fixes)
 
 ### Step 2 Execution Details
-- `status: escalation_needed` or `status: blocked` -> Escalate to user
+- `status: escalation_needed` or `status: blocked` -> inspect the declared user-owned boundary; escalate when it remains unresolved after consulting repository evidence
 - `requiresTestReview` is `true` -> Execute **integration-test-reviewer**
   - If `status` is `needs_revision` -> Apply Review Resolution and re-invoke the routed executor (task-executor or task-executor-frontend per Layer-Aware Agent Routing) in **Fix Mode** with the same `task_file` and the complete `apply` quality-issue objects verbatim
   - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor in **Fix Mode**. If it returns `blocked` again, record the review as not run and proceed to quality-fixer
   - If `status` is `approved` -> Proceed to quality-fixer
 
+### Commit Boundary Check
+
+Apply [references/commit-boundary.md](references/commit-boundary.md) before every task commit. It owns change-set coherence, `verification_incomplete` trailers, retained limitation state, and the final retry condition.
+
 ### Conditions for Stopping Autonomous Execution
 Stop autonomous execution and escalate to user in the following cases:
 
-1. **Escalation from subagent**
-   - When receiving response with `status: "escalation_needed"`
-   - When receiving response with `status: "blocked"`
+1. **User-owned boundary from a subagent**
+   - Accepted behavior, public/shared contract, major approved design, external authority, or irreversible action requires a decision
 
 2. **When requirement change detected**
    - Any match in requirement change detection checklist
@@ -306,7 +308,7 @@ After the selected flow completes, return:
 }
 ```
 
-Set `status` to `completed` only when every required task, quality gate, verifier, and commit step in the selected flow has completed. Set it to `blocked` when an unresolved item prevents the next transition.
+Set `status` to `completed` when every required task, quality gate, verifier, and commit step has completed with final proof. Set it to `blocked` when an unresolved decision or retained proof limitation prevents that final claim.
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
@@ -325,7 +327,7 @@ Set `status` to `completed` only when every required task, quality gate, verifie
    - Convert each subagent's output to next subagent's input format
    - **Always pass deliverables from previous process to next agent**
    - Extract necessary information from structured responses
-   - Compose commit messages from changeSummary -> **Execute git commit with Bash**
+   - Compose commit messages from changeSummary and execute the Commit Boundary Check below
    - Explicitly integrate initial and additional requirements when requirements change
 
    #### convergence record → the agent that carries it
@@ -366,16 +368,16 @@ Set `status` to `completed` only when every required task, quality gate, verifie
 
    **Pass to acceptance-test-generator**: Design Doc path; UI Spec path (if exists).
 
-   **Orchestrator verification**: Every non-null `generatedFiles.<lane>` path exists on disk. For each null lane, `e2eAbsenceReason.<lane>` is present — this is intentional absence, not an error.
+   **Orchestrator verification**: Every non-null `generatedFiles.<lane>` path exists on disk. For each null lane, validate from the Design Doc that accepted obligations are covered at other boundaries.
 
-   **Pass to work-planner**: integration / fixture-e2e / service-integration-e2e file paths (or null per lane), per-lane absence reasons, plus timing guidance — integration tests are created alongside each phase implementation, fixture-e2e tests are created alongside the UI feature phase, service-integration-e2e tests are executed only in the final phase.
+   **Pass to work-planner**: integration / fixture-e2e / service-integration-e2e file paths (or null per lane), plus timing guidance — integration tests are created alongside each phase implementation, fixture-e2e tests are created alongside the UI feature phase, service-integration-e2e tests are executed after their required services exist.
 
-   **On error**: Escalate to user when status != completed and integration file generation failed unexpectedly. A null E2E lane with a valid absence reason is not an error.
+   **On error**: Repair a malformed response or missing emitted path. Escalate when `status: blocked` identifies accepted behavior that remains unresolved after consulting repository artifacts. Treat a null lane as the valid absence of an obligation at that boundary.
 3. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
 ## Important Constraints
 
-- **Quality check**: A commit is permitted after quality-fixer returns `approved`
+- **Quality check**: A task commit is permitted after quality-fixer returns `approved` or `verification_incomplete`; final completion still requires every retained limitation to be retried and resolved
 - **Structured response**: Information passed between subagents uses the declared JSON fields
 - **Approval management**: Document creation is followed by document-reviewer and the named user-approval stop before the next phase
 - **Flow confirmation**: After approval, select the next step from the confirmed large/medium/small flow
@@ -392,8 +394,6 @@ Register overall phases using TaskCreate. Update each phase with TaskUpdate as i
 | code-verifier | `summary.status` is `consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` → Escalate with `blockingReason`; the verifier had no verifiable input |
 | security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` → Escalate the irreversible operation or other named decision outside agent authority |
 
-**Re-run rule**: Run at most 2 fix cycles. After each cycle, re-run the verifiers that returned **fail** and retain the recorded evidence from verifiers that passed. A cycle makes progress only when a previously failing verifier reaches a pass status or its count of named remaining findings decreases. Escalate immediately when a cycle makes no progress or requires external input; after cycle 2, escalate every remaining failure with its findings.
-
-This rule bounds the verifier set. The per-finding correction loop is bounded separately by `references/review-resolution.md` section 3, and whichever limit triggers first escalates.
+**Re-run rule**: After each fix cycle, re-run the verifiers that returned **fail** and retain evidence from verifiers that passed. Continue while the implementation changes in response to evidence and remaining findings become narrower. When the same finding repeats against the same code and evidence, inspect whether it exposes a user-owned decision or an unresolved proof limitation; route that cause explicitly instead of enforcing an arbitrary retry count.
 
 **Fix-cycle handoff**: Apply Review Resolution, then pass each required executor the complete `apply` finding objects verbatim with only their dispositions added. Carry `prior_feedback` to reviewer inputs that support reconciliation.

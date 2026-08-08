@@ -27,13 +27,7 @@ Design Doc (uses most recent if omitted): $ARGUMENTS
 ## Execution Flow
 
 ### Step 1: Prerequisite Check
-```bash
-# Identify Design Doc
-ls docs/design/*.md | grep -v template | tail -1
-
-# Check implementation files
-git diff --name-only main...HEAD
-```
+Resolve the Design Doc from `$ARGUMENTS` first. Otherwise discover the document governing the changed frontend responsibilities from repository metadata, references, and content. Resolve the branch comparison base from its upstream and the repository default branch, then list implementation files from that merge base through `HEAD`.
 
 ### Step 2: Execute code-reviewer
 Invoke code-reviewer using Agent tool:
@@ -79,7 +73,7 @@ Declined: [ID] — [governing reason]
 
 Ask the user for two things only: authority to apply the proposed `apply` set, and a decision on each `user_decision_required` item. For a `user_decision_required` item the user may decide that the code is correct and the Design Doc is stale; those items go to Step 5. When no approved change remains, proceed to Step 10.
 
-**Scope carried into the fix path**: Pass the approved findings, the files and sections they cover, and any size budget the user stated to every agent invoked from Steps 5-9. Before re-validation, map each diff hunk to an approved finding or to a consistency update that finding required; request a scope decision for any unmapped hunk or for a diff that exceeds a stated budget, rather than accepting it as part of the fix.
+**Boundary carried into the fix path**: Pass the approved findings, their observable correction conditions, and any size budget the user stated to every agent invoked from Steps 5-9. Treat finding paths as investigation starting points. Before re-validation, map each diff hunk to a finding or to the same repository responsibility required to make that correction consistent. Keep a different independently executable outcome outside this fix. A user-stated size budget remains a user-owned boundary when the complete correction exceeds it.
 
 ### Step 5: Design-Side Update
 
@@ -96,7 +90,7 @@ Run this step only for `user_decision_required` items the user resolved by ratif
    - `prompt`: "doc_type: DesignDoc. review_context: update. Review updated Design Doc at [path] for consistency and completeness."
    - Run Review Resolution through its correction re-review, escalation, and convergence transitions, using technical-designer-frontend for rerouted corrections. Proceed only at its convergence condition.
 
-3. When multiple Design Docs exist (`ls docs/design/*.md | grep -v template | wc -l > 1`), invoke design-sync:
+3. When another Design Doc governs a responsibility or contract touched by the reviewed changes, invoke design-sync:
    - `subagent_type`: "design-sync"
    - `description`: "Cross-DD consistency check"
    - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
@@ -108,7 +102,7 @@ Run this step only for `user_decision_required` items the user resolved by ratif
 Invoke task-executor-frontend using Agent tool:
 - `subagent_type`: "task-executor-frontend"
 - `description`: "Execute review fixes"
-- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Keep the change within the approved findings and stated total size budget."
+- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Deliver each observable correction consistently across its owning repository responsibility. Respect the stated total size budget."
 
 ### Step 7: Quality Check
 Invoke quality-fixer-frontend using Agent tool:

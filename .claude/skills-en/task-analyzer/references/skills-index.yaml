@@ -139,10 +139,10 @@ skills:
       - "references/e2e-environment-prerequisites.md - E2E environment prerequisites"
     sections:
       - "References"
-      - "Test Types and Limits"
+      - "Test Types and Selection"
       - "Behavior-First Principle"
       - "Skeleton Specification"
-      - "Multi-Step User Journey Definition"
+      - "Test Set Selection"
       - "Implementation Rules"
       - "Review Criteria"
 

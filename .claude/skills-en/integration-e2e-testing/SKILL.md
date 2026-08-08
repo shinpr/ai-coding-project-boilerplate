@@ -1,6 +1,6 @@
 ---
 name: integration-e2e-testing
-description: Designs integration and E2E tests with mock boundaries and behavior verification rules. Use when writing E2E or integration tests.
+description: Selects and designs the smallest integration/E2E test set that proves accepted behavior at an observable boundary. Use when writing or reviewing E2E or integration tests.
 ---
 
 # Integration Test & E2E Test Design/Implementation Rules
@@ -10,36 +10,37 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 - **[references/e2e-design.md](references/e2e-design.md)** - E2E test design principles with Playwright (candidate properties, selection criteria, candidate record)
 - **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** - service-integration-e2e environment prerequisites (seed data, auth fixtures, environment checklist); fixture-e2e requires no live service or real database
 
-## Test Types and Limits
+## Test Types and Selection
 
-| Test Type | Purpose | Scope | External Deps | File Format | Limit per Feature | Implementation Timing |
-|-----------|---------|-------|---------------|-------------|-------------------|----------------------|
-| Integration | Verify component interactions in-process | Partial system integration (in-process modules; for UI components, RTL+MSW for React/TS) | Mocked or in-process | `*.int.test.ts` | MAX 3 | Created alongside implementation |
-| fixture-e2e | Verify UI behavior in a browser with deterministic fixtures | Full UI flow with mocked backend / fixture-driven state | Mocked / fixture only — no live services | `*.fixture-e2e.test.ts` | MAX 3 | Created alongside the UI feature |
-| service-integration-e2e | Verify critical user journeys against a running local stack | Full system across services | Live local services or stubs | `*.service-e2e.test.ts` | MAX 1-2 | Executed only in the final phase |
+| Test Type | Purpose | Scope | External Deps | File Format | Implementation Timing |
+|-----------|---------|-------|---------------|-------------|----------------------|
+| Integration | Verify component interactions in-process | Partial system integration (in-process modules; for UI components, RTL+MSW for React/TS) | Mocked or in-process | `*.int.test.ts` | Created alongside implementation |
+| fixture-e2e | Verify browser behavior with deterministic fixtures | Full UI flow with mocked backend / fixture-driven state | Mocked / fixture only — no live services | `*.fixture-e2e.test.ts` | Created alongside the UI feature |
+| service-integration-e2e | Verify a contract that only a running stack can expose | Full system across services | Live local services or service-level stubs | `*.service-e2e.test.ts` | Executed after the required services exist |
 
 **Lane selection (E2E only)**:
 - Default lane for user-facing UI journeys is **fixture-e2e** — it runs a real browser against deterministic fixtures, catches the bugs that unit/integration tests miss (button no-op, state never updates, navigation breaks), and runs in CI without infrastructure setup
-- Add **service-integration-e2e** only when the journey's correctness depends on real cross-service behavior (data persistence, transactional consistency, external service contracts) that cannot be faked safely
+- Select **service-integration-e2e** when the proof obligation is real cross-service behavior such as data persistence, transactional consistency, or an external service contract
 
-The two E2E lanes are budgeted independently — having a fixture-e2e for a journey does not consume the service-integration-e2e budget and vice versa.
-
-**Critical User Journey**: Features with revenue impact, legal requirements, or daily use by majority of users
+Start from accepted proof obligations, assign each to the cheapest boundary that can expose its failure, remove duplicate coverage, and keep the smallest set that covers every remaining distinct failure. Let those obligations determine the test count. A feature may validly produce no test in a lane.
 
 ## Behavior-First Principle
 
-### Observability Check (All YES = Include)
+### Candidate Evidence
 
-| Check | Question | If NO |
-|-------|----------|-------|
-| Observable | Can user observe the result? | Exclude |
-| System Context | Does it require integration of multiple components? | Exclude |
-| Automatable | Can it run stably in CI environment? | Exclude |
+An integration/E2E candidate states:
 
-### Include/Exclude Criteria
+- an observable result at the boundary named by the accepted behavior;
+- a material failure that crosses the components exercised by the selected lane;
+- an automated harness or controlled environment capable of reproducing that failure.
 
-**Include**: Business logic accuracy, data integrity, user-visible features, error handling
-**Exclude**: External live connections, performance metrics, implementation details, UI layout
+Route behavior observable in isolation to unit/component verification. Record an unavailable controlled environment as a proof prerequisite for service-integration-e2e.
+
+### Candidate Routing
+
+- Keep business-logic accuracy, data integrity, user-visible behavior, and observable error handling in the integration/E2E pool when they require those boundaries.
+- Route pure implementation details and data transformations to unit tests, performance claims to performance verification, and layout-only claims to visual or UI checks.
+- Represent external contracts with service-level stubs or a controlled local service when that contract is the proof target.
 
 ## Skeleton Specification
 
@@ -51,13 +52,13 @@ Each test MUST include the following annotations.
 
 ```typescript
 // AC: "[Acceptance criteria original text]"
-// ROI: [0-120] | Business Value: [0-10] | Frequency: [0-10] | Legal: [0|1] | Defect Detection: [0-10]
 // Behavior: [Trigger] -> [Process] -> [Observable Result]
-// @category: core-functionality | integration | edge-case | ux | fixture-e2e | service-integration-e2e
 // @lane: integration | fixture-e2e | service-integration-e2e
 // @dependency: none | [component names] | full-ui (mocked backend) | full-system
-// @complexity: low | medium | high
 // @real-dependency: [component name] (optional, when Test Boundaries specify non-mock setup)
+// Primary failure mode: [specific regression that must make the implemented test fail]
+// Proof obligation: [boundary and observable state the implemented test must assert]
+// Verification items: [observations that establish the obligation]
 ```
 
 **`@lane` selection rule**:
@@ -72,72 +73,20 @@ Each test MUST include the following annotations.
 // fast-check: fc.property(fc.[arbitrary], (input) => [invariant])
 ```
 
-## Multi-Step User Journey Definition
+## Test Set Selection
 
-A feature qualifies as containing a **multi-step user journey** when ALL of the following are true:
+1. Read the accepted behavior and each recorded proof obligation from the governing artifact or task.
+2. For each obligation, name the material failure that must make a test fail and the observable state that exposes it.
+3. Search existing tests. Reuse coverage only when it exercises the same boundary and would fail for that failure.
+4. Assign the obligation to the narrowest sufficient lane:
+   - unit/component when isolated execution exposes the behavior;
+   - integration for in-process component contracts;
+   - fixture-e2e for browser behavior whose backend may be deterministic;
+   - service-integration-e2e for persistence, transactions, messages, or external contracts whose failure is exposed only through that running boundary.
+5. Merge obligations when one scenario proves them while preserving a clear assertion-to-failure mapping. Keep distinct setup and failure modes in separate scenarios.
+6. Emit only the remaining minimal covering set. Record the accepted behavior, primary failure, proof obligation, selected lane, and mock boundary in each skeleton.
 
-1. **2+ distinct interaction boundaries** are traversed in sequence to complete a user goal. What counts as a boundary depends on the system type:
-   - Web: distinct routes/pages
-   - Mobile native: distinct screens/views
-   - CLI: distinct command invocations or interactive prompts
-   - API: distinct API calls forming a transaction (e.g., create → confirm → finalize)
-2. **State carries across steps** — data produced or actions taken in one step affect what the next step accepts or displays
-3. **The journey has a completion point** — a final state the user or caller reaches (e.g., confirmation page, saved record, API success response, completed workflow)
-
-### User-Facing vs Service-Internal Journeys
-
-Multi-step journeys are classified for reserved-slot eligibility:
-
-| Classification | Condition | Reserved Slot Eligibility | Example |
-|---|---|---|---|
-| **User-facing** | A human user directly triggers and observes the steps (via UI, CLI, or direct API interaction) | Eligible — defaults to **fixture-e2e** reserved slot. Add a service-integration-e2e reserved slot only when the journey's correctness depends on real cross-service behavior | Web checkout flow, CLI setup wizard, mobile onboarding |
-| **Service-internal** | Steps are triggered by backend services without direct user interaction | Not eligible for reserved slot — use integration tests. service-integration-e2e through normal ROI > 50 path is still valid when full-system verification is warranted | Async job pipeline, service-to-service saga, scheduled batch processing |
-
-This classification applies to the reserved-slot rule and the E2E Gap Check. Other selection follows lane-specific ROI rules below.
-
-### ROI Calculation
-
-ROI is used to **rank candidates within the same test type** (integration candidates against each other, E2E candidates against each other). Cross-type comparison is unnecessary because integration and E2E budgets are selected independently.
-
-```
-ROI Score = Business Value × User Frequency + Legal Requirement × 10 + Defect Detection
-              (range: 0–120)
-```
-
-Score inputs use these rules:
-
-| Input | Range | Evidence rule |
-|-------|-------|---------------|
-| Business Value | 0-10 | 0 = no user/business outcome; 10 = revenue, legal, safety, or primary product outcome |
-| User Frequency | 0-10 | Map observed product analytics or sampled telemetry to the range and record the source. Use a named stakeholder estimate only when observed usage is unavailable, label it inferred, and otherwise mark the input unknown |
-| Legal Requirement | 0 or 1 | 1 only when a named requirement, policy, or regulation requires the behavior |
-| Defect Detection | 0-10 | 0 = already proven at a cheaper boundary; 10 = the candidate uniquely detects a material failure at this lane |
-
-Higher ROI Score = higher priority within its test type. No normalization or capping is applied — the raw score is used directly for ranking. Deduplication is a separate step that removes candidates entirely; it does not modify scores. Break score ties by higher Defect Detection, then higher Business Value, then lower environment/maintenance cost.
-
-When a required score input is unknown and could change selection at the lane budget boundary, stop candidate selection and report the exact usage, requirement, or boundary evidence needed. When it cannot change the selected set, record the unknown and continue.
-
-### ROI Thresholds by Lane
-
-The two E2E lanes have very different ownership costs and use independent thresholds.
-
-| Lane | ROI threshold | Rationale |
-|------|---------------|-----------|
-| fixture-e2e | ROI ≥ 20 (beyond reserved slot) | Cost is comparable to integration tests once the harness exists; the floor avoids filling MAX 3 with low-signal tests when fewer would suffice |
-| service-integration-e2e | ROI > 50 (beyond reserved slot) | Creation, execution, and maintenance cost is 3-10× higher than integration; reserve for journeys whose value cannot be proven any other way |
-
-Reserved slot rules apply per lane and override the threshold (the reserved candidate is emitted regardless of its ROI score). Below-floor candidates beyond the reserved slot are not emitted, leaving budget intentionally unfilled rather than padding with low-value tests.
-
-### ROI Calculation Examples
-
-| Scenario | BV | Freq | Legal | Defect | ROI Score | Test Type | Selection Outcome |
-|----------|----|------|-------|--------|-----------|-----------|-------------------|
-| Core checkout UI flow | 10 | 9 | 1 | 9 | 109 | fixture-e2e | Selected by the reserved user-facing journey rule |
-| Core checkout against live payment service | 10 | 9 | 1 | 9 | 109 | service-integration-e2e | Selected because correctness requires real cross-service behavior |
-| Dismiss button updates UI state | 6 | 7 | 0 | 8 | 50 | fixture-e2e | Selected within the fixture-e2e budget |
-| Payment error message display | 5 | 4 | 0 | 7 | 27 | fixture-e2e | Selected as the third and final fixture-e2e budget slot |
-| Optional filter persistence | 4 | 4 | 0 | 6 | 22 | fixture-e2e | Threshold met, but not selected because three higher-scoring candidates fill the MAX 3 budget |
-| Payment retry against real provider | 8 | 3 | 0 | 7 | 31 | service-integration-e2e | Below the service-integration-e2e threshold |
+Select from accepted behavior and repository proof boundaries; product analytics and numerical value estimates are unnecessary. Escalate when the accepted behavior or required contract remains unresolved after consulting governing sources and repository evidence.
 
 ## Implementation Rules
 
@@ -183,13 +132,13 @@ Take the first row that matches the claim under review:
 ### E2E Test Execution Conditions
 
 **fixture-e2e**:
-- Execute alongside the UI feature implementation phase (not deferred to the end)
-- Use mocked backend / fixture-driven state (`@dependency: full-ui (mocked backend)`); no live services required
-- Runs in CI without infrastructure setup
+- Execute alongside the UI feature implementation phase
+- Use mocked backend / fixture-driven state (`@dependency: full-ui (mocked backend)`)
+- Run in CI with the deterministic fixture setup
 
 **service-integration-e2e**:
 - Execute only in the final phase, after all components are implemented and the local stack is up
-- Use real local services or service stubs — no in-process mocks for the components under verification (`@dependency: full-system`)
+- Exercise components under verification through real local services or service-level stubs (`@dependency: full-system`)
 
 ## Review Criteria
 
