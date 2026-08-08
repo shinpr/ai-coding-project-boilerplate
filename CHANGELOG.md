@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.1] - 2026-08-08
+
+### Changed
+
+- **Scale and ADR routing follow decision burden** (skills, agents, commands) — Structural Scale replaces file-count thresholds, and an ADR is created only when a decision point passes both the Choice and Durability filters. Qualifying ADRs are written and reviewed as one batch before the Design Doc. Applied across en/ja.
+- **Reviewers return one routing signal and one correction list** (agents, commands) — `integration-test-reviewer` reports `status` with `qualityIssues` as its only fix list, `security-reviewer` reports `confirmed_risk` and `defense_gap` only, and `code-verifier` reports evidence-backed discrepancies. `/review` presents Review Resolution dispositions instead of a per-finding route choice. Applied across en/ja.
+- **Executors resolve local ambiguity instead of escalating** (agents, commands) — reuse decisions and dependency-version ambiguity are settled and recorded by the executor, missing task files and stale investigation targets resolve the moved path first, and a test review that stays blocked is recorded as not run so the run continues. Applied across en/ja.
+- **Work skills carry criteria, not artifact structure** (skills, agents) — testing and coding skills state self-contained judgment criteria; the agent that reads a Design Doc or UI Spec owns the mapping from its sections. Applied across en/ja.
+
+### Removed
+
+- **Scale escalation conditions and option quotas** (skills) — the enumerated ADR creation conditions, the three-option ADR minimum, and file-count scale bands are gone. Applied across en/ja.
+- **Duplicate routing and unreachable branches** (commands, skills, agents) — the `/review` route table and its c/d/s prompt, `code-verifier`'s `verbose` parameter, and the work-plan Phase 0 branch that no producer creates. Applied across en/ja.
+
 ## [1.27.0] - 2026-08-05
 
 ### Added
