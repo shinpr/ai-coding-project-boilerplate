@@ -7,7 +7,7 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 
 ## References
 
-- **[references/e2e-design.md](references/e2e-design.md)** - E2E test design principles with Playwright (candidate sources, selection criteria, UI Spec mapping)
+- **[references/e2e-design.md](references/e2e-design.md)** - E2E test design principles with Playwright (candidate properties, selection criteria, candidate record)
 - **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** - service-integration-e2e environment prerequisites (seed data, auth fixtures, environment checklist); fixture-e2e requires no live service or real database
 
 ## Test Types and Limits

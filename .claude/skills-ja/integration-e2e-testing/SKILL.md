@@ -7,7 +7,7 @@ description: 統合テストとE2Eテストを設計。モック境界と振る�
 
 ## References
 
-- **[references/e2e-design.md](references/e2e-design.md)** — E2Eテスト設計原則（候補ソース、選定基準、UI Specからのマッピング）
+- **[references/e2e-design.md](references/e2e-design.md)** — E2Eテスト設計原則（候補の性質、選定基準、候補の記録）
 - **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** — service-integration-e2eの環境前提条件（seed data、auth fixture、環境チェックリスト）。fixture-e2eには稼働中のサービスも実データベースも不要
 
 ## テスト種別と上限

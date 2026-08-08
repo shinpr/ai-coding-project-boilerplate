@@ -227,7 +227,7 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 
 **Design Doc作成時のレイヤーコンテキスト指定**:
 - **バックエンド**: 「PRD [パス] からバックエンドDesign Docを作成。コードベース分析: [ステップ8のJSON。バックエンドに関係するエビデンスを使用]。対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」
-- **フロントエンド**: 「PRD [パス] からフロントエンドDesign Docを作成。コードベース分析: [ステップ8のJSON。フロントエンドに関係するエビデンスを使用]。レビュー済みバックエンドDesign Doc [パス] — このドキュメントからAPIコントラクトとIntegration Pointsを抽出し、フロントエンドのIntegration Point Mapに反映する。バックエンドのレビュー issue と処理方針: [ステップ11 document-reviewer の結果とレビュー裁定の記録]。prior_layer_verification: [バックエンドDesign Docに対するcode-verifierのJSON]。エビデンスに裏付けられた discrepancy と `maintained` のレビュー issue のみを不安定な契約として扱う。UI Spec [パス] のコンポーネント構造を参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
+- **フロントエンド**: 「PRD [パス] からフロントエンドDesign Docを作成。コードベース分析: [ステップ8のJSON。フロントエンドに関係するエビデンスを使用]。レビュー済みバックエンドDesign Doc [パス] — このドキュメントからAPIコントラクトとIntegration Pointsを抽出し、フロントエンドDesign Doc の Integration Points に反映する。バックエンドのレビュー issue と処理方針: [ステップ11 document-reviewer の結果とレビュー裁定の記録]。prior_layer_verification: [バックエンドDesign Docに対するcode-verifierのJSON]。エビデンスに裏付けられた discrepancy と `maintained` のレビュー issue のみを不安定な契約として扱う。UI Spec [パス] のコンポーネント構造を参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
 
 **design-sync**: フロントエンドDesign Docをソースとして使用。`docs/design/`内の他のDesign Docを自動検出して比較。
 

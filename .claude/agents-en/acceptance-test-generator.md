@@ -82,6 +82,14 @@ For each valid AC from Phase 1:
    - Legal requirement: true/false
    - Defect detection rate: 0-10 (likelihood of catching bugs)
 
+
+4. **Locate E2E candidates in the governing artifacts** (this agent owns the artifact-to-property mapping; the skill defines the properties):
+   - Design Doc acceptance criteria whose EARS `When` spans multiple screens
+   - UI Spec screen transitions with more than one step
+   - UI Spec state/display rows whose state is reachable only by navigating
+   - UI Spec interaction definitions that depend on browser behavior
+   Use the section names the documentation-criteria templates define. When a section is absent, derive the same properties from what the artifact does record.
+
 **Output**: Candidate pool with ROI metadata
 
 ### Phase 3: ROI-Based Selection (Two-Pass #2)

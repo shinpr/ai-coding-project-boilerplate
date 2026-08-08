@@ -62,7 +62,7 @@ Before service-integration-e2e tests can pass, verify:
 - [ ] Environment variables are set (`E2E_*` prefixed)
 - [ ] External services are either available or stubbed
 
-When the work plan includes dedicated environment setup tasks (Phase 0), follow those tasks. When no setup tasks exist in the plan, address missing prerequisites as part of the test implementation task itself, OR consider whether the verification could move to fixture-e2e instead.
+Address a missing prerequisite as part of the test implementation task itself, or move the verification to fixture-e2e when the behavior under test does not require the live environment.
 
 ## Locator Strategy
 
