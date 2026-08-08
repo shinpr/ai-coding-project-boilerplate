@@ -119,19 +119,15 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  verbose: false
 ```
 
 Note: `code_paths` is intentionally NOT provided. The verifier independently discovers code scope from the document, ensuring independent verification not constrained by scope-discoverer's output.
 
-Read `summary.status` before continuing: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `summary.blockingReason` to the user rather than passing the result on, because its empty `discrepancies` would read downstream as a clean verification.
+Read `summary.status` before continuing: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `blockingReason` to the user rather than passing the result on, because its empty `discrepancies` would read downstream as a clean verification.
 
 **Store output as**: `$STEP_3_OUTPUT`
 
-**Quality Gate**:
-- consistencyScore >= 70 AND verifiableClaimCount >= 20 → proceed to review
-- consistencyScore >= 70 BUT verifiableClaimCount < 20 → re-run verifier (investigation too shallow)
-- consistencyScore < 70 → flag for detailed review
+Pass the complete verifier result to document review. Its discrepancies are evidence to resolve; numeric scoring and claim quotas are not used.
 
 #### Step 4: Review
 
@@ -145,50 +141,19 @@ prompt: |
 
   doc_type: PRD
   target: $STEP_2_OUTPUT
-  mode: composite
-  code_verification: $STEP_3_OUTPUT
-
-  ## Additional Review Focus
-  - Alignment between PRD claims and verification evidence
-  - Resolution recommendations for each discrepancy
-  - Completeness of undocumented feature coverage
+  review_context: reverse-engineer
+  verification_evidence: $STEP_3_OUTPUT
 ```
 
 **Store output as**: `$STEP_4_OUTPUT`
 
 #### Step 5: Revision (conditional)
 
-**Trigger Conditions** (any one of the following):
-- Review status is "Needs Revision" or "Rejected"
-- Critical discrepancies exist in `$STEP_3_OUTPUT`
-- consistencyScore < 70
-
-**Task invocation**:
-```
-subagent_type: prd-creator
-prompt: |
-  Update PRD based on review feedback.
-
-  Operation Mode: update
-  Existing PRD: $STEP_2_OUTPUT
-
-  ## Review Feedback
-  $STEP_4_OUTPUT
-
-  ## Code Verification Results
-  $STEP_3_OUTPUT
-
-  Address each issue by severity:
-  - critical: Must fix — incorrect or missing core behavior
-  - important: Should fix — improves accuracy or completeness
-  - recommended: May fix — stylistic or minor improvements
-```
-
-**Loop Control**: Maximum 2 revision cycles. After 2 cycles, flag for human review regardless of status.
+Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution, pass complete `apply` issue objects verbatim to `prd-creator` in update mode, then rerun Steps 3-4 with `prior_feedback`. For `rejected`, resolve the governing-source conflict or escalate when user authority is required. Follow Review Resolution convergence and escalation conditions.
 
 #### Unit Completion
 
-- [ ] Review status is "Approved" or "Approved with Conditions"
+- [ ] Review verdict is `approved`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units → Phase 2.
@@ -290,12 +255,11 @@ prompt: |
 
   doc_type: design-doc
   document_path: $STEP_7_OUTPUT or $STEP_7_FRONTEND_OUTPUT
-  verbose: false
 ```
 
 Note: `code_paths` is intentionally NOT provided. The verifier independently discovers code scope from the document.
 
-Read `summary.status` before continuing: when it is `blocked`, stop and report `summary.blockingReason` for that Design Doc rather than passing the result to document-reviewer.
+Read `summary.status` before continuing: when it is `blocked`, stop and report `blockingReason` for that Design Doc rather than passing the result to document-reviewer.
 
 **Store output as**: `$STEP_8_OUTPUT`
 
@@ -310,10 +274,9 @@ prompt: |
   Review the following Design Doc considering code verification findings.
 
   doc_type: DesignDoc
-  review_context: as-is
+  review_context: reverse-engineer
   target: $STEP_7_OUTPUT or $STEP_7_FRONTEND_OUTPUT
-  mode: composite
-  code_verification: $STEP_8_OUTPUT
+  verification_evidence: $STEP_8_OUTPUT
 
   ## Parent PRD
   $APPROVED_PRD_PATH
@@ -328,58 +291,11 @@ prompt: |
 
 #### Step 10: Revision (conditional)
 
-**Trigger Conditions** (any one of the following):
-- Review status is "Needs Revision" or "Rejected"
-- Critical discrepancies exist in `$STEP_8_OUTPUT`
-- consistencyScore < 70
-
-**Backend Design Doc revision** (technical-designer):
-```
-subagent_type: technical-designer
-prompt: |
-  Update Design Doc based on review feedback.
-
-  Operation Mode: update
-  Existing Document: $STEP_7_OUTPUT
-
-  ## Review Feedback
-  $STEP_9_OUTPUT
-
-  ## Code Verification Results
-  $STEP_8_OUTPUT
-
-  Address each issue by severity:
-  - critical: Must fix — incorrect or missing core behavior
-  - important: Should fix — improves accuracy or completeness
-  - recommended: May fix — stylistic or minor improvements
-```
-
-**Frontend Design Doc revision** (fullstack, technical-designer-frontend):
-```
-subagent_type: technical-designer-frontend
-prompt: |
-  Update frontend Design Doc based on review feedback.
-
-  Operation Mode: update
-  Existing Document: $STEP_7_FRONTEND_OUTPUT
-
-  ## Review Feedback
-  $STEP_9_OUTPUT
-
-  ## Code Verification Results
-  $STEP_8_OUTPUT
-
-  Address each issue by severity:
-  - critical: Must fix — incorrect or missing core behavior
-  - important: Should fix — improves accuracy or completeness
-  - recommended: May fix — stylistic or minor improvements
-```
-
-**Loop Control**: Maximum 2 revision cycles. After 2 cycles, flag for human review regardless of status.
+Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution and pass complete `apply` issue objects verbatim to `technical-designer` or `technical-designer-frontend` in update mode, then rerun Steps 8-9 with `prior_feedback`. For `rejected`, resolve the governing-source conflict or escalate when user authority is required. Follow Review Resolution convergence and escalation conditions.
 
 #### Unit Completion
 
-- [ ] Review status is "Approved" or "Approved with Conditions"
+- [ ] Review verdict is `approved`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units → Final Report.
@@ -387,8 +303,8 @@ prompt: |
 ## Final Report
 
 Output summary including:
-- Generated documents table (Type, Name, Consistency Score, Review Status)
-- Action items (critical discrepancies, undocumented features, flagged items)
+- Generated documents table (Type, Name, Verification Status, Review Verdict)
+- Resolved, declined, and unresolved findings
 - Next steps checklist
 
 ## Error Handling
@@ -397,5 +313,5 @@ Output summary including:
 |-------|--------|
 | Discovery finds nothing | Ask user for project structure hints |
 | Generation fails | Log failure, continue with other units, report in summary |
-| consistencyScore < 50 | Flag for mandatory human review, do not auto-approve |
-| Review rejects after 2 revisions | Stop loop, flag for human intervention |
+| Verifier returns `blocked` | Stop and report `blockingReason` |
+| Reviewer returns `rejected` | Resolve the governing-source conflict or escalate when user authority is required |

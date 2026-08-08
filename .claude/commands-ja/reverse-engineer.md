@@ -119,19 +119,15 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  verbose: false
 ```
 
 注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見することで、scope-discovererの出力に制約されない独立した検証を実現する。
 
-続行する前に `summary.status` を読む: `blocked` の場合は Input Gate が失敗し何も検証されていないため、結果を渡さず停止して `summary.blockingReason` をユーザーに報告する。空の `discrepancies` は下流でクリーンな検証として読まれてしまうため。
+続行する前に `summary.status` を読む: `blocked` の場合は入力ゲートが失敗し何も検証されていないため、結果を渡さず停止して `blockingReason` をユーザーに報告する。空の `discrepancies` は下流でクリーンな検証として読まれてしまうため。
 
 **出力を保存**: `$STEP_3_OUTPUT`
 
-**品質ゲート**:
-- consistencyScore >= 70 かつ verifiableClaimCount >= 20 → レビューへ進む
-- consistencyScore >= 70 だが verifiableClaimCount < 20 → 検証が浅い、code-verifierを再実行
-- consistencyScore < 70 → 詳細レビュー用にフラグ
+検証結果一式をドキュメントレビューへ渡す。その discrepancy は解消すべきエビデンスであり、数値スコアや主張件数のノルマは用いない。
 
 #### ステップ4: レビュー
 
@@ -145,50 +141,19 @@ prompt: |
 
   doc_type: PRD
   target: $STEP_2_OUTPUT
-  mode: composite
-  code_verification: $STEP_3_OUTPUT
-
-  ## 追加レビュー観点
-  - PRD主張と検証evidenceの整合性
-  - 各不整合に対する解決推奨
-  - 未ドキュメント機能カバレッジの完全性
+  review_context: reverse-engineer
+  verification_evidence: $STEP_3_OUTPUT
 ```
 
 **出力を保存**: `$STEP_4_OUTPUT`
 
 #### ステップ5: 修正（条件付き）
 
-**トリガー条件**（以下のいずれか）:
-- レビューステータスが「Needs Revision」または「Rejected」
-- `$STEP_3_OUTPUT`にクリティカルな不整合が存在
-- consistencyScore < 70
-
-**Task呼び出し**:
-```
-subagent_type: prd-creator
-prompt: |
-  レビューフィードバックに基づきPRDを更新する。
-
-  動作モード: update
-  既存PRD: $STEP_2_OUTPUT
-
-  ## レビューフィードバック
-  $STEP_4_OUTPUT
-
-  ## コード検証結果
-  $STEP_3_OUTPUT
-
-  severity別に対処する:
-  - critical: 必須修正 — 中核的な振る舞いの誤りまたは欠落
-  - important: 推奨修正 — 正確性や完全性の向上
-  - recommended: 任意修正 — 文体や軽微な改善
-```
-
-**ループ制御**: 最大2回の修正サイクル。2サイクル後はステータスに関わらず人間レビュー用にフラグ。
+`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語で `prd-creator` の update モードに渡し、その後 `prior_feedback` を添えてステップ3〜4を再実行する。`rejected` は出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーションする。レビュー裁定の収束条件とエスカレーション条件に従う。
 
 #### ユニット完了
 
-- [ ] レビューステータスが「Approved」または「Approved with Conditions」
+- [ ] レビュー verdict が `approved`
 - [ ] 人間レビュー通過（ステップ0で有効化時）
 
 **次へ**: 次のユニットへ進む。全ユニット完了後 → フェーズ2。
@@ -290,12 +255,11 @@ prompt: |
 
   doc_type: design-doc
   document_path: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
-  verbose: false
 ```
 
 注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見する。
 
-続行する前に `summary.status` を読む: `blocked` の場合は、その Design Doc について停止し `summary.blockingReason` を報告する。document-reviewer に結果を渡さない。
+続行する前に `summary.status` を読む: `blocked` の場合は、その Design Doc について停止し `blockingReason` を報告する。document-reviewer に結果を渡さない。
 
 **出力を保存**: `$STEP_8_OUTPUT`
 
@@ -310,10 +274,9 @@ prompt: |
   コード検証結果を考慮してDesign Docをレビューする。
 
   doc_type: DesignDoc
-  review_context: as-is
+  review_context: reverse-engineer
   target: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
-  mode: composite
-  code_verification: $STEP_8_OUTPUT
+  verification_evidence: $STEP_8_OUTPUT
 
   ## 親PRD
   $APPROVED_PRD_PATH
@@ -328,58 +291,11 @@ prompt: |
 
 #### ステップ10: 修正（条件付き）
 
-**トリガー条件**（以下のいずれか）:
-- レビューステータスが「Needs Revision」または「Rejected」
-- `$STEP_8_OUTPUT`にクリティカルな不整合が存在
-- consistencyScore < 70
-
-**バックエンドDesign Doc修正**（technical-designer）:
-```
-subagent_type: technical-designer
-prompt: |
-  レビューフィードバックに基づきDesign Docを更新する。
-
-  動作モード: update
-  既存ドキュメント: $STEP_7_OUTPUT
-
-  ## レビューフィードバック
-  $STEP_9_OUTPUT
-
-  ## コード検証結果
-  $STEP_8_OUTPUT
-
-  severity別に対処する:
-  - critical: 必須修正 — 中核的な振る舞いの誤りまたは欠落
-  - important: 推奨修正 — 正確性や完全性の向上
-  - recommended: 任意修正 — 文体や軽微な改善
-```
-
-**フロントエンドDesign Doc修正**（fullstack、technical-designer-frontend）:
-```
-subagent_type: technical-designer-frontend
-prompt: |
-  レビューフィードバックに基づきフロントエンドDesign Docを更新する。
-
-  動作モード: update
-  既存ドキュメント: $STEP_7_FRONTEND_OUTPUT
-
-  ## レビューフィードバック
-  $STEP_9_OUTPUT
-
-  ## コード検証結果
-  $STEP_8_OUTPUT
-
-  severity別に対処する:
-  - critical: 必須修正 — 中核的な振る舞いの誤りまたは欠落
-  - important: 推奨修正 — 正確性や完全性の向上
-  - recommended: 任意修正 — 文体や軽微な改善
-```
-
-**ループ制御**: 最大2回の修正サイクル。2サイクル後はステータスに関わらず人間レビュー用にフラグ。
+`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語で `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後 `prior_feedback` を添えてステップ8〜9を再実行する。`rejected` は出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーションする。レビュー裁定の収束条件とエスカレーション条件に従う。
 
 #### ユニット完了
 
-- [ ] レビューステータスが「Approved」または「Approved with Conditions」
+- [ ] レビュー verdict が `approved`
 - [ ] 人間レビュー通過（ステップ0で有効化時）
 
 **次へ**: 次のユニットへ進む。全ユニット完了後 → 最終レポート。
@@ -387,8 +303,8 @@ prompt: |
 ## 最終レポート
 
 以下を含むサマリを出力:
-- 生成ドキュメント表（タイプ、名前、整合性スコア、レビューステータス）
-- アクション項目（クリティカルな不整合、未ドキュメント機能、フラグ項目）
+- 生成ドキュメント表（タイプ、名前、検証ステータス、レビュー verdict）
+- 解消した検出事項・decline した検出事項・未解決の検出事項
 - 次のステップチェックリスト
 
 ## エラーハンドリング
@@ -397,5 +313,5 @@ prompt: |
 |--------|-----------|
 | 発見で何も見つからない | ユーザーにプロジェクト構造のヒントを求める |
 | 生成が失敗 | 失敗をログ、他のユニットで続行、サマリで報告 |
-| consistencyScore < 50 | 必須人間レビュー用にフラグ、自動承認しない |
-| 2回の修正後もレビューが却下 | ループ停止、人間介入用にフラグ |
+| 検証エージェントが `blocked` を返す | 停止して `blockingReason` を報告 |
+| レビュアーが `rejected` を返す | 出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーション |

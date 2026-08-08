@@ -26,7 +26,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 ## 入力パラメータ
 
 - **task_file**（任意）: 検証対象のタスクファイルへのパス。指定された場合、その Operation Verification Methods を、コード・マニフェスト・設定から検出したチェックと併せてタスク固有のチェックとして使用する。
-- **filesModified**（任意）: 上流の実装ステップが現在のタスクで変更したファイルパスのリスト。ステップ1の主要スコープとして、かつ現在の変更境界の根拠として使用する。未指定時は `git diff HEAD` にフォールバックする。
+- **direct_scope**（任意）: タスクファイルが存在しない場合の、確認済みの実行成果・対象パス・検証条件。
 - **runnableCheck**（任意）: 上流の実装ステップから受け取るテスト実行のエビデンス。指定された場合、ステップ3の Substance チェックの一次入力として使う。スキーマ: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。未指定時は、スコープ内のテスト本体を自分で走査して実体性を判定する。
 - **qualityCommand**（任意）: 呼び出し側が把握している場合の、プロジェクトの権威ある品質コマンド（例: technical-spec やリポジトリの規約由来）。指定された場合、ステップ2はまずこれを実行し、これがカバーしないカテゴリについてのみコマンドを検出する。指定がない場合、ステップ2は従来どおりプロジェクト設定からコマンドを検出する。
 
@@ -41,13 +41,7 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 
 ### ステップ1: 未完成実装チェック [BLOCKING — 品質チェック前に必須実行]
 
-変更ファイルのdiffをレビューし、スタブや未完成の実装を検出する。品質チェックの前にこのステップを実行する理由は、未完成のコードに対して品質検証を行っても無駄なサイクルを消費し、誤った結果を生むためである。
-
-**このチェックのスコープ**（優先度順）:
-- **主要スコープ**: オーケストレータが `filesModified`（タスクの書き込みセット、通常は上流の実装ステップのレスポンス）を渡した場合は、それらのファイルのみを対象とする。
-- **フォールバックスコープ**: `filesModified` が未指定の場合、現在の未コミットdiffに対して `git diff HEAD` を使用する。オーケストレータからタスクファイルパスやファイルリストが別途提供された場合はそれらに限定する（例: `git diff HEAD -- file1 file2`）。
-
-以下の指標はスコープ内のファイルにのみ適用する。スコープ外のファイルは本エージェントでのstub検出をスキップしてレビューを通過させる（タスク横断のスコープ管理はオーケストレータが担当）。
+現在の未コミットのワークツリー全体を文脈として確認する。ステージ済み・未ステージの変更、未追跡ファイル、削除、リネームをすべて含める。`stub_detected` を適用するのは、現在の `task_file` または `direct_scope` に属する未完成実装に限る。無関係なユーザー作業や既存のワークツリー変更はこのステータスを左右しない。リポジトリの品質コマンド自体は、プロジェクトのコマンドが定める境界全体で引き続き実行する。品質チェックの前にこのステップを実行する理由は、スコープ内の未完成コードに対して検証を行うと誤った結果を生むためである。
 
 **未完成実装の検出指標**（stub_detected）:
 - `// TODO`, `// FIXME`, `// HACK`, `throw new Error("not implemented")` またはそれに相当する記述
@@ -60,7 +54,7 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 - TODOコメントがあるが、現在のロジックが機能的に正しい関数
 - 期待される動作に合致する正当な空の戻り値やデフォルト値
 
-**未完成実装が見つかった場合**: 即座に停止。品質チェックに進まず `status: "stub_detected"` を返却する（出力フォーマット参照）。
+**未完成実装が見つかった場合**: フェーズ1の結果として `status: "stub_detected"` を返却する（出力フォーマット参照）。品質チェックは実装が完成してから開始する。
 
 **未完成実装が見つからなかった場合**: ステップ2へ進む。
 
@@ -200,7 +194,7 @@ coding-standardsおよびtypescript-testingスキルに従って修正を適用�
 最小例（`blocked` — バリアントC、スコープ外）:
 
 ```json
-{ "status": "blocked", "reason": "Quality failure outside current task scope", "outOfScopeFailures": [{ "command": "npm run type-check", "file": "src/legacy/report.ts", "evidence": "今回の変更前のHEADでも失敗する。filesModifiedにもタスクの確定済みスコープにも含まれない" }], "needsUserDecision": "src/legacy/report.ts の修復を今回のタスクスコープに含めるか確認" }
+{ "status": "blocked", "reason": "Quality failure outside current task scope", "outOfScopeFailures": [{ "command": "npm run type-check", "file": "src/legacy/report.ts", "evidence": "今回の変更前のHEADでも失敗し、かつタスクの確定済みスコープ外" }], "needsUserDecision": "src/legacy/report.ts の修復を今回のタスクスコープに含めるか確認" }
 ```
 
 **処理ルール**（内部）:

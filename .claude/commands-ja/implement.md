@@ -30,17 +30,16 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 
 ### 3. 設計フェーズ
 
-requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + frontend）を示す場合、subagents-orchestration-guideスキルのレイヤー横断オーケストレーションに従い、レイヤー別にDesign Docを作成する。
+オーケストレーターが `scopeEvidence.affectedLayers` からレイヤー横断（backend + frontend）と判断した場合、subagents-orchestration-guideスキルのレイヤー横断オーケストレーションに従う。
 
 ### 4. requirement-analyzer後に停止
 
-他の内容を提示する前に、返された `convergence` オブジェクトに対して requirement-convergence のヒアリングプロトコルを実行する。提示する事実には、アナライザーが出したスコープの事実とコストのバンドを用いる。
+`requestSignals`、`scopeEvidence`、`costEvidence`、`questions` を用いて requirement-convergence のヒアリングを実行する。収束記録と構造スケール（Structural Scale）を判定するのはオーケストレーターである。
 
 ユーザーが質問に回答した時：
-- `convergence` のいずれかのフィールドが `ready` に達していない → ヒアリングの回答を添えてrequirement-analyzerを再実行し、記録を再判定させる。再実行はフィールドごと1回まで
-- 回答が`scopeDependencies.question`のいずれかに該当 → `impact`で規模変更をチェック
-- 規模が変更 → 更新されたコンテキストでrequirement-analyzerを再実行
-- `confidence: "confirmed"` または規模変更なし → 次のステップへ進む
+- 回答を収束記録に記録し、影響を受けたフィールドと構造スケールを再判定する
+- requirement-analyzer を再実行するのは、回答が分析対象または必要なスコープエビデンスを変える場合のみとする
+- 該当する収束フィールドがすべて `ready` または `weak-but-explicit` になったら次のステップへ進む
 
 最終的な `convergence` 記録は、subagents-orchestration-guideスキルの収束記録の受け渡しに従い、各ドキュメント作成ステップへ引き継ぐ。
 
@@ -60,7 +59,7 @@ requirement-analyzerの`crossLayerScope`がレイヤー横断（backend + fronte
 - [ ] 次のステップを明確にした
 - [ ] 停止ポイントを認識した → **全ての停止ポイントでAskUserQuestionを使用**
 - [ ] 各Design Doc作成前にcodebase-analyzerを含めた
-- [ ] 各Design DocレビューでDesign Doc前にcode-verifierを含めた
+- [ ] 各Design Docについて document-reviewer の前に code-verifier を含めた
 - [ ] タスク実行後の4ステップサイクル（task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit）を理解した
 
 **フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで4ステップを管理する
@@ -85,27 +84,30 @@ Escalate when the required fix or investigation falls outside that scope.
 
 ### タスク実行品質サイクル
 subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで以下のステップを管理：
-1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）
+1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small では承認済みの成果・出典・影響パス・検証条件を直接渡し、タスクファイルは作成しない。
 2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `verdict.decision` で分岐する
-     - `needs_revision` → ステップ1 に戻り、同じ `task_file` と `requiredFixes[]` 配列を入力として task-executor を **Fix Mode** で再起動
-     - `blocked` → 停止してユーザーにエスカレーションし、`verdict.reason` とレビュアが確立できなかった review basis を報告する
+   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスと `diffBase: HEAD` を渡す。Medium/Large ではさらに `taskFiles: [現在のタスクファイルパス]` を渡し、Small では直接スコープの検証主張を渡す。その後 `status` で分岐する
+     - `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を逐語で task-executor に渡して **Fix Mode** でステップ1 に戻る
+     - `blocked` → 現在の diff から移動・リネームされたテストパスを解決してレビューを**1回だけ**再実行する。`requiresTestReview: true` にもかかわらず変更されたテストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でステップ1 に差し戻す。再実行でも `blocked` が返る場合は、テストレビュー未実施を `blockingReason` とともに記録してステップ3へ進み、その未証明の状態を完了レポートに引き継ぐ
      - `approved` → ステップ3 へ
    - それ以外 → ステップ3 へ
-3. **quality-fixer を呼び出す**: 全品質チェックと修正を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。`task_file` として現在のタスクファイルパス、`filesModified` として実装ステップの `filesModified` 配列を **必ず渡す**（未完成実装検出を当該タスクの実書き込み集合にスコープする。省略時は quality-fixer が `git diff HEAD` にフォールバックする）。あわせて実装ステップの `runnableCheck` を渡し、substance チェックが上流のエビデンスを再導出せず読めるようにする。また technical-spec またはリポジトリの規約がプロジェクトの権威ある品質コマンドを示している場合は `qualityCommand` を渡し、この実行の全タスクが同一コマンドで検証されるようにする。
-   - `stub_detected` → ステップ1 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor を **Fix Mode** で再起動
+3. **quality-fixer を呼び出す**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して、全品質チェックと修正を実行する（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large では現在の `task_file` も渡し、Small では直接の実行スコープを渡す。実装ステップの `runnableCheck` と、出典ソースまたはリポジトリの規約が権威ある品質コマンドを示している場合は `qualityCommand` を渡す。
+   - `stub_detected` → 元の実行スコープと `incompleteImplementations[]` を渡して task-executor を **Fix Mode** で再起動し、ステップ1 に戻る
    - `blocked` → ユーザーにエスカレーション
    - `approved` → ステップ4 へ
 4. **承認後コミット**: `approved` 確認後 → git commit を実行
 
-### Security Review（全タスク完了後）
+### 実装後検証
 
-全タスクサイクル完了後、完了レポートの前にsecurity-reviewerを実行:
-1. **Agent tool** (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリストを渡す
-2. レスポンスを確認:
-   - `approved` または `approved_with_notes` → 完了レポートへ（notesがあれば含める）
-   - `needs_revision` → 各検出事項にレビュー裁定を適用し、`apply` の検出事項オブジェクトを逐語で載せた明示プロンプト、`requiredFixes[].location` を `file[:line]` として解釈しファイル部分のみ取り出した影響パスの和集合、および観察可能な検証条件を渡して task-executor を **Fix Mode** で起動する。`requiredFixes` には security-reviewer の配列を設定する。続いて quality-fixer、その後 `prior_feedback` を添えて security-reviewer を再実行する。
+Medium/Large では、全タスクサイクル完了後、完了レポートの前に code-verifier と security-reviewer を実行する。code-verifier には Design Doc と実装ファイルリストを渡し、security-reviewer には `governingDocuments: [{"type":"design-doc","path":"[パス]"}]` と同じ実装ファイルリストを渡す。合格/不合格と修正サイクルの規則はガイドに従う。
+
+Small ではドキュメント依存の検証をスキップする。quality-fixer の承認と、直接スコープの観察可能な検証の成功をもって完了とする。
+
+security-reviewer のレスポンス:
+
+   - `approved` → 完了レポートへ
+   - `needs_revision` → 各検出事項にレビュー裁定を適用し、`apply` の検出事項オブジェクトを逐語で、影響パスと観察可能な検証条件とともに渡して task-executor を **Fix Mode** で起動する。続いて quality-fixer、その後 `prior_feedback` を添えて security-reviewer を再実行する。
    - `blocked` → ユーザーにエスカレーション
 
 ### テスト情報の伝達
@@ -118,7 +120,7 @@ acceptance-test-generator実行後、work-planner（subagent_type: "work-planner
 
 ### 最終クリーンアップ
 
-完了レポートの前に、本レシピが消費した実装タスクファイルを削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である。
+Medium/Large でのみ、完了レポートの前に本レシピが消費した実装タスクファイルを削除する。Small ではタスクファイルを作成しない。消費したタスクファイルはレシピ実行間で保持しない一時的な作業状態である。
 
 本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップは、計画書の Executor lane からタスク実体化が生成しうるすべてのタスク命名パターンを対象とする:
 

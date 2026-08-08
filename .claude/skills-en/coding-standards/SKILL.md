@@ -120,7 +120,7 @@ Nearby code is a starting point for investigation. Verify repository-wide usage 
 - Similar functionality found -> Use or extend that implementation when it satisfies the current contract
 - Similar functionality is technical debt -> Repair it when it blocks the current outcome, was caused by the current change, or lies in confirmed scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
 - No similar functionality exists -> Implement new functionality following existing design philosophy
-- Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
+- Record every decision and its rationale in the artifact the current workflow assigns to it
 - **Reference representativeness check**: See "Reference Representativeness" section above for IF-THEN thresholds
 
 ## Debugging Techniques

@@ -16,23 +16,26 @@
 
 ```mermaid
 graph LR
-    A[要件] --> B[規模判定]
-    B -->|小:1-2ファイル| C[実装のみ]
-    B -->|中:3-5ファイル| D[Design Doc→実装]
-    B -->|大:6ファイル以上| E[PRD→ADR→Design Doc→実装]
+    A[要件] --> B[構造スケール]
+    B -->|小: 明白な実装が1つ| C[実装のみ]
+    B -->|中: まとまった成果1つの調整| D[任意のADR→Design Doc→実装]
+    B -->|大: 独立した成果が複数| E[PRD→任意のADR→Design Doc→実装]
 ```
 
 ## /implementコマンドの裏側
 
 ```mermaid
 graph TD
-    Start["/implement 要件"] --> RA["requirement-analyzer 規模判定"]
-    RA -->|小規模| Direct[直接実装]
-    RA -->|中規模| TD["technical-designer Design Doc作成"]
-    RA -->|大規模| PRD["prd-creator PRD作成"]
+    Start["/implement 要件"] --> RA["requirement-analyzer スコープとコストのエビデンス"]
+    RA --> SJ["オーケストレーターによる収束と構造スケール判定"]
+    SJ -->|小規模| Direct[直接実装]
+    SJ -->|中規模| ADR{持続的な選択あり?}
+    SJ -->|大規模| PRD["prd-creator PRD作成"]
     
-    PRD --> ADR["technical-designer ADR作成"]
-    ADR --> TD
+    PRD --> ADR
+    ADR -->|あり| ADRD["technical-designer ADRバッチ"]
+    ADR -->|なし| TD["technical-designer Design Doc作成"]
+    ADRD --> TD
     TD --> WP["work-planner 作業計画書"]
     WP --> TE["task-executor タスク実行"]
     Direct --> QF["quality-fixer 品質チェック"]
@@ -134,13 +137,15 @@ AIに知っておいてほしい情報があれば、スキルとして追加で
 
 # コマンドリファレンス
 
-## 規模判定の基準
+## 構造スケールの基準
 
-| 規模 | ファイル数 | 例 | 生成ドキュメント |
-|------|-----------|-----|-----------------|
-| 小 | 1-2 | バグ修正、リファクタリング | なし |
-| 中 | 3-5 | API追加、レート制限 | Design Doc + 作業計画書 |
-| 大 | 6+ | 認証システム、決済システム | PRD + ADR + Design Doc + 作業計画書 |
+| スケール | 判断負荷 | 生成ドキュメント |
+|---------|---------|-----------------|
+| 小 | まとまった成果が1つで、1つの責務境界の中にリポジトリが支持する明白な経路が1つ | なし |
+| 中 | まとまった成果が1つで、境界をまたいだ調整を伴うか、持続的になりうる選択を含む | Design Doc + 作業計画書。ADRは両フィルタを通過した場合のみ |
+| 大 | 独立して価値を持つ成果が複数あり、それぞれ別個の設計判断を要する | PRD + Design Doc + 作業計画書。ADRは両フィルタを通過した場合のみ |
+
+ファイル数は判断を補助するが、スケールを決定するものではない。
 
 ## 各コマンドの詳細
 
@@ -148,8 +153,8 @@ AIに知っておいてほしい情報があれば、スキルとして追加で
 **用途**: 要件から実装まで全自動
 **引数**: 要件の説明
 **実行内容**:
-1. requirement-analyzerが規模判定
-2. 規模に応じてドキュメント生成
+1. requirement-analyzerがスコープとコストのエビデンスを収集
+2. オーケストレーターが要件を収束させ、構造スケールを割り当て、ドキュメントをルーティング
 3. task-executorが実装
 4. quality-fixerが品質保証
 5. 各タスクごとにコミット
@@ -172,11 +177,10 @@ Agentic Coding（LLMが自律的に判断し、実装タスクを遂行する）
 **用途**: 設計書作成（実装なし）
 **引数**: 設計したい内容
 **実行内容**:
-1. requirement-analyzerが要件分析
-2. PRD作成（大規模時）
-3. ADR作成（技術選択が必要な時）
-4. Design Doc作成
-5. 承認取得で終了
+1. コードベース分析とスコープ確認
+2. 未解決の持続的な選択に対してのみADRバッチを作成
+3. Design Doc作成
+4. 検証・レビュー・承認
 
 ユーザーと対話し、要件を整理し、各種設計書を作成します。実装規模に応じて必要な設計書を決定し、作成・自己レビュー・ユーザーレビュー結果の反映を経て設計書を完成させます。
 `/implement`による設計〜実装の一連のプロセスを採用しない場合に、活用してください。
@@ -282,7 +286,7 @@ Claude Codeのモデルによっては、完了したタスクに自動でチェ
 
 # 実例
 
-## Webhook機能（中規模・4ファイル）
+## Webhook機能（中規模・境界をまたぐ調整が1つ）
 ```bash
 /implement 外部システム連携用Webhook API
 ```
@@ -292,13 +296,13 @@ Claude Codeのモデルによっては、完了したタスクに自動でチェ
 - src/services/retry.service.ts
 - src/controllers/webhook.controller.ts
 
-## 認証システム（大規模・10ファイル以上）
+## 認証システム（大規模・独立して価値を持つ成果が複数）
 ```bash
 /implement JWT認証とRBACシステム
 ```
 **生成物**:
 - docs/prd/auth-system.md
-- docs/adr/auth-architecture.md
+- docs/adr/auth-architecture.md（持続的な選択が残る場合のみ）
 - docs/design/auth-system.md
 - src/auth/以下の実装ファイル群
 

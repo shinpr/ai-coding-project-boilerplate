@@ -29,19 +29,17 @@ Identify the fundamental purpose beyond surface-level work:
 - What is the expected outcome?
 - What could go wrong if we approach this superficially?
 
-### 2. Estimate Task Scale
+### 2. Estimate Structural Scale
 
-File count is one signal, not the deciding rule. Evaluate every axis below and select the highest scale triggered by any observed axis.
+Classify decision burden from the intended outcomes and responsibility boundaries. File count is supporting evidence only.
 
-| Axis | Small | Medium | Large |
-|------|-------|--------|-------|
-| Estimated files | 1-2 | 3-5 | 6+ |
-| Observable outcomes | One behavior | Multiple related behaviors | Multiple independently verifiable outcomes |
-| Contracts/data | No public contract or persisted-data change | Backward-compatible contract change | Breaking contract, schema migration, or persisted-data migration |
-| Boundaries | One local module/component | Multiple modules in one layer | Cross-layer, cross-service, or external-system boundary |
-| Decision risk | Existing pattern applies directly | One bounded technical decision | Architecture, security, compliance, or irreversible operational decision |
+| Scale | Decision burden |
+|-------|-----------------|
+| Small | One coherent outcome, one evident repository-supported implementation within one responsibility boundary, and no unresolved durable choice |
+| Medium | One coherent outcome that coordinates a boundary or contains a potentially durable choice |
+| Large | Multiple independently valuable outcomes that require separate design decisions |
 
-Record which axis determined the final scale. A high file count caused only by mechanical generated-file updates may be reduced when the repository workflow proves the change has one behavior and one verification path; record that evidence in `scaleRationale`.
+A cross-layer implementation can remain Medium when it serves one coherent outcome. A decision point passing both documentation-criteria ADR filters raises the scale to Medium at minimum. Record the evidence that established the outcome and boundary classification in `scaleRationale`.
 
 **Scale affects skill priority:**
 - Larger scale → process/documentation skills more important
@@ -100,9 +98,9 @@ taskAnalysis:
   type: <implementation|fix|refactoring|design|quality|documentation|investigation|migration|operations|security|skill>
   secondaryTypes: [<task-type>, ...]
   scale: <small|medium|large>
-  estimatedFiles: <number>
+  estimatedFiles: <number or unknown>  # Supporting evidence only
   scaleRationale:
-    decidingAxis: <files|outcomes|contracts-data|boundaries|decision-risk>
+    decidingAxis: <outcomes|responsibility-boundaries|durable-choice>
     evidence: <string>
   tags: [<string>, ...]  # Extracted from task description
 
@@ -122,10 +120,10 @@ selectedSkills:
 ## Process Gates
 
 1. **Intent gate**: Proceed to scale estimation when `essence`, primary `type`, and any `secondaryTypes` are recorded. If the requested outcome is ambiguous, record the exact outcome decision required.
-2. **Scale gate**: Proceed to skill matching when every scale axis has observed, inferred, or unknown evidence and `scaleRationale` names the deciding axis.
+2. **Scale gate**: Proceed to skill matching when the outcome and responsibility-boundary evidence is sufficient for Structural Scale and `scaleRationale` names the deciding axis.
 3. **Selection gate**: Finalize when every selected skill exists in `skills-index.yaml`, has a reason tied to the task, and its metadata is copied without invention.
 
-If estimated file count or a material contract/boundary decision is unknown, classify it as `unknown`. Use the highest scale supported by observed evidence; when an unknown could raise the scale and changes the required workflow, stop and request the exact repository evidence or user decision needed.
+When an unknown can change the outcome boundary, ADR qualification, or required workflow, request the exact repository evidence or user decision needed. An unknown file count alone does not block Structural Scale judgment.
 
 ## Skill Selection Priority
 

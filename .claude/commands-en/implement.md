@@ -30,17 +30,16 @@ When continuing existing flow, verify:
 
 ### 3. Design Phase
 
-When requirement-analyzer's `crossLayerScope` indicates cross-layer scope (backend + frontend), follow the Cross-Layer Orchestration section in subagents-orchestration-guide skill for Design Doc creation per layer.
+When the orchestrator determines from `scopeEvidence.affectedLayers` that the work spans backend and frontend, follow the Cross-Layer Orchestration section in subagents-orchestration-guide skill.
 
 ### 4. After requirement-analyzer [Stop]
 
-Run the requirement-convergence hearing protocol on the returned `convergence` object before presenting anything else, using the analyzer's scope facts and cost band as the facts it presents.
+Use `requestSignals`, `scopeEvidence`, `costEvidence`, and `questions` to run the requirement-convergence hearing. The orchestrator judges the convergence record and Structural Scale.
 
 When user responds to questions:
-- If any `convergence` field is below `ready` → Re-execute requirement-analyzer with the hearing answers so the record is re-judged. Re-invoke at most once per field
-- If response matches any `scopeDependencies.question` → Check `impact` for scale change
-- If scale changes → Re-execute requirement-analyzer with updated context
-- If `confidence: "confirmed"` or no scale change → Proceed to next step
+- Record the answer in the convergence record and re-judge the affected field and Structural Scale
+- Re-execute requirement-analyzer only when the answer changes the analysis target or required scope evidence
+- Proceed when every applicable convergence field is `ready` or `weak-but-explicit`
 
 Carry the final `convergence` record into every document-creation step per the convergence-record handoff in subagents-orchestration-guide skill.
 
@@ -85,27 +84,30 @@ Additionally, include the following constraint at the end of every sub-agent pro
 
 ### Task Execution Quality Cycle
 Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these steps with TaskCreate/TaskUpdate:
-1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing)
+1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly; do not create a task file.
 2. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
-   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `verdict.decision`
-     - `needs_revision` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `requiredFixes[]` array as input
-     - `blocked` → STOP and escalate to user, reporting `verdict.reason` and the review basis the reviewer could not establish
+   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
+     - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor in **Fix Mode**
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to step 3; carry that unproven state into the completion report
      - `approved` → Proceed to step 3
    - Otherwise → Proceed to step 3
-3. **INVOKE quality-fixer**: Execute all quality checks and fixes (cross-layer: see Layer-Aware Agent Routing). **Always pass** the current task file path as `task_file` and the implementation step's `filesModified` array as `filesModified` (this scopes the stub-detection step to the task's actual write set; without it, quality-fixer falls back to `git diff HEAD`). Also pass the implementation step's `runnableCheck` so the substance check reads the upstream evidence instead of re-deriving it, and `qualityCommand` when technical-spec or a repo convention names the project's authoritative quality command, so every task in this run is verified by the same command
-   - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
+3. **INVOKE quality-fixer**: Execute all quality checks and fixes against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Medium/Large also pass the current `task_file`; Small passes the direct execution scope. Pass the implementation step's `runnableCheck` and `qualityCommand` when the governing source or repository convention names one.
+   - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** with the original execution scope and `incompleteImplementations[]`
    - `blocked` → Escalate to user
    - `approved` → Proceed to step 4
 4. **COMMIT on approval**: Execute git commit
 
-### Security Review (After All Tasks Complete)
+### Post-Implementation Verification
 
-After all task cycles finish, invoke security-reviewer before the completion report:
-1. **Agent tool** (subagent_type: "security-reviewer") → Pass Design Doc path and implementation file list
-2. Check response:
-   - `approved` or `approved_with_notes` → Proceed to completion report (include notes if present)
-   - `needs_revision` → Apply Review Resolution to every finding, then invoke task-executor in **Fix Mode** with an explicit prompt carrying the `apply` finding objects verbatim, the union of file paths from `requiredFixes[].location` (parsed as `file[:line]`, take only the file part) as the affected paths, and the observable verification condition. Set `requiredFixes` to the security-reviewer array. Follow with quality-fixer, then re-invoke security-reviewer with `prior_feedback`.
+For Medium/Large, after all task cycles finish, invoke code-verifier and security-reviewer before the completion report. Pass the Design Doc and implementation file list to code-verifier; pass `governingDocuments: [{"type":"design-doc","path":"[path]"}]` and the same implementation file list to security-reviewer. Apply the guide's pass/fail and fix-cycle rules.
+
+For Small, skip document-dependent verification. Complete after quality-fixer approval and successful execution of the direct scope's observable verification.
+
+For the security-reviewer response:
+
+   - `approved` → Proceed to completion report
+   - `needs_revision` → Apply Review Resolution to every finding, then invoke task-executor in **Fix Mode** with the `apply` finding objects verbatim, their affected paths, and the observable verification condition. Follow with quality-fixer, then re-invoke security-reviewer with `prior_feedback`.
    - `blocked` → Escalate to user
 
 ### Test Information Communication
@@ -118,7 +120,7 @@ After acceptance-test-generator execution, when invoking work-planner (subagent_
 
 ### Final Cleanup
 
-Before the completion report, delete the implementation task files this recipe consumed. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs.
+For Medium/Large only, before the completion report, delete the implementation task files this recipe consumed. Small creates no task files. The consumed task files are ephemeral working state and are not retained between recipe runs.
 
 This recipe is scale-agnostic and may execute single-layer or multi-layer plans, so cleanup must cover every task naming pattern task materialization can produce from the plan's executor lanes:
 

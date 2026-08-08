@@ -17,14 +17,18 @@ Both lanes typically use Playwright; the difference is whether the backend is mo
 
 E2E candidates target **critical user journeys** that span multiple pages or require real browser interaction. Pick the lane based on whether real services are required for the verification.
 
-### Candidate Sources
+### Candidate Properties
 
-| Source | What to Extract |
-|--------|----------------|
-| **Design Doc ACs** | User journeys with EARS "When" keyword spanning multiple screens |
-| **UI Spec Screen Transitions** | Multi-step flows (e.g., form wizard, checkout) |
-| **UI Spec State x Display Matrix** | Error/empty/loading states requiring browser-level verification |
-| **UI Spec Interaction Definitions** | Complex interactions (drag-drop, keyboard navigation, responsive behavior) |
+An E2E candidate is a behavior with one of these properties, wherever the governing artifact records it:
+
+| Property | What makes it an E2E candidate |
+|----------|-------------------------------|
+| Spans multiple screens | The promised outcome is only observable after a sequence of screen transitions |
+| Requires a real browser | Navigation, cookies, storage, or actual DOM rendering decides the result |
+| State is reachable only by navigating | An error, empty, or loading state that cannot be produced in-process |
+| Interaction is browser-dependent | Drag-drop, keyboard navigation, or responsive behavior |
+
+The agent that reads the governing artifacts maps them to these properties; this skill does not name artifact sections.
 
 ### Selection Criteria
 
@@ -39,14 +43,9 @@ E2E candidates target **critical user journeys** that span multiple pages or req
 - Testing API response handling → in-process API mock + component renderer (MSW + RTL for React/TS)
 - Testing pure data transformations → unit tests
 
-## UI Spec to E2E Test Mapping
+## Candidate Record
 
-When a UI Spec exists, use it as the primary source for E2E test design:
-
-1. **Extract screen transitions** → Each multi-step transition = 1 E2E candidate
-2. **Check state x display matrix** → Error states requiring navigation = E2E candidate
-3. **Review interaction definitions** → Browser-dependent interactions = E2E candidate
-4. **Cross-reference with Design Doc ACs** → Ensure E2E candidates map to acceptance criteria
+Record each candidate in this form so the lane decision and the budget step can consume it.
 
 ### Mapping Template
 

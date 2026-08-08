@@ -136,20 +136,20 @@ Invoke integration-test-reviewer using Agent tool:
 - `description`: "Review test quality"
 - `prompt`: "Review test quality. Test files: [paths from Step 4 testsAdded]. taskFiles: [the same task file path used in Step 4]. diffBase: HEAD. Skeleton files: [layer-specific paths from Step 2 generatedFiles matching current task's layer]"
 
-**Expected output**: `verdict.decision` (approved/needs_revision/blocked), `verdict.reason`, `requiredFixes[]`
+**Expected output**: `status` (approved/needs_revision/blocked), `blockingReason`, and the single `qualityIssues[]` correction list
 
 ### Step 6: Apply Review Fixes
 
-Check Step 5 result, branching on `verdict.decision`:
+Check Step 5 result, branching on `status`:
 - `approved` → Mark complete, proceed to Step 7
-- `needs_revision` → Re-invoke the routed task-executor in **Fix Mode** with the same `task_file` and `requiredFixes[]` (see prompt detail below), then return to Step 5
-- `blocked` → STOP and escalate to user, reporting `verdict.reason` and the review basis the reviewer could not establish. Re-invoke integration-test-reviewer only after the user supplies the missing basis
+- `needs_revision` → Apply Review Resolution, re-invoke the routed task-executor in **Fix Mode** with the complete `apply` quality-issue objects, then return to Step 5
+- `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists, return to Step 4 and correct the implementation result. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to Step 7
 
 Invoke task-executor routed by task filename pattern:
 - `*-backend-task-*` → `subagent_type`: "task-executor"
 - `*-frontend-task-*` → `subagent_type`: "task-executor-frontend"
 - `description`: "Fix review findings"
-- `prompt`: "task_file: [the same task file path used in Step 4]. requiredFixes: [the requiredFixes array from Step 5]. Apply Fix Mode (the task's checkboxes are already `[x]` from Step 4)."
+- `prompt`: "task_file: [the same task file path used in Step 4]. requiredFixes: [complete `apply` quality-issue objects from Step 5, copied verbatim with only their dispositions added]. Apply Fix Mode (the task's checkboxes are already `[x]` from Step 4)."
 
 ### Step 7: Quality Check
 
@@ -157,7 +157,7 @@ Invoke quality-fixer routed by task filename pattern:
 - `*-backend-task-*` → `subagent_type`: "quality-fixer"
 - `*-frontend-task-*` → `subagent_type`: "quality-fixer-frontend"
 - `description`: "Final quality assurance"
-- `prompt`: "Final quality assurance for test files added in this workflow. Run all tests and verify coverage. task_file: [task file path]. filesModified: [extract from the most recent implementation step's response — Step 4 normally, or the union of Step 4 and Step 6 when a fix re-execution ran]."
+- `prompt`: "Final quality assurance for the complete current uncommitted worktree. Run all applicable checks. task_file: [task file path]."
 
 **Expected output**: `status` (approved/stub_detected/blocked)
 

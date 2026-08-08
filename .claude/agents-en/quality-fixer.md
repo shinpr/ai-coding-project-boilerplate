@@ -26,7 +26,7 @@ Executes applicable quality checks, fixes in-scope failures, and reports blocker
 ## Input Parameters
 
 - **task_file** (optional): Path to the task file being verified. When provided, use its Operation Verification Methods as task-specific checks alongside the checks discovered from code, manifest, and configuration.
-- **filesModified** (optional): List of file paths that the upstream implementation step modified for the current task. Used as the primary scope for Step 1 and as evidence of the current change boundary. When absent, Step 1 falls back to `git diff HEAD`.
+- **direct_scope** (optional): Confirmed execution outcome, affected paths, and verification condition when no task file exists.
 - **runnableCheck** (optional): Test execution evidence from the upstream implementation step. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
 - **qualityCommand** (optional): The project's authoritative quality command when the caller knows it (e.g., from technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual.
 
@@ -41,13 +41,7 @@ Use the appropriate run command based on the `packageManager` field in package.j
 
 ### Step 1: Incomplete Implementation Check [BLOCKING — before any quality checks]
 
-Review the diff of changed files to detect stub or incomplete implementations. This step runs before any quality checks because verifying the quality of unfinished code wastes cycles and produces misleading results.
-
-**Scope of this check** (in priority order):
-- **Primary scope**: When the orchestrator passes `filesModified` (the task's write set, typically the upstream implementation step's response), use only those files.
-- **Fallback scope**: When `filesModified` is absent, use `git diff HEAD` for the current uncommitted diff. When a task file path or file list is otherwise provided by the orchestrator, limit the diff to those files (e.g., `git diff HEAD -- file1 file2`).
-
-Apply the indicators below to files within scope only. Files outside the scope go through review without stub-detection in this agent (the orchestrator handles cross-task scope concerns).
+Inspect the complete current uncommitted worktree for context, including staged and unstaged changes, untracked files, deletions, and renames. Apply `stub_detected` only to incomplete implementation that belongs to the current `task_file` or `direct_scope`; unrelated user or pre-existing worktree changes do not determine this status. Repository quality commands still run across the boundary defined by the project command. This step runs before quality checks because verifying unfinished in-scope code produces misleading results.
 
 **Indicators of incomplete implementation** (stub_detected):
 - `// TODO`, `// FIXME`, `// HACK`, `throw new Error("not implemented")` or equivalent
@@ -60,7 +54,7 @@ Apply the indicators below to files within scope only. Files outside the scope g
 - Functions with TODO comments whose current logic is functionally correct
 - Legitimate empty returns or default values that match the expected behavior
 
-**If any incomplete implementation is found**: Stop immediately. Return `status: "stub_detected"` without proceeding to quality checks (see Output Format).
+**If any incomplete implementation is found**: Return `status: "stub_detected"` as the Phase 1 result (see Output Format). Quality checks begin after the implementation is complete.
 
 **If no incomplete implementation is found**: Proceed to Step 2.
 
@@ -199,7 +193,7 @@ Minimal example (`blocked` — Variant B, missing prerequisites):
 Minimal example (`blocked` — Variant C, out of scope):
 
 ```json
-{ "status": "blocked", "reason": "Quality failure outside current task scope", "outOfScopeFailures": [{ "command": "npm run type-check", "file": "src/legacy/report.ts", "evidence": "Fails on HEAD before this change; file absent from filesModified and from the task's confirmed scope" }], "needsUserDecision": "Confirm whether repairing src/legacy/report.ts is in scope for this task" }
+{ "status": "blocked", "reason": "Quality failure outside current task scope", "outOfScopeFailures": [{ "command": "npm run type-check", "file": "src/legacy/report.ts", "evidence": "Fails on HEAD before this change and is outside the task's confirmed scope" }], "needsUserDecision": "Confirm whether repairing src/legacy/report.ts is in scope for this task" }
 ```
 
 **Processing rules** (internal):

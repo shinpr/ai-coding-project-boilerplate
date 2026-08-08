@@ -12,7 +12,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 **「私は作業者ではない。オーケストレーターである。」**
 
 ### 正しい振る舞い
-- 新規タスク: requirement-analyzerから開始し、記録された規模判定結果からフローを選択
+- 新規タスク: requirement-analyzerから開始し、そのエビデンスから要件を収束させ構造スケール（Structural Scale）を選択する
 - フロー実行中: 選択した規模別フローと移行条件に従う
 - 各フェーズ: 宣言された責務が必要な出力と一致するエージェントへ委譲
 - 停止ポイント: 必要なユーザー承認が記録された場合にのみ継続
@@ -22,9 +22,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 ### 初動アクション規則
 
-新しいタスクを受け取ったら、ユーザー要件をrequirement-analyzerに直接渡す。その規模判定結果に基づいてワークフローを決定する。
-
-requirement-analyzer は `convergence` オブジェクトを返す。要件の停止ポイントでその出力に対して requirement-convergence のヒアリングプロトコルを実行し、各ステップの根拠を記録したうえで、回答を添えて requirement-analyzer を再実行して記録を再判定させる。ヒアリングは AskUserQuestion を要するためオーケストレーターが担い、オーケストレーター自身は何も調査しないため分析の後に実行する。
+新しいタスクを受け取ったら、ユーザー要件をrequirement-analyzerに直接渡す。その依頼・スコープ・コスト・質問のエビデンスを用いて要件収束を実行し、構造スケールを割り当てる。どちらの判定もオーケストレーターが持つ。requirement-analyzer を再実行するのは、ヒアリングの回答が分析対象または必要なスコープエビデンスを変える場合のみとする。
 
 ### フロー実行中の要件変更検知
 
@@ -33,7 +31,7 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 - 制約・条件の追加（データ量制限、権限制御など）
 - 技術要件の変更（処理方式、出力形式の変更など）
 
-いずれかに該当する場合は、統合した要件を記録し、requirement-analyzerから再開する。
+いずれかに該当する場合は、統合した要件を記録する。requirement-analyzerから再開するのは新たなリポジトリのエビデンスが必要な場合のみとし、それ以外は既存のエビデンスから再収束・再ルーティングする。
 
 ## 活用できるサブエージェント
 
@@ -45,11 +43,11 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 5. **security-reviewer**: 全タスク完了後のDesign Docおよびプロジェクトのコーディング規約に対するセキュリティ準拠レビュー
 
 ### ドキュメント作成エージェント
-6. **requirement-analyzer**: 要件分析と作業規模判定（WebSearch対応、最新技術情報の調査）
+6. **requirement-analyzer**: 依頼・スコープ・コスト・質問のエビデンスを簡潔に収集
 7. **codebase-analyzer**: 既存コードベースを分析し技術設計への重点的なガイダンスを生成
 8. **prd-creator**: Product Requirements Document作成（WebSearch対応、市場動向調査）
 9. **ui-spec-designer**: PRDとプロトタイプコード（任意）からUI Spec作成（フロントエンド/フルスタック機能）
-10. **technical-designer**: ADR/Design Doc作成（最新技術情報の調査、Property注釈付与）
+10. **technical-designer**: 確認済み要件とリポジトリのエビデンスからADRバッチまたはDesign Docを作成
 11. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
 12. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
 13. **code-verifier**: ドキュメントとコードの整合性を検証。実装前: Design Docの主張を既存コードベースに対して検証。実装後: 実装がDesign Docに準拠しているか検証
@@ -87,7 +85,7 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 
 サブエージェント同士の判断が衝突した場合、またはサブエージェントの出力が期待と異なる場合、上記の優先順位を適用する。リポジトリの客観的状態（3）で検証し、1・2と整合する出力に従う。矛盾がある場合はユーザー指示、次いで設計成果物に従う。
 
-サブエージェントがリポジトリの状態や成果物から実行方法を判断できない場合、blockedステータスでエスカレーションする。その詳細をユーザーに伝える。
+サブエージェントが `blocked` を返した場合、まず承認済みスコープ内で、発見可能な入力や呼び出し方の問題を是正する。是正の試行は1回とする。再度の呼び出しでも `blocked` が返る場合、または前進のためにユーザーが持つ成果・権限・不可逆な外部判断が必要な場合はエスカレーションする。
 
 ### レビュー裁定（Review Resolution）
 
@@ -116,19 +114,17 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 
 **重要**: Sub-agentから他のSub-agentを直接呼び出すことはできない。複数のSub-agentを連携させる場合は、メインAIがオーケストレーターとして動作。
 
-## 規模判定とドキュメント要件
+## 構造スケールとドキュメント要件
 
-以下のファイル数が下限を定める。documentation-criteriaスキルの構造的エスカレーションが、ADR作成条件のいずれかに該当する場合に確定規模と必要ドキュメントの行を引き上げる（引き上げるだけで下げることはない）。
+オーケストレーターは、収束した成果とリポジトリのエビデンスに documentation-criteria を適用する。スケールは判断負荷に従う: 小規模は1つの責務境界の中に明白な実装が1つ、中規模は境界をまたいだ調整または持続的になりうる選択を含み、大規模は別個の設計判断を要する独立した成果を複数含む。ファイル数は補助的なエビデンスにとどまる。
 
-| 規模 | 基準ファイル数 | PRD | ADR | Design Doc | 作業計画書 |
-|------|---------------|-----|-----|------------|-----------|
-| 小規模 | 1-2 | 更新※1 | 不要 | 不要 | 不要 — task-executor が明示プロンプトから実行する |
-| 中規模 | 3-5 | 更新※1 | 条件付き※2 | **必須** | **必須** |
-| 大規模 | 6以上 | **必須**※3 | 条件付き※2 | **必須** | **必須** |
+| スケール | PRD | ADR | Design Doc | 作業計画書 |
+|---------|-----|-----|------------|-----------|
+| 小規模 | プロダクトスコープが変わる場合は更新 | 不要 | 不要 | 不要 — task-executor が明示プロンプトから実行する |
+| 中規模 | プロダクトスコープが変わる場合は更新 | ADRの両フィルタを通過した決定ポイントのみ | **必須** | **必須** |
+| 大規模 | **必須** — 新規作成・更新・リバースPRDのいずれか | ADRの両フィルタを通過した決定ポイントのみ | **必須** | **必須** |
 
-※1: 該当機能のPRDが存在する場合は更新
-※2: アーキテクチャ変更、新技術導入、データフロー変更がある場合
-※3: 新規作成/既存更新/リバースPRD（既存PRDがない場合）
+適格なADRが存在する場合、スケールは最低でも中規模に引き上げられる。適格なADRはすべて1つのバッチとしてレビューし、受理した決定を Design Doc 作成前に `Accepted` にする。
 
 ## 構造化レスポンス仕様
 
@@ -157,17 +153,17 @@ requirement-analyzer は `convergence` オブジェクトを返す。要件の�
 
 | Agent | 分岐に使う信号 | 各値での行動 |
 |---|---|---|
-| requirement-analyzer | `scale`、`adrRequired`、`convergence` | `scale` でフローを選ぶ — 構造的エスカレーションは既に反映済み。`adrRequired` ならADRステップを追加。進む前に `convergence` に対して requirement-convergence ヒアリングを実行 |
+| requirement-analyzer | `requestSignals`、`scopeEvidence`、`costEvidence`、`questions` | 要件を収束させ、構造スケールを割り当て、より深いコードベースのエビデンスが必要かを判断する |
 | codebase-analyzer / ui-analyzer | — | JSON全体をそのまま次の専門エージェントへ渡す。各エージェントは自身の入力宣言が挙げるフィールドを消費する |
 | task-executor / task-executor-frontend | `status`、`escalation_type`、`requiresTestReview` | `completed` → サイクルを継続。`escalation_needed` → エージェントが定義する `escalation_type` に従って処理し、ユーザー判断が要る項目は提示する。`requiresTestReview: true` → quality-fixer の前に integration-test-reviewer を実行 |
 | quality-fixer / quality-fixer-frontend | `status` | `approved` → コミット。`stub_detected` → `incompleteImplementations[]` を実装ステップに戻し再実行。`blocked` → 後述の quality-fixer blockedハンドリング |
-| document-reviewer | `verdict.decision` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`rejected` → エスカレーション。approvedを全スコープの承認として扱う前に、スキップされたチェックの `recommendations` を読む |
-| integration-test-reviewer | `verdict.decision` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`blocked` → `verdict.reason` を添えてエスカレーション。トップレベルの `status` は検証結果の軸であり、ルーティング判断ではない |
+| document-reviewer | `verdict.decision` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`rejected` → 出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーション |
+| integration-test-reviewer | `status` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`blocked` → 変更されたテストパスを解決して呼び出しを1回だけ是正する。テストが存在しない場合はその欠陥を executor へ差し戻す。再度 `blocked` が返る場合はレビュー未実施を記録し、その未証明の状態を完了レポートに引き継ぐ |
 | code-verifier / security-reviewer | `summary.status` / `status` | 「実装後検証の合否基準」を参照。不可逆操作のハザードによる security の `blocked` は必要な判断を名指しし、エージェント層の権限の外にある |
 | design-sync | `sync_status` | `CONFLICTS_FOUND` → 矛盾をユーザーに提示してから進む |
 | acceptance-test-generator | レーン別の `generatedFiles`、レーン別の `e2eAbsenceReason` | null でない各パスの存在を確認し、レーン別のパスと不在理由を work-planner へ渡す |
 
-**オーケストレーターが持つエージェント間の配線**: 実装ステップの `filesModified` と `runnableCheck` を後続の quality-fixer 呼び出しへ引き継ぐ。レシピまたは technical-spec がプロジェクトの正典となる品質コマンドを示している場合は `qualityCommand` として渡す。
+**オーケストレーターが持つエージェント間の配線**: quality-fixer には、未追跡・削除・リネームを含む現在の未コミットのワークツリー全体を調べるよう依頼する。実装ステップの `runnableCheck` を引き継ぎ、レシピまたは technical-spec がプロジェクトの正典となる品質コマンドを示している場合は `qualityCommand` として渡す。
 
 ### quality-fixer blockedハンドリング
 
@@ -178,50 +174,39 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 
 ## 作業計画時の基本フロー
 
-### 大規模（6ファイル以上） - 14ステップ（バックエンド） / 16ステップ（フロントエンド/フルスタック）
+新機能や変更要求を受け取ったら、まず要件のエビデンスを収集し、要件を収束させ、構造スケールを割り当てる。
 
-1. requirement-analyzer → 要件分析 + 既存PRD確認 → requirement-convergence のヒアリングを実施し、回答を添えて requirement-analyzer を再実行 **[停止]**
-2. prd-creator → PRD作成（収束記録を受け取る）
-3. document-reviewer → PRDレビュー **[停止: PRD承認]**
-4. **（フロントエンド/フルスタックのみ）** プロトタイプコードの有無を確認 → ui-spec-designer → UI Spec作成
-5. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
-6. technical-designer → ADR作成（アーキテクチャ/技術/データフロー変更がある場合）
-7. document-reviewer → ADRレビュー（ADR作成時） **[停止: ADR承認]**
-8. codebase-analyzer → コードベース分析（要件分析結果 + PRDパスを入力）
-9. technical-designer → Design Doc作成（codebase-analyzer出力を追加コンテキストとして入力。レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
-10. code-verifier → Design Docを既存コードに対して検証（doc_type: design-doc）
-11. document-reviewer → Design Docレビュー（code-verifier結果をcode_verificationとして入力。レイヤー横断時: Design Doc毎に実行）
-12. design-sync → 整合性検証 **[停止: Design Doc承認]**
-13. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
-14. work-planner → 作業計画書作成
-15. document-reviewer → 作業計画書レビュー（doc_type: WorkPlan。AC/コントラクト/状態のカバレッジをトレースできるようDesign Docのパスを渡す）。`needs_revision` の場合: レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には work-planner を update モードで用いる。`rejected` の場合: ユーザーにエスカレーション。 **[停止: 一括承認]**
-16. task-decomposer → 自律実行 → 完了報告
+### 大規模
 
-### 中規模（3-5ファイル） - 10ステップ（バックエンド） / 12ステップ（フロントエンド/フルスタック）
+1. requirement-analyzer → オーケストレーターによる収束とスケール判定 **[停止]**
+2. prd-creator → document-reviewer → PRD承認 **[停止]**
+3. codebase-analyzer → 簡潔なリポジトリのエビデンス
+4. **（フロントエンド/フルスタックのみ）** ui-spec-designer → document-reviewer → UI Spec承認 **[停止]**
+5. **（ADR決定ポイントが適格な場合）** technical-designer を `ADRBatch` モードで実行 → document-reviewer によるバッチレビュー → 検出事項の裁定 → 受理したADRを `Accepted` にする **[停止]**
+6. technical-designer を `DesignDoc` モードで実行 → code-verifier → document-reviewer → design-sync → Design Doc承認 **[停止]**
+7. acceptance-test-generator → work-planner → document-reviewer → 一括承認 **[停止]**
+8. task-decomposer → 自律実行 → 完了報告
 
-1. requirement-analyzer → 要件分析 → requirement-convergence のヒアリングを実施し、回答を添えて requirement-analyzer を再実行 **[停止]**
-2. **（フロントエンド/フルスタックのみ）** プロトタイプコードの有無を確認 → ui-spec-designer → UI Spec作成（コンポーネント構造が技術設計に反映されるため先に実施）
-3. **（フロントエンド/フルスタックのみ）** document-reviewer → UI Specレビュー **[停止: UI Spec承認]**
-4. codebase-analyzer → コードベース分析（要件分析結果を入力）
-5. technical-designer → Design Doc作成（codebase-analyzer出力を追加コンテキストとして入力。レイヤー横断時: レイヤー別に作成、レイヤー横断オーケストレーション参照）
-6. code-verifier → Design Docを既存コードに対して検証（doc_type: design-doc）
-7. document-reviewer → Design Docレビュー（code-verifier結果をcode_verificationとして入力。レイヤー横断時: Design Doc毎に実行）
-8. design-sync → 整合性検証 **[停止: Design Doc承認]**
-9. acceptance-test-generator → テストスケルトン生成、work-plannerに渡す (*1)
-10. work-planner → 作業計画書作成
-11. document-reviewer → 作業計画書レビュー（doc_type: WorkPlan。AC/コントラクト/状態のカバレッジをトレースできるようDesign Docのパスを渡す）。`needs_revision` の場合: レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には work-planner を update モードで用いる。`rejected` の場合: ユーザーにエスカレーション。 **[停止: 一括承認]**
-12. task-decomposer → 自律実行 → 完了報告
+### 中規模
 
-### 小規模（1-2ファイル） - 2ステップ
+1. requirement-analyzer → オーケストレーターによる収束とスケール判定 **[停止]**
+2. codebase-analyzer → 簡潔なリポジトリのエビデンス
+3. **（フロントエンド/フルスタックのみ）** ui-spec-designer → document-reviewer → UI Spec承認 **[停止]**
+4. **（ADR決定ポイントが適格な場合）** technical-designer を `ADRBatch` モードで実行 → document-reviewer によるバッチレビュー → 検出事項の裁定 → 受理したADRを `Accepted` にする **[停止]**
+5. technical-designer を `DesignDoc` モードで実行 → code-verifier → document-reviewer → design-sync → Design Doc承認 **[停止]**
+6. acceptance-test-generator → work-planner → document-reviewer → 一括承認 **[停止]**
+7. task-decomposer → 自律実行 → 完了報告
 
-1. requirement-analyzer → 要件分析と小規模判定の確定 → requirement-convergence のヒアリングを実施し、回答を添えて requirement-analyzer を再実行 **[停止]**。ヒアリングは全スケールで実行する — `nonGoals` はユーザーが挙げるものであり、どのエージェントも代わりに用意できないためである。構造的エスカレーションで規模が上がった場合は、この時点から中規模のフローへ切り替える。確定した成果、影響パス、検証条件を提示する **[停止: 一括承認]**
-2. task-executor → quality-fixer → commit → 完了報告
+### 小規模
 
-注: 小規模スケールでは作業計画書もタスクファイルも作成しない。実装ステップは task-executor を介して標準の4ステップサイクル（`task-executor → エスカレーション判定 → quality-fixer → commit`）で実行し、確定した成果・出典・影響パス・検証条件を明示プロンプトとして受け取る。オーケストレーターによる直接編集は行わない。
+1. requirement-analyzer → オーケストレーターによる収束とスケール判定。確定した成果、影響パス、検証条件を提示する **[停止: 一括承認]**
+2. その明示プロンプトから task-executor → 現在の未コミットのワークツリー全体に対する quality-fixer → commit → 完了報告
+
+小規模では作業計画書もタスクファイルも作成しない。新たに適格なADRが判明した場合は中規模へ移行し、それ以外では計画ドキュメントを導入しない。
 
 ## レイヤー横断オーケストレーション
 
-requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend + frontend）にまたがると判定した場合、以下の拡張を適用する。ステップ番号は大規模フローに対応する。中規模のcross-layer flowでは、単一のcodebase analysisとDesign Docの区間を、以下と同じbackend先行・frontend後続の順序に置き換える。大規模フローのステップ番号を流用せず、名前付きのPhase移行を使用する。
+オーケストレーターが `scopeEvidence.affectedLayers` から、機能が backend と frontend にまたがると判断した場合、単一のコードベース分析とDesign Docの区間を、以下のbackend先行・frontend後続の順序に置き換える。
 
 ### 設計フェーズの拡張
 
@@ -229,20 +214,20 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
 
 | ステップ | エージェント | 目的 |
 |---------|-----------|------|
-| 8 | codebase-analyzer ×2 | レイヤー別コードベース分析（要件分析結果をレイヤーでフィルタして入力） |
-| 9 | technical-designer | バックエンドDesign Doc（バックエンドcodebase-analyzerコンテキスト付き） |
+| 8 | codebase-analyzer | 確認済みのレイヤー横断スコープ全体を分析する。出典ソースは `prd_path` または `requirements` のちょうど1つを渡す |
+| 9 | technical-designer | バックエンドDesign Doc（ステップ8のうちバックエンドに関係するエビデンスを使用） |
 | 10 | code-verifier | バックエンドDesign Docを既存コードに対して検証（結果JSONはステップ12に`prior_layer_verification`として渡す） |
-| 11 | document-reviewer | バックエンドDesign Docをレビュー（ステップ10の結果を`code_verification`、バックエンドcodebase-analyzer JSONを`codebase_analysis`として入力）**[criticalで停止]** — ここで構造的欠陥が出た場合はステップ12に進めない |
-| 12 | technical-designer-frontend | フロントエンドDesign Doc（フロントエンドcodebase-analyzerコンテキスト + レビュー済みバックエンドDesign Doc + ステップ10の`prior_layer_verification` + UI Spec付き） |
+| 11 | document-reviewer | バックエンドDesign Docをレビュー（ステップ10の結果を`verification_evidence`、ステップ8のJSONを`codebase_analysis`として入力）。`needs_revision` は裁定して解消し、`rejected` では停止する |
+| 12 | technical-designer-frontend | フロントエンドDesign Doc（ステップ8のうちフロントエンドに関係するエビデンス + レビュー済みバックエンドDesign Doc + ステップ10の`prior_layer_verification` + UI Spec） |
 | 13 | code-verifier | フロントエンドDesign Docを既存コードに対して検証 |
-| 14 | document-reviewer | フロントエンドDesign Docをレビュー（ステップ13の結果を`code_verification`、フロントエンドcodebase-analyzer JSONを`codebase_analysis`として入力）**[criticalで停止]** — ここで構造的欠陥が出た場合はステップ15に進めない |
+| 14 | document-reviewer | フロントエンドDesign Docをレビュー（ステップ13の結果と記録した処理方針を`verification_evidence`、ステップ8のJSONを`codebase_analysis`として入力）。`needs_revision` は裁定して解消し、`rejected` ではステップ15の前で停止する |
 | 15 | design-sync | レイヤー間整合性検証 **[停止]** |
 
-`codebase-analyzer ×2` の呼び出しは並列実行可能。バックエンド経路（ステップ9〜11）はステップ12の前に直列で完了させる。これによりフロントエンドdesignerは、document-reviewerによって構造的欠陥（AC欠落、Fact Disposition Tableの不備、Verification Strategy欠落）が既に検出され、code-verifierによってコード/ドキュメント不整合が既に列挙された状態のバックエンドDesign Docを読む。フロントエンドdesignerは `prior_layer_verification.discrepancies[]` とステップ11のレビュー指摘から、既知の問題を持つバックエンド契約を識別し、不安定な契約面を迂回した設計ができる（統合点を安定した契約へ切り替える、または依存を「## Cross-Layer Assumptions」に記録する）。
+ステップ8は1回だけ実行し、そのJSON全体を両方のdesignerがそのまま再利用する。各designerは自身のレイヤーに関係するエビデンスを消費する。バックエンド経路（ステップ9〜11）はステップ12の前に直列で完了させる。これによりフロントエンドdesignerは、リポジトリ上の検証結果とレビュー済みのバックエンド契約の両方を受け取る。
 
 **Design Doc作成時のレイヤーコンテキスト指定**:
-- **バックエンド**: 「PRD [パス] からバックエンドDesign Docを作成。コードベース分析: [バックエンドレイヤー用codebase-analyzerのJSON]。対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」
-- **フロントエンド**: 「PRD [パス] からフロントエンドDesign Docを作成。コードベース分析: [フロントエンドレイヤー用codebase-analyzerのJSON]。レビュー済みバックエンドDesign Doc [パス] — このドキュメントからAPIコントラクトとIntegration Pointsを抽出し、フロントエンドのIntegration Point Mapに反映する。バックエンドレビュー指摘: [ステップ11 document-reviewerのcritical/important項目があればそれ]。prior_layer_verification: [バックエンドDesign Docに対するcode-verifierのJSON]。`prior_layer_verification.discrepancies[]`とレビュー指摘から不安定なバックエンド契約を識別する。検証済みと見なせる主張は検証結果JSONに明示されているものに限定する。未検証のまま依存せざるを得ない契約は、「## Cross-Layer Assumptions」セクションに正当化と検証先を記載する。UI Spec [パス] のコンポーネント構造を参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
+- **バックエンド**: 「PRD [パス] からバックエンドDesign Docを作成。コードベース分析: [ステップ8のJSON。バックエンドに関係するエビデンスを使用]。対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」
+- **フロントエンド**: 「PRD [パス] からフロントエンドDesign Docを作成。コードベース分析: [ステップ8のJSON。フロントエンドに関係するエビデンスを使用]。レビュー済みバックエンドDesign Doc [パス] — このドキュメントからAPIコントラクトとIntegration Pointsを抽出し、フロントエンドDesign Doc の Integration Points に反映する。バックエンドのレビュー issue と処理方針: [ステップ11 document-reviewer の結果とレビュー裁定の記録]。prior_layer_verification: [バックエンドDesign Docに対するcode-verifierのJSON]。エビデンスに裏付けられた discrepancy と `maintained` のレビュー issue のみを不安定な契約として扱う。UI Spec [パス] のコンポーネント構造を参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
 
 **design-sync**: フロントエンドDesign Docをソースとして使用。`docs/design/`内の他のDesign Docを自動検出して比較。
 
@@ -275,9 +260,9 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
 ### Step 2 実行詳細
 - `status: escalation_needed` または `status: blocked` → ユーザーにエスカレーション
 - `requiresTestReview` が `true` → **integration-test-reviewer** を実行
-  - `verdict.decision` が `needs_revision` → ルーティング先の executor（レイヤー別エージェントルーティング 参照、task-executor または task-executor-frontend）を **Fix Mode** で再実行（同じ `task_file` と `requiredFixes[]` を渡す）
-  - `verdict.decision` が `blocked` → レビュアが示したブロッキング理由と、確立できなかった review basis を添えてユーザーにエスカレーション。その basis がユーザーから供給された後にのみレビュアを再実行する
-  - `verdict.decision` が `approved` → quality-fixer へ進む
+  - `status` が `needs_revision` → レビュー裁定を適用し、同じ `task_file` と `apply` の quality-issue オブジェクト一式を逐語で渡して、ルーティング先の executor（レイヤー別エージェントルーティング 参照、task-executor または task-executor-frontend）を **Fix Mode** で再実行する
+  - `status` が `blocked` → 移動・リネームされた変更テストパスを解決してレビュアを1回だけ再実行する。`requiresTestReview: true` にもかかわらず変更されたテストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でルーティング先の executor に差し戻す。再実行でも `blocked` が返る場合はレビュー未実施を記録して quality-fixer へ進む
+  - `status` が `approved` → quality-fixer へ進む
 
 ### 自律実行の停止条件
 
@@ -289,7 +274,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
 
 2. **要件変更検知時**
    - 要件変更検知チェックリストで1つでも該当
-   - 自律実行を停止し、requirement-analyzerに統合要件で再分析
+   - 自律実行を停止し、統合した要件で再収束する。requirement-analyzer の再実行はリポジトリのエビデンスが変わる必要がある場合のみ
 
 3. **work-planner更新制限に抵触時**
    - task-decomposer開始後の要件変更は全体再設計が必要
@@ -325,7 +310,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
 - description: "コードベース分析"
-- prompt: "requirement_analysis: [要件分析のJSON]. prd_path: [存在する場合はパス]. requirements: [元のユーザー要件]. 既存コードベースを分析し設計ガイダンスを生成してください。"
+- prompt: "出典ソースはちょうど1つ渡す: prd_path: [承認済みPRDのパス]、または requirements: [確認済み要件の原文]。設計のための簡潔なリポジトリのエビデンスを収集してください。"
 
 ### Call Example (code-verifier — 設計フロー)
 - subagent_type: "code-verifier"
@@ -344,7 +329,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
 
    #### 収束記録 → それを引き継ぐエージェント
 
-   **渡すもの**: 最後の requirement-analyzer 実行が返した `convergence` オブジェクト（requirement-analyzer を持たないフローでは、オーケストレーター自身が判定した記録）を、それを引き継ぐエージェントへ渡す。内容は変更せずに渡し、各フィールドの readiness ラベルも一緒に運ぶ。
+   **渡すもの**: オーケストレーターが判定した `convergence` 記録を、それを引き継ぐエージェントへ渡す。内容は変更せずに渡し、各フィールドの readiness ラベルも一緒に運ぶ。
    - **prd-creator**（PRDを新規作成または更新する場合）: `outcome` を `成功基準` へ、`nonGoals` と `speculative` 要件を origin `user` として `Future` / `Out of Scope` へ永続化する
    - **technical-designer / technical-designer-frontend**: PRDがない場合は同じ内容を Design Doc の `Requirement Convergence` へ永続化し、`weak-but-explicit` のまま残ったフィールドは常にそこへ記録する
    - **ui-spec-designer**（フロントエンド/フルスタック）: `nonGoals` と `speculative` 要件を、UI Specが対象に含めない機能・能力として扱う
@@ -352,7 +337,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
 
    #### codebase-analyzer → technical-designer
 
-   **codebase-analyzerへの入力**: 要件分析JSON出力（`convergence` を含む）、PRDパス（存在する場合）、元のユーザー要件
+   **codebase-analyzerへの入力**: 出典ソースちょうど1つ — 承認済みPRDが存在する場合はそのパス、存在しない場合は確認済み要件
    **technical-designerへの入力**: codebase-analyzerのJSON出力をDesign Doc作成プロンプトの追加コンテキストとして渡す。必須の使い道:
    - `focusAreas` → Fact Disposition Tableの正典となるdisposition targetリスト（各focusAreaを1行に展開し、`fact_id`と`evidence`をそのまま引き継ぐ）
    - `dataModel`、`dataTransformationPipelines`、`qualityAssurance` → 「既存コードベース分析」「検証戦略」の各セクションに反映
@@ -360,7 +345,7 @@ requirement-analyzerが`crossLayerScope`によって複数レイヤー（backend
    #### code-verifier → document-reviewer（Design Docレビュー）
 
    **code-verifierへの入力**: Design Docパス（doc_type: design-doc）。`code_paths`は指定を省略する — verifierがドキュメントからコードスコープを独自に発見する。
-   **document-reviewerへの入力**: code-verifierのJSON出力を`code_verification`として、designerに渡したものと同じcodebase-analyzerのJSONを`codebase_analysis`として渡す。加えて、要件が手元にある場合は、要件（改訂時は今回の変更要求）を`requirements_verbatim`、確認済みスコープとユーザー判断を`confirmed_decisions`として渡す。reviewerは`codebase_analysis.focusAreas`でFact Disposition Tableのカバレッジを検証し、対となる要件入力でAdopted design validityを検証する。対のうち一方だけを渡した場合は`rejected`が返る。
+   **document-reviewerへの入力**: 最新のcode-verifier結果と記録したレビュー裁定の処理方針をあわせて`verification_evidence`として、designerに渡したものと同じcodebase-analyzerのJSONを`codebase_analysis`として、出典ソースを`confirmed_requirement_context`として渡す。該当する場合は元の依頼を`requirements_verbatim`として渡す。reviewerは`codebase_analysis.focusAreas`でFact Disposition Tableのカバレッジを検証し、確認済み要件のコンテキストでドキュメントの成果と契約を検証する。
 
    #### code-verifier + document-reviewer → 次レイヤーのtechnical-designer（レイヤー横断フロー時のみ）
 
@@ -403,8 +388,8 @@ TaskCreateで全体フェーズを登録。各フェーズ完了時にTaskUpdate
 
 | Verifier | Pass | Fail | Blocked |
 |----------|------|------|---------|
-| code-verifier | `summary.status`が`consistent`または`mostly_consistent` | `summary.status`が`needs_review`または`inconsistent` | `summary.status`が`blocked` → `summary.blockingReason`を添えてユーザーにエスカレーション（検証可能な入力がなかったため、修正サイクルでは解消できない） |
-| security-reviewer | `status`が`approved`または`approved_with_notes` | `status`が`needs_revision` | `status`が`blocked` → ユーザーにエスカレーション |
+| code-verifier | `summary.status`が`consistent` | `summary.status`が`needs_review`または`inconsistent` | `summary.status`が`blocked` → `blockingReason`を添えてエスカレーション。検証可能な入力がなかった状態である |
+| security-reviewer | `status`が`approved` | `status`が`needs_revision` | `status`が`blocked` → 不可逆操作、またはエージェントの権限外として名指しされた判断をエスカレーション |
 
 **再実行ルール**: 修正サイクルは最大2回とする。各サイクル後に**Fail**を返した検証エージェントを再実行し、Passした検証エージェントの記録済み証跡は維持する。以前Failだった検証エージェントがPassになるか、名前付きの残存指摘件数が減った場合にのみ進捗ありと判定する。進捗がない、または外部入力が必要な場合は直ちにエスカレーションする。2回目のサイクル後は、残るすべての不合格を指摘内容とともにエスカレーションする。
 

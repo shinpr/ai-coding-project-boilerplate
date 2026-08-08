@@ -7,7 +7,7 @@ description: Designs integration and E2E tests with mock boundaries and behavior
 
 ## References
 
-- **[references/e2e-design.md](references/e2e-design.md)** - E2E test design principles with Playwright (candidate sources, selection criteria, UI Spec mapping)
+- **[references/e2e-design.md](references/e2e-design.md)** - E2E test design principles with Playwright (candidate properties, selection criteria, candidate record)
 - **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** - service-integration-e2e environment prerequisites (seed data, auth fixtures, environment checklist); fixture-e2e requires no live service or real database
 
 ## Test Types and Limits
@@ -43,9 +43,9 @@ The two E2E lanes are budgeted independently — having a fixture-e2e for a jour
 
 ## Skeleton Specification
 
-### Required Comment Format
+### Required Skeleton Format
 
-The committed skeleton imports only the test framework (for `describe`/`it`/`it.todo`). The implementing task adds the module under test after that module exists, so gates that type-check, compile, or load test files can run successfully before implementation begins.
+A committed file matching the project's test include pattern must remain valid to its runner. Use the detected framework's smallest pending suite (`describe` plus `it.todo`, or its equivalent), with only the test-framework import and the required comments. The implementing task replaces pending cases and adds application imports, assertions, fixtures, and mock setup alongside implementation.
 
 Each test MUST include the following annotations.
 
@@ -209,7 +209,6 @@ Take the first row that matches the claim under review:
 | AAA Structure | Arrange/Act/Assert separation unclear |
 | Independence | State sharing between tests, execution order dependency |
 | Reproducibility | Depends on date/random, results vary |
-| Readability | Test name and verification content don't match |
 
 ### Route Parity for Shared Mutations
 

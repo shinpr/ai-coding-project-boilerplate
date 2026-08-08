@@ -62,7 +62,7 @@ When the decision flow above created the work plan from a Design Doc, review it 
 1. Invoke document-reviewer using Agent tool:
    - `subagent_type`: "document-reviewer"
    - `description`: "Work plan review"
-   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [the Design Doc path]. Review the Work Plan's own Implementation Scope, tasks, Completion Criteria, dependencies, execution order, exact source-anchor existence, executable verification. Confine findings and recommendations to content the target itself cites; Governing Documents paths supply citation locations only."
+   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md. Review the Work Plan's own Implementation Scope, tasks, Completion Criteria, dependencies, execution order, exact source-anchor existence, and executable verification. Resolve governing sources from the target's Governing Documents."
 2. Branch on the reviewer's `verdict.decision`:
    - `needs_revision` → run Review Resolution through its correction re-review, escalation, and convergence transitions, using work-planner in update mode for rerouted corrections; proceed only at its convergence condition
    - `rejected` → stop before task materialization and escalate to the user
@@ -108,12 +108,12 @@ For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke the **Agent tool** (subagent_type: "task-executor-frontend") → Pass task file path in prompt, receive structured response
 2. **BRANCH ON EXECUTOR RESULT**:
    - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
-   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `verdict.decision`
-     - `needs_revision` → Return to step 1 and re-invoke task-executor-frontend in **Fix Mode** by passing the same `task_file` and the `requiredFixes[]` array as input
-     - `blocked` → STOP and escalate to user, reporting `verdict.reason` and the review basis the reviewer could not establish
+   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `status`
+     - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor-frontend in **Fix Mode**
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to step 3; carry that unproven state into the completion report
      - `approved` → Proceed to step 3
    - `readyForQualityCheck: true` → Proceed to step 3
-3. **QUALITY-FIX**: Invoke quality-fixer-frontend to execute all quality checks and fixes. **Always pass** the current task file path as `task_file` and the implementation step's `filesModified` array as `filesModified` (this scopes the stub-detection step to the task's actual write set; without it, quality-fixer falls back to `git diff HEAD`). Also pass the implementation step's `runnableCheck` so the substance check reads the upstream evidence instead of re-deriving it, and `qualityCommand` when frontend-technical-spec or a repo convention names the project's authoritative quality command, so every task in this run is verified by the same command. Then branch on its response:
+3. **QUALITY-FIX**: Invoke quality-fixer-frontend against the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Pass the current `task_file`, the implementation step's `runnableCheck`, and `qualityCommand` when frontend-technical-spec or a repository convention names one. Then branch on its response:
    - `stub_detected` → Return to step 1 and re-invoke task-executor-frontend in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
    - `blocked` → STOP and escalate to user (discriminate by `reason` per quality-fixer blocked handling in subagents-orchestration-guide)
    - `approved` → Proceed to step 4
@@ -140,16 +140,13 @@ After all task cycles finish, run verification agents **in parallel** before the
 
 1. **Invoke both in parallel** using Agent tool:
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list (`git diff --name-only main...HEAD`)
-   - security-reviewer (subagent_type: "security-reviewer") → Design Doc path and implementation file list
+   - security-reviewer (subagent_type: "security-reviewer") → `governingDocuments: [{"type":"design-doc","path":"[path]"}]` and implementation file list
 
 2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
 
 3. **Fix cycle** (when any verifier failed, max 2 cycles):
-   - Apply Review Resolution to every actionable finding, then **normalize verifier outputs** into a unified `requiredFixes[]` before invoking task-executor-frontend. Forward each `apply` finding object verbatim with only its disposition added:
-     - `security-reviewer.requiredFixes[]` (already `{location, issue, fix}`) → pass through as-is.
-     - `code-verifier.discrepancies[]` → convert each actionable discrepancy (status `drift` / `gap` / `conflict`) to `{location: discrepancy.codeLocation, issue: discrepancy.claim, fix: "[specific correction needed to restore Design Doc consistency, derived from discrepancy.classification and evidence]"}`.
-     - When a `discrepancy.codeLocation` is `null` (claim is unimplemented), set `location` to the planned target file path. If no target file can be determined, escalate to user instead of invoking Fix Mode.
-   - Invoke task-executor-frontend in **Fix Mode** with an explicit prompt naming the affected paths and the observable verification condition, and `requiredFixes` set to the normalized array. No fix task file is created — the finding objects are the execution scope.
+   - Apply Review Resolution to every actionable finding. Pass each `apply` finding object to task-executor-frontend verbatim with only its disposition added. When a discrepancy has no actionable target path, escalate rather than inventing one.
+   - Invoke task-executor-frontend in **Fix Mode** with the affected paths, observable verification condition, and the unchanged finding objects. No fix task file is created.
    - Then quality-fixer-frontend, then re-run only the failed verifiers.
    - If still failing after 2 cycles → Escalate to user with remaining findings
 

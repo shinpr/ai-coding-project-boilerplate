@@ -216,10 +216,10 @@ Both were built using the default `/implement` workflow — no manual agent orch
 
 ```mermaid
 graph LR
-    A[Requirements] --> B[Scale Detection]
+    A[Requirements] --> B[Structural Scale]
     B -->|Small| C[Direct Implementation]
-    B -->|Medium| D[Design → Implementation]
-    B -->|Large| E[PRD → Design → Implementation]
+    B -->|Medium| D[Optional ADR → Design → Implementation]
+    B -->|Large| E[PRD → Optional ADR → Design → Implementation]
 
     C --> F[Quality Check → Commit]
     D --> F

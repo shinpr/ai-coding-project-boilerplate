@@ -51,7 +51,7 @@ For shared components, custom hooks, and utilities reused across features, cover
 
 3. **Cross-functional Verification in E2E Tests**
    - Mandatory verification of impact on existing features when adding new features
-   - Cover integration points classified as "High" and "Medium" in the Design Doc's "Integration Point Map"; when no Design Doc exists, classify an integration point as High when failure breaks a primary user journey or contract, and Medium when failure degrades a secondary observable behavior
+   - Classify each integration point: High when failure breaks a primary user journey or contract, Medium when failure degrades a secondary observable behavior. Cover High and Medium
    - Verification pattern: Existing feature operation -> Enable new feature -> Verify continuity of existing features
    - Success criteria: Preserve the displayed content and interaction behavior named by the source acceptance criteria; apply a rendering-time threshold only when project configuration or a requirement defines its value and measurement method
    - Designed for automatic execution in CI/CD pipelines

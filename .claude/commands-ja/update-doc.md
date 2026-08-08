@@ -131,7 +131,7 @@ prompt: |
 ```
 
 
-続行する前に `summary.status` を読む: `blocked` の場合は Input Gate が失敗し何も検証されていないため、結果を渡さず停止して `summary.blockingReason` をユーザーに報告する。空の `discrepancies` は下流でクリーンな検証として読まれてしまうため。
+続行する前に `summary.status` を読む: `blocked` の場合は入力ゲートが失敗し何も検証されていないため、document-reviewer に結果を渡さず停止して `blockingReason` をユーザーに報告する。空の `discrepancies` はクリーンな検証として読まれてしまうため。
 
 **出力を保存**: `$CODE_VERIFICATION_OUTPUT`
 
@@ -142,13 +142,13 @@ description: "更新されたドキュメントをレビュー"
 prompt: |
   以下の更新されたドキュメントをレビューする。
 
-  doc_type: [DesignDoc / PRD / ADR]
+  doc_type: [DesignDoc / PRD / ADRBatch]
   review_context: update
-  target: [ステップ1のパス]
-  mode: composite
+  target: [ステップ1のパス]（DesignDoc または PRD）
+  targets: [[ステップ1のパス]]（ADRBatch のみ）
   requirements_verbatim: [ステップ3の変更要求（原文）]（Design Docのみ）
-  confirmed_decisions: [ステップ3で確認した変更内容の理解]（Design Docのみ）
-  code_verification: $CODE_VERIFICATION_OUTPUT（Design Docのみ、PRD/ADRでは省略）
+  confirmed_requirement_context: [ステップ3で確認した変更内容の理解]（Design Docのみ）
+  verification_evidence: $CODE_VERIFICATION_OUTPUT（Design Docのみ、PRD/ADRBatch では省略）
 
   注力ポイント:
   - 更新セクションとドキュメント全体の整合性
@@ -159,27 +159,11 @@ prompt: |
 **出力を保存**: `$STEP_5_OUTPUT`
 
 **レビュー結果に基づく対応**:
-- 承認 → ステップ6へ進む
-- 要修正 → 以下のプロンプトでステップ4に戻る:
-  ```
-  subagent_type: [ステップ2の更新エージェント]
-  description: "レビューフィードバックに基づき[タイプ]を修正"
-  prompt: |
-    動作モード: update
-    既存ドキュメント: [ステップ1のパス]
+- `approved` → ステップ6へ進む。
+- `needs_revision` → レビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語でステップ2の更新エージェントに渡す。その後、該当する場合は検証を再実行し、`prior_feedback` を添えて再レビューする。
+- `rejected` → 出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーションする。
 
-    ## 前回のレビューフィードバック
-    $STEP_5_OUTPUT
-
-    severity別に対処する:
-    - critical: 必須修正
-    - important: 推奨修正
-    - recommended: 任意修正
-
-    修正を適用し変更履歴を更新する。
-  ```
-  （最大2回）
-- **2回のリジェクト後** → 人間レビュー用にフラグ、蓄積されたフィードバックをユーザーに提示して終了
+レビュー裁定の収束条件とエスカレーション条件に従う。
 
 レビュー結果をユーザーに提示して承認を得る。
 
@@ -209,7 +193,7 @@ prompt: |
 |--------|-----------|
 | 対象ドキュメントが見つからない | 報告して終了（ドキュメント新規作成は本コマンドの対象外） |
 | サブエージェントの更新が失敗 | 失敗をログ、エラーをユーザーに提示、1回リトライ |
-| 2回の修正後もレビューがリジェクト | ループを停止、人間介入用にフラグ |
+| レビュアーが `rejected` を返す | 出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーション |
 | design-syncが矛盾を検出 | 解決判断のためユーザーに提示 |
 
 ## 完了条件

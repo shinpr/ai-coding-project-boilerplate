@@ -3,6 +3,7 @@ description: Design Doc準拠検証とセキュリティ検証、必要に応じ
 ---
 
 Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+ワークフロー判断・エージェント呼び出し・検出事項の裁定の前に、`subagents-orchestration-guide`スキルを実行する。
 
 **コマンドコンテキスト**: React/TypeScriptフロントエンド向け実装後品質保証コマンド
 
@@ -46,80 +47,48 @@ Agent toolでcode-reviewerを呼び出す:
 Agent toolでsecurity-reviewerを呼び出す:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティレビュー"
-- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. セキュリティ準拠をレビュー。"
+- `prompt`: "governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [git diff file list]. セキュリティ準拠をレビュー。"
 
 **出力を保存**: `$STEP_3_OUTPUT`
 
 ### Step 4: 判定と対応
 
-**security-reviewerが`blocked`を返した場合**: 即座に停止。blockedの検出結果を報告しユーザーにエスカレーション。修正ステップには進まない。
+**security-reviewerが`blocked`を返した場合**: このゲートで停止し、ブロッキング理由と返された検出事項を報告してユーザーにエスカレーションする。
 
-**コードレビュー基準**:
-- `pass` → 合格
-- `needs-improvement` / `needs-redesign` → 以下で残った finding をルーティングする
+両方の出力にレビュー裁定を適用する。以降の扱いは裁定の処理方針が決める: `apply` の検出事項はコード修正になり、`user_decision_required` の検出事項はユーザーにしか下せない判断を含み、`decline` の検出事項は理由とともに記録する。各検出事項は自身のコード上の位置を持つため、これ以上のルーティング分類は不要である。
 
-**セキュリティ基準**:
-- `approved` または `approved_with_notes` → 合格
-- `needs_revision` → 不合格
-
-**両方の結果をサブエージェントの出力フィールドのみを使用して独立に報告**（サブエージェントのレスポンスにないフィールドを追加しない）。
-
-**早期終了（ルーティング対象なし）**: code-reviewer の `verdict` が `pass` かつ `acceptanceCriteria[]` のすべてのエントリが `status: "fulfilled"` かつ `identifierMismatches[]` が空かつ `qualityFindings[]` が空かつ security-reviewer の `findings[]` が空の場合、Steps 5-9 をスキップして直接 Step 10 へ進む — ルーティング対象がないため。クリーンな結果をユーザーに提示する。
-
-それ以外の場合、ユーザー提示の前に、オーケストレーターは以下のルールで finding ごとに推奨ルートを計算する（このルール自体は内部用 — ユーザー向けプロンプトには含めない）。ルールは code-reviewer の既存構造化フィールドのみを参照する。「DDの意図」のような解釈は不安定な推論を避けるため意図的に行わない:
-
-| Finding ソース | 既存フィールドから検出可能なパターン | 推奨ルート |
-|---------------|----------------------------------|----------|
-| `acceptanceCriteria[]` で `status: "partially_fulfilled"` または `"unfulfilled"` | 引用された `gap` から、コードがACを満たしていないことが示される — 追加実装が必要 | `c`（コード側修正） |
-| `acceptanceCriteria[]` で `status: "partially_fulfilled"` または `"unfulfilled"` | 引用された `gap` から、ACテキスト自体が実装済み（チームが受け入れた）挙動から乖離していることが示される — 実装が要件を満たしていないのではなく、DDのAC文言が誤った意図を捉えているケース（ACを読み、引用された `location` と比較して検証する） | `d`（設計側更新 — ACテキストが古い） |
-| `identifierMismatches[]` | `codeValue` が `designDocValue` のリネームとして妥当（camelCase ↔ kebab-case ↔ snake_case、略語の展開/省略、同じ概念を指す意味的なリネーム）— 引用された `location` を確認してコードが新名称を一貫して使用していることを検証 | `d`（設計側更新 — DDが古い可能性が高い） |
-| `identifierMismatches[]` | それ以外の identifier mismatch（型違い、cardinality違い、完全欠落など） | `c`（コード側修正） |
-| `qualityFindings[]` | 全カテゴリ（`dd_violation`、`maintainability`、`reliability`、`coverage_gap`） | `c`（コード側修正） |
-| security-reviewer `findings[]` | 全カテゴリ（`confirmed_risk`、`defense_gap`、`hardening`、`policy`） | `c`（コード側修正） |
-
-各 finding に対しユーザーが推奨を上書き可能。`status: "fulfilled"` の AC 項目はルーティング対象外（対応不要）。
-
-ユーザーへの提示形式（finding ごとに推奨ルートをラベル付け、ルートでグルーピング）:
+裁定済みの結果を提示する:
 
 ```
 Code Review: [code-reviewerのverdict]
   Acceptance Criteria:
   - [fulfilled] [item] (confidence: [high/medium/low])
-  - [partially_fulfilled] [item]: [gap] — [suggestion] [recommended: c | d]
-  - [unfulfilled] [item]: [gap] — [suggestion] [recommended: c | d]
+  - [unfulfilled] [item]: [gap] — [suggestion]
   Identifier Mismatches:
-  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location] [recommended: c | d]
+  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location]
   Quality Findings:
-  - [category] [location]: [description] — [rationale] [recommended: c]
+  - [category] [location]: [description] — [rationale]
 
 Security Review: [security-reviewerのstatus]
   Findings by category:
-  - [confirmed_risk] [location]: [description] — [rationale] [recommended: c]
-  - [defense_gap] [location]: [description] — [rationale] [recommended: c]
-  - [hardening] [location]: [description] — [rationale] [recommended: c]
-  - [policy] [location]: [description] — [rationale] [recommended: c]
-  Notes: [security-reviewerのnotes、存在する場合]
+  - [confirmed_risk] [location]: [description] — [rationale]
+  - [defense_gap] [location]: [description] — [rationale]
 
-不整合の解消 — finding ごとに推奨ルートを承認または上書きする:
-  c) コード側修正  — コードがDesign Docに違反; コードを修正して合わせる
-  d) 設計側更新   — コードは正しい; Design Docが古いので改訂する
-  s) スキップ     — 現状を受け入れて変更しない
+decline: [ID] — [出典ソース上の理由]
 ```
 
-AskUserQuestionを使用する。デフォルト提示は **「すべての推奨ルートを承認」** — オーケストレーターの推奨が正しい典型ケース向けの単一確認。ユーザーが上書きしたい場合は finding ごとに c/d/s を収集する。すべてに対し `s` を選択した場合: Steps 5-9をスキップしてStep 10へ進む。
+ユーザーに尋ねるのは2つだけとする: 提案した `apply` 集合を適用する権限と、`user_decision_required` の各項目に対する判断。`user_decision_required` の項目でユーザーが「コードが正しく Design Doc が陳腐化している」と判断した場合、その項目はStep 5へ回す。承認された変更が残らない場合はStep 10へ進む。
 
-ユーザーのルート決定が、レビュー裁定（subagents-orchestration-guideスキルの `references/review-resolution.md`）におけるその finding の処理方針となる: `c` と `d` はコード側・設計側の `apply`、`s` は `decline`。ルートを処理方針として記録し、レビュアーの finding オブジェクトはそのまま引き継ぐ。
-
-**修正パスへ引き継ぐスコープ**: 承認された finding、そのルート、対象となるファイルとセクション、およびユーザーが述べたサイズ予算を、ステップ5〜9 で呼び出す全エージェントに渡す。再検証の前に、各差分ハンクを承認された finding、またはその finding が必要とした整合性の更新に対応付ける。対応付かないハンク、または述べられた予算を超える差分については、修正の一部として受け入れるのではなくスコープ判断を求める。
+**修正パスへ引き継ぐスコープ**: 承認された検出事項、対象となるファイルとセクション、およびユーザーが述べたサイズ予算を、Step 5〜9 で呼び出す全エージェントに渡す。再検証の前に、各差分ハンクを承認された検出事項、またはその検出事項が必要とした整合性の更新に対応付ける。対応付かないハンク、または述べられた予算を超える差分については、修正の一部として受け入れるのではなくスコープ判断を求める。
 
 ### Step 5: 設計側更新
 
-ユーザーが少なくとも1つのfindingを `d` にルーティングした場合のみ、本ステップを実行する。すべてのルートが `c` または `s` の場合は、Step 6 へ直接スキップする。
+このステップは、`user_decision_required` の項目のうち、ユーザーが「現在のコードを設計側で追認する」と判断したものについてのみ実行する。
 
 1. Agent tool で technical-designer-frontend を update モードで呼び出す:
    - `subagent_type`: "technical-designer-frontend"
-   - `description`: "レビューfindingsからのDesign Doc更新"
-   - `prompt`: "[path]のDesign Docをupdateモードで更新する。実装は以下の点で乖離しており、チームはコード側ではなく設計側で受け入れる判断をした: [`d` ルートのfindingsを $STEP_2_OUTPUT の codeLocation と designDocValue 付きでリスト化]。該当セクションに現在のコードの挙動を反映し、履歴エントリを追加する。"
+   - `description`: "レビュー検出事項からのDesign Doc更新"
+   - `prompt`: "[path]のDesign Docをupdateモードで更新する。実装は以下の点で乖離しており、ユーザーはコード側ではなく設計側で追認する判断をした: [記録したユーザー判断を添えた検出事項オブジェクト一式]。該当セクションに現在のコードの挙動を反映し、履歴エントリを追加する。"
 
 2. document-reviewer を呼び出して更新後の Design Doc を検証する:
    - `subagent_type`: "document-reviewer"
@@ -133,21 +102,19 @@ AskUserQuestionを使用する。デフォルト提示は **「すべての推�
    - `prompt`: "source_design: [更新後DDのパス]。更新後の全Design Doc間の矛盾を検出。"
    - `sync_status: CONFLICTS_FOUND` の場合: 矛盾をユーザーに提示し、影響を受けるDDに対して technical-designer-frontend を再起動して解消する。
 
-4. Step 5 完了後:
-   - ユーザーが選択した `c` ルートがゼロの場合（すべて `d`、すべて `s`、または `c` を含まない `d` + `s` の混在）→ Steps 6-7 をスキップし、Step 8 で再検証へ進む
-   - `d` と `c` の両方が選択された場合 → 更新後のDDに対して `c` ルートのfindingsを再評価し、DD改訂で満たされたものは除外する。残った `c` ルートのfindings で Step 6 へ進む
+4. 承認済みの `apply` 検出事項を更新後の Design Doc に対して再評価し、改訂で既に満たされたものは除外する。残りがない場合はStep 6〜7をスキップしてStep 8へ進む。
 
 ### Step 6: 修正実行
 Agent toolでtask-executor-frontendを呼び出す:
 - `subagent_type`: "task-executor-frontend"
 - `description`: "レビュー修正の実行"
-- `prompt`: "承認されたコード側の finding を直接適用する: [レビュアーの finding オブジェクト全体を逐語で、オーケストレーターの処理方針のみ付加]。承認されたルートと述べられた総サイズ予算の範囲に変更を収める（5ファイルで停止）。"
+- `prompt`: "承認されたコード側の検出事項を直接適用する: [レビュアーの検出事項オブジェクト全体を逐語で、オーケストレーターの処理方針のみ付加]。承認された検出事項と述べられた総サイズ予算の範囲に変更を収める。"
 
 ### Step 7: 品質チェック
 Agent toolでquality-fixer-frontendを呼び出す:
 - `subagent_type`: "quality-fixer-frontend"
 - `description`: "品質ゲートチェック"
-- `prompt`: "修正ファイルの品質ゲート通過を確認。filesModified: [直前の実装ステップのレスポンスから抽出]。"
+- `prompt`: "現在の未コミットのワークツリー全体について品質ゲート通過を確認する。"
 
 ### Step 8: code-reviewer再検証
 
@@ -161,7 +128,7 @@ Agent toolでcode-reviewerを呼び出す:
 Agent toolでsecurity-reviewerを呼び出す（セキュリティ修正が実行された場合のみ）:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティの再検証"
-- `prompt`: "修正後にセキュリティを再検証。Design Doc: [path]。実装ファイル: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
+- `prompt`: "修正後にセキュリティを再検証。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
 
 ### Step 10: 最終レポート
 
@@ -173,41 +140,20 @@ Agent toolでsecurity-reviewerを呼び出す（セキュリティ修正が実�
 Code Review:
   初回: [code-reviewerのverdict]
   修正レビュー: [再レビュー範囲のverdict]（修正実行時）
-  照合: [finding IDごとの resolved / withdrawn / maintained]
+  照合: [検出事項IDごとの resolved / withdrawn / maintained]
 
 Security Review:
   初回: [status]
   修正レビュー: [再レビュー範囲のstatus]（修正実行時）
-  照合: [finding IDごとの resolved / withdrawn / maintained]
-  Notes: [approved_with_notesのnotes、存在する場合]
-
-decline とした finding:
+  照合: [検出事項IDごとの resolved / withdrawn / maintained]
+decline とした検出事項:
 - [ID] — [出典上の理由とエビデンス]
 
 残存課題:
 - [手動対応が必要な項目]
 ```
 
-## 自動修正可能な項目（コード側パス）
-- 単純な未実装受入条件
-- エラーハンドリング追加
-- 契約定義の修正
-- 関数分割（長さ/複雑性改善）
-- セキュリティのconfirmed_riskとdefense_gapの修正（入力検証、認証チェック、出力エンコーディング）
-
-## 自動修正不可な項目
-- 根本的なビジネスロジック変更
-- アーキテクチャレベルの修正
-- コミット済みシークレット（blocked → 人間の判断が必要）
-
-## 設計側更新の対象
-設計側パスに適した不整合（コードが正しく、DDが古くなったケース）:
-- 新しい命名がチームの現行命名を反映している identifier rename
-- 元の要件意図に対し、DDが捉えた挙動より実装の方が合致している挙動変更
-- 新しい構造が妥当で、DDが旧構造を文書化していたままのコンポーネント分割・統合
-- 実装は既に満たしているがDDに列挙されていなかった新規AC
-
-**スコープ**: Design Doc準拠検証、セキュリティレビュー、コード側自動修正、および設計側更新ルーティング。
+**スコープ**: Design Doc準拠検証、セキュリティレビュー、コード側自動修正、およびユーザーが追認した設計側更新。
 
 ## サブエージェントのスコープ境界
 

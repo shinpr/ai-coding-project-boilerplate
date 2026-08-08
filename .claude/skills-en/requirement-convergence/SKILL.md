@@ -28,7 +28,7 @@ Judgment rules per field: [references/criteria.md](references/criteria.md).
 
 ## Hearing Protocol
 
-Eliciting requires user interaction, so the orchestrator owns it. It runs after the analysis that produced the scope facts, because the orchestrator investigates nothing itself.
+The orchestrator owns both elicitation and judgment. It uses the analyzer's scope and cost evidence, then asks only for product choices that the repository cannot answer. Re-run the analyzer only when an answer changes the analysis target or required scope evidence.
 
 Register these steps before starting and record each step's evidence as it completes:
 
@@ -38,13 +38,13 @@ Register these steps before starting and record each step's evidence as it compl
 | 2 | Ask about the fields below `ready`, at most two questions per message | One question per field below `ready` |
 | 3 | Record each answer as that field's value | The value is the option the user selected or the wording the user supplied |
 | 4 | Re-ask once when a recorded value still fails its pass condition, then mark the field `weak-but-explicit` when the user agrees to leave the second answer as it stands | Two recorded answers, or the user's agreement to stop |
-| 5 | Hand the record to the step that judges the fields | An updated record returned from that step |
+| 5 | Judge each field against its pass condition and pass the completed record downstream | A convergence record with every field labeled |
 
 ## Storage Protocol
 
 | Carrier | Holds | Written by |
 |---------|-------|------------|
-| The convergence record in the judging step's output | Every field with its readiness label | Whichever step judged them |
+| The orchestrator's convergence record | Every field with its readiness label | Orchestrator |
 | PRD `Success Criteria` and `Future` / `Out of Scope` | `outcome`; `nonGoals` and `speculative` requirements with origin `user` | The agent that owns the PRD |
 | Design Doc `Requirement Convergence` | The same when no PRD exists, and the fields left `weak-but-explicit` in every case | The agent that owns the Design Doc |
 

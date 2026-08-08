@@ -62,7 +62,7 @@ Consumed Task Set を確認し、適切な対応を決定する。注: `$ARGUMEN
 1. Agentツールでdocument-reviewerを呼び出す:
    - `subagent_type`: "document-reviewer"
    - `description`: "作業計画書レビュー"
-   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [Design Docのパス]。作業計画書自身の実装スコープ、タスク、完了条件、依存関係、実行順序、引用アンカーの実在、実行可能な検証をレビューする。検出事項と提案は、対象文書自身が引用している内容に限定する — 出典ドキュメントのパスは引用先を与えるだけである。"
+   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md。作業計画書自身の実装スコープ、タスク、完了条件、依存関係、実行順序、引用アンカーの実在、実行可能な検証をレビューする。出典ソースは対象文書の Governing Documents から解決する。"
 2. reviewerの `verdict.decision` で分岐する:
    - `needs_revision` → レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には work-planner を update モードで用い、収束条件に達したときのみ先へ進む
    - `rejected` → タスク実体化の前に停止しユーザーにエスカレーションする
@@ -108,12 +108,12 @@ Consumed Task Set 内の各タスクで必須：
 1. **EXECUTE**: task-executor-frontend を呼び出してタスク実装を実行
 2. **実行結果で分岐**:
    - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
-   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `verdict.decision` で分岐する
-     - `needs_revision` → ステップ1 に戻り、同じ `task_file` と `requiredFixes[]` 配列を入力として task-executor-frontend を **Fix Mode** で再起動
-     - `blocked` → 停止してユーザーにエスカレーションし、`verdict.reason` とレビュアが確立できなかった review basis を報告する
+   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `status` で分岐する
+     - `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を逐語で task-executor-frontend に渡して **Fix Mode** でステップ1 に戻る
+     - `blocked` → 現在の diff から移動・リネームされたテストパスを解決してレビューを**1回だけ**再実行する。`requiresTestReview: true` にもかかわらず変更されたテストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でステップ1 に差し戻す。再実行でも `blocked` が返る場合は、テストレビュー未実施を `blockingReason` とともに記録してステップ3へ進み、その未証明の状態を完了レポートに引き継ぐ
      - `approved` → ステップ3 へ
    - `readyForQualityCheck: true` → ステップ3 へ
-3. **QUALITY-FIX**: quality-fixer-frontend を呼び出して全品質チェックと修正を実行。`task_file` として現在のタスクファイルパス、`filesModified` として実装ステップの `filesModified` 配列を **必ず渡す**（未完成実装検出を当該タスクの実書き込み集合にスコープする。省略時は quality-fixer が `git diff HEAD` にフォールバックする）。あわせて実装ステップの `runnableCheck` を渡し、substance チェックが上流のエビデンスを再導出せず読めるようにする。また frontend-technical-spec またはリポジトリの規約がプロジェクトの権威ある品質コマンドを示している場合は `qualityCommand` を渡し、この実行の全タスクが同一コマンドで検証されるようにする。その後レスポンスで分岐する:
+3. **QUALITY-FIX**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して quality-fixer-frontend を呼び出す。現在の `task_file`、実装ステップの `runnableCheck`、および frontend-technical-spec またはリポジトリの規約が権威ある品質コマンドを示している場合は `qualityCommand` を渡す。その後レスポンスで分岐する:
    - `stub_detected` → ステップ1 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor-frontend を **Fix Mode** で再起動
    - `blocked` → 停止してユーザーにエスカレーション（subagents-orchestration-guide の quality-fixer blockedハンドリングに従い `reason` で判別する）
    - `approved` → ステップ4 へ
@@ -140,16 +140,13 @@ Escalate when the required fix or investigation falls outside that scope.
 
 1. **両方を並列で実行** (Agent tool):
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`、Design Docパス、`code_paths`: 実装ファイルリスト（`git diff --name-only main...HEAD`）
-   - security-reviewer (subagent_type: "security-reviewer") → Design Docパスと実装ファイルリスト
+   - security-reviewer (subagent_type: "security-reviewer") → `governingDocuments: [{"type":"design-doc","path":"[パス]"}]` と実装ファイルリスト
 
 2. **結果の統合** — 合格/不合格の基準はsubagents-orchestration-guideの実装後検証セクション参照。統合検証レポートをユーザーに提示。
 
 3. **修正サイクル**（いずれかの verifier が fail のとき、最大2サイクル）:
-   - 対応可能な各検出事項にレビュー裁定を適用し、その上で **verifier 出力を正規化**して統一的な `requiredFixes[]` にしてから task-executor-frontend を起動する。`apply` の検出事項オブジェクトは処理方針のみ付加して逐語で転送する:
-     - `security-reviewer.requiredFixes[]`（既に `{location, issue, fix}` 形式）→ そのまま透過。
-     - `code-verifier.discrepancies[]` → 対応可能な各 discrepancy（status が `drift` / `gap` / `conflict`）を `{location: discrepancy.codeLocation, issue: discrepancy.claim, fix: "[Design Doc 整合性回復に必要な具体的修正。discrepancy.classification と evidence から導出]"}` に変換。
-     - `discrepancy.codeLocation` が `null`（主張が未実装）の場合は、`location` に予定された対象ファイルパスを設定する。対象ファイルが特定できない場合は、Fix Mode を起動する代わりにユーザーにエスカレーション。
-   - 影響パスと観察可能な検証条件を示す明示プロンプトと、正規化した `requiredFixes` を渡して task-executor-frontend を **Fix Mode** で起動する。修正タスクファイルは作成しない — 検出事項オブジェクトが実行スコープである。
+   - 対応可能な各検出事項にレビュー裁定を適用する。`apply` の検出事項オブジェクトは、処理方針のみ付加して逐語で task-executor-frontend に渡す。対象パスを特定できない discrepancy は、パスを捏造せずエスカレーションする。
+   - 影響パス、観察可能な検証条件、変更していない検出事項オブジェクトを渡して task-executor-frontend を **Fix Mode** で起動する。修正タスクファイルは作成しない。
    - 続いて quality-fixer-frontend、その後 fail した verifier のみ再実行。
    - 2サイクル後も fail が残る場合 → 残存指摘事項を添えてユーザーにエスカレーション
 

@@ -7,7 +7,7 @@ description: 統合テストとE2Eテストを設計。モック境界と振る�
 
 ## References
 
-- **[references/e2e-design.md](references/e2e-design.md)** — E2Eテスト設計原則（候補ソース、選定基準、UI Specからのマッピング）
+- **[references/e2e-design.md](references/e2e-design.md)** — E2Eテスト設計原則（候補の性質、選定基準、候補の記録）
 - **[references/e2e-environment-prerequisites.md](references/e2e-environment-prerequisites.md)** — service-integration-e2eの環境前提条件（seed data、auth fixture、環境チェックリスト）。fixture-e2eには稼働中のサービスも実データベースも不要
 
 ## テスト種別と上限
@@ -43,9 +43,9 @@ description: 統合テストとE2Eテストを設計。モック境界と振る�
 
 ## スケルトン仕様
 
-### 必須コメント形式
+### 必須スケルトン形式
 
-コミットするスケルトンは、テストフレームワーク（`describe`/`it`/`it.todo`用）のみをimportする。テスト対象moduleが作成された後に、実装タスクでそのmoduleのimportを追加する。これにより、実装開始前でもテストファイルを型チェック・compile・loadするゲートを正常に実行できる。
+プロジェクトのテスト対象パターンに一致してコミットされるファイルは、そのテストランナー上で有効なままでなければならない。検出したフレームワークにおける最小の pending スイート（`describe` と `it.todo`、またはその同等物）を用い、テストフレームワークの import と必須コメントのみを含める。実装タスクが pending のケースを置き換え、実装と同時にアプリケーションの import・アサーション・フィクスチャ・モックセットアップを追加する。
 
 各テストに以下のアノテーションを含めること。
 
@@ -210,7 +210,6 @@ Property注釈がある場合、fast-check必須:
 | AAA構造 | Arrange/Act/Assertの区切りが不明確 |
 | 独立性 | テスト間で状態共有、実行順序依存 |
 | 再現性 | 日時・乱数に依存し結果が変動 |
-| 可読性 | テスト名と検証内容が一致しない |
 
 ### 共有mutationに対する経路の同等性
 

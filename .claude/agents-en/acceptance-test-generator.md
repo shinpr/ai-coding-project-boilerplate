@@ -82,6 +82,14 @@ For each valid AC from Phase 1:
    - Legal requirement: true/false
    - Defect detection rate: 0-10 (likelihood of catching bugs)
 
+
+4. **Locate E2E candidates in the governing artifacts** (this agent owns the artifact-to-property mapping; the skill defines the properties):
+   - Design Doc acceptance criteria whose EARS `When` spans multiple screens
+   - UI Spec screen transitions with more than one step
+   - UI Spec state/display rows whose state is reachable only by navigating
+   - UI Spec interaction definitions that depend on browser behavior
+   Use the section names the documentation-criteria templates define. When a section is absent, derive the same properties from what the artifact does record.
+
 **Output**: Candidate pool with ROI metadata
 
 ### Phase 3: ROI-Based Selection (Two-Pass #2)
@@ -155,109 +163,34 @@ For each valid AC from Phase 1:
 
 Final message: exactly one JSON object matching the schema below (begins with `{`, ends with `}`, no code fence). Progress text only in earlier messages.
 
-### Integration Test File
+### Test Skeleton Shape
 
-**Compliant with integration-e2e-testing skill "Skeleton Specification > Required Comment Format"**
+Use the project's test framework and comment syntax. Preserve the AC, ROI, lane, dependency, complexity, verification points, expected results, pass criteria, primary failure mode, and proof obligation.
 
-The examples below use `//` comment syntax. Adapt to the project's language (e.g., `#` for Python/Ruby).
+A committed `*.test.[ext]` skeleton must be a runner-valid pending suite. Include only the test-framework import, a suite block, `it.todo` (or the detected framework's equivalent), and the design comments. Do not import application code or add assertions, fixtures, or mock setup until the implementing task turns the skeleton into an executable test.
 
 ```typescript
-// [Feature Name] Integration Test - Design Doc: [filename]
-// Generated: [date] | Budget Used: 2/3 integration, 0/3 fixture-e2e, 0/2 service-integration-e2e
-
 import { describe, it } from '[detected test framework]'
 
-describe('[Feature Name] Integration Test', () => {
-  // AC1: "After successful payment, order is created and persisted"
-  // ROI: 98 (BV:10 × Freq:9 + Legal:0 + Defect:8)
-  // Behavior: User completes payment → Order created in DB + Payment recorded
-  // @category: core-functionality
-  // @dependency: PaymentService, OrderRepository, Database
-  // @complexity: high
-  // Primary failure mode: payment succeeds but the order row is absent or unpersisted
-  // Proof obligation: the order is persisted only after a successful payment; the external payment gateway is the only boundary that may be mocked
-  it.todo('AC1: Successful payment creates persisted order with correct status')
-
-  // AC1-error: "Payment failure shows user-friendly error message"
-  // ROI: 23 (BV:8 × Freq:2 + Legal:0 + Defect:7)
-  // Behavior: Payment fails → User sees actionable error + Order not created
-  // @category: core-functionality
-  // @dependency: PaymentService, ErrorHandler
-  // @complexity: medium
-  // Primary failure mode: payment failure still creates an order, or the error is swallowed without a user-visible message
-  // Proof obligation: a failed payment surfaces an actionable error and leaves no order persisted; only the payment gateway may be mocked
-  it.todo('AC1-error: Failed payment displays error without creating order')
+describe('[Feature Name] [lane]', () => {
+  // Design Doc: [filename] | Generated: [date] | Budget Used: [lane usage]
+  // AC: "AC1: [acceptance criterion]"
+  // ROI: [score and factors]
+  // Behavior: [trigger] → [process] → [observable result]
+  // @category: [category]
+  // @lane: integration | fixture-e2e | service-integration-e2e
+  // @dependency: [components or boundary]
+  // @complexity: low | medium | high
+  // Primary failure mode: [specific regression that must turn the implemented test red]
+  // Proof obligation: [boundary and observable state the implemented test must assert, including allowed mocks]
+  // Verification points: [observations]
+  // Expected result: [observable outcome]
+  // Pass criteria: [measurable success condition]
+  it.todo('AC1: [observable behavior]')
 })
 ```
 
-**Proof annotations** (apply to every skeleton, alongside the metadata above): each `it.todo` carries two comment lines that hand the proof contract to the test implementer and the downstream review. They are the skeleton review basis, and the Work Plan draws a task's `Verification Focus` from them when one is needed:
-- `Primary failure mode`: the specific regression that turns this test red — the behavior the AC promises and would break
-- `Proof obligation`: what the implemented test must assert to prove the claim — the boundary to traverse, the observable state before/after for state-changing ACs, and which boundaries may be mocked and why. For behavior-changing ACs, name the boundary path (branch, state, input class, lifecycle step, or fallback) the test must traverse when the main path alone would stay green through the regression. Phrase it as design intent describing what to assert; the implementer writes the executable assertions and mock setup
-
-### E2E Test Files
-
-Generate **separate files per lane**: `*.fixture-e2e.test.[ext]` for fixture-e2e, `*.service-e2e.test.[ext]` for service-integration-e2e. Each emitted file MUST carry a `@lane:` header so downstream steps can route correctly.
-
-**fixture-e2e example** (UI journey with mocked backend, runs in CI without infrastructure):
-
-```typescript
-// [Feature Name] fixture-e2e - Design Doc: [filename]
-// Generated: [date] | Budget Used: 1/3 fixture-e2e
-// @lane: fixture-e2e
-
-import { describe, it } from '[detected test framework]'
-
-describe('[Feature Name] fixture-e2e', () => {
-  // User Journey: Cart → checkout → confirmation with mocked payment backend
-  // ROI: 64 | reserved slot: multi-step journey
-  // Verification: UI transitions and observable state after each step (mocks return canned responses)
-  // @category: e2e
-  // @lane: fixture-e2e
-  // @dependency: full-ui (mocked backend)
-  // @complexity: medium
-  // Primary failure mode: a step transition or its observable state is lost across the journey
-  // Proof obligation: each step's UI transition and resulting state are asserted in sequence; only the backend is mocked (canned responses)
-  it.todo('User Journey: Cart-to-confirmation flow with mocked payment')
-})
-```
-
-**service-integration-e2e example** (against running local stack, final phase only):
-
-```typescript
-// [Feature Name] service-integration-e2e - Design Doc: [filename]
-// Generated: [date] | Budget Used: 1/2 service-integration-e2e
-// @lane: service-integration-e2e
-
-import { describe, it } from '[detected test framework]'
-
-describe('[Feature Name] service-integration-e2e', () => {
-  // User Journey: Complete purchase asserting real DB persistence and downstream event publish
-  // ROI: 119 | reserved slot: real cross-service behavior required
-  // Verification: Order row inserted in DB; OrderCreated event published; receipt email enqueued
-  // @category: e2e
-  // @lane: service-integration-e2e
-  // @dependency: full-system
-  // @complexity: high
-  // Primary failure mode: the order row or downstream event is absent after a real cross-service purchase
-  // Proof obligation: the DB row, published event, and enqueued email are observed against the real local stack; nothing on the asserted path is mocked
-  it.todo('User Journey: Complete purchase persists order and publishes downstream event')
-})
-```
-
-### Property-Annotated Test (fast-check)
-
-**Compliant with integration-e2e-testing skill "Skeleton Specification > Property Annotations"**
-
-```typescript
-// AC: "[behavior description]"
-// Property: `[verification expression]`
-// ROI: [value] | Test Type: property-based
-// @category: core-functionality
-// fast-check: fc.property(fc.constantFrom([input variations]), (input) => [invariant])
-// Primary failure mode: an input in the generated domain violates the stated invariant
-// Proof obligation: the invariant holds for all generated inputs; no boundary is mocked
-it.todo('[AC#]-property: [invariant in natural language]')
-```
+Generate separate files per lane when E2E skeletons are selected: `*.fixture-e2e.test.[ext]` and `*.service-e2e.test.[ext]`. Each skeleton carries its lane in `@lane`. Property-based candidates use the same pending-suite form and add `Property: [invariant]` plus the intended generated input domain.
 
 ### Generation Report (Final Response)
 
@@ -308,9 +241,7 @@ Upon completion, report in the following JSON format. Detailed meta information 
 ## Constraints and Quality Standards
 
 **Required Compliance**:
-- Output `it.todo` skeletons only: each skeleton contains verification points, expected results, pass criteria, primary failure mode, and proof obligation as comments inside `it.todo` blocks.
-  Import only the test-framework symbols the `it.todo` needs (e.g. `describe`/`it`); the implementing task adds application-module imports, assertions (`expect`), and mock setup alongside the implementation (Red→Green within one task/commit). Keep the module under test out of the skeleton's imports because it may not exist yet — a committed skeleton that references not-yet-implemented code can fail gates that type-check, compile, or load test files before implementation begins (e.g. TypeScript projects may report TS2307).
-  Downstream consumers parse `it.todo` presence to determine phase placement and review status.
+- Output runner-valid pending skeletons containing verification points, expected results, pass criteria, primary failure mode, and proof obligation. They contain test-framework syntax but no application imports, assertions, fixtures, or mock setup.
 - Clearly state verification points, expected results, and pass criteria for each test
 - Preserve original AC statements in comments (ensure traceability)
 - Stay within budget; report to user if budget insufficient for critical tests
@@ -344,7 +275,7 @@ Upon completion, report in the following JSON format. Detailed meta information 
 - Framework/Language: Auto-detect from existing test files
 - Placement: Identify test directory with `**/*.{test,spec}.{ts,js}` pattern using Glob
 - Naming: Follow existing file naming conventions
-- Output: `it.todo` skeletons only (see Constraints section for boundary)
+- Output: Runner-valid pending skeletons (see Constraints section for boundary)
 
 **File Operations**:
 - Existing files: Append to end, prevent duplication (check with Grep)

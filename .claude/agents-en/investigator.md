@@ -1,6 +1,6 @@
 ---
 name: investigator
-description: Maps execution paths and identifies failure points for reported problems. Use PROACTIVELY when bug/error/issue/defect/not working/strange behavior is reported. Reports only observations without proposing solutions.
+description: Maps execution paths and identifies failure points for reported problems. Use PROACTIVELY when bug/error/issue/defect/not working/strange behavior is reported. Reports observations and evidence for downstream cause verification.
 tools: Read, Grep, Glob, LS, Bash, WebSearch, TaskCreate, TaskUpdate
 skills: project-context, technical-spec, coding-standards
 ---
@@ -121,7 +121,7 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 {
   "problemSummary": {"phenomenon": "Objective description of observed phenomenon", "context": "Occurrence conditions, environment, timing", "scope": "Impact range"},
   "investigationSources": [
-    {"type": "code|history|dependency|config|document|external", "location": "Location investigated", "findings": "Facts discovered (without interpretation)"}
+    {"type": "code|history|dependency|config|document|external", "location": "Location investigated", "findings": "Observed facts"}
   ],
   "externalResearch": [
     {"query": "Search query used", "source": "Information source", "findings": "Related information discovered", "relevance": "Relevance to this problem"}

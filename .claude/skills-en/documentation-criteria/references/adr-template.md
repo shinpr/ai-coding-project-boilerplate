@@ -8,6 +8,14 @@
 
 [Describe the background and reasons why this decision is needed. Include the essence of the problem, current challenges, and constraints]
 
+## Decision Point
+
+| Item | Content |
+|------|---------|
+| **Question** | [The durable choice this ADR resolves] |
+| **Why this decision exists** | [Repository evidence and confirmed requirement that leave multiple credible options] |
+| **Scope boundary** | [What this decision governs and what it does not] |
+
 ## Decision
 
 [State the selected option, affected boundary, and behavior or constraint it establishes]
@@ -17,10 +25,9 @@
 | Item | Content |
 |------|---------|
 | **Decision** | [The decision in one sentence] |
-| **Why now** | [Why this needs to happen now (timing rationale)] |
 | **Why this** | [Why this option over alternatives (1-3 lines)] |
-| **Known unknowns** | [At least one uncertainty at this point] |
-| **Kill criteria** | [One signal that should trigger reversal of this decision] |
+| **Known unknowns** | [Material uncertainty, or N/A with reason] |
+| **Reconsider when** | [Signal that should reopen the decision, or N/A with reason] |
 
 ## Rationale
 
@@ -28,17 +35,14 @@
 
 ### Options Considered
 
-1. **Option 1**: [Description]
-   - Pros: [List advantages]
-   - Cons: [List disadvantages]
+Include only credible, materially distinct options supported by the evidence.
 
-2. **Option 2**: [Description]
-   - Pros: [List advantages]
-   - Cons: [List disadvantages]
+| Option | Requirement and repository fit | Benefit | Lifecycle cost | Maintainability | Trade-offs |
+|--------|--------------------------------|---------|----------------|-----------------|------------|
+| [Option] | [Fit] | [Benefit] | [Cost] | [Impact] | [Trade-offs] |
+| [Option] | [Fit] | [Benefit] | [Cost] | [Impact] | [Trade-offs] |
 
-3. **Option 3 (Selected)**: [Description]
-   - Pros: [List advantages]
-   - Cons: [List disadvantages]
+**Selected**: [The smallest sufficient option and why]
 
 ## Consequences
 
@@ -57,11 +61,6 @@
 ## Architecture Impact
 
 [Describe how this decision affects existing architecture: (1) components that change, (2) new dependencies introduced, (3) architectural constraints added or removed]
-
-## Implementation Guidance
-
-[Principled direction only. Implementation procedures go to Design Doc]
-Example: "Use dependency injection" ✓, "Implement in Phase 1" ✗
 
 ## Related Information
 

@@ -103,7 +103,8 @@ skills:
       - "Single Source of Truth"
     sections:
       - "Creation Decision Matrix"
-      - "ADR Creation Conditions (Required if Any Apply)"
+      - "Structural Scale"
+      - "ADR Decision Filters"
       - "Detailed Document Definitions"
       - "Creation Process"
       - "Storage Locations"
@@ -163,7 +164,7 @@ skills:
       - "Subagents I Can Utilize"
       - "My Orchestration Principles"
       - "Constraints Between Subagents"
-      - "Scale Determination and Document Requirements"
+      - "Structural Scale and Document Requirements"
       - "Structured Response Specifications"
       - "My Basic Flow: Planning and Implementation"
       - "Cross-Layer Orchestration"

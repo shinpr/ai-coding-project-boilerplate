@@ -9,6 +9,8 @@ The goal is stable downstream execution: the next agent should know what to read
 
 This skill governs the clarity of LLM-facing output — prompts, handoffs, and generated artifacts. The caller supplies the artifact type and any artifact-specific template or section contract; this skill makes that supplied contract executable for the downstream agent.
 
+An active workflow's declared input contract is already optimized for its specialist. Preserve its named fields and declared value forms, and build the handoff from those fields and values. Apply the general prompt-composition rules below only when no input contract exists; apply the generated-artifact rules to artifacts.
+
 ## Core Rules
 
 1. **Use positive, executable instructions**
