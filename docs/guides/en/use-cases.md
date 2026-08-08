@@ -16,23 +16,26 @@ New here? Start with the [Quick Start Guide](./quickstart.md). This page serves 
 
 ```mermaid
 graph LR
-    A[Requirements] --> B[Scale Detection]
-    B -->|Small:1-2 files| C[Direct Implementation]
-    B -->|Medium:3-5 files| D[Design Doc→Implementation]
-    B -->|Large:6+ files| E[PRD→ADR→Design Doc→Implementation]
+    A[Requirements] --> B[Structural Scale]
+    B -->|Small: one evident path| C[Direct Implementation]
+    B -->|Medium: one coordinated outcome| D[Optional ADR→Design Doc→Implementation]
+    B -->|Large: independent outcomes| E[PRD→Optional ADR→Design Doc→Implementation]
 ```
 
 ## Inside /implement Command
 
 ```mermaid
 graph TD
-    Start["/implement requirements"] --> RA["requirement-analyzer scale detection"]
-    RA -->|Small| Direct[Direct implementation]
-    RA -->|Medium| TD["technical-designer Design Doc"]
-    RA -->|Large| PRD["prd-creator PRD"]
+    Start["/implement requirements"] --> RA["requirement-analyzer scope and cost evidence"]
+    RA --> SJ["orchestrator convergence and Structural Scale"]
+    SJ -->|Small| Direct[Direct implementation]
+    SJ -->|Medium| ADR{Durable choice?}
+    SJ -->|Large| PRD["prd-creator PRD"]
     
-    PRD --> ADR["technical-designer ADR"]
-    ADR --> TD
+    PRD --> ADR
+    ADR -->|Yes| ADRD["technical-designer ADR batch"]
+    ADR -->|No| TD["technical-designer Design Doc"]
+    ADRD --> TD
     TD --> WP["work-planner Work plan"]
     WP --> TE["task-executor Execute tasks"]
     Direct --> QF["quality-fixer Quality checks"]
@@ -144,13 +147,15 @@ Any information you want AI to know about your project can be added as a skill.
 
 # Command Reference
 
-## Scale Detection Criteria
+## Structural Scale Criteria
 
-| Scale | Files | Examples | Generated Docs |
-|-------|-------|----------|----------------|
-| Small | 1-2 | Bug fixes, refactoring | None |
-| Medium | 3-5 | API additions, rate limiting | Design Doc + Work plan |
-| Large | 6+ | Auth system, payment system | PRD + ADR + Design Doc + Work plan |
+| Scale | Decision burden | Generated Docs |
+|-------|-----------------|----------------|
+| Small | One coherent outcome with one evident repository-supported path inside one responsibility boundary | None |
+| Medium | One coherent outcome that coordinates a boundary or contains a potentially durable choice | Design Doc + Work plan; ADR only when both decision filters pass |
+| Large | Multiple independently valuable outcomes requiring separate design decisions | PRD + Design Doc + Work plan; ADR only when both decision filters pass |
+
+File count supports the judgment but does not determine the scale.
 
 ## Command Details
 
@@ -158,8 +163,8 @@ Any information you want AI to know about your project can be added as a skill.
 **Purpose**: Full automation from requirements to implementation
 **Args**: Requirements description
 **Process**:
-1. requirement-analyzer detects scale
-2. Generate docs based on scale
+1. requirement-analyzer collects scope and cost evidence
+2. The orchestrator converges requirements, assigns Structural Scale, and routes documents
 3. task-executor implements
 4. quality-fixer ensures quality
 5. Commit per task
@@ -182,11 +187,10 @@ Encourages metacognition (self-reflection on reasoning), understands task essenc
 **Purpose**: Design docs creation (no implementation)
 **Args**: What to design
 **Process**:
-1. Requirements analysis (requirement-analyzer)
-2. PRD creation (if large scale)
-3. ADR creation (if tech choices needed)
-4. Design Doc creation
-5. End with approval
+1. Codebase analysis and scope confirmation
+2. ADR batch creation only for unresolved durable choices
+3. Design Doc creation
+4. Verification, review, and approval
 
 Interacts with users to organize requirements and create various design documents. Determines necessary documents based on implementation scale, finalizes design docs through creation, self-review, and user review reflection.
 Use when not adopting the full design-to-implementation process via `/implement`.
@@ -300,7 +304,7 @@ Use the `/implement` or `/build` commands to resume work.
 
 # Examples
 
-## Webhook Feature (Medium scale – about 4 files)
+## Webhook Feature (Medium scale – one coordinated boundary)
 ```bash
 /implement External system webhook API
 ```
@@ -310,13 +314,13 @@ Use the `/implement` or `/build` commands to resume work.
 - src/services/retry.service.ts
 - src/controllers/webhook.controller.ts
 
-## Auth System (Large scale – 10+ files)
+## Auth System (Large scale – multiple independently valuable outcomes)
 ```bash
 /implement JWT auth with RBAC system
 ```
 **Generated files**:
 - docs/prd/auth-system.md
-- docs/adr/auth-architecture.md
+- docs/adr/auth-architecture.md (only when a durable choice remains)
 - docs/design/auth-system.md
 - src/auth/ (implementation files)
 

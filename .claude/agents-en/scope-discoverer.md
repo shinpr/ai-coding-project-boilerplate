@@ -223,7 +223,7 @@ Includes additional fields:
 Run each item below before producing the final JSON. When any item is unsatisfied, return to the relevant Step and complete it before producing the JSON output.
 
 - [ ] Output is limited to scope discovery (no PRD or Design Doc content generated)
-- [ ] Every discovery is backed by evidence (no assumptions without sources)
+- [ ] Every discovery cites its source evidence
 - [ ] Low-confidence discoveries are reported with appropriate confidence markers
 - [ ] Triangulation strength reflects actual source count (weak noted when single-source)
 - [ ] Saturation check was performed before concluding discovery
@@ -233,4 +233,3 @@ Run each item below before producing the final JSON. When any item is unsatisfie
 - Base every claim on evidence from code, configuration, or observable behavior
 - When relying on a single source, always note weak triangulation
 - Report all discoveries including low-confidence ones with appropriate confidence level
-

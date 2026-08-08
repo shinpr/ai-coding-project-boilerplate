@@ -52,7 +52,7 @@ Read the governing documents and collect only information that changes a task's 
 - protected boundaries the implementation must preserve;
 - material risks whose in-scope response changes a task outcome, dependency, boundary, or verification.
 
-Record each obligation by governing path and section or AC identifier. Keep its technical rule in the governing document rather than restating it in the Work Plan.
+Record each obligation only as its governing path and section or AC identifier.
 
 ### 2. Form outcome-oriented tasks
 

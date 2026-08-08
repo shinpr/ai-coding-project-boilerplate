@@ -3,6 +3,7 @@ description: Design Doc compliance and security validation with optional auto-fi
 ---
 
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+Execute the `subagents-orchestration-guide` skill before making workflow decisions, invoking agents, or resolving findings.
 
 **Command Context**: Post-implementation quality assurance command for React/TypeScript frontend
 
@@ -46,46 +47,30 @@ Invoke code-reviewer using Agent tool:
 Invoke security-reviewer using Agent tool:
 - `subagent_type`: "security-reviewer"
 - `description`: "Security review"
-- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review security compliance."
+- `prompt`: "governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [git diff file list]. Review security compliance."
 
 **Store output as**: `$STEP_3_OUTPUT`
 
 ### Step 4: Verdict and Response
 
-**If security-reviewer returned `blocked`**: Stop immediately. Report the blocked finding and escalate to user. Do not proceed to fix steps.
+**If security-reviewer returned `blocked`**: Stop at this gate, report the blocking reason and any returned finding, then escalate to the user.
 
-**Code review criteria**:
-- `pass` → acceptable
-- `needs-improvement` / `needs-redesign` → route the remaining findings below
+Apply Review Resolution to both outputs before reporting or routing them. Finding dispositions determine routing. Ask the user only for `user_decision_required` items or for implementation authority after the proposed `apply` set is known.
 
-**Security criteria**:
-- `approved` or `approved_with_notes` → Pass
-- `needs_revision` → Fail
+For each `apply` or `user_decision_required` finding, compute a proposed route:
 
-**Report both results independently using subagent output fields only** (do not add fields that are not in the subagent response).
+| Finding pattern | Recommended route |
+|-----------------|-------------------|
+| `dd_violation` where code matches the original requirement but the Design Doc captured a different design | `d` (Design-side update) |
+| `dd_violation` where code drifted from a still-correct Design Doc | `c` (Code-side fix) |
+| `reliability`, `security`, or `maintainability` finding | `c` (Code-side fix) |
 
-**Early exit (no findings to route)**: When code-reviewer's `verdict` is `pass` AND every entry in `acceptanceCriteria[]` has `status: "fulfilled"` AND `identifierMismatches[]` is empty AND `qualityFindings[]` is empty AND security-reviewer's `findings[]` is empty, skip Steps 5-9 and proceed directly to Step 10 — there is nothing to route. Present the clean result to the user.
-
-Otherwise, before presenting to the user, the orchestrator computes a recommended route per finding using the rule below (this rule is internal — do not include it in the user-facing prompt). The rule keys off code-reviewer's existing structured fields only — interpretation of "DD intent" is intentionally avoided to prevent unstable inference:
-
-| Finding source | Pattern detectable from existing fields | Recommended route |
-|---------------|-----------------------------------------|-------------------|
-| `acceptanceCriteria[]` with `status: "partially_fulfilled"` or `"unfulfilled"` | The cited `gap` indicates the code does not satisfy the AC — needs additional implementation | `c` (Code-side fix) |
-| `acceptanceCriteria[]` with `status: "partially_fulfilled"` or `"unfulfilled"` | The cited `gap` indicates the AC text itself diverged from the implemented (and team-accepted) behavior — i.e., the DD's AC wording captured the wrong intent rather than the code missing requirements (verify by reading the AC and comparing against the cited `location`) | `d` (Design-side update — AC text outdated) |
-| `identifierMismatches[]` | `codeValue` is a plausible rename of `designDocValue` (camelCase ↔ kebab-case ↔ snake_case, abbreviation expansion/contraction, semantic renaming where both names refer to the same concept) — verify by inspecting the cited `location` to confirm the code uses the new name consistently | `d` (Design-side update — DD likely outdated) |
-| `identifierMismatches[]` | All other identifier mismatches (e.g., wrong type, wrong cardinality, missing entirely) | `c` (Code-side fix) |
-| `qualityFindings[]` | All categories (`dd_violation`, `maintainability`, `reliability`, `coverage_gap`) | `c` (Code-side fix) |
-| security-reviewer `findings[]` | All categories (`confirmed_risk`, `defense_gap`, `hardening`, `policy`) | `c` (Code-side fix) |
-
-The user can override any recommendation per finding. AC items with `status: "fulfilled"` are not routed (no action needed).
-
-Then present to the user (label each finding with its recommended route, grouped by route):
+Present the adjudicated result. Group `apply` and `user_decision_required` findings by proposed route and list declined IDs with reasons separately:
 
 ```
 Code Review: [verdict from code-reviewer]
   Acceptance Criteria:
   - [fulfilled] [item] (confidence: [high/medium/low])
-  - [partially_fulfilled] [item]: [gap] — [suggestion] [recommended: c | d]
   - [unfulfilled] [item]: [gap] — [suggestion] [recommended: c | d]
   Identifier Mismatches:
   - [identifier]: DD=[designDocValue] Code=[codeValue] at [location] [recommended: c | d]
@@ -96,19 +81,14 @@ Security Review: [status from security-reviewer]
   Findings by category:
   - [confirmed_risk] [location]: [description] — [rationale] [recommended: c]
   - [defense_gap] [location]: [description] — [rationale] [recommended: c]
-  - [hardening] [location]: [description] — [rationale] [recommended: c]
-  - [policy] [location]: [description] — [rationale] [recommended: c]
-  Notes: [notes from security-reviewer, if present]
 
-Resolve discrepancies — confirm or override the recommended route per finding:
+Approve the proposed changes or decide unresolved items:
   c) Code-side fix       — code violates Design Doc; modify code to match
   d) Design-side update  — code is correct; Design Doc is stale, revise it
-  s) Skip                — accept current state without changes
+  s) Decline             — record the governing reason and accept current state
 ```
 
-Use AskUserQuestion. The default offer is **"accept all recommended routes"** — a single confirmation for the typical case where the orchestrator's recommendations are correct. When the user wants to override, collect per-finding c/d/s decisions instead. If the user selects `s` for everything: skip Steps 5-9, proceed to Step 10.
-
-The user's route decision is the finding's disposition under Review Resolution (the subagents-orchestration-guide skill's `references/review-resolution.md`): `c` and `d` are `apply` on the code side and the design side, `s` is `decline`. Record the route as the disposition and carry the reviewer's finding objects on unchanged.
+This review command authorizes analysis; obtain separate user authority before applying changes. The batch option is "approve all proposed `apply` routes". Collect an explicit decision for each `user_decision_required` item. When the approved change set is empty, proceed to Step 10.
 
 **Scope carried into the fix path**: Pass the approved findings, their routes, the files and sections they cover, and any size budget the user stated to every agent invoked from Steps 5-9. Before re-validation, map each diff hunk to an approved finding or to a consistency update that finding required; request a scope decision for any unmapped hunk or for a diff that exceeds a stated budget, rather than accepting it as part of the fix.
 
@@ -141,13 +121,13 @@ Run this step only when the user routed at least one finding to `d`. When all ro
 Invoke task-executor-frontend using Agent tool:
 - `subagent_type`: "task-executor-frontend"
 - `description`: "Execute review fixes"
-- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Keep the change within the approved routes and stated total size budget (stops at 5 files)."
+- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Keep the change within the approved routes and stated total size budget."
 
 ### Step 7: Quality Check
 Invoke quality-fixer-frontend using Agent tool:
 - `subagent_type`: "quality-fixer-frontend"
 - `description`: "Quality gate check"
-- `prompt`: "Confirm quality gate passage for fixed files. filesModified: [extract from the prior implementation step's response]."
+- `prompt`: "direct_scope: { outcome: [approved code-side findings passed to Step 6], affectedPaths: [paths covered by those findings and their required consistency changes], verificationCondition: applicable project quality checks pass }. Confirm quality gate passage for the complete current uncommitted worktree."
 
 ### Step 8: Re-validate code-reviewer
 
@@ -161,7 +141,7 @@ Invoke code-reviewer using Agent tool:
 Invoke security-reviewer using Agent tool (only if security fixes were applied):
 - `subagent_type`: "security-reviewer"
 - `description`: "Re-validate security"
-- `prompt`: "Re-validate security after fixes. Design Doc: [path]. Implementation files: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
+- `prompt`: "Re-validate security after fixes. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
 
 ### Step 10: Final Report
 
@@ -179,8 +159,6 @@ Security Review:
   Initial: [status]
   Correction review: [status for the re-review scope] (if fixes executed)
   Reconciliation: [resolved / withdrawn / maintained by finding ID]
-  Notes: [notes from approved_with_notes, if any]
-
 Declined findings:
 - [ID] — [governing reason and evidence]
 

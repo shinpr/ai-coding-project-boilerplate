@@ -137,7 +137,7 @@ PRDs focus solely on "what to build." Implementation phases and task decompositi
 
 ## Diagram Creation (Using Mermaid Notation)
 
-**User journey diagram** and **scope boundary diagram** are mandatory for PRD creation. Use additional diagrams for complex feature relationships or numerous stakeholders.
+Use a user journey diagram, scope boundary diagram, or both only when prose does not make a material flow or boundary clear. Use additional diagrams only when they resolve another material relationship.
 
 ## Quality Checklist
 
@@ -148,7 +148,7 @@ PRDs focus solely on "what to build." Implementation phases and task decompositi
 - [ ] Can non-technical people understand it?
 - [ ] Is feasibility considered?
 - [ ] Is there consistency with existing systems?
-- [ ] Are important relationships clearly expressed in mermaid diagrams?
+- [ ] Are material relationships clear in prose, a compact table, or a Mermaid diagram where needed?
 - [ ] **Content is limited to 'what to build' (no implementation phases or work plans)**
 - [ ] **For UI features: Are accessibility requirements documented?**
 - [ ] **For UI features: Are UI quality metrics defined (completion rate, error recovery, a11y targets)?**

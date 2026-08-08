@@ -7,47 +7,38 @@ description: Guides PRD, ADR, Design Doc, UI Spec, and Work Plan creation. Use w
 
 ## Creation Decision Matrix
 
-Evaluate rows by confirmed scale, then add the conditional documents named in the same row.
+| Structural Scale | Base Documents | Creation Order |
+|------------------|----------------|----------------|
+| Small | None | Direct implementation |
+| Medium | Design Doc, Work Plan | Design Doc -> Work Plan |
+| Large | PRD, Design Doc, Work Plan | PRD -> Design Doc -> Work Plan |
 
-| Confirmed Scale | Required Documents | Conditional Additions | Creation Order |
-|-----------------|--------------------|-----------------------|----------------|
-| Large (6+ files or large-risk axis) | PRD, Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies | PRD -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
-| Medium (3-5 files or medium-risk axis) | Design Doc, Work Plan | UI Spec for frontend/fullstack; ADR when any ADR condition applies; update an existing PRD when the feature scope changes | PRD update (if applicable) -> UI Spec (if applicable) -> ADR (if applicable) -> Design Doc -> Work Plan |
-| Small (1-2 files with no higher-risk axis) | None — the confirmed outcome, affected paths, and verification condition are passed to the executor as an explicit prompt | Update an existing PRD when the feature scope changes | PRD update (if applicable) -> implementation |
+Add a UI Spec before the Design Doc for frontend/fullstack work. Complete any qualifying ADR batch before the Design Doc. A qualifying ADR raises the scale to Medium at minimum.
 
-For a Large change, satisfy the PRD requirement by creating a new PRD, updating the relevant PRD, or creating a reverse PRD when no current product document exists.
+For a Large change, satisfy the PRD requirement by creating a new PRD, updating the relevant PRD, or creating a reverse PRD when no current product document exists. At any scale, update an existing PRD when the product scope changes.
 
-### Structural Escalation
+## Structural Scale
 
-File count measures size, not structural impact, so a two-file change can still reshape a contract or a data flow.
+Classify the decision burden, not repository layout. File count is supporting evidence only.
 
-When any ADR Creation Condition below applies, the confirmed scale is **Medium at minimum** — Design Doc and Work Plan required — regardless of file count. Escalation only raises a level; a file count that already reaches Medium or Large stands. Record the applied condition as the deciding axis.
+| Scale | Decision burden |
+|-------|-----------------|
+| Small | One coherent outcome, one evident repository-supported implementation within one responsibility boundary, and no unresolved durable choice |
+| Medium | One coherent outcome that coordinates a boundary or contains a potentially durable choice |
+| Large | Multiple independently valuable outcomes that require separate design decisions |
 
-## ADR Creation Conditions (Required if Any Apply)
+A cross-layer implementation can remain Medium when it serves one coherent outcome. A qualifying ADR raises the scale to Medium at minimum.
 
-### 1. Type System Changes
-- **Adding nested types with 3+ levels**: `type A = { b: { c: { d: T } } }`
-  - Rationale: Deep nesting has high complexity and wide impact scope
-- **Changing/deleting types used in 3+ locations**
-  - Rationale: Multiple location impacts require careful consideration
-- **Type responsibility changes** (e.g., DTO->Entity)
-  - Rationale: Conceptual model changes affect design philosophy
+## ADR Decision Filters
 
-### 2. Data Flow Changes
-- **Storage location changes** (DB->File, Memory->Cache)
-- **Processing order changes with 3+ steps**
-  - Example: "Input->Validation->Save" to "Input->Save->Async Validation"
-- **Data passing method changes** (props->Context, direct reference->events)
+Create an ADR only when a candidate decision passes both filters:
 
-### 3. Architecture Changes
-- Layer addition, responsibility changes, component relocation
+1. **Choice requires judgment**: At least two credible, materially distinct options remain after applying confirmed requirements, accepted ADRs, and repository evidence.
+2. **Choice is durable**: The selection changes a responsibility boundary, dependency, shared contract, persistence model, technology, reversibility, or lifecycle cost that future work must preserve.
 
-### 4. External Dependency Changes
-- Library/framework/external API introduction or replacement
+Create one ADR per decision point. Group tightly coupled choices when separating them would make either decision misleading.
 
-### 5. Complex Implementation Logic (Regardless of Scale)
-- Managing 3+ states
-- Coordinating 5+ asynchronous processes
+Examples that often qualify include selecting or replacing an external dependency, moving ownership across architectural boundaries, changing persistence strategy, or establishing a shared contract. Local implementation details and readily reversible choices belong in the Design Doc. File counts, nesting depth, state counts, and pipeline length are evidence of complexity, not ADR triggers.
 
 ## Detailed Document Definitions
 
@@ -61,8 +52,7 @@ When any ADR Creation Condition below applies, the confirmed scale is **Medium a
 - User stories and use cases
 - Acceptance criteria with sequential IDs (AC-001, AC-002, ...) for downstream traceability
 - MVP convergence — the smallest coherent behavior or journey that delivers the value, with excluded capabilities placed in Future or Out of Scope with a reason and an origin marking whether the user authored the exclusion or the requirement analysis judged it
-- User journey diagram (required)
-- Scope boundary diagram (required)
+- User journey or scope boundary diagram when prose does not make the material flow or boundary clear
 
 **Scope**: Business requirements, user value, success metrics, user stories, and prioritization only. Implementation details belong in Design Doc, technical selection rationale in ADR, phases and task breakdown in Work Plan.
 
@@ -71,13 +61,13 @@ When any ADR Creation Condition below applies, the confirmed scale is **Medium a
 **Purpose**: Record technical decision rationale and background
 
 **Includes**:
+- Decision point and scope boundary
 - Decision (what was selected)
 - Rationale (why that selection was made)
-- Option comparison (minimum 3 options) and trade-offs
+- Evidence-backed comparison of the credible options and their trade-offs
 - Architecture impact
-- Principled implementation guidelines (e.g., "Use dependency injection")
 
-**Scope**: Decision, rationale, option comparison, architecture impact, and principled guidelines only. Implementation procedures and code examples belong in Design Doc, schedule and resource assignments in Work Plan.
+**Scope**: Decision, rationale, option comparison, and architecture impact only. Implementation procedures and code examples belong in Design Doc, schedule and resource assignments in Work Plan.
 
 ### UI Specification
 
@@ -160,18 +150,18 @@ When any ADR Creation Condition below applies, the confirmed scale is **Medium a
 
 ## Creation Process
 
-1. **Problem Analysis**: Change scale assessment, ADR condition check
+1. **Problem Analysis**: Confirm scope, Structural Scale, and candidate decision points
    - Identify explicit and implicit project standards before investigation
    - **Output evidence**: confirmed scale with deciding axis, required-document list, and named source for each existing document
    - **Transition**: proceed when every document has `create`, `update`, or `not required` with a rule-based reason
-2. **ADR Option Consideration** (ADR only): Compare 3+ options, specify trade-offs
-   - **Output evidence**: option comparison with selected option, rejected options, known unknowns, and kill criteria
-   - **Transition**: proceed when the decision is reviewable and blocking unknowns are named
-3. **Creation**: Use templates, include measurable conditions
+2. **ADR Qualification**: Apply the Choice filter, then the Durability filter, independently to each candidate decision point
+   - **Output evidence**: qualifying decision points, credible options, repository evidence, and rejected candidates with reasons
+   - **Transition**: when ADRs qualify, create and review the complete batch before the Design Doc; otherwise continue directly
+3. **Creation**: Use templates and accepted ADRs, include measurable conditions
    - **Output evidence**: document at the required storage path with every required section populated or marked N/A with rationale
    - **Transition**: proceed when template checks and traceability checks pass
-4. **Approval**: "Accepted" after review enables implementation
-   - **Output evidence**: reviewer result, resolved conditions, and recorded user approval
+4. **Approval**: Review the ADR batch together and set accepted decisions to `Accepted`; approval of the resulting Design Doc enables planning or implementation
+   - **Output evidence**: reviewer result, resolved findings, accepted ADRs, and recorded user approval
    - **Transition**: implementation begins only after the required approval is recorded
 
 ## Storage Locations
@@ -192,24 +182,24 @@ When any ADR Creation Condition below applies, the confirmed scale is **Medium a
 `Proposed` -> `Accepted` -> `Deprecated`/`Superseded`/`Rejected`
 
 ## AI Automation Rules
-- Evaluate ADR Creation Conditions at every scale; create or update an ADR when any condition applies
-- A type or data-flow change requires an ADR when it matches a condition in the corresponding section above
-- Check existing ADRs before implementation
+- Apply the Choice filter before the Durability filter; both must pass
+- Check existing ADRs before creating or changing a decision
+- Create one ADR per qualifying decision point and review the batch together
 
 ## Diagram Requirements
 
-Required diagrams for each document (using mermaid notation):
+Use diagrams only when they make a material relationship easier to judge than prose or a compact table:
 
 | Document | Required Diagrams | Purpose |
 |----------|------------------|---------|
-| PRD | User journey diagram, Scope boundary diagram | Clarify user experience and scope |
+| PRD | User journey or scope boundary diagram when needed | Clarify a material user flow or scope boundary |
 | ADR | Option comparison diagram when 2+ material options have relationships or trade-offs that are easier to compare visually | Visualize trade-offs |
-| UI Spec | Screen transition diagram, Component tree diagram | Clarify screen flow and component structure |
-| Design Doc | Architecture diagram, Data flow diagram | Understand technical structure |
+| UI Spec | Screen transition or component tree diagram when needed | Clarify a material screen flow or component structure |
+| Design Doc | Architecture or data-flow diagram when needed | Clarify a material technical relationship |
 
 ## Common ADR Relationships
-1. **At creation**: Identify common technical areas (logging, error handling, async processing, etc.), reference existing common ADRs
-2. **When missing**: Consider creating necessary common ADRs
+1. **At creation**: Identify and reference accepted common ADRs that govern the change
+2. **When missing**: Apply both ADR filters; a generic cross-cutting concern alone does not justify an ADR
 3. **Design Doc**: Specify common ADRs in "Prerequisite ADRs" section
 4. **Compliance check**: Verify design aligns with common ADR decisions
 

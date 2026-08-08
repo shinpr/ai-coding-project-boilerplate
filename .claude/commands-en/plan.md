@@ -63,7 +63,7 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    Invoke document-reviewer to review the work plan:
    - `subagent_type`: "document-reviewer"
    - `description`: "Work plan review"
-   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md design_doc: [the Design Doc path selected in Step 1]. Review the Work Plan's own Implementation Scope, tasks, Completion Criteria, dependencies, execution order, exact source-anchor existence, executable verification. Confine findings and recommendations to content the target itself cites; Governing Documents paths supply citation locations only."
+   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md. Review the Work Plan's own Implementation Scope, tasks, Completion Criteria, dependencies, execution order, exact source-anchor existence, and executable verification. Resolve governing sources from the target's Governing Documents."
    - The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`:
      - `needs_revision`: run Review Resolution through its correction re-review, escalation, and convergence transitions, using work-planner in update mode for rerouted corrections
      - `approved`, or Review Resolution reaching its convergence condition: proceed to Step 5

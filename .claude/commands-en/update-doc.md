@@ -130,7 +130,7 @@ prompt: |
   integrity in the updated sections (paths, endpoints, type names, config keys).
 ```
 
-Read `summary.status` before continuing: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `summary.blockingReason` to the user rather than passing the result to document-reviewer, because its empty `discrepancies` would read as a clean verification.
+Read `summary.status` before continuing: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `blockingReason` to the user rather than passing the result to document-reviewer, because its empty `discrepancies` would read as a clean verification.
 
 **Store output as**: `$CODE_VERIFICATION_OUTPUT`
 
@@ -141,13 +141,13 @@ description: "Review updated document"
 prompt: |
   Review the following updated document.
 
-  doc_type: [DesignDoc / PRD / ADR]
+  doc_type: [DesignDoc / PRD / ADRBatch]
   review_context: update
-  target: [path from Step 1]
-  mode: composite
+  target: [path from Step 1] (DesignDoc or PRD)
+  targets: [[path from Step 1]] (ADRBatch only)
   requirements_verbatim: [Step 3 requested changes, verbatim] (Design Doc only)
-  confirmed_decisions: [Step 3 confirmed understanding of the changes] (Design Doc only)
-  code_verification: $CODE_VERIFICATION_OUTPUT (Design Doc only, omit for PRD/ADR)
+  confirmed_requirement_context: [Step 3 confirmed understanding of the changes] (Design Doc only)
+  verification_evidence: $CODE_VERIFICATION_OUTPUT (Design Doc only, omit for PRD/ADRBatch)
 
   Focus on:
   - Consistency of updated sections with rest of document
@@ -158,27 +158,11 @@ prompt: |
 **Store output as**: `$STEP_5_OUTPUT`
 
 **On review result**:
-- Approved → Proceed to Step 6
-- Needs revision → Return to Step 4 with the following prompt:
-  ```
-  subagent_type: [Update Agent from Step 2]
-  description: "Revise [Type] based on review feedback"
-  prompt: |
-    Operation Mode: update
-    Existing Document: [path from Step 1]
+- `approved` → Proceed to Step 6.
+- `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim to the Step 2 update agent, then rerun verification when applicable and re-review with `prior_feedback`.
+- `rejected` → Resolve the governing-source conflict or escalate when user authority is required.
 
-    ## Prior Review Feedback
-    $STEP_5_OUTPUT
-
-    Address each issue by severity:
-    - critical: Must fix
-    - important: Should fix
-    - recommended: May fix
-
-    Apply corrections and update change history.
-  ```
-  (max 2 iterations)
-- **After 2 rejections** → Flag for human review, present accumulated feedback to user and end
+Follow Review Resolution convergence and escalation conditions.
 
 Present review result to user for approval.
 
@@ -208,7 +192,7 @@ prompt: |
 |-------|--------|
 | Target document not found | Report and end (document creation is out of scope) |
 | Sub-agent update fails | Log failure, present error to user, retry once |
-| Review rejects after 2 revisions | Stop loop, flag for human intervention |
+| Reviewer returns `rejected` | Resolve the governing-source conflict or escalate when user authority is required |
 | design-sync detects conflicts | Present to user for resolution decision |
 
 ## Completion Criteria
