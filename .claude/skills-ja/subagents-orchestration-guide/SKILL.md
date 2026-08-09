@@ -5,11 +5,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 # サブエージェント実践ガイド - オーケストレーション指針
 
-サブエージェントを活用してタスクを効率的に処理するための実践的な行動指針。
-
 ## 最重要原則：オーケストレーターとして振る舞う
-
-**「私は作業者ではない。オーケストレーターである。」**
 
 ### 正しい振る舞い
 - 新規タスク: requirement-analyzerから開始し、そのエビデンスから要件を収束させ構造スケール（Structural Scale）を選択する
@@ -62,7 +58,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 「何を達成するか」「どこで作業するか」を渡す。各サブエージェントは「どう実行するか」を自律的に決定する。
 
 **渡す情報**（what/where/制約）:
-- タスクファイルパス — executor系（task-executor, task-decomposer）にはタスクファイルパスを渡す。より広いスコープはユーザーの明示的な要求がある場合のみ
+- タスクファイルパス — executor系は、タスクファイルを成果と調査の開始地点として使用する。完全で一貫した変更セットはリポジトリの責務から決める
 - ディレクトリまたはパッケージスコープ — discovery/review系（codebase-analyzer, code-verifier, security-reviewer, integration-test-reviewer）向け
 - ユーザーまたは設計成果物からの受入条件とハード制約
 
@@ -85,7 +81,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 サブエージェント同士の判断が衝突した場合、またはサブエージェントの出力が期待と異なる場合、上記の優先順位を適用する。リポジトリの客観的状態（3）で検証し、1・2と整合する出力に従う。矛盾がある場合はユーザー指示、次いで設計成果物に従う。
 
-サブエージェントが `blocked` を返した場合、まず承認済みスコープ内で、発見可能な入力や呼び出し方の問題を是正する。是正の試行は1回とする。再度の呼び出しでも `blocked` が返る場合、または前進のためにユーザーが持つ成果・権限・不可逆な外部判断が必要な場合はエスカレーションする。
+サブエージェントが`blocked`を返した場合、まずリポジトリのエビデンスから発見可能な入力やルーティングの問題を修正し、その修正で呼び出し内容が実質的に変わる場合は再実行する。前進のためにユーザーが持つ成果・権限・不可逆な外部判断が必要な場合に限りエスカレーションする。
 
 ### レビュー裁定（Review Resolution）
 
@@ -101,11 +97,11 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 - 全体品質保証（型チェック、lint、全テスト実行等）
 - 品質エラーの完全修正実行
 - 修正完了まで自己完結で処理
-- 最終的な approved 判定（修正完了後のみ）
+- 修正と利用可能なすべてのチェックを完了した後の最終品質判定
 
 ### 標準フロー
 
-**基本サイクル**: `task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit` の4ステップサイクルを管理。
+**基本サイクル**: `task-executor → ユーザーが持つ境界の判定・フォローアップ → quality-fixer → コミット` の4ステップサイクルを管理。
 各タスクごとにこのサイクルを繰り返し、品質を保証。
 
 **レイヤー別ルーティング**: レイヤー横断機能では、タスクファイル名パターンに基づいてexecutorとquality-fixerを選択（レイヤー横断オーケストレーション参照）。
@@ -156,21 +152,16 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 | requirement-analyzer | `requestSignals`、`scopeEvidence`、`costEvidence`、`questions` | 要件を収束させ、構造スケールを割り当て、より深いコードベースのエビデンスが必要かを判断する |
 | codebase-analyzer / ui-analyzer | — | JSON全体をそのまま次の専門エージェントへ渡す。各エージェントは自身の入力宣言が挙げるフィールドを消費する |
 | task-executor / task-executor-frontend | `status`、`escalation_type`、`requiresTestReview` | `completed` → サイクルを継続。`escalation_needed` → エージェントが定義する `escalation_type` に従って処理し、ユーザー判断が要る項目は提示する。`requiresTestReview: true` → quality-fixer の前に integration-test-reviewer を実行 |
-| quality-fixer / quality-fixer-frontend | `status` | `approved` → コミット。`stub_detected` → `incompleteImplementations[]` を実装ステップに戻し再実行。`blocked` → 後述の quality-fixer blockedハンドリング |
+| quality-fixer / quality-fixer-frontend | `status` | `approved` → コミット。`stub_detected` → `incompleteImplementations[]` を実装ステップに戻し再実行。`blocked` → ユーザーが判断すべき内容をそのまま提示 |
 | document-reviewer | `verdict.decision` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`rejected` → 出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーション |
 | integration-test-reviewer | `status` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`blocked` → 変更されたテストパスを解決して呼び出しを1回だけ是正する。テストが存在しない場合はその欠陥を executor へ差し戻す。再度 `blocked` が返る場合はレビュー未実施を記録し、その未証明の状態を完了レポートに引き継ぐ |
 | code-verifier / security-reviewer | `summary.status` / `status` | 「実装後検証の合否基準」を参照。不可逆操作のハザードによる security の `blocked` は必要な判断を名指しし、エージェント層の権限の外にある |
 | design-sync | `sync_status` | `CONFLICTS_FOUND` → 矛盾をユーザーに提示してから進む |
-| acceptance-test-generator | レーン別の `generatedFiles`、レーン別の `e2eAbsenceReason` | null でない各パスの存在を確認し、レーン別のパスと不在理由を work-planner へ渡す |
+| acceptance-test-generator | `generatedFiles[]` | 出力された各パスの存在を確認し、work-planner へ渡す。空のリストは、追加のスケルトンを要する未充足の証明義務がないことを示す |
 
 **オーケストレーターが持つエージェント間の配線**: quality-fixer には、未追跡・削除・リネームを含む現在の未コミットのワークツリー全体を調べるよう依頼する。実装ステップの `runnableCheck` を引き継ぎ、レシピまたは technical-spec がプロジェクトの正典となる品質コマンドを示している場合は `qualityCommand` として渡す。
 
-### quality-fixer blockedハンドリング
-
-quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
-- `"Cannot determine due to unclear specification"` → `blockingIssues[]`で仕様詳細を確認
-- `"Execution prerequisites not met"` → `missingPrerequisites[]`の`resolutionSteps`をユーザーにアクション可能なステップとして提示
-- `"Quality failure outside current task scope"` → `outOfScopeFailures[]`と`needsUserDecision`をユーザーに提示して停止する。ユーザーがタスクスコープを広げて当該失敗を含めた場合にのみ、quality-fixerを再実行する
+quality-fixer は、実行できなかったチェックと無関係と確認済みの既存失敗を、既存のチェック結果に記録する。今回の変更に関係する実行可能なチェックがパスした後は、`approved` として通常のルーティングを続ける。今回の変更が原因の失敗、または受け入れ済みの成果に必要な依存の失敗は、元のタスクにそのパスがなくても修正対象とする。
 
 ## 作業計画時の基本フロー
 
@@ -258,7 +249,7 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 - quality-fixer：修正権限（品質エラー自動修正）
 
 ### Step 2 実行詳細
-- `status: escalation_needed` または `status: blocked` → ユーザーにエスカレーション
+- `status: escalation_needed` または `status: blocked` → 宣言されたユーザーが持つ境界を確認し、リポジトリのエビデンスを調べても未解決の場合はエスカレーション
 - `requiresTestReview` が `true` → **integration-test-reviewer** を実行
   - `status` が `needs_revision` → レビュー裁定を適用し、同じ `task_file` と `apply` の quality-issue オブジェクト一式を逐語で渡して、ルーティング先の executor（レイヤー別エージェントルーティング 参照、task-executor または task-executor-frontend）を **Fix Mode** で再実行する
   - `status` が `blocked` → 移動・リネームされた変更テストパスを解決してレビュアを1回だけ再実行する。`requiresTestReview: true` にもかかわらず変更されたテストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でルーティング先の executor に差し戻す。再実行でも `blocked` が返る場合はレビュー未実施を記録して quality-fixer へ進む
@@ -268,9 +259,8 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 
 以下の場合に自律実行を停止し、ユーザーにエスカレーション：
 
-1. **サブエージェントからのエスカレーション**
-   - `status: "escalation_needed"` のレスポンス受信時
-   - `status: "blocked"` のレスポンス受信時
+1. **サブエージェントが示した、ユーザーが持つ境界**
+   - 受理済みの振る舞い、公開/共有契約、承認済みの重要な設計、外部の権限、不可逆な操作のいずれかに判断が必要
 
 2. **要件変更検知時**
    - 要件変更検知チェックリストで1つでも該当
@@ -305,7 +295,7 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 }
 ```
 
-選択したフローで必須のタスク、品質ゲート、検証エージェント、commit stepがすべて完了した場合にのみ`status`を`completed`とする。未解決項目によって次の移行が妨げられる場合は`blocked`とする。
+選択したフローで必須のタスク、品質ゲート、検証エージェント、commit stepがすべて完了した場合に`status`を`completed`とする。実行できなかったチェックは`verification`に記録し、未解決のユーザー判断によって完了できない場合に限り`blocked`とする。
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
@@ -324,7 +314,7 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
    - 各サブエージェントの出力を次のサブエージェントの入力形式に変換
    - **前工程の成果物は必ず次のエージェントに渡す**
    - 構造化レスポンスから必要な情報を抽出
-   - changeSummaryからコミットメッセージを作成 → **Bashでgit commit実行**
+   - changeSummaryからコミットメッセージを作成して git commit を実行
    - 要件変更時は初期要件と追加要件を明示的に統合
 
    #### 収束記録 → それを引き継ぐエージェント
@@ -365,16 +355,14 @@ quality-fixerが `status: "blocked"` を返した場合、`reason`で判別：
 
    **acceptance-test-generatorへの入力**: Design Doc のパス、UI Spec のパス（存在する場合）。
 
-   **オーケストレーターの検証**: 非nullの各 `generatedFiles.<lane>` パスがディスク上に存在すること。nullのレーンごとに `e2eAbsenceReason.<lane>` が存在すること — これは意図的な不在であり、エラーではない。
+   **オーケストレーターの検証**: `generatedFiles[]` の各パスがディスク上に存在すること。空のリストも有効な生成結果である。
 
-   **work-plannerへの入力**: 統合テスト / fixture-e2e / service-integration-e2e の各ファイルパス（レーンごとに値またはnull）、レーン別の不在理由、およびタイミングガイダンス — 統合テストは各フェーズ実装と並行して作成、fixture-e2e テストは UI 機能フェーズと並行して作成、service-integration-e2e テストは最終フェーズでのみ実行。
-
-   **エラー時**: status != completed で統合テストファイル生成が予期せず失敗した場合はユーザーにエスカレーションする。E2Eレーンがnullかつ妥当な不在理由がある場合はエラーではない。
+   **work-plannerへの入力**: 生成されたパスとタイミングガイダンス — 統合テストは各フェーズ実装と並行して作成し、fixture-e2e テストは UI 機能フェーズと並行して作成し、service-integration-e2e テストは必要なサービスが利用可能になった後に実行する。
 3. **ADRステータス管理**: ユーザー判断後のADRステータス更新（Accepted/Rejected）
 
 ## 重要な制約
 
-- **品質チェック**: quality-fixerが`approved`を返した後にcommitできる
+- **品質チェック**: quality-fixer が `approved` を返した後にタスクをコミットできる
 - **構造化レスポンス**: サブエージェント間で渡す情報には、宣言済みのJSON fieldを使用する
 - **承認管理**: ドキュメント作成後にdocument-reviewerを実行し、指定されたユーザー承認の停止点を通過してから次のPhaseへ進む
 - **フロー確認**: 承認後は、確定した大規模・中規模・小規模フローから次のstepを選択する
@@ -391,8 +379,6 @@ TaskCreateで全体フェーズを登録。各フェーズ完了時にTaskUpdate
 | code-verifier | `summary.status`が`consistent` | `summary.status`が`needs_review`または`inconsistent` | `summary.status`が`blocked` → `blockingReason`を添えてエスカレーション。検証可能な入力がなかった状態である |
 | security-reviewer | `status`が`approved` | `status`が`needs_revision` | `status`が`blocked` → 不可逆操作、またはエージェントの権限外として名指しされた判断をエスカレーション |
 
-**再実行ルール**: 修正サイクルは最大2回とする。各サイクル後に**Fail**を返した検証エージェントを再実行し、Passした検証エージェントの記録済み証跡は維持する。以前Failだった検証エージェントがPassになるか、名前付きの残存指摘件数が減った場合にのみ進捗ありと判定する。進捗がない、または外部入力が必要な場合は直ちにエスカレーションする。2回目のサイクル後は、残るすべての不合格を指摘内容とともにエスカレーションする。
-
-このルールが制限するのは検証エージェント群である。検出事項単位の修正ループは `references/review-resolution.md` セクション3が別途制限し、先に到達した方でエスカレーションする。
+**再実行ルール**: 不合格となった検証エージェントの検出事項にレビュー裁定を適用し、修正対象になった検出事項を返した検証エージェントだけを再実行する。修正の収束とエスカレーションはレビュー裁定が担い、合格した検証エージェントの記録済みエビデンスは維持する。
 
 **修正サイクルのハンドオフ**: レビュー裁定を適用し、必要な各 executor には `apply` の検出事項オブジェクト全体を逐語で、処理方針のみ付加して渡す。照合を受け付けるレビュアー入力には `prior_feedback` を引き継ぐ。

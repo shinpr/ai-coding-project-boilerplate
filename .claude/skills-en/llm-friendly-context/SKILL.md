@@ -7,7 +7,7 @@ description: Clarifies inputs, outputs, success criteria, decisions, and unresol
 
 The goal is stable downstream execution: the next agent should know what to read, what to do, what counts as success, and which unresolved decisions can change the result.
 
-This skill governs the clarity of LLM-facing output — prompts, handoffs, and generated artifacts. The caller supplies the artifact type and any artifact-specific template or input contract; include only the information its consumer uses to decide, act, or verify. A declared contract supplies the normal field names and value meanings, while semantically equivalent labels or prose remain usable when they resolve to the same information from available context.
+This skill governs the clarity of LLM-facing output — prompts, handoffs, and generated artifacts. The caller supplies the artifact type and any artifact-specific template or input contract; include only the information its consumer uses to decide, act, or verify. Use a declared contract's field names and value meanings when the consumer branches on them.
 
 ## Core Rules
 
@@ -37,7 +37,7 @@ This skill governs the clarity of LLM-facing output — prompts, handoffs, and g
 6. **Permit uncertainty explicitly**
    - Resolve missing operational detail from governing artifacts and representative repository evidence before treating it as unresolved.
    - Record remaining uncertainty with its effect on the outcome or proof. Make reversible repository-local choices inside the confirmed boundary and preserve the evidence used.
-   - Escalate only when the unresolved choice changes the product outcome, a major approved design decision, user-held authority, or an irreversible action. When only proof is unavailable, complete unaffected work and report the exact verification limitation.
+   - Escalate only when the unresolved choice changes the product outcome, a major approved design decision, user-held authority, or an irreversible action. When only proof is unavailable, complete unaffected work and report exactly what could not be verified and why.
 
 7. **Keep constraints proportionate**
    - Add only constraints that reduce ambiguity or preserve a real requirement.

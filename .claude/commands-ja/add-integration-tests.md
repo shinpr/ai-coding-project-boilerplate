@@ -36,25 +36,17 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 ### ステップ1: ドキュメントの探索と検証
 
-```bash
-# ドキュメントパスが指定されているか確認
-test -n "$ARGUMENTS" || { echo "ERROR: ドキュメントパスが指定されていません"; exit 1; }
+`$ARGUMENTS`で明示された各パスを、移動または改名されたものも含めて解決する。その後、リポジトリのドキュメント配置とメタデータを調べ、関連するDesign DocとUI Specを探す。慣例的な`docs/design/`と`docs/ui-spec/`は、必須のレイアウトではなく探索の手掛かりとして扱う。
 
-# 指定パスの存在確認
-ls $ARGUMENTS
+見つかったドキュメントは、宣言されたスコープと内容から分類する:
+- backend契約、永続化、service責務 → **Design Doc（バックエンド）**
+- component、UI状態、ブラウザ上の振る舞い、frontend責務 → **Design Doc（フロントエンド）**
+- 画面、状態、インタラクションの仕様を持つ責務 → **UI Spec**（任意）
+- 責務は1つだがレーンが曖昧 → **単一レイヤーのDesign Doc**（参照先コードとリポジトリ上の責務からexecutor laneを解決）
 
-# 追加ドキュメントの探索
-ls docs/design/*.md 2>/dev/null | grep -v template
-ls docs/ui-spec/*.md 2>/dev/null
-```
+ユーザーが明示したドキュメントと、そこから参照される意味上関連した成果物を用いて続行する。複数の妥当なドキュメント集合またはexecutor laneによって生成するテストが実質的に変わる場合に限り、確認を求める。
 
-探索されたドキュメントをファイル名で分類:
-- ファイル名に`backend`を含む → **Design Doc（バックエンド）**
-- ファイル名に`frontend`を含む → **Design Doc（フロントエンド）**
-- `docs/ui-spec/`配下 → **UI Spec**（任意）
-- 上記いずれにも該当しない → **単一レイヤーのDesign Doc**（レイヤーは下記のゲートで確定）
-
-**[GATE] 分類結果を候補としてユーザーに提示し、続行前に確認を得る。** 自動探索で検出された無関係なドキュメントはユーザーが除外できる。単一レイヤーのDesign Docが検出された場合、バックエンドとフロントエンドのどちらを対象とするかユーザーに確認し、正しいエージェントルーティングを決定する。
+ステップ1で読み取り可能な Design Doc を確定し、その受け入れ済みの振る舞いを特定した後にスケルトン生成を開始する。
 
 ### ステップ2: スケルトン生成
 
@@ -65,16 +57,16 @@ ls docs/ui-spec/*.md 2>/dev/null
 - `description`: "[レイヤー/名称]のテストスケルトン生成"
 - `prompt`: "[パス]のDesign Docからテストスケルトンを生成。" + UI Specが存在する場合: "[UI Specパス]のUI Specを追加コンテキストとして利用可能。"
 
-**呼び出しごとの期待出力**: `generatedFiles`（統合テストとE2Eのパスを含む）
+**呼び出しごとの期待出力**: 出力したスケルトンのパスを含む `generatedFiles[]`
 
 ### ステップ3: タスクファイル作成 [GATE]
 
-**事前確認**: ステップ2 の各呼び出し結果について `generatedFiles.integration` を検査する:
-- `integration` がパス → 該当レイヤーのタスク作成へ進む
-- `integration` が `null` → 該当レイヤーのタスク作成をスキップし、レイヤー名と生成エージェントの `e2eAbsenceReason`（該当時）を最終レポート用に記録
-- 全レイヤーが `integration: null` を返した → ステップ4〜7 を完全にスキップし、「どのレイヤーでも統合テストスケルトンは生成されなかった」と各レイヤーの理由を添えて報告して終了
+**事前確認**: ステップ2 の各呼び出し結果について `generatedFiles[]` を検査する:
+- 出力されたファイルを含む → 該当レイヤーのタスク作成へ進む
+- 空である → 既存テストまたはより低コストなテストで受け入れ済みの証明義務を満たせるため、該当レイヤーのタスク作成をスキップする
+- すべての結果が空である → ステップ4〜7 を完全にスキップし、追加の統合/E2E証明成果物は不要であると報告して終了する
 
-`integration` パスが非nullのレイヤーごとに1つのタスクファイルを作成。monorepo-flow.mdの命名規則に従い、エージェントルーティングを決定的にする:
+生成ファイルがあるレイヤーごとに1つのタスクファイルを作成する。monorepo-flow.mdの命名規則に従い、エージェントルーティングを決定的にする:
 - バックエンドのDesign Doc → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
 - フロントエンドのDesign Doc → `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
 - 単一レイヤー（バックエンド確定） → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
@@ -93,7 +85,7 @@ type: test-implementation
 
 ## Target Files
 
-- スケルトン: [ステップ2のgeneratedFilesからレイヤー別パス]
+- スケルトン: [ステップ2で該当レイヤーのgeneratedFilesに含まれる全パス]
 
 ## Investigation Targets
 
@@ -134,7 +126,7 @@ type: test-implementation
 Agentツールでintegration-test-reviewerを呼び出す:
 - `subagent_type`: "integration-test-reviewer"
 - `description`: "テスト品質レビュー"
-- `prompt`: "テスト品質をレビュー。テストファイル: [ステップ4のtestsAdded]。taskFiles: [ステップ4で使用したものと同じタスクファイルパス]。diffBase: HEAD。スケルトンファイル: [ステップ2のgeneratedFilesから現在のタスクのレイヤーに該当するパス]"
+- `prompt`: "テスト品質をレビュー。テストファイル: [ステップ4のtestsAdded]。taskFiles: [ステップ4で使用したものと同じタスクファイルパス]。diffBase: HEAD。スケルトンファイル: [ステップ2で現在のレイヤーのgeneratedFilesに含まれる全パス]"
 
 **期待される出力**: `status`（approved/needs_revision/blocked）、`blockingReason`、および唯一の修正リストである `qualityIssues[]`
 
@@ -143,7 +135,7 @@ Agentツールでintegration-test-reviewerを呼び出す:
 ステップ5の結果を `status` で分岐して確認:
 - `approved` → 完了としてマーク、ステップ7へ進む
 - `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を渡してルーティング先の task-executor を **Fix Mode** で再起動する。その後ステップ5に戻る
-- `blocked` → 現在の diff から移動・リネームされたテストパスを解決してレビューを**1回だけ**再実行する。変更されたテストが存在しない場合はステップ4に戻り、実装結果を是正する。再実行でも `blocked` が返る場合は、テストレビュー未実施を `blockingReason` とともに記録してステップ7へ進む
+- `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。executorが読み取り可能な変更テストを生成していない場合はステップ4に戻って実装結果を是正し、それ以外はレビューを未実行として `blockingReason` を記録してステップ7へ進む
 
 タスクファイル名パターンでルーティングしてtask-executorを呼び出す:
 - `*-backend-task-*` → `subagent_type`: "task-executor"
@@ -163,13 +155,12 @@ Agentツールでintegration-test-reviewerを呼び出す:
 
 quality-fixer レスポンスをチェック:
 - `stub_detected` → ステップ4 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor を **Fix Mode** で再起動し、ステップ4→5→6→7 を再実行
-- `blocked` → ユーザーにエスカレーション
-- `approved` → ステップ8 へ
+- `blocked` → quality-fixerが報告した、ユーザーが持つ判断をエスカレーションする
+- `approved` → ステップ8へ
 
 ### ステップ8: コミット
 
-quality-fixer から `approved` の場合:
-- Bash で適切なメッセージを付けてテストファイルをコミット
+quality-fixer の `approved` を受けて、完了したテストタスクをコミットする。
 
 ### ステップ9: 最終クリーンアップ
 
@@ -177,16 +168,16 @@ quality-fixer から `approved` の場合:
 
 - 本実行で作成された `docs/plans/tasks/integration-tests-backend-task-*.md` および `docs/plans/tasks/integration-tests-frontend-task-*.md` に該当するすべてのファイルを削除する
 
-タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが完了をブロックしない。
+ファイルシステムエラーによってタスクファイルが残った場合は、そのクリーンアップ失敗を記録したうえで完了処理を続ける。
 
 ## サブエージェントのスコープ境界
 
 本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
 
 ```
-Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-New files derived from the requested deliverable are in scope (e.g., test skeleton files specified by the recipe).
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+サブエージェントのスコープ境界:
+受け入れ済みのテスト証明を、それを担うリポジトリ上の責務全体で整合する形で完成させる。
+参照されたパスは調査の起点として扱い、同じ証明に必要なテスト基盤の関連ファイルを含める。
+割り当てられた進捗フィールドを除き、出典となる成果物は読み取り専用とする。
+進行にプロダクト成果、公開契約、主要設計、権限、または不可逆操作に関するユーザー判断が必要な場合はエスカレーションする。
 ```

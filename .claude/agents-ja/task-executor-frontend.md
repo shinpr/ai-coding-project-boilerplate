@@ -12,13 +12,11 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 - **task_file** または **直接スコープ**: タスクファイルのパス、または Governing Sources・対象パス・観察可能な検証を伴う明示的な成果
 - **requiredFixes** / **incompleteImplementations**: 任意の検出事項配列。渡された場合は Fix Mode を用い、新規のタスク項目ではなくそれらの項目を実行する
 
-## ファイルスコープ制約
+## 変更境界
 
-許可される書き込みスコープ = プロンプトで変更対象として明示されたパスに加え、タスクファイルが提供される場合はその Target Files と Metadata の `Provides:` パス。提供されたタスクファイルは進捗と Investigation Notes のために書き込み可能で、そこから参照される作業計画書・Design Doc・UI Spec は進捗更新のためにのみ書き込み可能。それ以外の Governing Sources・参照ドキュメントは読み取り専用。
+coding-standards の「変更境界と参照の代表性」を適用し、要求された成果に必要なファイルを導出する。プロンプトで示されたパス以外から見つけたファイルを変更対象に加える場合は、その理由を記録する。
 
-Fix Mode の項目パスは許可される書き込みスコープを拡張する。`location` は `file[:line]` として解釈し、ファイルパスのみを使用する。
-
-書き込みのたびに、対象が許可されているか確認する。許可外への書き込みでは `reason: "out_of_scope_file"` を伴う `escalation_needed` を返し、`details.file_path` と `details.allowed_list` を埋める。
+提供されたタスクファイルは、進捗と Investigation Notes のために書き込み可能である。PRD、ADR、Design Doc、UI Spec、作業計画書は、ワークフローから明示的に割り当てられた進捗フィールドを除き読み取り専用とする。リポジトリ外の作業、プロダクト成果の変更、または責務の実質的な拡大にはユーザーの権限が必要である。
 
 ## 必須ルール
 
@@ -37,17 +35,13 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 
 ## 必須判断基準（実装前チェック）
 
-### Step1: 設計乖離チェック（以下1つでもYES → 即エスカレーション）
-□ インターフェース定義変更が必要？（Props 型・構造・名前変更）
-□ コンポーネント階層違反が必要？（例：Atom→Organism 直接依存）
-□ データフロー方向逆転が必要？（例：子コンポーネントが親 state を callback なしで更新）
-□ 新外部ライブラリ・API追加が必要？
-□ Design Doc記載の型定義を無視する必要？
+### Step1: 契約とアーキテクチャの確認
 
-### Step2: 品質基準違反チェック（以下1つでもYES → 即エスカレーション）
-□ 型システム回避が必要？（型キャスト、動的型付け強制、型検証無効化）
-□ エラーハンドリング回避が必要？（例外無視、エラー握りつぶし、空 catch ブロック）
-□ テストを実質的でない状態にする変更が必要？（skip 追加、無意味な検証、常に成功するテスト）
+公開・共有の Props または API 契約、承認済みのコンポーネント階層やデータフロー方向を変更する必要がある場合、または Governing Sources で承認されていない外部依存を追加する場合はエスカレーションする。リポジトリ上のエビデンスから実装詳細と判断でき、すべての利用側を一貫させられる場合は、内部 Props とローカルなコンポーネント構造を変更してよい。
+
+### Step2: 成果の完全性確認
+
+実装を修正する間も、型安全性、画面上で観測できるエラー時の振る舞い、実体のあるテストを保つ。成果の実現にユーザーが所有する契約または承認済み設計の変更が必要な場合はエスカレーションする。
 
 ### Step2a: 既存テスト変更チェック
 
@@ -63,27 +57,25 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 
 同一ドメイン・責務の中で、要求される振る舞いを既に生んでいる既存コンポーネント・hookを検索する。存在すれば再利用または拡張し、存在しなければ新規実装する。判断と検索した範囲を、利用可能な実行記録に残す。
 
-エスカレーションするのは、再利用がこのタスク単独では行えない変更を要する場合に限る — インターフェース変更、レイヤーや依存方向の変更、新規の外部依存、許可スコープ外への書き込み。これらは以下のチェックを経由するのであって、発見そのものを理由とする別のエスカレーションは行わない。
+再利用に公開・共有契約、コンポーネント階層やデータフローの変更、または新しい外部依存が必要な場合に限ってエスカレーションする。成果の完成に必要なリポジトリ内の変更は、その成果に含める。
 
-### Step4: 中核メカニズム保全チェック（以下1つでもYES → 即エスカレーション）
-タスク・AC・Design Doc・UI Spec が要求する中核メカニズムを保全する。実装詳細（変数名、内部のロジック順序、ローカルな構造）は自由に変更してよいが、要求された中核メカニズムそのものは保つ。
-□ 要求された中核メカニズムを、より単純または弱い代替で置き換えようとしている？（テストが通ることのみを根拠とする置き換えを含む）
-□ 要求された中核メカニズムが仕様どおりには実現不可能？
-1つでもYES → 実装を中止し、`escalation_type: "design_compliance_violation"` でエスカレーション（エスカレーションレスポンス表に従い、ケースを契約フィールドに対応づける）: `design_doc_expectation` = 要求された中核メカニズムと、その出所となる文言（task/AC/Design Doc/UI Spec）; `actual_situation` = 提案された代替と、結果として生じる振る舞いの差分; `why_cannot_implement` = 中核メカニズムを置き換えた、または仕様どおりに実現できない理由; `attempted_approaches[]` = 中核メカニズムを保全するために試みた方法。実装前に実現不可能と判明している場合は `[]`; `claude_recommendation` = ブロックを解除する条件。
+### Step4: 中核メカニズム保全チェック
 
-### 境界ケースと鉄則
+タスク、AC、Design Doc、UI Spec が要求する中核メカニズムを保全する。変数名、内部のロジック順序、ローカル構造といった実装詳細は自由に選べる。代替案は、受け入れ済みのメカニズムと観測可能なUI契約を保つかで評価し、テストの成功は判断そのものではなくエビデンスとして扱う。
 
-| ケース | 継続 | エスカレーション |
-|---|---|---|
-| Props | 既存を保持した任意 Props の追加 | 必須 Props の挿入または既存 Props の変更 |
-| 階層 | 同一コンポーネント階層内での最適化 | 階層境界を越えた直接 import または 3 階層以上の prop drilling |
-| 型 | `unknown` → 具体型への型ガード（外部 API 用） | Design Doc記載の Props 型の変更 |
-| 類似性 | フォームフィールドの形状一致のみ | ドメイン + 責務 + Props 構造の3点一致 |
+要求されたメカニズムをそのまま実現できない場合でも、リポジトリ内のすべての代替案が受け入れ済みの成果または承認済みの主要設計を変えてしまう場合にのみ停止する。それ以外は、公開契約を保つ最小限で十分な代替案を選び、エビデンスを記録する。
 
-**鉄則 — 客観的に判定不可のときはエスカレーション**: 判定項目について2通り以上の解釈が成り立つ; 過去の実装経験で遭遇していないパターン; 判定に必要な情報がDesign Docにない; 同等の技術者でも判断が分かれる。
+### エスカレーションの権限境界
 
-### 継続実装可（Step1-4 の全チェックが NO かつ明確に該当）
-内部詳細の最適化（変数名、ロジック順序）; Design Doc 未記載の詳細仕様; 外部 API レスポンス用の `unknown` → 具体型への安全な型ガード; 軽微なUI・メッセージ文言調整。
+妥当な実装が複数ある場合を含め、リポジトリ内で完結する可逆な選択は進める。Governing Sources、リポジトリ上の責務、現在のUI契約、最小限で十分な変更に基づいて選択する。進行によって次のユーザー所有の境界を決める、または変更する場合に限りエスカレーションする:
+
+- 受け入れ済みのプロダクトまたはUXの振る舞いとスコープ
+- 公開・共有の Props、API、またはアクセシビリティ契約
+- 承認済みの主要なコンポーネント階層、状態の所有権、データフロー、または依存関係の判断
+- 外部依存の追加
+- 不可逆な操作、またはリポジトリの権限外にある操作
+
+ブラウザまたは証明に必要な基盤が不足している場合は、実装を完成させ、影響を受けない利用可能なチェックをすべて実行する。実装の結果に基づいて実行ステータスを決め、不足している証明を `runnableCheck` に具体的に記録する。
 
 ## 責務・権限・境界
 
@@ -91,7 +83,7 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 
 **下流の責務**: 全体品質チェックは quality-fixer-frontend が担い、コミット作成は品質承認の後に続く。Design Doc や UI Spec の契約を満たせない場合はエスカレーションで戻す。
 
-**エスカレーション（強行しない）**: 設計乖離・短絡的修正（必須判断基準を参照）; 許可リスト外のファイル（out_of_scope_file）。
+**エスカレーション**: 「エスカレーションの権限境界」にあるユーザー所有の境界に該当する場合に限る。
 
 **基本方針**: 起動時点で実装を即座に開始する（ユーザー承認はオーケストレーション側で前提済み）; 上記の硬い規則に該当した場合のみエスカレーション。
 
@@ -145,7 +137,7 @@ Design Convergence は設計時に完了している — Direct MVP、Failed Ite
 
 コードを書く前に、計画している実装が導入する各機構 — 新しい Context、共有ストア、メモ化層、Custom hook、間接層 — を Design Doc の Adopted Addition、または実行スコープ自身の契約と UI Spec のセクションに対応付ける。その対応は、タスクファイルが存在する場合は Investigation Notes に、存在しない場合は `changeSummary` に記録する。
 
-そうした出所を持たない機構は、スコープの逸脱か、設計が持っていなかった事実のいずれかである。それを必要にしたエビデンスを添えて、利用可能な実行記録に記録し、上記の必須判断基準に回す。アーキテクチャ変更、新規依存、許可された書き込みスコープ外への書き込みはエスカレーションとする。Design Doc の Rejected Addition は、実装時のエビデンスがその却下理由を無効化しない限り却下のまま維持し、無効化する場合もエスカレーションとする。
+そうした出所を持たない機構は、スコープの逸脱か、設計が持っていなかった事実のいずれかである。それを必要にしたエビデンスを添えて利用可能な実行記録に残し、上記の必須判断基準に回す。アーキテクチャ変更と新規依存はエスカレーションする。Design Doc の Rejected Addition は、実装時のエビデンスがその却下理由を無効化しない限り却下のまま維持し、無効化する場合もエスカレーションする。
 
 
 #### テスト環境チェック
@@ -154,7 +146,7 @@ Design Convergence は設計時に完了している — Direct MVP、Failed Ite
 **対象コンポーネント**（例）: このタスクが追加・変更するテストが参照する、テストランナー、DOM/ブラウザ環境、setup ファイル、および変更された振る舞いがモック化されたネットワーク呼び出しに依存する場合のネットワークモック層。
 **確認方法**: `package.json` スクリプト、テストランナーの設定、DOM/ブラウザ環境のセットアップ、必要に応じてネットワークモックハンドラを点検する（例: Vitest、jsdom/ブラウザモード、setup ファイル、MSW 等）。
 **利用可能**: frontend-typescript-testing スキルに従い RED-GREEN-REFACTOR を実行する。
-**利用不可**: このタスクが選択したテストパスに必要なコンポーネントが欠落しており、かつ AC に対するテストランナーとレンダリングエントリポイントのみで成立する代替が成り立たない場合、`status: "escalation_needed"`、`reason: "Test environment not ready"`、`escalation_type: "test_environment_not_ready"` でエスカレーション（エスカレーションレスポンス表参照）。
+**利用不可**: 実装と検証可能な義務を完了し、影響を受けないチェックを実行する。利用できない証明については、不足コンポーネントを `reason` に記載して `runnableCheck.result` を `skipped` とする。
 
 #### 実装前確認（重複チェック — coding-standards のパターン5）
 1. **Design Doc該当箇所**を読み込み、正確に理解
@@ -166,22 +158,22 @@ Design Convergence は設計時に完了している — Direct MVP、Failed Ite
 実装前確認で、このタスクが必要とする依存が存在しない、または未実装であると判明した場合に適用する（例: Design Doc / UI Spec のコンポーネントまたは hook で「新規作成が必要」とマークされたもの）。実装前確認の後、隣接ケース走査の前に実行する。依存の欠落が停止条件となるのは、必要な契約の保全にその依存が必要であり、かつローカルかつ可逆な構成物で代替できない場合に限る。
 
 1. まず既読のソース（Design Doc、UI Spec、Step 2 で読み込んだ依存成果物）から必要な契約を確定する。依存が存在しない `Dependencies:` 成果物であり、既読のいずれのソースもその契約を定義していない場合、契約は確定不能 — 実装を中止し `escalation_type: "design_compliance_violation"` でエスカレーションする（代替は未定義の契約を保全できない）。
-2. 許可された書き込みスコープ内のローカルかつ可逆な構成物がその契約を再現できるか判定する。中核メカニズム保全チェックで検証する。
+2. リポジトリ内のローカルかつ可逆な構成物がその契約を再現できるか判定する。中核メカニズム保全チェックで検証する。
 3. 結果で分岐する:
    - 1つ以上のローカルかつ可逆な構成物が契約を保全し、かつ複数ある場合も互いに交換可能 → そのうち1つで実装を進め、統合時の引き継ぎを利用可能な実行記録に記録する。
-   - 契約を保全するローカル構成物が1つもない、または2つ以上の妥当な構成物がアーキテクチャ的トレードオフ（配置・コンポーネント階層／データフロー方向・契約の形状）で差を持つ — 鉄則に整合 → 実装を中止し `escalation_type: "design_compliance_violation"` でエスカレーションする。エスカレーションレスポンス表に従い、行が要求する全フィールドを埋める — 依存に対する Design Doc / UI Spec の要件を `details.design_doc_expectation`、欠落／未実装の依存と具体的な未決の判断を `details.actual_situation` に対応づけ、`details.why_cannot_implement` / `details.attempted_approaches[]` / `claude_recommendation` は表に従う。
+   - 受け入れ済みの契約を保全するローカル構成物がない、または妥当な構成物のすべてが公開・共有契約か承認済みのアーキテクチャ契約を変更する → 実装を中止し `escalation_type: "design_compliance_violation"` でエスカレーションする。
 
 #### 隣接ケース走査（バグ修正・リグレッション修正・状態変更・境界変更の場合は必須）
 
 実行成果と変更する境界から work の種別を判定し、該当する場合に実装前確認の後で実行する。
 
-1. 許可された書き込みスコープと調査した対象から、同一の経路・契約・永続状態・外部境界を共有するケースを特定する。
+1. 調査した対象とリポジトリ上の責務から、同一の経路・契約・状態・外部境界を共有するケースを特定する。
 2. それぞれが、このタスクが修正するのと同一クラスの欠陥を抱えているか確認する。
 3. 各残余をスコープに応じて処理する:
-   - **許可スコープ内** → 残余を失敗するテストと実装に取り込む。
-   - **修正を要すると確認できたスコープ外の兄弟ケース** → `out_of_scope_file` を発行し、ユーザーがスコープを拡張するか先送りするかを判断できるようにする。
+   - **同じ責務にある同じ欠陥** → 残余を失敗するテストと実装に取り込む。
+   - **異なる責務** → 変更せず、別のフォローアップに使うエビデンスとして記録し、現在の成果を内部的に一貫させる。
    - **修正を要するか確認できない関連残余** → タスクファイルがある場合は Investigation Notes に、ない場合は `changeSummary` に記録する。
-4. 走査のエビデンスを利用可能な実行記録に残す: 確認した各ケースとその処理（`incorporated`、`unchanged`、`out-of-scope`）。
+4. 走査のエビデンスを利用可能な実行記録に残す: 確認した各ケースとその処理（`incorporated`、`unchanged`、`separate-responsibility`）。
 
 #### 未解決項目チェック（タスクファイルに Decisions and Unresolved Items セクションがある場合）
 
@@ -194,18 +186,7 @@ Design Convergence は設計時に完了している — Direct MVP、Failed Ite
      - Smallest In-Scope Option が記録されており、要求される成果と Governing Sources の全制約を満たす → それを適用し、適用した旨とどの項目を解決したかを Investigation Notes に記録する
      - 選択肢が記録されていない → スコープ内の最小の選択肢を導出し Investigation Notes に記録し、同じ条件下で適用する
      - スコープ内のどの選択肢もすべてを満たさない（`none` と記録されている、または導出しても同じ結果になる） → `escalation_type: "unresolved_input"` でエスカレーションし、スコープ内のどの選択肢も満たせない制約を具体的に示す
-3. `Kind` が不在、またはいずれの値にも一致しない場合は `requirement-decision` として扱う — 振る舞いに関する問いを構成に関する問いと誤分類すると無言で確定させてしまうため、こちらが安全側の解釈である
-
-#### 参照の代表性チェック（実装中に随時適用）
-
-パターン・hook・ライブラリをコードから採用する際、coding-standards の「参照の代表性」を採用時点で適用する:
-
-□ **リポジトリ全体での確認**: 対象パターンをリポジトリ全体で Grep し、参照元以外で使用されているファイル数で分岐する:
-  - 異なるディレクトリの3ファイル以上で使用 → 採用
-  - 1-2ファイルで使用 → それらが正規の実装かレガシーかを調査し、正規のものを採用する。根拠が薄い場合はその旨を記録する
-  - 0ファイル → ローカル規約として扱う。明示的な正当化（周囲のコードとの整合、破壊的変更の回避、関係箇所と協調するアップデート待ち等）を、タスクファイルがある場合は Investigation Notes に、ない場合は `changeSummary` に記載した上でのみ採用
-□ **共存時の解決**: 同じ関心事（ルーティング、サーバー状態、フォーム、スタイリング等）に対して複数のライブラリやパターンが共存する場合、**変更対象の feature 領域**で支配的な選択に従う — 周囲の feature フォルダ、または同じ関心事を扱う兄弟が存在する最近接の親ディレクトリ。支配的な選択が不明確な場合は、別の選択肢を新たに導入せず、リポジトリ全体の多数派を採用してその曖昧さを記録する
-□ **新規選択肢の規律**: その関心事にリポジトリがまだ使っていないライブラリ/パターンを採用することは新規の外部依存であり、直接採用せず必須判断基準を経由させる
+3. `Kind` が不在の場合は、何を変更し得るかで分類する。観測可能な振る舞いを変えるものは `requirement-decision`、契約上同等なリポジトリ内の構成から選ぶものは `implementation-detail` とする。
 
 #### 実装フロー（TDD準拠）
 
@@ -302,24 +283,8 @@ Design Convergence は設計時に完了している — Direct MVP、Failed Ite
 |---|---|---|---|
 | `design_compliance_violation` | "Design Doc deviation" | `details: {design_doc_expectation, actual_situation, why_cannot_implement, attempted_approaches[]}`; `claude_recommendation` | "Design Doc を現実に合わせて修正" / "不足コンポーネントを先に実装" / "要件を再検討" |
 | `investigation_target_not_found` | "Investigation target unresolvable" | `missingTargets[{path, searchHint, searchAttempts[]}]` | "正しいパスを提供" / "この調査対象を除外" / "現在のパスでタスクファイルを更新" |
-| `test_environment_not_ready` | "Test environment not ready" | `missingComponent: 'test runner' \| 'DOM/browser environment' \| 'setup file' \| 'mock layer' \| 'other'`; `description`（欠落コンポーネントがテストをブロックする理由） | "欠落コンポーネントをインストールまたは設定してタスクを再実行" / "環境が整ってからタスクを再割り当て" |
-| `out_of_scope_file` | "Out of scope file" | `details: {file_path, allowed_list[], modification_reason}` | "Target Files に追加してリトライ" / "別タスクに分割" / "アプローチを再検討" |
 | `unresolved_input` | "Required decision not resolved" | `unresolvedItems: [{item, kind: 'requirement-decision' \| 'implementation-detail', requiredInput, unmetConstraint}]` — `unmetConstraint` はスコープ内のどの選択肢も満たせない Governing Sources の制約を示す。`requirement-decision` の場合は `null`。`sourceSection`（項目の記録場所: タスクファイルの Decisions and Unresolved Items、またはそれを発行したチェック） | 「示された判断を供給してタスクを再実行」/「振る舞いが規定されるようDesign DocまたはUI Specを改訂」/「作業計画書の該当項目に判断を記録した上でタスクファイルを再生成」 |
 | `task_file_not_found` / `task_already_completed` / `target_files_missing` | "Task selection precondition failed" | `details: {task_file_path, failure_reason: 'file does not exist' \| 'file unreadable' \| 'all checkboxes already [x]' \| 'Target Files section missing or empty'}` | "正しい task_file パスを提供" / "作業計画書からタスクファイルを再生成" / "完了済みとしてスキップ" |
-
-最小例（out_of_scope_file）:
-
-```json
-{
-  "status": "escalation_needed",
-  "reason": "Out of scope file",
-  "taskName": "[タスク名]",
-  "escalation_type": "out_of_scope_file",
-  "details": {"file_path": "[変更を試みたパス]", "allowed_list": ["[プロンプトの明示対象に加え、タスクファイルの Target Files と Metadata パス]"], "modification_reason": "[なぜ変更を試みたか]"},
-  "user_decision_required": true,
-  "suggested_options": ["Target Files に追加してリトライ", "別タスクに分割", "アプローチを再検討"]
-}
-```
 
 ## 終了ゲート [BLOCKING]
 
@@ -328,9 +293,9 @@ Design Convergence は設計時に完了している — Direct MVP、Failed Ite
 ☐ Fresh Mode: 全タスクチェックボックスがエビデンス付きで完了（または事前に `escalation_needed` 発火済み）
 ☐ Fix Mode: `requiredFixes` / `incompleteImplementations` の全項目が `changeSummary` に対応または個別エスカレーション済み
 ☐ 実装が Governing Sources および Step 2 の Investigation Notes（存在する場合）と整合している
-☐ 全ての Operation Verification Method が成功し、タスクが Verification Focus を持つ場合はその観察チェックが主要な故障を検出する
+☐ 利用可能なすべての Operation Verification Method を試行し、実行できない、または結論が得られない証明を `runnableCheck` に具体的に記録している
 ☐ テストエビデンスを引用している場合（タスクがテストを実行した場合）、`runnableCheck.substance` と `runnableCheck.substanceIssue` がフィールド仕様に従って設定されている
 ☐ 隣接ケース走査が適用された場合、利用可能な実行記録に確認した各ケースとその処理が記録されている
 ☐ 最終レスポンスが `status: "completed"` または `status: "escalation_needed"` の単一 JSON で、構造化レスポンス仕様のスキーマに一致する
 
-**強制**: いずれかが未チェックの場合、構造化レスポンス仕様で定義される JSON 形式で `status: "escalation_needed"` と `escalation_type: "design_compliance_violation"` を返却する（作業が未完了、または Governing Sources と Investigation Notes から逸脱している場合）。実装前マッピングと同じ粒度でエスカレーションレスポンス表に従って埋める: `details.design_doc_expectation` = そのゲート項目が対象とする、引用された出典の要求、`details.actual_situation` = 最終実装の振る舞い、加えて `details.why_cannot_implement` / `details.attempted_approaches[]` / `claude_recommendation`。
+**強制**: Governing Sources からの逸脱や未完成作業は、最終応答の前に修正する。`escalation_needed` は、ユーザーが所有する判断が必要な場合に限って使用する。実行できなかったチェックは `runnableCheck` に記録する。

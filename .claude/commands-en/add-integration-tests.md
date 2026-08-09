@@ -151,20 +151,18 @@ Invoke quality-fixer routed by task filename pattern:
 - `description`: "Final quality assurance"
 - `prompt`: "Final quality assurance for the complete current uncommitted worktree. Run all applicable checks. task_file: [task file path]."
 
-**Expected output**: `status` (approved/verification_incomplete/stub_detected/blocked)
+**Expected output**: `status` (approved/stub_detected/blocked)
 
 Check quality-fixer response:
 - `stub_detected` → Return to Step 4 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array, then re-execute Steps 4→5→6→7
 - `blocked` → Escalate the user-owned decision reported by quality-fixer
-- `approved` or `verification_incomplete` → Proceed to Step 8
+- `approved` → Proceed to Step 8
 
 ### Step 8: Commit
 
-Apply the subagents-orchestration-guide Commit Boundary Check and commit the coherent test task. For `verification_incomplete`, add the limitation trailers and retain the structured limitations for retry before completion.
+On `approved` from quality-fixer, commit the completed test task.
 
 ### Step 9: Final Cleanup
-
-Retry every retained verification limitation whose prerequisite may now be available. A remaining limitation produces a `blocked` completion result naming the unproved test claim and retry condition; committed task checkpoints remain intact.
 
 After all task files have been processed and committed, delete the task files this recipe created. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
 

@@ -46,12 +46,10 @@
 修正再レビューのエントリを、記録された `prior_disposition` に従って処理する:
 
 - `resolved` と `withdrawn` は完了
-- `prior_disposition: apply` の `maintained` は、元の検出事項と照合エントリ全体を逐語で同じ author / executor の経路に戻し、その後もう一度修正再レビューを行う
+- `prior_disposition: apply` の `maintained` は、元の検出事項と照合エントリ全体を逐語で同じ author / executor の経路に戻す。対象成果物が変更された場合、または `maintained` の理由を直接扱う新しいエビデンスが追加された場合にのみ修正再レビューを行う
 - `prior_disposition: decline` の `maintained` は、その decline を維持し、修正サイクルを再開しない
 
-エスカレーションする条件: 同一IDの `prior_disposition: apply` が2回連続で `maintained` を返した、処理方針が `user_decision_required` である、ユーザーのみが持つ権限が必要である、不可逆な操作が承認待ちである、または必要な入力が実際に使用不能である。進行してよいのは、`prior_disposition: apply` の `maintained` エントリが残っておらず、対応可能な他の全検出事項に処理方針があり、各 `user_decision_required` 項目にユーザーの判断が記録された後である。
-
-この検出事項単位のループは、親スキル「実装後検証の合否基準」にある検証エージェント単位のサイクル上限とは別物である。あちらは実装後の検証エージェント群を何回まで再実行するかを制限し、こちらは1つの検出事項IDが何回まで `maintained` を返せるかを制限する。両方が適用され、先に到達した方でエスカレーションする。
+成果物の変更も、該当理由を直接扱う新しいエビデンスもない修正レスポンスは、いずれかが得られるまで同じ author / executor の修正ステップに留め、再レビューを起動しない。エスカレーションするのは、処理方針が `user_decision_required` である、ユーザーのみが持つ権限が必要である、不可逆な操作が承認待ちである、または必要な入力が実際に使用不能である場合に限る。進行してよいのは、`prior_disposition: apply` の `maintained` エントリが残っておらず、対応可能な他の全検出事項に処理方針があり、各 `user_decision_required` 項目にユーザーの判断が記録された後である。
 
 ハンドオフに含めるのは、次のちょうどこの集合である:
 

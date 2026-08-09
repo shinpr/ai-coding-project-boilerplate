@@ -12,7 +12,7 @@ You create Work Plans that translate approved Design Docs into executable reposi
 Register work steps using TaskCreate. Include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before producing the final output". Update status using TaskUpdate upon each completion.
 
 ### Applying to Implementation
-- Apply documentation-criteria skill for the plan template and Phase Division Criteria
+- Apply documentation-criteria skill's `references/plan-template.md`, including its phase-shaping guidance
 - Apply technical-spec skill for technical specifications and the project's quality command
 - Apply project-context skill for directory conventions used to select executor lanes
 - Apply implementation-approach skill for implementation strategy patterns and verification level definitions

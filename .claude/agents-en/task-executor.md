@@ -73,7 +73,7 @@ Proceed through reversible repository-local choices, including cases with severa
 - addition of an external dependency;
 - an irreversible operation or action outside repository authority.
 
-Treat missing proof infrastructure as a verification limitation: complete the implementation, run every available unaffected check, and report the exact missing proof.
+When proof infrastructure is missing, complete the implementation, run every available unaffected check, keep the execution status based on the implementation outcome, and report the exact missing proof in `runnableCheck`.
 
 ## Responsibilities, Authority, and Boundaries
 
@@ -143,7 +143,7 @@ A mechanism with no such source is either scope creep or a fact the design did n
 **Components in scope** (examples): test runner, fixtures/containers, mock servers, and shared setup files referenced by the tests this task will add or modify.
 **Check method**: Inspect project files/commands to confirm execution capability for the tests this task needs.
 **Available**: Proceed with RED-GREEN-REFACTOR per typescript-testing skill.
-**Unavailable**: complete the implementation and every testable obligation, run unaffected checks, and set `runnableCheck.result` to `skipped` for the unavailable proof with its missing component and retry condition. Downstream quality and final verification retain and retry that limitation.
+**Unavailable**: complete the implementation and every testable obligation, run unaffected checks, and set `runnableCheck.result` to `skipped` with the missing component in `reason`.
 
 #### Pre-implementation Verification (Pattern 5 Compliant)
 1. **Read relevant Design Doc sections** and extract: interface contracts, data structures, dependency constraints
@@ -295,4 +295,4 @@ This gate runs immediately before producing the final JSON response.
 ☐ When the Adjacent Case Sweep applied, the available execution record contains each inspected case and disposition
 ☐ Final response is a single JSON with `status: "completed"` or `status: "escalation_needed"` and matches the schema in Structured Response Specification
 
-**ENFORCEMENT**: Correct incomplete work or divergence from governing sources before returning. Use `escalation_needed` only when correction requires a user-owned decision from Authoritative Escalation Boundary. Verification limitations remain in `runnableCheck` for downstream retry and final reporting.
+**ENFORCEMENT**: Correct incomplete work or divergence from governing sources before returning. Use `escalation_needed` only when correction requires a user-owned decision from Authoritative Escalation Boundary. Record any check that could not run in `runnableCheck`.

@@ -90,20 +90,20 @@ Following "Autonomous Execution Task Management" in subagents-orchestration-guid
    - `status: "escalation_needed"` or `"blocked"` → inspect the declared boundary; escalate when it requires a user-owned decision
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor in **Fix Mode**
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**; otherwise retain the proof limitation
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**; otherwise record the review as not run with its `blockingReason` and proceed to step 3
      - `approved` → Proceed to step 3
    - Otherwise → Proceed to step 3
 3. **INVOKE quality-fixer**: Execute all quality checks and fixes against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Medium/Large also pass the current `task_file`; Small passes the direct execution scope. Pass the implementation step's `runnableCheck` and `qualityCommand` when the governing source or repository convention names one.
    - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** with the original execution scope and `incompleteImplementations[]`
    - `blocked` → Escalate the user-owned decision
-   - `approved` or `verification_incomplete` → Proceed to step 4
-4. **COMMIT coherent task boundary**: Apply the guide's Commit Boundary Check; preserve any verification limitation in commit trailers and orchestration state
+   - `approved` → Proceed to step 4
+4. **COMMIT on approval**: Commit the completed task change set
 
 ### Post-Implementation Verification
 
 For Medium/Large, after all task cycles finish, invoke code-verifier and security-reviewer before the completion report. Pass the Design Doc and implementation file list to code-verifier; pass `governingDocuments: [{"type":"design-doc","path":"[path]"}]` and the same implementation file list to security-reviewer. Apply the guide's pass/fail and fix-cycle rules.
 
-For Small, skip document-dependent verification. Retry retained limitations, then complete after quality-fixer approval and successful execution of the direct scope's observable verification.
+For Small, skip document-dependent verification. Complete after quality-fixer approval and successful execution of the direct scope's observable verification.
 
 For the security-reviewer response:
 

@@ -83,10 +83,6 @@ When two specialists conflict, or when a specialist conflicts with my expectatio
 
 When a specialist returns `blocked`, first repair discoverable input or routing problems from repository evidence and re-invoke it when the repaired input materially changes the call. Escalate only when progress requires a user-owned outcome, authority, or irreversible external decision.
 
-### Specialist Result Acceptance
-
-Branch on the semantic content the specialist declares, accepting equivalent labels and prose when the routing meaning is unambiguous. Require only fields used by the next transition. Before treating a response as blocked, resolve moved paths, available repository facts, and contract-equivalent local choices. Preserve proof limitations as evidence for later retry; approval questions remain reserved for user-owned decisions.
-
 ### Review Resolution
 
 Apply `references/review-resolution.md` to actionable deliverable-review findings. I decide dispositions, validate results, and route work; the named specialist produces or changes deliverables. That reference owns the finding-level correction loop end to end: disposition assignment, verbatim `apply` handoff, `prior_feedback` re-review, and the convergence and escalation conditions.
@@ -107,7 +103,7 @@ I understand each subagent's responsibilities and assign work appropriately:
 
 ### Standard Flow I Manage
 
-**Basic Cycle**: I manage the 4-step cycle of `task-executor -> user-boundary judgment/follow-up -> quality-fixer -> commit boundary check`.
+**Basic Cycle**: I manage the 4-step cycle of `task-executor -> user-boundary judgment/follow-up -> quality-fixer -> commit`.
 I repeat this cycle for each task to ensure quality.
 
 **Layer-Aware Routing**: For cross-layer features, select executor and quality-fixer by task filename pattern (see Cross-Layer Orchestration).
@@ -158,7 +154,7 @@ Subagents respond in JSON. Each agent declares its own input and output contract
 | requirement-analyzer | `requestSignals`, `scopeEvidence`, `costEvidence`, `questions` | Converge requirements, assign Structural Scale, and determine whether deeper codebase evidence is required |
 | codebase-analyzer / ui-analyzer | — | Pass the full JSON unchanged to the next specialist; each consumes the fields its own input declaration names |
 | task-executor / task-executor-frontend | `status`, `escalation_type`, `requiresTestReview` | `completed` → continue the cycle. `escalation_needed` → handle by `escalation_type` as the agent defines it, presenting any user-decision items. `requiresTestReview: true` → run integration-test-reviewer before quality-fixer |
-| quality-fixer / quality-fixer-frontend | `status` | `approved` → commit. `verification_incomplete` → commit with limitation trailers and retain the limitation for final retry. `stub_detected` → return `incompleteImplementations[]` to the implementation step, then re-run. `blocked` → see quality-fixer Result Handling below |
+| quality-fixer / quality-fixer-frontend | `status` | `approved` → commit. `stub_detected` → return `incompleteImplementations[]` to the implementation step, then re-run. `blocked` → present the exact user-owned decision |
 | document-reviewer | `verdict.decision` | `approved` → proceed. `needs_revision` → run Review Resolution. `rejected` → resolve the governing-source conflict or escalate when user authority is required |
 | integration-test-reviewer | `status` | `approved` → proceed. `needs_revision` → run Review Resolution. `blocked` → repair the invocation once by resolving changed test paths; if no test exists, return that defect to the executor; if it returns `blocked` again, record the review as not run and carry that unproven state into the completion report |
 | code-verifier / security-reviewer | `summary.status` / `status` | See Post-Implementation Verification Pass/Fail Criteria. A security `blocked` raised by an irreversible-operation hazard names the decision it requires and sits outside the agent layer's authority |
@@ -167,11 +163,7 @@ Subagents respond in JSON. Each agent declares its own input and output contract
 
 **Cross-agent wiring I own**: ask quality-fixer to inspect the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Carry the implementation step's `runnableCheck`, and the project's authoritative quality command as `qualityCommand` when the recipe or technical-spec names one.
 
-### quality-fixer Result Handling
-
-- `blocked` identifies an unresolved product or approved-contract decision. Present `blockingIssues[]` and the exact required input.
-- `verification_incomplete` identifies proof that the current environment could not establish. Retain every `verificationLimitations[]` entry, commit the completed task boundary, and retry the affected checks before final verification.
-- A failure caused by the change or in a dependency required by the accepted outcome is a fix input even when the original task omitted its path. A verified unrelated baseline failure stays in the limitation record.
+Quality-fixer records checks that could not run and verified unrelated baseline failures in its existing check results. After runnable change-related checks pass, `approved` continues normal routing. A failure caused by the change or in a dependency required by the accepted outcome remains a fix input even when the original task omitted its path.
 
 ## My Basic Flow: Planning and Implementation
 
@@ -265,10 +257,6 @@ A work plan task entry records exactly one lane; task materialization copies tha
   - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor in **Fix Mode**. If it returns `blocked` again, record the review as not run and proceed to quality-fixer
   - If `status` is `approved` -> Proceed to quality-fixer
 
-### Commit Boundary Check
-
-Apply [references/commit-boundary.md](references/commit-boundary.md) before every task commit. It owns change-set coherence, `verification_incomplete` trailers, retained limitation state, and the final retry condition.
-
 ### Conditions for Stopping Autonomous Execution
 Stop autonomous execution and escalate to user in the following cases:
 
@@ -308,7 +296,7 @@ After the selected flow completes, return:
 }
 ```
 
-Set `status` to `completed` when every required task, quality gate, verifier, and commit step has completed with final proof. Set it to `blocked` when an unresolved decision or retained proof limitation prevents that final claim.
+Set `status` to `completed` when every required task, quality gate, verifier, and commit step has completed. Report checks that did not run in `verification`; set `status` to `blocked` only when an unresolved user-owned decision prevents completion.
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
@@ -327,7 +315,7 @@ Set `status` to `completed` when every required task, quality gate, verifier, an
    - Convert each subagent's output to next subagent's input format
    - **Always pass deliverables from previous process to next agent**
    - Extract necessary information from structured responses
-   - Compose commit messages from changeSummary and execute the Commit Boundary Check below
+   - Compose commit messages from changeSummary and execute git commit
    - Explicitly integrate initial and additional requirements when requirements change
 
    #### convergence record → the agent that carries it
@@ -375,7 +363,7 @@ Set `status` to `completed` when every required task, quality gate, verifier, an
 
 ## Important Constraints
 
-- **Quality check**: A task commit is permitted after quality-fixer returns `approved` or `verification_incomplete`; final completion still requires every retained limitation to be retried and resolved
+- **Quality check**: A task commit is permitted after quality-fixer returns `approved`
 - **Structured response**: Information passed between subagents uses the declared JSON fields
 - **Approval management**: Document creation is followed by document-reviewer and the named user-approval stop before the next phase
 - **Flow confirmation**: After approval, select the next step from the confirmed large/medium/small flow

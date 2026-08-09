@@ -60,7 +60,7 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 - [ ] 停止ポイントを認識した → **全ての停止ポイントでAskUserQuestionを使用**
 - [ ] 各Design Doc作成前にcodebase-analyzerを含めた
 - [ ] 各Design Docについて document-reviewer の前に code-verifier を含めた
-- [ ] タスク実行後の4ステップサイクル（task-executor → エスカレーション判定・フォローアップ → quality-fixer → commit）を理解した
+- [ ] タスク実行後の4ステップサイクル（task-executor → ユーザーが持つ境界の判定・フォローアップ → quality-fixer → コミット）を理解した
 
 **フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで4ステップを管理する
 
@@ -69,10 +69,11 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
 
 ```
-Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+サブエージェントのスコープ境界:
+タスクの成果を、それを担うリポジトリ上の責務全体で整合する形で完成させる。
+参照されたパスは調査の起点として扱い、同じ成果に必要な関連ファイルを含める。
+割り当てられた進捗フィールドを除き、出典となる成果物は読み取り専用とする。
+進行にプロダクト成果、公開契約、主要設計、権限、または不可逆操作に関するユーザー判断が必要な場合はエスカレーションする。
 ```
 
 加えて、サブエージェントから rule-advisor を呼び出すとシステムクラッシュを引き起こすため、全サブエージェントプロンプトの末尾に以下の制約も含める:
@@ -86,37 +87,33 @@ Escalate when the required fix or investigation falls outside that scope.
 subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで以下のステップを管理：
 1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small では承認済みの成果・出典・影響パス・検証条件を直接渡し、タスクファイルは作成しない。
 2. **task-executor レスポンスをチェック**:
-   - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
+   - `status: "escalation_needed"` または `"blocked"` → 宣言された境界を確認し、ユーザーが持つ判断を必要とする場合はエスカレーションする
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスと `diffBase: HEAD` を渡す。Medium/Large ではさらに `taskFiles: [現在のタスクファイルパス]` を渡し、Small では直接スコープの検証主張を渡す。その後 `status` で分岐する
      - `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を逐語で task-executor に渡して **Fix Mode** でステップ1 に戻る
-     - `blocked` → 現在の diff から移動・リネームされたテストパスを解決してレビューを**1回だけ**再実行する。`requiresTestReview: true` にもかかわらず変更されたテストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でステップ1 に差し戻す。再実行でも `blocked` が返る場合は、テストレビュー未実施を `blockingReason` とともに記録してステップ3へ進み、その未証明の状態を完了レポートに引き継ぐ
+     - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を**Fix Mode**でステップ1に差し戻し、それ以外はレビューを未実行として `blockingReason` を記録してステップ3へ進む
      - `approved` → ステップ3 へ
    - それ以外 → ステップ3 へ
 3. **quality-fixer を呼び出す**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して、全品質チェックと修正を実行する（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large では現在の `task_file` も渡し、Small では直接の実行スコープを渡す。実装ステップの `runnableCheck` と、出典ソースまたはリポジトリの規約が権威ある品質コマンドを示している場合は `qualityCommand` を渡す。
    - `stub_detected` → 元の実行スコープと `incompleteImplementations[]` を渡して task-executor を **Fix Mode** で再起動し、ステップ1 に戻る
-   - `blocked` → ユーザーにエスカレーション
-   - `approved` → ステップ4 へ
-4. **承認後コミット**: `approved` 確認後 → git commit を実行
+   - `blocked` → ユーザーが持つ判断をエスカレーションする
+   - `approved` → ステップ4へ
+4. **承認後にコミット**: 完了したタスクの変更セットをコミットする
 
 ### 実装後検証
 
 Medium/Large では、全タスクサイクル完了後、完了レポートの前に code-verifier と security-reviewer を実行する。code-verifier には Design Doc と実装ファイルリストを渡し、security-reviewer には `governingDocuments: [{"type":"design-doc","path":"[パス]"}]` と同じ実装ファイルリストを渡す。合格/不合格と修正サイクルの規則はガイドに従う。
 
-Small ではドキュメント依存の検証をスキップする。quality-fixer の承認と、直接スコープの観察可能な検証の成功をもって完了とする。
+Smallではドキュメント依存の検証をスキップする。quality-fixerの承認と、直接スコープの観測可能な検証の成功をもって完了とする。
 
 security-reviewer のレスポンス:
 
    - `approved` → 完了レポートへ
-   - `needs_revision` → 各検出事項にレビュー裁定を適用し、`apply` の検出事項オブジェクトを逐語で、影響パスと観察可能な検証条件とともに渡して task-executor を **Fix Mode** で起動する。続いて quality-fixer、その後 `prior_feedback` を添えて security-reviewer を再実行する。
+   - `needs_revision` → 各検出事項にレビュー裁定を適用し、`apply` の検出事項オブジェクトを逐語で、影響パスと観察可能な検証条件とともに渡して task-executor を **Fix Mode** で起動する。`prior_feedback` を添えて security-reviewer を再実行し、レビュー裁定が収束するまで従った後、quality-fixer を1回実行する。
    - `blocked` → ユーザーにエスカレーション
 
 ### テスト情報の伝達
-acceptance-test-generator実行後、work-planner（subagent_type: "work-planner"）呼び出し時にはレーン別に伝達する：
-- 統合テストファイルパス（`generatedFiles.integration`から取得）または null
-- fixture-e2eテストファイルパス（`generatedFiles.fixtureE2e`から取得）または null
-- service-integration-e2eテストファイルパス（`generatedFiles.serviceE2e`から取得）または null
-- レーン別の不在理由（`e2eAbsenceReason.fixtureE2e` / `e2eAbsenceReason.serviceE2e`、当該レーンが null の場合）
-- タイミングの明示: 統合テストは各フェーズ実装と並行して作成、fixture-e2eテストはUI機能フェーズと並行して作成、service-integration-e2eテストは最終フェーズでのみ実行
+acceptance-test-generator実行後、`generatedFiles[]` を `testSkeletons` として work-planner（subagent_type: "work-planner"）へ渡す。空のリストは、追加の統合/E2Eスケルトンタスクが不要であることを示す。
+- タイミングの明示: 統合テストは各フェーズ実装と並行して作成、fixture-e2eテストはUI機能フェーズと並行して作成、service-integration-e2eテストは必要なサービスが利用可能になった後に実行
 
 ### 最終クリーンアップ
 

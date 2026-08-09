@@ -131,7 +131,6 @@ After correction review converges, invoke quality-fixer-frontend once using Agen
 
 Branch on its response:
 - `approved` → proceed to Step 11
-- `verification_incomplete` → retain `verificationLimitations[]` and proceed to Step 11 without claiming complete quality proof
 - `blocked` → present the user-owned decision reported by quality-fixer-frontend
 
 ### Step 11: Final Report
@@ -150,8 +149,8 @@ Security Review:
   Reconciliation: [resolved / withdrawn / maintained by finding ID]
 
 Quality Check:
-  Status: [approved / verification_incomplete / not run — no code changes]
-  Limitations: [verificationLimitations, when present]
+  Status: [approved / not run — no code changes]
+  Checks not run or unrelated baseline failures: [from the quality-fixer result, when present]
 
 Declined findings:
 - [ID] — [governing reason and evidence]

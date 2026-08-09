@@ -35,9 +35,9 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 ## 実行プロセス
 
 ### Step 1: 設計ドキュメント選択
-   ! ls -la docs/design/*.md | head -10
-   - 設計ドキュメントの存在を確認、なければユーザーに通知
-   - 複数ある場合は選択肢を提示（$ARGUMENTSで指定可能）
+   - 明示された`$ARGUMENTS`のパスを、移動または改名されたものも含めて最初に解決する
+   - それ以外では、リポジトリのドキュメント規約、宣言されたスコープ、component/UI責務からfrontend Design Docを探す
+   - 複数の妥当なドキュメントによって異なる計画になる場合に限り、選択肢を提示する
 
 ### Step 2: テストスケルトン生成
 Agentツールでacceptance-test-generatorを呼び出す:
@@ -46,20 +46,14 @@ Agentツールでacceptance-test-generatorを呼び出す:
 - UI Specあり: `prompt: "[パス]のDesign Docからテストスケルトンを生成。UI Specは[ui-specパス]。"`
 - UI Specなし: `prompt: "[パス]のDesign Docからテストスケルトンを生成。"`
 
-レーン別のテストファイルパスと不在理由を、subagents-orchestration-guideの「acceptance-test-generator → work-planner」セクションに従いwork-plannerに渡す。
+生成されたパスを、subagents-orchestration-guideの「acceptance-test-generator → work-planner」セクションに従いwork-plannerに渡す。
 
 ### Step 3: 作業計画書作成
 Agentツールでwork-plannerを呼び出す:
 - `subagent_type`: "work-planner"
 - `description`: "作業計画書作成"
-- ステップ2でテストスケルトンを生成した場合、各レーンの状態を列挙する形でプロンプトを構築する:
-  - 必ず含める: "統合テストファイル: [パス または 'not generated']"
-  - E2Eの各レーン（`fixtureE2e`、`serviceE2e`）について:
-    - `generatedFiles.<lane>`がnullでない場合: "[lane] テストファイル: [パス]"
-    - `generatedFiles.<lane>`がnullの場合: "[lane] スケルトンは生成されませんでした（理由: [e2eAbsenceReason.<lane>]）"
-  - 配置ガイダンスを末尾に付加する: "統合テストは各フェーズ実装と同時に作成。fixture-e2eテストはUI機能フェーズと並行して作成。service-integration-e2eテストは最終フェーズでのみ実行。"
-- テストスケルトンを生成しなかった場合:
-  `prompt`: "[パス]のDesign Docから作業計画を作成。"
+- `generatedFiles[]` を `testSkeletons` として渡す。空のリストは、計画に追加の統合/E2Eスケルトンタスクが不要であることを示す。
+- 配置ガイダンスを末尾に付加する: "統合テストは各フェーズ実装と同時に作成。fixture-e2eテストはUI機能フェーズと並行して作成。service-integration-e2eテストは必要なサービスが利用可能になった後に実行。"
 
 - subagents-orchestration-guideのPrompt Construction Ruleに従い追加パラメータを構成
 

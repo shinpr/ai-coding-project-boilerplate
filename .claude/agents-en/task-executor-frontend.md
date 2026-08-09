@@ -73,7 +73,7 @@ Proceed through reversible repository-local choices, including cases with severa
 - addition of an external dependency;
 - an irreversible operation or action outside repository authority.
 
-Missing browser or proof infrastructure is a verification limitation. Complete the implementation, run every available unaffected check, and report the exact missing proof.
+When browser or proof infrastructure is missing, complete the implementation, run every available unaffected check, keep the execution status based on the implementation outcome, and report the exact missing proof in `runnableCheck`.
 
 ## Responsibilities, Authority, and Boundaries
 
@@ -143,7 +143,7 @@ A mechanism with no such source is either scope creep or a fact the design did n
 **Components in scope** (examples): test runner, DOM/browser environment, setup files referenced by the tests this task will add or modify, and the network mocking layer when the changed behavior depends on mocked network calls.
 **Check method**: Inspect `package.json` scripts, the test runner config, the DOM/browser environment setup, and network mock handlers when relevant (e.g., Vitest, jsdom/browser mode, setup files, MSW or equivalent).
 **Available**: Proceed with RED-GREEN-REFACTOR per frontend-typescript-testing skill.
-**Unavailable**: complete the implementation and every testable obligation, run unaffected checks, and set `runnableCheck.result` to `skipped` for the unavailable proof with its missing component and retry condition. Downstream quality and final verification retain and retry that limitation.
+**Unavailable**: complete the implementation and every testable obligation, run unaffected checks, and set `runnableCheck.result` to `skipped` with the missing component in `reason`.
 
 #### Pre-implementation Verification (Duplication Check — Pattern 5 from coding-standards)
 1. **Read relevant Design Doc sections** and understand accurately
@@ -296,4 +296,4 @@ This gate runs immediately before producing the final JSON response.
 ☐ When the Adjacent Case Sweep applied, the available execution record contains each inspected case and disposition
 ☐ Final response is a single JSON with `status: "completed"` or `status: "escalation_needed"` and matches the schema in Structured Response Specification
 
-**ENFORCEMENT**: Correct incomplete work or divergence from governing sources before returning. Use `escalation_needed` only when correction requires a user-owned decision from Authoritative Escalation Boundary. Verification limitations remain in `runnableCheck` for downstream retry and final reporting.
+**ENFORCEMENT**: Correct incomplete work or divergence from governing sources before returning. Use `escalation_needed` only when correction requires a user-owned decision from Authoritative Escalation Boundary. Record any check that could not run in `runnableCheck`.

@@ -90,7 +90,7 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
 - [ ] Identified task execution order within the Consumed Task Set (dependencies)
 - [ ] **Environment check**: Can I execute per-task commit cycle?
   - If commit capability unavailable → Escalate before autonomous mode
-  - Test and quality-tool limitations → Subagents run unaffected checks and carry exact proof limitations to final retry
+  - Test and quality-tool limitations → Subagents run unaffected checks and record exactly what could not run
 
 ## Task Execution Cycle (4-Step Cycle)
 **MANDATORY EXECUTION CYCLE**: `task-executor → escalation check → quality-fixer → commit`
@@ -103,16 +103,16 @@ For EACH task in the Consumed Task Set, YOU MUST:
    - `status: "escalation_needed"` or `"blocked"` → inspect the declared boundary; escalate when it requires a user-owned product, contract, authority, or irreversible decision
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor in **Fix Mode**
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**; otherwise carry the unproved review into the proof-limitation record
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**; otherwise record the review as not run with its `blockingReason` and proceed to step 3
      - `approved` → Proceed to step 3
    - `readyForQualityCheck: true` → Proceed to step 3
 3. **QUALITY-FIX**: Invoke quality-fixer against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Pass the current `task_file`, the implementation step's `runnableCheck`, and `qualityCommand` when technical-spec or a repository convention names one. Then branch on its response:
    - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
    - `blocked` → escalate the user-owned decision reported by quality-fixer
-   - `approved` or `verification_incomplete` → Proceed to step 4
-4. **COMMIT coherent task boundary**: Apply the subagents-orchestration-guide Commit Boundary Check. For `verification_incomplete`, add its limitation trailers and retain the structured limitations for final retry
+   - `approved` → Proceed to step 4
+4. **COMMIT on approval**: Commit the completed task change set
 
-**CRITICAL**: Parse every sub-agent response for its routing meaning. Proceed to the next task after quality-fixer establishes `approved` or an explicitly retained `verification_incomplete` checkpoint.
+**CRITICAL**: Parse every sub-agent response for its routing meaning. Proceed to the next task only after quality-fixer returns `approved`.
 
 ## Scope Boundary for Subagents
 
@@ -132,7 +132,7 @@ After approval confirmation, start autonomous execution mode. STOP IMMEDIATELY u
 
 After all task cycles finish, run verification agents **in parallel** before the completion report:
 
-1. Retry every retained verification limitation whose prerequisite may now be available. Resolve the comparison base from the branch upstream and repository default branch, then invoke both verification agents in parallel:
+1. Resolve the comparison base from the branch upstream and repository default branch, then invoke both verification agents in parallel:
    - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list from the merge base through `HEAD`
    - security-reviewer (subagent_type: "security-reviewer") → `governingDocuments: [{"type":"design-doc","path":"[path]"}]` and implementation file list
 
@@ -142,11 +142,9 @@ After all task cycles finish, run verification agents **in parallel** before the
    - Apply Review Resolution to every actionable finding. Pass each `apply` finding object to task-executor verbatim with only its disposition added; cited locations are investigation starting points.
    - Invoke task-executor in **Fix Mode** with the affected paths, observable verification condition, and the unchanged finding objects. No fix task file is created.
    - Re-run only the failed verifiers, carrying `prior_feedback` when the verifier supports reconciliation, and follow Review Resolution to convergence.
-   - After correction review converges, run quality-fixer once and route its result through the subagents-orchestration-guide quality-fixer Result Handling.
+   - After correction review converges, run quality-fixer once. Continue after `approved`; present the exact user-owned decision if it returns `blocked`.
 
 4. **All passed** → Proceed to Final Cleanup
-
-After verifier convergence, every retained verification limitation must have a successful retry result. A remaining limitation produces a `blocked` completion report naming the unproved claim and retry condition; committed task checkpoints remain intact.
 
 ## Final Cleanup
 
@@ -162,7 +160,7 @@ If a filesystem error leaves task files behind, continue the completion report w
 Final report must include:
 - Task materialization status
 - Implemented task count
-- Quality check result
+- Quality check result, including checks that did not run or unrelated baseline failures when present
 - Commit count
 - Cleanup result
 - Escalation or blocking summary, if any
