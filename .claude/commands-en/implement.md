@@ -108,15 +108,11 @@ For Small, skip document-dependent verification. Retry retained limitations, the
 For the security-reviewer response:
 
    - `approved` → Proceed to completion report
-   - `needs_revision` → Apply Review Resolution to every finding, then invoke task-executor in **Fix Mode** with the `apply` finding objects verbatim, their affected paths, and the observable verification condition. Follow with quality-fixer, then re-invoke security-reviewer with `prior_feedback`.
+   - `needs_revision` → Apply Review Resolution to every finding, then invoke task-executor in **Fix Mode** with the `apply` finding objects verbatim, their affected paths, and the observable verification condition. Re-invoke security-reviewer with `prior_feedback` and follow Review Resolution to convergence, then run quality-fixer once.
    - `blocked` → Escalate to user
 
 ### Test Information Communication
-After acceptance-test-generator execution, when invoking work-planner (subagent_type: "work-planner"), communicate per-lane:
-- Integration test file path (from `generatedFiles.integration`) or null
-- fixture-e2e test file path (from `generatedFiles.fixtureE2e`) or null
-- service-integration-e2e test file path (from `generatedFiles.serviceE2e`) or null
-- A null lane communicates that the accepted obligations require no proof at that boundary; pass the null value unchanged
+After acceptance-test-generator execution, pass `generatedFiles[]` to work-planner as `testSkeletons`. An empty list means no additional integration/E2E skeleton task is required.
 - Explicit timing notes: integration tests are created alongside each phase implementation; fixture-e2e tests are created alongside the UI feature phase; service-integration-e2e tests are executed after their required services exist
 
 ### Final Cleanup

@@ -46,6 +46,8 @@ Classify discovered documents from their declared scope and content:
 
 Continue with documents explicitly named by the user and semantically related artifacts they reference. Ask for confirmation only when multiple plausible document sets or executor lanes would materially change the generated tests.
 
+Skeleton generation begins after Step 1 has resolved a readable Design Doc and identified its accepted behavior.
+
 ### Step 2: Skeleton Generation
 
 Invoke acceptance-test-generator **once per Design Doc** (the agent expects a single designDocPath):
@@ -55,16 +57,16 @@ For each Design Doc from Step 1:
 - `description`: "Generate test skeletons for [layer/name]"
 - `prompt`: "Generate test skeletons from Design Doc at [path]." + If UI Spec exists: "UI Spec at [ui-spec path] is available as additional context."
 
-**Expected output per invocation**: `generatedFiles` containing integration and e2e paths
+**Expected output per invocation**: `generatedFiles[]` containing the emitted skeleton paths
 
 ### Step 3: Create Task Files [GATE]
 
-**Pre-check**: For each Step 2 invocation result, inspect `generatedFiles.integration`:
-- When `integration` is a path → proceed to task creation for that layer
-- When `integration` is `null` → skip task creation for that layer; no uncovered integration-boundary proof obligation exists
-- When all layers return `integration: null` → skip Steps 4–7 entirely, report that existing or cheaper tests cover the accepted obligations, and exit
+**Pre-check**: For each Step 2 invocation result, inspect `generatedFiles[]`:
+- When it contains emitted files → proceed to task creation for that layer
+- When it is empty → skip task creation for that layer; existing or cheaper tests cover its accepted obligations
+- When every result is empty → skip Steps 4–7 entirely, report that no additional integration/E2E proof artifact is required, and exit
 
-Create one task file per layer that has a non-null `integration` path, using the monorepo-flow.md naming convention for deterministic agent routing:
+Create one task file per layer that has generated files, using the monorepo-flow.md naming convention for deterministic agent routing:
 - Backend Design Doc → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
 - Frontend Design Doc → `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
 - Single-layer confirmed as backend → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
@@ -83,7 +85,7 @@ Implement test cases defined in skeleton files.
 
 ## Target Files
 
-- Skeleton: [layer-specific paths from Step 2 generatedFiles]
+- Skeletons: [every path in the layer's Step 2 generatedFiles]
 
 ## Investigation Targets
 
@@ -124,7 +126,7 @@ Execute one task file at a time through Steps 4→5→6→7 before starting the 
 Invoke integration-test-reviewer using Agent tool:
 - `subagent_type`: "integration-test-reviewer"
 - `description`: "Review test quality"
-- `prompt`: "Review test quality. Test files: [paths from Step 4 testsAdded]. taskFiles: [the same task file path used in Step 4]. diffBase: HEAD. Skeleton files: [layer-specific paths from Step 2 generatedFiles matching current task's layer]"
+- `prompt`: "Review test quality. Test files: [paths from Step 4 testsAdded]. taskFiles: [the same task file path used in Step 4]. diffBase: HEAD. Skeleton files: [every path from the current layer's Step 2 generatedFiles]"
 
 **Expected output**: `status` (approved/needs_revision/blocked), `blockingReason`, and the single `qualityIssues[]` correction list
 

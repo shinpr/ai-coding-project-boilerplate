@@ -146,10 +146,10 @@ After all task cycles finish, run verification agents **in parallel** before the
 2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
 
 3. **Fix cycle** (when any verifier failed):
-   - Apply Review Resolution to every actionable finding. Pass each `apply` finding object to task-executor-frontend verbatim with only its disposition added. When a discrepancy has no actionable target path, escalate rather than inventing one.
+   - Apply Review Resolution to every actionable finding. Pass each `apply` finding object to task-executor-frontend verbatim with only its disposition added; cited locations are investigation starting points.
    - Invoke task-executor-frontend in **Fix Mode** with the affected paths, observable verification condition, and the unchanged finding objects. No fix task file is created.
-   - Then quality-fixer-frontend, then re-run only the failed verifiers.
-   - Continue while fixes change the relevant evidence and narrow the findings. Route a repeated unchanged finding by its cause: user-owned decision → escalate; unavailable proof → retain as a final limitation; implementation defect → keep fixing
+   - Re-run only the failed verifiers, carrying `prior_feedback` when the verifier supports reconciliation, and follow Review Resolution to convergence.
+   - After correction review converges, run quality-fixer-frontend once and route its result through the subagents-orchestration-guide quality-fixer Result Handling.
 
 4. **All passed** → Proceed to Final Cleanup
 

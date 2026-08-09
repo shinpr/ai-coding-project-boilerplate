@@ -72,21 +72,13 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 - Significant readability decrease from commonalization
 - Simple helpers in test code
 
-## Reference Representativeness
+## Change Boundary and Reference Representativeness
 
-**Failure mode**: Adopting patterns or dependency versions from the nearest 2-3 files without verifying repository-wide usage leads to outdated patterns, version mismatches, and architecture inconsistency.
+Prompt paths are investigation starting points. Include another repository file when evidence shows that it implements the accepted outcome, is a required dependency or wiring path, or must change to preserve a contract affected by the work. Callers, consumers, tests, configuration, imports, and data flow are useful evidence rather than a required checklist.
 
-### Verifying References Before Adoption
-When adopting patterns, APIs, or dependencies from existing code:
-- **IF** referencing only 2-3 nearby files → **THEN** Grep the pattern across the repository; adopt only when ≥3 files across different directories use the same pattern
-- **IF** Grep returns 1-2 files outside the reference → **THEN** investigate whether those files are the canonical implementation or legacy outliers before adopting
-- **IF** Grep returns 0 files outside the reference → **THEN** treat the pattern as local convention; adopt only with explicit justification (e.g., consistency with surrounding code, avoiding breaking changes)
-- **IF** multiple approaches coexist in the repository → **THEN** identify the majority pattern (highest file count) and adopt it; state the reason when choosing a minority pattern
-- **IF** adopting an external dependency (library, plugin, SDK) → **THEN** verify repository-wide usage distribution for the same dependency; if its compatible version cannot be resolved from manifests, lockfiles, and existing consumers, escalate
-- **IF** following an existing pattern → **THEN** state the reason for following it when an alternative exists (e.g., consistency with surrounding code, avoiding breaking changes, pending coordinated update)
+When adopting a pattern, API, or dependency, inspect the relevant feature and repository uses that share its responsibility and current contract. Prefer the compatible implementation in that responsibility. Frequency helps locate candidates but does not make a pattern authoritative; when approaches coexist, use their callers, lifecycle, and compatibility to distinguish the current pattern from a legacy or unrelated one.
 
-### Principle
-Nearby code is a starting point for investigation. Verify repository-wide usage (≥3 files across different directories) before adopting a pattern as representative.
+Resolve external dependency versions from manifests, lockfiles, and compatible consumers. Escalate only when those sources cannot resolve a choice that changes compatibility or architecture.
 
 ## Common Failure Patterns and Avoidance Methods
 

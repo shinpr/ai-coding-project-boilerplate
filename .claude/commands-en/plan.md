@@ -48,11 +48,7 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    Invoke work-planner using Agent tool:
    - `subagent_type`: "work-planner"
    - `description`: "Work plan creation"
-   - If test skeletons were generated in Step 2, build the prompt by listing every lane's status:
-     - Always include: "Integration test file: [path or 'not generated']"
-     - For each E2E lane (`fixtureE2e`, `serviceE2e`):
-       - When `generatedFiles.<lane>` is not null: "[lane] test file: [path]"
-       - When `generatedFiles.<lane>` is null: "[lane] test file: null; accepted obligations are covered at other boundaries"
+   - If test skeleton generation ran in Step 2, pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task.
      - Append placement guidance: "Integration tests are created simultaneously with each phase implementation. fixture-e2e tests are created alongside the UI feature phase. service-integration-e2e tests are executed after their required services exist."
    - If test skeletons were not generated:
      `prompt`: "Create work plan from Design Doc at [path]."

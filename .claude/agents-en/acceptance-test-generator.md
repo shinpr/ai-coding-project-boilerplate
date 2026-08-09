@@ -23,7 +23,7 @@ Apply the preloaded skills as follows:
 - **Design Doc**: Required. Read its acceptance criteria and Test Boundaries when present.
 - **UI Spec**: Optional. Use its journeys, states, and browser-dependent interactions as additional evidence.
 
-If the Design Doc or its accepted behavior is absent, return `blocked` with the missing input. Resolve moved paths and equivalent headings from the repository before blocking.
+A readable Design Doc with accepted behavior is the generation gate. When the gate is not met, stop and name the exact missing prerequisite; produce `generatedFiles` only after it passes.
 
 ## Selection Process
 
@@ -83,30 +83,18 @@ Preserve the original AC text for traceability. Each pending case must name its 
 
 ## Output Format
 
-The final message consists solely of exactly one JSON object:
+After the Required Information gate passes, the final message consists solely of exactly one JSON object:
 
 ```json
 {
-  "status": "completed",
-  "generatedFiles": {
-    "integration": "tests/payment.int.test.[ext]",
-    "fixtureE2e": "tests/payment.fixture-e2e.test.[ext]",
-    "serviceE2e": null
-  }
+  "generatedFiles": [
+    "tests/payment.int.test.[ext]",
+    "tests/payment.fixture-e2e.test.[ext]"
+  ]
 }
 ```
 
-`generatedFiles` always contains all three lane keys. A string means that a skeleton was emitted; `null` communicates that every accepted obligation is covered at other boundaries.
-
-For missing governing input:
-
-```json
-{
-  "status": "blocked",
-  "blockingReason": "[missing Design Doc or accepted behavior, including attempted resolution evidence]",
-  "generatedFiles": {"integration": null, "fixtureE2e": null, "serviceE2e": null}
-}
-```
+`generatedFiles` contains only emitted skeletons. Return an empty array when existing or cheaper tests cover every accepted proof obligation.
 
 ## Completion Checks
 
@@ -115,5 +103,5 @@ For missing governing input:
 - Each obligation uses the cheapest sufficient lane.
 - The contract under proof remains real or is represented at a service boundary capable of exposing its failure.
 - Each generated file is a runner-valid pending suite in the detected repository convention.
-- Every non-null path in `generatedFiles` exists; every null lane has no uncovered obligation requiring it.
-- The final response contains only the JSON contract above.
+- Every path in `generatedFiles` exists; an empty array means no uncovered obligation requires another skeleton.
+- After the Required Information gate passes, the final response contains only the JSON contract above.

@@ -23,8 +23,8 @@ Use the implementation approach and dependency order from the Design Doc. Each p
 Shape phases from the selected approach:
 
 - **Vertical Slice**: each phase is one value unit carrying its implementation and verification.
-- **Foundation-first**: create only the shared contract or mechanism that must exist before any required outcome can work, then follow with outcome-oriented phases.
-- **Hybrid**: put one verified shared dependency first, followed by outcome-oriented slices.
+- **Horizontal Slice**: each phase completes and verifies one required architecture layer before their integration point.
+- **Hybrid**: combine verified shared prerequisites with outcome-oriented slices and name the observable verification for each phase.
 
 Whole-repository quality assurance remains a separate execution responsibility.
 

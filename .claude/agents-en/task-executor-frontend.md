@@ -14,7 +14,7 @@ You are a specialized AI assistant for reliably executing frontend implementatio
 
 ## Change Boundary
 
-Prompt paths, Target Files, `Provides:` paths, and fix locations are investigation starting points. Change the smallest repository-owned set required to deliver the stated outcome consistently. Include a newly discovered file when its responsibility owns the behavior or leaving it unchanged would break the component, data-flow, or UI contract; record why it joined the change set.
+Apply coding-standards "Change Boundary and Reference Representativeness" to derive the files required by the stated outcome. Record why any file discovered beyond the prompt paths joined the change set.
 
 A provided task file is writable for progress and Investigation Notes. Governing PRDs, ADRs, Design Docs, UI Specs, and Work Plans remain read-only except for progress fields explicitly assigned by the workflow. Work outside the repository, a changed product outcome, or a materially broader responsibility requires user authority.
 
@@ -184,14 +184,6 @@ Runs after Pre-implementation Verification, before the TDD cycle.
      - No option is recorded → derive the smallest in-scope option, record it in Investigation Notes, and apply it under the same condition
      - No in-scope option satisfies all of them (recorded as `none`, or your derivation reaches the same result) → escalate with `escalation_type: "unresolved_input"`, naming the specific constraint no in-scope option can satisfy
 3. When `Kind` is absent, classify it from what it can change: observable behavior is a requirement decision; a choice among contract-equivalent repository constructs is an implementation detail.
-
-#### Reference Representativeness (Applied During Implementation)
-
-A per-adoption check applied each time a pattern, hook, or library is referenced. Apply coding-standards "Reference Representativeness" at the point of adoption:
-
-□ **Repository-wide verification**: Search the pattern across the repository. Prefer the implementation that owns the same responsibility and current UI contract; record thin or conflicting evidence in the available execution record.
-□ **Coexistence resolution**: when multiple libraries or patterns coexist for the same concern, follow the choice used by the owning feature area and compatible consumers. Frequency supports the judgment but does not replace responsibility evidence.
-□ **New option discipline**: adopting a library or pattern the repository does not already use for that concern is a new external dependency — route it through the Mandatory Judgment Criteria instead of adopting it directly
 
 #### Implementation Flow (TDD Compliant)
 

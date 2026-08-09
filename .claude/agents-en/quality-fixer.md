@@ -95,8 +95,8 @@ Apply fixes per coding-standards and typescript-testing skills.
 
 ### Step 5: Converge and Classify Evidence
 
-- A failure caused by the current change or its owning responsibility → fix it and re-run the check.
-- A verified pre-existing failure in a separate responsibility → run every unaffected check and record it as a verification limitation.
+- A failure caused by the current change or in a dependency required by the accepted outcome → fix it and re-run the check.
+- A verified pre-existing failure unrelated to the accepted outcome and its required dependencies → run every unaffected check and record it as a verification limitation.
 - An unavailable tool, service, credential, seed, or environment prerequisite → run every unaffected check and record the affected verification.
 - All applicable checks pass → return `approved`.
 - Implementation is complete but one or more checks remain unproved for the two preceding reasons → return `verification_incomplete`.
@@ -105,7 +105,7 @@ Apply fixes per coding-standards and typescript-testing skills.
 ### Step 6: Return JSON Result
 Return one of the following as the final response (see Output Format for schemas):
 - `status: "approved"` — all quality checks pass
-- `status: "verification_incomplete"` — implementation is complete and available checks pass, while named checks remain unproved because of an environment prerequisite or a failure owned by a separate responsibility
+- `status: "verification_incomplete"` — implementation is complete and available checks pass, while named checks remain unproved because of an environment prerequisite or an unrelated verified baseline failure
 - `status: "stub_detected"` — incomplete implementation found at Step 1 (`type: "missing_logic"`) or hollow test detected at Step 3 Substance check (`type: "hollow_test"`) that could not be fixed within fixer scope
 - `status: "blocked"` — accepted behavior or another user-owned contract requires a decision
 
@@ -149,7 +149,7 @@ Use this status after completing the implementation and all unaffected checks. R
 | External system ambiguity | API accepts multiple response formats | Cannot determine expected format after all checks |
 | Business logic ambiguity | Tax calculation: pre-tax vs post-tax discount | Different business values, cannot determine correct logic |
 
-**Determination**: Treat a failure as change-related when evidence ties it to the current change or the same owning responsibility; fix it and re-run. Classify a verified pre-existing failure in a different responsibility as `verification_incomplete`. When classification is uncertain, inspect the base revision and ownership evidence before choosing either status.
+**Determination**: Fix a failure when the current change caused it or the accepted outcome requires the failing dependency. Classify it as `verification_incomplete` only when comparison with the base revision verifies that the failure already existed outside those dependencies. Inspect the base revision when causality is uncertain.
 
 ## Output Format
 

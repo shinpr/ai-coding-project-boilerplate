@@ -14,7 +14,7 @@ You are a specialized AI assistant for reliably executing individual tasks.
 
 ## Change Boundary
 
-Prompt paths, Target Files, `Provides:` paths, and fix locations are investigation starting points. Derive the complete change set from the stated outcome and repository ownership. Include a newly discovered file when its responsibility owns the behavior or its update keeps a shared contract consistent; record why it joined the change set.
+Apply coding-standards "Change Boundary and Reference Representativeness" to derive the files required by the stated outcome. Record why any file discovered beyond the prompt paths joined the change set.
 
 A provided task file is writable for progress and Investigation Notes. Governing PRDs, ADRs, Design Docs, and Work Plans remain read-only except for progress fields explicitly assigned by the workflow. Work outside the repository, a changed product outcome, or a materially broader responsibility requires user authority.
 
@@ -184,17 +184,6 @@ Runs after Pre-implementation Verification, before the TDD cycle.
      - No option is recorded → derive the smallest in-scope option, record it in Investigation Notes, and apply it under the same condition
      - No in-scope option satisfies all of them (recorded as `none`, or your derivation reaches the same result) → escalate with `escalation_type: "unresolved_input"`, naming the specific constraint no in-scope option can satisfy
 3. When `Kind` is absent, classify it from what it can change: observable behavior is a requirement decision; a choice among contract-equivalent repository constructs is an implementation detail.
-
-#### Reference Representativeness (Applied During Implementation)
-
-A per-adoption check applied each time a pattern or dependency is referenced. Apply coding-standards "Reference Representativeness" at the point of adoption:
-
-□ **Repository-wide verification**: Search the pattern across the repository. Prefer the implementation that owns the same responsibility and current contract. Treat file count as supporting evidence and record thin or conflicting evidence in the available execution record.
-□ **Dependency version verification** (when adopting external dependencies):
-  - Verify repository-wide usage distribution for the same dependency
-  - When following one of multiple coexisting versions, state the reason
-  - When multiple versions coexist, follow the version used by the owning subsystem unless the governing source requires a coordinated change
-□ **Coexistence resolution**: Resolve by responsibility and compatibility. Frequency is supporting evidence, not an automatic decision rule.
 
 #### Implementation Flow (TDD Compliant)
 

@@ -49,9 +49,7 @@ Resolve correction re-review entries by their recorded `prior_disposition`:
 - `maintained` with `prior_disposition: apply` returns the original finding and the complete reconciliation entry verbatim through the same author or executor path, followed by another correction re-review;
 - `maintained` with `prior_disposition: decline` retains that decline and does not reopen the correction cycle.
 
-Escalate when the same ID with `prior_disposition: apply` returns `maintained` in two consecutive correction re-reviews, the disposition is `user_decision_required`, user-held authority is needed, an irreversible action awaits authorization, or required inputs are genuinely unusable. Progress after no `maintained` entry with `prior_disposition: apply` remains, every other actionable finding has a disposition, and every `user_decision_required` item has a recorded user decision.
-
-This finding-level loop is distinct from the verifier-level cycle limit in the Post-Implementation Verification Pass/Fail Criteria section of the parent skill. That rule bounds how many times the post-implementation verifier set re-runs; this rule bounds how many times one finding ID can return `maintained`. Both apply, and whichever triggers first escalates.
+Escalate only when the disposition is `user_decision_required`, user-held authority is needed, an irreversible action awaits authorization, or required inputs are genuinely unusable. Progress after no `maintained` entry with `prior_disposition: apply` remains, every other actionable finding has a disposition, and every `user_decision_required` item has a recorded user decision.
 
 Handoffs contain this exact set:
 

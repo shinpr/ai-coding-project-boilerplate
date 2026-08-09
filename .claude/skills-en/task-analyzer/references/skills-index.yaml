@@ -21,7 +21,7 @@ skills:
       - "Comment Writing Rules"
       - "Error Handling Fundamentals"
       - "Rule of Three - Criteria for Code Duplication"
-      - "Reference Representativeness"
+      - "Change Boundary and Reference Representativeness"
       - "Common Failure Patterns and Avoidance Methods"
       - "Debugging Techniques"
       - "Type Safety Fundamentals"

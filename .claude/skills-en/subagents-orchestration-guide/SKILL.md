@@ -163,7 +163,7 @@ Subagents respond in JSON. Each agent declares its own input and output contract
 | integration-test-reviewer | `status` | `approved` → proceed. `needs_revision` → run Review Resolution. `blocked` → repair the invocation once by resolving changed test paths; if no test exists, return that defect to the executor; if it returns `blocked` again, record the review as not run and carry that unproven state into the completion report |
 | code-verifier / security-reviewer | `summary.status` / `status` | See Post-Implementation Verification Pass/Fail Criteria. A security `blocked` raised by an irreversible-operation hazard names the decision it requires and sits outside the agent layer's authority |
 | design-sync | `sync_status` | `CONFLICTS_FOUND` → present the conflicts to the user before proceeding |
-| acceptance-test-generator | `status`, per-lane `generatedFiles` | Verify each non-null path exists, then pass the per-lane paths to work-planner. A null lane means no uncovered proof obligation required it |
+| acceptance-test-generator | `generatedFiles[]` | Verify each emitted path exists, then pass the paths to work-planner. An empty list means no uncovered proof obligation requires another skeleton |
 
 **Cross-agent wiring I own**: ask quality-fixer to inspect the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Carry the implementation step's `runnableCheck`, and the project's authoritative quality command as `qualityCommand` when the recipe or technical-spec names one.
 
@@ -171,7 +171,7 @@ Subagents respond in JSON. Each agent declares its own input and output contract
 
 - `blocked` identifies an unresolved product or approved-contract decision. Present `blockingIssues[]` and the exact required input.
 - `verification_incomplete` identifies proof that the current environment could not establish. Retain every `verificationLimitations[]` entry, commit the completed task boundary, and retry the affected checks before final verification.
-- A failure in the same owning responsibility is a fix input even when the original task omitted its path. A verified failure in another responsibility stays in the limitation record.
+- A failure caused by the change or in a dependency required by the accepted outcome is a fix input even when the original task omitted its path. A verified unrelated baseline failure stays in the limitation record.
 
 ## My Basic Flow: Planning and Implementation
 
@@ -368,11 +368,9 @@ Set `status` to `completed` when every required task, quality gate, verifier, an
 
    **Pass to acceptance-test-generator**: Design Doc path; UI Spec path (if exists).
 
-   **Orchestrator verification**: Every non-null `generatedFiles.<lane>` path exists on disk. For each null lane, validate from the Design Doc that accepted obligations are covered at other boundaries.
+   **Orchestrator verification**: Every path in `generatedFiles[]` exists on disk. An empty list is a valid generation result.
 
-   **Pass to work-planner**: integration / fixture-e2e / service-integration-e2e file paths (or null per lane), plus timing guidance — integration tests are created alongside each phase implementation, fixture-e2e tests are created alongside the UI feature phase, service-integration-e2e tests are executed after their required services exist.
-
-   **On error**: Repair a malformed response or missing emitted path. Escalate when `status: blocked` identifies accepted behavior that remains unresolved after consulting repository artifacts. Treat a null lane as the valid absence of an obligation at that boundary.
+   **Pass to work-planner**: generated paths, plus timing guidance — integration tests are created alongside each phase implementation, fixture-e2e tests are created alongside the UI feature phase, service-integration-e2e tests are executed after their required services exist.
 3. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
 
 ## Important Constraints
@@ -394,6 +392,6 @@ Register overall phases using TaskCreate. Update each phase with TaskUpdate as i
 | code-verifier | `summary.status` is `consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` → Escalate with `blockingReason`; the verifier had no verifiable input |
 | security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` → Escalate the irreversible operation or other named decision outside agent authority |
 
-**Re-run rule**: After each fix cycle, re-run the verifiers that returned **fail** and retain evidence from verifiers that passed. Continue while the implementation changes in response to evidence and remaining findings become narrower. When the same finding repeats against the same code and evidence, inspect whether it exposes a user-owned decision or an unresolved proof limitation; route that cause explicitly instead of enforcing an arbitrary retry count.
+**Re-run rule**: Apply Review Resolution to failed verifier findings and re-run only the verifiers whose findings entered correction. Review Resolution owns correction convergence and escalation; retain evidence from verifiers that passed.
 
 **Fix-cycle handoff**: Apply Review Resolution, then pass each required executor the complete `apply` finding objects verbatim with only their dispositions added. Carry `prior_feedback` to reviewer inputs that support reconciliation.
