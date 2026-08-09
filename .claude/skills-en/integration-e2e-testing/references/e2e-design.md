@@ -1,15 +1,15 @@
 # E2E Test Design (Browser Harness)
 
-This reference uses Playwright as the default example throughout because it is the standard E2E browser harness assumed by these workflows. Adapt patterns to the project's chosen framework when different (Cypress, Selenium, etc.); the lane definitions, ROI rules, and budgets remain the same.
+This reference uses Playwright as the default example throughout because it is the standard E2E browser harness assumed by these workflows. Adapt patterns to the project's chosen framework when different (Cypress, Selenium, etc.); the proof-boundary rules remain the same.
 
 ## Two E2E Lanes
 
-E2E tests in this workflow split into two lanes (see parent skill Test Types and Limits):
+E2E tests in this workflow split into two lanes (see parent skill Test Types and Selection):
 
-| Lane | When | ROI gate | Cost |
-|------|------|----------|------|
-| **fixture-e2e** | UI journey verification with deterministic fixtures (mocked backend / fixture data) | Reserved slot is exempt; additional slots within MAX 3 require ROI ≥ 20 | Comparable to integration; runs in CI without infrastructure setup |
-| **service-integration-e2e** | Journey correctness depends on real cross-service behavior (data persistence, transactional consistency, external contracts) | ROI > 50 (beyond reserved slot) | 3-10× higher than integration; reserved for what cannot be faked safely |
+| Lane | When | Proof boundary | Cost |
+|------|------|----------------|------|
+| **fixture-e2e** | UI journey verification with deterministic fixtures (mocked backend / fixture data) | A real browser is the claim boundary; backend behavior is supplied as fixture state | Runs in CI with fixture setup |
+| **service-integration-e2e** | Journey correctness depends on real cross-service behavior (data persistence, transactional consistency, external contracts) | The running service boundary is itself part of the claim | Higher setup and maintenance cost; select it when that boundary uniquely exposes the failure |
 
 Both lanes typically use Playwright; the difference is whether the backend is mocked / fixture-driven or running for real.
 
@@ -32,7 +32,7 @@ The agent that reads the governing artifacts maps them to these properties; this
 
 ### Selection Criteria
 
-**Include** (high E2E ROI):
+**Include**:
 - Multi-page user journeys (login → dashboard → action → confirmation)
 - Flows requiring real browser APIs (navigation, cookies, localStorage)
 - Accessibility verification requiring actual DOM rendering
@@ -45,7 +45,7 @@ The agent that reads the governing artifacts maps them to these properties; this
 
 ## Candidate Record
 
-Record each candidate in this form so the lane decision and the budget step can consume it.
+Record each selected candidate in this form so downstream implementation can preserve the proof decision.
 
 ### Mapping Template
 
@@ -57,7 +57,8 @@ Lane: fixture-e2e | service-integration-e2e
 Preconditions: [Auth state, data state — note whether these are fixture-driven or live]
 Verification Points:
   - [What to assert at each step]
-E2E ROI Score: [calculated score]
+Primary Failure: [regression that must make the test fail]
+Proof Obligation: [boundary and observable state the test must exercise]
 ```
 
 **Lane decision**: choose `fixture-e2e` by default. Promote to `service-integration-e2e` when the verification requires observing real cross-service behavior (e.g., the test asserts that data persists across a real DB write, or that an external service receives the correct payload).
@@ -95,9 +96,9 @@ When UI Spec defines responsive behavior, test critical breakpoints:
 | Tablet | UI Spec breakpoint or configured tablet project viewport | If UI Spec defines tablet layout differences |
 | Default | Playwright project viewport or UI Spec baseline | For each selected responsive journey |
 
-## Budget Enforcement
+## Minimal Set Check
 
-Hard limits per feature (same as parent skill):
-- **fixture-e2e**: MAX 3 tests. Reserved slot is exempt from the ROI gate; additional slots require ROI ≥ 20
-- **service-integration-e2e**: MAX 1-2 tests, ROI > 50 beyond the reserved slot
-- Prefer fewer, comprehensive journey tests over many granular tests in both lanes
+- Every emitted E2E test covers an accepted proof obligation that no cheaper test already proves.
+- Every omitted E2E candidate is covered elsewhere, duplicates another scenario, or does not require a browser/system boundary.
+- Prefer one coherent journey when it proves several obligations and each assertion remains traceable to its failure.
+- Let the distinct material failures determine the test count; retain the smallest set that covers all of them.

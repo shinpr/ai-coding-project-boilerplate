@@ -21,7 +21,7 @@ skills:
       - "Comment Writing Rules"
       - "Error Handling Fundamentals"
       - "Rule of Three - Criteria for Code Duplication"
-      - "Reference Representativeness"
+      - "Change Boundary and Reference Representativeness"
       - "Common Failure Patterns and Avoidance Methods"
       - "Debugging Techniques"
       - "Type Safety Fundamentals"
@@ -102,17 +102,12 @@ skills:
       - "Design Doc Culture - Google Engineering Practices"
       - "Single Source of Truth"
     sections:
+      - "What Each Document Fixes"
       - "Creation Decision Matrix"
       - "Structural Scale"
       - "ADR Decision Filters"
-      - "Detailed Document Definitions"
-      - "Creation Process"
       - "Storage Locations"
-      - "ADR Status"
-      - "AI Automation Rules"
-      - "Diagram Requirements"
-      - "Common ADR Relationships"
-      - "Templates"
+      - "References"
 
   implementation-approach:
     skill: "implementation-approach"
@@ -144,10 +139,10 @@ skills:
       - "references/e2e-environment-prerequisites.md - E2E environment prerequisites"
     sections:
       - "References"
-      - "Test Types and Limits"
+      - "Test Types and Selection"
       - "Behavior-First Principle"
       - "Skeleton Specification"
-      - "Multi-Step User Journey Definition"
+      - "Test Set Selection"
       - "Implementation Rules"
       - "Review Criteria"
 

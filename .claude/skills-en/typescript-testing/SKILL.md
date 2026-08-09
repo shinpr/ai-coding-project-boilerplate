@@ -1,6 +1,6 @@
 ---
 name: typescript-testing
-description: Applies Vitest test design and quality standards. Provides coverage requirements and mock usage guides. Use when writing unit tests.
+description: Applies repository-aware TypeScript test design, behavior evidence, isolation, and mock-boundary criteria. Use when writing or reviewing unit tests.
 ---
 
 # TypeScript Testing Rules
@@ -120,4 +120,3 @@ When none is available and data-layer correctness is the target, stop and report
 ### AI-Generated Code and Schema Awareness
 
 Generated data-access code can be syntactically correct while referencing schema elements that do not exist, and mock-based tests pass either way. Design Docs therefore carry explicit schema references, so review can cross-check documented schema against the data-access code.
-

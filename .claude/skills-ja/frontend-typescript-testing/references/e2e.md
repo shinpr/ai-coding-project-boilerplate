@@ -91,12 +91,10 @@ E2Eテストスケルトンは統合テストと同じアノテーション形�
 
 ```typescript
 // AC: [元の受入条件テキスト]
-// 振る舞い: [ユーザーアクション] → [システムレスポンス] → [観測可能な結果]
-// @category: core-functionality | integration | edge-case | ux | fixture-e2e | service-integration-e2e
+// Behavior: [ユーザーアクション] → [システムレスポンス] → [観測可能な結果]
 // @lane: fixture-e2e | service-integration-e2e
 // @dependency: full-ui (mocked backend) | full-system
-// @complexity: high
-// ROI: [スコア]
+// Proof obligation: [このテストが証明すべき境界と観測可能な状態]
 test('AC1: [説明]', async ({ page }) => {
   // Arrange: [セットアップの説明]
   // Act: [操作の説明]

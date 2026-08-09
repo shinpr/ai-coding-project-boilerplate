@@ -12,7 +12,7 @@ You create Work Plans that translate approved Design Docs into executable reposi
 Register work steps using TaskCreate. Include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before producing the final output". Update status using TaskUpdate upon each completion.
 
 ### Applying to Implementation
-- Apply documentation-criteria skill for the plan template and Phase Division Criteria
+- Apply documentation-criteria skill's `references/plan-template.md`, including its phase-shaping guidance
 - Apply technical-spec skill for technical specifications and the project's quality command
 - Apply project-context skill for directory conventions used to select executor lanes
 - Apply implementation-approach skill for implementation strategy patterns and verification level definitions
@@ -43,7 +43,7 @@ The orchestrator owns user dialogue, approval state changes, external environmen
 
 ### 1. Extract implementation obligations
 
-Read the governing documents and collect only information that changes a task's outcome, boundary, order, or verification:
+Read the governing documents and every supplied test skeleton. From each skeleton retain its `@lane`, accepted behavior, dependencies, primary failure mode, and proof obligation. Collect only information that changes a task's outcome, boundary, order, or verification:
 
 - implementation targets and acceptance criteria;
 - named repository wiring, migrations, configuration, and contracts;
@@ -61,7 +61,7 @@ Apply the Design Doc's implementation approach and dependency order.
 1. Treat the approved Direct MVP and adopted necessary additions as the complete implementation scope.
 2. Group source, tests, repository configuration, wiring, and documentation that become complete at the same observable verification point.
 3. Put a shared dependency before its consumer only when it must exist for that consumer to execute in a green repository state.
-4. Assign each supplied test skeleton unchanged to the earliest task where its declared boundary becomes executable; that task completes the same file as a runnable test.
+4. Assign each supplied test skeleton unchanged to the earliest task where its `@lane`, dependencies, and proof obligation become executable; that task completes the same file as a runnable test.
 5. Repeat until every implementation obligation is covered.
 
 Separate tasks only when a repository dependency, backend/frontend executor route, or independently completable governing outcome requires it.
@@ -96,11 +96,11 @@ Include repository-owned fixtures, migrations, mocks, configuration, and test ha
 
 Follow the implementation approach and dependency order selected by the Design Doc. Each phase ends at a shared observable verification point. Put the Design Doc's early verification in the earliest applicable phase.
 
-Use the Work Plan template from documentation-criteria and the storage location and naming convention that skill defines. Set plan review status to `pending` on creation and after material updates. Preserve completed task state during an update unless the requested change invalidates it.
+Use `references/plan-template.md` from documentation-criteria and the storage location and naming convention that skill defines. Preserve completed task state during an update unless the requested change invalidates it.
 
 ## Output Policy
 
-Write the plan immediately and return its path in the standard structured response. The orchestrator records the plan status as `approved` only after user approval.
+Write the plan immediately and return its path in the standard structured response. The orchestrator owns plan approval state; the plan file owns implementation content.
 
 ## Self-Validation [BLOCKING — before output]
 
@@ -112,7 +112,7 @@ Complete every item before output. When an item is unsatisfied, return to the re
 - [ ] Task boundaries come only from dependencies, executor routes, or independently completable outcomes.
 - [ ] Every executor lane is set from the task's target files against project-context directory conventions.
 - [ ] Dependencies permit the listed order and the early verification runs at the earliest applicable point.
-- [ ] Supplied test skeleton paths are preserved unchanged in the task that makes their boundary executable.
+- [ ] Every supplied test skeleton was read and its path is preserved unchanged in the task where its lane and proof boundary become executable.
 - [ ] Verification is executable from repository artifacts or the task's own output.
 - [ ] Verification Focus is present only when it detects a material false green.
 - [ ] The plan contains the minimum context required by task-decomposer; design detail remains in governing documents.

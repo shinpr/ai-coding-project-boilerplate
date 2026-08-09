@@ -4,6 +4,8 @@
 
 [Proposed | Accepted | Deprecated | Superseded | Rejected]
 
+A created ADR starts at `Proposed` and advances `Proposed` -> `Accepted` -> `Deprecated`/`Superseded`/`Rejected`.
+
 ## Context
 
 [Describe the background and reasons why this decision is needed. Include the essence of the problem, current challenges, and constraints]
@@ -35,7 +37,7 @@
 
 ### Options Considered
 
-Include only credible, materially distinct options supported by the evidence.
+Include only credible, materially distinct options supported by the evidence. Add a Mermaid option-comparison diagram only when the relationship between options remains unclear in the table below.
 
 | Option | Requirement and repository fit | Benefit | Lifecycle cost | Maintainability | Trade-offs |
 |--------|--------------------------------|---------|----------------|-----------------|------------|

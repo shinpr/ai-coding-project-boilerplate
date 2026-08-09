@@ -39,7 +39,7 @@ Complete these steps in order before exploring implementation strategies:
 3. **Targeted Expansion**: For each Failed Item, first test reuse, derivation from existing data, on-demand computation, or responsibility at the current caller or boundary within the existing design surface. When these fail, select the smallest sufficient addition. Record `Adopted Additions` as addition -> Failed Item -> evidence that lower-surface resolutions fail; an addition requires a Failed Item.
 4. **Subtraction Check**: Temporarily remove each Adopted Addition and re-test its Failed Item. Keep the addition when the item becomes unmet again. Record options considered in step 3 but not adopted as `Rejected Additions` with a brief reason; record `None` when step 3 had no rejected candidate.
 
-**Design Doc output**: Direct MVP, Failed Items, Adopted Additions, and Rejected Additions.
+**Phase output**: Direct MVP, Failed Items, Adopted Additions, and Rejected Additions. A Design Doc author records all four; an implementation agent uses them to challenge added mechanisms while leaving design-artifact authorship with the design phase.
 
 **Completion evidence**: all four outputs recorded; every Failed Item carries its evidence; every Adopted Addition names its Failed Item, the lower-surface resolutions that fail, and its subtraction result.
 

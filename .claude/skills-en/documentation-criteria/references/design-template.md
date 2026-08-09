@@ -8,27 +8,11 @@
 - UI Spec path: [docs/ui-spec/xxx-ui-spec.md]
 - Component structure and state design are inherited from UI Spec
 
-## Design Summary (Meta)
-
-```yaml
-design_type: "new_feature|extension|refactoring"
-risk_level: "low|medium|high"
-complexity_level: "low|medium|high"
-complexity_rationale: "[Required if medium/high: (1) which requirements/ACs necessitate this complexity, (2) which constraints/risks it addresses]"
-main_constraints:
-  - "[constraint 1]"
-  - "[constraint 2]"
-biggest_risks:
-  - "[risk 1]"
-  - "[risk 2]"
-unknowns:
-  - "[uncertainty 1]"
-  - "[uncertainty 2]"
-```
-
 ## Background and Context
 
 ### Prerequisite ADRs
+
+List the accepted ADRs that govern the changed responsibility, including accepted common ADRs, and verify this design aligns with each recorded decision.
 
 - [docs/adr/ADR-XXXX.md]: [Related decision items]
 - Reference common technical ADRs when applicable
@@ -42,27 +26,14 @@ Records exclusions **the user decided** at requirement time. Exclusions this des
 - **Speculative**: [idea the user raised without deciding on -> deferral reason | None]
 - **Open questions**: [field the user agreed to leave unresolved | None]
 
-### Agreement Checklist
-
-#### Scope
-- [ ] [Features/components to change]
-- [ ] [Features to add]
-
-#### Non-Scope (Explicitly not changing)
-- [ ] [Features/components not to change]
-- [ ] [Existing logic to preserve]
-
-#### Constraints
-- [ ] Parallel operation: [Yes/No]
-- [ ] Backward compatibility: [Required/Not required]
-- [ ] Performance measurement: [Required/Not required]
+### Standards and Assumptions
 
 #### Applicable Standards
 - [Standard/convention] `[explicit]` — Source: [config / rule file / doc path]
 - [Observed pattern] `[implicit]` — Evidence: [file paths] — Confirmed: [Yes/No]
 
 #### Assumed Behaviors
-Behavioral or factual claims the design relies on but does not itself define — framework/library defaults, capabilities assumed already provided, features assumed already implemented — whose falsity would invalidate the design approach, and that are not already covered by the Fact Disposition Table or Cross-Layer Assumptions. Each claim carries evidence with Confirmed: Yes, or Confirmed: No (with Evidence: Not located) plus a matching Risks and Mitigation row — one that restates the claim as its Risk (the shared lookup key), names how it will be verified or guarded, and propagates the check downstream as `verify at [step or artifact]`. For a framework/library default, the doc evidence pairs the official doc with the resolved package version (from the lockfile or config). This slot is completed during Existing Code Investigation once evidence is gathered, so it may be empty when the rest of the Agreement Checklist is first filled. Mark the slot N/A when the design relies on no such claims.
+Behavioral or factual claims the design relies on but does not itself define — framework/library defaults, capabilities assumed already provided, features assumed already implemented — whose falsity would invalidate the design approach, and that are not already covered by the Fact Disposition Table or Cross-Layer Assumptions. Each claim carries evidence with Confirmed: Yes, or Confirmed: No (with Evidence: Not located) plus a matching Risks and Mitigation row — one that restates the claim as its Risk (the shared lookup key), names how it will be verified or guarded, and propagates the check downstream as `verify at [step or artifact]`. For a framework/library default, the doc evidence pairs the official doc with the resolved package version (from the lockfile or config). This slot is completed during Existing Code Investigation once evidence is gathered, so it may be empty when the rest of Standards and Assumptions is first filled. Mark the slot N/A when the design relies on no such claims.
 
 - [ ] [Claim — e.g., "framework X defaults to Y", "service already returns Z"] — Evidence: [file:line / command output / doc URL paired with resolved package version, or "Not located" when Confirmed: No] — Confirmed: [Yes/No]
 
@@ -161,6 +132,8 @@ No Ripple Effect:
 ### Architecture Overview
 
 [How this feature is positioned within the overall system]
+
+Add an architecture or data-flow Mermaid diagram only when the changed relationships remain unclear in prose or a compact table.
 
 ### Data Flow
 

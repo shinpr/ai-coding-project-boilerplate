@@ -5,11 +5,9 @@ description: Clarifies inputs, outputs, success criteria, decisions, and unresol
 
 # LLM-Friendly Context
 
-The goal is stable downstream execution: the next agent should know what to read, what to do, what counts as success, and when to stop or escalate.
+The goal is stable downstream execution: the next agent should know what to read, what to do, what counts as success, and which unresolved decisions can change the result.
 
-This skill governs the clarity of LLM-facing output — prompts, handoffs, and generated artifacts. The caller supplies the artifact type and any artifact-specific template or section contract; this skill makes that supplied contract executable for the downstream agent.
-
-An active workflow's declared input contract is already optimized for its specialist. Preserve its named fields and declared value forms, and build the handoff from those fields and values. Apply the general prompt-composition rules below only when no input contract exists; apply the generated-artifact rules to artifacts.
+This skill governs the clarity of LLM-facing output — prompts, handoffs, and generated artifacts. The caller supplies the artifact type and any artifact-specific template or input contract; include only the information its consumer uses to decide, act, or verify. Use a declared contract's field names and value meanings when the consumer branches on them.
 
 ## Core Rules
 
@@ -24,22 +22,22 @@ An active workflow's declared input contract is already optimized for its specia
    - Terms that often need clarification when they leave a decision to the next agent: `appropriate`, `proper`, `related`, `existing behavior`, `optional`, `as needed`, `if needed`, `per convention`, unresolved alternatives, `TBD`, `placeholder`.
 
 3. **Specify output shape**
-   - Define required sections, fields, table columns, JSON keys, or checklist items.
-   - For handoffs, include paths to produced artifacts and the exact status fields the caller must inspect.
+   - Define the sections, fields, table columns, JSON keys, or checklist items the consumer uses.
+   - For handoffs, include produced artifact paths and status fields only when they control the next transition.
 
 4. **Provide necessary context**
    - Include the purpose, source artifacts, hard constraints, accepted decisions, and unresolved conditions.
    - Prefer concrete file paths and section hints over broad module names.
-   - Follow references while they can still change an in-scope decision; stop when the next link only confirms what is already decided.
+   - Follow references while they can change an in-scope decision, action, or verification result; stop when the next link only confirms what is already decided.
 
 5. **Decompose complex work into verifiable steps**
    - Split work with 3+ objectives or sequential dependencies into ordered steps.
    - Each step needs a checkpoint: what evidence proves it is complete.
 
 6. **Permit uncertainty explicitly**
-   - If the source material is missing, contradictory, or not verifiable, state the uncertainty and the required escalation.
-   - Record unknown business, product, security, or compatibility decisions as blocking unresolved items, each stating the required input to resolve it and the escalation condition.
-   - Write every blocking unresolved item in one consistent shape, regardless of artifact: `Unresolved: <decision needed> — required input: <what or who resolves it> — escalation: <the condition under which the next agent stops rather than guesses>`.
+   - Resolve missing operational detail from governing artifacts and representative repository evidence before treating it as unresolved.
+   - Record remaining uncertainty with its effect on the outcome or proof. Make reversible repository-local choices inside the confirmed boundary and preserve the evidence used.
+   - Escalate only when the unresolved choice changes the product outcome, a major approved design decision, user-held authority, or an irreversible action. When only proof is unavailable, complete unaffected work and report exactly what could not be verified and why.
 
 7. **Keep constraints proportionate**
    - Add only constraints that reduce ambiguity or preserve a real requirement.
@@ -59,7 +57,7 @@ Use these rewrites before treating a prompt, handoff, or artifact as complete.
 | `related files` | Specific paths, globs, or search hints |
 | `existing behavior` | The observable behavior, source file, test, API response, or UI state to preserve |
 | `placeholder` | Exact temporary value/behavior, allowed dependencies, and verification expectation |
-| `TBD` used as a placeholder for required information | A blocking unresolved item stating the required input and escalation condition (and owner when known) |
+| `TBD` used as a placeholder for required information | The decision it can change and the evidence or user-owned decision required; omit it when the item has no downstream effect |
 | `appropriate` / `proper` | A measurable criterion or checklist |
 
 ## Handoff Checklist
@@ -67,13 +65,13 @@ Use these rewrites before treating a prompt, handoff, or artifact as complete.
 Before sending a prompt or artifact to another agent, verify:
 
 - [ ] The target action is explicit.
-- [ ] Required input paths and source artifacts are named.
+- [ ] Required input paths, source artifacts, and decision-relevant facts are named.
 - [ ] Accepted decisions and constraints are stated once, without alternate wording.
 - [ ] Output format or expected status fields are specified.
 - [ ] Success criteria are observable.
 - [ ] Ambiguous expressions have been rewritten or marked as unresolved.
 - [ ] Any stated size expectation is expressed as one budget over the completed diff, with the overrun-reporting condition named.
-- [ ] The next agent can complete its scope with explicit choices, decision rules, or blocking unresolved items.
+- [ ] The next agent can complete its scope from the supplied purpose, sources, criteria, and evidence, or return one exact user-owned decision.
 
 ## Generated Artifact Checklist
 
@@ -84,4 +82,4 @@ Before writing or finalizing a generated document:
 - [ ] Verification steps say what to run or observe and what result proves success.
 - [ ] If an artifact is derived from another artifact, copied decisions stay consistent in wording and meaning.
 - [ ] Any stated size expectation is expressed as one budget over the completed artifact, with the overrun-reporting condition named.
-- [ ] If downstream work is blocked by missing information, the artifact records the missing input and escalation condition.
+- [ ] Missing information records the decision or proof it affects; only a user-owned decision is a blocking escalation.

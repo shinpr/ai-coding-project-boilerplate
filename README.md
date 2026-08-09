@@ -1,4 +1,4 @@
-# AI Coding Project Boilerplate for Claude Code 🤖
+# AI Coding Project Boilerplate for Claude Code
 
 *Read this in other languages: [日本語](README.ja.md)*
 
@@ -6,368 +6,116 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-green?logo=node.js)](https://nodejs.org/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
-> **Agentic coding starter kit and workflow boilerplate for Claude Code** — Build production-ready TypeScript projects with sub-agents, context engineering, and zero context exhaustion.
+Evidence-driven Claude Code workflows for TypeScript projects. The package installs commands, specialized agents, and skills that carry confirmed requirements and repository evidence through design, implementation, review, and quality checks.
 
-⚡ **This boilerplate is for developers who want to:**
-- Build **TypeScript projects** faster with AI-driven workflows
-- Avoid **context exhaustion** in long AI coding sessions
-- Standardize team workflows with **specialized AI agents**
+## What it provides
 
-## 📖 Table of Contents
-1. [Quick Start (3 Steps)](#-quick-start-3-steps)
-2. [Updating Existing Projects](#-updating-existing-projects)
-3. [Beyond Vibe Coding: Why Sub Agents?](#-beyond-vibe-coding-why-sub-agents)
-4. [Slash Commands](#-slash-commands)
-5. [Customizing Skills](#-customizing-skills)
-6. [Skills System](#-skills-system)
-7. [Built with This Boilerplate](#-built-with-this-boilerplate)
-8. [Documentation & Guides](#-documentation--guides)
-9. [Development Workflow](#-claude-code-workflow)
-10. [Project Structure](#-project-structure)
-11. [Package Manager Configuration](#-package-manager-configuration)
-12. [Multilingual Support](#-multilingual-support)
-13. [FAQ](#-faq)
+- End-to-end implementation with `/implement`, plus separate design, planning, build, review, and diagnosis commands
+- Direct implementation for small changes; durable documents only when the decision burden requires them
+- Repository-aware implementation and test boundaries based on owning responsibility, observable evidence, and proof obligations
+- Integration/E2E selection from accepted behavior and proof obligations
+- Applicable quality checks before each workflow commit, with checks that could not run reported explicitly
+- Equivalent English and Japanese command, agent, and skill environments
 
-## ⚡ Quick Start (3 Steps)
+## Quick start
 
 ```bash
-# 1. Create your project
 npx create-ai-project my-project
-
-# 2. Install dependencies (automatic)
-cd my-project && npm install
-
-# 3. Launch Claude Code and configure
-claude                    # Launch Claude Code
-/project-inject          # Set up project prerequisites (read every session by AI)
-/implement <your feature> # Start building!
+cd my-project
+npm install
+claude
 ```
 
-> 💡 **First time?** Check the [Quick Start Guide](docs/guides/en/quickstart.md) for detailed setup instructions
+Inside Claude Code:
 
-## 🔄 Updating Existing Projects
+```text
+/project-inject
+/implement Add rate limiting to the API
+```
 
-Keep your project's agent definitions, commands, skills, and AI rules up to date. Run from your project's root directory:
+`/project-inject` records project-specific prerequisites. `/implement` confirms the outcome and scope, reads the repository, creates only the required design artifacts, implements the change, runs applicable checks, and commits completed task boundaries.
+
+For setup details and what to expect during the first run, see the [Quick Start Guide](docs/guides/en/quickstart.md).
+
+## Workflow
+
+```mermaid
+flowchart TD
+    R[Confirm outcome and requirements] --> S{Decision burden}
+    S -->|Small| I[Direct implementation]
+    S -->|Medium| D[Design Doc → Work Plan]
+    S -->|Large| P[PRD → Design Doc → Work Plan]
+    D --> I
+    P --> I
+    I --> Q[Applicable checks → Commit]
+    Q --> V[Post-implementation verification when a Design Doc exists]
+```
+
+A qualifying durable technical choice adds an ADR batch before the Design Doc. Frontend and fullstack work add a UI Spec only when UI decisions remain open. File count supports scope investigation but does not determine the route.
+
+| Scale | Route |
+|---|---|
+| Small | One coherent outcome with one evident repository-supported implementation inside one responsibility boundary → direct implementation |
+| Medium | One coherent outcome coordinating a boundary or containing a potentially durable choice → Design Doc and Work Plan |
+| Large | Multiple independently valuable outcomes requiring separate design decisions → PRD, Design Doc, and Work Plan |
+
+## Commands
+
+| Command | Use it for |
+|---|---|
+| `/implement` | Complete a change from requirement confirmation through implementation |
+| `/task` | Execute a focused standalone task with the applicable skills |
+| `/design`, `/front-design` | Confirm scope and produce approved design artifacts without implementation |
+| `/plan`, `/front-plan` | Create and approve a Work Plan from a Design Doc |
+| `/build`, `/front-build` | Execute approved planned work |
+| `/review`, `/front-review` | Review Design Doc compliance and security, then optionally apply corrections |
+| `/diagnose` | Investigate a problem, verify the cause, and derive solutions |
+| `/reverse-engineer` | Produce PRDs and Design Docs from existing code |
+| `/add-integration-tests` | Add integration/E2E proof to an existing implementation |
+| `/update-doc` | Update and review an existing PRD, ADR, or Design Doc |
+| `/create-skill`, `/refine-skill` | Create or revise project skills |
+| `/project-inject`, `/sync-skills` | Maintain project context and skill metadata |
+
+See [Use Cases & Commands](docs/guides/en/use-cases.md) for examples and the complete command reference.
+
+## Skills and project context
+
+Skills contain reusable judgment criteria for a responsibility and load when relevant. The included skills cover requirement convergence, document routing, implementation strategy, coding and testing, integration/E2E proof, orchestration, and LLM-facing handoffs.
+
+Use `/project-inject` for repository-specific prerequisites such as domain constraints, directory conventions, and external evidence sources. Use `/create-skill` or `/refine-skill` for reusable project rules. The [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) explains where information belongs and how to validate a skill change.
+
+[rashomon](https://github.com/shinpr/rashomon) can compare runs with and without a skill change when you need evidence that the change improved behavior.
+
+## Updating an existing project
+
+From the project root:
 
 ```bash
-# Preview changes without applying
 npx create-ai-project update --dry-run
-
-# Apply updates
 npx create-ai-project update
 ```
 
-### How It Works
+The updater refreshes managed agent, command, skill, and Claude rule files while preserving source code and package configuration. Use `--ignore` and `--unignore` for managed files you maintain separately.
 
-When you run `npx create-ai-project update`, the CLI:
+## Configuration
 
-1. Checks your project's `.create-ai-project.json` manifest for the current version
-2. Compares it with the latest package version
-3. Shows the CHANGELOG for review
-4. Replaces managed files with the latest versions
-5. Regenerates active directories for your language setting
-
-### What Gets Updated
-
-| Target | Path |
-|--------|------|
-| Agent definitions | `.claude/agents-{lang}/` |
-| Command definitions | `.claude/commands-{lang}/` |
-| Skill definitions | `.claude/skills-{lang}/` |
-| AI rules | `CLAUDE.{lang}.md` |
-
-Your source code (`src/`), `package.json`, and other project files are never touched.
-
-### Protecting Customized Files
-
-If you've customized a file and don't want it overwritten:
+Switch the active language environment with:
 
 ```bash
-# Add to ignore list
-npx create-ai-project update --ignore skills project-context
-npx create-ai-project update --ignore agents task-executor
-npx create-ai-project update --ignore commands implement
-npx create-ai-project update --ignore CLAUDE.md
-
-# Remove from ignore list
-npx create-ai-project update --unignore skills project-context
+npm run lang:en
+npm run lang:ja
+npm run lang:status
 ```
 
-Ignored files are preserved during updates. Note that ignoring files may cause version mismatch with other updated components.
+The workflows detect the package manager and quality commands from repository configuration. Change `packageManager` and project scripts in `package.json` when the generated project uses different commands.
 
-### First Run on Existing Projects
+## Guides
 
-If your project was created before the update feature, just run `npx create-ai-project update` from your project's root directory. It will automatically initialize the manifest by detecting your language from `.claudelang`.
+- [Quick Start Guide](docs/guides/en/quickstart.md)
+- [Use Cases & Commands](docs/guides/en/use-cases.md)
+- [Skills Editing Guide](docs/guides/en/skills-editing-guide.md)
 
-## 🚀 Beyond Vibe Coding: Why Sub Agents?
+## License
 
-As teams move beyond vibe coding, **agentic coding** — delegating structured workflows to specialized AI agents — is gaining traction as a practical approach. This boilerplate implements that approach with Claude Code sub-agents:
-
-**Traditional AI coding struggles with:**
-- ❌ Losing context in long sessions
-- ❌ Declining code quality over time
-- ❌ Frequent session restarts for large tasks
-
-**Sub agents solve this through context engineering:**
-- ✅ Splitting work into specialized roles (design, implementation, review)
-- ✅ Each agent gets fresh, focused context — no exhaustion
-- ✅ Handling large projects without degradation
-
-This works because Claude Code's sub-agent mechanism runs each agent in its own context window. The parent session delegates tasks, and each sub-agent starts with a clean, focused context. Quality checks (lint, type check, test, build) run locally before each commit — not in CI. The feedback loop stays fast, and code is already verified when it's pushed.
-
-👉 [Learn more about Sub Agents (Anthropic docs)](https://docs.anthropic.com/en/docs/claude-code/sub-agents)
-
-### 📸 Demo
-
-![Demo](./.github/assets/demo.gif)
-
-*Sub agents working together on a TypeScript project*
-
-## 📝 Slash Commands
-
-Essential commands for Claude Code:
-
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `/implement` | End-to-end feature development | New features |
-| `/task` | Single task with skill-based precision | Bug fixes, small changes |
-| `/design` | Create design docs only | Architecture planning |
-| `/plan` | Create work plan from design | After design approval |
-| `/build` | Execute from existing plan | Resume work |
-| `/review` | Check code compliance | Post-implementation |
-| `/diagnose` | Problem diagnosis workflow | Debugging, troubleshooting |
-| `/reverse-engineer` | Generate PRD/Design Docs from code | Legacy system documentation |
-| `/create-skill` | Create a new skill through interactive dialog | Adding project-specific rules |
-| `/refine-skill` | Modify an existing skill with quality review | Improving skill accuracy |
-
-Frontend equivalents (`/front-design` for UI Spec + Design Doc, `/front-build`, `/front-review`, `/front-plan`) and utility commands (`/add-integration-tests`, `/update-doc`) are also available.
-
-[Full command reference →](docs/guides/en/use-cases.md)
-
-## 🌱 Customizing Skills
-
-This boilerplate ships with general-purpose skills that work out of the box. But skills reach their full potential when you tailor them to your project — your coding conventions, domain constraints, and team decisions.
-
-Think of the included skills as a baseline. The next step is making them yours:
-
-- **`/project-inject`** — Capture project-specific prerequisites (run once, referenced every session)
-- **`/create-skill`** — Create a new skill through interactive dialog
-- **`/refine-skill`** — Improve an existing skill with optimization review
-
-For principles and best practices on writing effective skills, see the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md).
-
-### Validating Skill Effectiveness
-
-Creating a skill is one thing — knowing whether it actually improves agent behavior is another. Skills interact with each other and with project context, so the only reliable way to know is to run with and without the skill and compare results.
-
-[rashomon](https://github.com/shinpr/rashomon) is a Claude Code plugin for this. Use it when you want evidence, not intuition, that a skill change made things better.
-
-## 🎨 Skills System
-
-This boilerplate provides the principles used in agentic implementation workflows as skills, making them available for reference in everyday tasks as needed.
-
-### Applied Skills
-
-| Skill | Purpose |
-|-------|---------|
-| `coding-standards` | Universal coding principles, anti-patterns, debugging |
-| `typescript-rules` | TypeScript type safety, async patterns, refactoring |
-| `typescript-testing` | Vitest, TDD, coverage requirements |
-| `documentation-criteria` | PRD, ADR, Design Doc, UI Spec standards |
-| `technical-spec` | Architecture, environment, build commands |
-| `implementation-approach` | Strategy patterns, task decomposition |
-| `integration-e2e-testing` | Integration tests and two-lane E2E (fixture-e2e / service-integration-e2e), ROI-based selection, journey definition |
-| `frontend-typescript-rules` | React component design, Props-driven patterns |
-| `frontend-typescript-testing` | React Testing Library, MSW, Playwright E2E (fixture and service-integration patterns) |
-| `frontend-technical-spec` | React architecture, environment, data flow |
-| `llm-friendly-context` | Clarity of LLM-facing output — prompts, handoffs, and generated artifacts |
-| `project-context` | Project-specific prerequisites for AI accuracy (set via `/project-inject`) |
-
-👉 [Learn how Skills work (Claude Code docs)](https://code.claude.com/docs/en/skills)
-
-## 🎯 Built with This Boilerplate
-
-### ⏱️ Time Comparison
-- **Without this boilerplate**: ~1 week for setup + infrastructure
-- **With this boilerplate**: ~2 days to production-ready application
-
-### Success Stories
-
-**Sub Agents MCP Server** — MCP server enabling Claude Code/Cursor CLI as sub agents
-⏱️ Initial development in 2 days — test code makes up ~90% of the codebase, now in production
-
-**MCP Image Generator** — AI image generation via Gemini API
-⏱️ Initial development in 1.5 days — complete creative tool with multi-image blending and character consistency
-
-Both were built using the default `/implement` workflow — no manual agent orchestration needed.
-
-> See these projects: [sub-agents-mcp](https://github.com/shinpr/sub-agents-mcp) ・ [mcp-image](https://github.com/shinpr/mcp-image)
-
-## 📚 Documentation & Guides
-
-- **[Quick Start Guide](docs/guides/en/quickstart.md)** - Get running in 5 minutes
-- **[Use Cases & Commands](docs/guides/en/use-cases.md)** - Daily workflow reference
-- **[Skills Editing Guide](docs/guides/en/skills-editing-guide.md)** - Add library docs, team rules, and project-specific knowledge for AI
-- **[Design Philosophy](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b)** - Why this approach works
-
-## 🤖 Claude Code Workflow
-
-```mermaid
-graph LR
-    A[Requirements] --> B[Structural Scale]
-    B -->|Small| C[Direct Implementation]
-    B -->|Medium| D[Optional ADR → Design → Implementation]
-    B -->|Large| E[PRD → Optional ADR → Design → Implementation]
-
-    C --> F[Quality Check → Commit]
-    D --> F
-    E --> F
-```
-
-### Reverse Engineering Workflow
-
-Generate PRD and Design Docs from existing code:
-
-```mermaid
-graph TB
-    subgraph Phase1[Phase 1: PRD Generation]
-        SD[scope-discoverer] --> PRD[prd-creator]
-        PRD --> CV1[code-verifier]
-        CV1 --> DR1[document-reviewer]
-        DR1 -->|Revision needed| PRD
-        DR1 -->|Approved| NEXT1[Next unit]
-    end
-
-    subgraph Phase2[Phase 2: Design Doc Generation]
-        TD[technical-designer] --> CV2[code-verifier]
-        CV2 --> DR2[document-reviewer]
-        DR2 -->|Revision needed| TD
-        DR2 -->|Approved| NEXT2[Next unit]
-    end
-
-    NEXT1 -->|"All PRDs Approved (reuse scope)"| TD
-    NEXT2 --> REPORT[Final report]
-```
-
-### How It Works
-
-1. **Requirement Analysis**: `/implement` command analyzes task scale
-2. **Document Generation**: Creates necessary docs (PRD, UI Spec, Design Doc, Work Plan)
-3. **Task Execution**: Specialized agents handle each phase
-4. **Quality Assurance**: Automatic testing, type checking, and fixes
-5. **Commit & Continue**: Clean commits for each completed task
-
-## 📂 Project Structure
-
-```
-ai-coding-project-boilerplate/
-├── .claude/               # AI agent configurations
-│   ├── agents/           # Specialized sub-agent definitions
-│   ├── commands/         # Slash command definitions
-│   └── skills/           # Skills for automatic context loading
-│       ├── coding-standards/
-│       ├── typescript-rules/
-│       ├── typescript-testing/
-│       ├── documentation-criteria/
-│       ├── technical-spec/
-│       ├── project-context/
-│       ├── frontend-typescript-rules/
-│       ├── frontend-typescript-testing/
-│       └── frontend-technical-spec/
-├── docs/
-│   ├── guides/           # User documentation
-│   ├── adr/              # Architecture decisions
-│   ├── design/           # Design documents
-│   └── prd/              # Product requirements
-├── src/                  # Your source code
-├── scripts/              # Utility scripts
-└── CLAUDE.md             # Claude Code configuration
-```
-
-## 🔧 Package Manager Configuration
-
-This boilerplate uses npm by default, but you can switch to your preferred package manager like bun or pnpm.
-
-There are two environment-dependent settings in `package.json`:
-
-- **`packageManager`**: The package manager and version to use
-- **`scripts`**: The execution commands for each script
-
-When you change these, Claude Code will recognize them and execute with the appropriate commands.
-
-### Switching to bun
-
-```json
-{
-  "packageManager": "bun@1.3.3",
-  "scripts": {
-    "build": "bun run tsc && tsc-alias",
-    "dev": "bun run src/index.ts",
-    "test": "bun test",
-    "check": "bunx @biomejs/biome check src",
-    "check:all": "bun run check && bun run lint && bun run format:check && bun run check:unused && bun run check:deps && bun run build && bun test"
-  }
-}
-```
-
-The above are representative examples. The following scripts are referenced in skills and sub-agent definitions. Update them as needed:
-
-`build`, `dev`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
-
-## 🌐 Multilingual Support
-
-Full support for English and Japanese:
-
-```bash
-npm run lang:en         # Switch to English
-npm run lang:ja         # Switch to Japanese
-npm run lang:status     # Check current language
-```
-
-Automatically updates all configurations, rules, and agent definitions.
-
-## 🤔 FAQ
-
-**Q: How do sub agents work?**  
-A: Just use `/implement` or `/task`. The right agents activate automatically.
-
-**Q: What if there are errors?**  
-A: quality-fixer auto-fixes most issues. If not, it provides clear instructions.
-
-**Q: Can I customize for my project?**
-A: Yes! Run `/project-inject` to set up project-specific prerequisites. This information is read by AI at the start of every session to improve execution accuracy.
-
-**Q: Can I make AI reference my library documentation (llms.txt, API refs, etc.)?**
-A: Yes — create a custom skill under `.claude/skills/` with the relevant URLs. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for details.
-
-**Q: What's the typical workflow?**
-A: `/project-inject` (once) → `/implement` (features) → auto quality checks → commit
-
-**Q: How is this different from Copilot/Cursor?**
-A: Those tools focus on code writing assistance. This boilerplate provides a structured development lifecycle managed by specialized agents.
-
-**Q: What is agentic coding and how does this boilerplate support it?**
-A: Agentic coding delegates structured workflows to specialized AI agents instead of relying on conversational prompting. This boilerplate provides pre-configured sub-agents, CLAUDE.md rules, and quality checks so you can adopt that approach without building the scaffolding yourself.
-
-**Q: How does this prevent context exhaustion?**
-A: Through context engineering. Each sub-agent runs in its own context window focused on a single responsibility, so context stays fresh regardless of session length. We've run 770K+ token sessions without quality degradation — details in the [design philosophy post](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
-
-## 🤖 Sub Agents
-
-20+ specialized sub-agents covering the full development lifecycle: requirement analysis, UI specification, design, planning, implementation, quality assurance, code review, debugging, and reverse engineering. Each agent runs in its own context window for focused execution.
-
-[Full agent list →](.claude/agents-en/)
-
-## 📄 License
-
-MIT License - Free to use, modify, and distribute
-
-## 🎯 About This Project
-
-AI Coding Project Boilerplate gives Claude Code a structured development lifecycle — from requirements analysis through automated quality checks — using specialized sub-agents and context engineering. Each agent handles a focused task in its own context window, which keeps quality consistent across long sessions. The boilerplate ships with pre-configured CLAUDE.md rules, custom skills, and slash commands, so you can start building TypeScript projects with agentic workflows without assembling the tooling yourself.
-
----
-
-Happy Coding with Claude Code! 🤖✨
+[MIT](LICENSE)

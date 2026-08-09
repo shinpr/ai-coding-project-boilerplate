@@ -46,12 +46,10 @@ Derive the correction re-review status or verdict only from these reconciliation
 Resolve correction re-review entries by their recorded `prior_disposition`:
 
 - `resolved` and `withdrawn` are complete;
-- `maintained` with `prior_disposition: apply` returns the original finding and the complete reconciliation entry verbatim through the same author or executor path, followed by another correction re-review;
+- `maintained` with `prior_disposition: apply` returns the original finding and the complete reconciliation entry verbatim through the same author or executor path. Invoke correction re-review only after the target artifact changes or new evidence directly addresses the maintained reason;
 - `maintained` with `prior_disposition: decline` retains that decline and does not reopen the correction cycle.
 
-Escalate when the same ID with `prior_disposition: apply` returns `maintained` in two consecutive correction re-reviews, the disposition is `user_decision_required`, user-held authority is needed, an irreversible action awaits authorization, or required inputs are genuinely unusable. Progress after no `maintained` entry with `prior_disposition: apply` remains, every other actionable finding has a disposition, and every `user_decision_required` item has a recorded user decision.
-
-This finding-level loop is distinct from the verifier-level cycle limit in the Post-Implementation Verification Pass/Fail Criteria section of the parent skill. That rule bounds how many times the post-implementation verifier set re-runs; this rule bounds how many times one finding ID can return `maintained`. Both apply, and whichever triggers first escalates.
+A correction response that supplies neither an artifact change nor directly relevant new evidence remains with the same author or executor until the correction step produces one; it does not trigger another review. Escalate only when the disposition is `user_decision_required`, user-held authority is needed, an irreversible action awaits authorization, or required inputs are genuinely unusable. Progress after no `maintained` entry with `prior_disposition: apply` remains, every other actionable finding has a disposition, and every `user_decision_required` item has a recorded user decision.
 
 Handoffs contain this exact set:
 

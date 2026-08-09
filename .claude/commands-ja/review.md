@@ -11,7 +11,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 - 準拠検証 → code-reviewerが実行
 - セキュリティ検証 → security-reviewerが実行
-- **コード側修正パス**: 修正実装 → task-executor、品質チェック → quality-fixer、再検証 → code-reviewer / security-reviewer
+- **コード側修正パス**: 修正実装 → task-executor、修正再レビュー → code-reviewer / security-reviewer、最終品質チェック → quality-fixer
 - **設計側更新パス**: DD改訂 → technical-designer（updateモード）、DDレビュー → document-reviewer、複数DDの整合性 → design-sync（複数DD存在時のみ）、再検証 → code-reviewer
 
 オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡す。設計側パスは、コードが正しいのにDesign Docが古くなっていた不整合（コードがDDに違反したケースではない）に適用される。
@@ -23,13 +23,7 @@ Design Doc（省略時は直近のもの）: $ARGUMENTS
 ## 実行フロー
 
 ### 1. 前提確認
-```bash
-# Design Docの特定
-ls docs/design/*.md | grep -v template | tail -1
-
-# 実装ファイル確認
-git diff --name-only main...HEAD
-```
+まず`$ARGUMENTS`からDesign Docを解決する。指定がない場合は、リポジトリのメタデータ、参照、内容から、変更された責務を統制するドキュメントを探す。ブランチのupstreamとリポジトリのデフォルトブランチから比較基点を解決し、そのmerge baseから`HEAD`までの実装ファイルを列挙する。
 
 ### 2. code-reviewer実行
 Agent toolでcode-reviewerを呼び出す:
@@ -73,9 +67,9 @@ Security Review: [security-reviewerのstatus]
 decline: [ID] — [出典ソース上の理由]
 ```
 
-ユーザーに尋ねるのは2つだけとする: 提案した `apply` 集合を適用する権限と、`user_decision_required` の各項目に対する判断。`user_decision_required` の項目でユーザーが「コードが正しく Design Doc が陳腐化している」と判断した場合、その項目はステップ5へ回す。承認された変更が残らない場合はステップ10へ進む。
+ユーザーに尋ねるのは2つだけとする: 提案した `apply` 集合を適用する権限と、`user_decision_required` の各項目に対する判断。`user_decision_required` の項目でユーザーが「コードが正しく Design Doc が陳腐化している」と判断した場合、その項目はステップ5へ回す。承認されたコード変更が残らない場合はステップ11へ進む。
 
-**修正パスへ引き継ぐスコープ**: 承認された検出事項、対象となるファイルとセクション、およびユーザーが述べたサイズ予算を、ステップ5〜9 で呼び出す全エージェントに渡す。再検証の前に、各差分ハンクを承認された検出事項、またはその検出事項が必要とした整合性の更新に対応付ける。対応付かないハンク、または述べられた予算を超える差分については、修正の一部として受け入れるのではなくスコープ判断を求める。
+**修正パスへ引き継ぐ境界**: 承認された検出事項、その観測可能な修正条件、ユーザーが述べたサイズ予算を、コード側の修正パスと最終品質チェックまで引き継ぐ。coding-standards の「変更境界と参照の代表性」を適用して必要な修正全体を導出し、検出事項が示すパスは調査の起点として扱う。必要な修正全体がユーザー指定のサイズ予算を超える場合、その予算はユーザーが判断する境界として維持する。
 
 ### 5. 設計側更新
 
@@ -92,45 +86,51 @@ decline: [ID] — [出典ソース上の理由]
    - `prompt`: "doc_type: DesignDoc。review_context: update。[path]の更新後Design Docの整合性と完成度をレビュー。"
    - レビュー裁定を、その修正再レビュー・エスカレーション・収束の各遷移に沿って回す。差し戻す修正には technical-designer を用いる。収束条件に達したときのみ先へ進む。
 
-3. 複数のDesign Docが存在する場合（`ls docs/design/*.md | grep -v template | wc -l > 1`）、design-syncを呼び出す:
+3. レビュー対象の変更が触れる責務または契約を別のDesign Docも統制する場合、design-syncを呼び出す:
    - `subagent_type`: "design-sync"
    - `description`: "DD間整合性チェック"
    - `prompt`: "source_design: [更新後DDのパス]。更新後の全Design Doc間の矛盾を検出。"
    - `sync_status: CONFLICTS_FOUND` の場合: 矛盾をユーザーに提示し、影響を受けるDDに対して technical-designer を再起動して解消する。
 
-4. 承認済みの `apply` 検出事項を更新後の Design Doc に対して再評価し、改訂で既に満たされたものは除外する。残りがない場合はステップ6〜7をスキップしてステップ8へ進む。
+4. 承認済みの `apply` 検出事項を更新後の Design Doc に対して再評価し、改訂で既に満たされたものは除外する。残りがない場合はコード側の修正パスをスキップして最終レポートへ進む。
 
 ### 6. 修正実行
 
 Agent toolでtask-executorを呼び出す:
 - `subagent_type`: "task-executor"
 - `description`: "レビュー修正の実行"
-- `prompt`: "承認されたコード側の検出事項を直接適用する: [レビュアーの検出事項オブジェクト全体を逐語で、オーケストレーターの処理方針のみ付加]。承認された検出事項と述べられた総サイズ予算の範囲に変更を収める。"
+- `prompt`: "承認されたコード側の検出事項を直接適用する: [レビュアーの検出事項オブジェクト全体を逐語で、オーケストレーターの処理方針のみ付加]。coding-standards の「変更境界と参照の代表性」を用いて必要な修正全体を導出し、示された総サイズ予算を守る。"
 
-### 7. 品質チェック
-
-Agent toolでquality-fixerを呼び出す:
-- `subagent_type`: "quality-fixer"
-- `description`: "品質ゲートチェック"
-- `prompt`: "現在の未コミットのワークツリー全体について品質ゲート通過を確認する。"
-
-### 8. code-reviewer再検証
+### 7. code-reviewer再検証
 
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
 - `description`: "準拠の再検証"
 - `prompt`: "修正後にDesign Doc準拠を再検証。Design Doc: [path]。実装ファイル: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
 
-### 9. security-reviewer再検証
+### 8. security-reviewer再検証
 
 Agent toolでsecurity-reviewerを呼び出す（セキュリティ修正が実行された場合のみ）:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティの再検証"
 - `prompt`: "修正後にセキュリティを再検証。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
 
-### 10. 最終レポート
+### 9. 修正結果の解決
 
-ステップ8とステップ9の各結果にレビュー裁定を適用する。その `maintained` の遷移に従い、差し戻した修正の後は該当する検証を繰り返し、エスカレーション条件で停止し、収束条件で先へ進む。
+ステップ7とステップ8の各結果にレビュー裁定を適用する。`prior_disposition: apply` の `maintained` はステップ6へ戻し、その後もう一度修正再レビューを行う。レビュー裁定が収束条件に達した後に進む。
+
+### 10. 品質チェック
+
+修正再レビューが収束した後、quality-fixerを1回呼び出す:
+- `subagent_type`: "quality-fixer"
+- `description`: "品質ゲートチェック"
+- `prompt`: "direct_scope: { outcome: [ステップ6へ渡した承認済みのコード側検出事項], affectedPaths: [検出事項と、その整合性を保つために必要な変更が対象とするパス], verificationCondition: 適用対象のプロジェクト品質チェックがパスする }。現在の未コミットのワークツリー全体について品質ゲート通過を確認する。"
+
+レスポンスで分岐する:
+- `approved` → ステップ11へ進む
+- `blocked` → quality-fixerが報告したユーザー判断を提示する
+
+### 11. 最終レポート
 
 その後、最終レポートを提示する:
 
@@ -144,6 +144,11 @@ Security Review:
   初回: [status]
   修正レビュー: [再レビュー範囲のstatus]（修正実行時）
   照合: [検出事項IDごとの resolved / withdrawn / maintained]
+
+品質チェック:
+  ステータス: [approved / 未実行 — コード変更なし]
+  実行できなかったチェックまたは無関係な既存失敗: [quality-fixer の結果に存在する場合]
+
 decline とした検出事項:
 - [ID] — [出典上の理由とエビデンス]
 
@@ -158,8 +163,9 @@ decline とした検出事項:
 本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
 
 ```
-Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+サブエージェントのスコープ境界:
+承認された修正を、その影響先となるリポジトリ上の責務全体で整合する形で完成させる。
+参照されたパスは調査の起点として扱う。
+割り当てられた更新を除き、出典ドキュメントは読み取り専用とする。
+進行にプロダクト成果、公開契約、主要設計、権限、または不可逆操作に関するユーザー判断が必要な場合はエスカレーションする。
 ```

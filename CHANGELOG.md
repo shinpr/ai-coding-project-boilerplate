@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.2] - 2026-08-09
+
+### Changed
+
+- **Evidence-driven autonomous workflows** (skills, agents, commands) — Workflow decisions now use governing sources, repository ownership, observable changes, and proof obligations instead of fixed file-count, iteration, ROI, and template constraints. Correction review advances only with changed artifacts or new evidence, and quality limitations reach final reports. Applied across en/ja.
+
 ## [1.27.1] - 2026-08-08
 
 ### Changed

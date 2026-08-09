@@ -39,7 +39,7 @@ description: 実装戦略（垂直スライス、水平、ハイブリッド）�
 3. **的を絞った拡張**: `Failed Items` ごとに、まず既存の設計サーフェス内での解決を検証する — 再利用、既存データからの導出、オンデマンド計算、現在の呼び出し側または境界での責務保持。これらで解決できない場合に、十分な最小の追加を選択する。`Adopted Additions` として、追加 → 対応する Failed Item → より小さいサーフェスでの解決が成立しない根拠、の形で記録する。追加には対応する Failed Item が必要である。
 4. **減算チェック**: `Adopted Additions` を1つずつ一時的に取り除き、対応する Failed Item を再検証する。項目が再び満たせなくなる場合にその追加を残す。ステップ3で検討したが採用しなかった選択肢を、簡潔な理由とともに `Rejected Additions` として記録する。ステップ3で不採用の候補がなかった場合は `None` と記録する。
 
-**Design Docへの出力**: `Direct MVP`、`Failed Items`、`Adopted Additions`、`Rejected Additions`。
+**フェーズの出力**: `Direct MVP`、`Failed Items`、`Adopted Additions`、`Rejected Additions`。Design Docの作成者は4つすべてを記録する。実装エージェントは、設計成果物の作成責務を設計フェーズに残したまま、追加された仕組みを検証するためにこれらを使用する。
 
 **完了証跡**: 4つの出力すべてが記録されていること。`Failed Items` ごとに根拠があり、`Adopted Additions` ごとに対応する Failed Item、より小さいサーフェスでは不十分である理由、減算チェックの結果が示されていること。
 

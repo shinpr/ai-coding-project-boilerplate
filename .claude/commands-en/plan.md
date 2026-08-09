@@ -35,9 +35,9 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
 ## Execution Process
 
 1. **Design Document Selection**
-   ! ls -la docs/design/*.md | head -10
-   - Check for existence of design documents, notify user if none exist
-   - Present options if multiple exist (can be specified with $ARGUMENTS)
+   - Resolve an explicit `$ARGUMENTS` path first, including moved or renamed paths
+   - Otherwise discover Design Docs from repository documentation conventions and document content
+   - Present options only when multiple plausible documents would produce different plans
 
 2. **Test Skeleton Generation Confirmation**
    - Confirm with user whether to generate test skeletons (integration + E2E lanes) first
@@ -48,12 +48,8 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    Invoke work-planner using Agent tool:
    - `subagent_type`: "work-planner"
    - `description`: "Work plan creation"
-   - If test skeletons were generated in Step 2, build the prompt by listing every lane's status:
-     - Always include: "Integration test file: [path or 'not generated']"
-     - For each E2E lane (`fixtureE2e`, `serviceE2e`):
-       - When `generatedFiles.<lane>` is not null: "[lane] test file: [path]"
-       - When `generatedFiles.<lane>` is null: "No [lane] skeleton generated (reason: [e2eAbsenceReason.<lane>])"
-     - Append placement guidance: "Integration tests are created simultaneously with each phase implementation. fixture-e2e tests are created alongside the UI feature phase. service-integration-e2e tests are executed only in the final phase."
+   - If test skeleton generation ran in Step 2, pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task.
+     - Append placement guidance: "Integration tests are created simultaneously with each phase implementation. fixture-e2e tests are created alongside the UI feature phase. service-integration-e2e tests are executed after their required services exist."
    - If test skeletons were not generated:
      `prompt`: "Create work plan from Design Doc at [path]."
 

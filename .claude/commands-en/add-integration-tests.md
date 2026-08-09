@@ -36,25 +36,17 @@ Execute Skill: documentation-criteria (for task file template in Step 3)
 
 ### Step 1: Discover and Validate Documents
 
-```bash
-# Verify at least one document path was provided
-test -n "$ARGUMENTS" || { echo "ERROR: No document paths provided"; exit 1; }
+Resolve every explicit path in `$ARGUMENTS`, including moved or renamed paths. Then inspect repository documentation locations and metadata for related Design Docs and UI Specs. Conventional `docs/design/` and `docs/ui-spec/` locations are discovery hints rather than required layout.
 
-# Verify provided paths exist
-ls $ARGUMENTS
+Classify discovered documents from their declared scope and content:
+- backend contracts, persistence, or service responsibilities → **Design Doc (backend)**
+- components, UI state, browser behavior, or frontend responsibilities → **Design Doc (frontend)**
+- screen/state/interaction specification responsibility → **UI Spec** (optional)
+- one responsibility with an ambiguous lane → **single-layer Design Doc** (resolve its executor lane from referenced code and repository ownership)
 
-# Discover additional documents
-ls docs/design/*.md 2>/dev/null | grep -v template
-ls docs/ui-spec/*.md 2>/dev/null
-```
+Continue with documents explicitly named by the user and semantically related artifacts they reference. Ask for confirmation only when multiple plausible document sets or executor lanes would materially change the generated tests.
 
-Classify discovered documents by filename:
-- Filename contains `backend` → **Design Doc (backend)**
-- Filename contains `frontend` → **Design Doc (frontend)**
-- Located in `docs/ui-spec/` → **UI Spec** (optional)
-- None of the above → **single-layer Design Doc** (layer TBD in gate below)
-
-**[GATE] Present classification results to user as candidates and ask for confirmation before proceeding.** The user may exclude irrelevant documents discovered by the automatic search. If a single-layer Design Doc is detected, ask the user whether it targets backend or frontend to determine correct agent routing.
+Skeleton generation begins after Step 1 has resolved a readable Design Doc and identified its accepted behavior.
 
 ### Step 2: Skeleton Generation
 
@@ -65,16 +57,16 @@ For each Design Doc from Step 1:
 - `description`: "Generate test skeletons for [layer/name]"
 - `prompt`: "Generate test skeletons from Design Doc at [path]." + If UI Spec exists: "UI Spec at [ui-spec path] is available as additional context."
 
-**Expected output per invocation**: `generatedFiles` containing integration and e2e paths
+**Expected output per invocation**: `generatedFiles[]` containing the emitted skeleton paths
 
 ### Step 3: Create Task Files [GATE]
 
-**Pre-check**: For each Step 2 invocation result, inspect `generatedFiles.integration`:
-- When `integration` is a path → proceed to task creation for that layer
-- When `integration` is `null` → skip task creation for that layer; record the layer and the generator's `e2eAbsenceReason` (when applicable) for the final report
-- When all layers return `integration: null` → skip Steps 4–7 entirely, report "No integration test skeletons generated for any layer" with each layer's reason, and exit
+**Pre-check**: For each Step 2 invocation result, inspect `generatedFiles[]`:
+- When it contains emitted files → proceed to task creation for that layer
+- When it is empty → skip task creation for that layer; existing or cheaper tests cover its accepted obligations
+- When every result is empty → skip Steps 4–7 entirely, report that no additional integration/E2E proof artifact is required, and exit
 
-Create one task file per layer that has a non-null `integration` path, using the monorepo-flow.md naming convention for deterministic agent routing:
+Create one task file per layer that has generated files, using the monorepo-flow.md naming convention for deterministic agent routing:
 - Backend Design Doc → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
 - Frontend Design Doc → `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
 - Single-layer confirmed as backend → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
@@ -93,7 +85,7 @@ Implement test cases defined in skeleton files.
 
 ## Target Files
 
-- Skeleton: [layer-specific paths from Step 2 generatedFiles]
+- Skeletons: [every path in the layer's Step 2 generatedFiles]
 
 ## Investigation Targets
 
@@ -134,7 +126,7 @@ Execute one task file at a time through Steps 4→5→6→7 before starting the 
 Invoke integration-test-reviewer using Agent tool:
 - `subagent_type`: "integration-test-reviewer"
 - `description`: "Review test quality"
-- `prompt`: "Review test quality. Test files: [paths from Step 4 testsAdded]. taskFiles: [the same task file path used in Step 4]. diffBase: HEAD. Skeleton files: [layer-specific paths from Step 2 generatedFiles matching current task's layer]"
+- `prompt`: "Review test quality. Test files: [paths from Step 4 testsAdded]. taskFiles: [the same task file path used in Step 4]. diffBase: HEAD. Skeleton files: [every path from the current layer's Step 2 generatedFiles]"
 
 **Expected output**: `status` (approved/needs_revision/blocked), `blockingReason`, and the single `qualityIssues[]` correction list
 
@@ -143,7 +135,7 @@ Invoke integration-test-reviewer using Agent tool:
 Check Step 5 result, branching on `status`:
 - `approved` → Mark complete, proceed to Step 7
 - `needs_revision` → Apply Review Resolution, re-invoke the routed task-executor in **Fix Mode** with the complete `apply` quality-issue objects, then return to Step 5
-- `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists, return to Step 4 and correct the implementation result. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to Step 7
+- `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the corrected input changes the review target. If the executor produced no readable changed test, return to Step 4 and correct its result; otherwise retain the unproved review for final reporting
 
 Invoke task-executor routed by task filename pattern:
 - `*-backend-task-*` → `subagent_type`: "task-executor"
@@ -163,13 +155,12 @@ Invoke quality-fixer routed by task filename pattern:
 
 Check quality-fixer response:
 - `stub_detected` → Return to Step 4 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array, then re-execute Steps 4→5→6→7
-- `blocked` → Escalate to user
+- `blocked` → Escalate the user-owned decision reported by quality-fixer
 - `approved` → Proceed to Step 8
 
 ### Step 8: Commit
 
-On `approved` from quality-fixer:
-- Commit test files with appropriate message using Bash
+On `approved` from quality-fixer, commit the completed test task.
 
 ### Step 9: Final Cleanup
 
@@ -177,7 +168,7 @@ After all task files have been processed and committed, delete the task files th
 
 - Delete every file matching `docs/plans/tasks/integration-tests-backend-task-*.md` and `docs/plans/tasks/integration-tests-frontend-task-*.md` created during this run
 
-If task files cannot be deleted (filesystem error), report the failure but do not block completion.
+If a filesystem error leaves task files behind, continue completion with that cleanup failure recorded.
 
 ## Scope Boundary for Subagents
 
@@ -185,8 +176,8 @@ Append the following block to every subagent prompt invoked from this recipe:
 
 ```
 Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-New files derived from the requested deliverable are in scope (e.g., test skeleton files specified by the recipe).
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+Deliver the accepted test proof consistently across the repository responsibility that owns it.
+Treat referenced paths as investigation starting points and include supporting test-harness files when the same proof requires them.
+Keep governing artifacts read-only except for assigned progress fields.
+Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
 ```

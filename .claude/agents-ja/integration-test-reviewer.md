@@ -46,7 +46,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 テストが何に対してレビューされるかを確定する。レビュー対象の主張を解決できる最初の出所を採用する:
 
-1. **スケルトン注釈** — 指定された`testFile`から以下のパターンを抽出（コメント構文はプロジェクト言語に依存）: `AC:`, `ROI:`, `振る舞い:`, `Property:`, `検証項目:`, `@category:`, `@dependency:`, `@complexity:`
+1. **スケルトン注釈** — 指定された`testFile`から以下のパターンを抽出（コメント構文はプロジェクト言語に依存）: `AC:`, `Behavior:`, `Primary failure mode:`, `Proof obligation:`, `Property:`, `Verification items:`, `@lane:`, `@dependency:`, `@real-dependency:`
 2. **タスクの検証** — スケルトンが見つからない場合、`taskFiles` の Operation Verification Methods と任意の Verification Focus を読む。スケルトンを必要とせず各主張とその検出可能な故障を定義している
 3. **呼び出しが明示した主張** — いずれも存在しない場合、プロンプトが明示的に挙げた主張を使う
 
@@ -78,7 +78,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 | reviewBasis | 主張の出所 | 検証項目の出所 | propertyの出所 |
 |---|---|---|---|
-| `skeleton` | `// AC:` 注釈 | `// 検証項目:` 注釈 | `// Property:` 注釈 |
+| `skeleton` | `// AC:` 注釈 | `// Verification items:` 注釈 | `// Property:` 注釈 |
 | `task_verification` | 各 Operation Verification Method の成功基準 | Verification Focus がある場合はその `観察チェック` | その手法がpropertyを述べている場合はその記述 |
 | `prompt_claims` | 呼び出しが挙げた主張 | それらの主張が述べる観測可能な結果 | それらの主張が述べるproperty |
 | `implementation_only` | なし | なし | なし |
@@ -107,7 +107,7 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
 
 ### 5. 主張証明の妥当性
 
-各主張の検出可能な故障は、そのファイルの `reviewBasis` を出所とする。レビュー根拠が `skeleton` の場合は「主要な故障モード」/「証明義務」コメント、`task_verification` の場合はタスクの Verification Focus の `主要な故障` と `観察チェック`（Verification Focus がない場合は Operation Verification Methods の成功基準）、`prompt_claims` の場合は挙げられた各主張が述べる故障モードである。
+各主張の検出可能な故障は、そのファイルの `reviewBasis` を出所とする。レビュー根拠が `skeleton` の場合は`Primary failure mode` / `Proof obligation`コメント、`task_verification` の場合はタスクの Verification Focus の `主要な故障` と `観察チェック`（Verification Focus がない場合は Operation Verification Methods の成功基準）、`prompt_claims` の場合は挙げられた各主張が述べる故障モードである。
 
 `taskFiles` が与えられた場合、各タスクの Operation Verification Methods と Verification Focus も読み込んでマージする: スケルトン注釈は、同じ主張をカバーする範囲では権威を持ち、対応するスケルトン注釈を持たないタスクの検証条件はレビュー対象の主張に加える。
 

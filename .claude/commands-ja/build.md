@@ -90,7 +90,7 @@ Agentツールでtask-decomposerを呼び出す:
 - [ ] Consumed Task Set 内のタスク実行順序（依存関係）を特定
 - [ ] **環境チェック**: タスク単位のコミットサイクルを実行可能か？
   - コミット機能が利用不可 → 自律実行モード前にエスカレーション
-  - その他の環境（テスト、品質ツール） → サブエージェントがエスカレーション
+  - テストまたは品質ツールを利用できない場合 → サブエージェントは影響を受けないチェックを実行し、実行できなかった内容を正確に記録する
 
 ## タスク実行サイクル（4ステップサイクル）
 **必須実行サイクル**: `task-executor → エスカレーションチェック → quality-fixer → commit`
@@ -100,29 +100,30 @@ Agentツールでtask-decomposerを呼び出す:
 Consumed Task Set 内の各タスクで必須：
 1. **EXECUTE**: task-executor を呼び出してタスク実装を実行（レイヤー横断 の場合は subagents-orchestration-guide の レイヤー別エージェントルーティング 参照）
 2. **実行結果で分岐**:
-   - `status: "escalation_needed"` または `"blocked"` → 停止してユーザーにエスカレーション
+   - `status: "escalation_needed"` または `"blocked"` → 宣言された境界を確認し、ユーザーが所有するプロダクト、契約、権限、または不可逆な判断が必要な場合にエスカレーションする
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `status` で分岐する
      - `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を逐語で task-executor に渡して **Fix Mode** でステップ1 に戻る
-     - `blocked` → 現在の diff から移動・リネームされたテストパスを解決してレビューを**1回だけ**再実行する。`requiresTestReview: true` にもかかわらず変更されたテストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でステップ1 に差し戻す。再実行でも `blocked` が返る場合は、テストレビュー未実施を `blockingReason` とともに記録してステップ3へ進み、その未証明の状態を完了レポートに引き継ぐ
+     - `blocked` → 現在の diff から移動・リネームされたテストパスを解決し、その入力によってレビュー対象が変わる場合は再実行する。`requiresTestReview: true` にもかかわらず読み取り可能な変更テストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でステップ1 に差し戻す。それ以外はレビューを未実行として `blockingReason` を記録し、ステップ3へ進む
      - `approved` → ステップ3 へ
    - `readyForQualityCheck: true` → ステップ3 へ
 3. **QUALITY-FIX**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して quality-fixer を呼び出す（レイヤー横断の場合は レイヤー別エージェントルーティング 参照）。現在の `task_file`、実装ステップの `runnableCheck`、および technical-spec またはリポジトリの規約が権威ある品質コマンドを示している場合は `qualityCommand` を渡す。その後レスポンスで分岐する:
    - `stub_detected` → ステップ1 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor を **Fix Mode** で再起動
-   - `blocked` → 停止してユーザーにエスカレーション（subagents-orchestration-guide の quality-fixer blockedハンドリングに従い `reason` で判別する）
+   - `blocked` → quality-fixer が報告したユーザー判断をエスカレーションする
    - `approved` → ステップ4 へ
-4. **承認後コミット**: git commit を実行
+4. **承認後にコミット**: 完了したタスクの変更セットをコミットする
 
-**重要**: 全サブエージェントレスポンスの status フィールドをパースし、4ステップサイクルの対応ブランチを実行。quality-fixer が `approved` を返すまで次のタスクに進まない。
+**重要**: 全サブエージェントレスポンスのルーティング上の意味を読み取る。quality-fixer が `approved` を返した後にのみ次のタスクへ進む。
 
 ## サブエージェントのスコープ境界
 
 本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
 
 ```
-Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+サブエージェントのスコープ境界:
+タスクの成果を、それを担うリポジトリ上の責務全体で整合する形で完成させる。
+参照されたパスは調査の起点として扱い、同じ成果に必要な関連ファイルを含める。
+割り当てられた進捗フィールドを除き、出典となる成果物は読み取り専用とする。
+進行にプロダクト成果、公開契約、主要設計、権限、または不可逆操作に関するユーザー判断が必要な場合はエスカレーションする。
 ```
 
 承認確認後、自律実行モードを開始。要件変更を検知した場合は即座に停止。
@@ -131,17 +132,17 @@ Escalate when the required fix or investigation falls outside that scope.
 
 全タスクサイクル完了後、完了レポートの前に検証エージェントを**並列実行**:
 
-1. **両方を並列で実行** (Agent tool):
-   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`、Design Docパス、`code_paths`: 実装ファイルリスト（`git diff --name-only main...HEAD`）
+1. ブランチのupstreamとリポジトリのデフォルトブランチから比較基点を解決し、両方を並列で実行する (Agent tool):
+   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`、Design Docパス、`code_paths`: merge baseから`HEAD`までの実装ファイルリスト
    - security-reviewer (subagent_type: "security-reviewer") → `governingDocuments: [{"type":"design-doc","path":"[パス]"}]` と実装ファイルリスト
 
 2. **結果の統合** — 合格/不合格の基準はsubagents-orchestration-guideの実装後検証セクション参照。統合検証レポートをユーザーに提示。
 
-3. **修正サイクル**（いずれかの verifier が fail のとき、最大2サイクル）:
-   - 対応可能な各検出事項にレビュー裁定を適用する。`apply` の検出事項オブジェクトは、処理方針のみ付加して逐語で task-executor に渡す。対象パスを特定できない discrepancy は、パスを捏造せずエスカレーションする。
+3. **修正サイクル**（いずれかの verifier が fail のとき）:
+   - 対応可能な各検出事項にレビュー裁定を適用する。`apply` の検出事項オブジェクトは、処理方針のみ付加して逐語で task-executor に渡す。引用された位置は調査の起点として扱う。
    - 影響パス、観察可能な検証条件、変更していない検出事項オブジェクトを渡して task-executor を **Fix Mode** で起動する。修正タスクファイルは作成しない。
-   - 続いて quality-fixer、その後 fail した verifier のみ再実行。
-   - 2サイクル後も fail が残る場合 → 残存指摘事項を添えてユーザーにエスカレーション
+   - 照合に対応する verifier には `prior_feedback` を引き継ぎ、fail した verifier だけを再実行して、レビュー裁定が収束するまで従う。
+   - 修正再レビューが収束した後、quality-fixer を1回実行する。`approved` なら続行し、`blocked` ならユーザーが判断すべき内容をそのまま提示する。
 
 4. **全て合格** → 最終クリーンアップへ
 
@@ -152,14 +153,14 @@ Escalate when the required fix or investigation falls outside that scope.
 - Consumed Task Set 内のすべてのファイルを削除する
 - 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
 
-タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが完了レポートをブロックしない。
+ファイルシステムエラーによってタスクファイルが残った場合は、そのクリーンアップ失敗を記録したうえで完了レポートを続ける。
 
 ## 完了レポートコントラクト
 
 最終レポートには以下を含めること:
 - タスク実体化のステータス
 - 実装したタスク数
-- 品質チェック結果
+- 品質チェック結果（実行できなかったチェックまたは無関係な既存失敗がある場合はそれを含む）
 - コミット数
 - クリーンアップ結果
 - エスカレーションまたはブロッキングの要約（あれば）

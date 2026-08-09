@@ -4,12 +4,6 @@ Created Date: YYYY-MM-DD
 Type: feature|fix|refactor
 Related Issue/PR: #XXX (if any)
 
-## WorkPlan Review
-
-Plan creation and material updates set this to `pending`. Record `approved` after the user approves the reviewed implementation scope.
-
-- **Status**: pending|approved
-
 ## Governing Documents
 
 - Design Doc: [docs/design/XXX.md] (list each when the change spans layers)
@@ -24,7 +18,15 @@ Plan creation and material updates set this to `pending`. Record `approved` afte
 
 ## Implementation Phases
 
-Use the implementation approach and dependency order from the Design Doc; see documentation-criteria skill for Phase Division Criteria. Each phase groups the work that reaches a shared observable verification point. Keep implementation, tests, configuration, wiring, and documentation together when they become complete at that point.
+Use the implementation approach and dependency order from the Design Doc. Each phase groups the work that reaches a shared observable verification point. Keep implementation, tests, configuration, wiring, and documentation together when they become complete at that point.
+
+Shape phases from the selected approach:
+
+- **Vertical Slice**: each phase is one value unit carrying its implementation and verification.
+- **Horizontal Slice**: each phase completes and verifies one required architecture layer before their integration point.
+- **Hybrid**: combine verified shared prerequisites with outcome-oriented slices and name the observable verification for each phase.
+
+Whole-repository quality assurance remains a separate execution responsibility.
 
 Each `PN-TN` checkbox entry is one implementation task. `PN-TN` is its stable ID and the key every dependency reference uses.
 
@@ -66,7 +68,3 @@ Add `Verification Focus` only when the task could appear complete while its cite
 - [ ] Dependencies permit execution in the listed order
 - [ ] Verification is executable from repository artifacts or the task's own output
 - [ ] Task verification passes and cited acceptance criteria are satisfied
-
-## Progress Notes
-
-[Record execution-relevant discoveries only when they change task order, scope, or verification.]

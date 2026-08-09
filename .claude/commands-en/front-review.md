@@ -11,13 +11,13 @@ Execute the `subagents-orchestration-guide` skill before making workflow decisio
 
 **Core Identity**: "I am an orchestrator." (see subagents-orchestration-guide skill)
 
-**First Action**: Register Steps 1-10 using TaskCreate before any execution.
+**First Action**: Register Steps 1-11 using TaskCreate before any execution.
 
 ## Execution Method
 
 - Compliance validation → performed by code-reviewer
 - Security validation → performed by security-reviewer
-- **Code-side fix path**: Fix implementation → task-executor-frontend; Quality checks → quality-fixer-frontend; Re-validation → code-reviewer / security-reviewer
+- **Code-side fix path**: Fix implementation → task-executor-frontend; Correction review → code-reviewer / security-reviewer; Final quality checks → quality-fixer-frontend
 - **Design-side update path**: DD revision → technical-designer-frontend (update mode); DD review → document-reviewer; cross-DD consistency → design-sync (when multiple DDs exist); Re-validation → code-reviewer
 
 Orchestrator invokes sub-agents and passes structured JSON between them. The design-side path applies when the discrepancy reflects code that was correct but the Design Doc became stale, rather than code that violated the Design Doc.
@@ -27,13 +27,7 @@ Design Doc (uses most recent if omitted): $ARGUMENTS
 ## Execution Flow
 
 ### Step 1: Prerequisite Check
-```bash
-# Identify Design Doc
-ls docs/design/*.md | grep -v template | tail -1
-
-# Check implementation files
-git diff --name-only main...HEAD
-```
+Resolve the Design Doc from `$ARGUMENTS` first. Otherwise discover the document governing the changed frontend responsibilities from repository metadata, references, and content. Resolve the branch comparison base from its upstream and the repository default branch, then list implementation files from that merge base through `HEAD`.
 
 ### Step 2: Execute code-reviewer
 Invoke code-reviewer using Agent tool:
@@ -77,9 +71,9 @@ Security Review: [status from security-reviewer]
 Declined: [ID] — [governing reason]
 ```
 
-Ask the user for two things only: authority to apply the proposed `apply` set, and a decision on each `user_decision_required` item. For a `user_decision_required` item the user may decide that the code is correct and the Design Doc is stale; those items go to Step 5. When no approved change remains, proceed to Step 10.
+Ask the user for two things only: authority to apply the proposed `apply` set, and a decision on each `user_decision_required` item. For a `user_decision_required` item the user may decide that the code is correct and the Design Doc is stale; those items go to Step 5. When no approved code change remains, proceed to Step 11.
 
-**Scope carried into the fix path**: Pass the approved findings, the files and sections they cover, and any size budget the user stated to every agent invoked from Steps 5-9. Before re-validation, map each diff hunk to an approved finding or to a consistency update that finding required; request a scope decision for any unmapped hunk or for a diff that exceeds a stated budget, rather than accepting it as part of the fix.
+**Boundary carried into the fix path**: Carry the approved findings, their observable correction conditions, and any size budget the user stated through the code-side correction path and its final quality check. Apply coding-standards "Change Boundary and Reference Representativeness" to derive the complete correction; finding paths are investigation starting points. A user-stated size budget remains a user-owned boundary when the complete correction exceeds it.
 
 ### Step 5: Design-Side Update
 
@@ -96,43 +90,50 @@ Run this step only for `user_decision_required` items the user resolved by ratif
    - `prompt`: "doc_type: DesignDoc. review_context: update. Review updated Design Doc at [path] for consistency and completeness."
    - Run Review Resolution through its correction re-review, escalation, and convergence transitions, using technical-designer-frontend for rerouted corrections. Proceed only at its convergence condition.
 
-3. When multiple Design Docs exist (`ls docs/design/*.md | grep -v template | wc -l > 1`), invoke design-sync:
+3. When another Design Doc governs a responsibility or contract touched by the reviewed changes, invoke design-sync:
    - `subagent_type`: "design-sync"
    - `description`: "Cross-DD consistency check"
    - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
    - When `sync_status: CONFLICTS_FOUND`: present conflicts to the user; resolution requires re-invoking technical-designer-frontend for affected DDs.
 
-4. Re-evaluate the approved `apply` findings against the updated Design Doc and drop any the revision already satisfies. When none remains, skip Steps 6-7 and proceed to Step 8.
+4. Re-evaluate the approved `apply` findings against the updated Design Doc and drop any the revision already satisfies. When none remains, skip the code-side fix path and proceed to the final report.
 
 ### Step 6: Execute Fixes
 Invoke task-executor-frontend using Agent tool:
 - `subagent_type`: "task-executor-frontend"
 - `description`: "Execute review fixes"
-- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Keep the change within the approved findings and stated total size budget."
+- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Derive the complete correction using coding-standards Change Boundary and Reference Representativeness. Respect the stated total size budget."
 
-### Step 7: Quality Check
-Invoke quality-fixer-frontend using Agent tool:
-- `subagent_type`: "quality-fixer-frontend"
-- `description`: "Quality gate check"
-- `prompt`: "direct_scope: { outcome: [approved code-side findings passed to Step 6], affectedPaths: [paths covered by those findings and their required consistency changes], verificationCondition: applicable project quality checks pass }. Confirm quality gate passage for the complete current uncommitted worktree."
-
-### Step 8: Re-validate code-reviewer
+### Step 7: Re-validate code-reviewer
 
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
 - `description`: "Re-validate compliance"
 - `prompt`: "Re-validate Design Doc compliance after fixes. Design Doc: [path]. Implementation files: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
 
-### Step 9: Re-validate security-reviewer
+### Step 8: Re-validate security-reviewer
 
 Invoke security-reviewer using Agent tool (only if security fixes were applied):
 - `subagent_type`: "security-reviewer"
 - `description`: "Re-validate security"
 - `prompt`: "Re-validate security after fixes. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
 
-### Step 10: Final Report
+### Step 9: Resolve Corrections
 
-Apply Review Resolution to every Step 8 and Step 9 result. Follow its `maintained` transitions, repeat the affected verification after a rerouted correction, stop at its escalation conditions, and proceed at its convergence condition.
+Apply Review Resolution to every Step 7 and Step 8 result. A maintained `apply` finding returns to Step 6 and then to its correction review. Proceed when Review Resolution reaches its convergence condition.
+
+### Step 10: Quality Check
+
+After correction review converges, invoke quality-fixer-frontend once using Agent tool:
+- `subagent_type`: "quality-fixer-frontend"
+- `description`: "Quality gate check"
+- `prompt`: "direct_scope: { outcome: [approved code-side findings passed to Step 6], affectedPaths: [paths covered by those findings and their required consistency changes], verificationCondition: applicable project quality checks pass }. Confirm quality gate passage for the complete current uncommitted worktree."
+
+Branch on its response:
+- `approved` → proceed to Step 11
+- `blocked` → present the user-owned decision reported by quality-fixer-frontend
+
+### Step 11: Final Report
 
 Then present the final report:
 
@@ -146,6 +147,11 @@ Security Review:
   Initial: [status]
   Correction review: [status for the re-review scope] (if fixes executed)
   Reconciliation: [resolved / withdrawn / maintained by finding ID]
+
+Quality Check:
+  Status: [approved / not run — no code changes]
+  Checks not run or unrelated baseline failures: [from the quality-fixer result, when present]
+
 Declined findings:
 - [ID] — [governing reason and evidence]
 
@@ -161,7 +167,8 @@ Append the following block to every subagent prompt invoked from this recipe:
 
 ```
 Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+Deliver the approved corrections consistently across the repository responsibility they affect.
+Treat referenced paths as investigation starting points.
+Keep governing artifacts read-only except for assigned updates.
+Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
 ```

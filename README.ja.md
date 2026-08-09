@@ -1,4 +1,4 @@
-# AI コーディングプロジェクト ボイラープレート — Claude Code対応 🤖
+# AI Coding Project Boilerplate — Claude Code向け
 
 *他の言語で読む: [English](README.md)*
 
@@ -6,362 +6,116 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22%2B-green?logo=node.js)](https://nodejs.org/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/shinpr/ai-coding-project-boilerplate/pulls)
 
-> **Claude Code向けAgentic Codingスターターキット & ワークフローボイラープレート** — サブエージェントとContext Engineeringで、コンテキスト枯渇なしにプロダクション品質のTypeScriptプロジェクトを構築。
+TypeScriptプロジェクト向けの、エビデンスに基づくClaude Codeワークフローです。確認済みの要件とリポジトリのエビデンスを、設計・実装・レビュー・品質チェックまで引き継ぐコマンド、専門エージェント、スキルを導入します。
 
-⚡ **このボイラープレートは以下のような開発者のためのツールです**
-- AIを活用して**TypeScriptプロジェクト**を効率的に開発したい
-- 長時間のAIコーディングで起きる**コンテキスト枯渇**を回避したい
-- **専門AIエージェント**で開発のワークフローを標準化したい
+## 主な機能
 
-## 📖 目次
-1. [クイックスタート（3ステップ）](#-クイックスタート3ステップ)
-2. [既存プロジェクトの更新](#-既存プロジェクトの更新)
-3. [Vibe Codingの先へ：なぜサブエージェント？](#-vibe-codingの先へなぜサブエージェント)
-4. [スラッシュコマンド](#-スラッシュコマンド)
-5. [スキルのカスタマイズ](#-スキルのカスタマイズ)
-6. [スキルシステム](#-スキルシステム)
-7. [このボイラープレートで作られたプロジェクト](#-このボイラープレートで作られたプロジェクト)
-8. [ドキュメント＆ガイド](#-ドキュメントガイド)
-9. [開発ワークフロー](#-claude-code-ワークフロー)
-10. [プロジェクト構成](#-プロジェクト構成)
-11. [パッケージマネージャーの設定](#-パッケージマネージャーの設定)
-12. [多言語対応](#-多言語対応)
-13. [よくある質問](#-よくある質問)
+- `/implement`による一貫した実装と、設計・計画・実装・レビュー・診断を個別に実行できるコマンド
+- 小さな変更は直接実装し、判断負荷が必要とする場合にだけ永続的なドキュメントを作成
+- 所有する責務、観察可能なエビデンス、証明義務から実装・テスト境界を判断
+- 受理済みの振る舞いと証明義務に基づく統合/E2Eテスト選定
+- ワークフロー内の各コミット前に該当する品質チェックを実行し、実行できなかったチェックも明示
+- 同じ契約を持つ英語・日本語のコマンド、エージェント、スキル環境
 
-## ⚡ クイックスタート（3ステップ）
+## クイックスタート
 
 ```bash
-# 1. プロジェクト作成
 npx create-ai-project my-project --lang=ja
-
-# 2. 依存関係インストール（自動）
-cd my-project && npm install
-
-# 3. Claude Codeを起動して設定
-claude                         # Claude Codeを起動
-/project-inject                # プロジェクトの前提情報を設定（毎セッションAIが参照）
-/implement <あなたの作りたい機能> # 開発開始！
+cd my-project
+npm install
+claude
 ```
 
-> 💡 **初めての方は？** [クイックスタートガイド](docs/guides/ja/quickstart.md)で詳細なセットアップ手順を確認
+Claude Code内で実行します。
 
-## 🔄 既存プロジェクトの更新
+```text
+/project-inject
+/implement APIにレート制限を追加
+```
 
-プロジェクトのエージェント定義、コマンド、スキル、AIルールを最新の状態に保ちます。プロジェクトのルートディレクトリで実行してください。
+`/project-inject`はプロジェクト固有の前提情報を記録します。`/implement`は成果とスコープを確認し、リポジトリを調査して必要な設計成果物だけを作成した後、実装、品質チェック、完了したタスク境界のコミットまで進めます。
+
+初回実行の詳しい流れは[クイックスタート](docs/guides/ja/quickstart.md)を参照してください。
+
+## ワークフロー
+
+```mermaid
+flowchart TD
+    R[成果と要件を確認] --> S{判断負荷}
+    S -->|小| I[直接実装]
+    S -->|中| D[Design Doc → 作業計画書]
+    S -->|大| P[PRD → Design Doc → 作業計画書]
+    D --> I
+    P --> I
+    I --> Q[該当チェック → コミット]
+    Q --> V[Design Docがある場合は実装後検証]
+```
+
+永続的な技術選択が条件を満たす場合は、Design Docの前にADRバッチを追加します。フロントエンドまたはフルスタックでは、UIに関する判断が残っている場合にだけUI Specを作成します。ファイル数は変更範囲を調べる材料にはなりますが、経路を決定しません。
+
+| スケール | 経路 |
+|---|---|
+| 小 | まとまった成果が1つで、1つの責務境界内にリポジトリが支持する明白な実装が1つある → 直接実装 |
+| 中 | まとまった成果が1つで、境界をまたぐ調整または永続的になりうる選択を含む → Design Doc、作業計画書 |
+| 大 | 独立して価値を持つ成果が複数あり、それぞれ別の設計判断を要する → PRD、Design Doc、作業計画書 |
+
+## コマンド
+
+| コマンド | 用途 |
+|---|---|
+| `/implement` | 要件確認から実装完了まで一貫して進める |
+| `/task` | 該当するスキルを使って単独のタスクを実行する |
+| `/design`, `/front-design` | スコープを確認し、実装せずに設計成果物を承認まで進める |
+| `/plan`, `/front-plan` | Design Docから作業計画書を作成し、承認まで進める |
+| `/build`, `/front-build` | 承認済みの計画に基づく実装を実行する |
+| `/review`, `/front-review` | Design Doc準拠とセキュリティをレビューし、必要に応じて修正する |
+| `/diagnose` | 問題を調査し、原因を検証して解決策を導く |
+| `/reverse-engineer` | 既存コードからPRDやDesign Docを作成する |
+| `/add-integration-tests` | 既存実装に統合/E2Eの証明を追加する |
+| `/update-doc` | 既存のPRD、ADR、Design Docを更新・レビューする |
+| `/create-skill`, `/refine-skill` | プロジェクトのスキルを作成・修正する |
+| `/project-inject`, `/sync-skills` | プロジェクトコンテキストとスキルメタデータを管理する |
+
+使用例とすべてのコマンドは[ユースケースとコマンド](docs/guides/ja/use-cases.md)を参照してください。
+
+## スキルとプロジェクトコンテキスト
+
+スキルは、1つの責務で繰り返し使う判断基準を持ち、必要なときだけ読み込まれます。同梱スキルは、要件収束、ドキュメント経路、実装方針、コーディングとテスト、統合/E2Eの証明、オーケストレーション、LLM向けハンドオフを扱います。
+
+ドメイン制約、ディレクトリ規約、外部エビデンスの参照方法など、リポジトリ固有の前提には`/project-inject`を使います。繰り返し使うプロジェクトルールには`/create-skill`または`/refine-skill`を使います。情報の置き場所とスキル変更の検証方法は[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)を参照してください。
+
+[rashomon](https://github.com/shinpr/rashomon)を使うと、スキル変更の有無による実行結果を比較し、変更が実際に振る舞いを改善したか検証できます。
+
+## 既存プロジェクトの更新
+
+プロジェクトルートで実行します。
 
 ```bash
-# 変更内容をプレビュー（適用なし）
 npx create-ai-project update --dry-run
-
-# 更新を適用
 npx create-ai-project update
 ```
 
-### 仕組み
+更新処理は、管理対象のエージェント、コマンド、スキル、Claudeルールを更新し、ソースコードとパッケージ設定は保持します。個別に管理するファイルには`--ignore`と`--unignore`を使用できます。
 
-`npx create-ai-project update`を実行すると、CLIが以下を行います。
+## 設定
 
-1. `.create-ai-project.json`マニフェストから現在のバージョンを確認
-2. 最新のパッケージバージョンと比較
-3. CHANGELOGを表示してレビュー
-4. 管理対象ファイルを最新版に置換
-5. 言語設定に基づいてアクティブディレクトリを再生成
-
-### 更新対象
-
-| 対象 | パス |
-|------|------|
-| エージェント定義 | `.claude/agents-{lang}/` |
-| コマンド定義 | `.claude/commands-{lang}/` |
-| スキル定義 | `.claude/skills-{lang}/` |
-| AIルール | `CLAUDE.{lang}.md` |
-
-ソースコード（`src/`）、`package.json`、その他のプロジェクトファイルは変更されません。
-
-### カスタマイズしたファイルの保護
-
-ファイルをカスタマイズしていて上書きされたくない場合
+使用する言語環境は次のコマンドで切り替えます。
 
 ```bash
-# ignoreリストに追加
-npx create-ai-project update --ignore skills project-context
-npx create-ai-project update --ignore agents task-executor
-npx create-ai-project update --ignore commands implement
-npx create-ai-project update --ignore CLAUDE.md
-
-# ignoreリストから削除
-npx create-ai-project update --unignore skills project-context
+npm run lang:ja
+npm run lang:en
+npm run lang:status
 ```
 
-ignoreされたファイルは更新時に保護されます。ただし、ignoreしたファイルと他の更新されたコンポーネント間でバージョンの不整合が発生する可能性があります。
+ワークフローはリポジトリ設定からパッケージマネージャーと品質コマンドを検出します。生成先プロジェクトで異なるコマンドを使う場合は、`package.json`の`packageManager`と各scriptを変更してください。
 
-### 既存プロジェクトでの初回実行
+## ガイド
 
-更新機能導入前に作成されたプロジェクトでも、プロジェクトのルートディレクトリで`npx create-ai-project update`を実行するだけで利用できます。`.claudelang`から言語設定を自動検出し、マニフェストを初期化します。
+- [クイックスタート](docs/guides/ja/quickstart.md)
+- [ユースケースとコマンド](docs/guides/ja/use-cases.md)
+- [スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)
 
-## 🚀 Vibe Codingの先へ：なぜサブエージェント？
+## ライセンス
 
-Vibe Codingの先へ — **Agentic Coding**（構造化されたワークフローを専門AIエージェントに委任するアプローチ）が実践的な開発手法として広がりつつあります。このボイラープレートはClaude Codeのサブエージェントでそれを実現します。
-
-**従来のAIコーディングの問題**
-- ❌ 長時間のセッションでコンテキストを失う
-- ❌ 時間とともにコード品質が低下
-- ❌ 大規模タスクで頻繁なセッション再起動が必要
-
-**サブエージェントによるContext Engineering**
-- ✅ 専門的な単一の役割に分割（設計、実装、レビュー）
-- ✅ 各エージェントが新鮮で集中したコンテキストを持つ — 枯渇なし
-- ✅ 大規模なプロジェクトでも品質低下なしに処理
-
-これはClaude Codeのサブエージェント機構が、各エージェントを独立したコンテキストウィンドウで実行する仕組みに基づいています。親セッションがタスクを委任し、各サブエージェントはクリーンで集中したコンテキストで処理を開始します。品質チェック（lint、型チェック、テスト、ビルド）はCIではなくコミット前にローカルで実行されるため、フィードバックループが速く、pushする時点でコードは検証済みです。
-
-👉 [サブエージェントについて詳しく（Anthropic docs）](https://docs.anthropic.com/en/docs/claude-code/sub-agents)
-
-### 📸 デモ
-
-![Demo](./.github/assets/demo.gif)
-
-*サブエージェントが連携してTypeScriptプロジェクトを構築する様子*
-
-## 📝 スラッシュコマンド
-
-Claude Codeで利用できる主要なコマンド
-
-| コマンド | 目的 | 使用場面 |
-|---------|------|----------|
-| `/implement` | 要件から実装までの一貫した開発 | 新機能開発 |
-| `/task` | スキルに基づいた単一タスクの実行 | バグ修正、小規模な変更 |
-| `/design` | 設計書の作成 | アーキテクチャの計画時 |
-| `/plan` | 設計書から作業計画書を作成 | 設計承認後 |
-| `/build` | 既存の計画から実行 | 作業の再開時 |
-| `/review` | コードの準拠性確認 | 実装完了後 |
-| `/diagnose` | 問題診断ワークフロー | デバッグ、トラブルシューティング |
-| `/reverse-engineer` | コードからPRD/Design Docを生成 | 既存システムのドキュメント化 |
-| `/create-skill` | 対話形式で新しいスキルを作成 | プロジェクト固有のルールを追加 |
-| `/refine-skill` | 品質レビュー付きでスキルを修正 | スキルの精度改善 |
-
-フロントエンド用（`/front-design`（UI Spec + Design Doc）, `/front-build`, `/front-review`, `/front-plan`）やユーティリティコマンド（`/add-integration-tests`, `/update-doc`）も利用できます。
-
-[コマンドの詳細はこちら →](docs/guides/ja/use-cases.md)
-
-## 🌱 スキルのカスタマイズ
-
-このボイラープレートには汎用的なスキルが同梱されており、すぐに使い始められます。ただし、スキルが本領を発揮するのは、プロジェクト固有のコーディング規約やドメイン制約、チームの意思決定を反映させたときです。
-
-同梱されているスキルはベースラインです。次のステップは、それをあなたのプロジェクトに合わせて育てていくことです。
-
-- **`/project-inject`** — プロジェクトの前提情報を設定（初回実行、毎セッション参照）
-- **`/create-skill`** — 対話形式で新しいスキルを作成
-- **`/refine-skill`** — 既存スキルを品質レビュー付きで改善
-
-スキル作成の原則やベストプラクティスは[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)を参照してください。
-
-### スキルの効果検証
-
-スキルを作ることと、それが実際にエージェントの挙動を改善しているかを知ることは別の問題です。スキルは互いに影響し合い、プロジェクトのコンテキストとも相互作用するため、確実に効果を知るには実際に動かして比較するしかありません。
-
-[rashomon](https://github.com/shinpr/rashomon)はこのためのClaude Codeプラグインです。スキル変更が本当に改善につながったのか、感覚ではなくエビデンスで確認したいときに使えます。
-
-## 🎨 スキルシステム
-
-このボイラープレートでは、自律的（Agentic）な実装ワークフローで用いられている原理原則を、日常のタスクにおいても必要に応じて参照できるようスキルとして提供しています。
-
-### 適用されるスキル
-
-| スキル | 目的 |
-|--------|------|
-| `coding-standards` | 汎用コーディング原則、アンチパターン、デバッグ |
-| `typescript-rules` | TypeScript型安全性、非同期パターン、リファクタリング |
-| `typescript-testing` | Vitest、TDD、カバレッジ要件 |
-| `documentation-criteria` | PRD、ADR、Design Doc、UI Spec基準 |
-| `technical-spec` | アーキテクチャ、環境設定、ビルドコマンド |
-| `implementation-approach` | 戦略パターン、タスク分解 |
-| `integration-e2e-testing` | 統合テストと二レーンE2E（fixture-e2e / service-integration-e2e）、ROIベース選択、ジャーニー定義 |
-| `frontend-typescript-rules` | Reactコンポーネント設計、Props駆動パターン |
-| `frontend-typescript-testing` | React Testing Library、MSW、Playwright E2E（fixture / service-integrationパターン） |
-| `frontend-technical-spec` | Reactアーキテクチャ、環境設定、データフロー |
-| `llm-friendly-context` | LLM向け出力（プロンプト、ハンドオフ、生成物）の明確さ |
-| `project-context` | AIの実行精度のためのプロジェクト前提情報（`/project-inject`で設定） |
-
-👉 [スキルの仕組みについて（Claude Code docs）](https://code.claude.com/docs/ja/skills)
-
-## 🎯 このボイラープレートで作られたプロジェクト
-
-### ⏱️ 時間比較
-- **ボイラープレートなし**: セットアップ + 基盤構築に約1週間
-- **ボイラープレートあり**: 約2日でプロダクション品質のアプリケーション
-
-### 実績
-
-**Sub Agents MCP Server** — Claude Code/Cursor CLIをサブエージェント化するMCPサーバー
-⏱️ 初期開発2日間 → テストコードがソースの約9割を占める構成でプロダクション稼働中
-
-**MCP Image Generator** — Gemini API経由のAI画像生成
-⏱️ 初期開発1.5日間 → マルチ画像ブレンディング、キャラクター一貫性を持つクリエイティブツール
-
-いずれもデフォルトの`/implement`ワークフローで構築。エージェントの手動オーケストレーションは不要でした。
-
-> プロジェクトを見る: [sub-agents-mcp](https://github.com/shinpr/sub-agents-mcp) ・ [mcp-image](https://github.com/shinpr/mcp-image)
-
-## 📚 ドキュメント＆ガイド
-
-- **[クイックスタートガイド](docs/guides/ja/quickstart.md)** - 5分で動かす
-- **[ユースケース＆コマンド](docs/guides/ja/use-cases.md)** - 日常ワークフローのリファレンス
-- **[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)** - ライブラリドキュメント、チームルール、プロジェクト固有の知識をAIに追加
-- **[設計思想](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)** - このアプローチがなぜ有効か
-
-## 🤖 Claude Code ワークフロー
-
-```mermaid
-graph LR
-    A[要件] --> B[構造スケール]
-    B -->|小規模| C[直接実装]
-    B -->|中規模| D[任意のADR → 設計 → 実装]
-    B -->|大規模| E[PRD → 任意のADR → 設計 → 実装]
-
-    C --> F[品質チェック → コミット]
-    D --> F
-    E --> F
-```
-
-### リバースエンジニアリングワークフロー
-
-```mermaid
-graph TB
-    subgraph フェーズ1 [フェーズ1: PRD生成]
-        A1[スコープ発見] --> A2[PRD生成]
-        A2 --> A3[コード検証]
-        A3 --> A4[レビュー]
-        A4 -->|修正要| A2
-        A4 -->|承認| A5[次のユニット]
-    end
-
-    subgraph フェーズ2 [フェーズ2: Design Doc生成]
-        B2[Design Doc生成] --> B3[コード検証]
-        B3 --> B4[レビュー]
-        B4 -->|修正要| B2
-        B4 -->|承認| B5[次のユニット]
-    end
-
-    A5 -->|"全PRD承認（スコープ再利用）"| B2
-    B5 --> C[最終レポート]
-```
-
-### 動作の仕組み
-
-1. **要件分析**: `/implement`コマンドがタスクの規模を判断します
-2. **ドキュメント生成**: 必要に応じてドキュメント（PRD、UI Spec、Design Doc、Work Plan）を作成します
-3. **タスク実行**: 専門のエージェントが各フェーズを担当します
-4. **品質保証**: テスト、型チェック、必要に応じた修正を行います
-5. **コミット**: タスクごとに整理されたコミットを作成します
-
-## 📂 プロジェクト構成
-
-```
-ai-coding-project-boilerplate/
-├── .claude/               # AIエージェント設定
-│   ├── agents/           # 専門サブエージェント定義
-│   ├── commands/         # スラッシュコマンド定義
-│   └── skills/           # 自動コンテキスト読み込み用スキル
-│       ├── coding-standards/
-│       ├── typescript-rules/
-│       ├── typescript-testing/
-│       ├── documentation-criteria/
-│       ├── technical-spec/
-│       ├── project-context/
-│       ├── frontend-typescript-rules/
-│       ├── frontend-typescript-testing/
-│       └── frontend-technical-spec/
-├── docs/
-│   ├── guides/           # ユーザードキュメント
-│   ├── adr/              # アーキテクチャ決定
-│   ├── design/           # 設計ドキュメント
-│   └── prd/              # 製品要件
-├── src/                  # あなたのソースコード
-├── scripts/              # ユーティリティスクリプト
-└── CLAUDE.md             # Claude Code設定
-```
-
-## 🔧 パッケージマネージャーの設定
-
-このボイラープレートはデフォルトでnpmを使用しますが、bunやpnpmなど好みのパッケージマネージャーに切り替えることができます。
-
-`package.json`には2つの環境依存設定があります。
-
-- **`packageManager`**: 使用するパッケージマネージャーとバージョン
-- **`scripts`**: 各スクリプトの実行コマンド
-
-これらを変更すると、Claude Codeがそれを認識し、適切なコマンドで実行します。
-
-### bunに切り替える場合
-
-```json
-{
-  "packageManager": "bun@1.3.3",
-  "scripts": {
-    "build": "bun run tsc && tsc-alias",
-    "dev": "bun run src/index.ts",
-    "test": "bun test",
-    "check": "bunx @biomejs/biome check src",
-    "check:all": "bun run check && bun run lint && bun run format:check && bun run check:unused && bun run check:deps && bun run build && bun test"
-  }
-}
-```
-
-上記は代表例です。スキルやサブエージェント定義で言及されているスクリプトは以下の通りです。必要に応じて書き換えてください。
-
-`build`, `dev`, `type-check`, `test`, `test:coverage`, `test:coverage:fresh`, `test:safe`, `cleanup:processes`, `check`, `check:fix`, `check:code`, `check:unused`, `check:deps`, `check:all`, `format`, `format:check`, `lint`, `lint:fix`
-
-## 🌐 多言語対応
-
-日本語と英語に対応しています。
-
-```bash
-npm run lang:ja         # 日本語に切り替え
-npm run lang:en         # 英語に切り替え
-npm run lang:status     # 現在の言語設定を確認
-```
-
-言語を切り替えると、設定ファイル、ルール、エージェント定義が自動的に更新されます。
-
-## 🤔 よくある質問
-
-**Q: サブエージェントはどのように動作しますか？**  
-A: `/implement`や`/task`コマンドを使用すると、タスクに応じて適切なエージェントが自動的に選択され、実行されます。
-
-**Q: エラーが発生した場合の対処法は？**  
-A: quality-fixerが多くの問題を自動的に検出・修正します。自動修正できない場合は、具体的な対処方法をご案内します。
-
-**Q: プロジェクトに合わせたカスタマイズは可能ですか？**
-A: はい、可能です。`/project-inject`を実行してプロジェクトの前提情報を設定してください。この情報は毎セッション開始時にAIが読み込み、実行精度の向上に使われます。
-
-**Q: AIにライブラリのドキュメント（llms.txt、APIリファレンス等）を参照させることはできますか？**
-A: はい。`.claude/skills/`配下にカスタムスキルを作成し、関連するURLを記載してください。詳しくは[スキル編集ガイド](docs/guides/ja/skills-editing-guide.md)を参照してください。
-
-**Q: 基本的な開発の流れを教えてください。**
-A: 初回は`/project-inject`でプロジェクト設定を行い、その後は`/implement`で機能開発、品質チェック、コミットという流れになります。
-
-**Q: GitHub CopilotやCursorとはどう違いますか？**
-A: これらのツールはコード記述の支援に特化していますが、本ボイラープレートは開発プロセス全体をサポートする仕組みを提供しています。
-
-**Q: Agentic Codingとは？このボイラープレートはどう関係しますか？**
-A: Agentic Codingは、会話的なプロンプティングではなく構造化されたワークフローを専門AIエージェントに委任するアプローチです。このボイラープレートは設定済みのサブエージェント、CLAUDE.mdルール、品質チェックを提供しているので、基盤を自分で組み立てることなくすぐに実践できます。
-
-**Q: コンテキスト枯渇はどう防いでいますか？**
-A: Context Engineeringにより防止しています。各サブエージェントは単一の責務に集中した独自のコンテキストウィンドウで実行されるため、セッションが長くなってもコンテキストは常に新鮮です。実際に770K+トークンのセッションで品質低下なく開発を完了しています — 詳細は[設計思想の記事](https://qiita.com/shinpr/items/98771c2b8d2e15cafcd5)をご覧ください。
-
-## 🤖 サブエージェント
-
-要件分析、UI仕様、設計、計画、実装、品質保証、コードレビュー、デバッグ、リバースエンジニアリングをカバーする20以上の専門サブエージェントを搭載しています。各エージェントは独自のコンテキストウィンドウで実行されるため、集中した処理が可能です。
-
-[エージェントの詳細 →](.claude/agents-ja/)
-
-## 📄 ライセンス
-
-MIT License - 自由に使用・改変・配布可能
-
-## 🎯 このプロジェクトについて
-
-AI Coding Project Boilerplateは、Claude Codeに要件分析から品質チェックまでの構造化された開発ライフサイクルを与えるツールです。専門サブエージェントとContext Engineeringにより、各エージェントが独自のコンテキストウィンドウで集中したタスクを処理するため、長時間のセッションでも品質が安定します。設定済みのCLAUDE.mdルール、カスタムスキル、スラッシュコマンドが同梱されており、ツール基盤を自分で構築することなくAgentic CodingでTypeScriptプロジェクトを始められます。
+[MIT](LICENSE)

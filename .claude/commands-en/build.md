@@ -90,7 +90,7 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
 - [ ] Identified task execution order within the Consumed Task Set (dependencies)
 - [ ] **Environment check**: Can I execute per-task commit cycle?
   - If commit capability unavailable → Escalate before autonomous mode
-  - Other environments (tests, quality tools) → Subagents will escalate
+  - Test and quality-tool limitations → Subagents run unaffected checks and record exactly what could not run
 
 ## Task Execution Cycle (4-Step Cycle)
 **MANDATORY EXECUTION CYCLE**: `task-executor → escalation check → quality-fixer → commit`
@@ -100,19 +100,19 @@ Before the first iteration, register this recipe's phases once using TaskCreate:
 For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke task-executor to implement the task (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)
 2. **BRANCH ON EXECUTOR RESULT**:
-   - `status: "escalation_needed"` or `"blocked"` → STOP and escalate to user
+   - `status: "escalation_needed"` or `"blocked"` → inspect the declared boundary; escalate when it requires a user-owned product, contract, authority, or irreversible decision
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor in **Fix Mode**
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run the review **once**. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**. If it returns `blocked` again, record the test review as not run with its `blockingReason` and proceed to step 3; carry that unproven state into the completion report
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**; otherwise record the review as not run with its `blockingReason` and proceed to step 3
      - `approved` → Proceed to step 3
    - `readyForQualityCheck: true` → Proceed to step 3
 3. **QUALITY-FIX**: Invoke quality-fixer against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Pass the current `task_file`, the implementation step's `runnableCheck`, and `qualityCommand` when technical-spec or a repository convention names one. Then branch on its response:
    - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
-   - `blocked` → STOP and escalate to user (discriminate by `reason` per quality-fixer blocked handling in subagents-orchestration-guide)
+   - `blocked` → escalate the user-owned decision reported by quality-fixer
    - `approved` → Proceed to step 4
-4. **COMMIT on approval**: Execute git commit
+4. **COMMIT on approval**: Commit the completed task change set
 
-**CRITICAL**: Parse every sub-agent response for status fields. Execute the matching branch in the 4-step cycle. Proceed to next task only after quality-fixer returns `approved`.
+**CRITICAL**: Parse every sub-agent response for its routing meaning. Proceed to the next task only after quality-fixer returns `approved`.
 
 ## Scope Boundary for Subagents
 
@@ -120,9 +120,10 @@ Append the following block to every subagent prompt invoked from this recipe:
 
 ```
 Scope boundary for subagents:
-Operate within the task scope and referenced files in the prompt.
-Use loaded skills to execute that scope.
-Escalate when the required fix or investigation falls outside that scope.
+Deliver the task outcome consistently across the repository responsibility that owns it.
+Treat referenced paths as investigation starting points and include supporting files when the same outcome requires them.
+Keep governing artifacts read-only except for assigned progress fields.
+Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
 ```
 
 After approval confirmation, start autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
@@ -131,17 +132,17 @@ After approval confirmation, start autonomous execution mode. STOP IMMEDIATELY u
 
 After all task cycles finish, run verification agents **in parallel** before the completion report:
 
-1. **Invoke both in parallel** using Agent tool:
-   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list (`git diff --name-only main...HEAD`)
+1. Resolve the comparison base from the branch upstream and repository default branch, then invoke both verification agents in parallel:
+   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list from the merge base through `HEAD`
    - security-reviewer (subagent_type: "security-reviewer") → `governingDocuments: [{"type":"design-doc","path":"[path]"}]` and implementation file list
 
 2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
 
-3. **Fix cycle** (when any verifier failed, max 2 cycles):
-   - Apply Review Resolution to every actionable finding. Pass each `apply` finding object to task-executor verbatim with only its disposition added. When a discrepancy has no actionable target path, escalate rather than inventing one.
+3. **Fix cycle** (when any verifier failed):
+   - Apply Review Resolution to every actionable finding. Pass each `apply` finding object to task-executor verbatim with only its disposition added; cited locations are investigation starting points.
    - Invoke task-executor in **Fix Mode** with the affected paths, observable verification condition, and the unchanged finding objects. No fix task file is created.
-   - Then quality-fixer, then re-run only the failed verifiers.
-   - If still failing after 2 cycles → Escalate to user with remaining findings
+   - Re-run only the failed verifiers, carrying `prior_feedback` when the verifier supports reconciliation, and follow Review Resolution to convergence.
+   - After correction review converges, run quality-fixer once. Continue after `approved`; present the exact user-owned decision if it returns `blocked`.
 
 4. **All passed** → Proceed to Final Cleanup
 
@@ -152,14 +153,14 @@ Before the completion report, delete the implementation task files this recipe c
 - Delete every file in the Consumed Task Set
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review
 
-If task files cannot be deleted (filesystem error), report the failure but do not block the completion report.
+If a filesystem error leaves task files behind, continue the completion report with that cleanup failure recorded.
 
 ## Completion Report Contract
 
 Final report must include:
 - Task materialization status
 - Implemented task count
-- Quality check result
+- Quality check result, including checks that did not run or unrelated baseline failures when present
 - Commit count
 - Cleanup result
 - Escalation or blocking summary, if any

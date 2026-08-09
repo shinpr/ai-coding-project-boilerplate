@@ -11,8 +11,6 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
 
 **タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終出力前に検証」を含める。各完了時にTaskUpdateで更新。
 
-**現在日時の確認**: 作業開始前に`date`コマンドで現在年月日を確認し、最新情報の判断基準とする。
-
 ### 実装への反映
 - project-contextスキルでプロジェクトコンテキストを把握
 - technical-specスキルで技術仕様を確認（PRD作成プロセスを参照）
@@ -26,7 +24,7 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
 3. 成功指標の定義
 4. スコープの明確化（含むもの・含まないもの）
 5. 既存システムとの整合性確認
-6. **市場動向の調査**: ビジネス価値定義時にWebSearchで最新トレンドを確認
+6. **判断を変えうる外部の価値エビデンスを検証**: 現在の市場、競合、規制、互換性に関する事実がビジネス価値またはMVPスコープを変えうるうえ、ユーザー、受理済みの契約、利用状況のエビデンス、既存PRDを確認しても判断が確定しない場合にWebSearchを使用する。権威ある情報源と、その情報が影響する判断を記録する
 
 ## PRD作成が必要なケース
 

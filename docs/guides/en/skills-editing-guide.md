@@ -1,370 +1,172 @@
 # Skills Editing Guide
 
-This guide covers the concepts and best practices for creating effective skills that maximize LLM execution accuracy, based on how LLMs work.
+A skill should change a decision that a capable model cannot safely make from baseline knowledge and the repository alone. Keep strict boundaries and evidence requirements; let the model choose reversible paths inside them.
 
-## Project Philosophy and the Importance of Skills
+## Decide whether a skill is needed
 
-This boilerplate is designed based on the concepts of "Agentic Coding" and "Context Engineering":
-- **Agentic Coding**: LLMs autonomously making decisions and carrying out implementation tasks
-- **Context Engineering**: Building mechanisms to provide appropriate context at the right time for LLMs to make proper decisions
+Keep a rule in a skill when all of the following are true:
 
-For details, see [this article](https://dev.to/shinpr/zero-context-exhaustion-building-production-ready-ai-coding-teams-with-claude-code-sub-agents-31b).
+- the decision recurs for the same responsibility;
+- project, product, or organization evidence changes the correct choice;
+- the information is not already owned by code, configuration, or a governing artifact;
+- removing the rule would change a decision, downstream result, irreversible boundary, or observable verification.
 
-Skills are written to maximize LLM execution accuracy as described below, and work together with [sub-agents](https://docs.anthropic.com/en/docs/claude-code/sub-agents) to achieve this.
+General programming knowledge, one-change design decisions, explanatory background, and rules added only to prevent a past model habit do not justify a skill by themselves.
 
-Sub-agents have dedicated contexts separate from the main agent, loading only the skills necessary for their specific responsibilities. The main agent uses metacognition to understand task context, select necessary skills, and execute tasks. This approach maximizes execution accuracy by retrieving the right skills at the right time.
+## Put information in its owner
 
-While it's impossible to completely control LLM output, it is possible to maximize execution accuracy through proper systems. When results don't match expectations, consider improving your skills.
+| Information | Owner |
+|---|---|
+| Rules that truly apply to every task and session startup | `CLAUDE.md` |
+| Repository purpose, domain constraints, directory conventions, and external evidence access | `project-context` via `/project-inject` |
+| Reusable decision criteria for one technical or workflow responsibility | A skill |
+| Product outcome, accepted requirements, and exclusions for one change | PRD or confirmed requirement record |
+| Durable technical choice between credible alternatives | ADR |
+| Feature-specific responsibilities, contracts, flows, and verification boundaries | Design Doc or UI Spec |
+| Implementation order and executable task boundaries | Work Plan |
+| Package scripts, schemas, routes, and runtime configuration | Their repository source files |
 
-## Determining Where to Document
+State how to locate an existing source instead of copying it into a skill. Add only the interpretation rule the source itself cannot express.
 
-### File Roles and Scope
+## Give decisions, not a predicted route
 
-| File | Scope | When Applied | Example Content |
-|------|-------|--------------|-----------------|
-| **CLAUDE.md** | All tasks | Always | Approval required before Edit/Write, stop at 5+ file changes |
-| **Skills** | Specific technical domains | When using that technology | Use specific types, error handling required, functions under 30 lines |
-| **Guidelines** | Specific workflows | When performing that workflow | Sub-agent selection strategies |
-| **Design Docs** | Specific features | When developing that feature | Feature requirements, API specifications, security constraints |
+For each responsibility, provide four things:
 
-### Decision Flow
+| Input | Question it answers |
+|---|---|
+| Purpose | What result does this skill own? |
+| Evidence | Which requirements, repository facts, or checks can change the decision? |
+| Selection criteria | How does the agent choose the next action from that evidence? |
+| Minimum result | What is the smallest result the next consumer needs? |
 
+“Run every test lane” predicts work. “Use the narrowest test that exposes the required boundary” supplies a selection criterion. A capable model can choose the lane from repository evidence without a branch for every framework or project shape.
+
+### Boundary constraints
+
+Boundary constraints describe what must remain true:
+
+- implement the confirmed outcome and preserve recorded exclusions;
+- preserve public contracts unless an authorized requirement changes them;
+- require authority for irreversible external actions;
+- claim completion only when the required behavior is observable.
+
+These constraints continue to matter as models improve.
+
+### Work-generating constraints
+
+Work-generating constraints request artifacts or actions regardless of current need: fixed alternative counts, mandatory test lanes, universal mitigation records, fixed retry loops, and exact labels in human-readable documents.
+
+Retain one only when current evidence shows that the generated work protects a requirement, consumer, or observable failure. Otherwise replace it with the decision criterion that selects the work when needed.
+
+Use exact schemas where software parses the result. For human-readable artifacts, accept semantically equivalent evidence unless a downstream consumer requires a specific representation.
+
+Let the model resolve repository-local, reversible ambiguity. Ask the user when progress requires a changed product outcome, public contract, major approved design, user-held authority, or irreversible action. Enforce dangerous operational boundaries with permissions, sandboxes, isolated credentials, and other mechanical controls where possible; prompt wording is not containment.
+
+## Use progressive disclosure
+
+```text
+.claude/skills/api-contracts/
+├── SKILL.md
+├── references/        # detailed criteria loaded when needed
+└── scripts/           # deterministic operations owned by the skill
 ```
-When is this information needed?
-├─ Always → CLAUDE.md
-├─ Only for specific feature development → Design Doc
-├─ When using specific technology → Skill
-└─ When performing specific workflow → Guideline
-```
 
-## Skills Structure and Best Practices
+### Metadata
 
-For full details on the Claude Code skills system, see the [official documentation](https://code.claude.com/docs/en/skills).
-
-### SKILL.md Composition
-
-```
-my-skill/
-├── SKILL.md           # Main instructions (required)
-├── references/        # Detailed reference material (on-demand loading)
-├── scripts/           # Executable scripts
-└── examples/          # Example outputs
-```
-
-SKILL.md consists of YAML frontmatter and Markdown content.
+The description is selection evidence, not a table of contents. Name the responsibility, its project-specific value, and caller phrases that should trigger it.
 
 ```yaml
 ---
-name: skill-name
-description: Start with a verb. Use when: specify trigger conditions.
+name: api-contracts
+description: Applies this project's shared API compatibility and error semantics. Use when creating or changing HTTP endpoints or shared API types.
 ---
-# Skill content
 ```
 
-### Naming Conventions
+A skill that describes only baseline knowledge needs project-specific content or does not need to exist.
 
-Use consistent naming patterns. The [official recommendation](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) suggests **gerund form** (verb + -ing) for clarity.
+### SKILL.md body
 
-- **Gerund form (recommended)**: `processing-pdfs`, `managing-databases`, `testing-code`
-- **Action-oriented (acceptable)**: `process-pdfs`, `analyze-spreadsheets`
-- **Avoid vague names**: `helper`, `utils`, `tools`, `documents`
+Use only the sections needed by the responsibility. A useful order is:
 
-**Constraints**: lowercase letters, numbers, and hyphens only. Maximum 64 characters. Cannot contain "anthropic" or "claude".
+1. purpose and scope;
+2. sources and required inputs;
+3. decision criteria;
+4. dependent process steps, when order matters;
+5. consumer-required output shape, when one exists;
+6. verification and unresolved-input handling;
+7. references.
 
-### Writing Effective Descriptions
+Do not create empty sections. Put the common decision path before exceptions. A process step names its completion evidence and the condition that permits the next step.
 
-The description is the most critical field — it determines skill selection accuracy. At startup, only metadata (name and description) from all skills is loaded. Claude uses descriptions to decide which skill to activate from potentially 100+ available skills. [Research indicates](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices) that well-optimized descriptions can improve activation rates from 20% to over 90%.
+### References and scripts
 
-**Rules**:
+- Link supporting files directly from `SKILL.md`; avoid reference chains.
+- Put large source material in `references/` and load only what controls the current decision.
+- Use `scripts/` when the same deterministic operation would otherwise be regenerated each time.
+- Reuse an existing template or script when it already produces the required artifact.
+- Record access methods for external schemas, APIs, or infrastructure in `project-context`; a URL alone does not guarantee access in every execution environment.
 
-1. **Write in third person**: The description is injected into the system prompt. Inconsistent point-of-view causes discovery problems.
-   - Good: "Processes Excel files and generates reports"
-   - Avoid: "I can help you process Excel files"
-   - Avoid: "You can use this to process Excel files"
-2. **Start with a verb**: "Applies TDD process and inspects quality" not "Testing principles"
-3. **Use "Use when:" with concrete triggers**: 3-5 triggers using expressions users actually say
-4. **Be specific and include key terms**: Include both what the skill does and when to use it
-5. **Over 200 characters signals a split**: The skill's responsibility may be too broad
+## Review with BP-001 through BP-008
 
-**Constraints**: Maximum 1024 characters. Cannot contain XML tags.
+Use the same eight checks as [rashomon](https://github.com/shinpr/rashomon):
 
-**Good examples**:
-```yaml
-# Specific, verb-first, with triggers
-description: Extracts text and tables from PDF files, fills forms, merges documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+| Pattern | Skill check |
+|---|---|
+| BP-001 Negative instructions | Lead with the required behavior. Keep an explicit prohibition only for a narrow irreversible boundary, paired with the safe alternative and authorization condition. |
+| BP-002 Vague instructions | Clarify only an ambiguity that materially changes correctness, scope, downstream use, or verification. Use the least-restrictive sufficient criterion. |
+| BP-003 Missing output format | Define only the fields, ordering, or serialization required by the actual output consumer. |
+| BP-004 Unstructured content | Add the smallest structure that exposes priority, roles, and dependencies. A simple rule can remain prose. |
+| BP-005 Missing or excess context | Keep context only when it changes a decision, action, or verification result. Name project-specific sources. |
+| BP-006 Missing procedural gates | Split dependent work into steps whose evidence controls the next transition. Do not decompose independent or simple actions. |
+| BP-007 Unnecessary examples | Prefer a rule or consumer-required shape. Add the smallest example set only for a non-obvious project mapping, exception, or boundary. |
+| BP-008 Missing uncertainty handling | Distinguish observed, inferred, and unknown evidence. Stop only when an unknown blocks the next transition, and name the exact evidence or user decision required. |
 
-description: Generates descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.
+An example affects the model beyond the fact it demonstrates: it also anchors format, local naming, and likely solutions. Remove examples whose ambiguity can be resolved by a concise rule.
+
+## Create or revise a skill
+
+Use the repository commands when possible:
+
+```text
+/create-skill Define the API compatibility rules used by this project
+/refine-skill Remove file-count thresholds from api-contracts and use consumer evidence instead
+/sync-skills
 ```
 
-**Bad examples**:
-```yaml
-# Too vague — Claude can't determine when to activate
-description: Helps with documents
-description: Processes data
-description: Does stuff with files
-```
+For a manual or reviewed change, use three gates:
 
-### Keep File References One Level Deep
+1. **Analysis** — preserve the intended outcome and requirements; inspect the complete skill and required references; scan BP-001 through BP-008; identify the decision or output that is wrong.
+2. **Optimization** — resolve each supported finding at the owning rule; add a constraint only when it removes an outcome-relevant ambiguity or protects a named requirement.
+3. **Balance** — verify intent preservation, decision sufficiency, information density, constraint necessity, and traceability; remove additions that change no decision or valid output.
 
-Claude may partially read files when they're referenced from other referenced files. Keep all references directly from SKILL.md to ensure complete reads.
+After editing, run `/sync-skills` and the repository's skill-index check.
 
-```markdown
-# Good: One level deep from SKILL.md
-See [reference.md](reference.md) for API details
-See [examples.md](examples.md) for usage patterns
+## Audit each rule
 
-# Bad: Nested references
-# SKILL.md → advanced.md → details.md (Claude may not fully read details.md)
-```
+Before retaining or adding a rule, ask:
 
-### Progressive Disclosure
+1. What decision, boundary, consumer, or observable failure changes if the rule is removed?
+2. Does the rule limit scope, or does it manufacture work regardless of need?
+3. Can the model choose correctly from current evidence instead of following an exhaustive route?
+4. Does the revised skill work in a fresh session without relying on the conversation that produced it?
 
-| Level | When Loaded | Content |
-|-------|------------|---------|
-| description | Always in context | Metadata only (used for skill selection) |
-| SKILL.md body | When skill is invoked | Main instructions |
-| Supporting files | On-demand when needed | Detailed references, scripts |
+Do not add the opposite of one observed model failure as a universal rule. First determine whether the failure still reproduces, whether it belongs to the prompt, and whether the same rule would create passivity or extra work on another valid task.
 
-This mechanism maintains token efficiency even with many skills defined. Reference supporting files from SKILL.md with `[reference.md](reference.md)` so Claude loads details only when needed.
+## Validate behavior
 
-### When to Split
+Text review proves consistency, not effectiveness. Run representative tasks from a fresh session and compare actual results:
 
-- SKILL.md body exceeds **500 lines** → Extract to supporting files ([official recommendation](https://code.claude.com/docs/en/skills))
-- Description has **5+ "Use when:" triggers** → Responsibility too broad, split the skill
-- Language-specific details → Separate into `references/`
+- a small change remains small;
+- ordinary repository ambiguity does not return to the user;
+- optional findings and speculative risks do not expand scope;
+- required approvals, contracts, tests, and quality checks still hold;
+- the skill is selected for intended requests and not unrelated ones;
+- removing an added instruction reintroduces the observed failure or ambiguity.
 
-### Common Mistakes
+[rashomon](https://github.com/shinpr/rashomon) can run tasks with and without a skill change in isolated environments. Treat output differences as improvement only when they preserve intent and produce an attributable execution benefit beyond normal variance.
 
-| Mistake | Why It's a Problem | Solution |
-|---------|-------------------|----------|
-| Writing general practices LLM already knows | Context waste | Only write project-specific judgment criteria |
-| Putting always-applicable content in skills | Risk of not loading when needed | Place in CLAUDE.md instead |
-| Writing frequently-changing information in skills | Staleness risk | Manage in Design Docs or comments |
+## References
 
-## 9 Principles for Maximizing LLM Execution Accuracy
-
-Here are 9 skill creation principles based on LLM characteristics and this boilerplate's design philosophy.
-We provide `/create-skill` for creating new skills through interactive dialog, and `/refine-skill` for modifying existing skills with quality review. We ultimately recommend interactive editing through dialogue, as LLMs tend to have difficulty reaching issues without comparing output with thinking after generation.
-
-### 1. Achieve Maximum Accuracy with Minimum Description (Context Pressure vs. Execution Accuracy)
-
-Context is a precious resource. Avoid redundant explanations and include only essential information.
-However, it's not just about being short — it must be the minimum description that doesn't cause decision hesitation.
-
-```markdown
-❌ Redundant description (22 words)
-Please make sure to record all errors in the log when they occur
-
-✅ Concise description (9 words)
-All errors must be logged
-
-❌ Over-abbreviated description (6 words)
-Record all errors
-```
-
-Aim for concise expressions that keep the same meaning. But don't shorten so much that ambiguity is introduced.
-
-### 2. Completely Unify Notation
-
-Always use the same terms for the same concepts. Notation inconsistencies hinder LLM understanding.
-
-```markdown
-# Term Definitions (Unified across project)
-- API response/return value → Unified as `response`
-- User/customer → Unified as `user`
-- Error/abnormality → Unified as `error` (exception/failure may be used depending on context)
-```
-
-### 3. Thoroughly Eliminate Duplication
-
-Repeating the same content across multiple files wastes context capacity. Consolidate in one place.
-
-```markdown
-❌ Same content in multiple locations
-# .claude/skills/error-handling/SKILL.md
-Standard error format: { success: false, error: string, code: number }
-
-# .claude/skills/api-design/SKILL.md
-Error responses follow standard error format `{ success: false, error: string, code: number }`
-
-✅ Consolidated in one location
-# .claude/skills/error-handling/SKILL.md
-Standard error format: { success: false, error: string, code: number }
-```
-
-Check for duplication between files and eliminate contradictions and redundancy.
-Eliminating duplication also reduces maintenance costs by preventing notation inconsistencies from update omissions.
-
-Note: there is a tradeoff between DRY and skill self-containment. If a skill requires context from another skill to be understood, the reader (both human and LLM) has to chase references. When a piece of information is central to a skill's decision-making, it may be worth repeating rather than forcing a cross-reference. Use judgment — eliminate *accidental* duplication, but don't sacrifice clarity for purity.
-
-### 4. Appropriately Aggregate Responsibilities
-
-Consolidating related content in one skill maintains single responsibility and prevents unnecessary context mixing in tasks.
-
-```markdown
-# Authentication consolidated in one skill
-.claude/skills/auth/SKILL.md
-├── JWT Specification
-├── Authentication Flow
-├── Error Handling
-└── Security Requirements
-
-# ❌ Dispersed responsibilities
-.claude/skills/auth/SKILL.md
-├── JWT Specification
-├── Error Handling
-└── Security Requirements
-.claude/skills/auth-flow/SKILL.md
-├── User Registration Flow
-└── Authentication Flow
-```
-
-However, if a skill becomes too large, reading costs increase, so aim for logical division around 250 lines (approximately 1,500 tokens).
-
-### 5. Set Measurable Decision Criteria
-
-Ambiguous instructions cause interpretation inconsistencies. Clarify criteria with numbers and specific conditions.
-
-```markdown
-✅ Measurable criteria
-- Function lines: 30 or less
-- Cyclomatic complexity: 10 or less
-- Response time: Within 200ms at p95
-- Test coverage: 80% or more
-
-❌ Ambiguous criteria
-- Readable code
-- Fast processing
-- Sufficient tests
-```
-
-Note that LLMs cannot understand time, so descriptions like "break down tasks to complete within 30 minutes" are not effective.
-
-### 6. Show NG Patterns as Recommendations with Background
-
-Showing recommended patterns with reasons is more effective than listing prohibitions.
-
-```markdown
-✅ Description in recommended format
-【State Management】
-Recommended: Use Zustand or Context API
-Reason: Global variables are difficult to test and state tracking is complex
-NG Example: window.globalState = { ... }
-
-❌ List of prohibitions
-- Don't use global variables
-- Don't save values to window object
-```
-
-If prohibitions are needed, present them as background context rather than the main instruction.
-
-### 7. Verbalize Implicit Assumptions
-
-Even things obvious to human developers must be explicitly stated for LLMs to understand.
-
-```markdown
-## Prerequisites
-- Execution environment: Node.js 20.x on AWS Lambda
-- Maximum execution time: 15 minutes (Lambda limit)
-- Memory limit: 3GB
-- Concurrent executions: 1000 (account limit)
-- Timezone: All UTC
-- Character encoding: UTF-8 only
-```
-
-Use the `/project-inject` command at project start or when project assumptions change to document project context as a skill.
-
-### 8. Arrange Descriptions by Importance
-
-LLMs pay more attention to information at the beginning. Place most important items first, exceptional cases last.
-
-```markdown
-# API Specifications
-
-## Critical Principles (Must follow)
-1. All APIs require JWT authentication
-2. Rate limit: 100 requests/minute
-3. Timeout: 30 seconds
-
-## Standard Specifications
-- Methods: Follow REST principles
-- Body: JSON format
-- Character encoding: UTF-8
-
-## Exceptional Cases (Only for special situations)
-- multipart/form-data allowed only for file uploads
-- WebSocket connections only at /ws endpoint
-```
-
-### 9. Clarify Scope Boundaries
-
-Explicitly stating what is and isn't covered prevents unnecessary processing and misunderstandings.
-
-```markdown
-## Scope of This Skill
-
-### Covered
-- REST APIs in general
-- GraphQL endpoints
-- WebSocket communication
-
-### Not Covered
-- Static file delivery
-- Health check endpoint (/health)
-- Metrics endpoint (/metrics)
-```
-
-## Reference: Skills and Applied Principles
-
-Skill files under `.claude/skills/` are created with these principles in mind.
-Each is written with no duplication, single responsibility, and minimal description, serving as references when adding or creating new skills.
-
-| Skill | Main Content | Examples of Applied Principles |
-|-------|-------------|--------------------------------|
-| **typescript-rules** | TypeScript code creation/modification/refactoring, modern type features | **Principle 2**: Unified notation (consistent terms like "any type completely prohibited")<br>**Principle 5**: Measurable criteria (20 fields max, 3 nesting levels max) |
-| **typescript-testing** | Test creation, quality checks, development steps | **Principle 5**: Measurable criteria (coverage 70% or more)<br>**Principle 8**: Arrangement by importance (quality requirements at the top) |
-| **coding-standards** | Technical decision criteria, anti-pattern detection, best practices | **Principle 6**: Show NG patterns in recommended format (anti-pattern collection)<br>**Principle 3**: Eliminate duplication (Rule of Three for consolidation decisions) |
-| **technical-spec** | Technical design, environment setup, documentation process | **Principle 4**: Aggregate responsibilities (technical design in one file)<br>**Principle 7**: Verbalize implicit assumptions (security rules documented) |
-| **project-context** | Project-specific prerequisites for AI execution accuracy | **Principle 7**: Verbalize implicit assumptions (project characteristics documented)<br>**Principle 1**: Maximum accuracy with minimum description (concise bullet format) |
-| **documentation-criteria** | Scale determination, document creation criteria | **Principle 5**: Measurable criteria (creation decision matrix)<br>**Principle 9**: Clarify scope boundaries (clearly state what's included/excluded) |
-| **implementation-approach** | Implementation strategy selection, task breakdown, large-scale change planning | **Principle 8**: Arrangement by importance (Phase-ordered structure)<br>**Principle 6**: Show NG patterns in recommended format (risk analysis) |
-
-All 9 principles are practiced across these skills, serving as practical references for skill creation.
-
-## Troubleshooting
-
-### Problem: Skills are too long and overload the context window
-
-**Solutions**
-1. Find and remove duplications
-2. Minimize examples
-3. Extract to supporting files
-4. Move low-priority content to separate skills
-
-### Problem: Inconsistent generation results
-
-**Solutions**
-1. Unify terms and notation
-2. Quantify decision criteria
-3. Clarify priorities
-4. Eliminate contradicting skills
-
-### Problem: Important instructions are not followed
-
-**Solutions**
-1. Move to file beginning
-2. Add 【Required】【Important】 tags
-3. Add one specific example
-4. Convert negative form to positive form
-
-## Validating Skill Effectiveness
-
-The 9 principles and `/create-skill` / `/refine-skill` help you write better skills, but writing and validating are different problems. Skills interact with each other and with project context, so the only reliable way to know whether a change actually improved agent behavior is to run the task with and without the skill and compare results.
-
-[rashomon](https://github.com/shinpr/rashomon) is a Claude Code plugin for evidence-based skill validation. Its `/recipe-eval-skill` command runs your task in isolated environments and compares results to classify whether the difference is a real improvement or just variance.
-
-Use `/create-skill` and `/refine-skill` for quick iteration, and rashomon when you want proof that a skill change made things better.
-
-## Summary
-
-Well-written skills stabilize LLM output. By following the 9 principles and continuously refining your skills, you can maximize LLM capabilities. Build the optimal skill set for your project through regular implementation review and improvement.
+- [rashomon prompt optimization](https://github.com/shinpr/rashomon) — BP-001 through BP-008 analysis, gated optimization, and comparative evaluation
+- [When Better Models Make Old Agent Workflows Worse](https://www.norsica.jp/blog/when-better-models-make-old-agent-workflows-worse.md) — boundary constraints, work-generating constraints, and fresh-session validation for current coding models
+- [Claude Code skills documentation](https://code.claude.com/docs/en/skills) — platform format and loading behavior

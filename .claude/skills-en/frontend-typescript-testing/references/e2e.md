@@ -92,11 +92,9 @@ E2E test skeletons follow the same annotation format as integration tests, with 
 ```typescript
 // AC: [Original acceptance criteria text]
 // Behavior: [User action] → [System response] → [Observable result]
-// @category: core-functionality | integration | edge-case | ux | fixture-e2e | service-integration-e2e
 // @lane: fixture-e2e | service-integration-e2e
 // @dependency: full-ui (mocked backend) | full-system
-// @complexity: high
-// ROI: [score]
+// Proof obligation: [boundary and observable state this test must prove]
 test('AC1: [Description]', async ({ page }) => {
   // Arrange: [Setup description]
   // Act: [Action description]

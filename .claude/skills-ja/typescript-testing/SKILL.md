@@ -1,6 +1,6 @@
 ---
 name: typescript-testing
-description: Vitestテスト設計と品質基準を適用。カバレッジ要件とモック使用ガイドを提供。ユニットテスト作成時に使用。
+description: リポジトリに即したTypeScriptテスト設計、振る舞いの証明、独立性、モック境界の基準を適用する。ユニットテストの作成・レビュー時に使用。
 ---
 
 # TypeScript テストルール
