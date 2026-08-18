@@ -125,8 +125,6 @@ Select the package manager from the `packageManager` field, lockfile, or CI comm
 
 ### Testing Commands
 - `test` - Run tests
-- `test:coverage` - Run tests with coverage
-- `test:coverage:fresh` - Run tests with coverage (fresh cache)
 - `test:safe` - Safe test execution (with auto cleanup)
 - `cleanup:processes` - Cleanup Vitest processes
 
@@ -141,15 +139,12 @@ Quality checks are mandatory upon implementation completion:
 
 **Phase 4-5: Tests and Final Confirmation**
 - `test` - Test execution
-- `test:coverage:fresh` - Coverage measurement
 - `check:all` - Overall integrated check
 
 **Completion evidence**: configured tests pass, the production build succeeds, and the integrated check remains clean after test fixes. Record an environment-dependent test as blocked with its exact prerequisite.
 
-### Coverage
-- Treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law)
-- Concentrate test rigor on foundational, high-reuse units (shared components, custom hooks, utils) whose regression has the widest blast radius; higher-composition surfaces (organisms, pages) lean on integration/E2E coverage instead
-- Any enforced numeric threshold is the project's CI/coverage config, not a goal in itself
+### Test Focus
+- Give foundational, high-reuse units such as shared components, custom hooks, and utilities direct tests for their observable contracts. Verify higher-composition surfaces such as organisms and pages through integration or E2E tests when that boundary best exposes the relevant failure.
 
 ### Non-functional Requirements
 - **Browser Compatibility**: Use the repository's Browserslist/build target or a named product requirement; record the source and test the affected browser-specific behavior

@@ -136,10 +136,9 @@ package.json からフロントエンドビルドコマンドを自動検出し�
   - カスタムフックのモック設定を修正
   - 変更されたコントラクトに合わせて、リポジトリ既存のネットワーク/API モック層（例: MSWハンドラ）を更新
   - テスト環境が要求する場合は、ブラウザプリミティブのテストダブル（ResizeObserver、IntersectionObserver、時間、ルーター/プロバイダ）を追加
-- テストカバレッジ不足:
+- 振る舞いの証明不足:
   - ユーザー可視要素には role/name クエリを優先。非同期な出現には `findBy*`/`waitFor`、意図的な不在の検証には `queryBy*`/`queryAllBy*` を使う
   - 内部状態の検査ではなく、実レンダリングとユーザー操作を通じて観測可能な振る舞いを検証する
-  - カバレッジ目標は frontend-typescript-testing スキルに従う（60% を基準、基礎/葉コンポーネントは 70%、molecules 65%、organisms 60%）
 
 #### Phase 4: 最終確認
 - 全Phaseの結果を確認
@@ -195,7 +194,7 @@ package.json からフロントエンドビルドコマンドを自動検出し�
 
 | status | 必須フィールド | 使用条件 |
 |---|---|---|
-| `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}`（各 `{status, commands[], …}`; `phase3_tests` は `testsRun`, `testsPassed`, `coverage` を含めてよい）, `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | 実装が完成し、今回の変更に関係する実行可能な全Phaseがパス。実行できなかったチェックと無関係な既存失敗は既存のチェック結果に明記する |
+| `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}`（各 `{status, commands[], …}`; `phase3_tests` は `testsRun`, `testsPassed` を含めてよい）, `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | 実装が完成し、今回の変更に関係する実行可能な全Phaseがパス。実行できなかったチェックと無関係な既存失敗は既存のチェック結果に明記する |
 | `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | ステップ1でスコープ内に stub/TODO/プレースホルダーを検出（`type: "missing_logic"`、品質チェック前に即座に返却）、またはステップ3 Substance チェックで修正範囲内で回復不能な hollow テストを検出（`type: "hollow_test"`） |
 | `blocked`（specification_conflict） | `reason: "Cannot determine due to unclear specification"`, `blockingIssues[{type: "ux_specification_conflict" \| "specification_conflict", details, test_expects, implementation_behavior, why_cannot_judge}]`, `attemptedFixes[]`, `needsUserDecision` | 以下の3条件が全て成立: 妥当な修正方法が複数存在; UX/仕様判断が必要; 全確認手段を試行済み |
 

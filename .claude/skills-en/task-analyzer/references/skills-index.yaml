@@ -51,7 +51,7 @@ skills:
 
   typescript-testing:
     skill: "typescript-testing"
-    tags: [quality, testing, tdd, coverage, vitest, implementation, debugging, refactoring, backend]
+    tags: [quality, testing, tdd, vitest, implementation, debugging, refactoring, backend]
     typical-use: "Backend test creation, quality checks, test quality criteria, development steps for code/bug fixes, refactoring, and new feature implementation"
     size: medium
     key-references:
@@ -216,7 +216,7 @@ skills:
 
   frontend-typescript-testing:
     skill: "frontend-typescript-testing"
-    tags: [frontend, react, quality, testing, tdd, coverage, vitest, react-testing-library, msw, implementation, playwright, e2e]
+    tags: [frontend, react, quality, testing, tdd, vitest, react-testing-library, msw, implementation, playwright, e2e]
     typical-use: "React component testing, React Testing Library tests, MSW API mocking, frontend test creation, Playwright E2E testing"
     size: medium
     key-references:
