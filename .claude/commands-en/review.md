@@ -2,6 +2,8 @@
 description: Design Doc compliance and security validation with optional auto-fixes
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 Execute the `subagents-orchestration-guide` skill before making workflow decisions, invoking agents, or resolving findings.
 

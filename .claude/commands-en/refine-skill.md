@@ -2,13 +2,15 @@
 description: Implement user skill change requests with optimization pattern evaluation
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 **Command Context**: Workflow for understanding skill file change requests and implementing via skill-creator (modification mode) with quality-assured optimization.
 
 Change request: $ARGUMENTS
 
 ## Execution Process
 
-Register the following steps with TaskCreate and proceed systematically.
+Complete Steps 1-6 in order. Advance only when the current step's stated output, review result, or approval condition is satisfied. Complete after every applicable Completion Criterion is satisfied.
 
 ### Step 1: Understand the Request
 

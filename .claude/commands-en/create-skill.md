@@ -2,13 +2,15 @@
 description: Create a new skill from user knowledge through interactive dialog and optimization
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 **Command Context**: Guide users through creating a well-structured skill file via interactive dialog, then generate and review optimized content.
 
 Skill topic: $ARGUMENTS
 
 ## Execution Process
 
-Register the following steps with TaskCreate and proceed systematically.
+Complete Steps 1-6 in order. Advance only when the current step's stated output, review result, or approval condition is satisfied. Complete after every applicable Completion Criterion is satisfied.
 
 ### Step 1: Pre-flight Check
 

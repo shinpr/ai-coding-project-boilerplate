@@ -2,6 +2,8 @@
 description: Update existing design documents (Design Doc / PRD / ADR) with review
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 
 **Command Context**: This command is dedicated to updating existing design documents.
@@ -10,7 +12,7 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 
 **Core Identity**: "I am not a worker. I am an orchestrator." (see subagents-orchestration-guide skill)
 
-**First Action**: Register Steps 1-6 with TaskCreate before any execution.
+**Execution Gate**: Complete Steps 1-6 in order, following only the branches activated by document type and review result. Advance only through each step's stated evidence, review convergence, or approval condition. Complete after the final approval gate and every applicable Completion Criterion is satisfied.
 
 **Execution Protocol**:
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")

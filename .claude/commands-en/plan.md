@@ -2,6 +2,8 @@
 description: Create work plan from design document and obtain plan approval
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 
 **Command Context**: This command is dedicated to the planning phase.

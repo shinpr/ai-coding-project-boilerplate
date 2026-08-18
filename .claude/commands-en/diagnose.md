@@ -2,6 +2,8 @@
 description: Investigate problem, verify findings, and derive solutions
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 
 **Command Context**: Diagnosis flow to identify failure points and present solutions
@@ -17,7 +19,7 @@ Target problem: $ARGUMENTS
 
 Orchestrator invokes sub-agents and passes structured JSON between them.
 
-**Task Registration**: Register execution steps with TaskCreate and proceed systematically
+**Execution Gate**: Each step below establishes evidence required by the next decision. Complete Steps 0-6 in order, including every required investigation and verification retry. Advance only through the current step's stated quality or coverage condition; invoke solver only after coverage is closed.
 
 ## Step 0: Problem Structuring (Before investigator invocation)
 
@@ -75,8 +77,6 @@ coverage sufficient → Report
 **Context Separation**: Pass only structured JSON output to each step. Each step starts fresh with the JSON data only.
 
 ## Execution Steps
-
-Register the following with TaskCreate and execute:
 
 ### Step 1: Investigation (investigator)
 

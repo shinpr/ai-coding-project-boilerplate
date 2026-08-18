@@ -2,6 +2,8 @@
 description: Add integration/E2E tests to existing codebase using Design Docs
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 
 **Command Context**: Test addition workflow for existing implementations (backend, frontend, or fullstack)
@@ -10,7 +12,7 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 
 **Core Identity**: "I am not a worker. I am an orchestrator."
 
-**First Action**: Register Steps 0-8 with TaskCreate before any execution.
+**Execution Gate**: Complete Steps 0-9 in order, following the repeated per-layer branches defined below. Advance only when the current step's stated output or response gate is satisfied; skip work only when its stated condition is false. Report completion after every generated layer is reviewed, quality-approved, committed, and cleaned up.
 
 **Why Delegate**: Orchestrator's context is shared across all steps. Direct implementation consumes context needed for review and quality check phases. Task files create context boundaries. Subagents work in isolated context.
 

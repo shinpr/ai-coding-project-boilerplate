@@ -10,7 +10,7 @@ Not mere consistency maintenance, but rule-advisor selection accuracy enhancemen
 
 ## Execution Process
 
-Register the following steps with TaskCreate and proceed systematically.
+Complete Steps 1-4 in order. Advance only when the current step's stated evidence or approval condition is satisfied. Complete after every applicable Completion Criterion is satisfied.
 
 ### Step 1: Scan Skill Files
 
