@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Work-proportional Claude workflows** (CLAUDE, agents, commands, skills) — Replaced obsolete task-tool tracking with outcome gates and bounded recipe-declared subagent authorization, and made skill creation and review converge through BP-009, evidence-guided procedure, compression-first content, and explicit finding dispositions. Applied across en/ja.
 - **Starter-kit documentation** — Refocused the README on setup, updates, repository contents, workflow behavior, and common entry points. Applied across en/ja.
+- **Development dependencies** — Updated Vitest, Vite, and TSX to patched releases.
 
 ## [1.27.2] - 2026-08-09
 
