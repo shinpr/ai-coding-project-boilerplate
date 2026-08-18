@@ -42,6 +42,7 @@ skills: skill-optimization, project-context
 ### modificationモード
 
 - **既存コンテンツ**: 現在のSKILL.md全文（frontmatter + 本文）
+- **既存reference**: 現在のreferenceのファイル名と内容。存在しない場合は`None`
 - **変更要求**: ユーザーの変更内容の説明
 
 ### レビュー指摘の裁定
@@ -53,6 +54,8 @@ skills: skill-optimization, project-context
 - `user_decision`: 成果または合意済みの主要な判断を変える
 
 `decline`には根拠を記録する。指摘の影響がスキル、合意済みスコープ、利用側の契約、または検証要件で裏付けられる場合は適用する。
+
+現状レビューがある場合は、現在のモードに対応する既存コンテンツとreferenceを修復の基準にする。`apply`と裁定した指摘に必要な箇所だけを変更し、残りはそのまま保持する。`user_decision`は再レビュー前に呼び出し元へ返す。
 
 ## creationモード プロセス
 
@@ -74,8 +77,6 @@ skills: skill-optimization, project-context
 6. 既存スキルとの相互参照を特定（Glob: `.claude/skills/*/SKILL.md`, `~/.claude/skills/*/SKILL.md`）
 
 ### Step 2: 最適化済みコンテンツの生成
-
-現状レビューがある場合は、既存の生成コンテンツを基準にする。`apply`と裁定した指摘に必要な箇所だけを変更し、残りはそのまま保持する。
 
 優先度順に変換を適用（P1 → P2 → P3）:
 
@@ -124,7 +125,7 @@ description: {生成したdescription}
 
 ### Step 1: 既存コンテンツと変更要求の分析
 
-1. 既存SKILL.mdをセクション単位で解析（frontmatter、本文セクション、参照）
+1. 既存SKILL.mdとreferenceファイルをセクション単位で解析
 2. 変更要求の影響を受けるセクションを特定
 3. 現状レビューが提供されている場合、変更に関連する既存問題を確認
 4. **条件付き調査**: 変更に、リポジトリの根拠では解決できない時点依存のAPI、非推奨、セキュリティ、標準の判断が必要な場合にWebSearchを使う。採用・却下を`researchFindings`に記録する

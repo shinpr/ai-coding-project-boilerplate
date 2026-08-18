@@ -17,7 +17,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Read `s
 - **Reference files**: Filename, line count, and content for each reference, or `None`
 - **Review mode**: `creation` or `modification`
 - **Previous review** (optional): Prior skill-reviewer output on re-review
-- **Review resolutions** (optional): Prior findings resolved as `apply`, `decline`, or `user_decision`
+- **Review resolutions** (optional): Prior findings resolved as `apply` or `decline` after the caller has obtained any required user decision
 
 ## Review Process
 
@@ -34,7 +34,7 @@ Scan all 9 BP patterns from skill-optimization. For each unresolved issue, recor
 
 Record an applicable BP-001 operational boundary in `patternExceptions`. Verify that the action is irreversible, the caller cannot normally recover, a positive-only form would blur the boundary, the safe state appears first, and the authorization condition is explicit.
 
-On re-review, join resolutions by `findingId`. Record an evidence-backed decline in `acceptedDeclines` when the proposed change adds scope, duplicates proof, or has no observable effect. Accepted declines contribute zero to findings, grade counts, principle failures, and required actions. Return the issue again only when new evidence shows that the result remains incorrect or unverifiable.
+On re-review, apply the finding-resolution rules in `review-criteria.md`, joining resolutions by `findingId`.
 
 Use WebSearch only when grading depends on a time-sensitive Agent Skills capability that repository evidence cannot resolve. Prefer current official specifications for format contracts and reproducible repository evidence for runtime behavior.
 
@@ -44,9 +44,10 @@ Evaluate all 10 editing principles. Each result is `pass`, `partial`, or `fail` 
 
 ### Step 3: Progressive Disclosure Check
 
-- **Tier 1**: Apply the description quality checklist in `creation-guide.md`.
+- **Tier 1**: Apply the description quality checklist in `creation-guide.md`. Fail when the description lacks the selection evidence needed to activate the skill for its intended requests.
 - **Tier 2**: Check the 500-line limit, 250-line target and necessity test, first-screen content, standard section order, and conditional guards.
 - **Tier 3**: Verify that compression preceded splitting and references contain only necessary conditional detail at one level deep.
+- Each failed tier references at least one existing BP or principle finding. Tier 1 fail forces grade C; Tier 2 and Tier 3 affect the grade only through their referenced findings, principle results, or balance checks.
 - For pure skills, preserve standalone execution; independently loaded pure skills may duplicate an operative rule when each copy is required.
 
 ### Step 4: Cross-Skill Consistency
@@ -95,9 +96,9 @@ Use `ruleId` BP-001 through BP-009 or principle-1 through principle-10. Principl
 
 | Grade | Criteria |
 |-------|----------|
-| A | 0 P1, 0 P2 findings, 9+ principles pass |
-| B | 0 P1, at most 2 P2 findings, 7+ principles pass |
-| C | Any P1, more than 2 P2 findings, or fewer than 7 principles pass |
+| A | 0 P1, 0 P2 findings, 9+ principles pass, Tier 1 pass |
+| B | 0 P1, at most 2 P2 findings, 7+ principles pass, Tier 1 pass |
+| C | Any P1, more than 2 P2 findings, fewer than 7 principles pass, or Tier 1 fail |
 
 A blocked balance check prevents grade A. An evaluation supported only by accepted declines reports `pass`.
 

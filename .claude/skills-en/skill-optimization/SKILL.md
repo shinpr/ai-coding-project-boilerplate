@@ -130,10 +130,12 @@ Issues that reduce skill effectiveness when addressed.
 
 **Key insight**: Control the boundary and required evidence, not a predicted path between them.
 
-For creation and comprehensive review, use three gates in order:
+For skill creation, use three gates in order:
 1. **Analysis gate**: Original requirements are recorded, BP-001 through BP-009 are covered, every issue has evidence, and no unresolved input blocks faithful work.
 2. **Optimization gate**: Every finding has one applied/skipped resolution, each change is traceable, and all preservation requirements remain represented.
 3. **Balance gate**: Intent preservation, decision sufficiency, information density, constraint necessity, work proportionality, and traceability pass before the result is final.
+
+For review-driven repair, use the current review as analysis evidence and apply the optimization and balance gates to the accepted repair scope.
 
 ### P3: Enhancement (Could Fix)
 

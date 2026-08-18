@@ -11,7 +11,7 @@ Criteria for evaluating existing or generated skill content quality.
 3. Evaluate all 10 editing principles.
 4. Count lines and estimate the size category.
 
-On re-review, preserve the ID of the same issue. Join prior resolutions by finding ID. Record an evidence-backed decline in `acceptedDeclines` when the proposed change adds scope, duplicates proof, or has no observable effect. An accepted decline contributes zero to findings, grade counts, failed principles, and required actions. Return the issue again only when new evidence shows that the result remains incorrect or unverifiable.
+On re-review, preserve the ID of the same issue. Join prior resolutions by finding ID. Record an evidence-backed decline in `acceptedDeclines` when the proposed change adds scope, duplicates proof, or has no observable effect. An accepted decline contributes zero to findings, grade counts, failed principles, and required actions. Return the issue again only when new evidence shows that the result remains incorrect or unverifiable. The caller resolves each `user_decision` before re-review.
 
 **Analysis gate**: Proceed when all 9 patterns are covered, every unresolved issue has evidence and a stable ID, preservation requirements are explicit, and no unknown blocks faithful review.
 
@@ -22,6 +22,8 @@ On re-review, preserve the ID of the same issue. Join prior resolutions by findi
 | Tier 1 | description | Passes the description quality checklist in `creation-guide.md` |
 | Tier 2 | SKILL.md body | Under 500 lines, target 250; first-screen test, standard section order, and conditional guards pass; each section above the target passes the necessity test |
 | Tier 3 | References/scripts | Compression precedes splitting; references contain necessary conditional detail, remain one level deep, and have no nested reference chains |
+
+Each failed tier references at least one existing BP or principle finding. Tier 1 fails when the description lacks the selection evidence needed to activate the skill for its intended requests; that failure forces grade C. Map a missing or incorrect activation scope or caller trigger to principle-9, and absent non-baseline distinguishing value to principle-1. Tier 2 and Tier 3 have no independent grade effect and contribute through their referenced findings, principle results, or balance checks. Record other checklist deviations only when they have an observable selection effect.
 
 For pure skills, verify standalone execution. Duplication across independently loaded pure skills is valid when each copy is required; record only semantic conflicts or in-skill duplication. Cross-skill references are valid for orchestration and skill-selection roles.
 
@@ -53,9 +55,9 @@ For pure skills, verify standalone execution. Duplication across independently l
 
 | Grade | Criteria | Recommendation |
 |-------|----------|----------------|
-| A | 0 P1, 0 P2 findings, 9+ principles pass | Ready for use |
-| B | 0 P1, at most 2 P2 findings, 7+ principles pass | Acceptable with noted improvements |
-| C | Any P1, more than 2 P2 findings, or fewer than 7 principles pass | Revision required |
+| A | 0 P1, 0 P2 findings, 9+ principles pass, Tier 1 pass | Ready for use |
+| B | 0 P1, at most 2 P2 findings, 7+ principles pass, Tier 1 pass | Acceptable with noted improvements |
+| C | Any P1, more than 2 P2 findings, fewer than 7 principles pass, or Tier 1 fail | Revision required |
 
 ## Review Mode Differences
 

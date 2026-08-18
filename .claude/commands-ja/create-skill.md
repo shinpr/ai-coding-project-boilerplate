@@ -86,14 +86,14 @@ skill-reviewerエージェントをAgent toolで起動:
 - skill-creatorの生成コンテンツを渡す
 - 生成された各referenceのファイル名、行数、内容を渡す
 - レビューモード: `creation`
-- 再レビューでは、前回のレビューとskill-creatorの`reviewResolutions`を渡す
+- 再レビューでは、全ての`user_decision`を解決した後、前回のレビューとskill-creatorの`reviewResolutions`を渡す
 
 **判定ロジック**:
 - グレードAまたはB: Step 6へ進み、グレードBの残存指摘は任意の注記として提示する
 - グレードC: 各指摘を`findingId`で`apply`、`decline`、`user_decision`に裁定するようskill-creatorへ依頼する
 - `apply`: 現在の生成コンテンツを修正して再レビューする
 - `decline`: 根拠を添えて再レビューする
-- `user_decision`: ユーザーへ確認する
+- `user_decision`: ユーザーへ確認し、回答を成果またはスコープを決める情報としてskill-creatorへ戻す。再レビュー前に、その指摘を`apply`または根拠付き`decline`へ確定する
 - reviewerが却下済みの指摘を維持できるのは、正しさまたは検証可能性に関する新しい根拠がある場合だけとする。新しい根拠を伴わない同じ選好は作業を妨げない
 - 2回の修復・再レビュー後もグレードCの場合は、現在の内容と残存指摘をユーザーへ提示する
 

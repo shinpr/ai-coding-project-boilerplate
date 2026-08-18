@@ -76,12 +76,13 @@ skill-reviewerエージェントをAgent toolで起動:
 - skill-creatorの出力を組み立てたSKILL.md全文を渡す
 - 変更済みおよび保持した全referenceのファイル名、行数、内容を渡す
 - レビューモード: `modification`
-- 再レビューでは、前回のレビューとskill-creatorの`reviewResolutions`を渡す
+- 再レビューでは、全ての`user_decision`を解決した後、前回のレビューとskill-creatorの`reviewResolutions`を渡す
 
 **レビュー結果の処理:**
 - グレードAまたはB: Step 6へ進行
-- グレードC: 直前のskill-creator出力をcontent base、直前のレビューを`Current review`としてskill-creatorを再起動する
-- 各指摘を`apply`、`decline`、`user_decision`に裁定し、適用対象を修正し、根拠付き却下を再レビューし、ユーザー所有の判断はユーザーへ確認する
+- グレードC: referenceを含む直前のskill-creator出力を修復の基準とし、直前のレビューを`Current review`としてskill-creatorを再起動する
+- 各指摘を`apply`、`decline`、`user_decision`に裁定し、適用対象を修正して、根拠付き却下を再レビューする
+- `user_decision`はユーザーへ確認し、回答を成果またはスコープを決める情報としてskill-creatorへ戻す。再レビュー前に、その指摘を`apply`または根拠付き`decline`へ確定する
 - reviewerが却下済みの指摘を維持できるのは、正しさまたは検証可能性に関する新しい根拠がある場合だけとする。新しい根拠を伴わない同じ選好は作業を妨げない
 - 自動修復は2回の修復・再レビューで終了する
 - 変更スコープ外の問題を検出: 別の改善機会としてユーザーに報告

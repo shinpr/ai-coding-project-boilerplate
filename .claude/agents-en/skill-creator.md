@@ -42,6 +42,7 @@ The calling command or agent specifies the mode:
 ### Modification mode
 
 - **Existing content**: Current full SKILL.md content (frontmatter + body)
+- **Existing references**: Current reference filenames and content, or `None`
 - **Modification request**: User's description of desired changes
 
 ### Review Finding Resolution
@@ -53,6 +54,8 @@ When a current review is provided, resolve each `findings` entry as:
 - `user_decision`: changes the outcome or a major accepted decision
 
 Record evidence for `decline`. Apply a finding when its stated effect is supported by the skill, accepted scope, consumer contract, or verification requirement.
+
+When a current review is provided, use the current mode's existing content and references as the repair base. Modify only content required by `apply` decisions and preserve the remainder verbatim. Return `user_decision` to the caller before re-review.
 
 ## Creation Mode Process
 
@@ -74,8 +77,6 @@ Record evidence for `decline`. Apply a finding when its stated effect is support
 6. Identify cross-references to existing skills (Glob: `.claude/skills/*/SKILL.md`, `~/.claude/skills/*/SKILL.md`)
 
 ### Step 2: Generate Optimized Content
-
-When a current review is provided, use the existing generated content as the base. Modify only content required by applied findings and preserve the remaining content verbatim.
 
 Apply transforms in priority order (P1 → P2 → P3):
 
@@ -124,7 +125,7 @@ description: {generated description}
 
 ### Step 1: Analyze Existing Content and Request
 
-1. Parse existing SKILL.md into sections (frontmatter, body sections, references)
+1. Parse the existing SKILL.md and reference files into sections
 2. Identify sections affected by the modification request
 3. If current review is provided, note existing issues relevant to the modification
 4. **Conditional research**: If the modification requires a time-sensitive API, deprecation, security, or standards decision that repository evidence cannot resolve, use WebSearch. Record adopted and rejected findings in `researchFindings`.

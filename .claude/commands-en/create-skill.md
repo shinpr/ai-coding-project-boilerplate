@@ -86,14 +86,14 @@ Invoke skill-reviewer agent via Agent tool:
 - Pass skill-creator's generated content
 - Pass every generated reference file with filename, line count, and content
 - Review mode: `creation`
-- On re-review, pass the previous review and skill-creator's `reviewResolutions`
+- On re-review, pass the previous review and skill-creator's `reviewResolutions` after every `user_decision` has been resolved
 
 **Decision logic**:
 - Grade A or B: proceed to Step 6; present remaining Grade B findings as optional notes
 - Grade C: ask skill-creator to resolve every finding by `findingId` as `apply`, `decline`, or `user_decision`
 - `apply`: revise the current generated content and re-review
 - `decline`: re-review with evidence
-- `user_decision`: ask the user
+- `user_decision`: ask the user, pass the answer back to skill-creator as a governing outcome or scope decision, and require the finding to resolve as `apply` or evidence-backed `decline` before re-review
 - A reviewer may maintain a declined finding only with new correctness or verifiability evidence; repeated preference is non-blocking
 - After 2 repair/re-review iterations, present the current content and remaining findings to the user
 

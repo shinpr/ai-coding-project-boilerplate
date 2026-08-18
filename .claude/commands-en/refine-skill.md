@@ -76,12 +76,13 @@ Invoke skill-reviewer agent via Agent tool:
 - Pass the modified SKILL.md content assembled from skill-creator output
 - Pass all modified and retained reference files with filename, line count, and content
 - Review mode: `modification`
-- On re-review, pass the previous review and skill-creator's `reviewResolutions`
+- On re-review, pass the previous review and skill-creator's `reviewResolutions` after every `user_decision` has been resolved
 
 **Review outcome handling:**
 - Grade A or B: proceed to Step 6
-- Grade C: re-invoke skill-creator with the preceding creator output as the content base and the immediately preceding review as `Current review`
-- Resolve each finding as `apply`, `decline`, or `user_decision`; revise applied findings, re-review evidence-backed declines, and ask the user for user-owned decisions
+- Grade C: re-invoke skill-creator with the preceding creator output, including references, as the repair base and the immediately preceding review as `Current review`
+- Resolve each finding as `apply`, `decline`, or `user_decision`; revise applied findings and re-review evidence-backed declines
+- For `user_decision`, ask the user, pass the answer back to skill-creator as a governing outcome or scope decision, and require the finding to resolve as `apply` or evidence-backed `decline` before re-review
 - A reviewer may maintain a declined finding only with new correctness or verifiability evidence; repeated preference is non-blocking
 - Stop automatic repair after 2 repair/re-review iterations
 - Reviewer identifies issues outside the change scope: report to user as separate improvement opportunities
