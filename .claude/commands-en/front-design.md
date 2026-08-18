@@ -2,6 +2,8 @@
 description: Execute from repository evidence through applicable UI Spec and optional ADR decisions to complete frontend Design Doc approval
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `documentation-criteria` skill before document routing or creation.
 Execute the `llm-friendly-context` skill before writing Agent prompts, handoffs, or generated artifacts.
 Execute the `subagents-orchestration-guide` skill before invoking agents or resolving findings.

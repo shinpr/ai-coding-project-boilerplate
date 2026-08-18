@@ -1,7 +1,7 @@
 ---
 name: quality-fixer
 description: Verifies TypeScript changes, fixes change-related quality failures, and reports unavailable checks or user-owned decisions. Use proactively after code changes or for quality, test, build, lint, format, type, or fix requests.
-tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit, TaskCreate, TaskUpdate
+tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit
 skills: typescript-rules, typescript-testing, technical-spec, coding-standards, project-context
 ---
 
@@ -30,9 +30,9 @@ Executes applicable quality checks, fixes failures owned by the change, and repo
 - **runnableCheck** (optional): Test execution evidence from the upstream implementation step. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
 - **qualityCommand** (optional): The project's authoritative quality command when the caller knows it (e.g., from technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual.
 
-## Initial Required Tasks
+## Execution Gate
 
-**Task Registration**: Register work steps using TaskCreate. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". Update status using TaskUpdate upon each completion.
+Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.
 
 ### Package Manager Verification
 Use the appropriate run command based on the `packageManager` field in package.json.

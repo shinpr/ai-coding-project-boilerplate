@@ -2,6 +2,8 @@
 description: Generate PRD and Design Docs from existing codebase through discovery, generation, verification, and review workflow
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 
 **Command Context**: Reverse engineering workflow to create documentation from existing code
@@ -17,7 +19,7 @@ Target: $ARGUMENTS
 2. **Process one step at a time**: Execute steps sequentially within each unit (2 → 3 → 4 → 5). Each step's output is the required input for the next step. Complete all steps for one unit before starting the next
 3. **Pass `$STEP_N_OUTPUT` as-is** to sub-agents — the orchestrator bridges data without processing or filtering it
 
-**Task Registration**: Register phases first with TaskCreate, then steps within each phase as you enter it.
+**Execution Gate**: Complete Phase 1 before Phase 2. Within each phase, complete one unit's generation, verification, review, and required revision to convergence before starting the next unit. Advance only when the current step's stated output and quality gate are satisfied. At each loop boundary, select the first unit in the current phase's declared order whose Unit Completion conditions are unsatisfied and that is not logged as a generation failure. A document path proves generation only.
 
 ## Step 0: Initial Configuration
 
@@ -51,10 +53,6 @@ Phase 2: Design Doc Generation (if requested)
 ```
 
 ## Phase 1: PRD Generation
-
-**Register with TaskCreate**:
-- Step 1: PRD Scope Discovery
-- Per-unit processing (Steps 2-5 for each unit)
 
 ### Step 1: PRD Scope Discovery
 
@@ -161,10 +159,6 @@ Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision
 ## Phase 2: Design Doc Generation
 
 *Execute only if Design Docs were requested in Step 0*
-
-**Register with TaskCreate**:
-- Step 6: Design Doc Scope Mapping
-- Per-unit processing (Steps 7-10 for each unit)
 
 ### Step 6: Design Doc Scope Mapping
 

@@ -1,4 +1,4 @@
-# AI Coding Project Boilerplate for Claude Code
+# AI Coding Project Boilerplate — A Starter Kit for Claude Code
 
 *Read this in other languages: [日本語](README.ja.md)*
 
@@ -7,18 +7,34 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Evidence-driven Claude Code workflows for TypeScript projects. The package installs commands, specialized agents, and skills that carry confirmed requirements and repository evidence through design, implementation, review, and quality checks.
+Set up a TypeScript repository for structured development with Claude Code. `create-ai-project` adds a project-level `CLAUDE.md`, ready-to-use commands, specialized agents, and skills so Claude can take a request through design, implementation, and verification using rules stored alongside your code.
 
-## What it provides
+Use it to start a new project and keep its Claude Code setup up to date. Instead of assembling prompts and agent definitions yourself, you get a working development environment that lives in the repository, where your team can version, share, and adapt it.
 
-- End-to-end implementation with `/implement`, plus separate design, planning, build, review, and diagnosis commands
-- Direct implementation for small changes; durable documents only when the decision burden requires them
-- Repository-aware implementation and test boundaries based on owning responsibility, observable evidence, and proof obligations
-- Integration/E2E selection from accepted behavior and proof obligations
-- Applicable quality checks before each workflow commit, with checks that could not run reported explicitly
-- Equivalent English and Japanese command, agent, and skill environments
+## What this starter kit helps with
+
+- Use `CLAUDE.md` to define project-wide rules, what Claude Code can decide, and when it should ask you
+- Complete a change with `/implement`, from clarifying the request to implementation and verification
+- Keep straightforward changes lightweight while adding design documents and reviews when the change needs them
+- Run the repository's applicable tests, type checks, linting, and build checks as part of the workflow
+- Record project-specific context and turn recurring team knowledge into reusable skills
+- Use the same setup in English or Japanese
+
+## What it adds to your repository
+
+| Path | Purpose |
+|---|---|
+| `CLAUDE.md` | Project-wide rules, including what Claude Code can decide and when it should ask you |
+| `.claude/commands/` | Entry points for implementation, design, planning, review, diagnosis, and project setup |
+| `.claude/agents/` | Specialized roles for repository analysis, design, implementation, testing, and review |
+| `.claude/skills/` | Development guidance that Claude loads when it is relevant to the current work |
+| `docs/guides/` | Setup, command, and skill-editing guides for project users |
+
+The kit also includes `/create-skill`, `/refine-skill`, and `/sync-skills` so you can add project-specific guidance without maintaining the skill structure by hand.
 
 ## Quick start
+
+### Start a new project
 
 ```bash
 npx create-ai-project my-project
@@ -27,80 +43,71 @@ npm install
 claude
 ```
 
-Inside Claude Code:
+### Update a project created with this starter kit
+
+Run these commands from the project root:
+
+```bash
+npx create-ai-project update --dry-run
+npx create-ai-project update
+claude
+```
+
+The updater refreshes the managed `CLAUDE.md`, commands, agents, and skills without replacing your source code or package configuration.
+
+Once Claude Code is running:
 
 ```text
 /project-inject
 /implement Add rate limiting to the API
 ```
 
-`/project-inject` records project-specific prerequisites. `/implement` confirms the outcome and scope, reads the repository, creates only the required design artifacts, implements the change, runs applicable checks, and commits completed task boundaries.
+`/project-inject` records the repository-specific information Claude needs, such as domain constraints, directory conventions, and where to find external schemas or API contracts. You can then use `/implement` for an end-to-end change.
 
-For setup details and what to expect during the first run, see the [Quick Start Guide](docs/guides/en/quickstart.md).
+See the [Quick Start Guide](docs/guides/en/quickstart.md) for the full setup and first-run walkthrough.
 
-## Workflow
+## How development runs
 
 ```mermaid
-flowchart TD
-    R[Confirm outcome and requirements] --> S{Decision burden}
-    S -->|Small| I[Direct implementation]
-    S -->|Medium| D[Design Doc → Work Plan]
-    S -->|Large| P[PRD → Design Doc → Work Plan]
-    D --> I
-    P --> I
-    I --> Q[Applicable checks → Commit]
-    Q --> V[Post-implementation verification when a Design Doc exists]
+flowchart LR
+    A[Request] --> B[Clarify the outcome]
+    B --> C[Inspect the repository]
+    C --> D{Design decisions needed?}
+    D -->|No| E[Implement directly]
+    D -->|Yes| F[Design and approve the plan]
+    F --> E
+    E --> G[Run checks and review]
+    G --> H[Complete]
 ```
 
-A qualifying durable technical choice adds an ADR batch before the Design Doc. Frontend and fullstack work add a UI Spec only when UI decisions remain open. File count supports scope investigation but does not determine the route.
+Claude Code first confirms what the change should accomplish and inspects the existing implementation. Straightforward changes can proceed directly. Changes that need product or technical decisions get the necessary design and planning documents before implementation. The workflow then runs the applicable repository checks and reports anything it could not verify.
 
-| Scale | Route |
-|---|---|
-| Small | One coherent outcome with one evident repository-supported implementation inside one responsibility boundary → direct implementation |
-| Medium | One coherent outcome coordinating a boundary or containing a potentially durable choice → Design Doc and Work Plan |
-| Large | Multiple independently valuable outcomes requiring separate design decisions → PRD, Design Doc, and Work Plan |
+See [Use Cases & Commands](docs/guides/en/use-cases.md) for when documents are created, how tests are selected, and what each workflow covers.
 
-## Commands
+## Common entry points
 
 | Command | Use it for |
 |---|---|
-| `/implement` | Complete a change from requirement confirmation through implementation |
-| `/task` | Execute a focused standalone task with the applicable skills |
-| `/design`, `/front-design` | Confirm scope and produce approved design artifacts without implementation |
-| `/plan`, `/front-plan` | Create and approve a Work Plan from a Design Doc |
-| `/build`, `/front-build` | Execute approved planned work |
-| `/review`, `/front-review` | Review Design Doc compliance and security, then optionally apply corrections |
-| `/diagnose` | Investigate a problem, verify the cause, and derive solutions |
-| `/reverse-engineer` | Produce PRDs and Design Docs from existing code |
-| `/add-integration-tests` | Add integration/E2E proof to an existing implementation |
-| `/update-doc` | Update and review an existing PRD, ADR, or Design Doc |
-| `/create-skill`, `/refine-skill` | Create or revise project skills |
-| `/project-inject`, `/sync-skills` | Maintain project context and skill metadata |
+| `/implement` | Take a change from requirements through implementation and verification |
+| `/design`, `/front-design` | Design a change before implementation |
+| `/plan`, `/front-plan` | Turn an approved design into an executable plan |
+| `/build`, `/front-build` | Continue from an approved plan |
+| `/review`, `/front-review` | Review an implementation against its design and security requirements |
+| `/diagnose` | Investigate a problem and compare solutions backed by the findings, without changing code |
+| `/project-inject` | Record project-specific context for future Claude Code sessions |
+| `/create-skill`, `/refine-skill` | Add or improve reusable project guidance |
 
 See [Use Cases & Commands](docs/guides/en/use-cases.md) for examples and the complete command reference.
 
-## Skills and project context
+## Adapt it to your project
 
-Skills contain reusable judgment criteria for a responsibility and load when relevant. The included skills cover requirement convergence, document routing, implementation strategy, coding and testing, integration/E2E proof, orchestration, and LLM-facing handoffs.
+Use `/project-inject` for facts and constraints that apply across the repository. This keeps Claude aware of the project's purpose, conventions, and external sources without repeating them in every request.
 
-Use `/project-inject` for repository-specific prerequisites such as domain constraints, directory conventions, and external evidence sources. Use `/create-skill` or `/refine-skill` for reusable project rules. The [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) explains where information belongs and how to validate a skill change.
+When your team has guidance that should apply only to particular work, create or refine a skill instead. The included skill-editing workflow helps decide where the information belongs, reviews the change, and keeps skill metadata in sync. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for examples and validation guidance.
 
-[rashomon](https://github.com/shinpr/rashomon) can compare runs with and without a skill change when you need evidence that the change improved behavior.
+## Language and project configuration
 
-## Updating an existing project
-
-From the project root:
-
-```bash
-npx create-ai-project update --dry-run
-npx create-ai-project update
-```
-
-The updater refreshes managed agent, command, skill, and Claude rule files while preserving source code and package configuration. Use `--ignore` and `--unignore` for managed files you maintain separately.
-
-## Configuration
-
-Switch the active language environment with:
+Switch the active Claude Code environment with:
 
 ```bash
 npm run lang:en
@@ -108,7 +115,7 @@ npm run lang:ja
 npm run lang:status
 ```
 
-The workflows detect the package manager and quality commands from repository configuration. Change `packageManager` and project scripts in `package.json` when the generated project uses different commands.
+The workflows discover the package manager and quality commands from the repository. If your generated project uses different commands, update `packageManager` and the relevant scripts in `package.json`.
 
 ## Guides
 

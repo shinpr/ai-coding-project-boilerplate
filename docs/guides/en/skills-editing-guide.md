@@ -96,19 +96,19 @@ Use only the sections needed by the responsibility. A useful order is:
 6. verification and unresolved-input handling;
 7. references.
 
-Do not create empty sections. Put the common decision path before exceptions. A process step names its completion evidence and the condition that permits the next step.
+Include only sections with operative content. Put the common decision path before exceptions. A dependent process step names its completion evidence and the condition that permits the next step.
 
 ### References and scripts
 
 - Link supporting files directly from `SKILL.md`; avoid reference chains.
-- Put large source material in `references/` and load only what controls the current decision.
+- Compress first, then put remaining conditional source material in `references/` and load only what controls the current decision.
 - Use `scripts/` when the same deterministic operation would otherwise be regenerated each time.
 - Reuse an existing template or script when it already produces the required artifact.
 - Record access methods for external schemas, APIs, or infrastructure in `project-context`; a URL alone does not guarantee access in every execution environment.
 
-## Review with BP-001 through BP-008
+## Review with BP-001 through BP-009
 
-Use the same eight checks as [rashomon](https://github.com/shinpr/rashomon):
+Use the same nine checks as [rashomon](https://github.com/shinpr/rashomon):
 
 | Pattern | Skill check |
 |---|---|
@@ -117,9 +117,10 @@ Use the same eight checks as [rashomon](https://github.com/shinpr/rashomon):
 | BP-003 Missing output format | Define only the fields, ordering, or serialization required by the actual output consumer. |
 | BP-004 Unstructured content | Add the smallest structure that exposes priority, roles, and dependencies. A simple rule can remain prose. |
 | BP-005 Missing or excess context | Keep context only when it changes a decision, action, or verification result. Name project-specific sources. |
-| BP-006 Missing procedural gates | Split dependent work into steps whose evidence controls the next transition. Do not decompose independent or simple actions. |
+| BP-006 Missing or excess procedural control | Keep gates for true dependencies, authority, irreversible actions, machine-consumed contracts, and completion proof. For reversible choices, provide purpose, evidence, and selection criteria without prescribing the route. |
 | BP-007 Unnecessary examples | Prefer a rule or consumer-required shape. Add the smallest example set only for a non-obvious project mapping, exception, or boundary. |
 | BP-008 Missing uncertainty handling | Distinguish observed, inferred, and unknown evidence. Stop only when an unknown blocks the next transition, and name the exact evidence or user decision required. |
+| BP-009 Unbounded work generation | Treat discoveries as candidates. Retain only work required by the outcome, a boundary, a real consumer, or necessary proof; allow no-change, reuse, and evidence-backed decline. |
 
 An example affects the model beyond the fact it demonstrates: it also anchors format, local naming, and likely solutions. Remove examples whose ambiguity can be resolved by a concise rule.
 
@@ -135,9 +136,9 @@ Use the repository commands when possible:
 
 For a manual or reviewed change, use three gates:
 
-1. **Analysis** — preserve the intended outcome and requirements; inspect the complete skill and required references; scan BP-001 through BP-008; identify the decision or output that is wrong.
+1. **Analysis** — preserve the intended outcome and requirements; inspect the complete skill and required references; scan BP-001 through BP-009; identify the decision or output that is wrong.
 2. **Optimization** — resolve each supported finding at the owning rule; add a constraint only when it removes an outcome-relevant ambiguity or protects a named requirement.
-3. **Balance** — verify intent preservation, decision sufficiency, information density, constraint necessity, and traceability; remove additions that change no decision or valid output.
+3. **Balance** — verify intent preservation, decision sufficiency, information density, constraint necessity, work proportionality, and traceability; remove additions that change no decision or valid output.
 
 After editing, run `/sync-skills` and the repository's skill-index check.
 
@@ -167,6 +168,6 @@ Text review proves consistency, not effectiveness. Run representative tasks from
 
 ## References
 
-- [rashomon prompt optimization](https://github.com/shinpr/rashomon) — BP-001 through BP-008 analysis, gated optimization, and comparative evaluation
+- [rashomon prompt optimization](https://github.com/shinpr/rashomon) — BP-001 through BP-009 analysis, gated optimization, and comparative evaluation
 - [When Better Models Make Old Agent Workflows Worse](https://www.norsica.jp/blog/when-better-models-make-old-agent-workflows-worse.md) — boundary constraints, work-generating constraints, and fresh-session validation for current coding models
 - [Claude Code skills documentation](https://code.claude.com/docs/en/skills) — platform format and loading behavior

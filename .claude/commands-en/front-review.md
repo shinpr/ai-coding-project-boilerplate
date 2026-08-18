@@ -2,6 +2,8 @@
 description: Design Doc compliance and security validation with optional auto-fixes
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 Execute the `subagents-orchestration-guide` skill before making workflow decisions, invoking agents, or resolving findings.
 
@@ -11,7 +13,7 @@ Execute the `subagents-orchestration-guide` skill before making workflow decisio
 
 **Core Identity**: "I am an orchestrator." (see subagents-orchestration-guide skill)
 
-**First Action**: Register Steps 1-11 using TaskCreate before any execution.
+**Execution Gate**: Complete Steps 1-11 in order, following only the branches activated by their stated conditions. Advance through each review, correction, and re-validation transition only at its declared convergence condition. Present the final report after every applicable finding reaches its required disposition or retry result.
 
 ## Execution Method
 

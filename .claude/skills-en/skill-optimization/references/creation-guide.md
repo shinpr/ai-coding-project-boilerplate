@@ -12,13 +12,13 @@ Preserve the supplied knowledge and requirements verbatim before changing struct
 
 **Process**:
 1. Classify content: definitions, patterns, processes, criteria, examples
-2. Detect issues using BP patterns (BP-001 through BP-008)
+2. Detect issues using BP patterns (BP-001 through BP-009)
 3. Estimate size: small (<80 lines), medium (80-250), large (250+)
 4. Identify whether the skill owns orchestration/selection. For those roles, record required skill references; for a pure execution skill, identify the execution-critical context that must be materialized locally
 
 **Output evidence**:
 - Original requirements and intended outcome
-- BP-001 through BP-008 coverage
+- BP-001 through BP-009 coverage
 - Issue list with unique finding ID, severity, location, and quoted evidence
 - Preservation requirements and unresolved inputs
 
@@ -40,7 +40,7 @@ Preserve the supplied knowledge and requirements verbatim before changing struct
 3. **Balance checks**:
    - Over-optimization: Content exceeds scope of user's input → trim
    - Clarity trade-off: Structure obscures main point → simplify
-4. Verify 9 principles pass
+4. Verify 10 principles pass
 
 **Output evidence**:
 - One applied/skipped resolution per finding
@@ -51,7 +51,7 @@ Preserve the supplied knowledge and requirements verbatim before changing struct
 
 ### Step 3: Balance
 
-Evaluate intent preservation, decision sufficiency, information density, constraint necessity, and traceability. Apply only adjustments that resolve a named finding or protect a preservation requirement.
+Evaluate intent preservation, decision sufficiency, information density, constraint necessity, work proportionality, and traceability. Apply only adjustments that resolve a named finding or protect a preservation requirement.
 
 **Output**: Final `SKILL.md` content and any same-directory reference/script content required by its execution flow.
 
@@ -66,7 +66,7 @@ For skill frontmatter `description` field:
 | Third-person, verb-first | "Evaluates code quality..." not "This skill evaluates..." |
 | Include "Use when:" trigger | "Use when creating tests or reviewing test quality." |
 | Target ~200 characters | Shorter descriptions reduce context pressure across all loaded skills |
-| Specific over generic | "Applies 8 content patterns" not "Improves quality" |
+| Specific over generic | "Applies 9 content patterns" not "Improves quality" |
 | No implementation details | Describe what it does, not how |
 
 **Core principle**: The description is the agent's **trigger mechanism**, not a summary for humans. Agents only consult skills for tasks requiring knowledge beyond their baseline capabilities. The description must convey why this skill adds value the agent lacks.
@@ -80,10 +80,14 @@ For skill frontmatter `description` field:
 - [ ] Skills consisting only of general knowledge may be unnecessary — verify project-specific content is present
 - [ ] A pure skill remains executable when loaded alone; independently loaded sibling skills are not prerequisites
 
-## Split Decision
+## Compression and Split
 
-If generated content exceeds 400 lines:
-- Extract reference data (large tables, example collections) to `references/`
-- Keep SKILL.md under 250 lines with references to extracted files
-- All reference files one level deep from SKILL.md
-- Keep every execution-critical rule in `SKILL.md`, or make loading its same-directory reference an explicit gated step; each pure skill remains executable without a sibling pure skill being loaded
+Before splitting:
+
+1. Remove baseline knowledge, duplication, and corrective rules not tied to an observed recurring failure or required boundary.
+2. Replace exhaustive branches with purpose, evidence, and selection criteria.
+3. Remove examples without a non-obvious mapping or exception.
+4. Move repeatable deterministic operations to scripts.
+5. Retain conditional detail only when its load condition and decision effect are explicit.
+
+If content still exceeds 400 lines, extract the remaining conditional detail to one-level-deep `references/`. A body above the 250-line target is valid only when removing a retained section would change a non-baseline decision, required boundary, consumer contract, or observed recurring failure. Keep every execution-critical rule in `SKILL.md`, or make loading its same-directory reference an explicit gated step; each pure skill remains executable without a sibling pure skill being loaded.

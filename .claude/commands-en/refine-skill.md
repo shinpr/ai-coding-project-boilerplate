@@ -2,13 +2,15 @@
 description: Implement user skill change requests with optimization pattern evaluation
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 **Command Context**: Workflow for understanding skill file change requests and implementing via skill-creator (modification mode) with quality-assured optimization.
 
 Change request: $ARGUMENTS
 
 ## Execution Process
 
-Register the following steps with TaskCreate and proceed systematically.
+Complete Steps 1-6 in order. Advance only when the current step's stated output, review result, or approval condition is satisfied. Complete after every applicable Completion Criterion is satisfied.
 
 ### Step 1: Understand the Request
 
@@ -44,11 +46,12 @@ Present before/after comparison of current state and proposed change:
 Proceed with this design? (y/n)
 ```
 
-**Design Checklist**: Evaluate proposal against the 9 editing principles defined in skill-optimization skill. Key focus areas:
+**Design Checklist**: Evaluate proposal against the 10 editing principles defined in skill-optimization skill. Key focus areas:
 - Context efficiency: every added sentence must contribute to LLM decision-making
 - Measurability: all criteria use if-then format or concrete thresholds
 - Deduplication: verify no overlap with other skill files
 - Scope boundaries: confirm changes stay within this skill's responsibility
+- Work proportionality: every added artifact, gate, or decision changes the outcome, a required boundary, a real consumer, or necessary proof
 
 ### Step 4: Execute Changes via skill-creator
 
@@ -60,7 +63,9 @@ prompt: |
   Mode: modification
   Skill name: {target skill name}
   Existing content: {current full SKILL.md content}
+  Existing references: {current reference filenames and content, or "None"}
   Modification request: {approved change content from Step 3}
+  Current review: None
 ```
 
 Review the changesSummary returned by skill-creator to verify changes match intent.
@@ -69,17 +74,23 @@ Review the changesSummary returned by skill-creator to verify changes match inte
 
 Invoke skill-reviewer agent via Agent tool:
 - Pass the modified SKILL.md content assembled from skill-creator output
+- Pass all modified and retained reference files with filename, line count, and content
 - Review mode: `modification`
+- On re-review, pass the previous review and skill-creator's `reviewResolutions` after every `user_decision` has been resolved
 
 **Review outcome handling:**
 - Grade A or B: proceed to Step 6
-- Grade C: re-invoke skill-creator with reviewer's `actionItems` and `patternIssues` to fix (max 2 iterations)
+- Grade C: re-invoke skill-creator with the preceding creator output, including references, as the repair base and the immediately preceding review as `Current review`
+- Resolve each finding as `apply`, `decline`, or `user_decision`; revise applied findings and re-review evidence-backed declines
+- For `user_decision`, ask the user, pass the answer back to skill-creator as a governing outcome or scope decision, and require the finding to resolve as `apply` or evidence-backed `decline` before re-review
+- A reviewer may maintain a declined finding only with new correctness or verifiability evidence; repeated preference is non-blocking
+- Stop automatic repair after 2 repair/re-review iterations
 - Reviewer identifies issues outside the change scope: report to user as separate improvement opportunities
 
 ### Step 6: Approval and Implementation
 
 1. Present before/after comparison to user and obtain approval
-2. Include skill-reviewer's grade and any remaining action items
+2. Include skill-reviewer's grade and any remaining findings
 3. Present skill-creator's changesSummary
 4. Confirm user intent alignment: "Do the changes achieve what you originally requested?"
 5. Apply changes with appropriate tool
@@ -104,7 +115,7 @@ Invoke skill-reviewer agent via Agent tool:
 | Skill not found | Display available skill list |
 | Large change detected (50%+ of file) | Suggest phased implementation |
 | Responsibility overlap with other skills | Confirm boundaries and defer to user judgment |
-| Grade C after 2 review iterations | Present changes with issues list, let user decide |
+| Grade C after 2 repair/re-review iterations | Present changes with remaining findings, let user decide |
 | Reviewer identifies regression | Revert specific change causing regression, re-invoke skill-creator |
 
 **Scope**: Understanding user change requests and implementing with quality-assured optimization. Change execution delegated to skill-creator (modification mode). Quality evaluation delegated to skill-reviewer agent. Metadata sync through /sync-skills.

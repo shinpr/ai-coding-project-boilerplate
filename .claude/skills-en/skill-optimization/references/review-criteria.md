@@ -6,71 +6,64 @@ Criteria for evaluating existing or generated skill content quality.
 
 ### Step 1: Pattern Scan
 
-**Input**: Skill content (SKILL.md frontmatter + body)
+1. Scan BP-001 through BP-009.
+2. Record a stable finding ID, rule ID, severity, location, original text, observable effect, and suggested fix for each unresolved issue.
+3. Evaluate all 10 editing principles.
+4. Count lines and estimate the size category.
 
-**Process**:
-1. Scan for each BP pattern (BP-001 through BP-008)
-2. Record: pattern ID, severity, location, original text
-3. Evaluate against 9 editing principles
-4. Count total lines, estimate size category
+On re-review, preserve the ID of the same issue. Join prior resolutions by finding ID. Record an evidence-backed decline in `acceptedDeclines` when the proposed change adds scope, duplicates proof, or has no observable effect. An accepted decline contributes zero to findings, grade counts, failed principles, and required actions. Return the issue again only when new evidence shows that the result remains incorrect or unverifiable. The caller resolves each `user_decision` before re-review.
 
-**Output**: Issue list with severity, location, and original text per finding.
-
-**Analysis gate**: Proceed only when BP-001 through BP-008 are covered, every issue has a unique finding ID and quoted evidence, preservation requirements are explicit, and no unresolved input blocks faithful review.
+**Analysis gate**: Proceed when all 9 patterns are covered, every unresolved issue has evidence and a stable ID, preservation requirements are explicit, and no unknown blocks faithful review.
 
 ### Step 2: Progressive Disclosure Evaluation
 
-Verify the 3-tier disclosure architecture:
-
 | Tier | Target | Verification |
 |------|--------|-------------|
-| Tier 1 | description | Passes the description quality checklist (see creation-guide.md) |
-| Tier 2 | SKILL.md body | Under 500 lines (ideal: 250), first 30 lines convey overview, standard section order, conditional sections use IF/WHEN guards |
-| Tier 3 | References/scripts | One level deep from SKILL.md only, SKILL.md over 400 lines must be split |
+| Tier 1 | description | Passes the description quality checklist in `creation-guide.md` |
+| Tier 2 | SKILL.md body | Under 500 lines, target 250; first-screen test, standard section order, and conditional guards pass; each section above the target passes the necessity test |
+| Tier 3 | References/scripts | Compression precedes splitting; references contain necessary conditional detail, remain one level deep, and have no nested reference chains |
+
+Each failed tier references at least one existing BP or principle finding. Tier 1 fails when the description lacks the selection evidence needed to activate the skill for its intended requests; that failure forces grade C. Map a missing or incorrect activation scope or caller trigger to principle-9, and absent non-baseline distinguishing value to principle-1. Tier 2 and Tier 3 have no independent grade effect and contribute through their referenced findings, principle results, or balance checks. Record other checklist deviations only when they have an observable selection effect.
 
 For pure skills, verify standalone execution. Duplication across independently loaded pure skills is valid when each copy is required; record only semantic conflicts or in-skill duplication. Cross-skill references are valid for orchestration and skill-selection roles.
 
 ### Step 3: Evaluate and Grade
 
-**Input**: Issue list + skill content
+1. Keep unresolved issues in `findings` and evidence-backed declines in `acceptedDeclines`.
+2. Count P1 and P2 findings.
+3. Count only principles with `pass` status.
+4. Check cross-skill overlap using the standalone-execution rule above.
+5. Evaluate:
+   - Over-optimization: excessive constraints or generated obligations; content above 250 lines without completed compression
+   - Work generation: findings or possibilities become unsupported artifacts, tests, gates, or decisions
+   - Lost expertise: domain knowledge is removed by restructuring
+   - Clarity trade-off: structure obscures the main point
+   - Description quality: frontmatter description follows trigger guidance
+6. Assign the grade.
 
-**Process**:
-1. Count P1 and P2 issues
-2. Count principles passed (pass/partial/fail)
-3. Check cross-skill overlap
-4. **Balance assessment**:
-   - Over-optimization: Excessive constraints for simple topic
-   - Lost expertise: Domain knowledge compressed away in structured content
-   - Clarity trade-off: Structure obscures main point
-   - Constraint necessity: Each constraint in the skill traces to a stated requirement or finding; flag any constraint that excludes valid solutions without protecting a named requirement
-   - Description quality: Frontmatter description follows guidelines
-5. Assign grade
+**Output**: A quality report containing:
+- BP-001 through BP-009 coverage
+- unresolved `findings` and evidence-backed `acceptedDeclines`
+- preservation requirements and unresolved inputs
+- Progressive Disclosure and 10-principle results
+- six balance checks: intent preservation, decision sufficiency, information density, constraint necessity, work proportionality, and traceability
+- final grade
 
-**Output**: Quality report containing:
-- BP-001 through BP-008 coverage
-- Findings with ID, severity, location, and quoted evidence
-- One applied/skipped resolution per finding with reason
-- Preservation requirements and unresolved inputs
-- Progressive Disclosure and 9-principle results
-- Grade and ordered action items
-
-**Optimization gate**: Every finding has exactly one resolution, every proposed change traces to a finding or project source, and all preservation requirements remain represented.
-
-**Balance gate**: Intent preservation, decision sufficiency, information density, constraint necessity, and traceability all pass. When evidence is unknown and blocks a check, stop and name the required evidence or decision.
+**Balance gate**: Each balance check records pass or blocked with evidence. A blocked check references a finding and prevents grade A.
 
 ## Grading
 
 | Grade | Criteria | Recommendation |
 |-------|----------|----------------|
-| A | 0 P1, 0 P2 issues, 8+ principles pass, Tier 1 pass | Ready for use |
-| B | 0 P1, ≤2 P2 issues, 6+ principles pass, Tier 1 pass | Acceptable with noted improvements |
-| C | Any P1 OR >2 P2 OR <6 principles pass OR Tier 1 fail | Revision required |
+| A | 0 P1, 0 P2 findings, 9+ principles pass, Tier 1 pass | Ready for use |
+| B | 0 P1, at most 2 P2 findings, 7+ principles pass, Tier 1 pass | Acceptable with noted improvements |
+| C | Any P1, more than 2 P2 findings, fewer than 7 principles pass, or Tier 1 fail | Revision required |
 
 ## Review Mode Differences
 
 | Aspect | creation | modification |
 |--------|----------|-------------|
-| Scope | All content, comprehensive | Changed sections + regression check |
-| BP scan | All 8 patterns | Focus on patterns relevant to changes |
-| Cross-skill check | Full overlap scan | Verify changes didn't introduce overlap |
+| Scope | All content, comprehensive | Changed sections plus regression check |
+| BP scan | All 9 patterns | Patterns relevant to the changes |
+| Cross-skill check | Full overlap scan | Verify changes introduced no conflict or unnecessary duplication |
 | Extra check | — | Report issues outside change scope separately |

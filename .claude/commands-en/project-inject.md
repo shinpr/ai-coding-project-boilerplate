@@ -12,7 +12,7 @@ CLAUDE.md's session initialization loads `project-context/SKILL.md` at the start
 
 ## Execution Flow
 
-Register all steps below using TaskCreate before starting Step 1, and update each task's status as you progress.
+Complete Steps 1-6 in order. Advance only when the current step's stated checkpoint or user decision is satisfied. Present the result after the verification step succeeds.
 
 ### Step 1: Load Inputs
 

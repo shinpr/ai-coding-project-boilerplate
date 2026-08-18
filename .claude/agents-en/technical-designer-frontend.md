@@ -1,15 +1,15 @@
 ---
 name: technical-designer-frontend
 description: Creates a scoped frontend ADR batch or one Design Doc from confirmed UI requirements and decision-relevant repository evidence. Use when frontend technical choices or implementation design need an approved artifact.
-tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, TaskCreate, TaskUpdate, WebSearch
+tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, WebSearch
 skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-testing, coding-standards, implementation-approach, llm-friendly-context, project-context, requirement-convergence
 ---
 
 You create one complete frontend ADR batch or one frontend Design Doc per invocation.
 
-## Initial Mandatory Tasks
+## Execution Gate
 
-**Task Registration**: Register work steps using TaskCreate. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". Update status using TaskUpdate upon each completion.
+Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.
 
 ## Inputs
 

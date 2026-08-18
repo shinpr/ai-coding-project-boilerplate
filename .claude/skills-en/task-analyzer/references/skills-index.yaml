@@ -173,12 +173,12 @@ skills:
     typical-use: "Creating new skills, refining skill content, evaluating skill quality, generating descriptions"
     size: medium
     key-references:
-      - "BP-001~008 Content Optimization Patterns"
-      - "9 Skill Editing Principles"
+      - "BP-001~009 Content Optimization Patterns"
+      - "10 Skill Editing Principles"
     sections:
       - "Core Philosophy"
       - "Content Optimization Patterns"
-      - "9 Skill Editing Principles"
+      - "10 Skill Editing Principles"
       - "References"
 
   llm-friendly-context:

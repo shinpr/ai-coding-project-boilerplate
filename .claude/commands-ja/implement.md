@@ -2,6 +2,8 @@
 description: オーケストレーターとして要件分析から実装まで完全サイクルを管理
 ---
 
+**ユーザーの明示的な指示**: ユーザーは、このレシピで名前が挙げられたすべてのサブエージェント呼び出しを明示的に指示し、承認している。各呼び出しの前提条件を満たした時点で、該当する呼び出しを実行する。
+
 Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
 
 **コマンドコンテキスト**: 実装の完全サイクル管理（要件分析→設計→計画→実装→品質保証）
@@ -43,13 +45,13 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 
 最終的な `convergence` 記録は、subagents-orchestration-guideスキルの収束記録の受け渡しに従い、各ドキュメント作成ステップへ引き継ぐ。
 
-### 5. 規模判定後：TaskCreateでフロー全ステップを登録（必須）
+### 5. 適用フローの確定
 
-規模判定完了後、**subagents-orchestration-guideスキルの該当フロー全ステップをTaskCreateで登録**。各タスクは追跡対象のフローステップの名前を用いる。登録後、TaskListを参照してフローを進める。
+Structural Scaleの判定後、その規模で適用される経路だけに従う。該当する設計、レビュー、承認、計画、実装、検証、クリーンアップ、報告の各フェーズをゲートとして扱う。現在のフェーズで定められたエビデンスまたは承認が存在する場合にのみ次へ進み、明記された条件が偽の場合にのみ分岐をスキップする。
 
 ### 6. 次のアクション実行
 
-**TaskListで次のpendingタスクを確認して実行**。
+必要なエビデンスがまだ存在しない、最も早い適用可能なフェーズを実行する。
 
 ## subagents-orchestration-guideスキル準拠の実行
 
@@ -62,7 +64,7 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 - [ ] 各Design Docについて document-reviewer の前に code-verifier を含めた
 - [ ] タスク実行後の4ステップサイクル（task-executor → ユーザーが持つ境界の判定・フォローアップ → quality-fixer → コミット）を理解した
 
-**フロー厳守**: subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで4ステップを管理する
+**フロー厳守**: subagents-orchestration-guideの該当するStructural Scaleフローと4ステップのタスク実行サイクルに従う。現在のフェーズまたはサイクルのステップで定められた遷移条件を満たした場合にのみ次へ進む。
 
 ## サブエージェントのスコープ境界
 
@@ -84,7 +86,7 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 ## オーケストレーターとしての必須責務
 
 ### タスク実行品質サイクル
-subagents-orchestration-guideスキルの「自律実行中のタスク管理」に従い、TaskCreate/TaskUpdateで以下のステップを管理：
+以下の依存順のステップを実行し、現在のステップで定められたレスポンス条件を満たした場合にのみ次へ進む：
 1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small では承認済みの成果・出典・影響パス・検証条件を直接渡し、タスクファイルは作成しない。
 2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → 宣言された境界を確認し、ユーザーが持つ判断を必要とする場合はエスカレーションする

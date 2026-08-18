@@ -2,6 +2,8 @@
 description: Execute materialized task files in autonomous execution mode
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 
 ## Orchestrator Definition
@@ -12,7 +14,7 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Follow the 4-step task cycle exactly**: task-executor → escalation check → quality-fixer → commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
-4. **Scope**: Complete when all tasks are committed or escalation occurs
+4. **Scope**: Complete consumed task-set execution, post-implementation verification, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a valid user-owned escalation. Advance only when the current phase's stated transition condition is satisfied.
 
 **CRITICAL**: Run quality-fixer before every commit.
 
@@ -94,8 +96,6 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
 
 ## Task Execution Cycle (4-Step Cycle)
 **MANDATORY EXECUTION CYCLE**: `task-executor → escalation check → quality-fixer → commit`
-
-Before the first iteration, register this recipe's phases once using TaskCreate: "Execute consumed task set", "Run post-implementation verification", "Clean up consumed task files", "Report completion". Update each with TaskUpdate as it completes.
 
 For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke task-executor to implement the task (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)

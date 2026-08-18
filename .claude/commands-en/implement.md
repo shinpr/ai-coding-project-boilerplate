@@ -2,6 +2,8 @@
 description: Orchestrate the complete implementation lifecycle from requirements to deployment
 ---
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
+
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
 
 **Command Context**: Full-cycle implementation management (Requirements Analysis → Design → Planning → Implementation → Quality Assurance)
@@ -43,13 +45,13 @@ When user responds to questions:
 
 Carry the final `convergence` record into every document-creation step per the convergence-record handoff in subagents-orchestration-guide skill.
 
-### 5. After Scale Determination: Register All Flow Steps with TaskCreate (Required)
+### 5. Bind the Applicable Flow
 
-After scale determination, **register all steps of the applicable subagents-orchestration-guide skill flow with TaskCreate**, naming each task after the flow step it tracks. After registration, proceed through the flow referencing TaskList.
+After Structural Scale is determined, follow only that scale's applicable path. Treat each applicable design, review, approval, planning, implementation, verification, cleanup, and reporting phase as a gate. Advance only when the current phase's stated evidence or approval exists; skip only branches whose stated condition is false.
 
 ### 6. Execute Next Action
 
-**Check next pending task with TaskList**.
+Execute the earliest applicable phase whose required evidence is not yet present.
 
 ## subagents-orchestration-guide skill Compliance Execution
 
@@ -62,7 +64,7 @@ After scale determination, **register all steps of the applicable subagents-orch
 - [ ] code-verifier included before document-reviewer for each Design Doc
 - [ ] Understood the 4-step cycle after task execution (task-executor → user-boundary judgment/follow-up → quality-fixer → commit boundary check)
 
-**Flow Adherence**: Follow "Autonomous Execution Task Management" in subagents-orchestration-guide skill, managing 4 steps with TaskCreate/TaskUpdate
+**Flow Adherence**: Follow the applicable Structural Scale flow and the 4-step task execution cycle in subagents-orchestration-guide. Advance only when the current phase or cycle step satisfies its stated transition condition.
 
 ## Scope Boundary for Subagents
 
@@ -84,7 +86,7 @@ Additionally, include the following constraint at the end of every sub-agent pro
 ## Mandatory Orchestrator Responsibilities
 
 ### Task Execution Quality Cycle
-Following "Autonomous Execution Task Management" in subagents-orchestration-guide skill, manage these steps with TaskCreate/TaskUpdate:
+Execute the following dependency-ordered steps, advancing only when the current step's response condition is satisfied:
 1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly; do not create a task file.
 2. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → inspect the declared boundary; escalate when it requires a user-owned decision

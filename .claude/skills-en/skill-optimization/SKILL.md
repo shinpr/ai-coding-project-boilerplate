@@ -1,6 +1,6 @@
 ---
 name: skill-optimization
-description: Evaluates and optimizes skill file quality using 8 content patterns and 9 editing principles. Use when creating skills, refining skill content, or auditing skill quality.
+description: Evaluates and optimizes skill file quality using 9 content patterns and 10 editing principles. Use when creating skills, refining skill content, or auditing skill quality.
 ---
 
 # Skill Content Optimization
@@ -28,7 +28,7 @@ Issues that directly reduce LLM execution accuracy when consuming the skill.
 
 **Exception boundary examples**:
 - Permitted: "Move obsolete records to the recoverable archive. Do not permanently delete them unless the user explicitly authorizes permanent deletion."
-- Rewrite in positive form: "Do not invent issues" → "Base every issue on BP patterns or 9 principles", "Do not skip P1 issues" → "Evaluate all P1 issues in every review mode", "Do not give grade A when P1 exists" → "Assign grade A only when P1 count is zero"
+- Rewrite in positive form: "Do not invent issues" → "Base every issue on BP patterns or 10 principles", "Do not skip P1 issues" → "Evaluate all P1 issues in every review mode", "Do not give grade A when P1 exists" → "Assign grade A only when P1 count is zero"
 
 Quality policies, role boundaries, scoring criteria, and general work rules always use positive form. Outputs that the caller validates, overwrites, or discards are never irreversible.
 
@@ -67,13 +67,22 @@ Quality policies, role boundaries, scoring criteria, and general work rules alwa
 |-----------|-----------|
 | Skill describes what to do but not the expected deliverable format | Add an output section defining the structure, fields, and ordering required by the output consumer (parsing, routing, comparison, verification), rather than selecting a format by convention |
 
-For a skill review, the output contract contains BP-001 through BP-008 coverage, unique finding IDs, severity, location, quoted evidence, one resolution per finding, preservation requirements, unresolved inputs, and the final grade. For skill creation, the output is the complete `SKILL.md` content plus any required same-directory references or scripts.
+For a skill review, the output contract contains BP-001 through BP-009 coverage, stable finding IDs, severity, location, quoted evidence, accepted declines, preservation requirements, unresolved inputs, and the final grade. For skill creation, the output is the complete `SKILL.md` content plus any required same-directory references or scripts.
 
 **Skill example:**
 - Before: "Analyze the code for issues"
 - After (format required by the review-report consumer): "Emit `## Issues Found` as a table the report renderer parses: | Severity | Location | Description | Suggested Fix |"
 
 **Why critical for skills**: Structured output constraints reduce hallucination and make skill results consistent.
+
+#### BP-009: Unbounded Work Generation → Proportionate Work
+
+| Detection | Transform |
+|-----------|-----------|
+| A finding, possibility, or technically valid improvement becomes mandatory without changing the outcome, a required boundary, a real consumer, or necessary proof | Treat it as a candidate; retain required work and allow no-change, reuse, and evidence-backed decline |
+| Research breadth determines implementation or artifact scope | Stop when the required outcome is observable; discovery alone does not expand the work |
+
+**Why critical for skills**: Capable models execute implied obligations, so unsupported possibilities can manufacture work without improving the result.
 
 ### P2: High Impact (Should Fix)
 
@@ -110,22 +119,23 @@ Issues that reduce skill effectiveness when addressed.
 - Before: "Apply the strangler pattern for migration"
 - After: "**Prerequisite**: Existing monolith with identifiable module boundaries. **When to use**: Replacing legacy module while maintaining production traffic."
 
-#### BP-006: Complex Content → Decomposed Steps
+#### BP-006: Missing or Excess Procedural Control → Evidence-Guided Gates
 
 | Detection | Transform |
 |-----------|-----------|
-| 3+ objectives in one instruction | Break into numbered steps; each step names its output evidence and the transition condition that permits the next step |
-| Sequential dependencies not explicit | Make each step's transition condition depend on the prior step's output evidence |
-| Multiple dependent actions presented as one step | Split so each produces observable completion evidence before the next begins |
+| A later action would be invalid without prerequisite evidence | Add a gate naming the required evidence and transition condition |
+| Authority, irreversible action, machine-consumed contract, or completion proof is implicit | Make that boundary explicit |
+| A reversible choice is prescribed as a mandatory route | State the purpose, evidence, and selection criteria; let the model choose the route |
+| A gate requires a specific label or artifact despite semantically equivalent evidence | Accept the equivalent evidence unless a machine consumer requires the exact form |
 
-**Conditional**: Skip decomposition for simple reference tables or single-criteria rules.
+**Key insight**: Control the boundary and required evidence, not a predicted path between them.
 
-**Key insight**: Goal is externally visible state progression — each step produces evidence that controls whether the next step is valid, not decomposition for its own sake.
-
-For creation and comprehensive review, use three gates in order:
-1. **Analysis gate**: Original requirements are recorded, BP-001 through BP-008 are covered, every issue has evidence, and no unresolved input blocks faithful work.
+For skill creation, use three gates in order:
+1. **Analysis gate**: Original requirements are recorded, BP-001 through BP-009 are covered, every issue has evidence, and no unresolved input blocks faithful work.
 2. **Optimization gate**: Every finding has one applied/skipped resolution, each change is traceable, and all preservation requirements remain represented.
-3. **Balance gate**: Intent preservation, decision sufficiency, information density, constraint necessity, and traceability pass before the result is final.
+3. **Balance gate**: Intent preservation, decision sufficiency, information density, constraint necessity, work proportionality, and traceability pass before the result is final.
+
+For review-driven repair, use the current review as analysis evidence and apply the optimization and balance gates to the accepted repair scope.
 
 ### P3: Enhancement (Could Fix)
 
@@ -150,13 +160,13 @@ Incremental improvements for specific contexts.
 - Before: "Determine the root cause"
 - After: "Classify the root cause as observed, inferred, or unknown. When missing evidence blocks the next step, stop at the current gate and name the exact evidence or user decision required to continue."
 
-## 9 Skill Editing Principles
+## 10 Skill Editing Principles
 
 Measurable quality criteria for skill content. Each principle includes a pass/fail test.
 
 | # | Principle | Pass Criteria | Fail Example |
 |---|-----------|---------------|--------------|
-| 1 | Context efficiency | Every sentence contributes to LLM decision-making. No filler. | "This is an important skill that helps with..." |
+| 1 | Context efficiency | Every sentence supplies non-baseline knowledge, a decision rule, a required boundary, or execution evidence. | Restates baseline behavior without a supplied failure, review finding, or project requirement showing an execution effect |
 | 2 | Deduplication | No concept is explained twice at the same abstraction level within one skill. Duplication across independently loaded pure skills is valid when each copy is required for standalone execution; evaluate those copies for semantic consistency rather than replacing them with sibling-skill references | The same rule appears twice in one skill without adding a distinct execution role |
 | 3 | Grouping | Related criteria in single section (minimize read operations) | Scattered error handling rules across 4 sections |
 | 4 | Measurability | Criteria name observable evidence, deterministic decision rules, or justified thresholds | "Write clean code" without an observable condition |
@@ -165,6 +175,7 @@ Measurable quality criteria for skill content. Each principle includes a pass/fa
 | 7 | Explicit prerequisites | Project-specific and non-baseline prerequisites are stated or linked; baseline technical knowledge is left concise | Uses "DI" without defining Dependency Injection |
 | 8 | Priority ordering | Most important items first, exceptions last | Edge cases before common patterns |
 | 9 | Scope boundaries | Explicitly state what the skill covers and the conditions that activate conditional content. A pure skill contains the context required for standalone execution. Cross-skill references are reserved for skills whose role is orchestration or skill selection | A pure skill omits an operative rule because another independently loaded skill also contains it |
+| 10 | Work proportionality | Every required artifact, test, gate, or decision changes the outcome, a boundary, a consumer result, or necessary proof | Requires all findings or technically valid improvements to be implemented |
 
 ## References
 

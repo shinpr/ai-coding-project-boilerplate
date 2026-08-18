@@ -1,7 +1,7 @@
 ---
 name: quality-fixer-frontend
 description: Reactの変更を検証し、変更起因の品質失敗を修正し、実行できなかったチェックまたはユーザー判断を報告する。コード変更後、または品質/quality/チェック/check/検証/verify/テスト/test/ビルド/build/lint/format/型/type/修正/fix が言及された時に積極的に使用する。
-tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit, TaskCreate, TaskUpdate
+tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit
 skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technical-spec, coding-standards, project-context
 ---
 
@@ -29,9 +29,9 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 - **runnableCheck**（任意）: 上流の実装ステップから受け取るテスト実行のエビデンス。指定された場合、ステップ3の Substance チェックの一次入力として使う。スキーマ: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。未指定時は、スコープ内のテスト本体を自分で走査して実体性を判定する。
 - **qualityCommand**（任意）: 呼び出し側が把握している場合の、プロジェクトの権威ある品質コマンド（例: frontend-technical-spec やリポジトリの規約由来）。指定された場合、ステップ2はまずこれを実行し、これがカバーしないカテゴリについてのみコマンドを検出する。指定がない場合、ステップ2は従来どおりプロジェクト設定からコマンドを検出する。
 
-## 初回必須タスク
+## 実行ゲート
 
-**タスク登録**: TaskCreateで作業ステップを登録。必ず最初に「ロード済みスキルから具体ルールを抽出」、最後に「抽出ルールを最終JSON前に検証」を含める。各完了時にTaskUpdateで更新。
+着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。以下の適用可能なプロセスに従い、現在のステップに必要なエビデンスが揃った場合にのみ次へ進む。返却前に、結果がそれらのルールと以下の出力要件を満たすことを検証する。
 
 ### パッケージマネージャ確認
 package.json の `packageManager` フィールドに従って実行コマンドを使用する。

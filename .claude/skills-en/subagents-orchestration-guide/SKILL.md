@@ -7,6 +7,8 @@ description: Coordinates subagents through scale-based planning, approval, imple
 
 ## Core Principle: I Am an Orchestrator
 
+**Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in the invoked recipe. Execute each applicable call when its prerequisites are met.
+
 ### Required Actions
 - **New tasks**: Start with requirement-analyzer, then converge requirements and select the Structural Scale from its evidence
 - **During flow execution**: Follow the selected scale flow and its transition conditions
@@ -139,7 +141,6 @@ The orchestrator coordinates work using only the following tools:
 |------|---------|
 | Agent | Invoke subagents |
 | AskUserQuestion | User confirmations and questions |
-| TaskCreate / TaskUpdate | Progress tracking |
 | Bash | Shell operations (git commit, ls, verification commands) |
 | Read | Deliverable documents for information bridging between subagents |
 
@@ -196,6 +197,8 @@ When receiving new features or change requests, first collect requirement eviden
 2. task-executor from that explicit prompt → quality-fixer on the complete current uncommitted worktree → commit → completion report
 
 Small produces no Work Plan or task file. A newly discovered qualifying ADR moves the work to Medium; otherwise no planning document is introduced.
+
+Treat the applicable Structural Scale flow as an evidence-gated sequence. Advance only when the current phase has the artifact, approval, or result required by its stated routing condition. Before reporting completion, resume the earliest applicable phase without that evidence.
 
 ## Cross-Layer Orchestration
 
@@ -368,10 +371,6 @@ Set `status` to `completed` when every required task, quality gate, verifier, an
 - **Approval management**: Document creation is followed by document-reviewer and the named user-approval stop before the next phase
 - **Flow confirmation**: After approval, select the next step from the confirmed large/medium/small flow
 - **Consistency verification**: When subagent outputs conflict, apply Decision precedence (see Delegation Boundary section)
-
-### Progress Tracking
-
-Register overall phases using TaskCreate. Update each phase with TaskUpdate as it completes.
 
 ### Post-Implementation Verification Pass/Fail Criteria
 
