@@ -170,12 +170,12 @@ skills:
     typical-use: "スキル新規作成、コンテンツ改善、品質監査、description生成"
     size: medium
     key-references:
-      - "BP-001〜008 コンテンツ最適化パターン"
-      - "9つの編集原則"
+      - "BP-001〜009 コンテンツ最適化パターン"
+      - "10の編集原則"
     sections:
       - "基本方針"
       - "コンテンツ最適化パターン"
-      - "9つの編集原則"
+      - "10の編集原則"
       - "References"
 
   llm-friendly-context:

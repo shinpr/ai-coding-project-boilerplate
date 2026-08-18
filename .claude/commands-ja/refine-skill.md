@@ -46,11 +46,12 @@ Step 1-6を順番に完了する。現在のステップで定められた出力
 この設計で進めますか？ (y/n)
 ```
 
-**設計チェックリスト**: skill-optimizationスキルの9つの編集原則に照らして設計案を評価。重点項目：
+**設計チェックリスト**: skill-optimizationスキルの10の編集原則に照らして設計案を評価。重点項目：
 - コンテキスト効率: 追加する全文がLLMの判断に寄与するか
 - 測定可能性: 全基準がif-then形式または具体的閾値か
 - 重複排除: 他スキルファイルとの重複がないか
 - スコープ境界: 変更内容がこのスキルの責務範囲内か
+- 作業量の妥当性: 追加する成果物、ゲート、判断が、成果、必要な境界、実際の利用側、または必要な証明を変えるか
 
 ### Step 4: skill-creatorによる変更実行
 
@@ -62,7 +63,9 @@ prompt: |
   Mode: modification
   Skill name: {対象スキル名}
   Existing content: {現在のSKILL.md全文}
+  Existing references: {現在のreferenceのファイル名と内容。存在しない場合は"None"}
   Modification request: {Step 3で承認された変更内容}
+  Current review: None
 ```
 
 skill-creatorが返すchangesSummaryを確認し、変更内容が意図通りか検証。
@@ -71,17 +74,22 @@ skill-creatorが返すchangesSummaryを確認し、変更内容が意図通り�
 
 skill-reviewerエージェントをAgent toolで起動:
 - skill-creatorの出力を組み立てたSKILL.md全文を渡す
+- 変更済みおよび保持した全referenceのファイル名、行数、内容を渡す
 - レビューモード: `modification`
+- 再レビューでは、前回のレビューとskill-creatorの`reviewResolutions`を渡す
 
 **レビュー結果の処理:**
 - グレードAまたはB: Step 6へ進行
-- グレードC: skill-creatorをreviewerのactionItemsとpatternIssues付きで再起動し修正（最大2回）
+- グレードC: 直前のskill-creator出力をcontent base、直前のレビューを`Current review`としてskill-creatorを再起動する
+- 各指摘を`apply`、`decline`、`user_decision`に裁定し、適用対象を修正し、根拠付き却下を再レビューし、ユーザー所有の判断はユーザーへ確認する
+- reviewerが却下済みの指摘を維持できるのは、正しさまたは検証可能性に関する新しい根拠がある場合だけとする。新しい根拠を伴わない同じ選好は作業を妨げない
+- 自動修復は2回の修復・再レビューで終了する
 - 変更スコープ外の問題を検出: 別の改善機会としてユーザーに報告
 
 ### Step 6: 承認取得と実装
 
 1. 変更前後の比較をユーザーに提示し承認を取得
-2. skill-reviewerのグレードと残存する修正提案を提示
+2. skill-reviewerのグレードと残存する指摘を提示
 3. skill-creatorのchangesSummaryを提示
 4. 意図の整合性を確認: 「この変更は当初の要求を正しく反映していますか？」
 5. 適切なツールで変更適用
@@ -106,7 +114,7 @@ skill-reviewerエージェントをAgent toolで起動:
 | スキル未発見 | 利用可能なスキル一覧を表示 |
 | 大規模変更検出（ファイルの50%以上） | 段階的実施を提案 |
 | 他スキルとの責務重複 | 責務境界を確認しユーザーに判断を委ねる |
-| 2回のレビューでもグレードC | 変更内容と問題リストを提示し、ユーザーに判断を委ねる |
+| 2回の修復・再レビューでもグレードC | 変更内容と残存指摘を提示し、ユーザーに判断を委ねる |
 | reviewerが退行を検出 | 退行原因の変更を取り消し、skill-creatorを再起動 |
 
 **スコープ**: ユーザーの変更要求理解と品質評価付き最適化実装。変更実行はskill-creator（modificationモード）に委譲。品質評価はskill-reviewerエージェントに委譲。メタデータ同期は/sync-skills連携。

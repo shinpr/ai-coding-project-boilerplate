@@ -77,15 +77,25 @@ Invoke skill-creator agent via Agent tool with collected information:
 - Decision criteria: from Round 4
 - Project-specific value: from Round 2
 - Practical artifacts: from Round 4 (if provided)
+- Existing generated content: `None` on initial generation; current SKILL.md and references on repair
+- Current review: `None` on initial generation; immediately preceding skill-reviewer output on repair
 
 ### Step 5: Review Generated Content
 
 Invoke skill-reviewer agent via Agent tool:
 - Pass skill-creator's generated content
+- Pass every generated reference file with filename, line count, and content
 - Review mode: `creation`
+- On re-review, pass the previous review and skill-creator's `reviewResolutions`
 
-If grade C: apply suggested fixes from reviewer and re-review (max 2 iterations).
-If grade A or B: proceed to Step 6.
+**Decision logic**:
+- Grade A or B: proceed to Step 6; present remaining Grade B findings as optional notes
+- Grade C: ask skill-creator to resolve every finding by `findingId` as `apply`, `decline`, or `user_decision`
+- `apply`: revise the current generated content and re-review
+- `decline`: re-review with evidence
+- `user_decision`: ask the user
+- A reviewer may maintain a declined finding only with new correctness or verifiability evidence; repeated preference is non-blocking
+- After 2 repair/re-review iterations, present the current content and remaining findings to the user
 
 ### Step 6: User Review and Write
 
@@ -114,7 +124,7 @@ If grade A or B: proceed to Step 6.
 | Skill name already exists | Suggest `/refine-skill {name}` instead |
 | Insufficient knowledge after 4 rounds | Ask targeted follow-up (max 2 additional questions) |
 | skill-creator returns invalid JSON | Retry once with simplified input |
-| Grade C after 2 review iterations | Present current content with issues list, let user decide |
+| Grade C after 2 repair/re-review iterations | Present current content with remaining findings, let user decide |
 | User rejects generated content | Collect specific feedback, re-run skill-creator with adjustments |
 
 ## Scope Boundary

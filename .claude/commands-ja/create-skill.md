@@ -77,15 +77,25 @@ LLMのベースライン知識を超える価値があるかを検証する。
 - Decision criteria: ラウンド4の判断基準
 - Project-specific value: ラウンド2のプロジェクト固有の価値
 - Practical artifacts: ラウンド4の実践的成果物（提供された場合）
+- Existing generated content: 初回生成では`None`、修復時は現在のSKILL.mdとreference
+- Current review: 初回生成では`None`、修復時は直前のskill-reviewer出力
 
 ### Step 5: 生成コンテンツのレビュー
 
 skill-reviewerエージェントをAgent toolで起動:
 - skill-creatorの生成コンテンツを渡す
+- 生成された各referenceのファイル名、行数、内容を渡す
 - レビューモード: `creation`
+- 再レビューでは、前回のレビューとskill-creatorの`reviewResolutions`を渡す
 
-グレードC: reviewerの修正提案に基づき修正し再レビュー（最大2回）。
-グレードAまたはB: Step 6へ進行。
+**判定ロジック**:
+- グレードAまたはB: Step 6へ進み、グレードBの残存指摘は任意の注記として提示する
+- グレードC: 各指摘を`findingId`で`apply`、`decline`、`user_decision`に裁定するようskill-creatorへ依頼する
+- `apply`: 現在の生成コンテンツを修正して再レビューする
+- `decline`: 根拠を添えて再レビューする
+- `user_decision`: ユーザーへ確認する
+- reviewerが却下済みの指摘を維持できるのは、正しさまたは検証可能性に関する新しい根拠がある場合だけとする。新しい根拠を伴わない同じ選好は作業を妨げない
+- 2回の修復・再レビュー後もグレードCの場合は、現在の内容と残存指摘をユーザーへ提示する
 
 ### Step 6: ユーザー確認と書き込み
 
@@ -114,7 +124,7 @@ skill-reviewerエージェントをAgent toolで起動:
 | スキル名が既存と重複 | `/refine-skill {スキル名}`を提案 |
 | 4ラウンドで知識が不足 | 対象を絞った追加質問（最大2問） |
 | skill-creatorが無効なJSONを返却 | 入力を簡素化して1回再試行 |
-| 2回のレビューでもグレードC | 現在の内容と問題リストを提示し、ユーザーに判断を委ねる |
+| 2回の修復・再レビューでもグレードC | 現在の内容と残存指摘を提示し、ユーザーに判断を委ねる |
 | ユーザーが生成内容を却下 | 具体的なフィードバックを収集し、調整してskill-creatorを再実行 |
 
 ## スコープ境界
