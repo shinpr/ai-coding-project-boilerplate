@@ -169,5 +169,4 @@ Text review proves consistency, not effectiveness. Run representative tasks from
 ## References
 
 - [rashomon prompt optimization](https://github.com/shinpr/rashomon) — BP-001 through BP-009 analysis, gated optimization, and comparative evaluation
-- [When Better Models Make Old Agent Workflows Worse](https://www.norsica.jp/blog/when-better-models-make-old-agent-workflows-worse.md) — boundary constraints, work-generating constraints, and fresh-session validation for current coding models
 - [Claude Code skills documentation](https://code.claude.com/docs/en/skills) — platform format and loading behavior
