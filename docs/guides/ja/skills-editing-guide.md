@@ -169,5 +169,4 @@ description: このプロジェクトで共有するAPI互換性とエラーセ�
 ## 参照資料
 
 - [rashomon prompt optimization](https://github.com/shinpr/rashomon) — BP-001からBP-009による分析、ゲート付き最適化、比較評価
-- [When Better Models Make Old Agent Workflows Worse](https://www.norsica.jp/blog/when-better-models-make-old-agent-workflows-worse.md) — 現在のコーディングモデルに対する境界制約、作業生成制約、新しいセッションでの検証
 - [Claude Code スキル公式ドキュメント](https://code.claude.com/docs/ja/skills) — プラットフォーム上の形式と読み込み動作
