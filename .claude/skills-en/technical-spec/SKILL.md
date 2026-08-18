@@ -55,8 +55,6 @@ Select the package manager from the `packageManager` field, lockfile, or establi
 
 ### Testing Commands
 - `test` - Run tests
-- `test:coverage` - Run tests with coverage
-- `test:coverage:fresh` - Run tests with coverage (fresh cache)
 - `test:safe` - Safe test execution (with auto cleanup)
 - `cleanup:processes` - Cleanup Vitest processes
 
@@ -95,16 +93,9 @@ Quality checks are mandatory upon implementation completion:
 
 ### Auxiliary Commands
 - `check:all` - Overall integrated check (check:code + test) *for manual batch verification
-- `open coverage/index.html` - Check coverage report
 - `format` - Format fixes
 - `lint:fix` - Lint fixes
 
 ### Troubleshooting
 - **Port in use error**: Run the `cleanup:processes` script
-- **Cache issues**: Run the `test:coverage:fresh` script
 - **Dependency errors**: First record the failing resolver output, selected package manager, manifest, and lockfile state. Use the repository's established clean-install command only when it preserves the lockfile and generated artifacts; request approval before an operation that removes or regenerates dependency state
-
-### Coverage
-- Treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law). Concentrate tests on critical paths and business logic whose regression would matter
-- Any enforced numeric threshold is the project's CI/coverage config, not a goal in itself
-- **Metrics** (what coverage reports break down): Statements, Branches, Functions, Lines

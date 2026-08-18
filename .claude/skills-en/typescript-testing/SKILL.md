@@ -18,7 +18,7 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 ## Basic Testing Policy
 
 ### Quality Requirements
-- **Coverage**: treat coverage as a diagnostic signal for finding untested areas, not a target (a target gets gamed into trivial tests — Goodhart's Law). Concentrate tests on critical paths, business logic, and behavior whose regression would matter. Raise coverage where a gap leaves a real regression unguarded, not to hit a percentage. Any numeric threshold is the project's CI config
+- **Regression protection**: concentrate tests on critical paths, business logic, and behavior whose regression would matter. Add a test when an unguarded behavior creates a material regression risk
 - **Independence**: Each test can run independently without depending on other tests
 - **Reproducibility**: Control time, randomness, environment values, and external I/O so identical inputs produce the same observable result
 - **Readability**: Each test names one behavior, separates setup/action/assertion, and keeps fixtures limited to values used by that behavior

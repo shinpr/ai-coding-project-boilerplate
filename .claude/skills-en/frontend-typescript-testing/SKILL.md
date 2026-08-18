@@ -28,7 +28,7 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 ## Basic Testing Policy
 
 ### Quality Requirements
-- **Coverage**: assert the named acceptance result, public branch, or failure state on critical paths and high-reuse components; treat coverage as a signal for gaps, not a target. Any numeric threshold comes from the project's CI configuration
+- **Regression protection**: assert the named acceptance result, public branch, or failure state on critical paths and high-reuse components
 - **Independence**: Each test can run independently without depending on other tests
 - **Reproducibility**: Control time, randomness, environment values, network responses, and browser state so identical inputs produce the same observable result
 - **Readability**: Each test names one user-visible behavior, separates setup/action/assertion, and keeps fixtures limited to values used by that behavior

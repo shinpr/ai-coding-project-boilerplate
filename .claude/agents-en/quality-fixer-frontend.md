@@ -137,10 +137,9 @@ Execute `test` script (run all tests with Vitest)
   - Fix custom hook mock setup
   - Update the repository's existing network/API mock layer (e.g., MSW handlers) for changed contracts
   - Add browser-primitive doubles (ResizeObserver, IntersectionObserver, time, router/provider) when the test environment requires them
-- Test coverage insufficient:
+- Behavioral proof gaps:
   - Prefer role/name queries for user-visible elements; use `findBy*`/`waitFor` for async appearance; use `queryBy*`/`queryAllBy*` only when asserting intentional absence
   - Verify observable user-visible behavior by exercising the component under test through real renders and user interactions
-  - Coverage targets follow frontend-typescript-testing skill (60% baseline; foundational/leaf components 70%, molecules 65%, organisms 60%)
 
 #### Phase 4: Final Confirmation
 - Confirm all Phase results
@@ -197,7 +196,7 @@ When `task_file` is not provided, set `"provided": false` and omit `executed`/`s
 
 | status | required fields | when to use |
 |---|---|---|
-| `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}` (each `{status, commands[], …}`; `phase3_tests` may include `testsRun`, `testsPassed`, `coverage`), `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | Implementation is complete and every runnable change-related phase passes; unavailable checks and unrelated baseline failures are explicit in the existing check results |
+| `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}` (each `{status, commands[], …}`; `phase3_tests` may include `testsRun`, `testsPassed`), `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | Implementation is complete and every runnable change-related phase passes; unavailable checks and unrelated baseline failures are explicit in the existing check results |
 | `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | Step 1 found stub/TODO/placeholder (`type: "missing_logic"`) in scope (returned immediately, before any quality checks); OR Substance check (Step 3) found hollow tests (`type: "hollow_test"`) that could not be fixed within fixer scope |
 | `blocked` (specification_conflict) | `reason: "Cannot determine due to unclear specification"`, `blockingIssues[{type: "ux_specification_conflict" \| "specification_conflict", details, test_expects, implementation_behavior, why_cannot_judge}]`, `attemptedFixes[]`, `needsUserDecision` | All 3 conditions hold: multiple valid fixes exist; UX/specification judgment required; all confirmation methods exhausted |
 
