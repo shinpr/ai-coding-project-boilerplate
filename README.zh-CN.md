@@ -1,4 +1,4 @@
-# AI 编程项目模板 — Claude Code 入门套件
+# AI 编程项目模板：Claude Code 入门套件
 
 *其他语言版本：[English](README.md) | [日本語](README.ja.md)*
 

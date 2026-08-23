@@ -1,4 +1,4 @@
-# AI Coding Project Boilerplate — A Starter Kit for Claude Code
+# AI Coding Project Boilerplate: A Starter Kit for Claude Code
 
 *Read this in other languages: [日本語](README.ja.md) | [简体中文](README.zh-CN.md)*
 
