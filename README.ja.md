@@ -1,4 +1,4 @@
-# AI Coding Project Boilerplate — Claude Codeスターターキット
+# AI Coding Project Boilerplate：Claude Codeスターターキット
 
 *他の言語で読む: [English](README.md) | [简体中文](README.zh-CN.md)*
 
