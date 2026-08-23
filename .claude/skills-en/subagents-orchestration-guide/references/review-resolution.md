@@ -12,7 +12,7 @@ The orchestrator records one disposition for every actionable finding:
 
 | Disposition | Use when |
 |---|---|
-| `apply` | Leaving the current deliverable unchanged would prevent the confirmed outcome, violate a binding requirement, design decision, or repository rule, or leave required correctness or verification unsupported. |
+| `apply` | Leaving the current deliverable unchanged would prevent the confirmed outcome, violate a binding requirement, design decision, or repository rule, leave required correctness or verification unsupported, or commit downstream work to added design surface whose total complexity lacks current evidence. |
 | `decline` | Leaving the current deliverable unchanged still achieves the confirmed outcome and satisfies binding constraints and required correctness and verification; the finding instead proposes added scope, a reversed exclusion, optional hardening or generic cleanup, duplicate proof, depends on a property outside the reviewer's declared artifact boundary, or concerns other work outside that boundary. |
 | `user_decision_required` | Resolving the finding would change a confirmed product outcome, exclusion, major approved design decision, or requires authority held only by the user. |
 
@@ -31,7 +31,11 @@ Keep non-actionable reviewer recommendations in the final user report. Only find
 
 ## 2. Revise and Reconsider
 
-Pass complete `apply` finding objects verbatim with their dispositions to the author or executor. On reviewer re-review, reuse the initial reviewer inputs and add `prior_feedback` as an array of `{ id, disposition, reason?, evidence }`.
+Pass complete `apply` finding objects verbatim with their dispositions to the author or executor. Invoke a document author as a fresh update call with the original target and those findings; the artifact supplies unaffected context.
+
+For an applied Design Doc finding about an unverified decision-changing premise, the fresh technical-designer invocation applies its bounded self-verification gate. The finding carries the exact premise and required evidence; the designer selects existing evidence, a smaller design valid under every unresolved outcome, or a probe when all gate conditions hold. Rerun the originating verifier or reviewer after the update.
+
+On reviewer re-review, reuse the initial reviewer inputs and add `prior_feedback` as an array of `{ id, disposition, reason?, evidence }`.
 
 The correction assessment covers exactly every received item. The reviewer completes that scope and then:
 
@@ -43,13 +47,15 @@ Derive the correction re-review status or verdict only from these reconciliation
 
 ## 3. Converge or Escalate
 
+An author response with `status: evidence_exhausted` ends the current correction with the exact premise and checked evidence as its terminal report. Resume when directly relevant new evidence becomes available or the user independently changes the governing outcome. User-decision routing still requires a user-owned choice.
+
 Resolve correction re-review entries by their recorded `prior_disposition`:
 
 - `resolved` and `withdrawn` are complete;
 - `maintained` with `prior_disposition: apply` returns the original finding and the complete reconciliation entry verbatim through the same author or executor path. Invoke correction re-review only after the target artifact changes or new evidence directly addresses the maintained reason;
 - `maintained` with `prior_disposition: decline` retains that decline and does not reopen the correction cycle.
 
-A correction response that supplies neither an artifact change nor directly relevant new evidence remains with the same author or executor until the correction step produces one; it does not trigger another review. Escalate only when the disposition is `user_decision_required`, user-held authority is needed, an irreversible action awaits authorization, or required inputs are genuinely unusable. Progress after no `maintained` entry with `prior_disposition: apply` remains, every other actionable finding has a disposition, and every `user_decision_required` item has a recorded user decision.
+A correction response other than `evidence_exhausted` that supplies neither an artifact change nor directly relevant new evidence remains with the same author or executor until the correction step produces one; it does not trigger another review. Escalate only when the disposition is `user_decision_required`, user-held authority is needed, or an irreversible action awaits authorization. Progress after no `maintained` entry with `prior_disposition: apply` remains, every other actionable finding has a disposition, and every `user_decision_required` item has a recorded user decision.
 
 Handoffs contain this exact set:
 

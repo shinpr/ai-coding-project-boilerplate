@@ -87,14 +87,14 @@ Design Doc は完全な実装設計を所有し、documentation-criteria テン�
 
 `code-verifier` を `doc_type: design-doc` と Design Doc のパスで呼び出す。将来の振る舞いを意図のまま扱い、現状側の前提と実現可能性を検証させるため、`code_paths` は指定しない。
 
-ドキュメントレビューの前に、各 discrepancy にレビュー裁定を適用する。technical-designer の update モードへ渡すのは `apply` の検出事項のみとし、修正後は code-verifier を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。続行するのは、未解決の `apply` または `user_decision_required` の項目が残っていない場合に限る。
+ドキュメントレビューの前に、各 discrepancy にレビュー裁定を適用する。`apply` の検出事項だけを、新しい technical-designer 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提が finding に記されている場合、designer はレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は code-verifier を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。続行するのは、未解決の `apply` または `user_decision_required` の項目が残っていない場合に限る。
 
 ## ステップ7: レビューと承認
 
 `document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6の `verification_evidence` で呼び出す。
 
 - `approved`: 次へ進む。
-- `needs_revision`: レビュー裁定を適用し、technical-designer 経由で更新した上で、影響を受けた境界についてステップ6〜7を再実行する。
+- `needs_revision`: レビュー裁定を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、影響を受けた境界についてステップ6〜7を再実行する。
 - `rejected`: 出典ソースの衝突を解消する。ユーザーに尋ねるのは、プロダクトの成果または承認済みの主要な設計判断が変わる場合のみとする。
 
 他のDesign Doc との整合性のために `design-sync` を呼び出し、対応可能な矛盾にはレビュー裁定を適用する。Design Doc が1つしか存在しない場合は `SKIPPED` として明確に報告する。

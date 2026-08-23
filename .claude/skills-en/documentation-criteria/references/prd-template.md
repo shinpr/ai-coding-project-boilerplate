@@ -64,17 +64,11 @@ The smallest coherent behavior or journey that delivers the value stated above. 
   - AC-003: [Acceptance criteria]
   - Removal result: [What breaks without it]
 
-### Future
-
-Capabilities removed from MVP because value and required obligations still hold without them.
-
-`Origin` distinguishes an exclusion the user authored (`user`) from one the requirement analysis judged (`analysis`). Record `None — user confirmed there are none` when the user considered exclusions and found none.
-
-- Item 1: [Description] — [reason it left MVP] — Origin: user | analysis
-
 ### Out of Scope
 
-Capabilities not planned for this product direction. `Origin` follows the same rule as Future above.
+User-authored non-goals and current exclusions needed to make the MVP boundary executable. Evaluation requests, speculative ideas, and unselected possibilities remain only in pre-confirmation convergence context.
+
+`Origin` distinguishes a user-authored non-goal (`user`) from a current exclusion needed to make the confirmed MVP boundary executable (`analysis`). Record `None — user confirmed there are none` when the user considered exclusions and found none.
 
 - Item 1: [Description and reason for exclusion] — Origin: user | analysis
 

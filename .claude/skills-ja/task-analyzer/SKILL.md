@@ -141,7 +141,7 @@ selectedSkills:
 | implementation | 設計の妥当性、エッジケース、パフォーマンス |
 | fix | 根本原因（5 Whys）、影響範囲、回帰テスト |
 | refactoring | 現状の問題、目標状態、段階的計画 |
-| design | 要件の明確性、将来の拡張性、トレードオフ |
+| design | 要件の明確性、トレードオフ |
 | documentation | 読み手、正規の情報源、承認・利用側の契約 |
 | investigation | 解決する主張、根拠の境界、停止条件 |
 | migration | 互換期間、データ・契約の移行、ロールバック |

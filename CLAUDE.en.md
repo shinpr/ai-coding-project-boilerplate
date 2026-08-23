@@ -52,8 +52,8 @@ Resolve conflicts in this order:
 ## Implementation Quality
 
 - Correct the observed causal source of a problem rather than its symptom.
-- Prefer the solution that fully satisfies the outcome with the lowest lifecycle cost across long-term maintenance, operational complexity, and the conceptual or feature burden placed on users.
-- Use implementation effort as a tiebreaker only after outcome coverage, correctness, compatibility, and lifecycle cost.
+- Prefer the solution that fully satisfies the outcome with the lowest total complexity, treating both user-facing and lifecycle surface as cost. Compare only dimensions that differ between viable approaches.
+- Use implementation effort as a tiebreaker only after outcome coverage, correctness, compatibility, and total complexity.
 - Use an existing pattern when it is representative of the same responsibility and satisfies the current contract. Frequency alone does not make a pattern authoritative.
 - Introduce a dependency, abstraction, state, mode, configuration, artifact, or verification path only when a current requirement, contract, or evidence-backed material risk requires it.
 - Remove a proposed addition when the outcome and its proof still hold without it.

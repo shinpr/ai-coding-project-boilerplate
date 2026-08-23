@@ -27,11 +27,13 @@ When any pattern below is detected, pause implementation and record: the trigger
 
 ## Basic Principles
 
-Explore broadly, then converge on the lowest-lifecycle-cost solution that delivers the required user, operator, or maintainer value while keeping the system correct and maintainable.
+Inspect until the evidence identifies the lowest-total-complexity solution that delivers the required user, operator, or maintainer value while keeping the system correct and maintainable.
 
 - **Evidence-Bounded Refactoring** - Refactor code that blocks the current outcome, is changed by the current task, or fails an applicable quality check; use small behavior-preserving steps. Report other findings with evidence for a scope decision
 - **Current-Requirement Code Only** - Introduce code paths, capabilities, infrastructure, abstractions, or speculative edge-case handling when a current requirement, verified constraint, or evidence-backed material risk requires them (YAGNI)
 - **Design Convergence** - Deliver the current required outcome with the least new design surface. Before introducing persistent state, a public or cross-boundary contract, a behavioral mode, a reusable abstraction, or a component split, record what the existing capabilities already deliver, what they fail to deliver for the current outcome, and why the addition is the smallest thing that closes that gap
+
+Judge total complexity across every activated surface: user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths, together with their UX, runtime, implementation, testing, documentation, and maintenance cost. Compare only dimensions that differ between viable approaches. Prefer reuse or no new mechanism when it delivers the same confirmed value and proof at lower total complexity.
 
 ## Comment Writing Rules
 

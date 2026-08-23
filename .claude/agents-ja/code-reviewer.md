@@ -283,4 +283,4 @@ prior_feedback_reconciliation[].evidence:          string
 - 実装がDesign Docを大幅に超えて優れている場合
 - セキュリティ上の懸念を発見した場合
 - パフォーマンス上の重大な問題を発見した場合
-- 実装が、Design Doc の `Direct MVP` と `Adopted Additions` のどちらにも記載のない永続状態、公開または境界を越えるコントラクト、振る舞いモード、再利用可能な抽象、コンポーネント分割を導入している場合
+- 実装が、Design Doc の Selected Design に記載のない永続状態、公開または境界を越えるコントラクト、振る舞いモード、再利用可能な抽象、コンポーネント分割を導入している場合

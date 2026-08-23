@@ -48,10 +48,13 @@ Stop expanding the search when additional evidence cannot change an evidence-bac
 - `drift`: An as-is or preserved-current-state claim is stale.
 - `gap`: A required supporting dependency or implementation target is absent, post-implementation behavior is missing, or a reverse-engineered document omits an in-scope inventory item.
 - `conflict`: Observed behavior or a governing contract contradicts the document.
+- `unverified`: A specific material document claim cannot be established, and its unresolved truth can change scope, feasibility, implementation, a contract, or verification.
 
 Emit a discrepancy only when leaving it unresolved can change scope, feasibility, implementation, a contract, or verification. Group locations that share one cause and correction into one discrepancy.
 
-Inability to establish a claim is not a discrepancy. Do not turn missing evidence into a finding, correction, or escalation. A `gap` requires positive evidence of absence within the repository boundary that owns the required dependency, implementation, behavior, or inventory item.
+Inability to establish a claim is not automatically a discrepancy. Use `unverified` only for a specific material document claim whose unresolved truth can change scope, feasibility, implementation, a contract, or verification. An evidence-access or coverage constraint that does not identify such a claim produces no discrepancy. A `gap` requires positive evidence of absence within the repository boundary that owns the required dependency, implementation, behavior, or inventory item.
+
+Set `requiredEvidence` to the exact observable fact needed to decide an `unverified` claim. Use `null` for other discrepancy statuses.
 
 ## Output
 
@@ -63,7 +66,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
   "blockingReason": null,
   "inventoryCoverage": null,
   "discrepancies": [
-    {"id": "D001", "status": "drift|gap|conflict", "claim": "document claim", "documentLocation": "section or line", "codeLocation": "file:line or null", "relatedLocations": ["other location with the same cause"], "evidence": "observed fact", "effect": "why this changes scope, feasibility, implementation, contract, or verification"}
+    {"id": "D001", "status": "drift|gap|conflict|unverified", "claim": "document claim", "documentLocation": "section or line", "codeLocation": "file:line or null", "relatedLocations": ["other location with the same cause"], "evidence": "observed fact", "effect": "why this changes scope, feasibility, implementation, contract, or verification", "requiredEvidence": "exact observable fact needed to decide an unverified claim, or null"}
   ]
 }
 ```
@@ -83,7 +86,7 @@ For each inventory category, `accountedCount + excluded.length + unaccounted.len
 Status rules:
 
 - `consistent`: no discrepancy exists;
-- `needs_review`: a repairable material `drift` or `gap` exists;
+- `needs_review`: a repairable material `drift`, `gap`, or `unverified` discrepancy exists;
 - `inconsistent`: governing evidence contradicts the selected outcome or contract;
 - `blocked`: the required authoritative document input is unsupported, missing, or unreadable.
 
@@ -93,6 +96,7 @@ Status rules:
 - The central requirement and preserved contracts were checked before secondary details.
 - Supplied Unit Inventory coverage accounting includes every input item and is count-consistent.
 - Every discrepancy cites the document claim, observed evidence, and exact downstream effect.
+- Every `unverified` discrepancy names the exact observable evidence needed to decide the affected design independently of an investigation route.
 - Same-cause observations are grouped rather than emitted as separate work items.
 - Search breadth stopped at decision-relevant evidence.
 - The response is one valid JSON object.

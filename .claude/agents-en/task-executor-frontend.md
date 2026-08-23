@@ -129,13 +129,13 @@ This gate runs only when a provided task file's "Investigation Targets" section 
 
 ### 3. Implementation Execution
 
-#### Adopted Additions Correspondence
+#### Selected Design Correspondence
 
-Design Convergence was completed at design time — the Design Doc owns its Direct MVP, Failed Items, Adopted Additions, and Rejected Additions. This step's scope is correspondence: confirm that what this task builds matches what the design adopted.
+Design Convergence was completed at design time, and the Design Doc owns the Selected Design. This step confirms that what the task builds matches that selection without adding unevidenced design surface.
 
-Before writing code, map each mechanism the planned implementation introduces — a new Context, shared store, memoization layer, custom hook, or indirection — to an Adopted Addition in the Design Doc or to the execution scope's own contracts and UI Spec sections. Record the mapping in Investigation Notes when a task file exists; otherwise record it in `changeSummary`.
+Before writing code, map each mechanism the planned implementation introduces — a new Context, shared store, memoization layer, custom hook, or indirection — to the Design Doc's Selected Design or to the execution scope's own contracts and UI Spec sections. Challenge each addition against current evidence, a lower-surface alternative, total complexity, and subtraction. Record the mapping in Investigation Notes when a task file exists; otherwise record it in `changeSummary`.
 
-A mechanism with no such source is either scope creep or a fact the design did not have. Record it in the available execution record with the evidence that made it necessary, then route it through Mandatory Judgment. Architecture changes and new dependencies escalate. A Rejected Addition remains rejected unless implementation evidence invalidates its reason, which also escalates.
+A mechanism with no such source is either scope creep or a fact the design did not have. Record it in the available execution record with the evidence that made it necessary, then route it through Mandatory Judgment. Architecture changes and new dependencies escalate.
 
 #### Test Environment Check
 **Before starting the TDD cycle**: verify the components the execution scope's tests rely on. When the required behavior can be exercised with only the test runner and a render entry point, prefer that path.

@@ -39,12 +39,12 @@ A created ADR starts at `Proposed` and advances `Proposed` -> `Accepted` -> `Dep
 
 Include only credible, materially distinct options supported by the evidence. Add a Mermaid option-comparison diagram only when the relationship between options remains unclear in the table below.
 
-| Option | Requirement and repository fit | Benefit | Lifecycle cost | Maintainability | Trade-offs |
-|--------|--------------------------------|---------|----------------|-----------------|------------|
-| [Option] | [Fit] | [Benefit] | [Cost] | [Impact] | [Trade-offs] |
-| [Option] | [Fit] | [Benefit] | [Cost] | [Impact] | [Trade-offs] |
+| Option | Confirmed product value | Repository fit | Total complexity | Maintainability | Material trade-offs | Reversibility |
+|--------|-------------------------|----------------|------------------|-----------------|---------------------|---------------|
+| [Option] | [Value required now] | [Fit and evidence] | [Materially different activated surfaces and lifecycle costs] | [Impact] | [Trade-offs] | [Cost and conditions to reverse] |
+| [Option] | [Value required now] | [Fit and evidence] | [Materially different activated surfaces and lifecycle costs] | [Impact] | [Trade-offs] | [Cost and conditions to reverse] |
 
-**Selected**: [The smallest sufficient option and why]
+**Selected**: [The smallest sufficient option whose total complexity is justified by confirmed product value and repository evidence]
 
 ## Consequences
 

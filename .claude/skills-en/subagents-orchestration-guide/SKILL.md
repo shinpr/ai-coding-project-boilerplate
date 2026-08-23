@@ -112,7 +112,7 @@ I repeat this cycle for each task to ensure quality.
 
 ## Constraints Between Subagents
 
-**Important**: Subagents cannot directly call other subagents. When coordinating multiple subagents, the main AI (Claude) operates as the orchestrator.
+Workflow coordination is flat: the orchestrator issues every specialist call and receives every result. Specialist definitions keep `Agent` outside their tool sets.
 
 ## Structural Scale and Document Requirements
 
@@ -154,6 +154,7 @@ Subagents respond in JSON. Each agent declares its own input and output contract
 |---|---|---|
 | requirement-analyzer | `requestSignals`, `scopeEvidence`, `costEvidence`, `questions` | Converge requirements, assign Structural Scale, and determine whether deeper codebase evidence is required |
 | codebase-analyzer / ui-analyzer | — | Pass the full JSON unchanged to the next specialist; each consumes the fields its own input declaration names |
+| technical-designer / technical-designer-frontend | `status` | `completed` → continue. `evidence_exhausted` → end the current design attempt with the exact premise and checked evidence as its terminal report; another correction requires directly relevant new evidence, and user escalation requires a user-owned decision. `contradiction` → resolve governing-source precedence, escalating only when the remaining decision is user-owned |
 | task-executor / task-executor-frontend | `status`, `escalation_type`, `requiresTestReview` | `completed` → continue the cycle. `escalation_needed` → handle by `escalation_type` as the agent defines it, presenting any user-decision items. `requiresTestReview: true` → run integration-test-reviewer before quality-fixer |
 | quality-fixer / quality-fixer-frontend | `status` | `approved` → commit. `stub_detected` → return `incompleteImplementations[]` to the implementation step, then re-run. `blocked` → present the exact user-owned decision |
 | document-reviewer | `verdict.decision` | `approved` → proceed. `needs_revision` → run Review Resolution. `rejected` → resolve the governing-source conflict or escalate when user authority is required |
@@ -324,10 +325,10 @@ Set `status` to `completed` when every required task, quality gate, verifier, an
    #### convergence record → the agent that carries it
 
    **Pass**: the orchestrator's judged `convergence` record to whichever agent carries it forward. Pass it unchanged; each field's readiness label travels with it.
-   - **prd-creator** (when a PRD is created or updated): persists `outcome` to `Success Criteria`, and `nonGoals` plus `speculative` requirements to `Future` / `Out of Scope` with origin `user`
+   - **prd-creator** (when a PRD is created or updated): persists `outcome` to `Success Criteria` and user-authored `nonGoals` to `Out of Scope`; the PRD contains confirmed requirements and boundaries while evaluation requests, speculative ideas, and unselected mechanisms remain only in pre-confirmation convergence context
    - **technical-designer / technical-designer-frontend**: persists the same to the Design Doc's `Requirement Convergence` when no PRD exists, and always records the fields left `weak-but-explicit` there
-   - **ui-spec-designer** (frontend/fullstack): treats `nonGoals` and `speculative` requirements as capabilities the UI Spec leaves out
-   - **work-planner**: treats `nonGoals` and `speculative` requirements as excluded from every task entry. At Small scale no Work Plan is produced, so the `weak-but-explicit` fields stay in the orchestrator's own context per the storage protocol rather than becoming blocking items in the executor prompt
+   - **ui-spec-designer** (frontend/fullstack): receives confirmed UI requirements and user-authored `nonGoals`; unselected candidates create no UI Spec content
+   - **work-planner**: treats `nonGoals` as excluded from every task entry; unselected candidates create no planning obligation. At Small scale no Work Plan is produced, so the `weak-but-explicit` fields stay in the orchestrator's own context per the storage protocol rather than becoming blocking items in the executor prompt
 
    #### codebase-analyzer → technical-designer
 
@@ -340,6 +341,10 @@ Set `status` to `completed` when every required task, quality gate, verifier, an
 
    **Pass to code-verifier**: Design Doc path (doc_type: design-doc). Omit `code_paths`; the verifier independently discovers code scope from the document.
    **Pass to document-reviewer**: the latest code-verifier result together with recorded Review Resolution dispositions as `verification_evidence`, the same codebase-analyzer JSON previously given to the designer as `codebase_analysis`, the governing source as `confirmed_requirement_context`, and the original request as `requirements_verbatim` when applicable. The reviewer uses `codebase_analysis.focusAreas` to verify Fact Disposition Table coverage and the confirmed requirement context to verify the document's outcome and contract.
+
+   #### applied design-evidence finding → technical-designer
+
+   **Pass to the owning designer**: invoke a fresh `update` call with the existing Design Doc path and complete `correction_findings` copied verbatim with only their `apply` dispositions added. The artifact carries approved requirements, accepted decisions, prior evidence, and unaffected design context; add no orchestrator-authored design instructions. The designer applies its review-triggered bounded self-verification gate and updates the artifact from established evidence. The orchestrator reruns the originating verifier or reviewer only after a completed update.
 
    #### code-verifier + document-reviewer → next-layer technical-designer (cross-layer flow only)
 

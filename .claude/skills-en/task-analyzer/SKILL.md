@@ -141,7 +141,7 @@ Generate only questions whose answers can change intent classification, scale, s
 | Implementation | Design validity, edge cases, performance |
 | Fix | Root cause (5 Whys), impact scope, regression testing |
 | Refactoring | Current problems, target state, phased plan |
-| Design | Requirement clarity, future extensibility, trade-offs |
+| Design | Requirement clarity, trade-offs |
 | Documentation | Audience, source of truth, approval/consumer contract |
 | Investigation | Claim to resolve, evidence boundary, stopping condition |
 | Migration | Compatibility window, data/contract transition, rollback |

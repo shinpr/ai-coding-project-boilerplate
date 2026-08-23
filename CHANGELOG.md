@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.27.5] - 2026-08-24
+
+### Changed
+
+- **Evidence-bounded design convergence** (CLAUDE, agents, commands, skills) — Design and review now retain confirmed scope and the selected design, compare total complexity, verify decision-changing premises with one bounded probe per premise, and end exhausted-evidence paths without retry loops or user escalation. PRDs keep confirmed exclusions in Out of Scope while speculative signals remain transient. Applied across en/ja.
+
 ## [1.27.4] - 2026-08-19
 
 ### Changed

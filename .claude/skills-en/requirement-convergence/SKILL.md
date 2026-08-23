@@ -16,11 +16,13 @@ This skill converges **what to build**. How to build it, and which documents the
 | Field | Pass condition |
 |-------|----------------|
 | `outcome` | One observable result. A requirement that does not serve it is excess. |
-| `requirements[]` | Every item labeled `current-state`, `desired-future`, or `speculative`. `speculative` is one of these layer labels, not a separate field; "speculative requirements" means the items carrying it. |
+| `requirements[]` | Every build-relevant item labeled `current-state` or `desired-future`. |
 | `nonGoals[]` | Authored by the user, or the user stated there are none. |
 | `cost` | A band with the structural evidence that places it, plus the unknowns that remain. |
 
 `cost` is a rough band, not the effort estimate a work plan schedules against; requirements cannot support person-days. Its unknowns carry more decision weight than its size.
+
+Keep request signals classified as evaluation requests, speculative ideas, or prescribed mechanisms in active convergence context as judgment-only candidates. `requirements[]` and durable documents receive a candidate only after explicit user confirmation.
 
 Each field carries its own readiness label: `ready`, `weak`, or `weak-but-explicit` (weak, and the user agreed to leave it unresolved). Only the user sets `weak-but-explicit`. Requirements are converged when every applicable field is `ready` or `weak-but-explicit`.
 
@@ -45,7 +47,7 @@ Register these steps before starting and record each step's evidence as it compl
 | Carrier | Holds | Written by |
 |---------|-------|------------|
 | The orchestrator's convergence record | Every field with its readiness label | Orchestrator |
-| PRD `Success Criteria` and `Future` / `Out of Scope` | `outcome`; `nonGoals` and `speculative` requirements with origin `user` | The agent that owns the PRD |
+| PRD `Success Criteria` and `Out of Scope` | `outcome`; user-authored `nonGoals` | The agent that owns the PRD |
 | Design Doc `Requirement Convergence` | The same when no PRD exists, and the fields left `weak-but-explicit` in every case | The agent that owns the Design Doc |
 
 A flow that produces neither document carries the record in its own context to the next step.
@@ -53,7 +55,7 @@ A flow that produces neither document carries the record in its own context to t
 ## Reference Protocol (For Downstream Consumers)
 
 1. Read the convergence record from the prompt.
-2. Treat `nonGoals` and `speculative` requirements as excluded from the current change. A `speculative` item becomes buildable only after the user promotes it to `desired-future`.
+2. Treat `nonGoals` as excluded from the current change and `desired-future` requirements as buildable scope. Evaluation requests, speculative ideas, and prescribed mechanisms that were not promoted create no downstream obligation; an accepted ADR may retain evaluated options as decision history.
 3. Treat a `weak-but-explicit` field as a recorded open question rather than a settled decision, and escalate when the work depends on resolving it.
 
 ## Quality Checklist

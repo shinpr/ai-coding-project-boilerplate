@@ -80,7 +80,7 @@ flowchart LR
     G --> H[Complete]
 ```
 
-Claude Code first confirms what the change should accomplish and inspects the existing implementation. Straightforward changes can proceed directly. Changes that need product or technical decisions get the necessary design and planning documents before implementation. The workflow then runs the applicable repository checks and reports anything it could not verify.
+Claude Code first confirms what the change should accomplish and inspects the existing implementation. Straightforward changes can proceed directly. Changes that need product or technical decisions get the necessary design and planning documents before implementation. Before approving a design, Claude checks any facts that could affect the chosen approach against the repository or actual behavior. Any additional experiment is limited to what is needed to make that decision. The workflow then runs the applicable repository checks and reports anything it could not verify.
 
 See [Use Cases & Commands](docs/guides/en/use-cases.md) for when documents are created, how tests are selected, and what each workflow covers.
 
