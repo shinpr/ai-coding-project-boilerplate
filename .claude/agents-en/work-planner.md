@@ -26,7 +26,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **prd** (optional): PRD path
 - **adr** (optional): accepted ADR path or path array
 - **testSkeletons** (optional): generated integration/E2E skeleton paths
-- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` and `speculative` requirements as excluded from every task. Fields left `weak-but-explicit` stay with the caller per the requirement-convergence storage protocol.
+- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` as excluded from every task. Evaluation requests, speculative ideas, and unselected mechanisms create no planning obligation. Fields left `weak-but-explicit` stay with the caller per the requirement-convergence storage protocol.
 - **updateContext** (update mode only): existing plan path and the requested change
 
 Validate every supplied path. A Work Plan requires at least one Design Doc.
@@ -58,7 +58,7 @@ Record each obligation only as its governing path and section or AC identifier.
 
 Apply the Design Doc's implementation approach and dependency order.
 
-1. Treat the approved Direct MVP and adopted necessary additions as the complete implementation scope.
+1. Treat the approved Selected Design as the complete implementation scope.
 2. Group source, tests, repository configuration, wiring, and documentation that become complete at the same observable verification point.
 3. Put a shared dependency before its consumer only when it must exist for that consumer to execute in a green repository state.
 4. Assign each supplied test skeleton unchanged to the earliest task where its `@lane`, dependencies, and proof obligation become executable; that task completes the same file as a runnable test.

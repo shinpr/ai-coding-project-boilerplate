@@ -100,12 +100,12 @@ Design Doc はコンポーネントからサービスまでの完全な実装を
 
 ## ステップ8: 検証・レビュー・承認
 
-`code-verifier` を `doc_type: design-doc` と返却された Design Doc のパスで呼び出し、`code_paths` は指定しない。ドキュメントレビューの前にレビュー裁定を適用する。修正を適用した場合は technical-designer-frontend 経由で更新し、検証を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。残るすべての discrepancy に処理方針が付いた時点で次へ進む。
+`code-verifier` を `doc_type: design-doc` と返却された Design Doc のパスで呼び出し、`code_paths` は指定しない。ドキュメントレビューの前にレビュー裁定を適用する。apply 対象の finding は、新しい technical-designer-frontend 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提には、designer がレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は検証を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。残るすべての discrepancy に処理方針が付いた時点で次へ進む。
 
 `document-reviewer` を、`doc_type: DesignDoc`、返却された Design Doc のパス、`review_context: creation`、ユーザー要件の原文、`confirmed_requirement_context`、設計者に渡したものと同じ変更していない分析入力、`verification_evidence` で呼び出す。
 
 - `approved`: 次へ進む。
-- `needs_revision`: レビュー裁定を適用し、technical-designer-frontend 経由で更新した上で、影響を受けた境界について検証とレビューを再実行する。
+- `needs_revision`: レビュー裁定を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer-frontend 呼び出しで更新した上で、影響を受けた境界について検証とレビューを再実行する。
 - `rejected`: 出典ソースの衝突を解消する。ユーザーに尋ねるのは、プロダクトの成果または承認済みの主要な設計判断を変更しなければならない場合のみとする。
 
 返却された Design Doc をソースとして `design-sync` を呼び出し、対応可能な矛盾にはレビュー裁定を適用する。Design Doc が1つしか存在しない場合は `SKIPPED` として明確に報告する。

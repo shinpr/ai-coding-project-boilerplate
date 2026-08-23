@@ -7,7 +7,7 @@ description: Selects implementation strategy (vertical slice, horizontal, or hyb
 
 ## Meta-cognitive Strategy Selection Process
 
-### Phase 1: Comprehensive Current State Analysis
+### Phase 1: Decision-Sufficient Current State Analysis
 
 **Core Question**: "What does the existing implementation look like?"
 
@@ -24,6 +24,8 @@ Historical Context Understanding: Current form rationale, past decision validity
 - What dependencies or implicit preconditions are unclear from the code?
 - What benefits and constraints does the current design bring?
 
+Stop when another current-state fact cannot change responsibility, reuse, option validity, total complexity, a contract, or verification.
+
 **Completion evidence**: inspected paths, observed architecture/data-flow facts, known constraints, inferred historical rationale labeled as inferred, and unknowns that could change strategy selection.
 
 **Transition**: proceed when every strategy-relevant claim is observed, explicitly inferred with evidence, or recorded as unknown.
@@ -34,14 +36,14 @@ Historical Context Understanding: Current form rationale, past decision validity
 
 Complete these steps in order before exploring implementation strategies:
 
-1. **Direct MVP**: Describe the simplest end-to-end design that delivers the current required outcome using existing system capabilities. Explicit user requirements and confirmed decisions are binding; technical mechanisms framed as suggestions or options remain candidates unless confirmed as mandatory.
-2. **Failure Check**: Test the Direct MVP against current requirements, verified constraints, observed problems within confirmed scope or dependencies required for the outcome, and evidence-backed material risks. Record only unmet items as `Failed Items` with their evidence; record `None` when all pass. Report problems outside that boundary separately for a scope decision.
-3. **Targeted Expansion**: For each Failed Item, first test reuse, derivation from existing data, on-demand computation, or responsibility at the current caller or boundary within the existing design surface. When these fail, select the smallest sufficient addition. Record `Adopted Additions` as addition -> Failed Item -> evidence that lower-surface resolutions fail; an addition requires a Failed Item.
-4. **Subtraction Check**: Temporarily remove each Adopted Addition and re-test its Failed Item. Keep the addition when the item becomes unmet again. Record options considered in step 3 but not adopted as `Rejected Additions` with a brief reason; record `None` when step 3 had no rejected candidate.
+1. **Existing-Surface Baseline**: Form the simplest end-to-end path that delivers the current outcome through existing responsibilities. Explicit requirements and accepted decisions are binding; suggested mechanisms remain candidates.
+2. **Evidence Check**: Test that path against current requirements, verified constraints, observed in-scope problems, and evidence-backed material risks. Keep only the unmet conditions that can change the selected design.
+3. **Targeted Comparison**: For each unmet condition, test reuse, derivation from existing data, on-demand computation, or responsibility at the current caller or boundary before adding design surface. Compare viable choices by total complexity across the dimensions that materially differ: user decisions, settings, modes, concepts, outputs, persistent state, implementation paths, UX, runtime, implementation, testing, documentation, and maintenance. Select the lowest-total-complexity choice that satisfies the condition.
+4. **Subtraction Check**: Remove each proposed addition and re-test its governing condition. Retain it only when the confirmed outcome, a required boundary, or necessary proof becomes unmet.
 
-**Phase output**: Direct MVP, Failed Items, Adopted Additions, and Rejected Additions. A Design Doc author records all four; an implementation agent uses them to challenge added mechanisms while leaving design-artifact authorship with the design phase.
+Candidate paths and rejected additions remain active analysis. The durable output is the **Selected Design**: the complete chosen path plus evidence for each added design surface and the condition that fails when it is removed. An accepted ADR may retain alternatives as decision history. An implementer uses the same convergence check without producing a separate artifact.
 
-**Completion evidence**: all four outputs recorded; every Failed Item carries its evidence; every Adopted Addition names its Failed Item, the lower-surface resolutions that fail, and its subtraction result.
+**Completion evidence**: one complete Selected Design; every added design surface names its current evidence, why lower-surface resolutions fail, and its subtraction result.
 
 **Transition**: proceed when every supporting claim is observed, explicitly inferred with evidence, or recorded as unknown; when an unknown blocks a step, stop at that step and name the evidence or user decision required.
 
@@ -136,7 +138,7 @@ For Hybrid, assign one explicit L1/L2/L3 verification level and observable compl
 
 **Completion evidence**: one selected approach, its phase boundaries, integration points, and a verification result for every phase.
 
-**Transition**: proceed to documentation when the selected approach covers every hard constraint and its risks have controls. Otherwise return to candidate exploration (Phase 3), or to Design Convergence (Phase 2) when a Phase 4-5 result changes the Direct MVP, Failed Items, or Adopted Additions.
+**Transition**: proceed to documentation when the selected approach covers every hard constraint and its risks have controls. Otherwise return to candidate exploration (Phase 3), or to Design Convergence (Phase 2) when a Phase 4-5 result changes the Selected Design or its evidence.
 
 ### Phase 7: Decision Rationale Documentation
 
@@ -147,14 +149,15 @@ implementationApproachDecision:
   observedConstraints: [<constraint + evidence>]
   inferredConstraints: [<constraint + evidence and inference>]
   unknowns: [<unknown + required evidence or decision>]
-  candidates: [<approach + requirements covered + risks + verification delay>]
   selectedApproach: <vertical | horizontal | hybrid description>
-  selectionRationale: <hard-constraint coverage, compatibility, risk control, then tiebreakers>
-  rejectedApproaches: [<approach + unmet requirement or higher material risk>]
+  selectionRationale: <hard-constraint coverage, compatibility, risk control, and total-complexity basis>
+  addedDesignSurface: [<addition + current evidence + lower-surface insufficiency + subtraction result>]
   phaseVerification: [<phase + L1/L2/L3 + observable completion evidence>]
 ```
 
-**Completion evidence**: every selected/rejected decision traces to an observed constraint, accepted inference, or resolved user decision.
+Candidate approaches and rejection reasoning remain active analysis unless an accepted ADR owns them as decision history.
+
+**Completion evidence**: the selected approach and every added design surface trace to an observed constraint, accepted inference, or resolved user decision.
 
 ## Verification Level Definitions
 
@@ -177,11 +180,11 @@ Define integration points according to selected strategy:
 ## Decision Gate Checklist
 
 - [ ] Phase 1 evidence exists before strategy selection
-- [ ] Phase 2 records all four Design Convergence outputs, with evidence for every Failed Item and Adopted Addition
+- [ ] Phase 2 produces one complete Selected Design and every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction
 - [ ] Candidate generation includes combinations when no listed strategy satisfies all hard constraints
 - [ ] Every material risk has a control and verification point
 - [ ] Every hard constraint maps to the selected approach
-- [ ] Phase 7 output records the selection and rejection rationale
+- [ ] Phase 7 output records the selection, total-complexity basis, and added design surface; alternatives appear only in an accepted ADR
 
 When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence or user decision needed to continue.
 

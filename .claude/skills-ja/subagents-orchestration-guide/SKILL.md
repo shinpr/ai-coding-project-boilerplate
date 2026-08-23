@@ -110,7 +110,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 ## Sub-agent間の制約
 
-**重要**: Sub-agentから他のSub-agentを直接呼び出すことはできない。複数のSub-agentを連携させる場合は、メインAIがオーケストレーターとして動作。
+ワークフローの連携はフラットに保つ。各 specialist の呼び出しと結果の受け取りはすべてオーケストレーターが行い、specialist の定義では `Agent` をツールセットに含めない。
 
 ## 構造スケールとドキュメント要件
 
@@ -152,6 +152,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 |---|---|---|
 | requirement-analyzer | `requestSignals`、`scopeEvidence`、`costEvidence`、`questions` | 要件を収束させ、構造スケールを割り当て、より深いコードベースのエビデンスが必要かを判断する |
 | codebase-analyzer / ui-analyzer | — | JSON全体をそのまま次の専門エージェントへ渡す。各エージェントは自身の入力宣言が挙げるフィールドを消費する |
+| technical-designer / technical-designer-frontend | `status` | `completed` → 続行。`evidence_exhausted` → 正確な前提と確認済みのエビデンスを終端報告として現在の設計試行を終える。再度の修正には、その前提を直接扱う新しいエビデンスが必要であり、ユーザーへのエスカレーションにはユーザーが所有する判断が必要となる。`contradiction` → 出典ソースの優先順位で解決し、残る判断をユーザーが所有する場合だけエスカレーションする |
 | task-executor / task-executor-frontend | `status`、`escalation_type`、`requiresTestReview` | `completed` → サイクルを継続。`escalation_needed` → エージェントが定義する `escalation_type` に従って処理し、ユーザー判断が要る項目は提示する。`requiresTestReview: true` → quality-fixer の前に integration-test-reviewer を実行 |
 | quality-fixer / quality-fixer-frontend | `status` | `approved` → コミット。`stub_detected` → `incompleteImplementations[]` を実装ステップに戻し再実行。`blocked` → ユーザーが判断すべき内容をそのまま提示 |
 | document-reviewer | `verdict.decision` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`rejected` → 出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーション |
@@ -323,10 +324,10 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
    #### 収束記録 → それを引き継ぐエージェント
 
    **渡すもの**: オーケストレーターが判定した `convergence` 記録を、それを引き継ぐエージェントへ渡す。内容は変更せずに渡し、各フィールドの readiness ラベルも一緒に運ぶ。
-   - **prd-creator**（PRDを新規作成または更新する場合）: `outcome` を `成功基準` へ、`nonGoals` と `speculative` 要件を origin `user` として `Future` / `Out of Scope` へ永続化する
+   - **prd-creator**（PRDを新規作成または更新する場合）: `outcome` は `成功基準` に、ユーザーが挙げた `nonGoals` は `Out of Scope` に残す。PRDには確認済みの要件と境界だけを残し、評価依頼、推測的なアイデア、未選択の実装手段は要件確認前の収束コンテキストに留める
    - **technical-designer / technical-designer-frontend**: PRDがない場合は同じ内容を Design Doc の `Requirement Convergence` へ永続化し、`weak-but-explicit` のまま残ったフィールドは常にそこへ記録する
-   - **ui-spec-designer**（フロントエンド/フルスタック）: `nonGoals` と `speculative` 要件を、UI Specが対象に含めない機能・能力として扱う
-   - **work-planner**: `nonGoals` と `speculative` 要件を全タスクエントリから除外されたものとして扱う。小規模ではPRDもDesign Docも存在しないため、`weak-but-explicit` のフィールドは保存プロトコルに従いオーケストレーター自身のコンテキストに留め、タスクファイルのブロッキング項目にはしない
+   - **ui-spec-designer**（フロントエンド/フルスタック）: 確認済みのUI要件と、ユーザーが挙げた `nonGoals` を受け取る。未選択の候補からUI Specの内容を作らない
+   - **work-planner**: `nonGoals` は全タスクエントリから除外し、未選択の候補から計画上の作業を作らない。小規模ではPRDもDesign Docも存在しないため、`weak-but-explicit` のフィールドは保存プロトコルに従いオーケストレーター自身のコンテキストに留め、タスクファイルのブロッキング項目にはしない
 
    #### codebase-analyzer → technical-designer
 
@@ -339,6 +340,10 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 
    **code-verifierへの入力**: Design Docパス（doc_type: design-doc）。`code_paths`は指定を省略する — verifierがドキュメントからコードスコープを独自に発見する。
    **document-reviewerへの入力**: 最新のcode-verifier結果と記録したレビュー裁定の処理方針をあわせて`verification_evidence`として、designerに渡したものと同じcodebase-analyzerのJSONを`codebase_analysis`として、出典ソースを`confirmed_requirement_context`として渡す。該当する場合は元の依頼を`requirements_verbatim`として渡す。reviewerは`codebase_analysis.focusAreas`でFact Disposition Tableのカバレッジを検証し、確認済み要件のコンテキストでドキュメントの成果と契約を検証する。
+
+   #### apply 対象の設計エビデンス finding → technical-designer
+
+   **担当designerへの入力**: 新規の `update` 呼び出しに、既存のDesign Docパスと、`apply` の処理方針だけを加えてそれ以外はそのままコピーした `correction_findings` 全体を渡す。承認済み要件、受理済みの決定、従来のエビデンス、影響を受けない設計コンテキストは既存成果物が保持するため、オーケストレーターが設計指示を追加しない。designer はレビューを起点とする範囲限定セルフ検証ゲートを適用し、確立済みのエビデンスに基づいて成果物を更新する。起点となった verifier または reviewer を再実行するのは、update が完了した場合だけとする。
 
    #### code-verifier + document-reviewer → 次レイヤーのtechnical-designer（レイヤー横断フロー時のみ）
 

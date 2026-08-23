@@ -19,11 +19,10 @@ List the accepted ADRs that govern the changed responsibility, including accepte
 
 ### Requirement Convergence
 
-Records exclusions **the user decided** at requirement time. Exclusions this design decided belong in `Future Extensibility`. Mark the first three bullets `N/A — covered by PRD [path]` when a PRD holds them, or the whole section `N/A — reverse-engineer/as-is document`. Open questions stay here in every case, because design readiness depends on them.
+Records confirmed requirements and boundaries. Evaluation requests, speculative ideas, and unselected mechanisms remain only in pre-confirmation convergence context. Mark the first two bullets `N/A — covered by PRD [path]` when a PRD holds them, or the whole section `N/A — reverse-engineer/as-is document`. Open questions stay here in every case, because design readiness depends on them.
 
 - **Outcome**: [one observable result this change must produce]
 - **Non-Goals**: [capability the user excluded | None — user confirmed there are none]
-- **Speculative**: [idea the user raised without deciding on -> deferral reason | None]
 - **Open questions**: [field the user agreed to leave unresolved | None]
 
 ### Standards and Assumptions
@@ -33,9 +32,17 @@ Records exclusions **the user decided** at requirement time. Exclusions this des
 - [Observed pattern] `[implicit]` — Evidence: [file paths] — Confirmed: [Yes/No]
 
 #### Assumed Behaviors
-Behavioral or factual claims the design relies on but does not itself define — framework/library defaults, capabilities assumed already provided, features assumed already implemented — whose falsity would invalidate the design approach, and that are not already covered by the Fact Disposition Table or Cross-Layer Assumptions. Each claim carries evidence with Confirmed: Yes, or Confirmed: No (with Evidence: Not located) plus a matching Risks and Mitigation row — one that restates the claim as its Risk (the shared lookup key), names how it will be verified or guarded, and propagates the check downstream as `verify at [step or artifact]`. For a framework/library default, the doc evidence pairs the official doc with the resolved package version (from the lockfile or config). This slot is completed during Existing Code Investigation once evidence is gathered, so it may be empty when the rest of Standards and Assumptions is first filled. Mark the slot N/A when the design relies on no such claims.
+Behavioral or factual claims the design relies on but does not itself define — framework/library defaults, capabilities assumed already provided, features assumed already implemented — whose falsity would invalidate the design approach, and that are not already covered by the Fact Disposition Table or Cross-Layer Assumptions. Each claim carries evidence. Before verification, use `Confirmed: No` for a specific unresolved premise and state the exact evidence needed and its design effect. A premise that can change the Selected Design must be resolved before approval. After verification, `Confirmed: No` is valid only for residual implementation uncertainty whose possible outcomes leave the Selected Design valid; add a matching Risks and Mitigation row that restates the claim as its Risk, names how it will be verified or guarded, and propagates the check downstream as `verify at [step or artifact]`. For a framework/library default, pair the official documentation with the resolved package version from the lockfile or configuration. Mark the slot N/A when the design relies on no such claims.
 
-- [ ] [Claim — e.g., "framework X defaults to Y", "service already returns Z"] — Evidence: [file:line / command output / doc URL paired with resolved package version, or "Not located" when Confirmed: No] — Confirmed: [Yes/No]
+- [ ] [Claim — e.g., "framework X defaults to Y", "service already returns Z"] — Evidence: [file:line / command output / doc URL paired with resolved package version / exact evidence needed] — Design effect: [what changes if false | Selected Design remains valid] — Confirmed: [Yes/No]
+
+#### Bounded Self-Verification Evidence (when applied)
+
+Include only when a fresh review-triggered technical-designer update executed a capability probe. Keep the durable record compact; raw logs and temporary artifacts are discarded during probe cleanup.
+
+| Applied finding | Premise | Method and observed boundary | Observation | Limitation | Design effect |
+|---|---|---|---|---|---|
+| [finding ID] | [exact premise] | [bounded method and consumer-visible postcondition] | [observed result] | [remaining limitation that constrains the design effect, or None] | [Selected Design change or confirmation] |
 
 #### Quality Assurance Mechanisms
 How quality is enforced in the change area. Each item is either adopted (will be enforced during implementation) or noted (observed but not adopted, with reason).
@@ -162,14 +169,20 @@ Add an architecture or data-flow Mermaid diagram only when the changed relations
 - **Interface**: [APIs and type definitions provided]
 - **Dependencies**: [Relationships with other components]
 
-### Design Convergence
+### Selected Design
 
-In a future-state document, use `None` for empty Failed Items, Adopted Additions, or Rejected Additions. Mark this whole section `N/A — reverse-engineer/as-is document` for a reverse-engineer/as-is document.
+Describe the complete selected end-to-end path. Candidate paths and rejected additions remain active analysis; an accepted ADR may retain alternatives as decision history. Mark this whole section `N/A — reverse-engineer/as-is document` for a reverse-engineer/as-is document.
 
-1. **Direct MVP**: [Simplest end-to-end design using existing system capabilities]
-2. **Failed Items**: [Unmet item -> requirement, verified constraint, observed problem, or evidence-backed material risk | None]
-3. **Adopted Additions**: [Addition -> Failed Item -> evidence that lower-surface resolutions fail -> item becomes unmet against its evidence when removed | None]
-4. **Rejected Additions**: [Considered option -> brief rejection reason | None]
+[Selected responsibilities, control/data flow, and use of existing system capabilities]
+
+For each added design surface—user decision, setting, mode, concept, output, persistent state, implementation path, public contract, abstraction, service, or component split—record:
+
+- **Addition**: [selected design surface]
+- **Current evidence**: [requirement, accepted decision, verified constraint, observed problem, or evidence-backed material risk]
+- **Lower-surface insufficiency**: [why reuse, derivation, on-demand computation, or current-boundary ownership does not satisfy the same condition]
+- **Subtraction result**: [confirmed outcome, required boundary, or proof that becomes unmet when removed]
+
+Use `None — existing design surface is sufficient` when the selected design adds none of these surfaces.
 
 ### Data Representation Decision (When the Converged Design Introduces or Modifies Structures)
 Evaluate existing structures: semantic fit, responsibility fit, lifecycle fit, boundary/interop cost.
@@ -342,15 +355,16 @@ How will behavioral equivalence be verified between existing and new implementat
 
 Mark as N/A with brief rationale when the design introduces entirely new behavior with no existing equivalent.
 
-## Future Extensibility
+## Design Boundaries
 
-This section records capabilities **this design** excluded from the current design surface. Exclusions the user decided at requirement time belong in `Requirement Convergence`. Limit entries to capabilities tied to a current requirement, a current consumer, or a documented constraint; route purely speculative future plans into a separate proposal document.
+Record boundaries needed by a current requirement, downstream implementer, or verifier. This section contains selected design boundaries rather than discovered candidates or unselected future possibilities.
 
-- **Deferred possibilities**: [Capabilities considered during design and explicitly excluded from the current design surface. Each entry names the current requirement it would have served]
-- **Intentional limitations**: [What was deliberately kept small and why]
-- **Extension points (existing, with current consumers)**: [Interfaces or hooks already in use by named current consumers. Each entry names a current consumer]
+- **Intentional limitations**: [Current behavior or responsibility deliberately kept outside the selected design, with the governing scope reason]
+- **Existing extension points used**: [Interfaces or hooks the selected design uses, with each named current consumer | None]
 
 ## Risks and Mitigation
+
+Include only evidenced residual risks that can change rollout, rollback, contract handling, or verification strategy while leaving the Selected Design valid.
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|

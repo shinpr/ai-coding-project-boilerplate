@@ -48,10 +48,13 @@ skills: documentation-criteria, implementation-approach, coding-standards
 - `drift`: 現状記述、または維持されるべき現状に関する主張が古い。
 - `gap`: 必要な依存や実装対象が存在しない、実装後の振る舞いが欠けている、またはリバースエンジニアリングされたドキュメントがスコープ内のインベントリ項目を欠いている。
 - `conflict`: 観測された振る舞いまたは出典上の契約がドキュメントと矛盾する。
+- `unverified`: 判断に影響する、ドキュメント上の特定の主張を確認できず、その真偽によってスコープ・実現可能性・実装・契約・検証のいずれかが変わりうる。
 
 discrepancy を出力するのは、それを未解決のまま残すとスコープ・実現可能性・実装・契約・検証のいずれかが変わりうる場合に限る。原因と修正が同一の箇所は1つの discrepancy にまとめる。
 
-主張を確立できないことは discrepancy ではない。エビデンスの欠如を所見・修正・エスカレーションに変換しない。`gap` には、必要な依存・実装・振る舞い・インベントリ項目を所有するリポジトリ境界の中で、不在であることの積極的なエビデンスが必要である。
+主張を確認できないことが、直ちに discrepancy になるわけではない。`unverified` を使うのは、その真偽によってスコープ・実現可能性・実装・契約・検証のいずれかが変わりうる、ドキュメント上の特定の主張に限る。そのような主張を特定しない、エビデンスへのアクセスやカバレッジ上の制約は discrepancy にしない。`gap` には、必要な依存・実装・振る舞い・インベントリ項目を所有するリポジトリ境界の中で、不在であることの積極的なエビデンスが必要である。
+
+`unverified` の主張を判断するために必要な、正確かつ観測可能な事実を `requiredEvidence` に設定する。その他の discrepancy では `null` とする。
 
 ## 出力
 
@@ -63,7 +66,7 @@ discrepancy を出力するのは、それを未解決のまま残すとスコ�
   "blockingReason": null,
   "inventoryCoverage": null,
   "discrepancies": [
-    {"id": "D001", "status": "drift|gap|conflict", "claim": "ドキュメントの主張", "documentLocation": "セクションまたは行", "codeLocation": "file:line または null", "relatedLocations": ["同一原因の別の箇所"], "evidence": "観測した事実", "effect": "これがスコープ・実現可能性・実装・契約・検証のどれをどう変えるか"}
+    {"id": "D001", "status": "drift|gap|conflict|unverified", "claim": "ドキュメントの主張", "documentLocation": "セクションまたは行", "codeLocation": "file:line または null", "relatedLocations": ["同一原因の別の箇所"], "evidence": "観測した事実", "effect": "これがスコープ・実現可能性・実装・契約・検証のどれをどう変えるか", "requiredEvidence": "unverified の主張を判断するために必要な正確かつ観測可能な事実、または null"}
   ]
 }
 ```
@@ -83,7 +86,7 @@ discrepancy を出力するのは、それを未解決のまま残すとスコ�
 ステータス規則:
 
 - `consistent`: discrepancy が存在しない
-- `needs_review`: 修復可能で実害のある `drift` または `gap` が存在する
+- `needs_review`: 修復可能で実害のある `drift`、`gap`、または `unverified` が存在する
 - `inconsistent`: 出典上のエビデンスが、選択された成果または契約と矛盾する
 - `blocked`: 必要な出典ドキュメントの入力が非対応・不在・読み込み不能である
 
@@ -93,6 +96,7 @@ discrepancy を出力するのは、それを未解決のまま残すとスコ�
 - 副次的な詳細より先に、中心的な要件と維持される契約を確認した。
 - 与えられた Unit Inventory のカバレッジ集計が全入力項目を含み、件数が整合している。
 - 各 discrepancy が、ドキュメントの主張・観測したエビデンス・下流への正確な影響を示している。
+- 各 `unverified` discrepancy が、調査経路に依存せず、影響を受ける設計の判断に必要な正確かつ観測可能なエビデンスを示している。
 - 同一原因の観測を、別々の作業項目にせずまとめている。
 - 探索の広さを、判断に影響するエビデンスの範囲で止めた。
 - レスポンスが妥当な JSON オブジェクト1個である。

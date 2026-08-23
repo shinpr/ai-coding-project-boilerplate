@@ -110,7 +110,7 @@ Generate 3-5 questions according to task nature:
 - **Implementation tasks**: Design validity, edge cases, performance
 - **Fix tasks**: Root cause (5 Whys), impact scope, regression testing
 - **Refactoring**: Current problems, target state, phased plan
-- **Design tasks**: Requirement clarity, future extensibility, trade-offs
+- **Design tasks**: Requirement clarity, trade-offs
 
 ## Important Notes
 

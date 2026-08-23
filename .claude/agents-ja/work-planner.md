@@ -26,7 +26,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 - **prd**（オプション）: PRDドキュメントのパス
 - **adr**（オプション）: 承認済みADRのパス、またはパス配列
 - **testSkeletons**（オプション）: 生成済みの統合/E2Eテストスケルトンのパス
-- **収束結果**（任意）: `convergence` オブジェクト。`nonGoals` と `speculative` 要件は全タスクから除外されたものとして扱う。`weak-but-explicit` のまま残ったフィールドは、requirement-convergence の保存プロトコルに従い呼び出し元が保持する
+- **収束結果**（任意）: `convergence` オブジェクト。`nonGoals` は全タスクから除外されたものとして扱う。評価依頼、推測的なアイデア、未選択の実装手段から計画上の作業を作らない。`weak-but-explicit` のまま残ったフィールドは、requirement-convergence の保存プロトコルに従い呼び出し元が保持する
 - **updateContext**（updateモード時のみ）: 既存計画書のパスと要求された変更内容
 
 提供された全パスを検証する。作業計画書には Design Doc が少なくとも1つ必要である。
@@ -58,7 +58,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 Design Docの実装アプローチと依存順序を適用する。
 
-1. 承認済みのDirect MVPと採用された必要追加分を、実装スコープの全体として扱う。
+1. 承認済みのSelected Designを、実装スコープの全体として扱う。
 2. 同じ観測可能な検証ポイントで同時に完成する、ソース・テスト・リポジトリ設定・配線・ドキュメントをまとめる。
 3. 共有の依存物を利用側より前に置くのは、リポジトリがグリーンな状態でその利用側を実行するために存在が必要な場合に限る。
 4. 提供された各テストスケルトンは、その`@lane`、依存関係、証明義務が実行可能になる最も早いタスクに変更せず割り当てる。そのタスクは同じファイルを実行可能なテストとして完成させる。

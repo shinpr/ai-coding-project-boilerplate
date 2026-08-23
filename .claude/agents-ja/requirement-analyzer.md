@@ -20,7 +20,7 @@ skills: coding-standards, llm-friendly-context
 
 ### 1. 依頼シグナルの抽出
 
-ユーザーが示した成果、明示された現行要件、明示された除外事項、推測的なアイデア、指定された実装手段を、それぞれ別のシグナルとして保持する。実装の提案や推測的なアイデアが要件になるのは、ユーザーの確認を経た場合のみである。
+依頼内の意味のある各シグナルを、主な役割に基づいて一度だけ分類する: ユーザーが示した成果、明示された現行要件、明示された除外事項、評価依頼、推測的なアイデア、指定された実装手段。原文を保ち、`requirements` と `context` のどちらから得たかを記録する。評価依頼は実装ではなく判断を求めるものであり、推測的なアイデアと指定された実装手段は、ユーザーが現行要件として明示的に確認するまで候補として扱う。
 
 ### 2. 浅いスコープエビデンスの収集
 
@@ -41,11 +41,12 @@ skills: coding-standards, llm-friendly-context
 ```json
 {
   "requestSignals": {
-    "apparentOutcome": "ユーザーが述べた結果、または null",
-    "explicitRequirements": ["ユーザーの記述"],
-    "explicitExclusions": ["ユーザーが述べた除外事項"],
-    "speculativeIdeas": ["将来の候補アイデア"],
-    "prescribedMechanisms": ["後で選択肢評価を要する実装の提案"]
+    "apparentOutcome": {"statement": "ユーザーが述べた結果の原文", "source": "requirements|context"},
+    "explicitRequirements": [{"statement": "ユーザーが述べた現行要件の原文", "source": "requirements|context"}],
+    "explicitExclusions": [{"statement": "ユーザーが述べた除外事項の原文", "source": "requirements|context"}],
+    "evaluationRequests": [{"statement": "実装の承認を伴わない評価・比較依頼の原文", "source": "requirements|context"}],
+    "speculativeIdeas": [{"statement": "将来の候補アイデアの原文", "source": "requirements|context"}],
+    "prescribedMechanisms": [{"statement": "後で選択肢評価を要する実装提案の原文", "source": "requirements|context"}]
   },
   "scopeEvidence": {
     "affectedFiles": ["candidate/path"],
@@ -69,9 +70,12 @@ skills: coding-standards, llm-friendly-context
 }
 ```
 
+依頼に成果が示されていない場合は、`apparentOutcome` に `null` を使用する。
+
 ## 完了チェック
 
-- ユーザーの記述が、オーケストレーターの判断のために出所カテゴリを保ったまま残っている。
+- 意味のある各依頼シグナルが、主なカテゴリを1つだけ持ち、原文と入力元を保ったままオーケストレーターへ渡されている。
+- 評価依頼、推測的なアイデア、指定された実装手段が、ユーザーによって現行要件として明示的に確認されるまで判断材料に留まっている。
 - スコープとコストのエビデンスが浅く簡潔で、出所に裏付けられている。
 - 各質問が、その回答で変わる判断を名指ししている。
 - 収束・構造スケール・ADR・実装スコープの判断がオーケストレーターに割り当てられたままである。
