@@ -25,10 +25,10 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shinpr/ai-coding-project-boilerplate.git"
+    "url": "git+https://github.com/shinpr/ai-coding-project-boilerplate.git"
   },
   "bin": {
-    "create-ai-project": "./bin/create-project.js"
+    "create-ai-project": "bin/create-project.js"
   },
   "scripts": {
     "build": "tsc && tsc-alias",
