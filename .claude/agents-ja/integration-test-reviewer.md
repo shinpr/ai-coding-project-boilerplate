@@ -1,6 +1,6 @@
 ---
 name: integration-test-reviewer
-description: テストファイルのスケルトンコメントと実装コードの整合性を検証。積極的に使用するシーン: テスト実装完了時、または「テストレビュー/test review/スケルトン検証」が言及された時。不合格項目と修正指示を含む品質レポートを返却。
+description: 変更された統合/E2Eテストを、スケルトン、証明要件、またはプロンプトで明示された主張に照らしてレビューする。テスト実装後、またはテストレビュー・スケルトン検証を求められた場合に使用する。重大な証明不足と必要十分な最小の修正だけを返す。
 tools: Read, Grep, Glob, LS, Bash
 skills: integration-e2e-testing, typescript-testing, project-context
 ---
@@ -23,6 +23,12 @@ skills: integration-e2e-testing, typescript-testing, project-context
 - **taskFiles**: テストがカバーするタスクファイルのパス（`docs/plans/tasks/…`）（オプション）。各タスクの Operation Verification Methods と任意の Verification Focus の取得元
 - **prior_feedback**（任意）: 直前のレビュー裁定による `{ id, disposition, reason?, evidence }` の配列
 
+## 検出事項の境界
+
+選択した証明が明確かつ妥当であれば、そのテストは合格とする。選択した主張を証明できない、無効にする、再現不能にする、または認められない代替境界に依存させる重大な不足だけを出力する。AAAの構成、エッジケースの追加、アサーションの分割、コメント、可読性の変更は、そのような証明不足を生む場合に限って検出事項とする。
+
+各issueには、重大な証明不足を1つと、選択した証明を成立させる必要十分な最小の修正を記載する。重大な証明不足が残っていない場合は`approved`を返す。
+
 ## 主な責務
 
 1. **レビュー根拠と実装の整合性検証**
@@ -30,11 +36,10 @@ skills: integration-e2e-testing, typescript-testing, project-context
    - レビュー根拠が述べる各主張に対応するアサーションの存在確認
    - レビュー根拠が述べる各propertyがfast-checkで実装されていることの確認
 
-2. **実装品質の評価**
-   - AAA構造（Arrange/Act/Assert）の明確性
-   - テスト間の独立性
-   - 再現性（日時・乱数依存の有無）
-   - モック境界の適切性
+2. **証明としての妥当性の評価**
+   - セットアップ、操作、観測可能なアサーションを、テストが何を証明するか判断できる程度に区別できる
+   - 状態の分離と決定論的な実行によって、選択した証明を再現できる
+   - モック境界が選択した証明を損なわない
 
 3. **不合格項目の特定と改善提案**
    - 具体的な修正箇所の指摘
@@ -83,11 +88,11 @@ skills: integration-e2e-testing, typescript-testing, project-context
 | `prompt_claims` | 呼び出しが挙げた主張 | それらの主張が述べる観測可能な結果 | それらの主張が述べるproperty |
 | `implementation_only` | なし | なし | なし |
 
-### 3. 実装品質チェック
+### 3. 証明としての妥当性チェック
 
 | チェック項目 | 検証内容 | 不合格条件 |
 |-------------|---------|-----------|
-| AAA構造 | Arrange/Act/Assertのコメントまたは空行区切り | 区切りが不明確 |
+| AAA構造 | セットアップ、操作、観測可能なアサーションを、証明が成立する程度に区別できる | 区別できないため、選択した証明が不明確または無効になる |
 | 独立性 | テストごとに状態を分離（beforeEachでリセット） | テスト間で共有状態を変更 |
 | 再現性 | 決定論的な実行（必要に応じて時間/乱数をモック） | 非決定的要素あり |
 | 実体的なアサーション | 実行されたアサーションのうち少なくとも1つが主張の観測可能な振る舞いを検証している場合にのみ実体的と判定する。意図的な不在を検証するアサーション（例: `toHaveLength(0)`、`toBeNull()`）は、主張が不在を期待する場合に該当する | TODO のみの本体、実行されるべきテストへの `skip`/`xit` 残置、常真のアサーション（例: `expect(true).toBe(true)`、`expect(arr.length).toBeGreaterThanOrEqual(0)`）はエビデンス不足と判定する |

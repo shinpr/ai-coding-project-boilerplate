@@ -119,16 +119,6 @@ Review investigation output:
     Previous investigation results (for context, do not re-investigate covered areas):
     [Previous investigation JSON]
 
-**design_gap Escalation**:
-
-When investigator output contains `causeCategory: design_gap` or `recurrenceRisk: high`:
-1. **Insert user confirmation before verifier execution**
-2. Use AskUserQuestion:
-   "A design-level issue was detected. How should we proceed?"
-   - A: Attempt fix within current design
-   - B: Include design reconsideration
-3. If user selects B, pass `includeRedesign: true` to solver
-
 Proceed to verifier once quality is satisfied.
 
 ### Step 3: Verification (verifier)
@@ -160,6 +150,8 @@ Check verifier's `coverageAssessment`:
 
 **Prerequisite**: coverageAssessment=sufficient (or explicit user approval to proceed with partial/insufficient)
 
+Ownership, contract, and technical design corrections are ordinary solution candidates when they preserve the confirmed outcome, desired-future requirements, and non-goals; detecting a design gap does not create a user decision. If evidence shows those value boundaries cannot all remain true, or a proposed remedy requires authorization for an irreversible external action, report that exact boundary with the solution evidence instead of inventing a choice.
+
 Invoke solver using Agent tool:
 - `subagent_type`: "solver"
 - `description`: "Derive solutions"
@@ -172,7 +164,7 @@ Invoke solver using Agent tool:
     Impact analysis: [investigator's impactAnalysis]
     Coverage assessment: [sufficient/partial/insufficient]
 
-**Expected output**: Multiple solutions (at least 3), tradeoff analysis, recommendation and implementation steps, residual risks
+**Expected output**: Materially distinct feasible solutions derived from the verified cause set, tradeoff analysis, recommendation and implementation steps, residual risks
 
 ### Step 6: Final Report Creation
 

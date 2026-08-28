@@ -8,6 +8,7 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 |---------|----------------|-----------------------------|
 | Project Overview | Always include | This file (below) |
 | Domain Constraints | Include when at least one rule changes AI decisions | This file (below) |
+| Quality Standards | Include when at least one repository-specific standard changes implementation acceptance | This file (below) |
 | Development Phase | Include when phase materially changes AI behavior (e.g., suppresses test scaffolding for prototype) | This file (below) |
 | Directory Conventions | Include when non-obvious file placement rules exist | This file (below) |
 | External Resources | Include when the project depends on resources outside the repository (design source, schema source, secret store, IaC source, etc.) | `external-resources-{frontend,backend,api,infra}.md` (load only the domains relevant to the project) |
@@ -44,6 +45,26 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 1. <measurable rule 1>
 2. <measurable rule 2>
 3. <measurable rule 3>
+```
+
+### Quality Standards
+
+**Inclusion**: Include when this repository enforces at least one standard beyond general language or framework guidance that changes whether an implementation is accepted.
+
+**Hearing**:
+- AskUserQuestion: "Are there repository-specific quality standards that agents should apply during both implementation and review?" Options: "Yes, propose them from repository evidence" / "Yes, I will provide them" / "No repository-specific standards apply".
+- Build proposals only from user-provided policy or acceptance conditions expressed or enforced by repository instructions, contributor documentation, CI, manifests and scripts, schemas and public contracts, tests, or representative implementation patterns. Inspect supporting and contradicting evidence only where it can change a proposal's applicability, accepted state, or ownership by this repository.
+- Retain a proposal only when failing it would change implementation acceptance. Give it the narrowest useful **Applies when** condition, one positive and observable **Pass** condition, and the repository reference or user-confirmed policy that supports it as **Evidence**. Consolidate proposals that would produce the same failure and correction; omit proposals whose required evidence is unavailable and report what is missing.
+- For an update, ask which standards should change and preserve every other standard verbatim. Before capture, present the proposed additions, changes, and removals with the unchanged remainder, show evidence that supports or contradicts each change, and obtain explicit user confirmation.
+
+**Output structure** (omit the section entirely when zero standards remain):
+```markdown
+## Quality Standards
+
+### <concise standard name>
+- **Applies when**: <observable applicability condition>
+- **Pass**: <positive observable accepted state>
+- **Evidence**: <repository path and section, identifier, contract, or user-confirmed policy>
 ```
 
 ### Development Phase

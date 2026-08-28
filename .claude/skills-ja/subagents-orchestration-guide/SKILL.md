@@ -24,12 +24,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 ### フロー実行中の要件変更検知
 
-**フロー実行中**にユーザーレスポンスで以下を検知したら、フローを停止してrequirement-analyzerへ：
-- 新機能・動作の言及（追加の操作方法、別画面での表示など）
-- 制約・条件の追加（データ量制限、権限制御など）
-- 技術要件の変更（処理方式、出力形式の変更など）
-
-いずれかに該当する場合は、統合した要件を記録する。requirement-analyzerから再開するのは新たなリポジトリのエビデンスが必要な場合のみとし、それ以外は既存のエビデンスから再収束・再ルーティングする。
+確認済みの成果、将来状態の要件、対象外の変更案を要件変更として扱う。これらを同時には維持できないことをエビデンスが示す場合は、要件ゲートで停止し、どれを変更するかユーザーに確認する。これらを維持する技術設計または実装の修正は要件変更ではない。成立しなくなった技術成果物をそれぞれ更新し、なお有効な出力を維持したまま、影響を受ける最も早い技術ゲートから再開する。
 
 ## 活用できるサブエージェント
 
@@ -48,10 +43,11 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 10. **technical-designer**: 確認済み要件とリポジトリのエビデンスからADRバッチまたはDesign Docを作成
 11. **work-planner**: 作業計画書作成（テストスケルトンからメタ情報を抽出・反映）
 12. **document-reviewer**: 単一ドキュメントの品質・完成度・ルール準拠チェック
-13. **code-verifier**: ドキュメントとコードの整合性を検証。実装前: Design Docの主張を既存コードベースに対して検証。実装後: 実装がDesign Docに準拠しているか検証
+13. **code-verifier**: 実装前に、Design Docの主張を既存コードベースに対して検証
 14. **design-sync**: Design Doc間の整合性検証（明示的矛盾のみ検出）
 15. **acceptance-test-generator**: Design DocのACとUI Spec（任意）から統合テストとE2Eテストのスケルトン生成
 16. **ui-analyzer**: フロントエンド設計準備のためUI事実（外部ソース＋既存UIコード）を収集 — 読み取り専用
+17. **code-reviewer**: 完了した実装を、正典とリポジトリ固有の品質基準に照らしてレビュー
 
 ## オーケストレーション原則
 
@@ -81,9 +77,13 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 3. リポジトリの客観的状態（git status、ファイルシステム、プロジェクト設定）
 4. サブエージェントの判断
 
-サブエージェント同士の判断が衝突した場合、またはサブエージェントの出力が期待と異なる場合、上記の優先順位を適用する。リポジトリの客観的状態（3）で検証し、1・2と整合する出力に従う。矛盾がある場合はユーザー指示、次いで設計成果物に従う。
+ユーザー指示にある明示的な制約と、確認済みの成果、将来状態の要件、対象外は必ず守る。技術成果物は主要な実装基準だが、これらを変えずにリポジトリのエビデンスが技術的な実現方法を否定する場合は、影響を受ける技術成果物を修正する。対象パスとタスクファイルのファイル一覧は、正典にそれらだけが対象であると明示されていない限り、調査の開始地点である。関係のない改善は現在の変更に含めない。
 
-サブエージェントが`blocked`を返した場合、まずリポジトリのエビデンスから発見可能な入力やルーティングの問題を修正し、その修正で呼び出し内容が実質的に変わる場合は再実行する。前進のためにユーザーが持つ成果・権限・不可逆な外部判断が必要な場合に限りエスカレーションする。
+### 専門エージェントの結果の受理
+
+各専門エージェントの定義が、正規の結果形式を定める。受け手であるオーケストレーターは、結果が示す意味、正典、作成された成果物、リポジトリの状態から次の行動を決める。それらから次の行動を判断できる場合は、意味が同じラベル、省略された任意フィールド、遷移ラベルの欠落を受け入れる。運用上の不足は、調査またはリポジトリ内で完結する可逆な判断によって解消し、影響を受けない作業を続ける。
+
+リポジトリのエビデンスから確認済みの成果へ進む行動を導ける間は、未完了の実装を続ける。現在の権限とエビデンスでは必要な実装を進められない場合は、残作業と観測したエビデンスを未完了報告に記載して終了する。証明だけが不足する場合は別に扱う。現在の権限とスコープで可能な回復を行い、利用可能なチェックをすべて実行し、証明不足の結果を省略せず保持したうえで、レシピ本来の可逆な境界から残りの作業を続ける。最終検証の前に、同じスコープと対象チェックで該当するquality-fixerを1回だけ再実行する。`approved`なら証明不足を解消し、`stub_detected`なら`incompleteImplementations`を通じて実装へ戻し、`verification_incomplete`が再度返った場合だけ報告する。観測できた証明だけを完了根拠にする。ユーザーに確認するのは、確認済みの成果、将来状態の要件、対象外のどれを変えるか選ぶ場合、または不可逆な外部操作を承認する場合に限る。
 
 ### レビュー裁定（Review Resolution）
 
@@ -146,20 +146,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 ### サブエージェント応答形式
 
-サブエージェントはJSON形式で応答する。各エージェントは自身の入出力契約を宣言しているため、呼び出しを組み立てる際はその契約をエージェント側で読む。この表が持つのは、分岐に使う信号と、各値が選ぶ行動だけである。
-
-| Agent | 分岐に使う信号 | 各値での行動 |
-|---|---|---|
-| requirement-analyzer | `requestSignals`、`scopeEvidence`、`costEvidence`、`questions` | 要件を収束させ、構造スケールを割り当て、より深いコードベースのエビデンスが必要かを判断する |
-| codebase-analyzer / ui-analyzer | — | JSON全体をそのまま次の専門エージェントへ渡す。各エージェントは自身の入力宣言が挙げるフィールドを消費する |
-| technical-designer / technical-designer-frontend | `status` | `completed` → 続行。`evidence_exhausted` → 正確な前提と確認済みのエビデンスを終端報告として現在の設計試行を終える。再度の修正には、その前提を直接扱う新しいエビデンスが必要であり、ユーザーへのエスカレーションにはユーザーが所有する判断が必要となる。`contradiction` → 出典ソースの優先順位で解決し、残る判断をユーザーが所有する場合だけエスカレーションする |
-| task-executor / task-executor-frontend | `status`、`escalation_type`、`requiresTestReview` | `completed` → サイクルを継続。`escalation_needed` → エージェントが定義する `escalation_type` に従って処理し、ユーザー判断が要る項目は提示する。`requiresTestReview: true` → quality-fixer の前に integration-test-reviewer を実行 |
-| quality-fixer / quality-fixer-frontend | `status` | `approved` → コミット。`stub_detected` → `incompleteImplementations[]` を実装ステップに戻し再実行。`blocked` → ユーザーが判断すべき内容をそのまま提示 |
-| document-reviewer | `verdict.decision` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`rejected` → 出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーション |
-| integration-test-reviewer | `status` | `approved` → 次へ。`needs_revision` → レビュー裁定を実行。`blocked` → 変更されたテストパスを解決して呼び出しを1回だけ是正する。テストが存在しない場合はその欠陥を executor へ差し戻す。再度 `blocked` が返る場合はレビュー未実施を記録し、その未証明の状態を完了レポートに引き継ぐ |
-| code-verifier / security-reviewer | `summary.status` / `status` | 「実装後検証の合否基準」を参照。不可逆操作のハザードによる security の `blocked` は必要な判断を名指しし、エージェント層の権限の外にある |
-| design-sync | `sync_status` | `CONFLICTS_FOUND` → 矛盾をユーザーに提示してから進む |
-| acceptance-test-generator | `generatedFiles[]` | 出力された各パスの存在を確認し、work-planner へ渡す。空のリストは、追加のスケルトンを要する未充足の証明義務がないことを示す |
+各エージェントが自身の入出力契約を宣言する。呼び出しを構成する際にその契約を読み、返された結果には、ここで別のルーティングスキーマを要求せず「専門エージェントの結果の受理」を適用する。
 
 **オーケストレーターが持つエージェント間の配線**: quality-fixer には、未追跡・削除・リネームを含む現在の未コミットのワークツリー全体を調べるよう依頼する。実装ステップの `runnableCheck` を引き継ぎ、レシピまたは technical-spec がプロジェクトの正典となる品質コマンドを示している場合は `qualityCommand` として渡す。
 
@@ -253,29 +240,22 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 - quality-fixer：修正権限（品質エラー自動修正）
 
 ### Step 2 実行詳細
-- `status: escalation_needed` または `status: blocked` → 宣言されたユーザーが持つ境界を確認し、リポジトリのエビデンスを調べても未解決の場合はエスカレーション
+- `status: escalation_needed` または `status: blocked` → 専門エージェントの結果の受理を適用
 - `requiresTestReview` が `true` → **integration-test-reviewer** を実行
-  - `status` が `needs_revision` → レビュー裁定を適用し、同じ `task_file` と `apply` の quality-issue オブジェクト一式を逐語で渡して、ルーティング先の executor（レイヤー別エージェントルーティング 参照、task-executor または task-executor-frontend）を **Fix Mode** で再実行する
-  - `status` が `blocked` → 移動・リネームされた変更テストパスを解決してレビュアを1回だけ再実行する。`requiresTestReview: true` にもかかわらず変更されたテストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でルーティング先の executor に差し戻す。再実行でも `blocked` が返る場合はレビュー未実施を記録して quality-fixer へ進む
+  - `status` が `needs_revision` → レビュー裁定を適用し、同じ`task_file`と`apply`のquality-issueオブジェクト一式を、`correction_findings`として逐語でルーティング先のexecutor（レイヤー別エージェントルーティング参照、task-executorまたはtask-executor-frontend）へ渡す
+  - `status` が `blocked` → 移動・リネームされた変更テストパスを解決してレビュアーを1回だけ再実行する。`requiresTestReview: true`にもかかわらず変更されたテストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてルーティング先のexecutorに差し戻す。再実行でも`blocked`が返る場合はレビュー未実施を記録してquality-fixerへ進む
   - `status` が `approved` → quality-fixer へ進む
 
 ### 自律実行の停止条件
 
-以下の場合に自律実行を停止し、ユーザーにエスカレーション：
-
-1. **サブエージェントが示した、ユーザーが持つ境界**
-   - 受理済みの振る舞い、公開/共有契約、承認済みの重要な設計、外部の権限、不可逆な操作のいずれかに判断が必要
-
-2. **要件変更検知時**
-   - 要件変更検知チェックリストで1つでも該当
-   - 自律実行を停止し、統合した要件で再収束する。requirement-analyzer の再実行はリポジトリのエビデンスが変わる必要がある場合のみ
-
-3. **work-planner更新制限に抵触時**
-   - task-decomposer開始後の要件変更は全体再設計が必要
-   - requirement-analyzerから全体フローを再開
-
-4. **ユーザー明示停止時**
-   - 直接的な停止指示や割り込み
+| トリガー | 対応 |
+|---|---|
+| 確認済みの成果、将来状態の要件、対象外を、ユーザーの選択なしには同時に維持できないことをエビデンスが示す | 要件変更検知を適用し、どれを変更するか確認する。 |
+| 不可逆な外部操作に承認が必要 | 権限ゲートで承認を求める。 |
+| 必要な実装が未完了 | リポジトリのエビデンスから前進できる作業を導ける間は続ける。それ以外は、未完了の内容と観測したエビデンスを報告して終了する。 |
+| サブエージェントが環境または実行上の前提不足を報告 | 「専門エージェントの結果の受理」にある証明不足の回復と再試行を適用する。 |
+| 要件が変わる | 上記の要件変更検知を適用する。task-decomposer開始後は影響するタスクを無効にする。要件変更によって承認済みの要件、契約、データフロー、検証戦略、タスク境界が成立しなくなる場合に限り、ドキュメント設計から再開する。 |
+| ユーザーが停止または割り込む | 自律実行を停止する。 |
 
 ### Prompt Construction Rule
 すべてのサブエージェントプロンプトに以下を含める:
@@ -287,19 +267,6 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 追加の2つのルール:
 - サブエージェントは Agent prompt と自身が読み込んだファイルしか参照できない。必須のパス、先行 JSON、パラメータ、スコープ制約をプロンプトに明示的に注入する。
 - 以下の例の `[placeholder]` は Agent ツール呼び出し前にすべて具体値へ置換する。
-
-### 完了報告の形式
-
-選択したフローの完了後、以下を返す：
-
-```json
-{
-  "status": "completed | blocked", "scale": "small | medium | large", "completedTasks": [{"taskFile": "path", "status": "completed", "commit": "sha-or-null"}], "filesModified": ["path"],
-  "verification": [{"check": "name", "result": "passed | failed | not_run", "evidence": "command or verifier result"}], "verifiers": [{"name": "agent", "status": "status value"}], "unresolvedItems": [{"item": "decision or evidence", "requiredInput": "input", "escalation": "condition"}]
-}
-```
-
-選択したフローで必須のタスク、品質ゲート、検証エージェント、commit stepがすべて完了した場合に`status`を`completed`とする。実行できなかったチェックは`verification`に記録し、未解決のユーザー判断によって完了できない場合に限り`blocked`とする。
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
@@ -376,13 +343,15 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 - **フロー確認**: 承認後は、確定した大規模・中規模・小規模フローから次のstepを選択する
 - **整合性検証**: サブエージェントの出力が矛盾した場合、優先順位に従って解決（委譲の境界セクション参照）
 
-### 実装後検証のPass/Fail基準
+### 実装後レビューのステータスルーティング
 
-| Verifier | Pass | Fail | Blocked |
-|----------|------|------|---------|
-| code-verifier | `summary.status`が`consistent` | `summary.status`が`needs_review`または`inconsistent` | `summary.status`が`blocked` → `blockingReason`を添えてエスカレーション。検証可能な入力がなかった状態である |
-| security-reviewer | `status`が`approved` | `status`が`needs_revision` | `status`が`blocked` → 不可逆操作、またはエージェントの権限外として名指しされた判断をエスカレーション |
+| Reviewer | 完了: 検出事項が空 | レビュー裁定へ進む | Blocked |
+|----------|-------------------|-------------------|---------|
+| code-reviewer | `verdict`が`pass` | `verdict`が`needs-improvement`または`needs-redesign` | `verdict`が`blocked` → 専門エージェントの結果の受理を適用 |
+| security-reviewer | `status`が`approved` | `status`が`needs_revision` | `status`が`blocked` → 専門エージェントの結果の受理を適用 |
 
-**再実行ルール**: 不合格となった検証エージェントの検出事項にレビュー裁定を適用し、修正対象になった検出事項を返した検証エージェントだけを再実行する。修正の収束とエスカレーションはレビュー裁定が担い、合格した検証エージェントの記録済みエビデンスは維持する。
+レビュアーの検出事項は候補である。修正作業は、レビュー裁定で`apply`となった集合からだけ作成する。
 
-**修正サイクルのハンドオフ**: レビュー裁定を適用し、必要な各 executor には `apply` の検出事項オブジェクト全体を逐語で、処理方針のみ付加して渡す。照合を受け付けるレビュアー入力には `prior_feedback` を引き継ぐ。
+**修正サイクルのハンドオフ**: レビュー裁定を適用し、そこで選ばれた各修正担当を呼び出す。authorが所有する技術成果物の修正では、レイヤーに応じたtechnical designerをupdateモードで呼び出し、その成果物に既存のdocument-reviewerと該当するdesign-syncのゲートを実行した後、起点のレビュアーを再実行する。executorが所有する修正では、レイヤーに応じたexecutorへ、元の`task_file`またはdirect scopeのフィールドと、`apply`の検出事項オブジェクト一式に処理方針だけを加えた`correction_findings`を逐語で渡し、その後に該当する品質ゲートを実行する。両方の担当が必要な場合は、レビュー裁定にあるauthorを先に修正して再評価する順序に従う。`prior_feedback`は照合を行うレビュアーにだけ渡す。
+
+**再実行ルール**: 実装後の修正を適用した後、その最新結果から1件以上の修正を適用した各レビュアーを再実行する。それ以外のレビュアー結果を維持できるのは、修正によってそのレビュー境界が保たれたことをリポジトリのエビデンスで示せる場合に限る。それ以外はそのレビュアーも再実行する。レビューの前提不足を回復した後は、そのレビュアーを再実行する。受け入れ可否はレビュー裁定の収束条件で判断し、解決済みの却下を維持する。

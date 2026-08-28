@@ -87,8 +87,6 @@ Each task contains:
 - optional Verification Focus copied from the Work Plan;
 - Completion Criteria tied to cited ACs.
 
-Record every alternative, optional behavior, or placeholder this step fixed to an explicit choice, and every decision that remains blocked, in the task template's `Decisions and Unresolved Items` section. Omit that section when the task carries no such item.
-
 ## Output
 
 Return the standard structured response listing generated task paths.

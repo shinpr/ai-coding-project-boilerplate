@@ -24,12 +24,7 @@ When receiving a new task, pass user requirements directly to requirement-analyz
 
 ### Requirement Change Detection During Flow
 
-**During flow execution**, if detecting the following in user response, stop flow and go to requirement-analyzer:
-- Mentions of new features/behaviors (additional operation methods, display on different screens, etc.)
-- Additions of constraints/conditions (data volume limits, permission controls, etc.)
-- Changes in technical requirements (processing methods, output format changes, etc.)
-
-When any condition applies, record the integrated requirements and restart from requirement-analyzer only when new repository evidence is required; otherwise re-converge and re-route from the existing evidence.
+Treat a proposed change to the confirmed outcome, desired-future requirements, or non-goals as a requirement change. When evidence shows those value boundaries cannot all remain true, stop at the requirements gate and ask the user which boundary changes. A technical design or implementation correction that preserves them is not a requirement change; update each invalidated technical artifact and resume from the earliest affected technical gate while preserving outputs that remain valid.
 
 ## Subagents I Can Utilize
 
@@ -48,10 +43,11 @@ When any condition applies, record the integrated requirements and restart from 
 10. **technical-designer**: ADR batch or Design Doc creation from confirmed requirements and repository evidence
 11. **work-planner**: Work plan creation from Design Doc and test skeletons
 12. **document-reviewer**: Single document quality, completeness, and rule compliance check
-13. **code-verifier**: Verify document-code consistency. Pre-implementation: Design Doc claims against existing codebase. Post-implementation: implementation against Design Doc
+13. **code-verifier**: Verify Design Doc claims against the existing codebase before implementation
 14. **design-sync**: Design Doc consistency verification (detects explicit conflicts only)
 15. **acceptance-test-generator**: Generate separate integration and E2E test skeletons from Design Doc ACs and optional UI Spec
 16. **ui-analyzer**: Gather UI facts (external sources + existing UI code) for frontend design preparation — read-only
+17. **code-reviewer**: Review completed implementation against governing sources and repository quality policy
 
 ## My Orchestration Principles
 
@@ -81,9 +77,13 @@ I pass **what to accomplish** and **where to work**. Each specialist determines 
 3. Objective repo state (git status, file system, project configuration)
 4. Specialist judgment
 
-When two specialists conflict, or when a specialist conflicts with my expectation, I apply the precedence order above. I verify against objective repo state (item 3). I follow specialist output when it aligns with items 1 and 2. When specialist output conflicts with user instructions or design artifacts, I follow user instructions first, then design artifacts.
+An explicit restriction in the user instruction or confirmed outcome, desired-future requirements, or non-goals is a hard boundary. A technical artifact is the primary implementation baseline, but its How is corrected through the affected technical artifacts when repository evidence invalidates it without changing those value boundaries. Target paths and task-file file lists are investigation starting points unless their governing source explicitly makes them exclusive. Unrelated improvements remain outside the active change.
 
-When a specialist returns `blocked`, first repair discoverable input or routing problems from repository evidence and re-invoke it when the repaired input materially changes the call. Escalate only when progress requires a user-owned outcome, authority, or irreversible external decision.
+### Specialist Result Acceptance
+
+Each specialist's agent definition owns its canonical result shape. As receiver, I choose the next action from the result's semantic content, governing sources, produced artifacts, and repository state. Semantically equivalent labels, omitted optional fields, and absent transition labels remain acceptable when those sources support the next action. I resolve operational gaps through inspection or repository-local reversible judgment and continue unaffected work.
+
+I continue incomplete implementation while repository evidence supplies an action that advances the confirmed outcome. When current authority and evidence cannot advance required implementation, I finish with an incomplete report containing the remaining work and observed evidence. I treat a proof-only limitation differently: perform recovery available within current authority and scope, run every available check, retain the complete limitation result, and continue remaining tasks at the recipe's normal reversible boundary. Before final verification, I re-invoke the applicable quality-fixer once with the same scope and affected check; I clear an `approved` result, route `stub_detected` through `incompleteImplementations`, and report only a repeated `verification_incomplete` result. I claim only observed proof. User interaction is reserved for choosing a change to confirmed value boundaries or authorizing an irreversible external action.
 
 ### Review Resolution
 
@@ -148,20 +148,7 @@ All implementation work (Edit, Write, MultiEdit) is performed by subagents, not 
 
 ### Subagent Response Format
 
-Subagents respond in JSON. Each agent declares its own input and output contract — read that contract from the agent when composing a call. This table carries only the signal I branch on and the action each value selects.
-
-| Agent | I branch on | Action per value |
-|---|---|---|
-| requirement-analyzer | `requestSignals`, `scopeEvidence`, `costEvidence`, `questions` | Converge requirements, assign Structural Scale, and determine whether deeper codebase evidence is required |
-| codebase-analyzer / ui-analyzer | — | Pass the full JSON unchanged to the next specialist; each consumes the fields its own input declaration names |
-| technical-designer / technical-designer-frontend | `status` | `completed` → continue. `evidence_exhausted` → end the current design attempt with the exact premise and checked evidence as its terminal report; another correction requires directly relevant new evidence, and user escalation requires a user-owned decision. `contradiction` → resolve governing-source precedence, escalating only when the remaining decision is user-owned |
-| task-executor / task-executor-frontend | `status`, `escalation_type`, `requiresTestReview` | `completed` → continue the cycle. `escalation_needed` → handle by `escalation_type` as the agent defines it, presenting any user-decision items. `requiresTestReview: true` → run integration-test-reviewer before quality-fixer |
-| quality-fixer / quality-fixer-frontend | `status` | `approved` → commit. `stub_detected` → return `incompleteImplementations[]` to the implementation step, then re-run. `blocked` → present the exact user-owned decision |
-| document-reviewer | `verdict.decision` | `approved` → proceed. `needs_revision` → run Review Resolution. `rejected` → resolve the governing-source conflict or escalate when user authority is required |
-| integration-test-reviewer | `status` | `approved` → proceed. `needs_revision` → run Review Resolution. `blocked` → repair the invocation once by resolving changed test paths; if no test exists, return that defect to the executor; if it returns `blocked` again, record the review as not run and carry that unproven state into the completion report |
-| code-verifier / security-reviewer | `summary.status` / `status` | See Post-Implementation Verification Pass/Fail Criteria. A security `blocked` raised by an irreversible-operation hazard names the decision it requires and sits outside the agent layer's authority |
-| design-sync | `sync_status` | `CONFLICTS_FOUND` → present the conflicts to the user before proceeding |
-| acceptance-test-generator | `generatedFiles[]` | Verify each emitted path exists, then pass the paths to work-planner. An empty list means no uncovered proof obligation requires another skeleton |
+Each agent declares its own input and output contract. Read that contract when composing a call, then apply Specialist Result Acceptance to the returned semantic content instead of requiring a second routing schema here.
 
 **Cross-agent wiring I own**: ask quality-fixer to inspect the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Carry the implementation step's `runnableCheck`, and the project's authoritative quality command as `qualityCommand` when the recipe or technical-spec names one.
 
@@ -255,28 +242,22 @@ A work plan task entry records exactly one lane; task materialization copies tha
 - quality-fixer: Fix authority (automatic quality error fixes)
 
 ### Step 2 Execution Details
-- `status: escalation_needed` or `status: blocked` -> inspect the declared user-owned boundary; escalate when it remains unresolved after consulting repository evidence
+- `status: escalation_needed` or `status: blocked` -> Apply Specialist Result Acceptance
 - `requiresTestReview` is `true` -> Execute **integration-test-reviewer**
-  - If `status` is `needs_revision` -> Apply Review Resolution and re-invoke the routed executor (task-executor or task-executor-frontend per Layer-Aware Agent Routing) in **Fix Mode** with the same `task_file` and the complete `apply` quality-issue objects verbatim
-  - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor in **Fix Mode**. If it returns `blocked` again, record the review as not run and proceed to quality-fixer
+  - If `status` is `needs_revision` -> Apply Review Resolution and re-invoke the routed executor (task-executor or task-executor-frontend per Layer-Aware Agent Routing) with the same `task_file` and the complete `apply` quality-issue objects verbatim as `correction_findings`
+  - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor as `correction_findings`. If it returns `blocked` again, record the review as not run and proceed to quality-fixer
   - If `status` is `approved` -> Proceed to quality-fixer
 
 ### Conditions for Stopping Autonomous Execution
-Stop autonomous execution and escalate to user in the following cases:
 
-1. **User-owned boundary from a subagent**
-   - Accepted behavior, public/shared contract, major approved design, external authority, or irreversible action requires a decision
-
-2. **When requirement change detected**
-   - Any match in requirement change detection checklist
-   - Stop autonomous execution and re-converge with the integrated requirements; re-run requirement-analyzer only when repository evidence must change
-
-3. **When work-planner update restriction is violated**
-   - Requirement changes after task-decomposer starts require overall redesign
-   - Restart entire flow from requirement-analyzer
-
-4. **When user explicitly stops**
-   - Direct stop instruction or interruption
+| Trigger | Action |
+|---|---|
+| Evidence shows the confirmed outcome, desired-future requirements, and non-goals cannot all remain true without a user choice | Apply Requirement Change Detection and ask which value boundary changes. |
+| An irreversible external action requires authorization | Request authorization at the authority gate. |
+| Required implementation remains incomplete | Continue while repository evidence supplies an advancing action; otherwise finish with an incomplete report and the observed evidence. |
+| A subagent reports an environment or execution prerequisite | Apply the proof-limitation recovery and retry in Specialist Result Acceptance. |
+| A requirement changes | Apply Requirement Change Detection above. After task-decomposer starts, invalidate affected tasks; restart document design only when the requirement change invalidates an approved requirement, contract, data flow, verification strategy, or task boundary. |
+| The user stops or interrupts | Stop autonomous execution. |
 
 ### Prompt Construction Rule
 Every subagent prompt must include:
@@ -288,19 +269,6 @@ Construct the prompt from the agent's Input Parameters section and the deliverab
 Two additional rules:
 - Subagents see only the Agent prompt and files they read. Include required paths, prior JSON, parameters, and scope constraints explicitly.
 - Replace every `[placeholder]` in examples below with concrete values before invoking the Agent tool.
-
-### Completion Report Format
-
-After the selected flow completes, return:
-
-```json
-{
-  "status": "completed | blocked", "scale": "small | medium | large", "completedTasks": [{"taskFile": "path", "status": "completed", "commit": "sha-or-null"}], "filesModified": ["path"],
-  "verification": [{"check": "name", "result": "passed | failed | not_run", "evidence": "command or verifier result"}], "verifiers": [{"name": "agent", "status": "status value"}], "unresolvedItems": [{"item": "decision or evidence", "requiredInput": "input", "escalation": "condition"}]
-}
-```
-
-Set `status` to `completed` when every required task, quality gate, verifier, and commit step has completed. Report checks that did not run in `verification`; set `status` to `blocked` only when an unresolved user-owned decision prevents completion.
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
@@ -377,13 +345,15 @@ Set `status` to `completed` when every required task, quality gate, verifier, an
 - **Flow confirmation**: After approval, select the next step from the confirmed large/medium/small flow
 - **Consistency verification**: When subagent outputs conflict, apply Decision precedence (see Delegation Boundary section)
 
-### Post-Implementation Verification Pass/Fail Criteria
+### Post-Implementation Review Status Routing
 
-| Verifier | Pass | Fail | Blocked |
-|----------|------|------|---------|
-| code-verifier | `summary.status` is `consistent` | `summary.status` is `needs_review` or `inconsistent` | `summary.status` is `blocked` → Escalate with `blockingReason`; the verifier had no verifiable input |
-| security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` → Escalate the irreversible operation or other named decision outside agent authority |
+| Reviewer | Complete: empty finding set | Enter Review Resolution | Blocked |
+|----------|---------------------------|-------------------------|---------|
+| code-reviewer | `verdict` is `pass` | `verdict` is `needs-improvement` or `needs-redesign` | `verdict` is `blocked` → Apply Specialist Result Acceptance |
+| security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` → Apply Specialist Result Acceptance |
 
-**Re-run rule**: Apply Review Resolution to failed verifier findings and re-run only the verifiers whose findings entered correction. Review Resolution owns correction convergence and escalation; retain evidence from verifiers that passed.
+Reviewer findings are candidates. Create correction work only from the Review Resolution `apply` set.
 
-**Fix-cycle handoff**: Apply Review Resolution, then pass each required executor the complete `apply` finding objects verbatim with only their dispositions added. Carry `prior_feedback` to reviewer inputs that support reconciliation.
+**Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers.
+
+**Re-run rule**: After any applied post-implementation correction, re-run each reviewer with at least one correction applied from its latest result. Retain any other reviewer result only when repository evidence establishes that the correction preserved its review boundary; otherwise re-run that reviewer. After recovering a blocked review prerequisite, re-run that reviewer. Review Resolution convergence governs acceptance and preserves resolved declines.

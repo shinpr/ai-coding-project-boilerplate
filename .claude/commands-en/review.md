@@ -1,5 +1,5 @@
 ---
-description: Design Doc compliance and security validation with optional auto-fixes
+description: Reviews completed implementation for governing-source compliance, scope economy, repository quality, and security, then applies user-approved corrections.
 ---
 
 **Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
@@ -11,7 +11,7 @@ Execute the `subagents-orchestration-guide` skill before making workflow decisio
 
 ## Execution Method
 
-- Compliance validation → performed by code-reviewer
+- Implementation review → performed by code-reviewer
 - Security validation → performed by security-reviewer
 - **Code-side fix path**: Fix implementation → task-executor; Correction review → code-reviewer / security-reviewer; Final quality checks → quality-fixer
 - **Design-side update path**: DD revision → technical-designer (update mode); DD review → document-reviewer; cross-DD consistency → design-sync (when multiple DDs exist); Re-validation → code-reviewer
@@ -30,8 +30,8 @@ Resolve the Design Doc from `$ARGUMENTS` first. Otherwise discover the document 
 ### 2. Execute code-reviewer
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
-- `description`: "Code compliance review"
-- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Validate Design Doc compliance and return structured JSON report."
+- `description`: "Completed implementation review"
+- `prompt`: "Review the completed implementation. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [git diff file list]. Return the initial review JSON."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
@@ -45,21 +45,21 @@ Invoke security-reviewer using Agent tool:
 
 ### 4. Verdict and Response
 
-**If security-reviewer returned `blocked`**: Stop at this gate, report the blocking reason and any returned finding, then escalate to the user.
+When either reviewer returns a blocked or otherwise unusable result, apply subagents-orchestration-guide Specialist Result Acceptance to its semantic cause. Carry only a remaining verification limitation into the report.
 
-Apply Review Resolution to both outputs. Its dispositions determine what happens next: `apply` findings become code corrections, `user_decision_required` findings carry a decision only the user can make, `decline` findings are recorded with their reason. Each finding already names its code location, so no further routing classification is needed.
+Apply Review Resolution to both outputs. Its `apply` and `decline` dispositions determine routing. For each `apply` finding, use the owning document author when the implementation is the accepted state and a technical artifact is stale; use the executor when implementation must change to reach the accepted state.
 
 Present the adjudicated result:
 
 ```
-Code Review: [verdict from code-reviewer]
+Implementation Review: [verdict from code-reviewer]
   Acceptance Criteria:
-  - [fulfilled] [item] (confidence: [high/medium/low])
-  - [unfulfilled] [item]: [gap] — [suggestion]
-  Identifier Mismatches:
-  - [identifier]: DD=[designDocValue] Code=[codeValue] at [location]
-  Quality Findings:
-  - [category] [location]: [description] — [rationale]
+  - [fulfilled] [item]: [evidence]
+  - [unfulfilled] [item] -> [corresponding finding ID]
+  Required Corrections:
+  - [id] [category] [location]: [description] — [basis and effect] [recommended: code-side correction | design-side update]
+  Limitations:
+  - [unverified judgment and effect]
 
 Security Review: [status from security-reviewer]
   Findings by category:
@@ -69,30 +69,30 @@ Security Review: [status from security-reviewer]
 Declined: [ID] — [governing reason]
 ```
 
-Ask the user for two things only: authority to apply the proposed `apply` set, and a decision on each `user_decision_required` item. For a `user_decision_required` item the user may decide that the code is correct and the Design Doc is stale; those items go to Step 5. When no approved code change remains, proceed to Step 11.
+Ask the user for authority to apply the proposed `apply` routes. The batch option is "approve all proposed `apply` routes" and includes only those routes. When the approved change set is empty, proceed to Step 11.
 
 **Boundary carried into the fix path**: Carry the approved findings, their observable correction conditions, and any size budget the user stated through the code-side correction path and its final quality check. Apply coding-standards "Change Boundary and Reference Representativeness" to derive the complete correction; finding paths are investigation starting points. A user-stated size budget remains a user-owned boundary when the complete correction exceeds it.
 
 ### 5. Design-Side Update
 
-Run this step only for `user_decision_required` items the user resolved by ratifying the current code in the design.
+Run this step only when the approved route keeps the accepted implementation and corrects a stale Design Doc.
 
 1. Invoke technical-designer in update mode using Agent tool:
    - `subagent_type`: "technical-designer"
    - `description`: "Design Doc update from review findings"
-   - `prompt`: "Update Design Doc at [path] in update mode. The implementation has diverged in the following ways that the user decided to ratify in the design rather than in the code: [complete finding objects with the recorded user decision]. Reflect the current code behavior in the relevant sections and add a history entry."
+   - `prompt`: "Update Design Doc at [path] in update mode from these approved design-side findings: [complete finding objects with their apply dispositions]. Preserve the confirmed outcome, desired-future requirements, and non-goals."
 
 2. Invoke document-reviewer to verify the updated Design Doc:
    - `subagent_type`: "document-reviewer"
    - `description`: "Document review of updated Design Doc"
    - `prompt`: "doc_type: DesignDoc. review_context: update. Review updated Design Doc at [path] for consistency and completeness."
-   - Run Review Resolution through its correction re-review, escalation, and convergence transitions, using technical-designer for rerouted corrections. Proceed only at its convergence condition.
+   - Run Review Resolution through its correction re-review and convergence transitions, using technical-designer for rerouted corrections. Proceed only at its convergence condition.
 
 3. When another Design Doc governs a responsibility or contract touched by the reviewed changes, invoke design-sync:
    - `subagent_type`: "design-sync"
    - `description`: "Cross-DD consistency check"
    - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
-   - When `sync_status: CONFLICTS_FOUND`: present conflicts to the user; resolution requires re-invoking technical-designer for affected DDs.
+   - When `sync_status: CONFLICTS_FOUND`: apply Review Resolution using design-sync as a fresh verifier, correct `apply` conflicts through the owning technical designer, rerun design-sync, and retain evidenced declines as complete.
 
 4. Re-evaluate the approved `apply` findings against the updated Design Doc and drop any the revision already satisfies. When none remains, skip the code-side fix path and proceed to the final report.
 
@@ -101,43 +101,55 @@ Run this step only for `user_decision_required` items the user resolved by ratif
 Invoke task-executor using Agent tool:
 - `subagent_type`: "task-executor"
 - `description`: "Execute review fixes"
-- `prompt`: "Apply these approved code-side findings directly: [complete reviewer finding objects verbatim, with only their orchestrator dispositions added]. Derive the complete correction using coding-standards Change Boundary and Reference Representativeness. Respect the stated total size budget."
+- `direct_scope`: Apply the approved code-side corrections within the confirmed review scope and stated total size budget
+- `governing_sources`: The reviewed Design Doc and accepted requirement or ADR paths
+- `target_paths`: The implementation and test paths confirmed for the approved code-side routes
+- `observable_verification`: The focused tests or observable contract checks named by the findings and governing sources pass
+- `correction_findings`: Complete reviewer finding objects verbatim, with only their orchestrator dispositions added
 
-### 7. Re-validate code-reviewer
+### 7. Quality Check
 
-Invoke code-reviewer using Agent tool:
-- `subagent_type`: "code-reviewer"
-- `description`: "Re-validate compliance"
-- `prompt`: "Re-validate Design Doc compliance after fixes. Design Doc: [path]. Implementation files: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
-
-### 8. Re-validate security-reviewer
-
-Invoke security-reviewer using Agent tool (only if security fixes were applied):
-- `subagent_type`: "security-reviewer"
-- `description`: "Re-validate security"
-- `prompt`: "Re-validate security after fixes. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
-
-### 9. Resolve Corrections
-
-Apply Review Resolution to every Step 7 and Step 8 result. A maintained `apply` finding returns to Step 6 and then to its correction review. Proceed when Review Resolution reaches its convergence condition.
-
-### 10. Quality Check
-
-After correction review converges, invoke quality-fixer once using Agent tool:
+Invoke quality-fixer using Agent tool:
 - `subagent_type`: "quality-fixer"
 - `description`: "Quality gate check"
 - `prompt`: "direct_scope: { outcome: [approved code-side findings passed to Step 6], affectedPaths: [paths covered by those findings and their required consistency changes], verificationCondition: applicable project quality checks pass }. Confirm quality gate passage for the complete current uncommitted worktree."
 
 Branch on its response:
-- `approved` → proceed to Step 11
-- `blocked` → present the user-owned decision reported by quality-fixer
+- `approved` → Proceed to Step 8
+- `stub_detected` → Return to Step 6 with `incompleteImplementations` unchanged, then repeat Step 7
+- `verification_incomplete` → Retain the complete result and proceed to Step 8
+- `blocked` → Apply Specialist Result Acceptance
+
+### 8. Re-validate code-reviewer
+
+Immediately before this invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
+
+Invoke code-reviewer using Agent tool:
+- `subagent_type`: "code-reviewer"
+- `description`: "Re-validate implementation review"
+- `prompt`: "Re-review the completed implementation after approved corrections. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every received item."
+
+### 9. Re-validate security-reviewer
+
+Immediately before this invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
+
+Invoke security-reviewer when subagents-orchestration-guide's post-implementation Re-run rule requires a current security result:
+- `subagent_type`: "security-reviewer"
+- `description`: "Re-validate security"
+- `prompt`: "Re-validate security after fixes. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
+
+### 10. Resolve Corrections
+
+Apply Review Resolution to every Step 8 and Step 9 result. A maintained `apply` finding returns to Step 6 and then repeats the applicable quality and correction review. Proceed when Review Resolution reaches its convergence condition.
+
+Before Step 11, retry each retained quality-fixer limitation once with the same Step 7 inputs and affected check. Clear an `approved` result, route newly discovered incomplete implementation through Steps 6-10, and report a repeated `verification_incomplete` result. When the retry changes the repository, repeat Steps 8-10 for the changed code before reporting.
 
 ### 11. Final Report
 
 Then present the final report:
 
 ```
-Code Review:
+Implementation Review:
   Initial: [verdict from code-reviewer]
   Correction review: [verdict for the re-review scope] (if fixes executed)
   Reconciliation: [resolved / withdrawn / maintained by finding ID]
@@ -148,8 +160,10 @@ Security Review:
   Reconciliation: [resolved / withdrawn / maintained by finding ID]
 
 Quality Check:
-  Status: [approved / not run — no code changes]
-  Checks not run or unrelated baseline failures: [from the quality-fixer result, when present]
+  Final: [approved / verification_incomplete / not run — no code changes]
+
+Remaining proof limitations:
+- [reason — affected check and evidence] (only when repeated after retry)
 
 Declined findings:
 - [ID] — [governing reason and evidence]
@@ -158,7 +172,7 @@ Remaining issues:
 - [items requiring manual intervention]
 ```
 
-**Scope**: Design Doc compliance validation, security review, code-side auto-fixes, and design-side updates the user ratifies.
+**Scope**: Completed implementation review, security review, and user-approved correction routing.
 
 ## Scope Boundary for Subagents
 
@@ -169,5 +183,5 @@ Scope boundary for subagents:
 Deliver the approved corrections consistently across the repository responsibility they affect.
 Treat referenced paths as investigation starting points.
 Keep governing artifacts read-only except for assigned updates.
-Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
+Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```

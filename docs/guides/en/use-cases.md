@@ -11,7 +11,7 @@ Start with the [Quick Start](./quickstart.md) if the project is not configured y
 | `/implement <request>` | Confirm requirements and complete the applicable design, implementation, verification, and commit flow |
 | `/task <request>` | Execute one focused task after identifying its scope and applicable skills |
 | `/diagnose <problem>` | Investigate a problem, independently verify the cause, and derive supported solutions without implementing one |
-| `/review [Design Doc]` | Review backend/general implementation against its Design Doc and security boundary; optionally apply approved corrections |
+| `/review [Design Doc]` | Review completed backend or shared implementation against the agreed outcome, repository standards, and security boundaries, then apply user-approved corrections |
 | `/front-review [Design Doc]` | Run the same review and correction flow for frontend implementation |
 
 ### Design and planned execution
@@ -32,7 +32,7 @@ Start with the [Quick Start](./quickstart.md) if the project is not configured y
 
 | Command | Outcome |
 |---|---|
-| `/project-inject` | Record project-specific prerequisites in `project-context` |
+| `/project-inject` | Record project-specific prerequisites and quality standards in `project-context` |
 | `/create-skill <knowledge>` | Create a new skill through an interactive hearing and review |
 | `/refine-skill <change>` | Apply a targeted change to an existing skill and review the result |
 | `/sync-skills` | Synchronize skill metadata after skill content changes |
@@ -87,7 +87,7 @@ With no argument, `/build` resolves the consumable task set owned by that recipe
 /review docs/design/webhook-signature-design.md
 ```
 
-The command reviews Design Doc compliance and security. It presents supported findings, applies only the correction set the user authorizes, re-reviews those findings after correction, and runs the final quality check once after review convergence. It does not create review-fix task files.
+The command checks whether the completed implementation meets the agreed outcome and repository standards, contains no unnecessary changes, and has no serious functional, reliability, or security issues. It presents supported findings, applies only the corrections you approve, rechecks those findings after correction, and runs the final quality check once the review converges. It does not create task files for review fixes.
 
 ## Document routing
 
@@ -118,7 +118,7 @@ File count is evidence about the change surface, not the scale rule.
 
 ## Customizing project behavior
 
-Use `/project-inject` for facts and constraints that apply to this repository. Use a skill for reusable judgment that should load only for a particular responsibility. Do not copy feature-specific decisions into a global rule; keep them in the applicable PRD, ADR, UI Spec, or Design Doc.
+Use `/project-inject` for facts, constraints, and quality standards that apply to this repository. Use a skill for reusable judgment that should load only for a particular responsibility. Do not copy feature-specific decisions into a global rule; keep them in the applicable PRD, ADR, UI Spec, or Design Doc.
 
 After changing skill content, run:
 

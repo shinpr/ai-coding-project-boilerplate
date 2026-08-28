@@ -147,7 +147,7 @@ prompt: |
 
 #### Step 5: Revision (conditional)
 
-Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution, pass complete `apply` issue objects verbatim to `prd-creator` in update mode, then rerun Steps 3-4 with `prior_feedback`. For `rejected`, resolve the governing-source conflict or escalate when user authority is required. Follow Review Resolution convergence and escalation conditions.
+Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution, pass complete `apply` issue objects verbatim to `prd-creator` in update mode, then rerun Steps 3-4 with `prior_feedback`. A decline-only result completes the review. For `rejected`, apply the parent requirement gate.
 
 #### Unit Completion
 
@@ -285,7 +285,7 @@ prompt: |
 
 #### Step 10: Revision (conditional)
 
-Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution and pass complete `apply` issue objects verbatim to `technical-designer` or `technical-designer-frontend` in update mode, then rerun Steps 8-9 with `prior_feedback`. For `rejected`, resolve the governing-source conflict or escalate when user authority is required. Follow Review Resolution convergence and escalation conditions.
+Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution and pass complete `apply` issue objects verbatim to `technical-designer` or `technical-designer-frontend` in update mode, then rerun Steps 8-9 with `prior_feedback`. A decline-only result completes the review. For `rejected`, apply the parent requirement gate.
 
 #### Unit Completion
 
@@ -308,4 +308,4 @@ Output summary including:
 | Discovery finds nothing | Ask user for project structure hints |
 | Generation fails | Log failure, continue with other units, report in summary |
 | Verifier returns `blocked` | Stop and report `blockingReason` |
-| Reviewer returns `rejected` | Resolve the governing-source conflict or escalate when user authority is required |
+| Reviewer returns `rejected` | Apply the parent requirement gate |

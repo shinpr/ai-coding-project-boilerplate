@@ -147,7 +147,7 @@ prompt: |
 
 #### ステップ5: 修正（条件付き）
 
-`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語で `prd-creator` の update モードに渡し、その後 `prior_feedback` を添えてステップ3〜4を再実行する。`rejected` は出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーションする。レビュー裁定の収束条件とエスカレーション条件に従う。
+`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語で `prd-creator` の update モードに渡し、その後 `prior_feedback` を添えてステップ3〜4を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
 
 #### ユニット完了
 
@@ -285,7 +285,7 @@ prompt: |
 
 #### ステップ10: 修正（条件付き）
 
-`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語で `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後 `prior_feedback` を添えてステップ8〜9を再実行する。`rejected` は出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーションする。レビュー裁定の収束条件とエスカレーション条件に従う。
+`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語で `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後 `prior_feedback` を添えてステップ8〜9を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
 
 #### ユニット完了
 
@@ -308,4 +308,4 @@ prompt: |
 | 発見で何も見つからない | ユーザーにプロジェクト構造のヒントを求める |
 | 生成が失敗 | 失敗をログ、他のユニットで続行、サマリで報告 |
 | 検証エージェントが `blocked` を返す | 停止して `blockingReason` を報告 |
-| レビュアーが `rejected` を返す | 出典ソースの衝突を解消するか、ユーザーの権限が必要な場合はエスカレーション |
+| レビュアーが `rejected` を返す | 上位の要件ゲートを適用 |

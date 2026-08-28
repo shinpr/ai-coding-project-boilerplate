@@ -1,24 +1,22 @@
 ---
-description: Design Docを使用して既存コードベースに統合/E2Eテストを追加
+description: Design Docを使用して既存コードベースに統合テスト/E2Eテストを追加
 ---
 
-**ユーザーの明示的な指示**: ユーザーは、このレシピで名前が挙げられたすべてのサブエージェント呼び出しを明示的に指示し、承認している。各呼び出しの前提条件を満たした時点で、該当する呼び出しを実行する。
+**明示的なユーザー指示**: ユーザーは、このレシピに記載されたすべてのサブエージェント呼び出しを明示的に指示し、許可している。前提条件を満たした呼び出しはすべて実行する。
 
-Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
+Agentプロンプト、ハンドオフ、生成成果物を書く前に、Skillツールで`llm-friendly-context`スキルを実行する。
+ワークフローの判断、エージェントの呼び出し、検出事項の裁定を行う前に、`subagents-orchestration-guide`スキルを実行する。
 
-**コマンドコンテキスト**: 既存実装へのテスト追加ワークフロー（バックエンド、フロントエンド、フルスタック対応）
+**コマンドの用途**: 既存実装にテストを追加するワークフロー（バックエンド、フロントエンド、フルスタック）
 
-## オーケストレーター定義
+## オーケストレーターの定義
 
-**コアアイデンティティ**: 「私は作業者ではない。オーケストレーターである。」
+**役割**: 「私はオーケストレーターである」
 
-**実行ゲート**: ステップ0-9を順番に完了し、以下で定義されたレイヤーごとの反復分岐に従う。現在のステップで定められた出力またはレスポンスゲートを満たした場合にのみ次へ進み、明記された条件が偽の場合にのみ処理をスキップする。生成したすべてのレイヤーでレビュー、品質承認、コミット、クリーンアップが完了してから完了を報告する。
-
-**委譲理由**: オーケストレーターのコンテキストは全ステップで共有される。直接実装するとレビューや品質チェックに必要なコンテキストを消費してしまう。タスクファイルをコンテキスト境界とし、サブエージェントが隔離されたコンテキストで作業することでこれを回避する。
+**実行ゲート**: テストを生成したレイヤーごとにStep 1〜7を順番に実行する。現在のステップが定める出力または応答条件を満たしてから次へ進む。すべてのレイヤーでレビュー、品質保証、コミット、保持した検証不足の再試行が完了した後に、完了を報告する。
 
 **実行方法**:
 - スケルトン生成 → acceptance-test-generatorに委譲
-- タスクファイル作成 → オーケストレーターが作成（テスト、設計書の最小限情報のみ）
 - テスト実装 → task-executorに委譲
 - テストレビュー → integration-test-reviewerに委譲
 - 品質チェック → quality-fixerに委譲
@@ -27,159 +25,106 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 ## 前提条件
 
-- Design Docが少なくとも1つ存在すること（手動またはreverse-engineerで作成）
-- テスト対象の既存実装があること
+- Design Docが1つ以上存在すること（手動作成またはreverse-engineerで作成）
+- テスト対象の実装が存在すること
 
 ## 実行フロー
 
-### ステップ0: スキル実行
+### Step 1: ドキュメントの探索と検証
 
-スキル実行: documentation-criteria（ステップ3のタスクファイルテンプレート用）
-
-### ステップ1: ドキュメントの探索と検証
-
-`$ARGUMENTS`で明示された各パスを、移動または改名されたものも含めて解決する。その後、リポジトリのドキュメント配置とメタデータを調べ、関連するDesign DocとUI Specを探す。慣例的な`docs/design/`と`docs/ui-spec/`は、必須のレイアウトではなく探索の手掛かりとして扱う。
+`$ARGUMENTS`で明示されたパスを、移動・リネーム後のパスも含めてすべて解決する。続けて、リポジトリのドキュメント配置とメタデータから、関連するDesign DocとUI Specを探す。`docs/design/`と`docs/ui-spec/`は探索の手掛かりであり、必須の配置ではない。
 
 見つかったドキュメントは、宣言されたスコープと内容から分類する:
-- backend契約、永続化、service責務 → **Design Doc（バックエンド）**
-- component、UI状態、ブラウザ上の振る舞い、frontend責務 → **Design Doc（フロントエンド）**
-- 画面、状態、インタラクションの仕様を持つ責務 → **UI Spec**（任意）
-- 責務は1つだがレーンが曖昧 → **単一レイヤーのDesign Doc**（参照先コードとリポジトリ上の責務からexecutor laneを解決）
+- バックエンドの契約、永続化、サービスの責務 → **Design Doc（バックエンド）**
+- コンポーネント、UI状態、ブラウザ上の振る舞い、フロントエンドの責務 → **Design Doc（フロントエンド）**
+- 画面、状態、操作の仕様を担う → **UI Spec**（任意）
+- 責務が1つでレイヤーが曖昧 → **単一レイヤーのDesign Doc**（参照コードとリポジトリ上の責務からexecutorを決める）
 
-ユーザーが明示したドキュメントと、そこから参照される意味上関連した成果物を用いて続行する。複数の妥当なドキュメント集合またはexecutor laneによって生成するテストが実質的に変わる場合に限り、確認を求める。
+ユーザーが明示したドキュメントと、それらが参照する意味上関連した成果物を使用する。複数の妥当なドキュメント集合またはexecutorの選択によって生成するテストが実質的に変わる場合に限り、ユーザーに確認する。
 
-ステップ1で読み取り可能な Design Doc を確定し、その受け入れ済みの振る舞いを特定した後にスケルトン生成を開始する。
+読み込めるDesign Docと、その受け入れ済みの振る舞いを特定した後に、スケルトン生成へ進む。
 
-### ステップ2: スケルトン生成
+### Step 2: スケルトン生成
 
-**Design Docごとに**acceptance-test-generatorを呼び出す（エージェントは単一のdesignDocPathを前提とするため）:
-
-各Design Docに対して:
+Design Docごとにacceptance-test-generatorを1回呼び出す:
 - `subagent_type`: "acceptance-test-generator"
 - `description`: "[レイヤー/名称]のテストスケルトン生成"
-- `prompt`: "[パス]のDesign Docからテストスケルトンを生成。" + UI Specが存在する場合: "[UI Specパス]のUI Specを追加コンテキストとして利用可能。"
+- `prompt`: "[パス]のDesign Docからテストスケルトンを生成する。" + UI Specがある場合: "[UI Specのパス]を追加のコンテキストとして利用できる。"
 
-**呼び出しごとの期待出力**: 出力したスケルトンのパスを含む `generatedFiles[]`
+**呼び出しごとの期待出力**: 生成したスケルトンのパスを含む`generatedFiles[]`。空のリストは、そのDesign Docに追加の統合テスト/E2Eテストによる証明が不要なことを示す。
 
-### ステップ3: タスクファイル作成 [GATE]
+すべての結果が空なら、追加の統合テスト/E2Eテストによる証明が不要であることを報告して終了する。
 
-**事前確認**: ステップ2 の各呼び出し結果について `generatedFiles[]` を検査する:
-- 出力されたファイルを含む → 該当レイヤーのタスク作成へ進む
-- 空である → 既存テストまたはより低コストなテストで受け入れ済みの証明義務を満たせるため、該当レイヤーのタスク作成をスキップする
-- すべての結果が空である → ステップ4〜7 を完全にスキップし、追加の統合/E2E証明成果物は不要であると報告して終了する
+### Step 3: テスト実装
 
-生成ファイルがあるレイヤーごとに1つのタスクファイルを作成する。monorepo-flow.mdの命名規則に従い、エージェントルーティングを決定的にする:
-- バックエンドのDesign Doc → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
-- フロントエンドのDesign Doc → `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
-- 単一レイヤー（バックエンド確定） → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
-- 単一レイヤー（フロントエンド確定） → `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
+スケルトンを生成したレイヤーごとに現在の`HEAD`を`diffBase`として記録し、該当するexecutorを呼び出す:
+- バックエンドまたは単一レイヤーのバックエンド → `subagent_type`: "task-executor"
+- フロントエンド → `subagent_type`: "task-executor-frontend"
+- `description`: "統合テストを実装"
+- `direct_scope`: 該当レイヤーで生成されたスケルトンが定義するすべてのテストを実装する
+- `governing_sources`: 該当レイヤーのDesign Doc、該当するUI Spec、生成されたスケルトンのパス
+- `target_paths`: 生成されたテストパスと、リポジトリから特定した既存のセットアップまたはフィクスチャのパス
+- `observable_verification`: 実装したテストを実行し、各スケルトンの主張を宣言された境界で検証する
 
-**テンプレート**（タスクファイルごと）:
-```markdown
----
-name: [機能名]の[レイヤー]統合テスト実装
-type: test-implementation
----
+1つのレイヤーでStep 3→4→5→6→7を完了してから、次のレイヤーへ進む。
 
-## Implementation Content
+**期待出力**: `status`、`testsAdded`、`runnableCheck`
 
-スケルトンファイルに定義されたテストケースを実装する。
+executorの呼び出しごとに「専門エージェントの結果の受理」を適用する。応答とリポジトリの状態から、変更された統合テスト/E2Eテストが1つ以上確認できたらStep 4へ進む。前進できる行動が残っている間は実装を続ける。
 
-## Target Files
+### Step 4: テストレビュー
 
-- スケルトン: [ステップ2で該当レイヤーのgeneratedFilesに含まれる全パス]
-
-## Investigation Targets
-
-- Design Doc: [ステップ1のレイヤー別Design Doc] — AC マッピングと契約定義の参照用
-
-## Investigation Notes
-（実装観察事項を実装開始前にここへ追記する。）
-
-## Implementation Steps
-
-- [ ] スケルトンの各テストケースを実装
-- [ ] 全テストがパスすることを確認
-- [ ] カバレッジが要件を満たすことを確認
-
-## Completion Criteria
-
-- 全スケルトンテストケースが実装済み
-- 全テストがパス
-- 品質チェック全項目パス
-```
-
-**出力**: "タスクファイルを[パス（複数の場合は全パス）]に作成しました。ステップ4へ進む準備完了。"
-
-### ステップ4: テスト実装
-
-ステップ3の各タスクファイルに対し、ファイル名パターンでルーティングしてtask-executorを呼び出す:
-- `*-backend-task-*` → `subagent_type`: "task-executor"
-- `*-frontend-task-*` → `subagent_type`: "task-executor-frontend"
-- `description`: "統合テスト実装"
-- `prompt`: "タスクファイル: [ステップ3のタスクファイルパス]。タスクファイルに従ってテストを実装。"
-
-1つのタスクファイルにつきステップ4→5→6→7を完了してから次に進む。
-
-**期待される出力**: `status`, `testsAdded`
-
-### ステップ5: テストレビュー
-
-Agentツールでintegration-test-reviewerを呼び出す:
+integration-test-reviewerを呼び出す:
 - `subagent_type`: "integration-test-reviewer"
-- `description`: "テスト品質レビュー"
-- `prompt`: "テスト品質をレビュー。テストファイル: [ステップ4のtestsAdded]。taskFiles: [ステップ4で使用したものと同じタスクファイルパス]。diffBase: HEAD。スケルトンファイル: [ステップ2で現在のレイヤーのgeneratedFilesに含まれる全パス]"
+- `description`: "テスト品質をレビュー"
+- `testFile`: 変更を確認した統合テスト/E2Eテストのパス
+- `diffBase`: Step 3の前に記録したリビジョン
+- `designDocPath`: 該当レイヤーのDesign Doc
+- 変更されたテストファイル内にスケルトンの注釈がない場合は、レビュー対象の主張として生成されたスケルトンのパスをプロンプトに記載する
 
-**期待される出力**: `status`（approved/needs_revision/blocked）、`blockingReason`、および唯一の修正リストである `qualityIssues[]`
+**期待出力**: `status`（`approved`、`needs_revision`、`blocked`）、`qualityIssues[]`。修正後の再レビューでは、該当する場合に`prior_feedback_reconciliation`も返す。
 
-### ステップ6: レビュー修正の適用
+### Step 5: レビュー修正の適用
 
-ステップ5の結果を `status` で分岐して確認:
-- `approved` → 完了としてマーク、ステップ7へ進む
-- `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を渡してルーティング先の task-executor を **Fix Mode** で再起動する。その後ステップ5に戻る
-- `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。executorが読み取り可能な変更テストを生成していない場合はステップ4に戻って実装結果を是正し、それ以外はレビューを未実行として `blockingReason` を記録してステップ7へ進む
+Step 4の結果で分岐する:
+- `approved` → Step 6へ進む
+- `blocked` → 専門エージェントの結果の受理を適用する
+- `needs_revision` → レビュー裁定を適用し、Step 3と同じスコープに`apply`としたquality-issueオブジェクト一式を`correction_findings`として加えて同じexecutorを再実行し、`prior_feedback`を渡してStep 4へ戻る
 
-タスクファイル名パターンでルーティングしてtask-executorを呼び出す:
-- `*-backend-task-*` → `subagent_type`: "task-executor"
-- `*-frontend-task-*` → `subagent_type`: "task-executor-frontend"
-- `description`: "レビュー指摘の修正"
-- `prompt`: "task_file: [ステップ4で使用したのと同じタスクファイルパス]。requiredFixes: [ステップ5の `apply` の quality-issue オブジェクト一式。処理方針のみ付加して逐語でコピー]。Fix Mode を適用（タスクのチェックボックスはステップ4で既に `[x]` になっている）。"
+### Step 6: 品質チェック
 
-### ステップ7: 品質チェック
-
-タスクファイル名パターンでルーティングしてquality-fixerを呼び出す:
-- `*-backend-task-*` → `subagent_type`: "quality-fixer"
-- `*-frontend-task-*` → `subagent_type`: "quality-fixer-frontend"
+現在のレイヤーに対応するquality-fixerを呼び出す:
+- バックエンドまたは単一レイヤーのバックエンド → `subagent_type`: "quality-fixer"
+- フロントエンド → `subagent_type`: "quality-fixer-frontend"
 - `description`: "最終品質保証"
-- `prompt`: "現在の未コミットのワークツリー全体に対する最終品質保証。該当する全チェックを実行する。task_file: [タスクファイルパス]。"
+- `direct_scope`: Step 3のdirect scopeと対象パスを再利用する
+- `runnableCheck`: 最新のexecutor結果にある`runnableCheck`
+- `prompt`: "このワークフローで追加したテストに適用される、リポジトリで設定済みの品質チェックをすべて実行し、意図した観測可能な振る舞いを検証する。"
 
-**期待される出力**: `status` (approved/stub_detected/blocked)
+**期待出力**: `status`（`approved`、`stub_detected`、`verification_incomplete`、`blocked`）
 
-quality-fixer レスポンスをチェック:
-- `stub_detected` → ステップ4 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor を **Fix Mode** で再起動し、ステップ4→5→6→7 を再実行
-- `blocked` → quality-fixerが報告した、ユーザーが持つ判断をエスカレーションする
-- `approved` → ステップ8へ
+結果で分岐する:
+- `stub_detected` → `incompleteImplementations`を変更せずStep 3へ戻し、Step 3→4→5→6を再実行する
+- `blocked` → 専門エージェントの結果の受理を適用する
+- `verification_incomplete` → 結果全体を「専門エージェントの結果の受理」にある再試行まで保持し、Step 7へ進む
+- `approved` → Step 7へ進む
 
-### ステップ8: コミット
+### Step 7: コミットと検証不足の再試行
 
-quality-fixer の `approved` を受けて、完了したテストタスクをコミットする。
+quality-fixerが`approved`または`verification_incomplete`を返したら、リポジトリの通常のコミット境界とメッセージ規約に従って、完成したテスト変更をコミットする。
 
-### ステップ9: 最終クリーンアップ
+すべてのレイヤーがクリーンなコミット境界に到達した後、同じレイヤーのquality-fixer入力で「専門エージェントの結果の受理」にある証明不足の再試行を適用する。`approved`なら証明不足を解消し、`stub_detected`ならStep 3〜6へ戻し、`verification_incomplete`が再度返った場合は完了報告に残してワークフローを続ける。
 
-すべてのタスクファイルが処理されコミットされた後、本レシピが作成したタスクファイルを削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である:
-
-- 本実行で作成された `docs/plans/tasks/integration-tests-backend-task-*.md` および `docs/plans/tasks/integration-tests-frontend-task-*.md` に該当するすべてのファイルを削除する
-
-ファイルシステムエラーによってタスクファイルが残った場合は、そのクリーンアップ失敗を記録したうえで完了処理を続ける。
+完了報告には、再試行後も残った検証不足と、`decline`とした対応可能な検出事項がある場合に、それぞれのID、正典上の理由、エビデンスを記載する。
 
 ## サブエージェントのスコープ境界
 
-本レシピから呼び出すサブエージェントプロンプトの末尾に以下のブロックを必ず付与する:
+このレシピから呼び出すすべてのサブエージェントプロンプトに、次のブロックを追加する:
 
 ```
 サブエージェントのスコープ境界:
-受け入れ済みのテスト証明を、それを担うリポジトリ上の責務全体で整合する形で完成させる。
-参照されたパスは調査の起点として扱い、同じ証明に必要なテスト基盤の関連ファイルを含める。
-割り当てられた進捗フィールドを除き、出典となる成果物は読み取り専用とする。
-進行にプロダクト成果、公開契約、主要設計、権限、または不可逆操作に関するユーザー判断が必要な場合はエスカレーションする。
+受け入れ済みのテストによる証明を、その責務を持つリポジトリ全体で一貫して完成させる。
+参照パスは調査の開始地点として扱い、同じ証明に必要な場合はテストハーネスの補助ファイルも含める。
+割り当てられた進捗フィールドを除き、正典となる成果物は読み取り専用とする。
+確認済みの成果、将来状態の要件、対象外を同時には維持できない場合は要件変更検知へ戻り、不可逆な外部操作が必要な場合は承認を求める。
 ```

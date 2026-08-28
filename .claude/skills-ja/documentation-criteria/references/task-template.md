@@ -8,8 +8,6 @@ Metadata:
 
 依存関係は、前提タスクを安定IDと、それを収めたタスクファイルの2点で示す。ファイル名の `-task-{NN}` の連番は作業計画書での出現順に従い、`PN-TN` のIDとは独立しているためである。
 
-作業計画書の実体化以外で生成されたタスクファイル（統合テストの追加分）は `Source Work Plan Task: N/A — <生成元>` とし、生成元のフローが executor を既に固定している場合は `Executor lane` を省略する。
-
 ## Implementation Outcome
 
 [このタスクが完成させる、リポジトリ上の変更]
@@ -33,27 +31,6 @@ Metadata:
 - [出典ドキュメントのセクション — 例: docs/design/payment.md (§ 決済フロー)]
 - [既存実装 — 例: src/orders/checkout (processOrder関数)]
 - [隣接する代表的なテスト]
-
-## Decisions and Unresolved Items
-
-（タスク実体化時に代替案・optionalな挙動・placeholderを解決した場合、または実体化時点で必須の決定が未解決の場合に本セクションを記載する。該当項目がない場合は省略する。）
-
-解決済みの決定 — 実体化が明示的な選択に確定した、各代替案・optionalな挙動・placeholder:
-
-| Item | Decision | Source / Rule |
-|---|---|---|
-| [代替案・optionalな挙動・placeholder] | [選択した選択肢、またはそれを選ぶ決定的な判断ルール。placeholderの場合は正確な暫定出力・許容される依存・検証の期待値] | [Governing Sources のエントリ、または判断ルールの根拠] |
-
-ブロッキングな未解決項目 — 実体化時点では決定できず実行をブロックする決定。`Kind` が、executor が項目を確定してよいか停止すべきかを決める:
-
-- `implementation-detail` — 開いているのは内部の構成だけ（対象ファイル内での配置、局所的な構造、命名、処理順序）。観測可能な振る舞いは Governing Sources で既に確定している。
-- `requirement-decision` — 観測可能な振る舞い、プロダクトのルール、セキュリティ姿勢、互換性保証が未決。問いが「どう作るか」ではなく「システムが何をすべきか」なので、スコープ内のどの選択肢でも確定できない。
-
-| Item | Kind | Required Input | Smallest In-Scope Option | Escalation Condition |
-|---|---|---|---|---|
-| [未解決の決定] | implementation-detail / requirement-decision | [解決に必要な入力] | [`implementation-detail` の場合: 要求される成果と Governing Sources の全制約を満たす、このタスクの Target Files 内で最小の選択肢。すべてを満たすスコープ内の選択肢がない場合は `none`。`requirement-decision` の場合: `n/a — stop`] | [誰/何にエスカレーションするか、および executor が推測せず停止すべき地点] |
-
-`implementation-detail` の項目では、executor が判断全体をエスカレーションせず適用できるよう Smallest In-Scope Option を記録する。`requirement-decision` の項目では executor が停止する — ここに候補を記録すると、要件が下していない判断を executor に確定させることになる。
 
 ## Investigation Notes
 
@@ -87,7 +64,6 @@ Metadata:
 - [ ] 必要な、焦点を絞ったテストがパス
 - [ ] 動作確認が成功している
 - [ ] （Verification Focus がある場合）観察チェックが主要な故障を検出する
-- [ ] （Decisions and Unresolved Items がある場合）解決済みの各決定が記録どおりに適用され、ブロッキングな未解決項目がすべて解消している — 残っている場合は実行を停止し、その Escalation Condition に従ってエスカレーションする
 
 ## Notes
 

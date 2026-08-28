@@ -87,7 +87,7 @@ skills:
   project-context:
     skill: "project-context"
     tags: [context, project-specific, implementation]
-    typical-use: "Project-specific information, understanding implementation principles"
+    typical-use: "Project-specific prerequisites and quality standards"
     size: small
     key-references:
       - "Project-specific (empirical)"

@@ -75,7 +75,7 @@ Scope boundary for subagents:
 Deliver the task outcome consistently across the repository responsibility that owns it.
 Treat referenced paths as investigation starting points and include supporting files when the same outcome requires them.
 Keep governing artifacts read-only except for assigned progress fields.
-Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
+Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```
 
 Additionally, include the following constraint at the end of every sub-agent prompt, as rule-advisor invocation from sub-agents causes system crash:
@@ -89,33 +89,32 @@ Additionally, include the following constraint at the end of every sub-agent pro
 Execute the following dependency-ordered steps, advancing only when the current step's response condition is satisfied:
 1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly; do not create a task file.
 2. **CHECK task-executor response**:
-   - `status: "escalation_needed"` or `"blocked"` → inspect the declared boundary; escalate when it requires a user-owned decision
+   - `status: "escalation_needed"` or `"blocked"` → Apply subagents-orchestration-guide Specialist Result Acceptance
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
-     - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor in **Fix Mode**
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**; otherwise record the review as not run with its `blockingReason` and proceed to step 3
+     - `needs_revision` → Apply Review Resolution and return to step 1 with the original execution scope plus the complete `apply` quality-issue objects passed verbatim as `correction_findings`
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to step 3
      - `approved` → Proceed to step 3
    - Otherwise → Proceed to step 3
 3. **INVOKE quality-fixer**: Execute all quality checks and fixes against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Medium/Large also pass the current `task_file`; Small passes the direct execution scope. Pass the implementation step's `runnableCheck` and `qualityCommand` when the governing source or repository convention names one.
-   - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** with the original execution scope and `incompleteImplementations[]`
-   - `blocked` → Escalate the user-owned decision
+   - `stub_detected` → Return to step 1 and re-invoke task-executor with the original execution scope and `incompleteImplementations[]`
+   - `blocked` → Apply Specialist Result Acceptance
+   - `verification_incomplete` → Retain the complete result for final retry and proceed to step 4
    - `approved` → Proceed to step 4
-4. **COMMIT on approval**: Commit the completed task change set
+4. **COMMIT**: Commit the completed task change set after `approved` or `verification_incomplete`
 
-### Post-Implementation Verification
+### Post-Implementation Review (Medium/Large, After All Tasks Complete)
 
-For Medium/Large, after all task cycles finish, invoke code-verifier and security-reviewer before the completion report. Pass the Design Doc and implementation file list to code-verifier; pass `governingDocuments: [{"type":"design-doc","path":"[path]"}]` and the same implementation file list to security-reviewer. Apply the guide's pass/fail and fix-cycle rules.
+Apply the proof-limitation retry in subagents-orchestration-guide Specialist Result Acceptance before the document-dependent reviewers. Continue after clearing or retaining each result and report only repeated limitations.
 
-For Small, skip document-dependent verification. Complete after quality-fixer approval and successful execution of the direct scope's observable verification.
+Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
-For the security-reviewer response:
+Emit these Agent calls in one assistant message, then await both:
+- code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved typed `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
+- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments`
 
-   - `approved` → Proceed to completion report
-   - `needs_revision` → Apply Review Resolution to every finding, then invoke task-executor in **Fix Mode** with the `apply` finding objects verbatim, their affected paths, and the observable verification condition. Re-invoke security-reviewer with `prior_feedback` and follow Review Resolution to convergence, then run quality-fixer once.
-   - `blocked` → Escalate to user
+Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 
-### Test Information Communication
-After acceptance-test-generator execution, pass `generatedFiles[]` to work-planner as `testSkeletons`. An empty list means no additional integration/E2E skeleton task is required.
-- Explicit timing notes: integration tests are created alongside each phase implementation; fixture-e2e tests are created alongside the UI feature phase; service-integration-e2e tests are executed after their required services exist
+For Small, skip this document-dependent review. Retry a retained verification limitation once after the task commit; complete with observed `observable_verification` evidence and report any proof that remains unavailable.
 
 ### Final Cleanup
 

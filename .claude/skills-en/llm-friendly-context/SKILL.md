@@ -37,7 +37,7 @@ This skill governs the clarity of LLM-facing output — prompts, handoffs, and g
 6. **Permit uncertainty explicitly**
    - Resolve missing operational detail from governing artifacts and representative repository evidence before treating it as unresolved.
    - Record remaining uncertainty with its effect on the outcome or proof. Make reversible repository-local choices inside the confirmed boundary and preserve the evidence used.
-   - Escalate only when the unresolved choice changes the product outcome, a major approved design decision, user-held authority, or an irreversible action. When only proof is unavailable, complete unaffected work and report exactly what could not be verified and why.
+   - Route an unknown that blocks the next step as an exact evidence prerequisite. Ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true without a user choice, or when an irreversible external action requires authorization. When only proof is unavailable, complete unaffected work and report exactly what could not be verified and why.
 
 7. **Keep constraints proportionate**
    - Add only constraints that reduce ambiguity or preserve a real requirement.
@@ -57,7 +57,7 @@ Use these rewrites before treating a prompt, handoff, or artifact as complete.
 | `related files` | Specific paths, globs, or search hints |
 | `existing behavior` | The observable behavior, source file, test, API response, or UI state to preserve |
 | `placeholder` | Exact temporary value/behavior, allowed dependencies, and verification expectation |
-| `TBD` used as a placeholder for required information | The decision it can change and the evidence or user-owned decision required; omit it when the item has no downstream effect |
+| `TBD` used as a placeholder for required information | The decision it can change and the exact evidence prerequisite; omit it when the item has no downstream effect |
 | `appropriate` / `proper` | A measurable criterion or checklist |
 
 ## Handoff Checklist
@@ -71,7 +71,7 @@ Before sending a prompt or artifact to another agent, verify:
 - [ ] Success criteria are observable.
 - [ ] Ambiguous expressions have been rewritten or marked as unresolved.
 - [ ] Any stated size expectation is expressed as one budget over the completed diff, with the overrun-reporting condition named.
-- [ ] The next agent can complete its scope from the supplied purpose, sources, criteria, and evidence, or return one exact user-owned decision.
+- [ ] The next agent can complete its scope from the supplied purpose, sources, criteria, and evidence, or return one exact evidence prerequisite or authoritative workflow stop.
 
 ## Generated Artifact Checklist
 
@@ -82,4 +82,4 @@ Before writing or finalizing a generated document:
 - [ ] Verification steps say what to run or observe and what result proves success.
 - [ ] If an artifact is derived from another artifact, copied decisions stay consistent in wording and meaning.
 - [ ] Any stated size expectation is expressed as one budget over the completed artifact, with the overrun-reporting condition named.
-- [ ] Missing information records the decision or proof it affects; only a user-owned decision is a blocking escalation.
+- [ ] Missing information records the decision or proof it affects; only a confirmed value-boundary choice or irreversible external action authorization is a blocking escalation.
