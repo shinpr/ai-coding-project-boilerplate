@@ -13,7 +13,6 @@
 | `/diagnose <problem>` | 调查问题、独立验证原因并推导有依据的解决方案，但不实施其中任何一个 |
 | `/review [Design Doc]` | 评审已完成的后端或通用实现，确认其符合约定的目标、仓库标准和安全边界，并应用用户批准的修正 |
 | `/front-review [Design Doc]` | 对前端实现运行相同的评审和修正流程 |
-| `/quality-profile [policy change]` | 提出仓库特有的评审标准，经确认后将其记录到 `docs/project-context/quality.yaml` |
 
 ### 设计和计划执行
 
@@ -33,7 +32,7 @@
 
 | 命令 | 目标 |
 |---|---|
-| `/project-inject` | 将项目特有的前置信息记录到 `project-context` |
+| `/project-inject` | 将项目特有的前置信息和质量标准记录到 `project-context` |
 | `/create-skill <knowledge>` | 通过交互式问答和评审创建新技能 |
 | `/refine-skill <change>` | 对现有技能进行针对性修改并评审结果 |
 | `/sync-skills` | 技能内容发生变化后同步技能元数据 |
@@ -119,7 +118,7 @@
 
 ## 自定义项目行为
 
-使用 `/project-inject` 记录适用于整个仓库的事实和约束。对于只应在某一特定职责下加载的可复用判断，请使用技能。不要将特定功能的决策复制到全局规则中；应将其保存在相应的 PRD、ADR、UI 规范或设计文档内。
+使用 `/project-inject` 记录适用于整个仓库的事实、约束和质量标准。对于只应在某一特定职责下加载的可复用判断，请使用技能。不要将特定功能的决策复制到全局规则中；应将其保存在相应的 PRD、ADR、UI 规范或设计文档内。
 
 修改技能内容后运行：
 

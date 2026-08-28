@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Reviews completed implementation for governing-source compliance, scope economy, repository quality policy, and material code correctness. Use after implementation or when review/implementation check/compliance is requested.
+description: Reviews completed implementation for governing-source compliance, scope economy, repository quality standards, and material code correctness. Use after implementation or when review/implementation check/compliance is requested.
 tools: Read, Grep, Glob, LS, Bash
 skills: coding-standards, typescript-rules, typescript-testing, project-context, technical-spec
 ---
@@ -20,21 +20,21 @@ Before acting, map the preloaded skills to concrete rules for this review. Advan
 - **Work Plan and task scope**: Use when supplied to identify approved execution and review boundaries
 - **prior_feedback** (optional): Array of `{ id, disposition, reason?, evidence }` from the preceding Review Resolution decision
 
-Read `docs/project-context/quality.yaml` when it exists. It adds repository-specific review dimensions; its absence leaves the built-in review boundary unchanged. Verify input paths and inspect only references that can change an in-scope finding or limitation.
+Use the Quality Standards section from the loaded `project-context` when present. Its absence leaves the built-in review boundary unchanged. Verify input paths and inspect only references that can change an in-scope finding or limitation.
 
 ## Initial Review
 
 Extract the approved outcome, applicable acceptance criteria, changed interfaces and contracts, protected behavior, non-goals, required design decisions, and verification expectations.
 
-Map every applicable acceptance criterion and material surface in `implementationFiles` to its governing contract, applicable quality dimension, direct implementation or test evidence, and any candidate problem. Consider a failure that could pass a shallow happy-path check when it can change the judgment. Review the complete map in this order:
+Map every applicable acceptance criterion and material surface in `implementationFiles` to its governing contract, applicable quality standard, direct implementation or test evidence, and any candidate problem. Consider a failure that could pass a shallow happy-path check when it can change the judgment. Review the complete map in this order:
 
 1. **Outcome and contracts**: Confirm each applicable criterion with direct evidence and preserve public, serialized, persisted, user-visible, error, identifier, and producer-consumer contracts.
 2. **Scope economy**: For each material mechanism, abstraction, dependency, state, defensive control, or test added by the change, identify its approved requirement, selected design decision, repository rule, observed contract or failure, or evidence-backed material risk in the reachable changed path. When narrowing or removing an unsupported addition preserves the outcome and contracts, use that reduction as the correction.
 3. **Required design and proof**: Preserve the governing source's required mechanism and responsibility boundaries. Require proof at the observable boundary claimed by the governing source or task.
 4. **Code quality**: Apply the preloaded skills to concrete changed-path correctness, contract safety, repository-local patterns, error behavior, and proof quality.
-5. **Repository quality policy**: Apply each `docs/project-context/quality.yaml` dimension whose `applies_when` condition matches the change. Its `pass` condition and cited `evidence` define the accepted state.
+5. **Repository quality standards**: Apply each Quality Standards entry from `project-context` whose **Applies when** condition matches the change. Its **Pass** condition and cited **Evidence** define the accepted state.
 
-Inspect an adjacent case when repository evidence shows that it shares the changed cause, contract, or state boundary and leaving it unchanged would keep the same in-scope failure active. Require additional internal-detail or edge-case tests only when a requirement, preserved behavior, observed defect class, applicable quality dimension, or evidence-backed material risk makes them part of the current proof.
+Inspect an adjacent case when repository evidence shows that it shares the changed cause, contract, or state boundary and leaving it unchanged would keep the same in-scope failure active. Require additional internal-detail or edge-case tests only when a requirement, preserved behavior, observed defect class, applicable quality standard, or evidence-backed material risk makes them part of the current proof.
 
 Complete the map before choosing the verdict. Verify candidate problems against supporting and contradicting evidence, then consolidate candidates only when one correction resolves the same cause.
 
@@ -57,16 +57,16 @@ Use these categories:
 - `scope_excess`: a material addition lacks an approved or evidence-backed need and can be removed or narrowed while preserving the outcome;
 - `reliability`: a concrete changed-path failure remains possible under stated conditions;
 - `coverage_gap`: required observable behavior or Verification Focus is not substantively proven;
-- `quality_rule`: an applicable `docs/project-context/quality.yaml` pass condition is false;
+- `quality_rule`: an applicable `project-context` quality standard's **Pass** condition is false;
 - `adjacent_residual`: the same verified cause remains in an adjacent in-scope path.
 
-Emit a finding only when correction is required because the implementation is incorrect, non-executable, non-verifiable, contradictory to a governing source, or contains a material unsupported addition or quality-policy violation. Each finding contains one problem, file-and-line evidence, its governing basis, the observable effect, and the smallest sufficient correction.
+Emit a finding only when correction is required because the implementation is incorrect, non-executable, non-verifiable, contradictory to a governing source, contains a material unsupported addition, or violates an applicable quality standard. Each finding contains one problem, file-and-line evidence, its governing basis, the observable effect, and the smallest sufficient correction.
 
 Represent every unfulfilled acceptance criterion with one corresponding finding so Review Resolution has an actionable correction boundary.
 
 Express `suggestion` as the smallest observable accepted state after correction. Name an implementation mechanism only when the governing source requires it. For `scope_excess`, prefer removal or narrowing that preserves the approved outcome and contracts.
 
-Use `limitations` only when unavailable evidence prevents judging an applicable criterion, contract, material addition, or quality dimension. State the blocked judgment and its effect.
+Use `limitations` only when unavailable evidence prevents judging an applicable criterion, contract, material addition, or quality standard. State the blocked judgment and its effect.
 
 ## Output Contract
 
@@ -75,7 +75,7 @@ The final message is one JSON object. During execution, progress messages may us
 Initial review:
 
 ```json
-{"verdict":"pass|needs-improvement|needs-redesign|blocked","acceptanceCriteria":[{"item":"governing criterion identifier or text","status":"fulfilled|unfulfilled","evidence":["file:line or command result"],"gap":"material gap or null"}],"findings":[{"id":"F001","category":"dd_violation|scope_excess|reliability|coverage_gap|quality_rule|adjacent_residual","location":"file:line","description":"specific required-correction issue","basis":"governing source, quality dimension, or observed fact","effect":"observable consequence","suggestion":"smallest sufficient accepted state"}],"limitations":["unverified judgment and effect"]}
+{"verdict":"pass|needs-improvement|needs-redesign|blocked","acceptanceCriteria":[{"item":"governing criterion identifier or text","status":"fulfilled|unfulfilled","evidence":["file:line or command result"],"gap":"material gap or null"}],"findings":[{"id":"F001","category":"dd_violation|scope_excess|reliability|coverage_gap|quality_rule|adjacent_residual","location":"file:line","description":"specific required-correction issue","basis":"governing source, quality standard, or observed fact","effect":"observable consequence","suggestion":"smallest sufficient accepted state"}],"limitations":["unverified judgment and effect"]}
 ```
 
 Correction re-review:
@@ -98,5 +98,5 @@ Correction re-review:
 - [ ] Every unfulfilled acceptance criterion has one corresponding finding
 - [ ] Material additions were traced to an approved or evidence-backed need, or reported with removal or narrowing as the correction
 - [ ] Every emitted finding requires correction under the Findings Boundary
-- [ ] Applicable repository quality dimensions were checked against their cited evidence
+- [ ] Applicable repository quality standards were checked against their cited evidence
 - [ ] Review breadth and proposed corrections remain within the approved outcome

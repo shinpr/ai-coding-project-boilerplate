@@ -38,6 +38,7 @@ Then run:
 Use the hearing to record only repository-specific information that changes agent decisions, such as:
 
 - the project outcome and domain constraints;
+- repository-specific standards that determine whether an implementation is accepted;
 - directory conventions that differ from repository defaults;
 - the current development phase;
 - how to access external evidence such as schemas, API contracts, or infrastructure configuration.

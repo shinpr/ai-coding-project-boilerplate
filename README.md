@@ -63,7 +63,7 @@ Once Claude Code is running:
 /implement Add rate limiting to the API
 ```
 
-`/project-inject` records the repository-specific information Claude needs, such as domain constraints, directory conventions, and where to find external schemas or API contracts. You can then use `/implement` for an end-to-end change.
+`/project-inject` records the repository-specific information Claude needs, including domain constraints, quality standards, directory conventions, and where to find external schemas or API contracts. You can then use `/implement` for an end-to-end change.
 
 See the [Quick Start Guide](docs/guides/en/quickstart.md) for the full setup and first-run walkthrough.
 
@@ -94,16 +94,15 @@ See [Use Cases & Commands](docs/guides/en/use-cases.md) for when documents are c
 | `/plan`, `/front-plan` | Turn an approved design into an executable plan |
 | `/build`, `/front-build` | Continue from an approved plan |
 | `/review`, `/front-review` | Review completed implementation against the agreed outcome, repository standards, and security requirements |
-| `/quality-profile` | Set repository-specific review standards in `docs/project-context/quality.yaml` |
 | `/diagnose` | Investigate a problem and compare solutions backed by the findings, without changing code |
-| `/project-inject` | Record project-specific context for future Claude Code sessions |
+| `/project-inject` | Record project-specific context and quality standards for future Claude Code sessions |
 | `/create-skill`, `/refine-skill` | Add or improve reusable project guidance |
 
 See [Use Cases & Commands](docs/guides/en/use-cases.md) for examples and the complete command reference.
 
 ## Adapt it to your project
 
-Use `/project-inject` for facts and constraints that apply across the repository. This keeps Claude aware of the project's purpose, conventions, and external sources without repeating them in every request.
+Use `/project-inject` for facts, constraints, and quality standards that apply across the repository. This keeps Claude aware of the project's purpose, conventions, and external sources without repeating them in every request.
 
 When your team has guidance that should apply only to particular work, create or refine a skill instead. The included skill-editing workflow helps decide where the information belongs, reviews the change, and keeps skill metadata in sync. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for examples and validation guidance.
 

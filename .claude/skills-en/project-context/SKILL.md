@@ -1,6 +1,6 @@
 ---
 name: project-context
-description: Marks project context as unconfigured until project-inject materializes domain constraints, phase, conventions, and external-resource access in this file. Use when checking project context before the initial project-inject run.
+description: Marks project context as unconfigured until project-inject materializes domain constraints, repository quality standards, phase, conventions, and external-resource access in this file. Use when checking project context before the initial project-inject run.
 ---
 
 # Project Context

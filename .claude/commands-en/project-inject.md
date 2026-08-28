@@ -16,7 +16,7 @@ Complete Steps 1-6 in order. Advance only when the current step's stated checkpo
 
 ### Step 1: Load Inputs
 
-1. Read `.claude/skills/project-context/SKILL.md` to learn the current state. Distinguish the two cases by the count of catalog section headings (`## Project Overview`, `## Domain Constraints`, `## Development Phase`, `## Directory Conventions`, `## External Resources`) present in the body:
+1. Read `.claude/skills/project-context/SKILL.md` to learn the current state. Distinguish the two cases by the count of catalog section headings (`## Project Overview`, `## Domain Constraints`, `## Quality Standards`, `## Development Phase`, `## Directory Conventions`, `## External Resources`) present in the body:
    - **Unconfigured** — the body has zero catalog section headings.
    - **Configured** — the body has one or more catalog section headings.
 2. Read `.claude/skills/project-context/references/template.md` to obtain the section catalog.
@@ -55,11 +55,11 @@ Build the rebuilt SKILL.md by concatenating, in this order:
    ```
    ---
    name: project-context
-   description: Provides project-specific prerequisites for AI execution accuracy — domain constraints, development phase, directory conventions, external resource access methods. Use when the session starts, when checking project structure, or when a task references domain rules or external resources outside the repository.
+   description: Provides project-specific prerequisites for AI execution accuracy — domain constraints, repository quality standards, development phase, directory conventions, and external resource access methods. Use when the session starts, when checking project structure, or when a task references domain rules, repository quality standards, or external resources outside the repository.
    ---
    ```
 2. `# Project Context` heading.
-3. Each section in catalog order (Project Overview → Domain Constraints → Development Phase → Directory Conventions → External Resources). The output contains only sections whose disposition is `add`, `keep`, or `update` AND that satisfy their inclusion rule; the body advances directly from one included section to the next.
+3. Each section in catalog order (Project Overview → Domain Constraints → Quality Standards → Development Phase → Directory Conventions → External Resources). The output contains only sections whose disposition is `add`, `keep`, or `update` AND that satisfy their inclusion rule; the body advances directly from one included section to the next.
 
 Write the assembled content to `.claude/skills/project-context/SKILL.md`. This single path is the runtime canonical source read by Claude in every session.
 
@@ -72,7 +72,8 @@ Apply each check below to the rebuilt `.claude/skills/project-context/SKILL.md`:
 - [ ] Every populated section's content matches the output structure that `template.md` defines for it.
 - [ ] Every section in the body has disposition `add`, `keep`, or `update` AND satisfies its inclusion rule.
 - [ ] Domain constraint statements are pass/fail checkable (e.g., "log entries use anonymized IDs" passes; "logs are clean" fails this check).
-- [ ] Project Context content is limited to constraints, phases, conventions, and external resources. Technology stack details belong in the `technical-spec` skill; implementation principles belong in the `coding-standards` skill.
+- [ ] Every quality standard has an observable applicability condition, one positive observable accepted state, and supporting evidence.
+- [ ] Project Context content is limited to repository-specific constraints, quality standards, phases, conventions, and external resources. Technology stack details belong in the `technical-spec` skill; general implementation principles belong in the `coding-standards` skill.
 
 When any check fails, report the failing check to the user with the specific line and propose either a re-hearing for the affected section or a manual edit. Re-run Step 5 after the fix.
 
@@ -88,7 +89,7 @@ Show the rebuilt SKILL.md to the user, list the changes made (added / updated / 
 project-context configured:
 - Sections kept: (none — first run)
 - Sections updated: (none — first run)
-- Sections added: Project Overview, Domain Constraints (2 rules captured), Development Phase, Directory Conventions (1 rule), External Resources (Backend domain — Database Schema Source, Secret Store)
+- Sections added: Project Overview, Domain Constraints (2 rules captured), Quality Standards (2 standards captured), Development Phase, Directory Conventions (1 rule), External Resources (Backend domain — Database Schema Source, Secret Store)
 - Sections removed: (none)
 - File written: .claude/skills/project-context/SKILL.md
 ```

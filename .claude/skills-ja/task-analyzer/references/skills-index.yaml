@@ -84,7 +84,7 @@ skills:
   project-context:
     skill: "project-context"
     tags: [context, project-specific, implementation]
-    typical-use: "プロジェクト固有情報、実装原則の理解"
+    typical-use: "プロジェクト固有の前提情報と品質基準"
     size: small
     key-references:
       - "プロジェクト固有（経験則）"

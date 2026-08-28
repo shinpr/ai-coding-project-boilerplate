@@ -63,7 +63,7 @@ claude
 /implement 为 API 添加速率限制
 ```
 
-`/project-inject` 会记录 Claude 所需的仓库特有信息，例如领域约束、目录约定，以及外部 schema 或 API 契约的位置。之后，你可以使用 `/implement` 端到端地完成一次变更。
+`/project-inject` 会记录 Claude 所需的仓库特有信息，包括领域约束、质量标准、目录约定，以及外部 schema 或 API 契约的位置。之后，你可以使用 `/implement` 端到端地完成一次变更。
 
 完整的配置和首次运行步骤请参阅[快速开始指南](docs/guides/zh-CN/quickstart.md)。
 
@@ -94,16 +94,15 @@ Claude Code 会先确认变更要实现的目标，并检查现有实现。路�
 | `/plan`、`/front-plan` | 将已批准的设计转化为可执行计划 |
 | `/build`、`/front-build` | 从已批准的计划继续实现 |
 | `/review`、`/front-review` | 评审已完成的实现，确认其符合约定的目标、仓库标准和安全要求 |
-| `/quality-profile` | 在 `docs/project-context/quality.yaml` 中设置仓库特有的评审标准 |
 | `/diagnose` | 调查问题并比较有调查结果支持的解决方案，但不修改代码 |
-| `/project-inject` | 记录供后续 Claude Code 会话使用的项目特有上下文 |
+| `/project-inject` | 记录供后续 Claude Code 会话使用的项目特有上下文和质量标准 |
 | `/create-skill`、`/refine-skill` | 添加或改进可复用的项目指导 |
 
 有关示例和完整命令参考，请参阅[使用场景和命令](docs/guides/zh-CN/use-cases.md)。
 
 ## 根据项目进行调整
 
-使用 `/project-inject` 记录适用于整个仓库的事实和约束。这样 Claude 就能了解项目目标、约定和外部资料，而无需在每次请求中重复提供这些信息。
+使用 `/project-inject` 记录适用于整个仓库的事实、约束和质量标准。这样 Claude 就能了解项目目标、约定和外部资料，而无需在每次请求中重复提供这些信息。
 
 如果团队中的某项指导只适用于特定类型的工作，请创建或改进相应技能。套件内置的技能编辑工作流可帮助你确定信息所属位置、评审变更并同步技能元数据。有关示例和验证方法，请参阅[技能编辑指南](docs/guides/zh-CN/skills-editing-guide.md)。
 

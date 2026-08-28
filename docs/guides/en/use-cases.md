@@ -13,7 +13,6 @@ Start with the [Quick Start](./quickstart.md) if the project is not configured y
 | `/diagnose <problem>` | Investigate a problem, independently verify the cause, and derive supported solutions without implementing one |
 | `/review [Design Doc]` | Review completed backend or shared implementation against the agreed outcome, repository standards, and security boundaries, then apply user-approved corrections |
 | `/front-review [Design Doc]` | Run the same review and correction flow for frontend implementation |
-| `/quality-profile [policy change]` | Propose repository-specific review standards and save them to `docs/project-context/quality.yaml` after confirmation |
 
 ### Design and planned execution
 
@@ -33,7 +32,7 @@ Start with the [Quick Start](./quickstart.md) if the project is not configured y
 
 | Command | Outcome |
 |---|---|
-| `/project-inject` | Record project-specific prerequisites in `project-context` |
+| `/project-inject` | Record project-specific prerequisites and quality standards in `project-context` |
 | `/create-skill <knowledge>` | Create a new skill through an interactive hearing and review |
 | `/refine-skill <change>` | Apply a targeted change to an existing skill and review the result |
 | `/sync-skills` | Synchronize skill metadata after skill content changes |
@@ -119,7 +118,7 @@ File count is evidence about the change surface, not the scale rule.
 
 ## Customizing project behavior
 
-Use `/project-inject` for facts and constraints that apply to this repository. Use a skill for reusable judgment that should load only for a particular responsibility. Do not copy feature-specific decisions into a global rule; keep them in the applicable PRD, ADR, UI Spec, or Design Doc.
+Use `/project-inject` for facts, constraints, and quality standards that apply to this repository. Use a skill for reusable judgment that should load only for a particular responsibility. Do not copy feature-specific decisions into a global rule; keep them in the applicable PRD, ADR, UI Spec, or Design Doc.
 
 After changing skill content, run:
 

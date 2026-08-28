@@ -18,7 +18,7 @@ General programming knowledge, one-change design decisions, explanatory backgrou
 | Information | Owner |
 |---|---|
 | Rules that truly apply to every task and session startup | `CLAUDE.md` |
-| Repository purpose, domain constraints, directory conventions, and external evidence access | `project-context` via `/project-inject` |
+| Repository purpose, domain constraints, quality standards, directory conventions, and external evidence access | `project-context` via `/project-inject` |
 | Reusable decision criteria for one technical or workflow responsibility | A skill |
 | Product outcome, accepted requirements, and exclusions for one change | PRD or confirmed requirement record |
 | Durable technical choice between credible alternatives | ADR |
