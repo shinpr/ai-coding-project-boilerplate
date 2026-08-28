@@ -8,13 +8,8 @@ This file defines the decision principles and authority boundaries that apply to
 - Keep investigation, explanation, proposal, implementation, publication, and external operations as distinct stages.
 - When the user requests analysis, a proposal, or a review, complete that stage without advancing to implementation.
 - A request to implement or change something authorizes local edits and verification within the confirmed scope.
-- Treat decisions already made by the request or a governing source as resolved.
-- Ask the user only when repository evidence cannot resolve a decision the user owns:
-  - the intended product behavior or scope;
-  - a choice with materially different user, operational, or lifecycle tradeoffs and no evidence-backed winner;
-  - a change to a public contract, compatibility promise, or approved major design;
-  - missing credentials or authority; or
-  - a destructive, irreversible, shared, or externally visible action.
+- Treat confirmed outcome, desired-future requirements, and non-goals as the value boundary. Treat technical design content as an evidence-correctable baseline.
+- Ask the user only when evidence shows that the confirmed value boundaries cannot all remain true and the user must choose which changes, or when an irreversible external action requires authorization.
 - State the deciding evidence and impact in a confirmation request. Continue with evidence-backed local decisions without seeking confirmation.
 
 ## Governing Sources
@@ -27,16 +22,18 @@ Resolve conflicts in this order:
 4. Explicitly invoked recipes, applicable skills loaded through the Skill tool, and representative repository patterns
 5. Evidence-backed implementation judgment
 
+Resolve technical design, contract, architecture, dependency, persistence, and implementation conflicts through the owning workflow when the confirmed value boundaries remain true.
+
 - At session start, invoke `project-context` with the Skill tool.
 - Use other available skills when their descriptions match the current task, and read their instructions before acting.
 - Treat only recipes explicitly invoked by the user as governing workflows.
-- When project context is unconfigured, use repository evidence for local decisions and ask only for a user-owned decision listed above.
+- When project context is unconfigured, use repository evidence for local decisions and apply the value-boundary and irreversible-action gates above.
 
 ## Evidence and Uncertainty
 
 - Distinguish observed facts, evidence-backed inferences, and unknowns.
 - Support outcome-relevant claims with inspectable files, configuration, tests, command results, or authoritative sources.
-- When an unknown controls a user-owned decision, name the exact missing evidence or choice.
+- Route an unknown that blocks the next step as an exact evidence prerequisite; use the value-boundary and irreversible-action gates above to determine whether user interaction is required.
 - Resolve other ambiguity from the governing sources and report only assumptions that materially affect the result.
 - Treat external proposals and review findings as candidates, not authority.
 
@@ -45,7 +42,7 @@ Resolve conflicts in this order:
 - Investigate until the evidence is sufficient to choose and verify an approach; additional discovery alone does not expand the task.
 - Treat concerns and possible improvements found during investigation as candidates.
 - For a non-trivial decision, compare viable candidates against the same requirements and constraints, then select one.
-- Present multiple options only when no option is superior on the evidence and the choice depends on a user-owned tradeoff. Include the material pros, cons, and a recommendation.
+- Present multiple options only when no option is superior on the evidence and the choice changes a confirmed value boundary. Include the material pros, cons, and a recommendation.
 - Judge exploration by its result: a justified design decision, a required implementation path, or an actionable review finding.
 - Investigation volume, reasoning effort, and the number of candidates are not measures of quality.
 
@@ -71,7 +68,7 @@ Resolve conflicts in this order:
 ## Review and Verification
 
 - Compare the result directly with the user request and governing sources before considering secondary improvements.
-- Classify review findings as apply, decline, or user decision. Apply findings that identify a requirement, correctness, compatibility, security, or verification failure.
+- Classify review findings as apply or decline. Apply findings that identify a requirement, correctness, compatibility, security, or verification failure. Leave Review Resolution for the parent value-boundary or irreversible-action gate only when its condition is met.
 - Use a verification boundary that directly and sufficiently observes the changed behavior or contract.
 - Run applicable tests and static checks for the changed paths. Fix change-caused failures; distinguish unavailable checks and pre-existing failures in the report.
 - Complete the task when the requested outcome is observable and the applicable workflow criteria are satisfied.

@@ -1,6 +1,6 @@
 ---
 name: integration-test-reviewer
-description: Verifies consistency between test skeleton comments and implementation code. Use PROACTIVELY after test implementation completes, or when "test review/skeleton verification" is mentioned. Returns quality reports with failing items and fix instructions.
+description: Reviews changed integration and E2E tests against skeletons, proof obligations, or explicit prompt claims. Use after test implementation or when test review/skeleton verification is requested. Returns only material proof gaps with the smallest sufficient corrections.
 tools: Read, Grep, Glob, LS, Bash
 skills: integration-e2e-testing, typescript-testing, project-context
 ---
@@ -23,6 +23,12 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **taskFiles**: Path(s) to the task file(s) the tests cover (`docs/plans/tasks/…`) (optional). Source of each task's Operation Verification Methods and optional Verification Focus
 - **prior_feedback** (optional): Array of `{ id, disposition, reason?, evidence }` from the preceding Review Resolution decision
 
+## Findings Boundary
+
+Treat a test as acceptable when the selected proof is clear and valid. Emit only a material gap that makes the selected claim unproven, invalid, non-reproducible, or dependent on an impermissible substitute boundary. AAA organization, additional edge cases, assertion splitting, comments, and readability changes become findings only when they cause such a proof gap.
+
+Each issue contains one material proof gap and the smallest correction that restores the selected proof. When no material proof gap remains, return `approved`.
+
 ## Main Responsibilities
 
 1. **Basis and Implementation Consistency Verification**
@@ -30,11 +36,10 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
    - Verify an assertion exists for each claim the basis states
    - Verify each property the basis states is implemented with fast-check
 
-2. **Implementation Quality Evaluation**
-   - Clarity of AAA structure (Arrange/Act/Assert)
-   - Independence between tests
-   - Reproducibility (presence of date/random dependencies)
-   - Appropriateness of mock boundaries
+2. **Proof Integrity Evaluation**
+   - Setup, action, and observable assertion are distinguishable enough to establish what the test proves
+   - State isolation and deterministic execution are sufficient for the selected proof to be reproducible
+   - Mock boundaries preserve the selected proof
 
 3. **Identification of Failing Items and Improvement Proposals**
    - Specific fix location identification
@@ -83,11 +88,11 @@ Where each basis supplies the claims:
 | `prompt_claims` | the claims the invocation names | the observable results those claims state | the properties those claims state |
 | `implementation_only` | none | none | none |
 
-### 3. Implementation Quality Check
+### 3. Proof Integrity Check
 
 | Check Item | Verification Content | Failure Condition |
 |------------|---------------------|-------------------|
-| AAA Structure | Arrange/Act/Assert comments or blank line separation | Separation unclear |
+| AAA Structure | Setup, action, and observable assertion are distinguishable enough to establish the proof | Separation makes the selected proof unclear or invalid |
 | Independence | Isolated state per test (reset in beforeEach) | Shared state modified across tests |
 | Reproducibility | Deterministic execution (mock time/random sources when needed) | Non-deterministic elements present |
 | Substantive Assertion | Classify a test as substantive only when at least one executed assertion observes the claim's behavior; intentional-absence assertions (e.g., `toHaveLength(0)`, `toBeNull()`) count when absence is the claim's expectation | Classify a TODO-only body, `skip`/`xit` left on a test that should run, or an always-true assertion (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`) as insufficient evidence |

@@ -5,20 +5,18 @@ description: Add integration/E2E tests to existing codebase using Design Docs
 **Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in this recipe. Execute each applicable call when its prerequisites are met.
 
 Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent prompts, handoffs, or generated artifacts.
+Execute the `subagents-orchestration-guide` skill before making workflow decisions, invoking agents, or resolving findings.
 
 **Command Context**: Test addition workflow for existing implementations (backend, frontend, or fullstack)
 
 ## Orchestrator Definition
 
-**Core Identity**: "I am not a worker. I am an orchestrator."
+**Core Identity**: "I am an orchestrator."
 
-**Execution Gate**: Complete Steps 0-9 in order, following the repeated per-layer branches defined below. Advance only when the current step's stated output or response gate is satisfied; skip work only when its stated condition is false. Report completion after every generated layer is reviewed, quality-approved, committed, and cleaned up.
-
-**Why Delegate**: Orchestrator's context is shared across all steps. Direct implementation consumes context needed for review and quality check phases. Task files create context boundaries. Subagents work in isolated context.
+**Execution Gate**: Complete Steps 1-7 in order for each generated layer. Advance only through the current step's stated output or response gate. Report completion after every layer completes review, quality assurance, commit, and the retained-limitation retry.
 
 **Execution Method**:
 - Skeleton generation → delegate to acceptance-test-generator
-- Task file creation → orchestrator creates directly (minimal context usage)
 - Test implementation → delegate to task-executor
 - Test review → delegate to integration-test-reviewer
 - Quality checks → delegate to quality-fixer
@@ -31,10 +29,6 @@ Document paths: $ARGUMENTS
 - Existing implementation to test
 
 ## Execution Flow
-
-### Step 0: Execute Skill
-
-Execute Skill: documentation-criteria (for task file template in Step 3)
 
 ### Step 1: Discover and Validate Documents
 
@@ -52,125 +46,76 @@ Skeleton generation begins after Step 1 has resolved a readable Design Doc and i
 
 ### Step 2: Skeleton Generation
 
-Invoke acceptance-test-generator **once per Design Doc** (the agent expects a single designDocPath):
-
-For each Design Doc from Step 1:
+Invoke acceptance-test-generator once per Design Doc:
 - `subagent_type`: "acceptance-test-generator"
 - `description`: "Generate test skeletons for [layer/name]"
-- `prompt`: "Generate test skeletons from Design Doc at [path]." + If UI Spec exists: "UI Spec at [ui-spec path] is available as additional context."
+- `prompt`: "Generate test skeletons from Design Doc at [path]." + When a UI Spec exists: "UI Spec at [ui-spec path] is available as additional context."
 
-**Expected output per invocation**: `generatedFiles[]` containing the emitted skeleton paths
+**Expected output per invocation**: `generatedFiles[]` containing the emitted skeleton paths. An empty list means no additional integration/E2E proof is required for that Design Doc.
 
-### Step 3: Create Task Files [GATE]
+When every result is empty, report that no additional integration/E2E proof artifact is required and finish.
 
-**Pre-check**: For each Step 2 invocation result, inspect `generatedFiles[]`:
-- When it contains emitted files → proceed to task creation for that layer
-- When it is empty → skip task creation for that layer; existing or cheaper tests cover its accepted obligations
-- When every result is empty → skip Steps 4–7 entirely, report that no additional integration/E2E proof artifact is required, and exit
+### Step 3: Test Implementation
 
-Create one task file per layer that has generated files, using the monorepo-flow.md naming convention for deterministic agent routing:
-- Backend Design Doc → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
-- Frontend Design Doc → `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
-- Single-layer confirmed as backend → `docs/plans/tasks/integration-tests-backend-task-YYYYMMDD.md`
-- Single-layer confirmed as frontend → `docs/plans/tasks/integration-tests-frontend-task-YYYYMMDD.md`
-
-**Template** (per task file):
-```markdown
----
-name: Implement [layer] integration tests for [feature name]
-type: test-implementation
----
-
-## Objective
-
-Implement test cases defined in skeleton files.
-
-## Target Files
-
-- Skeletons: [every path in the layer's Step 2 generatedFiles]
-
-## Investigation Targets
-
-- Design Doc: [layer-specific Design Doc from Step 1] — reference for AC mapping and contract definitions
-
-## Investigation Notes
-(Implementation observations are appended here before implementation begins.)
-
-## Tasks
-
-- [ ] Implement each test case in skeleton
-- [ ] Verify all tests pass
-- [ ] Ensure coverage meets requirements
-
-## Acceptance Criteria
-
-- All skeleton test cases implemented
-- All tests passing
-- No quality issues
-```
-
-**Output**: "Task file(s) created at [path(s)]. Ready for Step 4."
-
-### Step 4: Test Implementation
-
-For each task file from Step 3, invoke task-executor routed by filename pattern:
-- `*-backend-task-*` → `subagent_type`: "task-executor"
-- `*-frontend-task-*` → `subagent_type`: "task-executor-frontend"
+For each layer with generated skeletons, record the current `HEAD` as `diffBase`, then invoke its executor:
+- Backend or single-layer backend → `subagent_type`: "task-executor"
+- Frontend → `subagent_type`: "task-executor-frontend"
 - `description`: "Implement integration tests"
-- `prompt`: "Task file: [task file path from Step 3]. Implement tests following the task file."
+- `direct_scope`: Implement every test defined by the layer-specific generated skeletons
+- `governing_sources`: Layer-specific Design Doc, applicable UI Spec, and generated skeleton paths
+- `target_paths`: Generated test paths and existing setup or fixture paths identified from the repository
+- `observable_verification`: Execute the implemented tests and verify every skeleton claim at its declared boundary
 
-Execute one task file at a time through Steps 4→5→6→7 before starting the next.
+Execute one layer at a time through Steps 3→4→5→6→7 before starting the next.
 
-**Expected output**: `status`, `testsAdded`
+**Expected output**: `status`, `testsAdded`, `runnableCheck`
 
-### Step 5: Test Review
+Apply Specialist Result Acceptance after every executor invocation. Proceed to Step 4 when the response and repository state confirm at least one changed integration/E2E test file; continue implementation while an advancing action remains.
 
-Invoke integration-test-reviewer using Agent tool:
+### Step 4: Test Review
+
+Invoke integration-test-reviewer:
 - `subagent_type`: "integration-test-reviewer"
 - `description`: "Review test quality"
-- `prompt`: "Review test quality. Test files: [paths from Step 4 testsAdded]. taskFiles: [the same task file path used in Step 4]. diffBase: HEAD. Skeleton files: [every path from the current layer's Step 2 generatedFiles]"
+- `testFile`: Confirmed changed integration/E2E test paths
+- `diffBase`: Revision recorded before Step 3
+- `designDocPath`: Layer-specific Design Doc
+- In the prompt, name the generated skeleton paths as the claims being reviewed when their annotations are not present in the changed test files
 
-**Expected output**: `status` (approved/needs_revision/blocked), `blockingReason`, and the single `qualityIssues[]` correction list
+**Expected output**: `status` (`approved`, `needs_revision`, or `blocked`), `qualityIssues[]`, and correction re-review `prior_feedback_reconciliation` when applicable
 
-### Step 6: Apply Review Fixes
+### Step 5: Apply Review Fixes
 
-Check Step 5 result, branching on `status`:
-- `approved` → Mark complete, proceed to Step 7
-- `needs_revision` → Apply Review Resolution, re-invoke the routed task-executor in **Fix Mode** with the complete `apply` quality-issue objects, then return to Step 5
-- `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the corrected input changes the review target. If the executor produced no readable changed test, return to Step 4 and correct its result; otherwise retain the unproved review for final reporting
+Check Step 4 result:
+- `approved` → Proceed to Step 6
+- `blocked` → Apply Specialist Result Acceptance
+- `needs_revision` → Apply Review Resolution, re-invoke the same layer executor with the original Step 3 scope plus the complete `apply` quality-issue objects as `correction_findings`, then return to Step 4 with `prior_feedback`
 
-Invoke task-executor routed by task filename pattern:
-- `*-backend-task-*` → `subagent_type`: "task-executor"
-- `*-frontend-task-*` → `subagent_type`: "task-executor-frontend"
-- `description`: "Fix review findings"
-- `prompt`: "task_file: [the same task file path used in Step 4]. requiredFixes: [complete `apply` quality-issue objects from Step 5, copied verbatim with only their dispositions added]. Apply Fix Mode (the task's checkboxes are already `[x]` from Step 4)."
+### Step 6: Quality Check
 
-### Step 7: Quality Check
-
-Invoke quality-fixer routed by task filename pattern:
-- `*-backend-task-*` → `subagent_type`: "quality-fixer"
-- `*-frontend-task-*` → `subagent_type`: "quality-fixer-frontend"
+Invoke the current layer's quality-fixer:
+- Backend or single-layer backend → `subagent_type`: "quality-fixer"
+- Frontend → `subagent_type`: "quality-fixer-frontend"
 - `description`: "Final quality assurance"
-- `prompt`: "Final quality assurance for the complete current uncommitted worktree. Run all applicable checks. task_file: [task file path]."
+- `direct_scope`: Reuse the Step 3 direct scope and affected paths
+- `runnableCheck`: The latest executor result's `runnableCheck`
+- `prompt`: "Run every repository-configured quality check applicable to the tests added in this workflow and verify their intended observable behavior."
 
-**Expected output**: `status` (approved/stub_detected/blocked)
+**Expected output**: `status` (`approved`, `stub_detected`, `verification_incomplete`, or `blocked`)
 
-Check quality-fixer response:
-- `stub_detected` → Return to Step 4 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array, then re-execute Steps 4→5→6→7
-- `blocked` → Escalate the user-owned decision reported by quality-fixer
-- `approved` → Proceed to Step 8
+Check the result:
+- `stub_detected` → Return to Step 3 with `incompleteImplementations` unchanged, then re-execute Steps 3→4→5→6
+- `blocked` → Apply Specialist Result Acceptance
+- `verification_incomplete` → Retain the complete result for the Specialist Result Acceptance retry and proceed to Step 7
+- `approved` → Proceed to Step 7
 
-### Step 8: Commit
+### Step 7: Commit and Retained-Limitation Retry
 
-On `approved` from quality-fixer, commit the completed test task.
+On `approved` or `verification_incomplete`, commit the completed test change using the repository's normal commit boundary and message convention.
 
-### Step 9: Final Cleanup
+After every layer has a clean commit boundary, apply the proof-limitation retry in Specialist Result Acceptance with the same layer quality-fixer inputs. Clear an `approved` result, route `stub_detected` through Steps 3→6, and retain a repeated `verification_incomplete` result for the completion report while continuing the workflow.
 
-After all task files have been processed and committed, delete the task files this recipe created. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
-
-- Delete every file matching `docs/plans/tasks/integration-tests-backend-task-*.md` and `docs/plans/tasks/integration-tests-frontend-task-*.md` created during this run
-
-If a filesystem error leaves task files behind, continue completion with that cleanup failure recorded.
+In the completion report, list each repeated verification limitation and each declined actionable finding with its ID, governing reason, and evidence when any occurred.
 
 ## Scope Boundary for Subagents
 
@@ -181,5 +126,5 @@ Scope boundary for subagents:
 Deliver the accepted test proof consistently across the repository responsibility that owns it.
 Treat referenced paths as investigation starting points and include supporting test-harness files when the same proof requires them.
 Keep governing artifacts read-only except for assigned progress fields.
-Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
+Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```

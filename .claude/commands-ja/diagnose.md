@@ -119,16 +119,6 @@ Agentツールでinvestigatorを呼び出す:
     前回の調査結果（コンテキスト用、調査済み領域の再調査は不要）:
     [前回の調査JSON]
 
-**design_gap検出時のエスカレーション**:
-
-investigatorの出力で`causeCategory: design_gap`または`recurrenceRisk: high`の場合：
-1. verifier実行前に**ユーザー確認を挿入**
-2. AskUserQuestionで以下を確認：
-   「設計レベルの問題が検出されました。以下のどちらで進めますか？」
-   - A: 現状の設計内で修正を試みる
-   - B: 設計の見直しを含めて検討する
-3. ユーザーがBを選択した場合、solverに`includeRedesign: true`を渡す
-
 品質を満たしたらverifierに進む。
 
 ### ステップ3: 検証（verifier）
@@ -160,6 +150,8 @@ verifierのカバレッジ評価（`coverageAssessment`）を確認:
 
 **前提**: カバレッジ評価が十分（`coverageAssessment=sufficient`）、または部分的/不十分でのユーザー承認
 
+所有範囲、契約、技術設計の修正は、確認済みの成果、将来状態の要件、対象外を維持できる場合、通常の解決策候補として扱う。design gapを検出しただけでユーザー判断にはしない。これらを同時には維持できないことをエビデンスが示す場合、または解決策に不可逆な外部操作の承認が必要な場合は、選択肢を捏造せず、解決策のエビデンスとともにその境界を具体的に報告する。
+
 Agentツールでsolverを呼び出す:
 - `subagent_type`: "solver"
 - `description`: "解決策の導出"
@@ -172,7 +164,7 @@ Agentツールでsolverを呼び出す:
     影響分析: [investigatorのimpactAnalysis]
     カバレッジ評価: [sufficient/partial/insufficient]
 
-**期待される出力**: 複数の解決策（最低3つ）、トレードオフ分析、推奨案と実装ステップ、残存リスク
+**期待される出力**: 検証済みの原因から導いた、実質的に異なる実行可能な解決策、トレードオフ分析、推奨案と実装ステップ、残存リスク
 
 ### ステップ6: 最終レポート作成
 

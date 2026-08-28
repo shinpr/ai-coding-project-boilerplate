@@ -106,7 +106,7 @@ Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc p
 
 - `approved`: continue.
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete applied findings, and rerun verification and review for the affected boundary.
-- `rejected`: resolve the governing-source conflict; ask the user only when product outcome or a major approved decision must change.
+- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes.
 
 Invoke `design-sync` with the returned Design Doc as source, apply Review Resolution to actionable conflicts, and report `SKIPPED` distinctly when only one Design Doc exists.
 

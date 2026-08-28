@@ -91,7 +91,7 @@ Extract the requested outcome, reason, and affected document responsibilities fr
 
 Record the resolved changes as the update contract.
 
-**Scope carried into the update**: Pass the confirmed sections, the reason for the change, and any size budget the user stated to the update agent. Before document review, map each changed section to a confirmed change or to a consistency update that change required; request a scope decision for any section changed outside that set or for an update that exceeds a stated budget.
+**Scope carried into the update**: Pass the confirmed sections, the reason for the change, and any size budget the user stated to the update agent. Before document review, map each changed section to a confirmed change or to a consistency update that change required. Remove accidental unmapped changes; when a necessary change would alter the requested document outcome or explicit size constraint, return to the request clarification gate.
 
 ### Step 4: Document Update
 
@@ -155,7 +155,7 @@ prompt: |
 **On review result**:
 - `approved` → Proceed to Step 6.
 - `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim to the Step 2 update agent, then rerun verification when applicable and re-review with `prior_feedback`.
-- `rejected` → Resolve the governing-source conflict or escalate when user authority is required.
+- `rejected` → Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution.
 
 Follow Review Resolution convergence and escalation conditions.
 
@@ -175,9 +175,7 @@ prompt: |
 
 **On consistency result**:
 - No conflicts → include the result in the final approval summary
-- Conflicts detected → Present conflicts to user with AskUserQuestion:
-  - A: Return to Step 4 to resolve conflicts in this document
-  - B: End command and address conflicts separately
+- Conflicts detected → Apply Review Resolution using design-sync as a fresh verifier. Return `apply` conflicts to Step 4 for the owning document, rerun design-sync after correction, and retain evidenced declines as complete.
 
 Present the reviewed update and, for a Design Doc, its consistency result for one final user approval. This is the command's single approval gate.
 
@@ -187,8 +185,8 @@ Present the reviewed update and, for a Design Doc, its consistency result for on
 |-------|--------|
 | Target document not found | Report and end (document creation is out of scope) |
 | Sub-agent update fails | Repair discoverable input or routing errors and retry when the invocation materially changes; otherwise report the failure evidence |
-| Reviewer returns `rejected` | Resolve the governing-source conflict or escalate when user authority is required |
-| design-sync detects conflicts | Present to user for resolution decision |
+| Reviewer returns `rejected` | Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution |
+| design-sync detects conflicts | Apply Review Resolution and return applied conflicts to the owning update path |
 
 ## Completion Criteria
 

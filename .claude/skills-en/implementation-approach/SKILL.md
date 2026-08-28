@@ -45,7 +45,7 @@ Candidate paths and rejected additions remain active analysis. The durable outpu
 
 **Completion evidence**: one complete Selected Design; every added design surface names its current evidence, why lower-surface resolutions fail, and its subtraction result.
 
-**Transition**: proceed when every supporting claim is observed, explicitly inferred with evidence, or recorded as unknown; when an unknown blocks a step, stop at that step and name the evidence or user decision required.
+**Transition**: proceed when every supporting claim is observed, explicitly inferred with evidence, or recorded as unknown; route an unknown that blocks the next step as an exact evidence prerequisite. The caller's value-boundary and irreversible-action gates determine whether user interaction is required.
 
 ### Phase 3: Strategy Exploration and Creation
 
@@ -111,7 +111,7 @@ Resource Constraints: Team/skills, work hours/systems, budget, external contract
 Business Constraints: Market launch timing, customer impact, regulatory compliance
 ```
 
-**Completion evidence**: each constraint is observed, inferred, or unknown; every unknown that can invalidate a candidate names the required evidence or user decision.
+**Completion evidence**: each constraint is observed, inferred, or unknown; every unknown that can invalidate a candidate names the exact evidence prerequisite.
 
 **Transition**: proceed when remaining unknowns cannot change the valid candidate set, or the user resolves them.
 
@@ -157,7 +157,7 @@ implementationApproachDecision:
 
 Candidate approaches and rejection reasoning remain active analysis unless an accepted ADR owns them as decision history.
 
-**Completion evidence**: the selected approach and every added design surface trace to an observed constraint, accepted inference, or resolved user decision.
+**Completion evidence**: the selected approach and every added design surface trace to an observed constraint, accepted inference, or resolved value-boundary decision.
 
 ## Verification Level Definitions
 
@@ -186,7 +186,7 @@ Define integration points according to selected strategy:
 - [ ] Every hard constraint maps to the selected approach
 - [ ] Phase 7 output records the selection, total-complexity basis, and added design surface; alternatives appear only in an accepted ADR
 
-When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence or user decision needed to continue.
+When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence prerequisite. The caller's value-boundary and irreversible-action gates determine whether user interaction is required.
 
 ## Guidelines for Meta-cognitive Execution
 

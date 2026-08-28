@@ -87,7 +87,7 @@ The Design Doc owns the complete implementation design and retains all applicabl
 
 Invoke `code-verifier` with `doc_type: design-doc` and the Design Doc path. Leave `code_paths` absent so future behavior remains intent and current premises and feasibility are verified.
 
-Apply Review Resolution to every discrepancy before document review. Send only `apply` findings to a fresh technical-designer invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate when a finding names an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun code-verifier after a correction. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue only when it contains no unresolved `apply` or `user_decision_required` item.
+Apply Review Resolution to every discrepancy before document review. Send only `apply` findings to a fresh technical-designer invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate when a finding names an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun code-verifier after a correction. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue only when it contains no unresolved `apply` item.
 
 ## Step 7: Review and Approve
 
@@ -95,7 +95,7 @@ Invoke `document-reviewer` with `doc_type: DesignDoc`, `target`, `review_context
 
 - `approved`: continue.
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer invocation using the existing path and complete applied findings, then rerun Steps 6-7 for the affected boundary.
-- `rejected`: resolve the governing-source conflict; ask the user only when it changes the product outcome or a major approved decision.
+- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes.
 
 Invoke `design-sync` for consistency with other Design Docs and apply Review Resolution to actionable conflicts. Report `SKIPPED` distinctly when only one Design Doc exists.
 

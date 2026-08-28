@@ -14,7 +14,7 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Follow the 4-step task cycle exactly**: task-executor → escalation check → quality-fixer → commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
-4. **Scope**: Complete consumed task-set execution, post-implementation verification, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a valid user-owned escalation. Advance only when the current phase's stated transition condition is satisfied.
+4. **Scope**: Complete consumed task-set execution, post-implementation review, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a confirmed value-boundary choice or irreversible-action authorization. Advance only when the current phase's stated transition condition is satisfied.
 
 **CRITICAL**: Run quality-fixer before every commit.
 
@@ -91,7 +91,7 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
 - [ ] Confirmed Consumed Task Set is non-empty (computed in the Consumed Task Set section above)
 - [ ] Identified task execution order within the Consumed Task Set (dependencies)
 - [ ] **Environment check**: Can I execute per-task commit cycle?
-  - If commit capability unavailable → Escalate before autonomous mode
+  - If commit capability is unavailable → Apply Specialist Result Acceptance before autonomous mode
   - Test and quality-tool limitations → Subagents run unaffected checks and record exactly what could not run
 
 ## Task Execution Cycle (4-Step Cycle)
@@ -100,19 +100,20 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
 For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke task-executor to implement the task (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)
 2. **BRANCH ON EXECUTOR RESULT**:
-   - `status: "escalation_needed"` or `"blocked"` → inspect the declared boundary; escalate when it requires a user-owned product, contract, authority, or irreversible decision
+   - `status: "escalation_needed"` or `"blocked"` → Apply subagents-orchestration-guide Specialist Result Acceptance
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `status`
-     - `needs_revision` → Apply Review Resolution and return to step 1 with the complete `apply` quality-issue objects passed verbatim to task-executor in **Fix Mode**
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 in **Fix Mode**; otherwise record the review as not run with its `blockingReason` and proceed to step 3
+     - `needs_revision` → Apply Review Resolution and return to step 1 with the same `task_file` plus the complete `apply` quality-issue objects passed verbatim as `correction_findings`
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to step 3
      - `approved` → Proceed to step 3
    - `readyForQualityCheck: true` → Proceed to step 3
 3. **QUALITY-FIX**: Invoke quality-fixer against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Pass the current `task_file`, the implementation step's `runnableCheck`, and `qualityCommand` when technical-spec or a repository convention names one. Then branch on its response:
-   - `stub_detected` → Return to step 1 and re-invoke task-executor in **Fix Mode** by passing the same `task_file` and the `incompleteImplementations[]` array as input
-   - `blocked` → escalate the user-owned decision reported by quality-fixer
+   - `stub_detected` → Return to step 1 and re-invoke task-executor with the same `task_file` and the `incompleteImplementations[]` array
+   - `blocked` → Apply Specialist Result Acceptance
+   - `verification_incomplete` → Retain the complete result for final retry and proceed to step 4
    - `approved` → Proceed to step 4
-4. **COMMIT on approval**: Commit the completed task change set
+4. **COMMIT**: Commit the completed task change set after `approved` or `verification_incomplete`
 
-**CRITICAL**: Parse every sub-agent response for its routing meaning. Proceed to the next task only after quality-fixer returns `approved`.
+**CRITICAL**: Parse every sub-agent response for its routing meaning. Proceed to the next task after step 4, retaining any `verification_incomplete` result for the final retry.
 
 ## Scope Boundary for Subagents
 
@@ -123,28 +124,22 @@ Scope boundary for subagents:
 Deliver the task outcome consistently across the repository responsibility that owns it.
 Treat referenced paths as investigation starting points and include supporting files when the same outcome requires them.
 Keep governing artifacts read-only except for assigned progress fields.
-Escalate when progress requires a user-owned product, public-contract, major-design, authority, or irreversible decision.
+Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```
 
 After approval confirmation, start autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
 
-## Post-Implementation Verification (After All Tasks Complete)
+## Post-Implementation Review (After All Tasks Complete)
 
-After all task cycles finish, run verification agents **in parallel** before the completion report:
+Before invoking post-implementation reviewers, apply the proof-limitation retry in subagents-orchestration-guide Specialist Result Acceptance. Continue with the reviewers after clearing or retaining each result; include only repeated limitations in the completion report.
 
-1. Resolve the comparison base from the branch upstream and repository default branch, then invoke both verification agents in parallel:
-   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`, Design Doc path, `code_paths`: implementation file list from the merge base through `HEAD`
-   - security-reviewer (subagent_type: "security-reviewer") → `governingDocuments: [{"type":"design-doc","path":"[path]"}]` and implementation file list
+Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
-2. **Consolidate results** — pass/fail criteria per subagents-orchestration-guide Post-Implementation Verification section. Present unified verification report to user.
+Emit these Agent calls in one assistant message, then await both:
+- code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved typed `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
+- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments`
 
-3. **Fix cycle** (when any verifier failed):
-   - Apply Review Resolution to every actionable finding. Pass each `apply` finding object to task-executor verbatim with only its disposition added; cited locations are investigation starting points.
-   - Invoke task-executor in **Fix Mode** with the affected paths, observable verification condition, and the unchanged finding objects. No fix task file is created.
-   - Re-run only the failed verifiers, carrying `prior_feedback` when the verifier supports reconciliation, and follow Review Resolution to convergence.
-   - After correction review converges, run quality-fixer once. Continue after `approved`; present the exact user-owned decision if it returns `blocked`.
-
-4. **All passed** → Proceed to Final Cleanup
+Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 
 ## Final Cleanup
 
@@ -161,6 +156,7 @@ Final report must include:
 - Task materialization status
 - Implemented task count
 - Quality check result, including checks that did not run or unrelated baseline failures when present
+- Verification limitations that remained after final retry
 - Commit count
 - Cleanup result
 - Escalation or blocking summary, if any

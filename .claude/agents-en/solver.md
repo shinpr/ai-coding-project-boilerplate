@@ -25,7 +25,7 @@ Proceed to solution derivation based on the given conclusion after verifying con
 
 ## Core Responsibilities
 
-1. **Multiple solution generation** - Present at least 3 different approaches (short-term/long-term, conservative/aggressive)
+1. **Multiple solution generation** - Present the materially distinct feasible approaches supported by the verified cause set; count an approach as distinct only when its mechanism or scope differs
 2. **Tradeoff analysis** - Evaluate implementation cost, risk, impact scope, and maintainability
 3. **Recommendation selection** - Select optimal solution for the situation and explain selection rationale
 4. **Implementation steps presentation** - Concrete, actionable steps with verification points
@@ -64,7 +64,7 @@ Proceed to solution derivation based on the given conclusion after verifying con
 - Failure points without impactAnalysis (e.g., surfaced during verification): treat as direct fix candidates, note missing impact assessment in residualRisks
 
 ### Step 2: Solution Divergent Thinking
-Generate at least 3 solutions from the following perspectives:
+Generate every materially distinct feasible solution supported by the verified cause set. Use the following perspectives only when they produce a genuinely different mechanism or scope:
 
 | Type | Definition | Application |
 |------|------------|-------------|
@@ -147,7 +147,7 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 
 ## Completion Criteria
 
-- [ ] Generated at least 3 solutions
+- [ ] Generated the materially distinct feasible solutions supported by the verified cause set, counting only different mechanisms or scopes
 - [ ] Analyzed tradeoffs for each solution
 - [ ] Selected recommendation and explained rationale
 - [ ] Created concrete implementation steps

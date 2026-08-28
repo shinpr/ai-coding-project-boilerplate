@@ -14,7 +14,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 1. **全作業をAgentツールでサブエージェントに委譲** — サブエージェントの呼び出し、データの受け渡し、結果の報告（許可ツール: subagents-orchestration-guideスキル「オーケストレーターの許可ツール」参照）
 2. **4ステップサイクルに厳密に従う**: task-executor → エスカレーションチェック → quality-fixer → commit
 3. **自律実行モード移行**: ユーザーの実行指示とタスクファイルの存在をバッチ承認とみなす
-4. **スコープ**: Consumed Task Set の実行、実装後検証、消費したタスクのクリーンアップ、完了報告を順番に完了する。または、ユーザーが持つ正当な判断のため、現在のフェーズで自律実行を停止する。現在のフェーズで定められた遷移条件を満たした場合にのみ次へ進む。
+4. **スコープ**: Consumed Task Setの実行、実装後レビュー、消費したタスクのクリーンアップ、完了報告を順番に完了する。または、確認済みの成果・将来状態の要件・対象外のどれを変更するかという選択や不可逆な操作の承認が必要な場合は、現在のフェーズで自律実行を停止する。現在のフェーズで定められた遷移条件を満たした場合にのみ次へ進む。
 
 **重要**: 全てのコミット前にquality-fixerを実行。
 
@@ -91,7 +91,7 @@ Agentツールでtask-decomposerを呼び出す:
 - [ ] Consumed Task Set が非空であることを確認（上記「Consumed Task Set」セクションで計算）
 - [ ] Consumed Task Set 内のタスク実行順序（依存関係）を特定
 - [ ] **環境チェック**: タスク単位のコミットサイクルを実行可能か？
-  - コミット機能が利用不可 → 自律実行モード前にエスカレーション
+  - コミット機能が利用不可 → 自律実行モード前に専門エージェントの結果の受理を適用
   - テストまたは品質ツールを利用できない場合 → サブエージェントは影響を受けないチェックを実行し、実行できなかった内容を正確に記録する
 
 ## タスク実行サイクル（4ステップサイクル）
@@ -100,19 +100,20 @@ Agentツールでtask-decomposerを呼び出す:
 Consumed Task Set 内の各タスクで必須：
 1. **EXECUTE**: task-executor を呼び出してタスク実装を実行（レイヤー横断 の場合は subagents-orchestration-guide の レイヤー別エージェントルーティング 参照）
 2. **実行結果で分岐**:
-   - `status: "escalation_needed"` または `"blocked"` → 宣言された境界を確認し、ユーザーが所有するプロダクト、契約、権限、または不可逆な判断が必要な場合にエスカレーションする
-   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `status` で分岐する
-     - `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を逐語で task-executor に渡して **Fix Mode** でステップ1 に戻る
-     - `blocked` → 現在の diff から移動・リネームされたテストパスを解決し、その入力によってレビュー対象が変わる場合は再実行する。`requiresTestReview: true` にもかかわらず読み取り可能な変更テストが存在しない場合は、その executor 出力の欠陥を **Fix Mode** でステップ1 に差し戻す。それ以外はレビューを未実行として `blockingReason` を記録し、ステップ3へ進む
+   - `status: "escalation_needed"` または `"blocked"` → subagents-orchestration-guideの「専門エージェントの結果の受理」を適用する
+   - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアーがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `status` で分岐する
+     - `needs_revision` → レビュー裁定を適用し、同じ`task_file`に、`apply`のquality-issueオブジェクト一式を`correction_findings`として逐語で加えてステップ1に戻る
+     - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、その入力によってレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻す。それ以外はレビューを未実行として`blockingReason`を記録し、ステップ3へ進む
      - `approved` → ステップ3 へ
    - `readyForQualityCheck: true` → ステップ3 へ
 3. **QUALITY-FIX**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して quality-fixer を呼び出す（レイヤー横断の場合は レイヤー別エージェントルーティング 参照）。現在の `task_file`、実装ステップの `runnableCheck`、および technical-spec またはリポジトリの規約が権威ある品質コマンドを示している場合は `qualityCommand` を渡す。その後レスポンスで分岐する:
-   - `stub_detected` → ステップ1 に戻り、同じ `task_file` と `incompleteImplementations[]` 配列を入力として task-executor を **Fix Mode** で再起動
-   - `blocked` → quality-fixer が報告したユーザー判断をエスカレーションする
+   - `stub_detected` → ステップ1に戻り、同じ`task_file`と`incompleteImplementations[]`配列を渡してtask-executorを再実行する
+   - `blocked` → 専門エージェントの結果の受理を適用する
+   - `verification_incomplete` → 結果を省略せず最終再試行まで保持し、ステップ4へ進む
    - `approved` → ステップ4 へ
-4. **承認後にコミット**: 完了したタスクの変更セットをコミットする
+4. **コミット**: `approved`または`verification_incomplete`の後に、完了したタスクの変更セットをコミットする
 
-**重要**: 全サブエージェントレスポンスのルーティング上の意味を読み取る。quality-fixer が `approved` を返した後にのみ次のタスクへ進む。
+**重要**: 全サブエージェントレスポンスのルーティング上の意味を読み取る。ステップ4の後に次のタスクへ進み、`verification_incomplete`の結果は最終再試行まで保持する。
 
 ## サブエージェントのスコープ境界
 
@@ -123,28 +124,22 @@ Consumed Task Set 内の各タスクで必須：
 タスクの成果を、それを担うリポジトリ上の責務全体で整合する形で完成させる。
 参照されたパスは調査の起点として扱い、同じ成果に必要な関連ファイルを含める。
 割り当てられた進捗フィールドを除き、出典となる成果物は読み取り専用とする。
-進行にプロダクト成果、公開契約、主要設計、権限、または不可逆操作に関するユーザー判断が必要な場合はエスカレーションする。
+確認済みの成果、将来状態の要件、対象外を同時には維持できない場合は要件変更検知へ戻る。不可逆な外部操作が必要な場合は承認を求める。
 ```
 
 承認確認後、自律実行モードを開始。要件変更を検知した場合は即座に停止。
 
-## 実装後検証（全タスク完了後）
+## 実装後レビュー（全タスク完了後）
 
-全タスクサイクル完了後、完了レポートの前に検証エージェントを**並列実行**:
+実装後レビュアーを呼び出す前に、subagents-orchestration-guideの「専門エージェントの結果の受理」にある証明不足の再試行を適用する。各結果を解消または保持した後にレビューへ進み、再試行後も残る証明不足だけを完了報告に含める。
 
-1. ブランチのupstreamとリポジトリのデフォルトブランチから比較基点を解決し、両方を並列で実行する (Agent tool):
-   - code-verifier (subagent_type: "code-verifier") → `doc_type: design-doc`、Design Docパス、`code_paths`: merge baseから`HEAD`までの実装ファイルリスト
-   - security-reviewer (subagent_type: "security-reviewer") → `governingDocuments: [{"type":"design-doc","path":"[パス]"}]` と実装ファイルリスト
+作業計画書が参照する読み込み可能なDesign Docを解決する。入力が不足している場合はレビューをブロックする。
 
-2. **結果の統合** — 合格/不合格の基準はsubagents-orchestration-guideの実装後検証セクション参照。統合検証レポートをユーザーに提示。
+次のAgent呼び出しを1つのassistantメッセージで行い、両方を待つ。
+- code-reviewer (subagent_type: "code-reviewer") → 型付きの`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
+- security-reviewer (subagent_type: "security-reviewer") → 同じ型付き`governingDocuments`に照らして、完了した実装をレビューする
 
-3. **修正サイクル**（いずれかの verifier が fail のとき）:
-   - 対応可能な各検出事項にレビュー裁定を適用する。`apply` の検出事項オブジェクトは、処理方針のみ付加して逐語で task-executor に渡す。引用された位置は調査の起点として扱う。
-   - 影響パス、観察可能な検証条件、変更していない検出事項オブジェクトを渡して task-executor を **Fix Mode** で起動する。修正タスクファイルは作成しない。
-   - 照合に対応する verifier には `prior_feedback` を引き継ぎ、fail した verifier だけを再実行して、レビュー裁定が収束するまで従う。
-   - 修正再レビューが収束した後、quality-fixer を1回実行する。`approved` なら続行し、`blocked` ならユーザーが判断すべき内容をそのまま提示する。
-
-4. **全て合格** → 最終クリーンアップへ
+subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー裁定の収束条件に達した後、最終クリーンアップへ進む。
 
 ## 最終クリーンアップ
 
@@ -161,6 +156,7 @@ Consumed Task Set 内の各タスクで必須：
 - タスク実体化のステータス
 - 実装したタスク数
 - 品質チェック結果（実行できなかったチェックまたは無関係な既存失敗がある場合はそれを含む）
+- 最終再試行後も残った証明不足
 - コミット数
 - クリーンアップ結果
 - エスカレーションまたはブロッキングの要約（あれば）

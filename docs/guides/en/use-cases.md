@@ -11,8 +11,9 @@ Start with the [Quick Start](./quickstart.md) if the project is not configured y
 | `/implement <request>` | Confirm requirements and complete the applicable design, implementation, verification, and commit flow |
 | `/task <request>` | Execute one focused task after identifying its scope and applicable skills |
 | `/diagnose <problem>` | Investigate a problem, independently verify the cause, and derive supported solutions without implementing one |
-| `/review [Design Doc]` | Review backend/general implementation against its Design Doc and security boundary; optionally apply approved corrections |
+| `/review [Design Doc]` | Review completed backend or shared implementation against the agreed outcome, repository standards, and security boundaries, then apply user-approved corrections |
 | `/front-review [Design Doc]` | Run the same review and correction flow for frontend implementation |
+| `/quality-profile [policy change]` | Propose repository-specific review standards and save them to `docs/project-context/quality.yaml` after confirmation |
 
 ### Design and planned execution
 
@@ -87,7 +88,7 @@ With no argument, `/build` resolves the consumable task set owned by that recipe
 /review docs/design/webhook-signature-design.md
 ```
 
-The command reviews Design Doc compliance and security. It presents supported findings, applies only the correction set the user authorizes, re-reviews those findings after correction, and runs the final quality check once after review convergence. It does not create review-fix task files.
+The command checks whether the completed implementation meets the agreed outcome and repository standards, contains no unnecessary changes, and has no serious functional, reliability, or security issues. It presents supported findings, applies only the corrections you approve, rechecks those findings after correction, and runs the final quality check once the review converges. It does not create task files for review fixes.
 
 ## Document routing
 

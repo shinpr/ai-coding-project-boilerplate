@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.28.0] - 2026-08-28
+
+### Added
+
+- **Repository quality profiles** (commands, agents) — Added `/quality-profile` to create evidence-backed review dimensions in `docs/project-context/quality.yaml`; code review applies matching dimensions as acceptance criteria. Applied across en/ja and documented across en/ja/zh-CN.
+
+### Changed
+
+- **Value-boundary autonomy** (CLAUDE, agents, commands, skills) — Technical design, contract, architecture, dependency, persistence, and implementation conflicts are resolved within the workflow while confirmed outcomes, desired-future requirements, and non-goals remain intact. User interaction is reserved for value-boundary conflicts and irreversible external actions. Applied across en/ja.
+- **Focused review and verification routing** (agents, commands, skills) — Reviewers return only evidence-backed must-fix findings, correction handoffs preserve reviewer evidence, and unavailable verification is retained, retried once before final review, and reported without blocking unrelated work. Applied across en/ja; review documentation updated across en/ja/zh-CN.
+
 ## [1.27.5] - 2026-08-24
 
 ### Changed

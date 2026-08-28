@@ -16,6 +16,7 @@ Use it to start a new project and keep its Claude Code setup up to date. Instead
 - Use `CLAUDE.md` to define project-wide rules, what Claude Code can decide, and when it should ask you
 - Complete a change with `/implement`, from clarifying the request to implementation and verification
 - Keep straightforward changes lightweight while adding design documents and reviews when the change needs them
+- Review the completed implementation to make sure it meets the agreed outcome and repository standards, with no unnecessary changes or serious functional, reliability, or security issues
 - Run the repository's applicable tests, type checks, linting, and build checks as part of the workflow
 - Record project-specific context and turn recurring team knowledge into reusable skills
 - Use the same setup in English or Japanese
@@ -92,7 +93,8 @@ See [Use Cases & Commands](docs/guides/en/use-cases.md) for when documents are c
 | `/design`, `/front-design` | Design a change before implementation |
 | `/plan`, `/front-plan` | Turn an approved design into an executable plan |
 | `/build`, `/front-build` | Continue from an approved plan |
-| `/review`, `/front-review` | Review an implementation against its design and security requirements |
+| `/review`, `/front-review` | Review completed implementation against the agreed outcome, repository standards, and security requirements |
+| `/quality-profile` | Set repository-specific review standards in `docs/project-context/quality.yaml` |
 | `/diagnose` | Investigate a problem and compare solutions backed by the findings, without changing code |
 | `/project-inject` | Record project-specific context for future Claude Code sessions |
 | `/create-skill`, `/refine-skill` | Add or improve reusable project guidance |

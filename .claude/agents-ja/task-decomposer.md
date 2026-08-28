@@ -87,8 +87,6 @@ documentation-criteriaのtask-templateを使用し、`docs/plans/tasks/` 配下�
 - 作業計画書からコピーした任意の Verification Focus
 - 引用ACに紐づく Completion Criteria
 
-このステップで明示的な選択に確定した代替案・optionalな挙動・placeholder、およびブロックされたまま残る決定は、task-templateの `Decisions and Unresolved Items` セクションに記録する。該当項目がないタスクでは同セクションを省略する。
-
 ## 出力
 
 生成したタスクファイルのパスを列挙した、標準の構造化レスポンスを返す。

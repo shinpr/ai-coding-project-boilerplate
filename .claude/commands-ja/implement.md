@@ -75,7 +75,7 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 タスクの成果を、それを担うリポジトリ上の責務全体で整合する形で完成させる。
 参照されたパスは調査の起点として扱い、同じ成果に必要な関連ファイルを含める。
 割り当てられた進捗フィールドを除き、出典となる成果物は読み取り専用とする。
-進行にプロダクト成果、公開契約、主要設計、権限、または不可逆操作に関するユーザー判断が必要な場合はエスカレーションする。
+確認済みの成果、将来状態の要件、対象外を同時には維持できない場合は要件変更検知へ戻る。不可逆な外部操作が必要な場合は承認を求める。
 ```
 
 加えて、サブエージェントから rule-advisor を呼び出すとシステムクラッシュを引き起こすため、全サブエージェントプロンプトの末尾に以下の制約も含める:
@@ -89,33 +89,32 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 以下の依存順のステップを実行し、現在のステップで定められたレスポンス条件を満たした場合にのみ次へ進む：
 1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small では承認済みの成果・出典・影響パス・検証条件を直接渡し、タスクファイルは作成しない。
 2. **task-executor レスポンスをチェック**:
-   - `status: "escalation_needed"` または `"blocked"` → 宣言された境界を確認し、ユーザーが持つ判断を必要とする場合はエスカレーションする
+   - `status: "escalation_needed"` または `"blocked"` → subagents-orchestration-guideの「専門エージェントの結果の受理」を適用する
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスと `diffBase: HEAD` を渡す。Medium/Large ではさらに `taskFiles: [現在のタスクファイルパス]` を渡し、Small では直接スコープの検証主張を渡す。その後 `status` で分岐する
-     - `needs_revision` → レビュー裁定を適用し、`apply` の quality-issue オブジェクト一式を逐語で task-executor に渡して **Fix Mode** でステップ1 に戻る
-     - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を**Fix Mode**でステップ1に差し戻し、それ以外はレビューを未実行として `blockingReason` を記録してステップ3へ進む
+     - `needs_revision` → レビュー裁定を適用し、元の実行スコープに、`apply`のquality-issueオブジェクト一式を`correction_findings`として逐語で加えてステップ1に戻る
+     - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻し、それ以外はレビューを未実行として`blockingReason`を記録してステップ3へ進む
      - `approved` → ステップ3 へ
    - それ以外 → ステップ3 へ
 3. **quality-fixer を呼び出す**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して、全品質チェックと修正を実行する（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large では現在の `task_file` も渡し、Small では直接の実行スコープを渡す。実装ステップの `runnableCheck` と、出典ソースまたはリポジトリの規約が権威ある品質コマンドを示している場合は `qualityCommand` を渡す。
-   - `stub_detected` → 元の実行スコープと `incompleteImplementations[]` を渡して task-executor を **Fix Mode** で再起動し、ステップ1 に戻る
-   - `blocked` → ユーザーが持つ判断をエスカレーションする
+   - `stub_detected` → 元の実行スコープと`incompleteImplementations[]`を渡してtask-executorを再実行し、ステップ1に戻る
+   - `blocked` → 専門エージェントの結果の受理を適用する
+   - `verification_incomplete` → 結果を省略せず最終再試行まで保持し、ステップ4へ進む
    - `approved` → ステップ4へ
-4. **承認後にコミット**: 完了したタスクの変更セットをコミットする
+4. **コミット**: `approved`または`verification_incomplete`の後に、完了したタスクの変更セットをコミットする
 
-### 実装後検証
+### 実装後レビュー（Medium/Large、全タスク完了後）
 
-Medium/Large では、全タスクサイクル完了後、完了レポートの前に code-verifier と security-reviewer を実行する。code-verifier には Design Doc と実装ファイルリストを渡し、security-reviewer には `governingDocuments: [{"type":"design-doc","path":"[パス]"}]` と同じ実装ファイルリストを渡す。合格/不合格と修正サイクルの規則はガイドに従う。
+ドキュメント依存のレビュアーを呼び出す前に、subagents-orchestration-guideの「専門エージェントの結果の受理」にある証明不足の再試行を適用する。各結果を解消または保持した後に続行し、再試行後も残る証明不足だけを報告する。
 
-Smallではドキュメント依存の検証をスキップする。quality-fixerの承認と、直接スコープの観測可能な検証の成功をもって完了とする。
+作業計画書が参照する読み込み可能なDesign Docを解決する。入力が不足している場合はレビューをブロックする。
 
-security-reviewer のレスポンス:
+次のAgent呼び出しを1つのassistantメッセージで行い、両方を待つ。
+- code-reviewer (subagent_type: "code-reviewer") → 型付きの`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
+- security-reviewer (subagent_type: "security-reviewer") → 同じ型付き`governingDocuments`に照らして、完了した実装をレビューする
 
-   - `approved` → 完了レポートへ
-   - `needs_revision` → 各検出事項にレビュー裁定を適用し、`apply` の検出事項オブジェクトを逐語で、影響パスと観察可能な検証条件とともに渡して task-executor を **Fix Mode** で起動する。`prior_feedback` を添えて security-reviewer を再実行し、レビュー裁定が収束するまで従った後、quality-fixer を1回実行する。
-   - `blocked` → ユーザーにエスカレーション
+subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー裁定の収束条件に達した後、最終クリーンアップへ進む。
 
-### テスト情報の伝達
-acceptance-test-generator実行後、`generatedFiles[]` を `testSkeletons` として work-planner（subagent_type: "work-planner"）へ渡す。空のリストは、追加の統合/E2Eスケルトンタスクが不要であることを示す。
-- タイミングの明示: 統合テストは各フェーズ実装と並行して作成、fixture-e2eテストはUI機能フェーズと並行して作成、service-integration-e2eテストは必要なサービスが利用可能になった後に実行
+Smallでは、このドキュメント依存のレビューを省く。タスクのコミット後、保持した証明不足を1回再試行し、観測した`observable_verification`のエビデンスをもって完了する。なお証明できない内容があれば報告する。
 
 ### 最終クリーンアップ
 
