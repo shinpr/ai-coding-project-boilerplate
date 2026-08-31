@@ -97,7 +97,7 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 ### Pattern 3: Implementation Without Sufficient Testing
 **Symptom**: Many bugs after implementation
 **Cause**: Ignoring Red-Green-Refactor process
-**Prevention**: Start behavior changes with a failing test that demonstrates the required outcome
+**Avoidance**: Start behavior changes with a failing test that demonstrates the required outcome
 
 ### Pattern 4: Ignoring Technical Uncertainty
 **Symptom**: Frequent unexpected errors when introducing new technology
@@ -115,7 +115,7 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 - Similar functionality is technical debt -> Repair it when it blocks the current outcome, was caused by the current change, or lies in confirmed scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
 - No similar functionality exists -> Implement new functionality following existing design philosophy
 - Record every decision and its rationale in the artifact the current workflow assigns to it
-- **Reference representativeness check**: See "Reference Representativeness" section above for IF-THEN thresholds
+- **Reference representativeness check**: See the "Change Boundary and Reference Representativeness" section above
 
 ## Debugging Techniques
 

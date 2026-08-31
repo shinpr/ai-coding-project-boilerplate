@@ -20,7 +20,7 @@ On re-review, preserve the ID of the same issue. Join prior resolutions by findi
 | Tier | Target | Verification |
 |------|--------|-------------|
 | Tier 1 | description | Passes the description quality checklist in `creation-guide.md` |
-| Tier 2 | SKILL.md body | Under 500 lines, target 250; first-screen test, standard section order, and conditional guards pass; each section above the target passes the necessity test |
+| Tier 2 | SKILL.md body | Under 500 lines, target 250; first-screen test, standard section order, and conditional guards pass; when the body exceeds the 250-line target, every retained section passes the necessity test |
 | Tier 3 | References/scripts | Compression precedes splitting; references contain necessary conditional detail, remain one level deep, and have no nested reference chains |
 
 Each failed tier references at least one existing BP or principle finding. Tier 1 fails when the description lacks the selection evidence needed to activate the skill for its intended requests; that failure forces grade C. Map a missing or incorrect activation scope or caller trigger to principle-9, and absent non-baseline distinguishing value to principle-1. Tier 2 and Tier 3 have no independent grade effect and contribute through their referenced findings, principle results, or balance checks. Record other checklist deviations only when they have an observable selection effect.

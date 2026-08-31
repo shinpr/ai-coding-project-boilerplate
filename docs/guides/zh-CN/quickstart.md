@@ -7,7 +7,7 @@
 创建新项目：
 
 ```bash
-npx create-ai-project my-project
+npx create-ai-project my-project --lang=zh-CN
 cd my-project
 npm install
 ```
@@ -18,6 +18,8 @@ npm install
 npx create-ai-project update --dry-run
 npx create-ai-project update
 ```
+
+如果更新程序提示选择语言，请输入 `zh-CN`。
 
 更新程序会刷新受管理的 Claude 命令、智能体、技能和规则，不会替换源代码或包配置。
 
@@ -60,7 +62,7 @@ claude
 5. 按已批准的任务边界逐项实现，运行仓库中适用的检查，并提交已批准的变更；
 6. 根据设计文档验证已完成的中型或大型实现，并报告所有无法运行的检查。
 
-当工作流需要产品决策、持久文档的批准、用户持有的权限或不可逆操作时，它会请求用户输入。仓库内部的实现细节由智能体自行决定。
+当工作流需要产品决策、需长期保留的文档获得批准、用户持有的权限或不可逆操作时，它会请求用户输入。仓库内部的实现细节由智能体自行决定。
 
 ## 继续已规划的工作
 
@@ -71,7 +73,7 @@ claude
 /build docs/plans/20260809-feature-example.md
 ```
 
-`/build` 会解析所选计划的任务文件，逐个完成任务，并在删除已消费的任务文件后保留工作计划。
+`/build` 会解析所选计划的任务文件，逐个完成任务，并在删除本次处理的任务文件后保留工作计划。
 
 ## 后续参考
 

@@ -15,14 +15,14 @@ These rules apply to a TypeScript application when repository configuration conf
 ## Environment Variable Management and Security
 
 ### Environment Variable Management
-- Centrally manage environment variables and build mechanisms to ensure type safety
+- Centrally manage environment variables and the build-time validation mechanism that enforces their type safety
 - Read environment variables through one typed configuration boundary; application code consumes validated configuration values
 - Give a variable a default only when requirements define valid behavior for absence; otherwise fail configuration validation with the variable name and expected format
 
 ### Security
 - Keep local `.env` files outside version control and provide non-secret example files for required variable names
 - Load API keys and secrets from the configured secret store or runtime environment boundary
-- Log and return only fields approved for the current trust boundary; redact credentials, tokens, personal data, and internal diagnostics from untrusted responses
+- Log and return only fields approved for the current trust boundary; redact credentials, tokens, personal data, and internal diagnostics before returning data across an untrusted boundary
 
 ## Architecture Design
 
@@ -55,8 +55,6 @@ Select the package manager from the `packageManager` field, lockfile, or establi
 
 ### Testing Commands
 - `test` - Run tests
-- `test:safe` - Safe test execution (with auto cleanup)
-- `cleanup:processes` - Cleanup Vitest processes
 
 ### Quality Assurance Mechanism Awareness
 
@@ -97,5 +95,4 @@ Quality checks are mandatory upon implementation completion:
 - `lint:fix` - Lint fixes
 
 ### Troubleshooting
-- **Port in use error**: Run the `cleanup:processes` script
 - **Dependency errors**: First record the failing resolver output, selected package manager, manifest, and lockfile state. Use the repository's established clean-install command only when it preserves the lockfile and generated artifacts; request approval before an operation that removes or regenerates dependency state

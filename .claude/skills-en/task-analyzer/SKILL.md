@@ -146,7 +146,7 @@ Generate only questions whose answers can change intent classification, scale, s
 | Investigation | Claim to resolve, evidence boundary, stopping condition |
 | Migration | Compatibility window, data/contract transition, rollback |
 | Operations | Target environment, authorization boundary, recovery evidence |
-| Security | Trust boundary, protected asset, threat/acceptance source |
+| Security | Trust boundary, protected asset, threat source, risk-acceptance authority |
 | Skill | Triggering intent, standalone context, output consumer |
 
 ## Warning Patterns

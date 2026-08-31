@@ -125,8 +125,6 @@ async function fetchUser(id: string): Promise<User> {
 
 ### テストコマンド
 - `test` - テスト実行
-- `test:safe` - 安全なテスト実行（自動クリーンアップ付き）
-- `cleanup:processes` - Vitestプロセスのクリーンアップ
 
 ### 品質チェック要件
 実装完了時に品質チェックは必須：

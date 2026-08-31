@@ -163,7 +163,7 @@ For each implementation item, apply the applicable test-first or behavior-preser
 
 ### 4. Completion Processing
 
-Task implementation is complete when every execution item is delivered. Attempt every applicable operation verification; report an unavailable prerequisite or environment in `runnableCheck` for downstream retry and final verification.
+Task implementation is complete when every execution item is delivered. Attempt every applicable operation verification; record an unavailable prerequisite or environment in `runnableCheck` and carry it into quality and final verification rather than reclassifying it as a product decision.
 
 ### 5. Return JSON Result
 Return one of the following as the final response (see Structured Response Specification for schemas):

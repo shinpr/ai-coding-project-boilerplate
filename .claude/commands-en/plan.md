@@ -63,7 +63,7 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    - `description`: "Work plan review"
    - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md. Review the Work Plan's own Implementation Scope, tasks, Completion Criteria, dependencies, execution order, exact source-anchor existence, and executable verification. Resolve governing sources from the target's Governing Documents."
    - The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`:
-     - `needs_revision`: run Review Resolution through correction re-review, its parent requirement or authority exits, and convergence, using work-planner in update mode for rerouted corrections
+     - `needs_revision`: run Review Resolution through correction re-review and convergence, exiting to the parent workflow's requirement-change or authority gate when its conditions apply; use work-planner in update mode for rerouted corrections
      - `approved`, or Review Resolution reaching its convergence condition: proceed to Step 5
      - `rejected`: apply the parent requirement gate
 

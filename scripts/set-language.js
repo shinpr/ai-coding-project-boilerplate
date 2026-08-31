@@ -4,7 +4,7 @@ import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { copyDirectory, copyFile, removeDirectory } from './utils.js'
 
-const SUPPORTED_LANGUAGES = ['ja', 'en']
+const SUPPORTED_LANGUAGES = ['ja', 'en', 'zh-CN']
 const CONFIG_FILE = '.claudelang'
 
 // Language configuration file path definitions
@@ -190,6 +190,7 @@ function showHelp() {
   console.log('Examples:')
   console.log('  node scripts/set-language.js ja    # Switch to Japanese')
   console.log('  node scripts/set-language.js en    # Switch to English')
+  console.log('  node scripts/set-language.js zh-CN # Switch to Simplified Chinese')
   console.log('  node scripts/set-language.js --status  # Check current status')
 }
 

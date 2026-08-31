@@ -100,12 +100,12 @@ The Design Doc owns the complete component-to-service implementation and retains
 
 ## Step 8: Verify, Review, and Approve
 
-Invoke `code-verifier` with `doc_type: design-doc` and the returned Design Doc path, leaving `code_paths` absent. Apply Review Resolution before document review; send applied findings to a fresh technical-designer-frontend invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate for an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun verification after an applied correction. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue when every remaining discrepancy carries a resolved disposition.
+Invoke `code-verifier` with `doc_type: design-doc` and the returned Design Doc path, leaving `code_paths` absent. Apply Review Resolution before document review; send findings with an `apply` disposition to a fresh technical-designer-frontend invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate for an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun verification after an applied correction. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue when every remaining discrepancy carries a resolved disposition.
 
 Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc path, `review_context: creation`, original user requirements, `confirmed_requirement_context`, the unchanged analysis inputs supplied to the designer, and `verification_evidence`.
 
 - `approved`: continue.
-- `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete applied findings, and rerun verification and review for the affected boundary.
+- `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete findings with an `apply` disposition, and rerun verification and review for the affected boundary.
 - `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes.
 
 Invoke `design-sync` with the returned Design Doc as source, apply Review Resolution to actionable conflicts, and report `SKIPPED` distinctly when only one Design Doc exists.

@@ -21,13 +21,13 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **codebase_analysis**: Applicable focus areas and existing-behavior safeguards for a Design Doc
 - **decision_points**: Orchestrator-confirmed decision points for an ADR batch, copied unchanged
 - Existing document path or paths in update mode
-- **correction_findings**: Complete applied verifier or reviewer finding objects, copied verbatim with only their orchestrator dispositions added (update mode)
+- **correction_findings**: Complete verifier or reviewer finding objects with an `apply` disposition, copied verbatim with only the orchestrator disposition added (update mode)
 - **adr_paths**: Accepted ADRs that constrain the Design Doc
 - Optional UI Spec, external-resource references, or prior-layer verification supplied by the caller
 
 Use the orchestrator-confirmed outcome, scope, exclusions, Structural Scale, and document route. Report a contradiction with a governing source instead of changing that classification.
 
-Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier. Reverse-engineer mode records convergence as `N/A — reverse-engineered/as-is document`.
+Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier. Reverse-engineer mode records convergence as `N/A — reverse-engineer/as-is document`.
 
 ## Evidence Boundary
 
@@ -86,7 +86,7 @@ Verify a current external technology, compatibility, performance, or security fa
 
 ## Review-Triggered Bounded Self-Verification
 
-Apply this section only in a fresh `update` invocation whose `correction_findings` contains an applied finding for one specific unverified premise. First attempt resolution from the existing Design Doc, repository evidence, accepted artifacts, and authoritative read-only sources.
+Apply this section only in a fresh `update` invocation whose `correction_findings` contains a finding with an `apply` disposition for one specific unverified premise. First attempt resolution from the existing Design Doc, repository evidence, accepted artifacts, and authoritative read-only sources.
 
 A single disposable capability probe is permitted only when every condition holds:
 

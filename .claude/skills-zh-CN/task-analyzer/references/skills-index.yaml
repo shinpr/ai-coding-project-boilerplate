@@ -1,0 +1,269 @@
+# Skills 元数据索引
+# 用于根据任务分析选择合适的技能
+
+skills:
+  coding-standards:
+    skill: "coding-standards"
+    tags: [universal, anti-patterns, refactoring, type-safety, testing, code-deletion, rule-of-three, fail-fast, impact-analysis]
+    typical-use: "适用于所有领域的通用编码原则，是所有开发者的基础标准"
+    size: large
+    key-references:
+      - "Rule of Three - Martin Fowler"
+      - "Single Responsibility Principle - Clean Code"
+      - "DRY Principle - The Pragmatic Programmer"
+      - "YAGNI Principle - Kent Beck"
+      - "5 Whys - Toyota Production System"
+      - "Red-Green-Refactor - Kent Beck"
+      - "AAA Pattern - Arrange-Act-Assert"
+    sections:
+      - "技术反模式（危险信号模式）"
+      - "基本原则"
+      - "注释编写规则"
+      - "错误处理基础"
+      - "三次法则 —— 代码重复的判断标准"
+      - "变更边界与参考代表性"
+      - "常见失败模式及规避方法"
+      - "调试技巧"
+      - "类型安全基础"
+      - "重构技巧"
+      - "实现完整性保证"
+      - "影响分析"
+      - "Red-Green-Refactor 流程（测试先行开发）"
+      - "测试设计原则"
+      - "测试粒度原则"
+      - "安全原则"
+
+  typescript-rules:
+    skill: "typescript-rules"
+    tags: [implementation, type-safety, async, coding-style, dependency-injection, error-handling, backend]
+    typical-use: "后端 TypeScript 代码的创建与修改、类与函数的选择判断、DI 实现、错误处理"
+    size: medium
+    key-references:
+      - "Clean Code - Robert C. Martin"
+      - "Dependency Injection - Martin Fowler"
+      - "Avoiding fallback in distributed systems - AWS Builders' Library"
+    sections:
+      - "前置条件检测"
+      - "后端实现中的类型安全"
+      - "编码约定"
+      - "错误处理"
+      - "性能优化"
+
+  typescript-testing:
+    skill: "typescript-testing"
+    tags: [quality, testing, tdd, vitest, implementation, debugging, refactoring, backend]
+    typical-use: "后端测试的创建、质量检查、测试质量标准，以及代码/缺陷修复、重构、新功能实现的开发步骤"
+    size: medium
+    key-references:
+      - "Test-Driven Development - Kent Beck"
+      - "Rule of Three - Martin Fowler"
+      - "Red-Green-Refactor - Kent Beck"
+      - "AAA Pattern - Arrange-Act-Assert"
+    sections:
+      - "前置条件检测"
+      - "测试框架"
+      - "基本测试策略"
+      - "测试实现规范"
+      - "测试质量标准"
+      - "Mock 类型安全强制要求"
+      - "数据层测试"
+
+  technical-spec:
+    skill: "technical-spec"
+    tags: [architecture, design, documentation, environment, data-flow, implementation, quality-commands, testing, build]
+    typical-use: "技术设计、环境配置、文档创建流程、实现方针决策、质量检查命令、构建与测试执行"
+    size: medium
+    key-references:
+      - "ADR Format - Michael Nygard"
+      - "Single Data Source Principle - Single Source of Truth"
+    sections:
+      - "前置条件检测"
+      - "基础技术栈方针"
+      - "环境变量管理与安全"
+      - "架构设计"
+      - "统一数据流原则"
+      - "构建与测试"
+
+  project-context:
+    skill: "project-context"
+    tags: [context, project-specific, implementation]
+    typical-use: "项目特定的前提条件与质量标准"
+    size: small
+    key-references:
+      - "项目特定（经验性）"
+
+  documentation-criteria:
+    skill: "documentation-criteria"
+    tags: [documentation, adr, prd, ui-spec, design-doc, work-plan, decision-matrix, verification-strategy]
+    typical-use: "实现启动的规模评估、文档创建决策、ADR/PRD/设计文档/工作计划的创建标准"
+    size: medium
+    key-references:
+      - "ADR Methodology - Michael Nygard"
+      - "Design Doc Culture - Google Engineering Practices"
+      - "Single Source of Truth"
+    sections:
+      - "每种文档固定的内容"
+      - "创建决策矩阵"
+      - "结构规模"
+      - "ADR 决策过滤器"
+      - "存放位置"
+      - "参考资料"
+
+  implementation-approach:
+    skill: "implementation-approach"
+    tags: [architecture, implementation, task-decomposition, strategy-patterns, strangler-pattern, facade-pattern, design, planning, verification-levels]
+    typical-use: "实现策略选择、任务拆分、设计决策、大规模变更规划"
+    size: medium
+    key-references:
+      - "Strangler Fig Pattern - Martin Fowler"
+      - "Feature Slicing - Martin Fowler"
+      - "Walking Skeleton - Alistair Cockburn"
+      - "Facade Pattern - Gang of Four"
+    sections:
+      - "元认知策略选择流程"
+      - "验证等级定义"
+      - "集成点定义"
+      - "决策检查清单"
+      - "元认知执行指南"
+
+  integration-e2e-testing:
+    skill: "integration-e2e-testing"
+    tags: [testing, integration-test, e2e-test, property-based-testing, fast-check, test-skeleton, test-review, quality, playwright]
+    typical-use: "集成测试与 E2E 测试骨架生成、测试实现、测试评审、Property-Based Test 实现、E2E 测试设计"
+    size: medium
+    key-references:
+      - "fast-check - Property-based testing for TypeScript"
+      - "Node.js Testing Best Practices - Yoni Goldberg"
+      - "Property-Based Testing - 2025 Practices"
+      - "references/e2e-design.md - E2E 测试设计原则"
+      - "references/e2e-environment-prerequisites.md - E2E 环境前提条件"
+    sections:
+      - "参考资料"
+      - "测试类型与选择"
+      - "行为优先原则"
+      - "骨架规范"
+      - "测试集选择"
+      - "实现规则"
+      - "评审标准"
+
+  subagents-orchestration-guide:
+    skill: "subagents-orchestration-guide"
+    tags: [orchestration, subagents, workflow, scale-determination, document-requirements, autonomous-execution]
+    typical-use: "在实现工作流中协调子智能体、规模判定、文档要求"
+    size: large
+    key-references:
+      - "Workflow Orchestration Patterns"
+      - "Agent Coordination Patterns"
+    sections:
+      - "核心原则：我是编排者"
+      - "我可以使用的子智能体"
+      - "我的编排原则"
+      - "子智能体之间的约束"
+      - "结构规模与文档要求"
+      - "结构化响应规范"
+      - "我的基本流程：规划与实现"
+      - "跨层编排"
+      - "自主执行模式"
+      - "我作为编排者的主要角色"
+      - "重要约束"
+
+  skill-optimization:
+    skill: "skill-optimization"
+    tags: [skill-creation, skill-editing, content-optimization, quality-evaluation, description-generation, metadata]
+    typical-use: "创建新技能、优化技能内容、评估技能质量、生成描述"
+    size: medium
+    key-references:
+      - "BP-001~009 Content Optimization Patterns"
+      - "10 Skill Editing Principles"
+    sections:
+      - "核心理念"
+      - "内容优化模式"
+      - "10 条技能编辑原则"
+      - "参考资料"
+
+  llm-friendly-context:
+    skill: "llm-friendly-context"
+    tags: [universal, cross-cutting, prompt, handoff, artifact, clarity, ambiguity-removal, downstream-execution, documentation]
+    typical-use: "编写或修订面向 LLM 的提示词、交接说明、规划产物、评审、报告或生成的指令，使下游智能体无需猜测即可执行"
+    size: medium
+    key-references:
+      - "以正向、可执行的指令取代禁止性表述"
+      - "面向智能体交接的可观测成功标准"
+      - "以显式标注的未解决事项取代隐性歧义"
+    sections:
+      - "核心规则"
+      - "改写模式"
+      - "交接检查清单"
+      - "生成产物检查清单"
+
+  # 前端专属 Skills
+  frontend-typescript-rules:
+    skill: "frontend-typescript-rules"
+    tags: [frontend, react, implementation, type-safety, component-design, props-driven, hooks, error-handling, conventions]
+    typical-use: "React 组件创建、Props/状态设计、错误处理、前端 TypeScript 实现规则"
+    size: small
+    key-references:
+      - "React Function Components - React docs"
+      - "边界处的类型守卫（unknown 收窄）"
+      - "Result 类型与 Error Boundary 错误处理"
+    sections:
+      - "前置条件检测"
+      - "反模式与阈值"
+      - "边界处的类型安全"
+      - "组件与状态设计"
+      - "错误处理"
+      - "项目约定"
+
+  frontend-typescript-testing:
+    skill: "frontend-typescript-testing"
+    tags: [frontend, react, quality, testing, tdd, vitest, react-testing-library, msw, implementation, playwright, e2e]
+    typical-use: "React 组件测试、React Testing Library 测试、MSW API mock、前端测试创建、Playwright E2E 测试"
+    size: medium
+    key-references:
+      - "React Testing Library - Kent C. Dodds"
+      - "MSW (Mock Service Worker) - MSW Team"
+      - "Test-Driven Development - Kent Beck"
+      - "Red-Green-Refactor - Kent Beck"
+      - "User-Observable Behavior Testing - Testing Library"
+      - "references/e2e.md - Playwright E2E patterns"
+    sections:
+      - "前置条件检测"
+      - "参考资料"
+      - "测试框架"
+      - "基本测试策略"
+      - "测试实现规范"
+      - "Mock 类型安全强制要求"
+      - "测试设计模式"
+
+  frontend-technical-spec:
+    skill: "frontend-technical-spec"
+    tags: [frontend, react, vite, architecture, design, environment, data-flow, implementation, performance]
+    typical-use: "React 技术设计、Vite 配置、前端环境搭建、组件架构决策"
+    size: medium
+    key-references:
+      - "React Official Documentation"
+      - "Build Tool Best Practices"
+      - "Single Source of Truth"
+    sections:
+      - "前置条件检测"
+      - "基础技术栈方针"
+      - "环境变量管理与安全"
+      - "架构设计"
+      - "统一数据流原则"
+      - "构建与测试"
+
+  requirement-convergence:
+    skill: "requirement-convergence"
+    tags: [cross-cutting, requirements, scope, non-goals, outcome, rough-estimate, trade-off, hearing-protocol, convergence]
+    typical-use: "在设计之前收敛要构建的内容：将结果层与需求层分离，记录用户撰写的非目标，并根据结构而非行为来划分成本区间"
+    size: small
+    key-references:
+      - "references/criteria.md"
+    sections:
+      - "目的"
+      - "收敛字段"
+      - "询问协议"
+      - "存储协议"
+      - "引用协议（供下游使用方使用）"
+      - "质量检查清单"
+      - "参考资料"

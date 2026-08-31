@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import readline from 'node:readline'
@@ -10,7 +11,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const MANIFEST_FILE = '.create-ai-project.json'
 const CLAUDELANG_FILE = '.claudelang'
-const SUPPORTED_LANGUAGES = ['ja', 'en']
+const SUPPORTED_LANGUAGES = ['ja', 'en', 'zh-CN']
+const NEW_LANGUAGE = 'zh-CN'
+
+// Unmodified set-language.js templates distributed before zh-CN support.
+// Unknown variants are treated as user-owned and preserved.
+const LEGACY_LANGUAGE_SCRIPT_HASHES = new Set([
+  '01c8417d8129ce387dea2d284d2895aa5ce514dfe8597798de648c903ddc7f72',
+  '8016f97ff61bdd4fc84f34c92b6f8d6690daee033ade614a61163d64ca741d3b',
+  '746957f432ff6aac7b14f79b5b1bc9310c716d1a293fb6b8be69ed66543ea8be',
+])
 
 // Categories that can be ignored
 const VALID_CATEGORIES = ['agents', 'commands', 'skills']
@@ -23,6 +33,8 @@ const MANAGED_DIRS = [
 ]
 
 const MANAGED_FILES = [(lang) => `CLAUDE.${lang}.md`]
+
+const LANGUAGE_SWITCH_SCRIPT = 'scripts/set-language.js'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -55,9 +67,9 @@ function prompt(question) {
  * Resolve a logical ignore identifier to actual file paths for all languages.
  *
  * Examples:
- *   "agents task-executor" -> [".claude/agents-ja/task-executor.md", ".claude/agents-en/task-executor.md"]
- *   "skills project-context" -> [".claude/skills-ja/project-context", ".claude/skills-en/project-context"]
- *   "CLAUDE.md" -> ["CLAUDE.ja.md", "CLAUDE.en.md"]
+ *   "agents task-executor" -> one task-executor path per supported language
+ *   "skills project-context" -> one project-context path per supported language
+ *   "CLAUDE.md" -> one CLAUDE.<lang>.md path per supported language
  */
 function resolveIgnorePaths(category, name) {
   if (category === 'CLAUDE.md') {
@@ -145,7 +157,7 @@ async function resolveLanguage(projectRoot) {
     return detected
   }
 
-  const answer = await prompt('  Select language (ja/en): ')
+  const answer = await prompt(`  Select language (${SUPPORTED_LANGUAGES.join('/')}): `)
   if (!SUPPORTED_LANGUAGES.includes(answer)) {
     console.error(
       `  Error: unsupported language "${answer}". Supported: ${SUPPORTED_LANGUAGES.join(', ')}`
@@ -287,6 +299,126 @@ function getManagedPaths() {
   return paths
 }
 
+function isNewLanguagePath(relativePath) {
+  return (
+    relativePath.endsWith(`-${NEW_LANGUAGE}`) || relativePath === `CLAUDE.${NEW_LANGUAGE}.md`
+  )
+}
+
+function shouldAddNewLanguagePath(projectRoot, relativePath) {
+  if (!isNewLanguagePath(relativePath)) return false
+
+  const siblingLanguages = SUPPORTED_LANGUAGES.filter((lang) => lang !== NEW_LANGUAGE)
+  if (relativePath === `CLAUDE.${NEW_LANGUAGE}.md`) {
+    return siblingLanguages.some((lang) =>
+      fs.existsSync(path.join(projectRoot, `CLAUDE.${lang}.md`))
+    )
+  }
+
+  const match = relativePath.match(/^\.claude\/(agents|commands|skills)-/)
+  if (!match) return false
+  const category = match[1]
+  return siblingLanguages.some((lang) =>
+    fs.existsSync(path.join(projectRoot, `.claude/${category}-${lang}`))
+  )
+}
+
+function hashLanguageScript(content) {
+  return createHash('sha256').update(content.replace(/\r\n/g, '\n')).digest('hex')
+}
+
+function languageScriptSupports(content, language) {
+  const supportedLanguages = content.match(/SUPPORTED_LANGUAGES\s*=\s*\[([^\]]*)\]/)?.[1]
+  if (!supportedLanguages) return false
+  return new RegExp(`['"]${language}['"]`).test(supportedLanguages)
+}
+
+function migrateKnownLanguageScript(content) {
+  if (!LEGACY_LANGUAGE_SCRIPT_HASHES.has(hashLanguageScript(content))) return null
+
+  return content.replace(
+    /(SUPPORTED_LANGUAGES\s*=\s*\[[^\]]*['"]en['"])(\s*\])/,
+    `$1, '${NEW_LANGUAGE}'$2`
+  )
+}
+
+function getNewLanguageToolingMigration(projectRoot) {
+  const languageScriptPath = path.join(projectRoot, LANGUAGE_SWITCH_SCRIPT)
+  const packagePath = path.join(projectRoot, 'package.json')
+  const languageScriptExists = fs.existsSync(languageScriptPath)
+
+  let packageJson = null
+  let hasLanguageCommands = false
+  if (fs.existsSync(packagePath)) {
+    packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'))
+    const scripts = packageJson.scripts
+    hasLanguageCommands =
+      scripts &&
+      (typeof scripts['lang:ja'] === 'string' || typeof scripts['lang:en'] === 'string')
+  }
+
+  if (!hasLanguageCommands) return null
+
+  let updatedLanguageScript = null
+  let requiresManualLanguageScriptMigration = false
+  let languageScriptReady = false
+  let needsLanguageScript = false
+  if (languageScriptExists) {
+    const languageScript = fs.readFileSync(languageScriptPath, 'utf8')
+    languageScriptReady = languageScriptSupports(languageScript, NEW_LANGUAGE)
+    if (!languageScriptReady) {
+      updatedLanguageScript = migrateKnownLanguageScript(languageScript)
+      needsLanguageScript = updatedLanguageScript !== null
+      requiresManualLanguageScriptMigration = !needsLanguageScript
+    }
+  } else {
+    requiresManualLanguageScriptMigration = true
+  }
+
+  const needsPackageCommand = Boolean(
+    (languageScriptReady || needsLanguageScript) &&
+      !packageJson.scripts[`lang:${NEW_LANGUAGE}`]
+  )
+
+  if (!needsLanguageScript && !needsPackageCommand && !requiresManualLanguageScriptMigration) {
+    return null
+  }
+
+  return {
+    languageScriptPath,
+    packagePath,
+    packageJson,
+    needsLanguageScript,
+    updatedLanguageScript,
+    needsPackageCommand,
+    requiresManualLanguageScriptMigration,
+  }
+}
+
+function migrateNewLanguageTooling(migration) {
+  if (!migration) return
+
+  if (migration.needsLanguageScript) {
+    fs.writeFileSync(migration.languageScriptPath, migration.updatedLanguageScript)
+    console.log(`  Updated ${LANGUAGE_SWITCH_SCRIPT} for ${NEW_LANGUAGE}.`)
+  }
+
+  if (migration.needsPackageCommand) {
+    migration.packageJson.scripts[`lang:${NEW_LANGUAGE}`] =
+      `node scripts/set-language.js ${NEW_LANGUAGE}`
+    fs.writeFileSync(migration.packagePath, `${JSON.stringify(migration.packageJson, null, 2)}\n`)
+    console.log(`  Added npm script lang:${NEW_LANGUAGE}.`)
+  }
+
+  if (migration.requiresManualLanguageScriptMigration) {
+    console.warn(`  Preserved customized or missing ${LANGUAGE_SWITCH_SCRIPT}.`)
+    console.warn(`  Add '${NEW_LANGUAGE}' to its SUPPORTED_LANGUAGES list.`)
+    if (!migration.packageJson.scripts[`lang:${NEW_LANGUAGE}`]) {
+      console.warn(`  Then add npm script lang:${NEW_LANGUAGE}.`)
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Show CHANGELOG
 // ---------------------------------------------------------------------------
@@ -317,6 +449,7 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
   const managed = getManagedPaths()
   const ignoredIds = manifest.ignored || []
   const ignoredPaths = resolveAllIgnoredPaths(ignoredIds)
+  const toolingMigration = getNewLanguageToolingMigration(projectRoot)
 
   if (ignoredIds.length > 0) {
     console.log('  The following are ignored and will be preserved:')
@@ -331,12 +464,31 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
     for (const dir of managed.dirs) {
       const dst = path.join(projectRoot, dir)
       const dstExists = fs.existsSync(dst)
-      console.log(`    ${dstExists ? 'UPDATE' : 'SKIP  '} ${dir}/`)
+      const action = dstExists
+        ? 'UPDATE'
+        : shouldAddNewLanguagePath(projectRoot, dir)
+          ? 'ADD   '
+          : 'SKIP  '
+      console.log(`    ${action} ${dir}/`)
     }
     for (const file of managed.files) {
       const dst = path.join(projectRoot, file)
       const dstExists = fs.existsSync(dst)
-      console.log(`    ${dstExists ? 'UPDATE' : 'SKIP  '} ${file}`)
+      const action = dstExists
+        ? 'UPDATE'
+        : shouldAddNewLanguagePath(projectRoot, file)
+          ? 'ADD   '
+          : 'SKIP  '
+      console.log(`    ${action} ${file}`)
+    }
+    if (toolingMigration?.needsLanguageScript) {
+      console.log(`    UPDATE ${LANGUAGE_SWITCH_SCRIPT}`)
+    }
+    if (toolingMigration?.needsPackageCommand) {
+      console.log(`    UPDATE package.json (add lang:${NEW_LANGUAGE})`)
+    }
+    if (toolingMigration?.requiresManualLanguageScriptMigration) {
+      console.log(`    PRESERVE ${LANGUAGE_SWITCH_SCRIPT} (manual ${NEW_LANGUAGE} migration required)`)
     }
     console.log('\n  No changes were made (dry-run).')
     return
@@ -345,33 +497,37 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
   // 1. Backup ignored paths
   const backups = backupIgnored(projectRoot, ignoredPaths)
 
-  // 2. Replace managed directories (only if target directory exists)
+  // 2. Replace managed directories and add sources for a newly supported language
   for (const dir of managed.dirs) {
     const src = path.join(packageRoot, dir)
     const dst = path.join(projectRoot, dir)
     if (!fs.existsSync(src)) continue
-    if (!fs.existsSync(dst)) {
+    const dstExists = fs.existsSync(dst)
+    if (!dstExists && !shouldAddNewLanguagePath(projectRoot, dir)) {
       console.log(`  Skipped ${dir}/ (not present in project)`)
       continue
     }
 
-    removeDirectory(dst)
+    if (dstExists) {
+      removeDirectory(dst)
+    }
     copyDirectory(src, dst)
-    console.log(`  Updated ${dir}/`)
+    console.log(`  ${dstExists ? 'Updated' : 'Added'} ${dir}/`)
   }
 
-  // 3. Replace managed files (only if target file exists)
+  // 3. Replace managed files and add sources for a newly supported language
   for (const file of managed.files) {
     const src = path.join(packageRoot, file)
     const dst = path.join(projectRoot, file)
     if (!fs.existsSync(src)) continue
-    if (!fs.existsSync(dst)) {
+    const dstExists = fs.existsSync(dst)
+    if (!dstExists && !shouldAddNewLanguagePath(projectRoot, file)) {
       console.log(`  Skipped ${file} (not present in project)`)
       continue
     }
 
     copyFile(src, dst)
-    console.log(`  Updated ${file}`)
+    console.log(`  ${dstExists ? 'Updated' : 'Added'} ${file}`)
   }
 
   // 4. Restore ignored paths
@@ -380,8 +536,11 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
     console.log('  Restored ignored resources.')
   }
 
-  // 5. Re-run set-language to regenerate active directories
-  const language = manifest.language
+  // 5. Migrate language switching for projects created before this language was supported
+  migrateNewLanguageTooling(toolingMigration)
+
+  // 6. Re-run set-language to regenerate active directories
+  const language = detectLanguage(projectRoot) || manifest.language
   const { switchLanguage } = await import('./set-language.js')
   const originalCwd = process.cwd()
   process.chdir(projectRoot)
@@ -389,9 +548,10 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
   process.chdir(originalCwd)
   console.log(`  Regenerated active directories for language: ${language}`)
 
-  // 6. Update manifest
+  // 7. Update manifest
   const newVersion = getPackageVersion()
   manifest.version = newVersion
+  manifest.language = language
   manifest.updatedAt = new Date().toISOString()
   saveManifest(projectRoot, manifest)
   console.log(`  Manifest updated to version ${newVersion}.`)

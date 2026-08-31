@@ -44,7 +44,7 @@ const excludeList = [
 ]
 
 // Files to process with template replacements
-const templateFiles = ['package.json', 'README.md', 'README.ja.md']
+const templateFiles = ['package.json', 'README.md', 'README.ja.md', 'README.zh-CN.md']
 
 /**
  * Recursively copy directory with exclusions
@@ -112,10 +112,12 @@ function processTemplateFile(source, target, projectName) {
 
     // Remove scripts related to package maintenance
     delete packageJson.scripts['lang:status']
-    delete packageJson.scripts.postinstall
-
     content = JSON.stringify(packageJson, null, 2)
-  } else if (fileName === 'README.md' || fileName === 'README.ja.md') {
+  } else if (
+    fileName === 'README.md' ||
+    fileName === 'README.ja.md' ||
+    fileName === 'README.zh-CN.md'
+  ) {
     // Replace project name in README
     content = content.replace(/ai-coding-project-boilerplate/g, projectName)
     content = content.replace(/AI Coding Project Boilerplate/g, projectName)
@@ -144,6 +146,7 @@ CLAUDE.*.md
 docs/rules-*/
 docs/guides/ja/
 docs/guides/en/
+docs/guides/zh-CN/
 .claude/commands-*/
 .claude/agents-*/
 .claude/skills-*/

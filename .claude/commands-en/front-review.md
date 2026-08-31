@@ -145,7 +145,7 @@ Invoke security-reviewer when subagents-orchestration-guide's post-implementatio
 
 Apply Review Resolution to every Step 8 and Step 9 result. A maintained `apply` finding returns to Step 6 and then repeats the applicable quality and correction review. Proceed when Review Resolution reaches its convergence condition.
 
-Before Step 11, retry each retained quality-fixer-frontend limitation once with the same Step 7 inputs and affected check. Clear an `approved` result, route newly discovered incomplete implementation through Steps 6-10, and report a repeated `verification_incomplete` result. When the retry changes the repository, repeat Steps 8-10 for the changed code before reporting.
+Before Step 11, retry each retained quality-fixer-frontend limitation once with the same Step 7 inputs and affected check. An `approved` result clears the retained limitation; route newly discovered incomplete implementation through Steps 6-10, and report a repeated `verification_incomplete` result. When the retry changes the repository, repeat Steps 8-10 for the changed code before reporting.
 
 ### Step 11: Final Report
 

@@ -125,8 +125,6 @@ Select the package manager from the `packageManager` field, lockfile, or CI comm
 
 ### Testing Commands
 - `test` - Run tests
-- `test:safe` - Safe test execution (with auto cleanup)
-- `cleanup:processes` - Cleanup Vitest processes
 
 ### Quality Check Requirements
 Quality checks are mandatory upon implementation completion:

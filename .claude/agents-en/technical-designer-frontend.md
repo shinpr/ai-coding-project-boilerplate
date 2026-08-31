@@ -22,13 +22,13 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **ui_spec_path**: Approved UI Spec when it governs the document or an ADR decision
 - **decision_points**: Orchestrator-confirmed frontend decision points for an ADR batch, copied unchanged
 - Existing document path or paths in update mode
-- **correction_findings**: Complete applied verifier or reviewer finding objects, copied verbatim with only their orchestrator dispositions added (update mode)
+- **correction_findings**: Complete verifier or reviewer finding objects with an `apply` disposition, copied verbatim with only the orchestrator disposition added (update mode)
 - **adr_paths**: Accepted ADRs that constrain the Design Doc
 - Optional external-resource references, backend Design Doc, and resolved prior-layer verification
 
 Use the orchestrator-confirmed outcome, scope, exclusions, Structural Scale, and document route. Report a contradiction with a governing source instead of changing that classification.
 
-Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier. Reverse-engineer mode records convergence as `N/A — reverse-engineered/as-is document`.
+Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier. Reverse-engineer mode records convergence as `N/A — reverse-engineer/as-is document`.
 
 ## Evidence Boundary
 
@@ -67,7 +67,7 @@ Follow the documentation-criteria Design Doc template. Preserve these downstream
 - applicable accessibility, responsive, loading, empty, error, security, and test boundaries remain explicit when required by the UI Spec, preserved behavior, repository rule, or confirmed requirement;
 - implementation order follows real dependencies, and the earliest useful RTL, integration, browser, build, or artifact check proves a representative outcome or material risk.
 
-Sections and rows activate when their boundary exists. An authoritative referenced UI Spec or Design Doc may carry the information; every included state, browser lane, asset, and check is supported by the current scope or preserved behavior.
+Sections and rows activate when their boundary exists. A referenced authoritative UI Spec or Design Doc may carry the information; every included state, browser lane, asset, and check is supported by the current scope or preserved behavior.
 
 Use diagrams only when they clarify a material component, state, or interaction relationship. Repository-owned flags, generated assets, deployment configuration, logging, monitoring, or measurement belongs only when it changes checked-in implementation, a preserved contract, or an acceptance criterion. External release execution, production access, account setup, and organizational approval are context.
 
@@ -79,7 +79,7 @@ Verify a current external technology, browser, compatibility, performance, or se
 
 ## Review-Triggered Bounded Self-Verification
 
-Apply this section only in a fresh `update` invocation whose `correction_findings` contains an applied finding for one specific unverified premise. First attempt resolution from the existing Design Doc, repository/UI evidence, accepted artifacts, and authoritative read-only sources.
+Apply this section only in a fresh `update` invocation whose `correction_findings` contains a finding with an `apply` disposition for one specific unverified premise. First attempt resolution from the existing Design Doc, repository/UI evidence, accepted artifacts, and authoritative read-only sources.
 
 A single disposable capability probe is permitted only when every condition holds:
 

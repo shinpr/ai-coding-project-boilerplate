@@ -4,7 +4,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const LANGUAGES = ['en', 'ja']
+const LANGUAGES = ['en', 'ja', 'zh-CN']
 
 function parseSkillsIndex(content) {
   const skills = {}
