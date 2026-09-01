@@ -33,11 +33,11 @@ Create/update mode requires a current PRD carrier or convergence record. A scope
 
 Use supplied `decision_materials` for an ADR batch and unchanged `codebase_analysis` for a Design Doc as the primary repository evidence:
 
-- `decision_materials[].options` supplies the repository-backed choices, repository fit, lifecycle cost drivers, and maintainability evidence for ADR selection;
-- `codebase_analysis.decisionMaterials.reuse` reduces new implementation surface;
-- `codebase_analysis.decisionMaterials.invalidations` eliminates approaches;
-- `codebase_analysis.decisionMaterials.verification` constrains proof;
-- `focusAreas` preserve existing behavior through explicit disposition;
+- `decision_materials[].options` supplies the repository-backed choices, repository fit, lifecycle cost drivers, and maintainability evidence for ADR selection
+- `codebase_analysis.decisionMaterials.reuse` reduces new implementation surface
+- `codebase_analysis.decisionMaterials.invalidations` eliminates approaches
+- `codebase_analysis.decisionMaterials.verification` constrains proof
+- `focusAreas` preserve existing behavior through explicit disposition
 - applicable `dataModel`, `dataTransformationPipelines`, and `qualityAssurance` entries supply data, equivalence, and check details
 
 Inspect only gaps that can change reuse, option validity, a selected decision, an implementation contract, or verification. Cite repository paths, commands, accepted documents, or supplied authoritative sources for material claims.
@@ -64,14 +64,14 @@ Create the complete end-to-end technical design for the confirmed scope. Apply i
 
 Follow the documentation-criteria Design Doc template. Preserve these guarantees whenever applicable:
 
-- requirement convergence, scope, non-scope, and user constraints remain explicit;
-- external resources record only feature-used identifiers, and applicable explicit/implicit standards and repository checks retain their evidence;
-- existing dependencies and reused behavior are verified; a premise that can change the Selected Design is identified explicitly for pre-approval verification, while Risks contain only residual uncertainty whose outcomes leave the Selected Design valid;
-- every supplied `focusArea` has one Fact Disposition row so existing behavior cannot disappear between analysis and implementation;
-- changed responsibility, integration points, interface/data/error contracts, state and persistence transitions, compatibility, and exact serialized field propagation supply the details required for implementation;
-- a new or changed data structure records its reuse/extend/new judgment;
-- behavior replacement or transformation defines representative identical input, expected output, and a comparison method covering applicable pipeline steps;
-- applicable security and test boundaries remain explicit;
+- requirement convergence, scope, non-scope, and user constraints remain explicit
+- external resources record only feature-used identifiers, and applicable explicit/implicit standards and repository checks retain their evidence
+- existing dependencies and reused behavior are verified; a premise that can change the Selected Design is identified explicitly for pre-approval verification, while Risks contain only residual uncertainty whose outcomes leave the Selected Design valid
+- every supplied `focusArea` has one Fact Disposition row so existing behavior cannot disappear between analysis and implementation
+- changed responsibility, integration points, interface/data/error contracts, state and persistence transitions, compatibility, and exact serialized field propagation supply the details required for implementation
+- a new or changed data structure records its reuse/extend/new judgment
+- behavior replacement or transformation defines representative identical input, expected output, and a comparison method covering applicable pipeline steps
+- applicable security and test boundaries remain explicit
 - implementation order follows real dependencies, and the earliest useful verification proves the riskiest current assumption or representative outcome
 
 Sections and rows activate when their boundary exists. An authoritative referenced artifact may carry the information; every included section contains decision-, implementation-, or verification-relevant content.

@@ -27,11 +27,11 @@ A boundary that looks wrong is returned as unresolved rather than re-decided her
 
 Extract each Work Plan task's:
 
-- task ID and implementation outcome;
-- cited Design Doc, ADR, or UI Spec sections and AC IDs;
-- target responsibility or expected files;
-- dependencies, executor lane, and rollback boundary;
-- verification method;
+- task ID and implementation outcome
+- cited Design Doc, ADR, or UI Spec sections and AC IDs
+- target responsibility or expected files
+- dependencies, executor lane, and rollback boundary
+- verification method
 - optional Primary failure and Observable check
 
 ### 2. Preserve task boundaries
@@ -71,14 +71,14 @@ Use the documentation-criteria task template and write files under `docs/plans/t
 
 Each task contains:
 
-- Source Work Plan Task;
-- Implementation Outcome;
-- Governing Sources;
-- Target Files;
-- Investigation Targets;
-- concise Implementation Steps;
-- Operation Verification Methods;
-- optional Verification Focus copied from the Work Plan;
+- Source Work Plan Task
+- Implementation Outcome
+- Governing Sources
+- Target Files
+- Investigation Targets
+- concise Implementation Steps
+- Operation Verification Methods
+- optional Verification Focus copied from the Work Plan
 - Completion Criteria tied to cited ACs
 
 ## Output

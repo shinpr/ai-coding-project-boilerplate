@@ -65,7 +65,7 @@ Five indicators: (a) same domain/responsibility (same UI pattern, same business 
 Use the indicators to find plausible candidates and apply the authoritative boundary below for escalation. For every plausible candidate:
 1. Compare responsibility, props/contract, lifecycle and state ownership, design-system role, and representative repository usage.
 2. Record one `reuseDecisions` entry:
-   - `reuse` or `extend` when those dimensions are compatible;
+   - `reuse` or `extend` when those dimensions are compatible
    - `separate` when sharing would merge independently evolving responsibilities or add more prop/state synchronization and contract surface than it removes
 3. Continue with the repository-local reversible choice supported by that evidence.
 

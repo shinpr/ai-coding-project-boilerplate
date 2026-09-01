@@ -27,9 +27,9 @@ Each finding contains one must-fix problem and its smallest sufficient correctio
 
 Review coding-standards Security Principles and its `references/security-checks.md` patterns against:
 
-- governing authentication, authorization, validation, and sensitive-data requirements;
-- secure defaults for secrets, queries, cryptography, and randomness;
-- input/output boundaries and error content;
+- governing authentication, authorization, validation, and sensitive-data requirements
+- secure defaults for secrets, queries, cryptography, and randomness
+- input/output boundaries and error content
 - access-control and least-privilege boundaries
 
 Follow a reference only while it can change an in-scope finding, action, or verification result.
@@ -71,7 +71,7 @@ Emit a finding only when current evidence requires correction to satisfy a gover
 
 Each rationale must explain:
 
-- `confirmed_risk`: why the surface is exploitable as-is after existing mitigations;
+- `confirmed_risk`: why the surface is exploitable as-is after existing mitigations
 - `defense_gap`: which required control is missing and which boundary it protects
 
 ## Output

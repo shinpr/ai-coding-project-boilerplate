@@ -28,10 +28,10 @@ Use `unit_inventory` or an explicitly as-is document as the reverse-engineering 
 
 First identify the document claims that control scope, feasibility, implementation actions, contracts, or verification results. Verify those claims against the smallest repository scope that can decide them:
 
-- current implementation locations and responsibility ownership;
-- interfaces, schemas, configuration, dependencies, and exact identifiers relied upon by the document;
-- preserved behavior, state, error, security, serialization, or compatibility contracts;
-- whether the named implementation and verification boundaries can support the planned outcome;
+- current implementation locations and responsibility ownership
+- interfaces, schemas, configuration, dependencies, and exact identifiers relied upon by the document
+- preserved behavior, state, error, security, serialization, or compatibility contracts
+- whether the named implementation and verification boundaries can support the planned outcome
 - post-implementation behavior that the governing document requires
 
 For a future-state PRD or Design Doc, planned behavior is intent rather than a code gap. Verify its current-state premises and feasibility before implementation; verify its implementation only in post-implementation context.
@@ -85,9 +85,9 @@ For each inventory category, `accountedCount + excluded.length + unaccounted.len
 
 Status rules:
 
-- `consistent`: no discrepancy exists;
-- `needs_review`: a repairable material `drift`, `gap`, or `unverified` discrepancy exists;
-- `inconsistent`: governing evidence contradicts the selected outcome or contract;
+- `consistent`: no discrepancy exists
+- `needs_review`: a repairable material `drift`, `gap`, or `unverified` discrepancy exists
+- `inconsistent`: governing evidence contradicts the selected outcome or contract
 - `blocked`: the required authoritative document input is unsupported, missing, or unreadable
 
 ## Completion Check

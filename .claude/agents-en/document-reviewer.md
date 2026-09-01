@@ -95,9 +95,9 @@ For ADR and Design Doc checks, total complexity covers every activated user deci
 
 Create an issue only when the artifact otherwise:
 
-- contradicts a governing source;
-- describes an incorrect approved outcome or contract;
-- leaves approved implementation non-executable;
+- contradicts a governing source
+- describes an incorrect approved outcome or contract
+- leaves approved implementation non-executable
 - leaves a required result non-verifiable; or
 - commits downstream implementation to added design surface whose total complexity lacks current evidence and whose removal still satisfies the confirmed outcome, boundaries, and required proof
 

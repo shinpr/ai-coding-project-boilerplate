@@ -28,10 +28,10 @@ Supply exactly one of `prd_path` or `requirements`.
 
 Return a fact only when it can:
 
-- change scope confirmation or Structural Scale;
-- reduce implementation surface through reuse;
-- eliminate or materially improve a technical option;
-- preserve or intentionally change an observable contract;
+- change scope confirmation or Structural Scale
+- reduce implementation surface through reuse
+- eliminate or materially improve a technical option
+- preserve or intentionally change an observable contract
 - identify a total-complexity or maintainability difference; or
 - select a verification boundary
 
@@ -47,10 +47,10 @@ Read the governing requirement source, then discover the directly affected respo
 
 Trace the directly affected control, data, state, persistence, and integration path far enough to identify:
 
-- the existing owner and reusable mechanisms;
-- changed or newly relied-upon interfaces, schemas, exact identifiers, configuration, dependencies, and error behavior;
-- transformations or external lookups whose output must remain equivalent;
-- applicable repository checks and domain constraints;
+- the existing owner and reusable mechanisms
+- changed or newly relied-upon interfaces, schemas, exact identifiers, configuration, dependencies, and error behavior
+- transformations or external lookups whose output must remain equivalent
+- applicable repository checks and domain constraints
 - evidence that invalidates an approach or changes its cost
 
 Preserve historical safeguards in the returned facts: dependency existence, behavior relied upon as already provided, cross-boundary values, data operations, state transitions, failure paths, and output transformations are included when the current design depends on them.

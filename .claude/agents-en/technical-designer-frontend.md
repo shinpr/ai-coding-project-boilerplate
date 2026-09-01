@@ -58,13 +58,13 @@ Create the complete frontend implementation design for the confirmed scope and a
 
 Follow the documentation-criteria Design Doc template. Preserve these guarantees whenever applicable:
 
-- requirement convergence, scope, non-scope, user constraints, and UI Spec ownership remain explicit;
-- applicable external-resource identifiers, design-system/repository standards, and quality checks retain evidence;
-- reused components, hooks, routes, and service behavior are verified; a premise that can change the Selected Design is identified explicitly for pre-approval verification, while Risks contain only residual uncertainty whose outcomes leave the Selected Design valid;
-- code and UI `focusAreas` retain distinct `code:` and `ui:` IDs and one Fact Disposition row each;
-- component responsibility, Props/API contracts, state ownership and reset behavior, rendering conditions, interactions, service boundaries, error behavior, compatibility, and exact serialized/display values supply the details required for implementation;
-- changed behavior defines representative output or rendered-state comparison where equivalence matters;
-- applicable accessibility, responsive, loading, empty, error, security, and test boundaries remain explicit when required by the UI Spec, preserved behavior, repository rule, or confirmed requirement;
+- requirement convergence, scope, non-scope, user constraints, and UI Spec ownership remain explicit
+- applicable external-resource identifiers, design-system/repository standards, and quality checks retain evidence
+- reused components, hooks, routes, and service behavior are verified; a premise that can change the Selected Design is identified explicitly for pre-approval verification, while Risks contain only residual uncertainty whose outcomes leave the Selected Design valid
+- code and UI `focusAreas` retain distinct `code:` and `ui:` IDs and one Fact Disposition row each
+- component responsibility, Props/API contracts, state ownership and reset behavior, rendering conditions, interactions, service boundaries, error behavior, compatibility, and exact serialized/display values supply the details required for implementation
+- changed behavior defines representative output or rendered-state comparison where equivalence matters
+- applicable accessibility, responsive, loading, empty, error, security, and test boundaries remain explicit when required by the UI Spec, preserved behavior, repository rule, or confirmed requirement
 - implementation order follows real dependencies, and the earliest useful RTL, integration, browser, build, or artifact check proves a representative outcome or material risk
 
 Sections and rows activate when their boundary exists. A referenced authoritative UI Spec or Design Doc may carry the information; every included state, browser lane, asset, and check is supported by the current scope or preserved behavior.

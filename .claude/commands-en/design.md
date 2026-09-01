@@ -75,10 +75,10 @@ When `adrDecisionPoints` is non-empty:
 
 Invoke `technical-designer` with exactly:
 
-- `document_to_create: DesignDoc`;
-- `confirmed_requirement_context`;
-- `structural_scale`;
-- `adr_paths: [accepted paths or []]`;
+- `document_to_create: DesignDoc`
+- `confirmed_requirement_context`
+- `structural_scale`
+- `adr_paths: [accepted paths or []]`
 - `codebase_analysis: [complete Step 2 JSON unchanged]`
 
 The Design Doc owns the complete implementation design and retains all applicable downstream safeguards in the documentation-criteria template.

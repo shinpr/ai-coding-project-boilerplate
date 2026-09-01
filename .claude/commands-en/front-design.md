@@ -88,12 +88,12 @@ When `adrDecisionPoints` is non-empty:
 
 Invoke `technical-designer-frontend` with:
 
-- `document_to_create: DesignDoc`;
-- `confirmed_requirement_context`;
-- `structural_scale`;
-- the applicable approved `ui_spec_path` and selected external-resource records;
-- `adr_paths: [accepted paths or []]`;
-- the complete Step 2 `codebase_analysis` unchanged;
+- `document_to_create: DesignDoc`
+- `confirmed_requirement_context`
+- `structural_scale`
+- the applicable approved `ui_spec_path` and selected external-resource records
+- `adr_paths: [accepted paths or []]`
+- the complete Step 2 `codebase_analysis` unchanged
 - the complete Step 3 `ui_analysis` unchanged when present
 
 The Design Doc owns the complete component-to-service implementation and retains all applicable downstream safeguards.

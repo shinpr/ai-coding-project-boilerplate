@@ -45,11 +45,11 @@ User dialogue, approval state changes, external environment preparation, and wor
 
 Read the governing documents and every supplied test skeleton. From each skeleton retain its `@lane`, accepted behavior, dependencies, primary failure mode, and proof obligation. Collect only information that changes a task's outcome, boundary, order, or verification:
 
-- implementation targets and acceptance criteria;
-- named repository wiring, migrations, configuration, and contracts;
-- implementation dependencies and the selected implementation approach;
-- verification methods and early verification points;
-- protected boundaries the implementation must preserve;
+- implementation targets and acceptance criteria
+- named repository wiring, migrations, configuration, and contracts
+- implementation dependencies and the selected implementation approach
+- verification methods and early verification points
+- protected boundaries the implementation must preserve
 - material risks whose in-scope response changes a task outcome, dependency, boundary, or verification
 
 Record each obligation only as its governing path and section or AC identifier.
@@ -68,11 +68,11 @@ Separate tasks only when a repository dependency, backend/frontend executor rout
 
 Each task records:
 
-- stable `PN-TN` task ID and repository implementation outcome;
-- every directly constraining governing path and section or AC ID;
-- target responsibility or expected files;
-- dependencies, declared by the stable task IDs;
-- executor lane and rollback boundary;
+- stable `PN-TN` task ID and repository implementation outcome
+- every directly constraining governing path and section or AC ID
+- target responsibility or expected files
+- dependencies, declared by the stable task IDs
+- executor lane and rollback boundary
 - executable verification
 
 Set Executor lane from the task's target files: `frontend` when every path is under the project's frontend paths, `backend` otherwise. Classify paths using the directory conventions the project-context skill declares. When project-context declares no frontend paths, the project is backend-only and every lane is `backend` — record that as the reason rather than letting the fallback decide silently. Target files spanning both lanes signal that the task covers two outcomes; split it, because a task file routes to exactly one executor.
@@ -83,7 +83,7 @@ An uncovered governing obligation is a planning omission: add or adjust a task. 
 
 When a task could appear complete while its cited acceptance criterion remains false, add one `Verification Focus` containing:
 
-- **Primary failure**: the material false-green state;
+- **Primary failure**: the material false-green state
 - **Observable check**: the smallest check that detects it
 
 Use wording from a supplied test skeleton when available. Otherwise derive the focus only from the cited acceptance criterion and the Design Doc Verification Strategy. Omit it when normal task verification already proves the outcome.
