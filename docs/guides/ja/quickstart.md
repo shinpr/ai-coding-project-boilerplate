@@ -7,7 +7,7 @@
 新規プロジェクトの場合:
 
 ```bash
-pnpm dlx create-ai-project my-project --lang=ja
+npx create-ai-project my-project --lang=ja
 cd my-project
 pnpm install
 ```
@@ -15,12 +15,11 @@ pnpm install
 既存プロジェクトの場合は、プロジェクトルートで更新処理を実行します。
 
 ```bash
-pnpm dlx create-ai-project update --dry-run
-pnpm dlx create-ai-project update
+npx create-ai-project update --dry-run
+npx create-ai-project update
 ```
 
 更新処理は、管理対象のClaudeコマンド、エージェント、スキル、ルールを更新します。ソースコードとパッケージ設定は置き換えません。
-npmを使い続ける既存プロジェクトでは、`npx create-ai-project update`で更新できます。
 
 ## プロジェクトの前提情報を記録する
 

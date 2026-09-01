@@ -38,7 +38,7 @@ TypeScriptリポジトリに、Claude Codeを使った開発環境を組み込�
 ### 新しいプロジェクトを作成する
 
 ```bash
-pnpm dlx create-ai-project my-project --lang=ja
+npx create-ai-project my-project --lang=ja
 cd my-project
 pnpm install
 claude
@@ -49,13 +49,12 @@ claude
 プロジェクトルートで実行します。
 
 ```bash
-pnpm dlx create-ai-project update --dry-run
-pnpm dlx create-ai-project update
+npx create-ai-project update --dry-run
+npx create-ai-project update
 claude
 ```
 
 更新コマンドは、管理対象の`CLAUDE.md`、コマンド、エージェント、スキルを更新します。ソースコードや既存の`package.json`設定は置き換えません。
-npmを使い続ける既存プロジェクトでは、`npx create-ai-project update`で更新できます。
 
 Claude Codeを起動したら、次のコマンドを実行します。
 

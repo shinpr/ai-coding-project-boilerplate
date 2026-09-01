@@ -7,7 +7,7 @@
 创建新项目：
 
 ```bash
-pnpm dlx create-ai-project my-project --lang=zh-CN
+npx create-ai-project my-project --lang=zh-CN
 cd my-project
 pnpm install
 ```
@@ -15,14 +15,13 @@ pnpm install
 对于现有项目，请在项目根目录运行更新程序：
 
 ```bash
-pnpm dlx create-ai-project update --dry-run
-pnpm dlx create-ai-project update
+npx create-ai-project update --dry-run
+npx create-ai-project update
 ```
 
 如果更新程序提示选择语言，请输入 `zh-CN`。
 
 更新程序会刷新受管理的 Claude 命令、智能体、技能和规则，不会替换源代码或包配置。
-仍使用 npm 的现有项目可以继续通过 `npx create-ai-project update` 运行更新程序。
 
 ## 记录项目的前置信息
 

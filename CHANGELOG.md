@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2026-09-01
+
+### Added
+
+- **Simplified Chinese support** — Added complete Simplified Chinese variants of the Claude instructions, commands, agents, skills, and user guides, including project creation, language switching, and update support.
+
+### Changed
+
+- **Cross-language prompt quality** — Aligned English, Japanese, and Simplified Chinese prompt contracts, references, terminology, and machine-readable values, and removed context that violated command, agent, and skill dependency boundaries.
+- **pnpm by default** — Migrated repository tooling and newly generated projects to pnpm, including CI, hooks, dependency policy, setup guidance, and the committed lockfile. Existing project updates retain their current package manager.
+- **Versioning documentation** — Removed declarations that this changelog follows external versioning and changelog conventions.
+
 ## [1.28.0] - 2026-08-28
 
 ### Changed

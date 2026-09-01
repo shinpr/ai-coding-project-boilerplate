@@ -1,6 +1,6 @@
 {
   "name": "create-ai-project",
-  "version": "1.28.0",
+  "version": "2.0.0",
   "packageManager": "pnpm@11.25.0",
   "description": "Evidence-driven Claude Code workflows for TypeScript projects, from design and implementation through review and quality checks.",
   "keywords": [

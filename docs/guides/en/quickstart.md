@@ -7,7 +7,7 @@ This guide takes a new or existing TypeScript project through initial setup and 
 For a new project:
 
 ```bash
-pnpm dlx create-ai-project my-project
+npx create-ai-project my-project
 cd my-project
 pnpm install
 ```
@@ -15,12 +15,11 @@ pnpm install
 For an existing project, run the updater from its root:
 
 ```bash
-pnpm dlx create-ai-project update --dry-run
-pnpm dlx create-ai-project update
+npx create-ai-project update --dry-run
+npx create-ai-project update
 ```
 
 The updater refreshes managed Claude commands, agents, skills, and rules. It does not replace source code or package configuration.
-Existing projects that use npm can continue to run it with `npx create-ai-project update`.
 
 ## Record project prerequisites
 
