@@ -59,9 +59,9 @@ task-analyzer 技能（通过 frontmatter 自动加载）提供：
 
 ```json
 {
-  "taskAnalysis": {"taskType": "implementation|fix|refactoring|design|quality-improvement", "essence": "根本目的", "estimatedFiles": 3, "scale": "small|medium|large", "extractedTags": ["implementation", "testing", "security"]},
+  "taskAnalysis": {"essence": "根本目的", "type": "implementation|fix|refactoring|design|quality|documentation|investigation|migration|operations|security|skill", "secondaryTypes": ["quality"], "scale": "small|medium|large", "estimatedFiles": 3, "scaleRationale": {"decidingAxis": "outcomes|responsibility-boundaries|durable-choice", "evidence": "规模依据"}, "tags": ["implementation", "testing", "security"]},
   "selectedSkills": [
-    {"skill": "coding-standards", "sections": [{"title": "章节名称", "content": "## 章节内容..."}], "reason": "为何需要", "priority": "high"}
+    {"skill": "coding-standards", "priority": "high", "reason": "为何需要", "tags": ["implementation"], "typical-use": "适用场景", "size": "small|medium|large", "sections": [{"title": "章节名称", "content": "## 章节内容..."}]}
   ],
   "metaCognitiveGuidance": {"taskEssence": "理解根本目的，而非表面工作", "pastFailures": ["急于修错的冲动", "一次性大改动", "测试不充分"], "potentialPitfalls": ["未做根因分析", "未采用分阶段方法", "无测试"], "firstStep": {"action": "第一步行动", "rationale": "为何先做此事"}},
   "metaCognitiveQuestions": ["最重要的质量标准是什么？", "类似任务中过去出现过哪些问题？", "先做哪一部分？"],
@@ -101,7 +101,7 @@ task-analyzer 技能（通过 frontmatter 自动加载）提供：
 
 ## 完成标准
 
-- [ ] 已完成任务分析，包含类型、规模和标签
+- [ ] 保留 task-analyzer 的 `essence`、`type`、`secondaryTypes`、`scale`、`scaleRationale` 与 `tags`
 - [ ] 已加载相关技能并提取章节
 
 ## 元认知问题设计

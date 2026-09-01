@@ -19,7 +19,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 2. **1ステップずつ順次実行**: 各ユニット内でステップを順次実行（2→3→4→5）。各ステップの出力が次ステップの必須入力。1ユニットの全ステップを完了してから次のユニットへ
 3. **`$STEP_N_OUTPUT`をそのまま渡す** — オーケストレーターはデータを加工・フィルタリングせず中継する
 
-**実行ゲート**: フェーズ1を完了してからフェーズ2へ進む。各フェーズでは、1ユニットの生成、検証、レビュー、必要な修正を収束まで完了してから次のユニットを開始する。現在のステップで定められた出力と品質ゲートを満たした場合にのみ次へ進む。各ループ境界では、現在のフェーズで宣言された順序に従い、ユニット完了条件を満たしておらず、生成失敗として記録されてもいない最初のユニットを選択する。ドキュメントパスは生成されたことだけを証明する。
+**実行ゲート**: フェーズ1を完了してからフェーズ2へ進む。各フェーズでは、1ユニットの生成、検証、レビュー、必要な修正を収束まで完了してから次のユニットを開始する。現在のステップで定められた出力と品質ゲートを満たした場合にのみ次へ進む。各ループ境界では、現在のフェーズで宣言された順序に従い、ユニット完了条件を満たしておらず、生成失敗として記録されてもいない最初のユニットを選択する。ドキュメントのパスは、生成が済んだことしか示さない。
 
 ## ステップ0: 初期設定
 
@@ -90,7 +90,7 @@ subagent_type: prd-creator
 prompt: |
   以下の機能のリバースエンジニアリングPRDを作成する。
 
-  動作モード: reverse-engineer
+  Operation Mode: reverse-engineer
   External Scope Provided: true
 
   機能: $PRD_UNIT_NAME ($STEP_1_OUTPUTより)
@@ -121,7 +121,7 @@ prompt: |
 
 注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見することで、scope-discovererの出力に制約されない独立した検証を実現する。
 
-続行する前に `summary.status` を読む: `blocked` の場合は入力ゲートが失敗し何も検証されていないため、結果を渡さず停止して `blockingReason` をユーザーに報告する。空の `discrepancies` は下流でクリーンな検証として読まれてしまうため。
+続行する前に `summary.status` を読む: `blocked` の場合は入力ゲートが失敗し何も検証されていないため、結果を渡さず停止して `blockingReason` をユーザーに報告する。`discrepancies` が空だと、下流では問題なしと解釈されてしまう。
 
 **出力を保存**: `$STEP_3_OUTPUT`
 
@@ -147,7 +147,7 @@ prompt: |
 
 #### ステップ5: 修正（条件付き）
 
-`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語で `prd-creator` の update モードに渡し、その後 `prior_feedback` を添えてステップ3〜4を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
+`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `prd-creator` の update モードに渡し、その後 `prior_feedback` を添えてステップ3〜4を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
 
 #### ユニット完了
 
@@ -162,7 +162,7 @@ prompt: |
 
 ### ステップ6: Design Docスコープマッピング
 
-**追加の発見は不要。** `$STEP_1_OUTPUT.discoveredUnits`（実装粒度のユニット）を技術プロファイルとして使用する。`$STEP_1_OUTPUT.prdUnits[].sourceUnits`で各PRDユニットに属するdiscoveredUnitsを追跡する。
+**追加の探索は不要。** `$STEP_1_OUTPUT.discoveredUnits`（実装粒度のユニット）を技術プロファイルとして使用する。`$STEP_1_OUTPUT.prdUnits[].sourceUnits`で各PRDユニットに属するdiscoveredUnitsを追跡する。
 
 fullstack=Yesの場合、ユニットの`relatedFiles`と`technicalProfile.primaryModules`のパスパターンからbackend / frontend / 両方のいずれが必要かをユニット毎に判定する（technical-specスキルのプロジェクト構造定義を参照）。
 
@@ -195,7 +195,7 @@ subagent_type: technical-designer
 prompt: |
   既存コードに基づき以下の機能のDesign Docを作成する。
 
-  動作モード: reverse-engineer
+  Operation Mode: reverse-engineer
 
   機能: $UNIT_NAME ($STEP_6_OUTPUTより)
   説明: $UNIT_DESCRIPTION
@@ -218,7 +218,7 @@ subagent_type: technical-designer-frontend
 prompt: |
   既存コードに基づき以下の機能のフロントエンドDesign Docを作成する。
 
-  動作モード: reverse-engineer
+  Operation Mode: reverse-engineer
 
   機能: $UNIT_NAME ($STEP_6_OUTPUTより)
   説明: $UNIT_DESCRIPTION
@@ -285,7 +285,7 @@ prompt: |
 
 #### ステップ10: 修正（条件付き）
 
-`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー裁定を適用し、`apply` の issue オブジェクト一式を逐語で `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後 `prior_feedback` を添えてステップ8〜9を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
+`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後 `prior_feedback` を添えてステップ8〜9を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
 
 #### ユニット完了
 
@@ -305,7 +305,7 @@ prompt: |
 
 | エラー | アクション |
 |--------|-----------|
-| 発見で何も見つからない | ユーザーにプロジェクト構造のヒントを求める |
+| 探索で何も見つからない | ユーザーにプロジェクト構造のヒントを求める |
 | 生成が失敗 | 失敗をログ、他のユニットで続行、サマリで報告 |
 | 検証エージェントが `blocked` を返す | 停止して `blockingReason` を報告 |
 | レビュアーが `rejected` を返す | 上位の要件ゲートを適用 |

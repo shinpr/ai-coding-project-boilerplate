@@ -103,7 +103,7 @@ Document supplied inventory and existing frontend behavior as-is. Trace in-scope
 
 ## Output
 
-- ADR batch: contiguous `docs/adr/ADR-[4-digit number]-[title].md` paths allocated by the create-mode rule above
+- ADR batch: contiguous `docs/adr/ADR-[4-digits]-[title].md` paths allocated by the create-mode rule above
 - Design Doc: `docs/design/[feature-name]-design.md`
 - Follow the applicable template; remove only non-applicable optional content.
 - ADR batch result: `{"status":"completed","documentType":"ADRBatch","paths":["path"]}`

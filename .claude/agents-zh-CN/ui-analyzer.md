@@ -74,7 +74,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
     {"kind": "css-module-typings|message-catalog-typings|route-typings|other", "command": "生成命令", "trigger": "on change|manual", "consumers": ["typecheck", "test", "build", "runtime"]}
   ],
   "focusAreas": [
-    {"fact_id": "src/components/Card.tsx:Card", "area": "连贯的 UI 行为", "evidence": "路径:行号或外部资源", "relatedFiles": ["使用方文件路径"], "factsToAddress": "需要保留、转换、移除或排除的事实", "risk": "遗漏时可观测到的不一致", "decisionEffect": "UI 规范、契约或验证决策"}
+    {"fact_id": "src/components/Card.tsx:Card", "area": "连贯的 UI 行为", "evidence": "路径:行号或外部资源", "relatedFiles": ["使用方文件路径"], "factsToAddress": "需要保留、转换、移除或标记为范围外的事实", "risk": "遗漏时可观测到的不一致", "decisionEffect": "UI 规范、契约或验证决策"}
   ],
   "limitations": ["与决策相关的证据局限"]
 }

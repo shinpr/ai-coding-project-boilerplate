@@ -104,7 +104,7 @@ Resolve the frontend implementation objective through the input precedence above
 4. When an Investigation Target file does not exist or the path is stale, resolve the moved or renamed path from the repository and read it. Record the resolved path in the available execution record. Escalate only when the target cannot be resolved and its content is required to preserve a governing contract.
 
 #### Dependency Deliverables (When a task file provides them)
-1. Extract paths from task file "Dependencies" section
+1. Extract paths from the `Dependencies:` line in the task file's Metadata section
 2. Read each deliverable with Read tool
 3. **Specific Utilization**:
    - Design Doc → Understand component interfaces, Props types, state management

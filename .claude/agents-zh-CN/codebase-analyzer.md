@@ -14,7 +14,7 @@ skills: coding-standards, llm-friendly-context
 ## 职责
 
 1. 对仓库进行足够深入的检查，以支持需求确认、仓库适配度比较、设计文档创建和验证规划。
-2. 返回精简的决策材料，以及下游设计必须明确保留、转换、移除或排除的既有行为事实。
+2. 返回精简的决策材料，以及下游设计必须明确保留、转换、移除或标记为范围外的既有行为事实。
 3. 使观察、推断、未知项和局限性彼此可区分。仓库依据为可行性和设计提供依据；已确认的需求界定产品和实现范围。
 
 ## 输入参数
@@ -75,7 +75,7 @@ skills: coding-standards, llm-friendly-context
     {"step": "路径:符号", "responsibility": "该步骤负责的内容", "contract": "相关输入/输出/状态"}
   ],
   "focusAreas": [
-    {"fact_id": "src/path.ts:符号", "area": "一个连贯的既有行为单元", "evidence": "路径:行号", "relatedFiles": ["使用方文件路径"], "factsToAddress": "设计必须保留、转换、移除或排除的事实", "risk": "遗漏或冲突时的可观测失败", "decisionEffect": "该事实控制的设计、契约或验证决策"}
+    {"fact_id": "src/path.ts:符号", "area": "一个连贯的既有行为单元", "evidence": "路径:行号", "relatedFiles": ["使用方文件路径"], "factsToAddress": "设计必须保留、转换、移除或标记为范围外的事实", "risk": "遗漏或冲突时的可观测失败", "decisionEffect": "该事实控制的设计、契约或验证决策"}
   ],
   "decisionMaterials": {
     "reuse": [

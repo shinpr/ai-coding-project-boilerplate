@@ -25,16 +25,16 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 
 事実を返すのは、それが今回の確認済み変更に対するUI Spec・コンポーネント/サービスの契約・維持される可視の振る舞い・検証境界のいずれかを変えうる場合に限る。出典となる要件ソースから関連する画面・コンポーネント・エントリポイントを発見し、続いて影響を受けるレンダリング・状態・スタイル・インタラクション・データの経路をたどる。
 
-別のファイルや呼び出し箇所がこれらの結果を変えられなくなった時点で拡大を止める。利用側をすべて調査するのは、共有/公開のProps契約、デザインシステムのプリミティブ、ルート/表示制御ルール、ローカライズキー、生成成果物であって、利用箇所の全体集合が互換性を左右する場合に限る。それ以外は、代表的な利用側・テスト・ストーリー・同種のスタイルで足りる。
+別のファイルや呼び出し箇所がこれらの結果を変えられなくなった時点で拡大を止める。利用側をすべて調査するのは、共有/公開のProps契約、デザインシステムのプリミティブ、ルート/表示制御ルール、ローカライズキー、生成成果物であって、すべての利用箇所が互換性を左右する場合に限る。それ以外は、代表的な利用側・テスト・ストーリー・同種のスタイルで足りる。
 
 ## プロセス
 
-1. 選択された `external_resource_refs` を読む。指定がない場合は project-context が記録したフロントエンドの External Resources を用いる。取得するのは、現在のUIの結果または検証を変えうる部分集合のみとする。利用できないリソースや無関係なリソースは、限界またはスキップとして記録する。
+1. 選択された `external_resource_refs` を読む。指定がない場合は、project-context の「外部リソース」に記録されたフロントエンド部分を用いる。取得するのは、現在のUIの結果または検証を変えうる部分集合のみとする。利用できないリソースや無関係なリソースは、限界またはスキップとして記録する。
 2. 出典となる要件ソースから、変更されるUIの経路を特定する。記録するのは、その変更を制約する規約のみとする。
 3. 契約・状態・DOM順序・合成のいずれかが結果を変えうるコンポーネントを調査する。正確なProps、重要な分岐、合成、代表的な利用側を記録する。
-4. 正規のバリアントと互換性に影響するバリアントを確立できる範囲まで、呼び出し箇所を調査する。
-5. 該当するレイアウト・レスポンシブ・状態・表示制御・ローカライズ・アクセシビリティ・生成成果物の事実を記録する。確認済みスコープが有効化しないカテゴリは省略する。
-6. 事実を `focusAreas` にまとめるのは、共有される下流の disposition が観測可能なUI契約を保護する場合に限る。
+4. 正規のバリアントと互換性に影響するバリアントを特定できる範囲まで、呼び出し箇所を調査する。
+5. 該当するレイアウト・レスポンシブ・状態・表示制御・ローカライズ・アクセシビリティ・生成成果物の事実を記録する。確認済みスコープの対象外であるカテゴリは省略する。
+6. 事実を `focusAreas` にまとめるのは、それらを後続で同じ扱いにすることで観測可能なUI契約を守れる場合に限る。
 
 ## 出力
 
@@ -71,7 +71,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
     {"component": "ComponentName", "ariaAttributes": ["role=button"], "keyboardHandling": "キーと操作の対応", "focusStyling": "focus-visible outline", "testCoverage": "present|absent"}
   ],
   "generatedArtifacts": [
-    {"kind": "css-module-typings|message-catalog-typings|route-typings|other", "command": "生成コマンド", "trigger": "変更時|手動", "consumers": ["typecheck", "test", "build", "runtime"]}
+    {"kind": "css-module-typings|message-catalog-typings|route-typings|other", "command": "生成コマンド", "trigger": "on change|manual", "consumers": ["typecheck", "test", "build", "runtime"]}
   ],
   "focusAreas": [
     {"fact_id": "src/components/Card.tsx:Card", "area": "まとまりのあるUIの振る舞い", "evidence": "path:line または外部リソース", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "preserve / transform / remove / out-of-scope のいずれかで扱うべき事実", "risk": "省略した場合に観測される不整合", "decisionEffect": "UI Spec・契約・検証のいずれの判断か"}
@@ -80,7 +80,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 }
 ```
 
-有効化されないカテゴリには空配列または null を用いる。
+該当しないカテゴリには空配列または null を用いる。
 
 ## 完了チェック
 

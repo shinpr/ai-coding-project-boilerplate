@@ -54,12 +54,14 @@ description: 判断某项变更需要哪些 PRD、ADR、UI 规范（UI Spec）�
 | 文档 | 路径 | 命名约定 | 模板 |
 |----------|------|------------------|----------|
 | PRD | `docs/prd/` | `[feature-name]-prd.md` | [prd-template.md](references/prd-template.md) |
-| ADR | `docs/adr/` | `ADR-[4位数字]-[标题].md` | [adr-template.md](references/adr-template.md) |
+| ADR | `docs/adr/` | `ADR-[4-digits]-[title].md` | [adr-template.md](references/adr-template.md) |
 | UI 规范 | `docs/ui-spec/` | `[feature-name]-ui-spec.md` | [ui-spec-template.md](references/ui-spec-template.md) |
 | UI 规范附件 | `docs/ui-spec/assets/{feature-name}/` | 原型代码文件 | - |
 | 设计文档 | `docs/design/` | `[feature-name]-design.md` | [design-template.md](references/design-template.md) |
 | 工作计划 | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | [plan-template.md](references/plan-template.md) |
 | 任务文件 | `docs/plans/tasks/` | 参见 task-decomposer 文件名表 | [task-template.md](references/task-template.md) |
+
+生成路径中的变量必须使用小写 ASCII kebab-case slug。非 ASCII 输入应在构造路径前转换为该格式。
 
 工作计划已在 `.gitignore` 中排除。
 

@@ -47,15 +47,15 @@ description: 调查问题、验证发现并推导解决方案
 - `prompt`: "请识别以下问题的本质以及所需的技能：[用户报告的问题]"
 
 从 rule-advisor 的输出中确认：
-- `taskAnalysis.mainFocus`：问题的主要焦点
-- `mandatoryChecks.taskEssence`：表面症状之外的根本问题
+- `taskAnalysis.essence`：表面症状之外的根本问题
+- `taskAnalysis.type` 与 `taskAnalysis.tags`：问题分类与匹配词
 - `selectedSkills`：适用的技能章节
 - `warningPatterns`：需要避免的模式
 
 ### 0.4 反映到 investigator 提示词中
 
 **在 investigator 提示词中包含以下内容**：
-1. 问题本质（taskEssence）
+1. 问题本质（`taskAnalysis.essence`）
 2. 适用技能的要点摘要（来自 selectedSkills）
 3. 调查焦点（investigationFocus）：将 warningPatterns 转换为“本次调查中容易混淆或遗漏的点”
 4. **对于变更导致的失败，额外包含**：

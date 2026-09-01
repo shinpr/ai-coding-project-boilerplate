@@ -74,7 +74,7 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 サブエージェントのスコープ境界:
 タスクの成果を、それを担うリポジトリ上の責務全体で整合する形で完成させる。
 参照されたパスは調査の起点として扱い、同じ成果に必要な関連ファイルを含める。
-割り当てられた進捗フィールドを除き、出典となる成果物は読み取り専用とする。
+割り当てられた進捗フィールドを除き、正典となる成果物は読み取り専用とする。
 確認済みの成果、将来状態の要件、対象外を同時には維持できない場合は要件変更検知へ戻る。不可逆な外部操作が必要な場合は承認を求める。
 ```
 
@@ -91,11 +91,11 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → subagents-orchestration-guideの「専門エージェントの結果の受理」を適用する
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスと `diffBase: HEAD` を渡す。Medium/Large ではさらに `taskFiles: [現在のタスクファイルパス]` を渡し、Small では直接スコープの検証主張を渡す。その後 `status` で分岐する
-     - `needs_revision` → レビュー裁定を適用し、元の実行スコープに、`apply`のquality-issueオブジェクト一式を`correction_findings`として逐語で加えてステップ1に戻る
+     - `needs_revision` → レビュー対応を適用し、元の実行スコープに、`apply`のquality-issueオブジェクト一式を`correction_findings`として逐語で加えてステップ1に戻る
      - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻し、それ以外はレビューを未実行として`blockingReason`を記録してステップ3へ進む
      - `approved` → ステップ3 へ
    - それ以外 → ステップ3 へ
-3. **quality-fixer を呼び出す**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して、全品質チェックと修正を実行する（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large では現在の `task_file` も渡し、Small では直接の実行スコープを渡す。実装ステップの `runnableCheck` と、出典ソースまたはリポジトリの規約が権威ある品質コマンドを示している場合は `qualityCommand` を渡す。
+3. **quality-fixer を呼び出す**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して、全品質チェックと修正を実行する（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large では現在の `task_file` も渡し、Small では直接の実行スコープを渡す。実装ステップの `runnableCheck` と、出典ソースまたはリポジトリの規約が正となる品質コマンドを定めている場合は `qualityCommand` を渡す。
    - `stub_detected` → 元の実行スコープと`incompleteImplementations[]`を渡してtask-executorを再実行し、ステップ1に戻る
    - `blocked` → 専門エージェントの結果の受理を適用する
    - `verification_incomplete` → 結果を省略せず最終再試行まで保持し、ステップ4へ進む
@@ -112,15 +112,15 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 - code-reviewer (subagent_type: "code-reviewer") → 型付きの`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
 - security-reviewer (subagent_type: "security-reviewer") → 同じ型付き`governingDocuments`に照らして、完了した実装をレビューする
 
-subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー裁定の収束条件に達した後、最終クリーンアップへ進む。
+subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー対応の収束条件に達した後、最終クリーンアップへ進む。
 
 Smallでは、このドキュメント依存のレビューを省く。タスクのコミット後、保持した証明不足を1回再試行し、観測した`observable_verification`のエビデンスをもって完了する。なお証明できない内容があれば報告する。
 
 ### 最終クリーンアップ
 
-Medium/Large でのみ、完了レポートの前に本レシピが消費した実装タスクファイルを削除する。Small ではタスクファイルを作成しない。消費したタスクファイルはレシピ実行間で保持しない一時的な作業状態である。
+Medium/Large でのみ、完了レポートの前に本レシピが処理した実装タスクファイルを削除する。Small ではタスクファイルを作成しない。処理したタスクファイルはレシピ実行間で保持しない一時的な作業状態である。
 
-本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップは、計画書の Executor lane からタスク実体化が生成しうるすべてのタスク命名パターンを対象とする:
+本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップは、計画書の Executor lane から生成されうるすべてのタスク命名パターンを対象とする:
 
 - 本実行で使用した作業計画書パスから導出した `{plan-name}` について、以下のいずれかにマッチするファイルすべてを削除する:
   - `docs/plans/tasks/{plan-name}-task-*.md`（単層タスク）

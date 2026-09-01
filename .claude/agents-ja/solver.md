@@ -63,7 +63,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 - impactScope 3件以上、またはrecurrenceRisk: high → 修正案と再設計案の両方
 - impactAnalysisなしの障害点（例: 検証段階で発見されたもの）: 直接修正の候補として扱い、影響評価未実施をresidualRisksに記載
 
-### ステップ2: 解決策の発散思考
+### ステップ2: 解決策の洗い出し
 検証済みの原因から導ける、実質的に異なる実現可能な案をすべて生成する。以下の観点は、仕組みまたはスコープが本当に異なる案になる場合にだけ使用する:
 
 | タイプ | 定義 | 適用場面 |
@@ -96,7 +96,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 カバレッジ評価に応じた推奨戦略：
 - sufficient: 積極的な直接対策、根本対策の実施を検討
 - partial: 段階的アプローチ、影響の小さい対策で検証後に本格対策。`supported`の障害点への修正を優先
-- insufficient: 保守的な緩和策から開始、未チェック領域に関わらず安全な修正を優先
+- insufficient: 保守的な緩和策から開始し、未チェック領域が残っていても安全な修正を優先
 
 ### ステップ5: 実装ステップの作成
 - 各ステップは独立して検証可能

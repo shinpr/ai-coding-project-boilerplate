@@ -4,7 +4,7 @@
 
 ## Axis 1: IaC ソース
 
-インフラ定義の正本となる取得元。
+インフラ定義の正典となる取得元。
 
 **AskUserQuestion 選択肢**:
 - リポジトリ内の Terraform 構成

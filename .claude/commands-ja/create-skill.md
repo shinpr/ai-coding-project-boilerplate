@@ -56,7 +56,7 @@ LLMのベースライン知識を超える価値があるかを検証する。
 - 具体的なルールや基準は？（体系化すべき中核知識）
 - 良い/悪いパターンの具体例は？
 - このスキルが準拠する外部参照や標準は？
-- 実践的成果物: 「これらのパターンを実証する既存ファイル、過去の障害例、PR、会話ログはありますか？」（実際の使用に基づいてスキルを根拠付ける）
+- 実物の資料: 「これらのパターンを実証する既存ファイル、過去の障害例、PR、会話ログはありますか？」（実際の使い方に裏付けられた内容にする）
 
 ### Step 3: スキル名と構造の決定
 
@@ -76,7 +76,7 @@ LLMのベースライン知識を超える価値があるかを検証する。
 - Scope: ラウンド3のスコープ
 - Decision criteria: ラウンド4の判断基準
 - Project-specific value: ラウンド2のプロジェクト固有の価値
-- Practical artifacts: ラウンド4の実践的成果物（提供された場合）
+- Practical artifacts: ラウンド4の実物の資料（提供された場合）
 - Existing generated content: 初回生成では`None`、修復時は現在のSKILL.mdとreference
 - Current review: 初回生成では`None`、修復時は直前のskill-reviewer出力
 
@@ -90,11 +90,11 @@ skill-reviewerエージェントをAgent toolで起動:
 
 **判定ロジック**:
 - グレードAまたはB: Step 6へ進み、グレードBの残存指摘は任意の注記として提示する
-- グレードC: 各指摘を`findingId`で`apply`、`decline`、`user_decision`に裁定するようskill-creatorへ依頼する
+- グレードC: 各指摘を`findingId`で`apply`、`decline`、`user_decision`に分類するようskill-creatorへ依頼する
 - `apply`: 現在の生成コンテンツを修正して再レビューする
 - `decline`: 根拠を添えて再レビューする
 - `user_decision`: ユーザーへ確認し、回答を成果またはスコープを決める情報としてskill-creatorへ戻す。再レビュー前に、その指摘を`apply`または根拠付き`decline`へ確定する
-- reviewerが却下済みの指摘を維持できるのは、正しさまたは検証可能性に関する新しい根拠がある場合だけとする。新しい根拠を伴わない同じ選好は作業を妨げない
+- reviewerが却下済みの指摘を維持できるのは、正しさまたは検証可能性に関する新しい根拠がある場合だけとする。新しい根拠を伴わない同じ好みは作業を妨げない
 - 2回の修復・再レビュー後もグレードCの場合は、現在の内容と残存指摘をユーザーへ提示する
 
 ### Step 6: ユーザー確認と書き込み
@@ -102,7 +102,7 @@ skill-reviewerエージェントをAgent toolで起動:
 1. 生成したSKILL.mdの内容をユーザーに提示し最終承認を取得
 2. 意図の整合性を確認: 「このスキルは説明いただいた知識と基準を正しく反映していますか？」
 3. 修正要望がある場合: 変更を適用しskill-reviewerを再実行
-4. 承認後、`.claude/skills/{スキル名}/SKILL.md`に書き込み
+4. 承認後、`.claude/skills/{skill-name}/SKILL.md`に書き込み
 5. `/sync-skills`の実行を提案
 
 ## 完了条件
@@ -114,7 +114,7 @@ skill-reviewerエージェントをAgent toolで起動:
 - [ ] skill-creatorが有効なJSON出力を返却
 - [ ] skill-reviewerがグレードAまたはBを返却
 - [ ] ユーザーが最終コンテンツを承認済み
-- [ ] `.claude/skills/{スキル名}/SKILL.md`に書き込み済み
+- [ ] `.claude/skills/{skill-name}/SKILL.md`に書き込み済み
 - [ ] `/sync-skills`の実行を提案済み
 
 ## エラーハンドリング

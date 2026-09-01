@@ -55,9 +55,9 @@ Agentツールでwork-plannerを呼び出す:
 - `subagent_type`: "work-planner"
 - `description`: "作業計画書作成"
 - `generatedFiles[]` を `testSkeletons` として渡す。空のリストは、計画に追加の統合/E2Eスケルトンタスクが不要であることを示す。
-- 配置ガイダンスを末尾に付加する: "統合テストは各フェーズ実装と同時に作成。fixture-e2eテストはUI機能フェーズと並行して作成。service-integration-e2eテストは必要なサービスが利用可能になった後に実行。"
+  - 配置ガイダンスを末尾に付加する: "統合テストは各フェーズ実装と同時に作成。fixture-e2eテストはUI機能フェーズと並行して作成。service-integration-e2eテストは必要なサービスが利用可能になった後に実行。"
 
-- subagents-orchestration-guideのPrompt Construction Ruleに従い追加パラメータを構成
+- subagents-orchestration-guideの「Prompt Construction Rule」に従い追加パラメータを構成
 
 ### Step 4: 作業計画書レビュー
 document-reviewerを呼び出し作業計画書をレビューする:
@@ -65,8 +65,8 @@ document-reviewerを呼び出し作業計画書をレビューする:
 - `description`: "作業計画書レビュー"
 - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md。作業計画書自身の実装スコープ、タスク、完了条件、依存関係、実行順序、引用アンカーの実在、実行可能な検証をレビューする。出典ソースは対象文書の Governing Documents から解決する。"
 - 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘はユーザー入力なしで解消する。reviewerの `verdict.decision` で分岐する:
-  - `needs_revision`: レビュー裁定を修正再レビューから収束まで進め、該当条件を満たす場合は親ワークフローの要件変更判定または権限判定へ移行する。差し戻す修正には work-planner を update モードで用いる
-  - `approved`、またはレビュー裁定が収束条件に達した場合: ステップ5へ進む
+  - `needs_revision`: レビュー対応を修正後の再レビューから収束まで進め、該当条件を満たす場合は親ワークフローの要件変更判定または権限判定へ移行する。差し戻す修正には work-planner を update モードで用いる
+  - `approved`、またはレビュー対応が収束条件に達した場合: ステップ5へ進む
   - `rejected`: 上位の要件ゲートを適用する
 
 ### Step 5: 承認のための提示

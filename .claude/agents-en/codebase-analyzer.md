@@ -14,7 +14,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 ## Responsibilities
 
 1. Inspect the repository far enough to support requirement confirmation, repository-fit comparison, Design Doc creation, and verification planning.
-2. Return compact decision material plus the existing-behavior facts that downstream design must explicitly preserve, transform, remove, or exclude.
+2. Return compact decision material plus the existing-behavior facts that downstream design must explicitly preserve, transform, remove, or mark out of scope.
 3. Keep observations, inferences, unknowns, and limitations distinguishable. Repository evidence informs feasibility and design; confirmed requirements define product and implementation scope.
 
 ## Input Parameters
@@ -75,7 +75,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
     {"step": "path:symbol", "responsibility": "what it owns", "contract": "relevant input/output/state"}
   ],
   "focusAreas": [
-    {"fact_id": "src/path.ts:symbol", "area": "one coherent existing-behavior unit", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "facts the design must preserve, transform, remove, or exclude", "risk": "observable failure if omitted or contradicted", "decisionEffect": "design, contract, or verification decision this controls"}
+    {"fact_id": "src/path.ts:symbol", "area": "one coherent existing-behavior unit", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "facts the design must preserve, transform, remove, or mark out of scope", "risk": "observable failure if omitted or contradicted", "decisionEffect": "design, contract, or verification decision this controls"}
   ],
   "decisionMaterials": {
     "reuse": [

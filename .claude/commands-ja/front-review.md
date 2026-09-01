@@ -5,7 +5,7 @@ description: 完了したフロントエンド実装について、正典との�
 **ユーザーの明示的な指示**: ユーザーは、このレシピで名前が挙げられたすべてのサブエージェント呼び出しを明示的に指示し、承認している。各呼び出しの前提条件を満たした時点で、該当する呼び出しを実行する。
 
 Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendly-context`スキル（Skillツール使用）を実行する。
-ワークフロー判断・エージェント呼び出し・検出事項の裁定の前に、`subagents-orchestration-guide`スキルを実行する。
+ワークフロー判断・エージェント呼び出し・検出事項への対応の前に、`subagents-orchestration-guide`スキルを実行する。
 
 **コマンドコンテキスト**: React/TypeScriptフロントエンド向け実装後品質保証コマンド
 
@@ -13,7 +13,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 **コアアイデンティティ**: 「私はオーケストレーターである。」（subagents-orchestration-guideスキル参照）
 
-**実行ゲート**: Step 1-11を順番に完了し、明記された条件で有効になる分岐だけに従う。各レビュー、修正、再検証は、定められた収束条件を満たした場合にのみ次へ進む。該当するすべての検出事項が、必要な裁定または再試行結果に達した後に最終報告を提示する。
+**実行ゲート**: Step 1-11を順番に完了し、明記された条件で有効になる分岐だけに従う。各レビュー、修正、再検証は、定められた収束条件を満たした場合にのみ次へ進む。該当するすべての検出事項に対応方針または再試行結果が付いた後に最終報告を提示する。
 
 ## 実行方法
 
@@ -49,11 +49,11 @@ Agent toolでsecurity-reviewerを呼び出す:
 
 ### Step 4: 判定と対応
 
-いずれかのレビュアーが`blocked`または利用できない結果を返した場合は、その意味上の原因にsubagents-orchestration-guideの「専門エージェントの結果の受理」を適用する。なお残る証明不足だけをレポートへ引き継ぐ。
+いずれかのレビュアーが`blocked`または利用できない結果を返した場合は、その原因の内容に応じてsubagents-orchestration-guideの「専門エージェントの結果の受理」を適用する。残った検証上の制約だけをレポートへ引き継ぐ。
 
-両方の出力にレビュー裁定を適用する。`apply`と`decline`の処理方針がルーティングを決める。`apply`の検出事項ごとに、実装が受け入れ状態で技術成果物が古い場合はそのドキュメントの作成担当を、受け入れ状態に到達するため実装を変える必要がある場合はexecutorを使用する。
+両方の出力にレビュー対応を適用する。`apply`と`decline`の処理方針がルーティングを決める。`apply`の検出事項ごとに、実装が受け入れ済みで技術成果物が古い場合はそのドキュメントの作成担当を、受け入れ済みの状態にするため実装を変える必要がある場合はexecutorを使用する。
 
-裁定済みの結果を提示する:
+対応方針を付けた結果を提示する:
 
 ```
 Implementation Review: [code-reviewerのverdict]
@@ -90,13 +90,13 @@ decline: [ID] — [出典ソース上の理由]
    - `subagent_type`: "document-reviewer"
    - `description`: "更新後Design Docのレビュー"
    - `prompt`: "doc_type: DesignDoc。review_context: update。[path]の更新後Design Docの整合性と完成度をレビュー。"
-   - レビュー裁定を、その修正再レビューと収束の遷移に沿って回す。差し戻す修正には technical-designer-frontend を用いる。収束条件に達したときのみ先へ進む。
+   - レビュー対応を、修正後の再レビューから収束まで進める。差し戻す修正には technical-designer-frontend を用いる。収束条件に達したときのみ先へ進む。
 
 3. レビュー対象の変更が触れる責務または契約を別のDesign Docも統制する場合、design-syncを呼び出す:
    - `subagent_type`: "design-sync"
    - `description`: "DD間整合性チェック"
    - `prompt`: "source_design: [更新後DDのパス]。更新後の全Design Doc間の矛盾を検出。"
-   - `sync_status: CONFLICTS_FOUND` の場合: design-syncを新しいverifierとしてレビュー裁定を適用し、`apply`の矛盾を担当するtechnical-designer-frontendで修正し、design-syncを再実行し、エビデンスに基づく却下は完了として維持する。
+   - `sync_status: CONFLICTS_FOUND` の場合: design-syncを新しいverifierとしてレビュー対応を適用し、`apply`の矛盾を担当するtechnical-designer-frontendで修正し、design-syncを再実行し、エビデンスに基づく却下は完了として維持する。
 
 4. 承認済みの `apply` 検出事項を更新後の Design Doc に対して再評価し、改訂で既に満たされたものは除外する。残りがない場合はコード側の修正パスをスキップして最終レポートへ進む。
 
@@ -143,9 +143,9 @@ subagents-orchestration-guideの実装後レビューの再実行規則によっ
 
 ### Step 10: 修正結果の解決
 
-Step 8とStep 9の各結果にレビュー裁定を適用する。`prior_disposition: apply`の`maintained`はStep 6へ戻し、該当する品質確認と修正再レビューをもう一度行う。レビュー裁定が収束条件に達した後に進む。
+Step 8とStep 9の各結果にレビュー対応を適用する。`prior_disposition: apply`の`maintained`はStep 6へ戻し、該当する品質確認と修正再レビューをもう一度行う。レビュー対応が収束条件に達した後に進む。
 
-Step 11の前に、保持しているquality-fixer-frontendの証明不足ごとに、Step 7と同じ入力と対象チェックで1回だけ再試行する。`approved`なら証明不足を解消し、新たに未完成の実装が見つかった場合はStep 6〜10へ戻し、`verification_incomplete`が再度返った場合は報告する。再試行によってリポジトリが変わった場合は、変更後のコードに対してStep 8〜10を繰り返してから報告する。
+Step 11の前に、quality-fixer-frontendが検証できなかった各項目を、Step 7と同じ入力と対象チェックで1回だけ再試行する。`approved`なら検証上の制約を解消し、新たに未完成の実装が見つかった場合はStep 6〜10へ戻し、`verification_incomplete`が再度返った場合は報告する。再試行によってリポジトリが変わった場合は、変更後のコードに対してStep 8〜10を繰り返してから報告する。
 
 ### Step 11: 最終レポート
 

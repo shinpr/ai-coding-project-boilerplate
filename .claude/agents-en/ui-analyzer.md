@@ -74,7 +74,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
     {"kind": "css-module-typings|message-catalog-typings|route-typings|other", "command": "generator command", "trigger": "on change|manual", "consumers": ["typecheck", "test", "build", "runtime"]}
   ],
   "focusAreas": [
-    {"fact_id": "src/components/Card.tsx:Card", "area": "coherent UI behavior", "evidence": "path:line or external resource", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "facts to preserve, transform, remove, or exclude", "risk": "observable inconsistency if omitted", "decisionEffect": "UI Spec, contract, or verification decision"}
+    {"fact_id": "src/components/Card.tsx:Card", "area": "coherent UI behavior", "evidence": "path:line or external resource", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "facts to preserve, transform, remove, or mark out of scope", "risk": "observable inconsistency if omitted", "decisionEffect": "UI Spec, contract, or verification decision"}
   ],
   "limitations": ["decision-relevant evidence limitation"]
 }

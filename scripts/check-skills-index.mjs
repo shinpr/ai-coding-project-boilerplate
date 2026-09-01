@@ -17,12 +17,22 @@ function parseSkillsIndex(content) {
     const skillMatch = /^ {2}([\w-]+):\s*$/.exec(line)
     if (skillMatch) {
       currentSkill = skillMatch[1]
-      skills[currentSkill] = { sections: [] }
+      skills[currentSkill] = { sections: [], tags: [] }
       inSections = false
       continue
     }
 
     if (!currentSkill) continue
+
+    const tagsMatch = /^ {4}tags:\s*\[(.*)\]\s*$/.exec(line)
+    if (tagsMatch) {
+      skills[currentSkill].tags = tagsMatch[1]
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+      inSections = false
+      continue
+    }
 
     if (/^ {4}sections:\s*$/.test(line)) {
       inSections = true
@@ -129,13 +139,23 @@ async function checkLanguage(lang) {
     }
   }
 
-  return { lang, skipped: false, failed, total: skillNames.length, reports }
+  return { lang, skipped: false, failed, total: skillNames.length, reports, skills }
+}
+
+function diffSets(expected, actual) {
+  const expectedSet = new Set(expected)
+  const actualSet = new Set(actual)
+  return {
+    missing: [...expectedSet].filter((item) => !actualSet.has(item)).sort(),
+    extra: [...actualSet].filter((item) => !expectedSet.has(item)).sort(),
+  }
 }
 
 async function main() {
   let totalFailed = 0
   let totalChecked = 0
   const allReports = []
+  const results = []
 
   for (const lang of LANGUAGES) {
     const result = await checkLanguage(lang)
@@ -146,6 +166,40 @@ async function main() {
     allReports.push(...result.reports)
     totalFailed += result.failed
     totalChecked += result.total
+    results.push(result)
+  }
+
+  const canonical = results.find((result) => result.lang === 'en')
+  if (!canonical) {
+    allReports.push('[en] ✗ tag comparison requires the en skills-index.yaml')
+    totalFailed++
+  } else {
+    for (const result of results.filter((item) => item.lang !== 'en')) {
+      for (const [name, expected] of Object.entries(canonical.skills)) {
+        const actual = result.skills[name]
+        if (!actual) {
+          allReports.push(`[${result.lang}] ✗ ${name}: missing skill entry required by en skills-index.yaml`)
+          totalFailed++
+          continue
+        }
+
+        const { missing, extra } = diffSets(expected.tags, actual.tags)
+        if (missing.length === 0 && extra.length === 0) {
+          allReports.push(`[${result.lang}] ✓ ${name}: tags match en`)
+          continue
+        }
+
+        allReports.push(`[${result.lang}] ✗ ${name}: tags differ from en`)
+        if (missing.length > 0) allReports.push(`         missing: ${missing.join(', ')}`)
+        if (extra.length > 0) allReports.push(`         extra: ${extra.join(', ')}`)
+        totalFailed++
+      }
+
+      for (const name of Object.keys(result.skills).filter((item) => !canonical.skills[item])) {
+        allReports.push(`[${result.lang}] ✗ ${name}: extra skill entry not present in en skills-index.yaml`)
+        totalFailed++
+      }
+    }
   }
 
   for (const line of allReports) {
@@ -159,8 +213,8 @@ async function main() {
 
   if (totalFailed > 0) {
     console.error(`\ncheck-skills-index: ${totalFailed} skill(s) failed`)
-    console.error('Either update .claude/skills-<lang>/task-analyzer/references/skills-index.yaml to match the SKILL.md headings,')
-    console.error('or update the SKILL.md headings to match the yaml. Order matters.')
+    console.error('Update each skills-index.yaml so headings match its SKILL.md files and non-English tag sets match en.')
+    console.error('Heading order matters; tag order does not.')
     process.exit(1)
   }
 

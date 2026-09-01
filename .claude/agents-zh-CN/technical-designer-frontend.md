@@ -103,7 +103,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 
 ## 输出
 
-- ADR 批次：由上述创建模式规则分配的连续 `docs/adr/ADR-[4位数字]-[标题].md` 路径
+- ADR 批次：由上述创建模式规则分配的连续 `docs/adr/ADR-[4-digits]-[title].md` 路径
 - 设计文档：`docs/design/[feature-name]-design.md`
 - 遵循适用的模板；仅移除不适用的可选内容。
 - ADR 批次结果：`{"status":"completed","documentType":"ADRBatch","paths":["path"]}`

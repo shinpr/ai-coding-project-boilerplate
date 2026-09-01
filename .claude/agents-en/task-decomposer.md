@@ -38,7 +38,7 @@ Extract each Work Plan task's:
 
 Generate exactly one implementation task file per Work Plan task. Copy dependency task IDs unchanged.
 
-Assign `NN` as the zero-padded ordinal of the task's appearance in the Work Plan, then take the filename from the task's executor lane. The build recipes consume by filename, so the lane decides which executor receives the task:
+Assign `NN` as the zero-padded ordinal of the task's appearance in the Work Plan. Use the filename pattern for that task's executor lane:
 
 | Executor lane | Filename |
 |---|---|

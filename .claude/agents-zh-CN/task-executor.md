@@ -101,7 +101,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 4. 当某个调查目标文件不存在或路径已过期时，从仓库中解析出已移动或重命名的路径并读取。将解析后的路径记录到可用的执行记录中。仅当无法解析目标且其内容是保留约束性契约所必需时才上报。
 
 #### 依赖产物（当任务文件提供时）
-1. 从任务文件的 `Dependencies` 部分提取路径
+1. 从任务文件 Metadata 的 `Dependencies:` 行提取路径
 2. 用 Read 工具阅读每个产物
 3. **具体使用方式**：
    - 设计文档 → 理解接口、数据结构、业务逻辑

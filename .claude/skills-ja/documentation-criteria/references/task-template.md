@@ -1,12 +1,12 @@
 # Task: [タスク名]
 
 Metadata:
-- Source Work Plan Task: [P1-T1 — このタスクが実体化する作業計画書タスクの安定ID]
+- Source Work Plan Task: [P1-T1 — このファイルに対応する作業計画書タスクの安定ID]
 - Dependencies: none | [作業計画書のタスクID (docs/plans/tasks/{plan-name}-task-NN.md) -> Deliverable: パス。前提タスクが成果物を生む場合]
 - Executor lane: backend | frontend
 - Rollback boundary: [作業計画書タスクから逐語コピー]
 
-依存関係は、前提タスクを安定IDと、それを収めたタスクファイルの2点で示す。ファイル名の `-task-{NN}` の連番は作業計画書での出現順に従い、`PN-TN` のIDとは独立しているためである。
+依存関係は、前提タスクを、安定IDとそれを記載したタスクファイルの2つで示す。ファイル名の `-task-{NN}` の連番は作業計画書での出現順に従い、`PN-TN` のIDとは独立しているためである。
 
 ## Implementation Outcome
 
@@ -47,15 +47,15 @@ Metadata:
 ## Operation Verification Methods
 
 - **検証手法**: [出典の検証手法、またはリポジトリのコマンド]
-- **成功基準**: [引用したACに紐づく観察可能な結果]
+- **成功基準**: [引用したACに紐づく観測可能な結果]
 - **検証レベル**: [L1: エンドユーザー機能としての動作確認 / L2: 新規テスト追加・パス / L3: ビルドエラーなし — implementation-approach スキルに従う]
 
 ## Verification Focus
 
 （作業計画書が提供している場合のみ本セクションを記載する。）
 
-- **主要な故障**: [作業計画書から変更せずにコピー]
-- **観察チェック**: [作業計画書から変更せずにコピー]
+- **主要な失敗**: [作業計画書から変更せずにコピー]
+- **観測方法**: [作業計画書から変更せずにコピー]
 
 ## Completion Criteria
 
@@ -63,7 +63,7 @@ Metadata:
 - [ ] 引用したACが満たされている
 - [ ] 必要な、焦点を絞ったテストがパス
 - [ ] 動作確認が成功している
-- [ ] （Verification Focus がある場合）観察チェックが主要な故障を検出する
+- [ ] （Verification Focus がある場合）観測方法が主要な失敗を検出する
 
 ## Notes
 

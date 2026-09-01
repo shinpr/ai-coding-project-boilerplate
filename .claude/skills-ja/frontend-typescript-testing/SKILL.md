@@ -73,11 +73,11 @@ description: リポジトリで設定済みのReactテスト・ブラウザハ�
 
 MSWハンドラーのresponse bodyは、それが代表するドメイン型に対して `satisfies` で制約する。契約から乖離したfixtureをコンパイル時に落とし、アプリが実際には受け取らない形に対してテストが通ってしまう状態を防ぐ。
 
-コンポーネントや依存のモックには、テスト対象が実際に消費する範囲だけを型付けする（`Pick<Props, '使用するprop'>`、`Pick<Router, 'push'>`）。インターフェース全体は型付けせず、リテラルは `satisfies` で制約して余分なメンバーや誤った名前をコンパイル時に落とす。
+コンポーネントや依存のモックには、テスト対象が実際に利用する範囲だけを型付けする（`Pick<Props, 'usedProp'>`、`Pick<Router, 'push'>`）。インターフェース全体は型付けせず、リテラルは `satisfies` で制約して余分なメンバーや誤った名前をコンパイル時に落とす。
 
 ## テスト設計パターン
 
-実装詳細ではなくユーザーから見える結果を検証する。クエリはユーザーが知覚するroleとaccessible name（`getByRole`/`getByLabelText`/`getByText`）で行い、`getByTestId` や `container.querySelector` に依存しない。操作は生のイベント発火ではなく、テストごとに `userEvent.setup()` した `userEvent` 経由で行い、ブラウザのイベント列を再現する。操作と非同期アサーションはすべて `await` する — awaitしない操作は更新前のrender結果に対してアサーションすることになるため、非同期UIは `findBy*` で待機する。
+実装詳細ではなくユーザーから見える結果を検証する。クエリはユーザーが認識できるroleとaccessible name（`getByRole`/`getByLabelText`/`getByText`）で行い、`getByTestId` や `container.querySelector` に依存しない。操作は生のイベント発火ではなく、テストごとに `userEvent.setup()` した `userEvent` 経由で行い、ブラウザのイベント列を再現する。操作と非同期アサーションはすべて `await` する — awaitしない操作は更新前のrender結果に対してアサーションすることになるため、非同期UIは `findBy*` で待機する。
 
 正常系だけでなく空・エラー・ローディング/非同期の状態も網羅する。error stateは共有ハンドラ集合を変更せず、そのテスト1件だけMSWハンドラを上書きして作る。
 

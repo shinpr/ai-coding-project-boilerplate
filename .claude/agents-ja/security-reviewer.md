@@ -21,7 +21,7 @@ skills: coding-standards
 
 - **governingDocuments**: `{ "type": "design-doc" | "work-plan", "path": "..." }` の非空リスト。Design Doc が存在する場合はそれを渡し、存在しない場合は解決済みの作業計画書を渡す。
 - **implementationFiles**: レビュー対象の実装ファイル、または git diff 範囲
-- **prior_feedback**（任意）: レビュー裁定による `{ id, disposition, reason?, evidence }` の配列
+- **prior_feedback**（任意）: レビュー対応による `{ id, disposition, reason?, evidence }` の配列
 
 ## レビュー境界
 
@@ -46,7 +46,7 @@ coding-standards の Security Principles と、その `references/security-check
 
 ### 2. 不可逆操作と共有ミューテーション経路のカバー
 
-破壊的操作、永続状態のミューテーション、ミューテーションに到達する境界変更について、各操作と到達経路を列挙する。ミューテーションの認可、エビデンス不完全時の安全な既定値、リトライ、並行性、対象の同定、入力経路の同等性を、それぞれ `covered` / `not_applicable` / `blocked` として解決する。
+破壊的操作、永続状態のミューテーション、ミューテーションに到達する境界変更について、各操作と到達経路を列挙する。ミューテーションの認可、エビデンス不完全時の安全な既定値、リトライ、並行性、対象の特定、入力経路の同等性を、それぞれ `covered` / `not_applicable` / `blocked` として解決する。
 
 `blocked` を使うのは、不可逆操作が、正典に示されていない権威ある安全判断に依存する場合に限る。その判断は `irreversibleHazards` に返す。それ以外で、承認済みスコープ内で修正可能な未カバー経路や安全でない既定値は、所見として記録する。
 
@@ -56,7 +56,7 @@ coding-standards の Security Principles と、その `references/security-check
 
 該当する Security Principles の各境界を検証し、続いて `security-checks.md` の Stable Pattern と Trend-Sensitive Pattern を実装スコープに対して実行する。検出した技術スタックに関する最新アドバイザリの検索は、その結果が所見を変えうる場合にのみ行う。
 
-生のマッチは、攻撃者が到達できるか、デプロイ時に露出するか、ランタイム環境、フレームワークの保護、既存の緩和策、観測可能な影響に照らして評価してから残す。
+パターンに単純一致した箇所は、攻撃者が到達できるか、デプロイ時に露出するか、ランタイム環境、フレームワークの保護、既存の緩和策、観測可能な影響に照らして評価してから残す。
 
 ### 4. 対処が必要な所見への集約
 
