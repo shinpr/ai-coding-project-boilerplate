@@ -24,10 +24,10 @@ Executes applicable quality checks, fixes failures owned by the change, and repo
 
 ## Input Parameters
 
-- **task_file** (optional): Path to the task file being verified. When provided, use its Operation Verification Methods as task-specific checks alongside the checks discovered from code, manifest, and configuration.
-- **direct_scope** (optional): Confirmed execution outcome, affected paths, and verification condition when no task file exists.
-- **runnableCheck** (optional): Test execution evidence. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
-- **qualityCommand** (optional): The project's authoritative quality command (e.g., from frontend-technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual.
+- **task_file** (optional): Path to the task file being verified. When provided, use its Operation Verification Methods as task-specific checks alongside the checks discovered from code, manifest, and configuration
+- **direct_scope** (optional): Confirmed execution outcome, affected paths, and verification condition when no task file exists
+- **runnableCheck** (optional): Test execution evidence. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination
+- **qualityCommand** (optional): The project's authoritative quality command (e.g., from frontend-technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual
 
 ## Execution Gate
 
@@ -94,12 +94,12 @@ Apply fixes per frontend-typescript-rules and frontend-typescript-testing skills
 
 ### Step 5: Converge and Classify Evidence
 
-- A failure caused by the current change or in a dependency required by the accepted outcome → fix it and re-run the check.
-- A verified pre-existing failure unrelated to the accepted outcome and its required dependencies → run every unaffected check and record the command, failure, and baseline evidence in `checksPerformed`.
-- An unavailable tool, service, credential, seed, or environment prerequisite → run every unaffected check and record the method and exact reason in `checksPerformed` and `taskVerification.skipped` when applicable.
-- The implementation is complete and every runnable change-related check passes → return `approved`; the result states exactly what ran and what could not run.
-- Required behavior cannot be determined from the supplied governing and repository evidence → return `verification_incomplete` with the missing governing evidence and affected checks.
-- Confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes, or an irreversible external action requires authorization → return `blocked`.
+- A failure caused by the current change or in a dependency required by the accepted outcome → fix it and re-run the check
+- A verified pre-existing failure unrelated to the accepted outcome and its required dependencies → run every unaffected check and record the command, failure, and baseline evidence in `checksPerformed`
+- An unavailable tool, service, credential, seed, or environment prerequisite → run every unaffected check and record the method and exact reason in `checksPerformed` and `taskVerification.skipped` when applicable
+- The implementation is complete and every runnable change-related check passes → return `approved`; the result states exactly what ran and what could not run
+- Required behavior cannot be determined from the supplied governing and repository evidence → return `verification_incomplete` with the missing governing evidence and affected checks
+- Confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes, or an irreversible external action requires authorization → return `blocked`
 
 ### Step 6: Return JSON Result
 Return one of the following as the final response (see Output Format for schemas):
@@ -152,8 +152,8 @@ Execute `test` script (run all tests with Vitest)
 
 ### stub_detected (Incomplete implementation or hollow test found)
 Returned from two paths, distinguished by `incompleteImplementations[].type`:
-- `type: "missing_logic"` — Step 1 found incomplete implementation in the diff (e.g., TODO/placeholder body, hardcoded return). Returned immediately; quality checks are not executed.
-- `type: "hollow_test"` — Step 3 Substance check found a test cited as AC evidence whose body lacks a substantive assertion, and the fixer could not recover it within auto/manual fix scope. Quality checks have already run up to this point.
+- `type: "missing_logic"` — Step 1 found incomplete implementation in the diff (e.g., TODO/placeholder body, hardcoded return). Returned immediately; quality checks are not executed
+- `type: "hollow_test"` — Step 3 Substance check found a test cited as AC evidence whose body lacks a substantive assertion, and the fixer could not recover it within auto/manual fix scope. Quality checks have already run up to this point
 
 In both cases, return `stub_detected` until the implementation or test body is complete; then verification can run again.
 
@@ -219,8 +219,8 @@ Minimal example (`blocked`):
 ```
 
 **Processing rules** (internal):
-- Change-related error found → fix immediately and continue until `approved`.
-- `blocked` is reserved for a confirmed value-boundary choice or irreversible external action authorization.
+- Change-related error found → fix immediately and continue until `approved`
+- `blocked` is reserved for a confirmed value-boundary choice or irreversible external action authorization
 
 ## Intermediate Progress Report
 

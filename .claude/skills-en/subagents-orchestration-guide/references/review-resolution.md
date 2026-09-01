@@ -8,9 +8,9 @@ Preserve reviewer/verifier evidence ownership so each gate converges on the gove
 
 Route a document-reviewer result in this order:
 
-- a `rejected` verdict first resolves its governing-source conflict through source precedence or the parent workflow's requirement or authority gate before another review, regardless of its issue set.
-- an empty actionable issue set completes the review; downstream consumers receive the reviewed artifact path and pre-existing governing evidence only.
-- a non-empty actionable issue set continues to section 1.
+- a `rejected` verdict first resolves its governing-source conflict through source precedence or the parent workflow's requirement or authority gate before another review, regardless of its issue set
+- an empty actionable issue set completes the review; downstream consumers receive the reviewed artifact path and pre-existing governing evidence only
+- a non-empty actionable issue set continues to section 1
 
 After `rejected` precedence, issue evidence governs routing when `approved` or `needs_revision` differs from the issue set. A completed review creates no author correction or downstream semantic input.
 
@@ -18,8 +18,8 @@ For verifier, design-sync, code-reviewer, security-reviewer, and integration-tes
 
 Use the result producer's declared verification mode:
 
-- **Reconciliation reviewer**: document-reviewer, code-reviewer, security-reviewer, and integration-test-reviewer accept `prior_feedback` and return `prior_feedback_reconciliation` after correction.
-- **Fresh verifier**: code-verifier and design-sync independently report the current state from their original inputs. After a correction is applied from a fresh verifier's result, rerun that verifier and adjudicate the current result; a decline-only result is complete.
+- **Reconciliation reviewer**: document-reviewer, code-reviewer, security-reviewer, and integration-test-reviewer accept `prior_feedback` and return `prior_feedback_reconciliation` after correction
+- **Fresh verifier**: code-verifier and design-sync independently report the current state from their original inputs. After a correction is applied from a fresh verifier's result, rerun that verifier and adjudicate the current result; a decline-only result is complete
 
 ## 1. Assess Every Finding
 
@@ -41,7 +41,7 @@ For each finding record:
 - stable finding ID;
 - disposition;
 - governing basis and concrete evidence;
-- the reason when `decline`.
+- the reason when `decline`
 
 The disposition controls routing. For `apply`, forward the complete reviewer finding object exactly as returned, preserving every field and value, and add only the `apply` disposition. This verbatim transfer keeps correction grounded in reviewed evidence; an orchestrator-authored paraphrase or supplement would become an unreviewed requirement. The author or executor determines the correction from the governing sources and current repository evidence.
 
@@ -52,7 +52,7 @@ Only findings with `apply`, and maintained `apply` findings under section 3, ent
 Select the existing correction owner from the accepted state each finding requires:
 
 - use the owning document author when the implementation already satisfies the confirmed value boundaries and the technical artifact must change;
-- use the executor when the implementation must change to reach the accepted state.
+- use the executor when the implementation must change to reach the accepted state
 
 For a mixed set, complete author-owned corrections first and re-evaluate executor-owned findings against the corrected governing artifact. Pass complete `apply` finding objects verbatim with their dispositions to the selected owner. Invoke a document author as a fresh update call with the original target and those findings; the artifact supplies unaffected context. When an executor is used, preserve its original `task_file` or four direct-scope fields and add the findings as `correction_findings`; correction remains inside the original execution scope.
 
@@ -64,7 +64,7 @@ The correction assessment covers exactly every received item. The reviewer compl
 
 - mark an applied item `resolved` when current evidence shows that the artifact satisfies the finding and preserves the changed boundary; otherwise mark that item `maintained`, citing current evidence;
 - mark a declined finding `withdrawn` when current evidence and governing sources no longer support it; otherwise mark that item `maintained`, citing current evidence;
-- emit exactly one `prior_feedback_reconciliation` entry for every received ID.
+- emit exactly one `prior_feedback_reconciliation` entry for every received ID
 
 Derive the correction re-review status or verdict only from these reconciliation entries. An independent factual verifier may repeat an observed discrepancy; the orchestrator assigns its disposition from governing evidence.
 
@@ -76,7 +76,7 @@ Resolve correction re-review entries by their recorded `prior_disposition`:
 
 - `resolved` and `withdrawn` are complete;
 - `maintained` with `prior_disposition: apply` returns the original finding and the complete reconciliation entry verbatim through the same author or executor path, followed by another correction re-review;
-- `maintained` with `prior_disposition: decline` retains that decline and does not reopen the correction cycle.
+- `maintained` with `prior_disposition: decline` retains that decline and does not reopen the correction cycle
 
 For a fresh verifier, a current finding with `apply` returns through the correction path, a current finding with a retained or newly assigned `decline` is complete, and an empty actionable result is complete.
 
@@ -88,7 +88,7 @@ Handoffs contain this exact set:
 - initial reviewer or verifier inputs unchanged when rechecking;
 - complete `apply` finding objects verbatim, with only their orchestrator dispositions added;
 - the complete reconciliation entry when a maintained `apply` finding returns to its author or executor;
-- declined IDs with reasons and evidence in `prior_feedback` when the next consumer accepts reviewer reconciliation; for a fresh verifier, retain those dispositions in orchestrator state and compare them with the latest result as described above.
+- declined IDs with reasons and evidence in `prior_feedback` when the next consumer accepts reviewer reconciliation; for a fresh verifier, retain those dispositions in orchestrator state and compare them with the latest result as described above
 
 An author handoff contains no other orchestrator-authored semantic content.
 
@@ -101,6 +101,6 @@ After Review Resolution completes for code-verifier output, pass one `verificati
 - start from the latest verifier result after every applied correction and rerun;
 - preserve its `summary`, `inventoryCoverage`, and `limitations` unchanged;
 - preserve each remaining discrepancy unchanged and add its `disposition`, plus `dispositionReason` and `dispositionEvidence` for a decline;
-- include remaining discrepancies only after each carries a resolved `decline` disposition; applied corrections are represented by the latest verifier result.
+- include remaining discrepancies only after each carries a resolved `decline` disposition; applied corrections are represented by the latest verifier result
 
 The document reviewer consumes this resolved evidence but does not own verifier-disposition convergence. Update and reverse-engineer flows may pass the current verifier result as `verification_evidence` before correction resolution when that result is the evidence being reviewed.

@@ -84,7 +84,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 
 ## 完成检查
 
-- 每一条返回的事实都能够改变当前的 UI 结果、契约或验证。
-- 每个 focus area 都具备依据、相关文件和与决策相关的影响。
-- 不可用的依据说明了其影响，而不制造推测性需求。
-- 响应是一个有效的 JSON 对象。
+- 每一条返回的事实都能够改变当前的 UI 结果、契约或验证
+- 每个 focus area 都具备依据、相关文件和与决策相关的影响
+- 不可用的依据说明了其影响，而不制造推测性需求
+- 响应是一个有效的 JSON 对象

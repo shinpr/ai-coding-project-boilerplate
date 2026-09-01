@@ -24,10 +24,10 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 ## 入力パラメータ
 
-- **task_file**（任意）: 検証対象のタスクファイルへのパス。指定された場合、その Operation Verification Methods を、コード・マニフェスト・設定から検出したチェックと併せてタスク固有のチェックとして使用する。
-- **direct_scope**（任意）: タスクファイルが存在しない場合の、確認済みの実行成果・対象パス・検証条件。
-- **runnableCheck**（任意）: テスト実行のエビデンス。指定された場合、ステップ3の検証内容チェックの一次入力として使う。スキーマ: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。未指定時は、スコープ内のテスト本体を走査する。
-- **qualityCommand**（任意）: プロジェクトで正となる品質コマンド（例: frontend-technical-spec やリポジトリの規約由来）。指定された場合、ステップ2はまずこれを実行し、これがカバーしないカテゴリについてのみコマンドを検出する。指定がない場合、ステップ2は従来どおりプロジェクト設定からコマンドを検出する。
+- **task_file**（任意）: 検証対象のタスクファイルへのパス。指定された場合、その Operation Verification Methods を、コード・マニフェスト・設定から検出したチェックと併せてタスク固有のチェックとして使用する
+- **direct_scope**（任意）: タスクファイルが存在しない場合の、確認済みの実行成果・対象パス・検証条件
+- **runnableCheck**（任意）: テスト実行のエビデンス。指定された場合、ステップ3の検証内容チェックの一次入力として使う。スキーマ: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。未指定時は、スコープ内のテスト本体を走査する
+- **qualityCommand**（任意）: プロジェクトで正となる品質コマンド（例: frontend-technical-spec やリポジトリの規約由来）。指定された場合、ステップ2はまずこれを実行し、これがカバーしないカテゴリについてのみコマンドを検出する。指定がない場合、ステップ2は従来どおりプロジェクト設定からコマンドを検出する
 
 ## 実行ゲート
 
@@ -151,8 +151,8 @@ package.json からフロントエンドビルドコマンドを自動検出し�
 
 ### stub_detected（未完成実装または実態のないテストを検出）
 2つの経路から返却される。`incompleteImplementations[].type` で区別する:
-- `type: "missing_logic"` — ステップ1で diff 内に未完成実装を検出（TODO・プレースホルダー本体、ハードコードされた戻り値など）。即座に返却され、品質チェックは実行されない。
-- `type: "hollow_test"` — ステップ3で、AC のエビデンスとして引用されたテストにACを検証するアサーションがなく、修正範囲内では直せなかった場合。ここまでの品質チェックは実行済み。
+- `type: "missing_logic"` — ステップ1で diff 内に未完成実装を検出（TODO・プレースホルダー本体、ハードコードされた戻り値など）。即座に返却され、品質チェックは実行されない
+- `type: "hollow_test"` — ステップ3で、AC のエビデンスとして引用されたテストにACを検証するアサーションがなく、修正範囲内では直せなかった場合。ここまでの品質チェックは実行済み
 
 いずれの場合も、実装またはテスト本体が完成するまでは`stub_detected`を返す。完成後に検証を再実行できる。
 
@@ -218,8 +218,8 @@ package.json からフロントエンドビルドコマンドを自動検出し�
 ```
 
 **処理ルール**（内部）:
-- 変更に起因するエラーを検出したら即座に修正し、`approved` まで継続する。
-- `blocked`は、確認済みの成果、将来状態の要件、対象外のどれを変更するかという選択、または不可逆な外部操作の承認が必要な場合に限る。
+- 変更に起因するエラーを検出したら即座に修正し、`approved` まで継続する
+- `blocked`は、確認済みの成果、将来状態の要件、対象外のどれを変更するかという選択、または不可逆な外部操作の承認が必要な場合に限る
 
 ## 中間進捗レポート
 

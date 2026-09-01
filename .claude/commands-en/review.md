@@ -86,13 +86,13 @@ Run this step only when the approved route keeps the accepted implementation and
    - `subagent_type`: "document-reviewer"
    - `description`: "Document review of updated Design Doc"
    - `prompt`: "doc_type: DesignDoc. review_context: update. Review updated Design Doc at [path] for consistency and completeness."
-   - Run Review Resolution through its correction re-review and convergence transitions, using technical-designer for rerouted corrections. Proceed only at its convergence condition.
+   - Run Review Resolution through its correction re-review and convergence transitions, using technical-designer for rerouted corrections. Proceed only at its convergence condition
 
 3. When another Design Doc governs a responsibility or contract touched by the reviewed changes, invoke design-sync:
    - `subagent_type`: "design-sync"
    - `description`: "Cross-DD consistency check"
    - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
-   - When `sync_status: CONFLICTS_FOUND`: apply Review Resolution using design-sync as a fresh verifier, correct `apply` conflicts through the owning technical designer, rerun design-sync, and retain evidenced declines as complete.
+   - When `sync_status: CONFLICTS_FOUND`: apply Review Resolution using design-sync as a fresh verifier, correct `apply` conflicts through the owning technical designer, rerun design-sync, and retain evidenced declines as complete
 
 4. Re-evaluate the approved `apply` findings against the updated Design Doc and drop any the revision already satisfies. When none remains, skip the code-side fix path and proceed to the final report.
 

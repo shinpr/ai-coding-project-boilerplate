@@ -31,7 +31,7 @@ description: 以自主执行模式执行已生成的前端任务文件
 **当 `$ARGUMENTS` 为空时**，从任务文件自动解析：
 1. 列出 `docs/plans/tasks/` 中与本流程唯一可处理模式匹配的任务文件（依据 subagents-orchestration-guide 的“分层感知智能体路由”，`task-executor-frontend` 拥有该文件名后缀，且不拥有其他后缀）：
    - `{plan-name}-frontend-task-*.md`
-   - 裸的 `{plan-name}-task-*.md` **不属于本流程的处理范围** —— 该文件名由路由表保留给后端，并由后端构建流程拥有。`{plan-name}-backend-task-*.md` 出于相同原因也不属于本流程的处理范围。
+   - 裸的 `{plan-name}-task-*.md` **不属于本流程的处理范围** —— 该文件名由路由表保留给后端，并由后端构建流程拥有。`{plan-name}-backend-task-*.md` 出于相同原因也不属于本流程的处理范围
 2. 在匹配到的文件中，还需排除匹配以下任一模式的每个文件 — 它们来自其他工作流阶段，不是本次运行计划的实现任务：`integration-tests-*-task-*.md`（集成测试附加脚手架）
 3. 对每个剩余文件，通过去掉结尾的 `-frontend-task-{NN}.md` 后缀提取 `{plan-name}`
 4. 当至少有一个任务文件匹配时，取任务文件 mtime 最新的那个前缀，工作计划即为 `docs/plans/{plan-name}.md`；并列时取字典序最后的 `{plan-name}`

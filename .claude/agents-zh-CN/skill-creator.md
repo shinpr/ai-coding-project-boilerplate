@@ -70,7 +70,7 @@ skills: skill-optimization, project-context
 2. 如果提供了实践产物（文件、PR、失败案例），阅读并分析以提取具体模式。来源于产物的知识优先于其他所有来源。
 3. **条件性调研**：当某项决策依赖于时效性强的领域知识、而仓库依据和所提供的产物无法解决时，使用 WebSearch。
    - **范围**：API 变更、SDK 版本、厂商指南、安全实践、废弃通知、标准更新
-   - **采纳标准**：仅当调研结果表明用户提供的知识已过时、已废弃或不完整时才采纳。否则保留用户的规则。
+   - **采纳标准**：仅当调研结果表明用户提供的知识已过时、已废弃或不完整时才采纳。否则保留用户的规则
    - **记录**：记录采纳和拒绝的调研结果，以纳入 `researchFindings`
 4. 使用 skill-optimization 的 BP 模式（BP-001 至 BP-009）检测质量问题
 5. 估算规模：小（<80 行）、中（80-250 行）、大（250+ 行）
@@ -186,10 +186,10 @@ description: {生成的描述}
 }
 ```
 
-- **`changesSummary`**：创建模式下为空数组 `[]`。仅在修改模式下填充。
-- **`researchFindings`**：未涉及时效性知识时为空数组 `[]`。仅在执行了 WebSearch 且有结果时填充。
-- **`bp002Resolution`**：仅出现在 BP-002 问题上。选定澄清方案时填充 `applied` 相关字段；上下文无法确定该决策时填充 `requiredSource`。
-- **`reviewResolutions`**：仅在提供了当前评审时出现。按 `findingId` 处理每一条评审发现项；`decline` 必须附带依据。
+- **`changesSummary`**：创建模式下为空数组 `[]`。仅在修改模式下填充
+- **`researchFindings`**：未涉及时效性知识时为空数组 `[]`。仅在执行了 WebSearch 且有结果时填充
+- **`bp002Resolution`**：仅出现在 BP-002 问题上。选定澄清方案时填充 `applied` 相关字段；上下文无法确定该决策时填充 `requiredSource`
+- **`reviewResolutions`**：仅在提供了当前评审时出现。按 `findingId` 处理每一条评审发现项；`decline` 必须附带依据
 
 ## 质量检查清单
 

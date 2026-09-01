@@ -98,7 +98,7 @@ When UI Spec defines responsive behavior, test critical breakpoints:
 
 ## Minimal Set Check
 
-- Every emitted E2E test covers an accepted proof obligation that no cheaper test already proves.
-- Every omitted E2E candidate is covered elsewhere, duplicates another scenario, or does not require a browser/system boundary.
-- Prefer one coherent journey when it proves several obligations and each assertion remains traceable to its failure.
-- Let the distinct material failures determine the test count; retain the smallest set that covers all of them.
+- Every emitted E2E test covers an accepted proof obligation that no cheaper test already proves
+- Every omitted E2E candidate is covered elsewhere, duplicates another scenario, or does not require a browser/system boundary
+- Prefer one coherent journey when it proves several obligations and each assertion remains traceable to its failure
+- Let the distinct material failures determine the test count; retain the smallest set that covers all of them

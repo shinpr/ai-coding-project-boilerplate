@@ -9,12 +9,12 @@ This skill owns document routing: which durable decisions the change needs to re
 
 ## What Each Document Fixes
 
-- **PRD** — Fixes the business outcome, current requirements, exclusions, and acceptance criteria that later work traces to. Its AC IDs are stable traceability keys for design and verification. Implementation design belongs in the Design Doc, technical option selection in an ADR, and task order in the Work Plan.
-- **ADR** — Fixes one durable technical choice and the materially distinct options it beat, allowing later work to distinguish an accepted decision from an incidental implementation. Complete implementation design belongs in the Design Doc.
-- **UI Spec** — Fixes screen structure, transitions, component and state contracts, interactions, and visual acceptance before implementation. Create one only while those decisions remain open; reuse an approved UI Spec or proceed to the Design Doc when representative repository evidence already determines them.
-- **Design Doc** — Records the complete implementation design for the confirmed scope: responsibilities, flows, contracts, change impact, and verification boundaries. Implementation treats it as the primary technical baseline, so implementation does not silently invent missing How. When repository evidence invalidates technical How while confirmed outcome, desired-future requirements, and non-goals remain true, correct the implementation and the affected technical artifact through their owning workflow without reopening product requirements.
-- **Work Plan** — Fixes dependency order, task boundaries, executable verification, and the earliest useful proof point. It references design details instead of reproducing them.
-- **Task File** — Carries one executable Work Plan outcome, its governing sources, investigation starting points, write responsibility, and observable verification into implementation.
+- **PRD** — Fixes the business outcome, current requirements, exclusions, and acceptance criteria that later work traces to. Its AC IDs are stable traceability keys for design and verification. Implementation design belongs in the Design Doc, technical option selection in an ADR, and task order in the Work Plan
+- **ADR** — Fixes one durable technical choice and the materially distinct options it beat, allowing later work to distinguish an accepted decision from an incidental implementation. Complete implementation design belongs in the Design Doc
+- **UI Spec** — Fixes screen structure, transitions, component and state contracts, interactions, and visual acceptance before implementation. Create one only while those decisions remain open; reuse an approved UI Spec or proceed to the Design Doc when representative repository evidence already determines them
+- **Design Doc** — Records the complete implementation design for the confirmed scope: responsibilities, flows, contracts, change impact, and verification boundaries. Implementation treats it as the primary technical baseline, so implementation does not silently invent missing How. When repository evidence invalidates technical How while confirmed outcome, desired-future requirements, and non-goals remain true, correct the implementation and the affected technical artifact through their owning workflow without reopening product requirements
+- **Work Plan** — Fixes dependency order, task boundaries, executable verification, and the earliest useful proof point. It references design details instead of reproducing them
+- **Task File** — Carries one executable Work Plan outcome, its governing sources, investigation starting points, write responsibility, and observable verification into implementation
 
 ## Creation Decision Matrix
 

@@ -19,7 +19,7 @@ skills: coding-standards
 
 ## 入力
 
-- **governingDocuments**: `{ "type": "design-doc" | "work-plan", "path": "..." }` の非空リスト。Design Doc が存在する場合はそれを渡し、存在しない場合は解決済みの作業計画書を渡す。
+- **governingDocuments**: `{ "type": "design-doc" | "work-plan", "path": "..." }` の非空リスト。Design Doc が存在する場合はそれを渡し、存在しない場合は解決済みの作業計画書を渡す
 - **implementationFiles**: レビュー対象の実装ファイル、または git diff 範囲
 - **prior_feedback**（任意）: レビュー対応による `{ id, disposition, reason?, evidence }` の配列
 
@@ -111,16 +111,16 @@ coding-standards の Security Principles と、その `references/security-check
 
 ## ステータス規則
 
-- `approved`: 対処が必要な所見が残っていない。
-- `needs_revision`: スコープ内での修正を要する所見が1件以上ある。
-- `blocked`: 正典となる入力を利用できない、実際に使われているシークレットの失効またはローテーションが必要、または不可逆操作に承認が必要である。
+- `approved`: 対処が必要な所見が残っていない
+- `needs_revision`: スコープ内での修正を要する所見が1件以上ある
+- `blocked`: 正典となる入力を利用できない、実際に使われているシークレットの失効またはローテーションが必要、または不可逆操作に承認が必要である
 
 ## 完了チェック
 
-- 正典となる入力と、該当する各セキュリティ境界を確認した。
-- 生のパターンマッチを、攻撃者の到達可能性、デプロイ時の露出、ランタイム、フレームワーク、緩和策、観測可能な影響のエビデンスで絞り込んだ。
-- `findings` には、修正を要する `confirmed_risk` または `defense_gap` のみが含まれる。
-- 各不可逆操作と到達経路について安全上の処理が解決されている。
-- 各所見に安定ID・location・rationale・必要十分な最小の修正があり、任意の堅牢化と多層防御を含んでいない。
-- prior_feedback が渡された場合、受領した各IDがちょうど1回現れる。
-- レスポンスが妥当な JSON オブジェクト1個である。
+- 正典となる入力と、該当する各セキュリティ境界を確認した
+- 生のパターンマッチを、攻撃者の到達可能性、デプロイ時の露出、ランタイム、フレームワーク、緩和策、観測可能な影響のエビデンスで絞り込んだ
+- `findings` には、修正を要する `confirmed_risk` または `defense_gap` のみが含まれる
+- 各不可逆操作と到達経路について安全上の処理が解決されている
+- 各所見に安定ID・location・rationale・必要十分な最小の修正があり、任意の堅牢化と多層防御を含んでいない
+- prior_feedback が渡された場合、受領した各IDがちょうど1回現れる
+- レスポンスが妥当な JSON オブジェクト1個である

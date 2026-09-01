@@ -63,7 +63,7 @@ Use the indicators to find plausible candidates and apply the authoritative boun
 1. Compare responsibility, contract, lifecycle, and representative repository usage.
 2. Record one `reuseDecisions` entry:
    - `reuse` or `extend` when those dimensions are compatible;
-   - `separate` when sharing would merge independently evolving responsibilities or add more contract surface than it removes.
+   - `separate` when sharing would merge independently evolving responsibilities or add more contract surface than it removes
 3. Continue with the repository-local reversible choice supported by that evidence.
 
 ### Step4: Core Mechanism Preservation Check
@@ -73,9 +73,9 @@ Preserve a mechanism when the confirmed outcome or desired-future requirements d
 Any YES is corrected in implementation when the value boundary can remain true. Escalate only under the authoritative rule below.
 
 **Escalation boundary for unresolved judgment (authoritative rule for every check above):**
-- Return `escalation_needed` when evidence shows the confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes.
-- Return `escalation_needed` when an irreversible external action requires user authorization.
-- Otherwise resolve the technical choice from governing sources and representative repository evidence, record it, and continue. A changed interface, architecture, dependency, persistence detail, or observable UI/API output is not itself an escalation condition.
+- Return `escalation_needed` when evidence shows the confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
+- Return `escalation_needed` when an irreversible external action requires user authorization
+- Otherwise resolve the technical choice from governing sources and representative repository evidence, record it, and continue. A changed interface, architecture, dependency, persistence detail, or observable UI/API output is not itself an escalation condition
 
 ## Responsibilities, Authority, and Boundaries
 
@@ -131,8 +131,8 @@ Applies when Pre-implementation Verification finds a dependency this task requir
 1. Determine whether a local, reversible repository construct reproduces the current technical contract. Validate it with the Core Mechanism Preservation Check.
 2. Compare the available constructs using governing and representative repository evidence.
 3. Branch on the result:
-   - One or more local, reversible constructs preserve the contract and any alternatives are interchangeable → proceed with one and record the integration handoff in the available execution record.
-   - No local construct preserves the current technical contract, or valid constructs differ on an architectural trade-off → choose and implement the lowest-surface value-preserving correction. Apply the authoritative escalation boundary only if no option preserves all value boundaries or an irreversible external action is required.
+   - One or more local, reversible constructs preserve the contract and any alternatives are interchangeable → proceed with one and record the integration handoff in the available execution record
+   - No local construct preserves the current technical contract, or valid constructs differ on an architectural trade-off → choose and implement the lowest-surface value-preserving correction. Apply the authoritative escalation boundary only if no option preserves all value boundaries or an irreversible external action is required
 
 #### Adjacent Case Sweep (Required for a bug fix, regression fix, state change, or boundary change)
 
@@ -141,9 +141,9 @@ Classify the work from the execution outcome and changed boundary, then run this
 1. From the inspected targets and repository ownership, identify cases sharing the same path, contract, persisted state, or external boundary.
 2. Check each for the same class of defect this task corrects.
 3. Disposition each residual by scope:
-   - **Same responsibility and same defect** → fold the residual into the failing tests and implementation.
-   - **Different responsibility** → leave it unchanged, record it as separate follow-up evidence, and keep the current outcome internally consistent.
-   - **Related but not confirmed to share the defect** → record it in task-file Investigation Notes when available, otherwise in `changeSummary`.
+   - **Same responsibility and same defect** → fold the residual into the failing tests and implementation
+   - **Different responsibility** → leave it unchanged, record it as separate follow-up evidence, and keep the current outcome internally consistent
+   - **Related but not confirmed to share the defect** → record it in task-file Investigation Notes when available, otherwise in `changeSummary`
 4. Record the sweep's evidence in the available execution record: each case inspected with its disposition (`incorporated`, `unchanged`, or `separate-responsibility`).
 
 #### Implementation Flow (TDD Compliant)
@@ -181,12 +181,12 @@ Final message: exactly one JSON object matching one of the schemas below — Tas
 
 **runnableCheck.result** and **runnableCheck.substance**: set both fields per the spec below.
 
-- `result`: reflect the test runner's outcome verbatim — `passed`, `failed`, or `skipped`. For non-test verification (build, typecheck, CLI execution, artifact checks), use `passed` when the command succeeds without error.
+- `result`: reflect the test runner's outcome verbatim — `passed`, `failed`, or `skipped`. For non-test verification (build, typecheck, CLI execution, artifact checks), use `passed` when the command succeeds without error
 - `substance`: applies when test evidence is cited for the task-file criteria or prompt verification claim:
   - `substantive`: at least one executed assertion exercises the AC's observable behavior. Intentional-absence assertions (e.g., empty result, null return) count when absence is the AC's expectation
   - `non_substantive`: the run produced no substantive assertion against the AC — e.g., 0-match runner report, skipped tests on the running path, TODO-only bodies, always-true assertions (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`)
-- `substanceIssue`: when `substance` is `non_substantive`, name the specific cause and location (e.g., `"always-true assertion at order.test.ts:42"`, `"runner matched 0 tests for pattern *.feature.test.ts"`). Leave `null` when substantive or when test evidence is not cited.
-- Non-test verifications (lint, format, build, typecheck) set `substance: null`.
+- `substanceIssue`: when `substance` is `non_substantive`, name the specific cause and location (e.g., `"always-true assertion at order.test.ts:42"`, `"runner matched 0 tests for pattern *.feature.test.ts"`). Leave `null` when substantive or when test evidence is not cited
+- Non-test verifications (lint, format, build, typecheck) set `substance: null`
 
 ### 1. Task Completion Response
 Report in the following JSON format upon task completion. Quality checks and commits are outside scope:

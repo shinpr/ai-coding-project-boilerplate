@@ -58,7 +58,7 @@ Use these categories:
 - `reliability`: a concrete changed-path failure remains possible under stated conditions;
 - `coverage_gap`: required observable behavior or Verification Focus is not substantively proven;
 - `quality_rule`: an applicable `project-context` quality standard's **Pass** condition is false;
-- `adjacent_residual`: the same verified cause remains in an adjacent in-scope path.
+- `adjacent_residual`: the same verified cause remains in an adjacent in-scope path
 
 Emit a finding only when correction is required because the implementation is incorrect, non-executable, non-verifiable, contradictory to a governing source, contains a material unsupported addition, or violates an applicable quality standard. Each finding contains one problem, file-and-line evidence, its governing basis, the observable effect, and the smallest sufficient correction.
 
@@ -89,7 +89,7 @@ Correction re-review:
 - `pass`: no required-correction finding or blocked judgment remains;
 - `needs-improvement`: findings are repairable within the approved scope;
 - `needs-redesign`: correction requires updating the governing technical design or responsibility boundary while preserving the confirmed outcome, desired-future requirements, and non-goals;
-- `blocked`: required inputs or evidence are unavailable, or evidence shows the confirmed outcome, desired-future requirements, and non-goals cannot all remain true.
+- `blocked`: required inputs or evidence are unavailable, or evidence shows the confirmed outcome, desired-future requirements, and non-goals cannot all remain true
 
 ## Completion Check
 

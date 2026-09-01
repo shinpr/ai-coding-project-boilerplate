@@ -50,7 +50,7 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    Invoke work-planner using Agent tool:
    - `subagent_type`: "work-planner"
    - `description`: "Work plan creation"
-   - If test skeleton generation ran in Step 2, pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task.
+   - If test skeleton generation ran in Step 2, pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task
      - Append placement guidance: "Integration tests are created simultaneously with each phase implementation. fixture-e2e tests are created alongside the UI feature phase. service-integration-e2e tests are executed after their required services exist."
    - If test skeletons were not generated:
      `prompt`: "Create work plan from Design Doc at [path]."
@@ -68,8 +68,8 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
      - `rejected`: apply the parent requirement gate
 
 5. **Present for Approval**
-   - Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4.
-   - Record unresolved technical evidence or external dependencies with their affected task and verification boundary. Return to the requirements gate only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true without a user choice.
+   - Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4
+   - Record unresolved technical evidence or external dependencies with their affected task and verification boundary. Return to the requirements gate only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true without a user choice
 
 Create a work plan from the selected design document, clarifying specific implementation steps and risks.
 

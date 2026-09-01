@@ -33,17 +33,17 @@ Everything lives under `tests/e2e/`: test files at its root, page objects in `pa
 
 ## Test Structure Rules
 
-- Extract a page object per the Rule of Three: keep interactions inline on first use, consider extracting on the second, and extract on the third substantially shared interaction. Extract earlier only when the shared interaction is itself complex (multi-step, waits on intermediate state) or when a representative page object for that page already exists — then follow it.
-- Put shared setup that every test in a file needs — authentication in particular — in a fixture rather than repeating the steps per test, so a test body contains only the behavior it verifies.
+- Extract a page object per the Rule of Three: keep interactions inline on first use, consider extracting on the second, and extract on the third substantially shared interaction. Extract earlier only when the shared interaction is itself complex (multi-step, waits on intermediate state) or when a representative page object for that page already exists — then follow it
+- Put shared setup that every test in a file needs — authentication in particular — in a fixture rather than repeating the steps per test, so a test body contains only the behavior it verifies
 
 ## What to Assert
 
 Assert the state the user can observe after the journey, not the steps taken to get there:
 
-- **Navigation** — the URL or the landmark that identifies the destination, not both as separate proofs of the same transition.
-- **Rendered outcome** — the specific content the journey was supposed to produce, identified by role and accessible name. A visibility check on a container proves the container rendered, not that it holds the right thing.
-- **Absence** — when the expectation is that something is gone or was never shown, assert absence explicitly rather than asserting that something else is present.
-- **Persisted effect** — when a requirement or contract states that the change survives a reload or a fresh navigation, assert it there too, since an in-page update can pass while persistence fails. Transient state with no such contract — filter selections, modal open/close, wizard progress — is asserted in place; adding a reload assertion there would test a guarantee the feature never made.
+- **Navigation** — the URL or the landmark that identifies the destination, not both as separate proofs of the same transition
+- **Rendered outcome** — the specific content the journey was supposed to produce, identified by role and accessible name. A visibility check on a container proves the container rendered, not that it holds the right thing
+- **Absence** — when the expectation is that something is gone or was never shown, assert absence explicitly rather than asserting that something else is present
+- **Persisted effect** — when a requirement or contract states that the change survives a reload or a fresh navigation, assert it there too, since an in-page update can pass while persistence fails. Transient state with no such contract — filter selections, modal open/close, wizard progress — is asserted in place; adding a reload assertion there would test a guarantee the feature never made
 
 ## Fixture-Based Backend (fixture-e2e)
 

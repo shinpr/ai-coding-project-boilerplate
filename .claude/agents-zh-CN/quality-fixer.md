@@ -25,10 +25,10 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 ## 输入参数
 
-- **task_file**（可选）：被验证的任务文件路径。提供时，将其 Operation Verification Methods 与从代码、清单和配置中发现的检查一并作为任务专属检查使用。
-- **direct_scope**（可选）：在没有任务文件时，已确认的执行结果、受影响路径和验证条件。
-- **runnableCheck**（可选）：测试执行依据。提供时，作为实质性检查（步骤 3）的主要输入。schema：`{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。缺省时，智能体在范围内自行扫描测试主体以判定实质性。
-- **qualityCommand**（可选）：项目的权威质量命令（例如来自 technical-spec 或仓库约定）。提供时，步骤 2 先运行该命令，仅对其未覆盖的类别检测命令。缺省时，步骤 2 照常从项目配置中发现命令。
+- **task_file**（可选）：被验证的任务文件路径。提供时，将其 Operation Verification Methods 与从代码、清单和配置中发现的检查一并作为任务专属检查使用
+- **direct_scope**（可选）：在没有任务文件时，已确认的执行结果、受影响路径和验证条件
+- **runnableCheck**（可选）：测试执行依据。提供时，作为实质性检查（步骤 3）的主要输入。schema：`{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。缺省时，智能体在范围内自行扫描测试主体以判定实质性
+- **qualityCommand**（可选）：项目的权威质量命令（例如来自 technical-spec 或仓库约定）。提供时，步骤 2 先运行该命令，仅对其未覆盖的类别检测命令。缺省时，步骤 2 照常从项目配置中发现命令
 
 ## 执行条件
 
@@ -95,12 +95,12 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 ### 步骤 5：收敛并归类依据
 
-- 由当前变更引起的失败，或已确认成果所需依赖中的失败 → 修复并重新运行该检查。
-- 与已确认成果及其所需依赖无关的、已验证的预先存在的失败 → 运行每一项不受影响的检查，并在 `checksPerformed` 中记录命令、失败情况和基线依据。
-- 不可用的工具、服务、凭据、种子数据或环境前提 → 运行每一项不受影响的检查，并在 `checksPerformed` 及适用时的 `taskVerification.skipped` 中记录方法和确切原因。
-- 实现已完成且每一项可运行的、与变更相关的检查都通过 → 返回 `approved`；结果准确说明哪些已运行、哪些无法运行。
-- 无法从所提供的约束依据和仓库依据中确定所需行为 → 返回 `verification_incomplete`，并说明缺失的约束依据和受影响的检查。
-- 已确认的成果、目标状态需求和非目标无法同时成立，需要用户选择变更哪一项，或某项不可逆的外部操作需要授权 → 返回 `blocked`。
+- 由当前变更引起的失败，或已确认成果所需依赖中的失败 → 修复并重新运行该检查
+- 与已确认成果及其所需依赖无关的、已验证的预先存在的失败 → 运行每一项不受影响的检查，并在 `checksPerformed` 中记录命令、失败情况和基线依据
+- 不可用的工具、服务、凭据、种子数据或环境前提 → 运行每一项不受影响的检查，并在 `checksPerformed` 及适用时的 `taskVerification.skipped` 中记录方法和确切原因
+- 实现已完成且每一项可运行的、与变更相关的检查都通过 → 返回 `approved`；结果准确说明哪些已运行、哪些无法运行
+- 无法从所提供的约束依据和仓库依据中确定所需行为 → 返回 `verification_incomplete`，并说明缺失的约束依据和受影响的检查
+- 已确认的成果、目标状态需求和非目标无法同时成立，需要用户选择变更哪一项，或某项不可逆的外部操作需要授权 → 返回 `blocked`
 
 ### 步骤 6：返回 JSON 结果
 将以下之一作为最终响应返回（schema 见输出格式）：
@@ -117,8 +117,8 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 ### stub_detected（发现未完成实现或空洞测试）
 由两条路径返回，通过 `incompleteImplementations[].type` 区分：
-- `type: "missing_logic"` — 步骤 1 在差异中发现未完成实现（例如 TODO/占位符主体、硬编码返回）。立即返回；不执行质量检查。
-- `type: "hollow_test"` — 步骤 3 实质性检查发现某个被引用为 AC 依据的测试，其主体缺乏实质性断言，且 fixer 无法在自动/手动修复范围内补救。此时质量检查已运行到该步骤为止。
+- `type: "missing_logic"` — 步骤 1 在差异中发现未完成实现（例如 TODO/占位符主体、硬编码返回）。立即返回；不执行质量检查
+- `type: "hollow_test"` — 步骤 3 实质性检查发现某个被引用为 AC 依据的测试，其主体缺乏实质性断言，且 fixer 无法在自动/手动修复范围内补救。此时质量检查已运行到该步骤为止
 
 两种情况下，在实现或测试主体完成之前均返回 `stub_detected`；完成后可重新进行验证。
 
@@ -184,8 +184,8 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 ```
 
 **处理规则**（内部）：
-- 发现与变更相关的错误 → 立即修复并继续，直到 `approved`。
-- `blocked` 仅保留给已确认的价值边界选择或不可逆的外部操作授权。
+- 发现与变更相关的错误 → 立即修复并继续，直到 `approved`
+- `blocked` 仅保留给已确认的价值边界选择或不可逆的外部操作授权
 
 ## 中间进度报告
 

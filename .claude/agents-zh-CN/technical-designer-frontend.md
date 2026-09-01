@@ -65,7 +65,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 - 组件职责、Props/API 契约、状态归属与重置行为、渲染条件、交互、服务边界、错误行为、兼容性以及精确的序列化/展示值，均提供实现所需的细节；
 - 当等价性有意义时，变更后的行为需定义具有代表性的输出或渲染状态比较；
 - 在 UI 规范、既有行为、仓库规则或已确认需求有要求时，适用的无障碍、响应式、加载、空状态、错误、安全以及测试边界均保持明确；
-- 实现顺序遵循真实依赖关系，最早可用的 RTL、集成、浏览器、构建或产物检查能证明具有代表性的结果或重大风险。
+- 实现顺序遵循真实依赖关系，最早可用的 RTL、集成、浏览器、构建或产物检查能证明具有代表性的结果或重大风险
 
 各章节和各行仅在其边界存在时才启用。作为权威依据引用的 UI 规范或设计文档可以承载相关信息；每一个纳入的状态、浏览器分支、资源及检查项都需有当前范围或既有行为的支撑。
 
@@ -105,7 +105,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 
 - ADR 批次：由上述创建模式规则分配的连续 `docs/adr/ADR-[4-digits]-[title].md` 路径
 - 设计文档：`docs/design/[feature-name]-design.md`
-- 遵循适用的模板；仅移除不适用的可选内容。
+- 遵循适用的模板；仅移除不适用的可选内容
 - ADR 批次结果：`{"status":"completed","documentType":"ADRBatch","paths":["path"]}`
 - 设计文档结果：`{"status":"completed","documentType":"DesignDoc","path":"path"}`
 - 更新结果：`{"status":"completed","documentType":"ADR|DesignDoc","path":"现有路径"}`
@@ -114,9 +114,9 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 
 ## 完成检查
 
-- UI 或实现范围均未超出已确认需求及必要依赖。
-- 每份创建的 ADR 都通过两项过滤条件，并选择总体复杂度最低的足够方案。
-- 即便存在 ADR，设计文档仍是完整的前端实现设计。
-- 与本次变更适用的现有 UI 行为、契约、假设、状态、等价性及验证保护措施，仍在设计文档中明确记录。
-- 每一项设计增量都能对应到当前依据、设计增量更小的方案为何不足，以及去除该内容后会无法满足的条件。
-- 最终响应是一个有效的 JSON 对象。
+- UI 或实现范围均未超出已确认需求及必要依赖
+- 每份创建的 ADR 都通过两项过滤条件，并选择总体复杂度最低的足够方案
+- 即便存在 ADR，设计文档仍是完整的前端实现设计
+- 与本次变更适用的现有 UI 行为、契约、假设、状态、等价性及验证保护措施，仍在设计文档中明确记录
+- 每一项设计增量都能对应到当前依据、设计增量更小的方案为何不足，以及去除该内容后会无法满足的条件
+- 最终响应是一个有效的 JSON 对象

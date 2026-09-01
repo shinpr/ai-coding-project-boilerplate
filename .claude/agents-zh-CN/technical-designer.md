@@ -38,7 +38,7 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 - `codebase_analysis.decisionMaterials.invalidations` 排除不可行方案；
 - `codebase_analysis.decisionMaterials.verification` 约束证明方式；
 - `focusAreas` 通过明确的处置结论保留既有行为；
-- 适用的 `dataModel`、`dataTransformationPipelines` 和 `qualityAssurance` 条目提供数据、等价性和检查方面的细节。
+- 适用的 `dataModel`、`dataTransformationPipelines` 和 `qualityAssurance` 条目提供数据、等价性和检查方面的细节
 
 只审视那些可能改变复用判断、方案有效性、已选决策、实现契约或验证方式的缺口。对于实质性论断，需引用仓库路径、命令、已接受文档或提供的权威来源。
 
@@ -72,7 +72,7 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 - 新增或变更的数据结构记录其复用/扩展/新建的判断；
 - 行为替换或转换需定义具有代表性的相同输入、预期输出，以及覆盖适用流水线各步骤的比较方法；
 - 适用的安全和测试边界保持明确；
-- 实现顺序遵循真实依赖关系，且最早可行的验证要证明当前风险最高的假设或具有代表性的结果。
+- 实现顺序遵循真实依赖关系，且最早可行的验证要证明当前风险最高的假设或具有代表性的结果
 
 各节和各行仅在其对应边界存在时才启用。权威的引用产物可以承载相应信息；每个被纳入的小节都包含与决策、实现或验证相关的内容。
 
@@ -112,7 +112,7 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 
 - ADR 批次：由上述创建模式规则分配的连续 `docs/adr/ADR-[4-digits]-[title].md` 路径
 - 设计文档：`docs/design/[feature-name]-design.md`
-- 遵循适用的模板；仅移除不适用的可选内容。
+- 遵循适用的模板；仅移除不适用的可选内容
 - ADR 批次结果：`{"status":"completed","documentType":"ADRBatch","paths":["path"]}`
 - 设计文档结果：`{"status":"completed","documentType":"DesignDoc","path":"path"}`
 - 更新结果：`{"status":"completed","documentType":"ADR|DesignDoc","path":"现有路径"}`
@@ -121,9 +121,9 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 
 ## 完成检查
 
-- 任何实现范围都不超出已确认的需求及必需的依赖。
-- 每份创建的 ADR 都通过两项过滤条件，并选择总体复杂度最低的足够方案。
-- 即使存在 ADR，设计文档仍是完整的实现设计。
-- 与本次变更相适用的既有行为、契约、假设、等价性和验证方面的保护措施，仍在设计文档中明确记录。
-- 每一项设计增量都能对应到当前依据、设计增量更小的方案为何不足，以及去除该内容后会无法满足的条件。
-- 最终响应是一个有效的 JSON 对象。
+- 任何实现范围都不超出已确认的需求及必需的依赖
+- 每份创建的 ADR 都通过两项过滤条件，并选择总体复杂度最低的足够方案
+- 即使存在 ADR，设计文档仍是完整的实现设计
+- 与本次变更相适用的既有行为、契约、假设、等价性和验证方面的保护措施，仍在设计文档中明确记录
+- 每一项设计增量都能对应到当前依据、设计增量更小的方案为何不足，以及去除该内容后会无法满足的条件
+- 最终响应是一个有效的 JSON 对象

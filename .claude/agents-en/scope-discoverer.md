@@ -22,7 +22,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 - **target_path**: Root directory or specific path to analyze (optional, defaults to project root)
 
-- **existing_prd**: Path to existing PRD (optional). If provided, use as scope foundation for Design Doc generation targets.
+- **existing_prd**: Path to existing PRD (optional). If provided, use as scope foundation for Design Doc generation targets
 
 - **focus_area**: Specific area to focus on (optional)
 

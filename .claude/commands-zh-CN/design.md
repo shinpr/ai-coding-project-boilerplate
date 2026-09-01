@@ -79,7 +79,7 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 - `confirmed_requirement_context`；
 - `structural_scale`；
 - `adr_paths: [已接受的路径，或 []]`；
-- `codebase_analysis: [第 2 步的完整 JSON，原样不变]`。
+- `codebase_analysis: [第 2 步的完整 JSON，原样不变]`
 
 设计文档拥有完整的实现设计，并保留 documentation-criteria 模板中所有适用的下游防护措施。
 
@@ -93,9 +93,9 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 调用 `document-reviewer`，传入 `doc_type: DesignDoc`、`target`、`review_context: creation`、作为 `requirements_verbatim` 的原始用户需求、`confirmed_requirement_context`、`codebase_analysis`，以及来自第 6 步的 `verification_evidence`。
 
-- `approved`：继续。
-- `needs_revision`：应用评审裁定，通过一次全新的 technical-designer 调用、传入现有路径和完整的、处置为 `apply` 的发现项进行更新，然后针对受影响的边界重新运行第 6-7 步。
-- `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户。
+- `approved`：继续
+- `needs_revision`：应用评审裁定，通过一次全新的 technical-designer 调用、传入现有路径和完整的、处置为 `apply` 的发现项进行更新，然后针对受影响的边界重新运行第 6-7 步
+- `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 
 调用 `design-sync` 以检查与其他设计文档的一致性，并对可处理的冲突应用评审裁定。当只存在一份设计文档时，明确地报告 `SKIPPED`。
 
@@ -103,9 +103,9 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 ## 完成标准
 
-- 已从成果和职责边界确认范围与结构规模。
-- ADR 仅对同时通过两项筛选条件的决策点存在，且完整批次经过了一次评审和批准。
-- 无论是否需要 ADR，都存在一份设计文档。
-- 适用的既有行为、契约、前提、等价性和验证防护措施都进入了设计文档。
-- 评审裁定仅将 `needs_revision` 的问题转入修正工作。
-- 所有停止点都得到了用户的明确确认。
+- 已从成果和职责边界确认范围与结构规模
+- ADR 仅对同时通过两项筛选条件的决策点存在，且完整批次经过了一次评审和批准
+- 无论是否需要 ADR，都存在一份设计文档
+- 适用的既有行为、契约、前提、等价性和验证防护措施都进入了设计文档
+- 评审裁定仅将 `needs_revision` 的问题转入修正工作
+- 所有停止点都得到了用户的明确确认

@@ -33,7 +33,7 @@ Return a fact only when it can:
 - eliminate or materially improve a technical option;
 - preserve or intentionally change an observable contract;
 - identify a total-complexity or maintainability difference; or
-- select a verification boundary.
+- select a verification boundary
 
 Stop expanding the search when another fact cannot change one of those outcomes. Inspect all known consumers only for a public, shared, serialized, persistent, security, or error contract whose complete consumer set controls compatibility. Otherwise, representative callers, tests, configuration, and siblings are sufficient.
 
@@ -51,18 +51,18 @@ Trace the directly affected control, data, state, persistence, and integration p
 - changed or newly relied-upon interfaces, schemas, exact identifiers, configuration, dependencies, and error behavior;
 - transformations or external lookups whose output must remain equivalent;
 - applicable repository checks and domain constraints;
-- evidence that invalidates an approach or changes its cost.
+- evidence that invalidates an approach or changes its cost
 
 Preserve historical safeguards in the returned facts: dependency existence, behavior relied upon as already provided, cross-boundary values, data operations, state transitions, failure paths, and output transformations are included when the current design depends on them.
 
 ### Step 3: Form Decision Materials
 
-- Record `reuse` when an existing element can avoid new implementation surface.
-- Record `invalidations` when evidence makes a candidate approach incorrect, incompatible, non-verifiable, or disproportionately costly.
-- Record a `candidateDecisionPoint` only when the governing source, reuse, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid.
-- Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one disposition decision rather than by symbol count.
-- Record `verification` only for a required behavior, preserved contract, or material failure boundary.
-- Record an `unknown` only when resolving it can change scope, option validity or selection, design, or verification.
+- Record `reuse` when an existing element can avoid new implementation surface
+- Record `invalidations` when evidence makes a candidate approach incorrect, incompatible, non-verifiable, or disproportionately costly
+- Record a `candidateDecisionPoint` only when the governing source, reuse, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid
+- Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one disposition decision rather than by symbol count
+- Record `verification` only for a required behavior, preserved contract, or material failure boundary
+- Record an `unknown` only when resolving it can change scope, option validity or selection, design, or verification
 
 ### Step 4: Return JSON
 
@@ -119,8 +119,8 @@ Use an empty array when its condition is absent. Populate an entry only from evi
 
 ## Completion Criteria
 
-- Every returned item states the decision, contract, or verification effect it controls.
-- Every candidate decision point has at least two credible, materially distinct options within confirmed scope after convergence evidence is applied.
-- Each focus area groups existing-behavior facts whose shared disposition protects an observable contract.
-- Data, transformation, and quality fields contain only applicable evidence but retain details needed by implementation and verification.
-- The response is one valid JSON object.
+- Every returned item states the decision, contract, or verification effect it controls
+- Every candidate decision point has at least two credible, materially distinct options within confirmed scope after convergence evidence is applied
+- Each focus area groups existing-behavior facts whose shared disposition protects an observable contract
+- Data, transformation, and quality fields contain only applicable evidence but retain details needed by implementation and verification
+- The response is one valid JSON object

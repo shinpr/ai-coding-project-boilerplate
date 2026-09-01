@@ -31,7 +31,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 **`$ARGUMENTS`が空の場合**、タスクファイルから自動解決する:
 1. `docs/plans/tasks/`内で本レシピの唯一の処理対象パターンに一致するタスクファイルを列挙する（subagents-orchestration-guideの「Layer-Aware Agent Routing」により、`task-executor-frontend` が所有するファイル名サフィックスはこの形のみ）:
    - `{plan-name}-frontend-task-*.md`
-   - 素の `{plan-name}-task-*.md` は処理対象外 — ルーティング表により backend 予約のファイル名で、backend build レシピが所有する。`{plan-name}-backend-task-*.md` も同様に処理対象外。
+   - 素の `{plan-name}-task-*.md` は処理対象外 — ルーティング表により backend 予約のファイル名で、backend build レシピが所有する。`{plan-name}-backend-task-*.md` も同様に処理対象外
 2. マッチしたファイルから、以下のいずれかにマッチするものを除外する。これらは本実行の実装タスクではなく、他のワークフローフェーズに由来する: `integration-tests-*-task-*.md`（統合テスト追加用スキャフォールディング）
 3. 残った各ファイルから、末尾の `-frontend-task-{NN}.md` を取り除いて `{plan-name}` を抽出する
 4. 少なくとも1つのタスクファイルがマッチした場合、最も新しい mtime を持つ `{plan-name}` の `docs/plans/{plan-name}.md` を作業計画書とする。タイは辞書順最大の `{plan-name}` で解決する

@@ -142,7 +142,7 @@ Quality checks are mandatory upon implementation completion:
 **Completion evidence**: configured tests pass, the production build succeeds, and the integrated check remains clean after test fixes. Record an environment-dependent test as blocked with its exact prerequisite.
 
 ### Test Focus
-- Give foundational, high-reuse units such as shared components, custom hooks, and utilities direct tests for their observable contracts. Verify higher-composition surfaces such as organisms and pages through integration or E2E tests when that boundary best exposes the relevant failure.
+- Give foundational, high-reuse units such as shared components, custom hooks, and utilities direct tests for their observable contracts. Verify higher-composition surfaces such as organisms and pages through integration or E2E tests when that boundary best exposes the relevant failure
 
 ### Non-functional Requirements
 - **Browser Compatibility**: Use the repository's Browserslist/build target or a named product requirement; record the source and test the affected browser-specific behavior

@@ -86,13 +86,13 @@ decline: [ID] — [出典ソース上の理由]
    - `subagent_type`: "document-reviewer"
    - `description`: "更新後Design Docのレビュー"
    - `prompt`: "doc_type: DesignDoc。review_context: update。[path]の更新後Design Docの整合性と完成度をレビュー。"
-   - レビュー対応を、修正後の再レビューから収束まで進める。差し戻す修正には technical-designer を用いる。収束条件に達したときのみ先へ進む。
+   - レビュー対応を、修正後の再レビューから収束まで進める。差し戻す修正には technical-designer を用いる。収束条件に達したときのみ先へ進む
 
 3. レビュー対象の変更が触れる責務または契約を別のDesign Docも統制する場合、design-syncを呼び出す:
    - `subagent_type`: "design-sync"
    - `description`: "DD間整合性チェック"
    - `prompt`: "source_design: [更新後DDのパス]。更新後の全Design Doc間の矛盾を検出。"
-   - `sync_status: CONFLICTS_FOUND` の場合: design-syncを新しいverifierとしてレビュー対応を適用し、`apply`の矛盾を担当するtechnical-designerで修正し、design-syncを再実行し、エビデンスに基づく却下は完了として維持する。
+   - `sync_status: CONFLICTS_FOUND` の場合: design-syncを新しいverifierとしてレビュー対応を適用し、`apply`の矛盾を担当するtechnical-designerで修正し、design-syncを再実行し、エビデンスに基づく却下は完了として維持する
 
 4. 承認済みの `apply` 検出事項を更新後の Design Doc に対して再評価し、改訂で既に満たされたものは除外する。残りがない場合はコード側の修正パスをスキップして最終レポートへ進む。
 

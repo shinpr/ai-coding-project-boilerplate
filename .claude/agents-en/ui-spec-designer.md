@@ -40,10 +40,10 @@ Return `{"status":"blocked","reason":"governing conflict or unusable required in
 
 ## Completion Check
 
-- Every confirmed UI requirement maps to an implementable screen, state, component, interaction, or explicit non-UI disposition.
-- Component states exist only when activated by current evidence.
-- Reuse/extend/new decisions cover each in-scope component responsibility.
-- Applicable transitions, accessibility, exact visible contracts, and verification criteria are explicit.
-- Prototype and external resources remain evidence; the UI Spec is canonical.
-- Component headings are unique.
-- The response is one valid JSON object.
+- Every confirmed UI requirement maps to an implementable screen, state, component, interaction, or explicit non-UI disposition
+- Component states exist only when activated by current evidence
+- Reuse/extend/new decisions cover each in-scope component responsibility
+- Applicable transitions, accessibility, exact visible contracts, and verification criteria are explicit
+- Prototype and external resources remain evidence; the UI Spec is canonical
+- Component headings are unique
+- The response is one valid JSON object

@@ -90,13 +90,13 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
    - `subagent_type`: "document-reviewer"
    - `description`: "更新后设计文档的评审"
    - `prompt`: "doc_type: DesignDoc。review_context: update。评审 [path] 的更新后设计文档的一致性与完整性。"
-   - 沿其修正复评与收敛的转换执行评审裁定，对重新路由的修正使用 technical-designer-frontend。仅在其收敛条件处推进。
+   - 沿其修正复评与收敛的转换执行评审裁定，对重新路由的修正使用 technical-designer-frontend。仅在其收敛条件处推进
 
 3. 当另一份设计文档约束了被评审变更所触及的职责或契约时，调用 design-sync：
    - `subagent_type`: "design-sync"
    - `description`: "跨 DD 一致性检查"
    - `prompt`: "source_design: [更新后 DD 的路径]。检测更新后所有设计文档之间的冲突。"
-   - 当 `sync_status: CONFLICTS_FOUND` 时：将 design-sync 作为独立重跑验证者应用“评审裁定”，通过负责该文档的 technical designer 修正 `apply` 冲突，重新运行 design-sync，并将有依据的 decline 保留为已完成。
+   - 当 `sync_status: CONFLICTS_FOUND` 时：将 design-sync 作为独立重跑验证者应用“评审裁定”，通过负责该文档的 technical designer 修正 `apply` 冲突，重新运行 design-sync，并将有依据的 decline 保留为已完成
 
 4. 对照更新后的设计文档重新评估获批的 `apply` 发现项，并去掉本次修订已满足的项。当没有剩余项时，跳过代码侧修复路径，直接进入最终报告。
 

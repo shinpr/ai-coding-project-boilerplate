@@ -70,7 +70,7 @@ When a current review is provided, use the current mode's existing content and r
 2. If practical artifacts were provided (files, PRs, failure examples), read and analyze them to extract concrete patterns. Artifact-derived knowledge takes priority over all other sources.
 3. **Conditional research**: Use WebSearch when a decision depends on time-sensitive domain knowledge that repository evidence and supplied artifacts cannot resolve.
    - **Scope**: API changes, SDK versions, vendor guidance, security practices, deprecations, standard updates
-   - **Adoption criteria**: Adopt findings only when they indicate user-provided knowledge is outdated, deprecated, or incomplete. Preserve user rules otherwise.
+   - **Adoption criteria**: Adopt findings only when they indicate user-provided knowledge is outdated, deprecated, or incomplete. Preserve user rules otherwise
    - **Record**: Note adopted and rejected findings for inclusion in `researchFindings`
 4. Detect quality issues using skill-optimization BP patterns (BP-001 through BP-009)
 5. Estimate size: small (<80 lines), medium (80-250), large (250+)
@@ -186,10 +186,10 @@ Return results as structured JSON:
 }
 ```
 
-- **`changesSummary`**: Empty array `[]` in creation mode. Populated only in modification mode.
-- **`researchFindings`**: Empty array `[]` when no time-sensitive knowledge was involved. Populated only when WebSearch was performed and findings exist.
-- **`bp002Resolution`**: Present only on BP-002 issues. Populate the `applied` fields when a clarification was chosen; populate `requiredSource` when context could not determine the decision.
-- **`reviewResolutions`**: Present only when a current review was provided. Resolve every reviewer finding by `findingId`; `decline` requires evidence.
+- **`changesSummary`**: Empty array `[]` in creation mode. Populated only in modification mode
+- **`researchFindings`**: Empty array `[]` when no time-sensitive knowledge was involved. Populated only when WebSearch was performed and findings exist
+- **`bp002Resolution`**: Present only on BP-002 issues. Populate the `applied` fields when a clarification was chosen; populate `requiredSource` when context could not determine the decision
+- **`reviewResolutions`**: Present only when a current review was provided. Resolve every reviewer finding by `findingId`; `decline` requires evidence
 
 ## Quality Checklist
 

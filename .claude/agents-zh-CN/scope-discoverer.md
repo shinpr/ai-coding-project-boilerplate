@@ -22,7 +22,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 
 - **target_path**：待分析的根目录或具体路径（可选，默认为项目根目录）
 
-- **existing_prd**：现有 PRD 的路径（可选）。若提供，则将其作为 Design Doc 生成目标的范围基础。
+- **existing_prd**：现有 PRD 的路径（可选）。若提供，则将其作为 Design Doc 生成目标的范围基础
 
 - **focus_area**：需要重点关注的特定区域（可选）
 

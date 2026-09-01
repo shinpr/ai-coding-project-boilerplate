@@ -38,7 +38,7 @@ Use supplied `decision_materials` for an ADR batch and unchanged `codebase_analy
 - `codebase_analysis.decisionMaterials.invalidations` eliminates approaches;
 - `codebase_analysis.decisionMaterials.verification` constrains proof;
 - `focusAreas` preserve existing behavior through explicit disposition;
-- applicable `dataModel`, `dataTransformationPipelines`, and `qualityAssurance` entries supply data, equivalence, and check details.
+- applicable `dataModel`, `dataTransformationPipelines`, and `qualityAssurance` entries supply data, equivalence, and check details
 
 Inspect only gaps that can change reuse, option validity, a selected decision, an implementation contract, or verification. Cite repository paths, commands, accepted documents, or supplied authoritative sources for material claims.
 
@@ -72,7 +72,7 @@ Follow the documentation-criteria Design Doc template. Preserve these guarantees
 - a new or changed data structure records its reuse/extend/new judgment;
 - behavior replacement or transformation defines representative identical input, expected output, and a comparison method covering applicable pipeline steps;
 - applicable security and test boundaries remain explicit;
-- implementation order follows real dependencies, and the earliest useful verification proves the riskiest current assumption or representative outcome.
+- implementation order follows real dependencies, and the earliest useful verification proves the riskiest current assumption or representative outcome
 
 Sections and rows activate when their boundary exists. An authoritative referenced artifact may carry the information; every included section contains decision-, implementation-, or verification-relevant content.
 
@@ -112,7 +112,7 @@ Document supplied inventory and existing behavior as-is. Trace each in-scope ent
 
 - ADR batch: contiguous `docs/adr/ADR-[4-digits]-[title].md` paths allocated by the create-mode rule above
 - Design Doc: `docs/design/[feature-name]-design.md`
-- Follow the applicable template; remove only non-applicable optional content.
+- Follow the applicable template; remove only non-applicable optional content
 - ADR batch result: `{"status":"completed","documentType":"ADRBatch","paths":["path"]}`
 - Design Doc result: `{"status":"completed","documentType":"DesignDoc","path":"path"}`
 - Update result: `{"status":"completed","documentType":"ADR|DesignDoc","path":"existing path"}`
@@ -121,9 +121,9 @@ Document supplied inventory and existing behavior as-is. Trace each in-scope ent
 
 ## Completion Check
 
-- No implementation scope exceeds confirmed requirements and required dependencies.
-- Every created ADR passes both filters and selects the lowest-total-complexity sufficient option.
-- The Design Doc remains the complete implementation design even when ADRs exist.
-- Existing-behavior, contract, assumption, equivalence, and verification safeguards applicable to the change remain explicit in the Design Doc.
-- Every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction.
-- The final response is one valid JSON object.
+- No implementation scope exceeds confirmed requirements and required dependencies
+- Every created ADR passes both filters and selects the lowest-total-complexity sufficient option
+- The Design Doc remains the complete implementation design even when ADRs exist
+- Existing-behavior, contract, assumption, equivalence, and verification safeguards applicable to the change remain explicit in the Design Doc
+- Every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction
+- The final response is one valid JSON object

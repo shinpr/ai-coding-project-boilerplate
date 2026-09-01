@@ -8,9 +8,9 @@
 
 document-reviewerの結果は、次の順でルーティングする:
 
-- `rejected`の場合は、検出事項の有無にかかわらず、別のレビューを行う前に、正典の優先順位または上位ワークフローの要件・権限ゲートを通じて正典との矛盾を解消する。
-- 対応可能な検出事項が空ならレビュー完了とする。下流には、レビュー済み成果物のパスと、レビュー前から存在する正典のエビデンスだけを渡す。
-- 対応可能な検出事項があれば、セクション1へ進む。
+- `rejected`の場合は、検出事項の有無にかかわらず、別のレビューを行う前に、正典の優先順位または上位ワークフローの要件・権限ゲートを通じて正典との矛盾を解消する
+- 対応可能な検出事項が空ならレビュー完了とする。下流には、レビュー済み成果物のパスと、レビュー前から存在する正典のエビデンスだけを渡す
+- 対応可能な検出事項があれば、セクション1へ進む
 
 `rejected`を優先して処理した後は、`approved`または`needs_revision`と検出事項の内容が一致しない場合でも、検出事項のエビデンスに基づいてルーティングする。完了したレビューから、authorへの修正依頼や下流への追加の意味入力は作らない。
 
@@ -18,8 +18,8 @@ verifier、design-sync、code-reviewer、security-reviewer、integration-test-re
 
 結果を生成したエージェントが宣言する検証方式を使用する:
 
-- **照合型レビュアー**: document-reviewer、code-reviewer、security-reviewer、integration-test-reviewerは、修正後に`prior_feedback`を受け取り、`prior_feedback_reconciliation`を返す。
-- **現状態を再判定するverifier**: code-verifierとdesign-syncは、元の入力から現在の状態を独立して報告する。最新結果から修正を適用した後に同じverifierを再実行し、現在の結果への対応方針を決める。`decline`だけの結果は完了とする。
+- **照合型レビュアー**: document-reviewer、code-reviewer、security-reviewer、integration-test-reviewerは、修正後に`prior_feedback`を受け取り、`prior_feedback_reconciliation`を返す
+- **現状態を再判定するverifier**: code-verifierとdesign-syncは、元の入力から現在の状態を独立して報告する。最新結果から修正を適用した後に同じverifierを再実行し、現在の結果への対応方針を決める。`decline`だけの結果は完了とする
 
 ## 1. 各検出事項を評価する
 
@@ -51,8 +51,8 @@ authorまたはexecutorへ渡すのは、`apply`とした検出事項と、セ�
 
 各検出事項が必要とする受け入れ可能な状態に応じて、既存の修正担当を選ぶ:
 
-- 実装が確認済みの成果・将来状態の要件・対象外を既に満たし、技術成果物を変更すべき場合は、そのドキュメントのauthorを使う。
-- 受け入れ可能な状態へ到達するために実装を変更すべき場合は、executorを使う。
+- 実装が確認済みの成果・将来状態の要件・対象外を既に満たし、技術成果物を変更すべき場合は、そのドキュメントのauthorを使う
+- 受け入れ可能な状態へ到達するために実装を変更すべき場合は、executorを使う
 
 両方が混在する場合は、authorが担当する修正を先に完了し、修正後の正典に照らしてexecutor担当の検出事項を再評価する。選んだ担当には、`apply`の処理方針を加えた検出事項オブジェクト一式を逐語で渡す。ドキュメントのauthorは、元の対象と検出事項を渡す新しいupdate呼び出しとして起動する。影響を受けないコンテキストは成果物自身が保持している。executorを使う場合は、元の`task_file`またはdirect scopeの4フィールドを保ち、検出事項を`correction_findings`として加える。修正は元の実行スコープ内に留める。
 
@@ -62,9 +62,9 @@ authorまたはexecutorへ渡すのは、`apply`とした検出事項と、セ�
 
 修正後の評価は、受け取った項目を漏れなく対象とする。レビュアーはその範囲を完了し、次のように判定する:
 
-- `apply`とした項目は、現在のエビデンスから成果物が検出事項を満たし、変更した境界を維持している場合に`resolved`とする。それ以外は、現在のエビデンスを添えて`maintained`とする。
-- `decline`とした項目は、現在のエビデンスと正典がその検出事項を支持しなくなった場合に`withdrawn`とする。それ以外は、現在のエビデンスを添えて`maintained`とする。
-- 受け取ったIDごとに、`prior_feedback_reconciliation`の項目をちょうど1つ出力する。
+- `apply`とした項目は、現在のエビデンスから成果物が検出事項を満たし、変更した境界を維持している場合に`resolved`とする。それ以外は、現在のエビデンスを添えて`maintained`とする
+- `decline`とした項目は、現在のエビデンスと正典がその検出事項を支持しなくなった場合に`withdrawn`とする。それ以外は、現在のエビデンスを添えて`maintained`とする
+- 受け取ったIDごとに、`prior_feedback_reconciliation`の項目をちょうど1つ出力する
 
 修正後の再レビューのステータスまたは判定は、この照合結果だけから導く。独立した事実確認を行うverifierが、観測した不一致を再度報告することはある。その場合も、オーケストレーターが正典のエビデンスから処理方針を決める。
 
@@ -74,9 +74,9 @@ authorまたはexecutorへ渡すのは、`apply`とした検出事項と、セ�
 
 修正後の照合結果は、記録された`prior_disposition`に従って処理する:
 
-- `resolved`と`withdrawn`は完了。
-- `prior_disposition: apply`の`maintained`は、元の検出事項と照合結果全体を逐語で同じauthorまたはexecutorへ戻し、その後にもう一度修正後の再レビューを行う。
-- `prior_disposition: decline`の`maintained`は、その`decline`を維持し、修正ループを再開しない。
+- `resolved`と`withdrawn`は完了
+- `prior_disposition: apply`の`maintained`は、元の検出事項と照合結果全体を逐語で同じauthorまたはexecutorへ戻し、その後にもう一度修正後の再レビューを行う
+- `prior_disposition: decline`の`maintained`は、その`decline`を維持し、修正ループを再開しない
 
 現状態を再判定するverifierでは、現在の検出事項に`apply`があれば修正経路へ戻し、維持または新規に`decline`とした現在の検出事項は完了とし、対応可能な検出事項が空の場合も完了とする。
 
@@ -88,7 +88,7 @@ authorまたはexecutorへ渡すのは、`apply`とした検出事項と、セ�
 - 再確認時は、レビュアーまたはverifierへ初回に渡した入力一式を変更せず、そのまま渡す
 - `apply`の処理方針だけを加えた、検出事項オブジェクト一式の逐語コピー
 - `apply`が維持されてauthorまたはexecutorへ戻る場合の、照合結果全体
-- 後続の利用側がレビュアーの照合を受け入れる場合は、`prior_feedback`に含める`decline`のID、理由、エビデンス。現在の状態を再判定するverifierでは、それらの処理方針をオーケストレーターの状態に保持し、前述の方法で最新結果と比較する。
+- 後続の利用側がレビュアーの照合を受け入れる場合は、`prior_feedback`に含める`decline`のID、理由、エビデンス。現在の状態を再判定するverifierでは、それらの処理方針をオーケストレーターの状態に保持し、前述の方法で最新結果と比較する
 
 authorへのハンドオフには、オーケストレーターが作成した意味上の内容をほかに加えない。
 
@@ -98,9 +98,9 @@ authorへのハンドオフには、オーケストレーターが作成した�
 
 code-verifierの結果に対するレビュー対応が完了したら、次のdocument-reviewerへ`verification_evidence`オブジェクトを1つ渡す:
 
-- すべての`apply`修正と再実行を終えた最新のverifier結果を起点にする。
-- `summary`、`inventoryCoverage`、`limitations`を変更せず保持する。
-- 残る各discrepancyを変更せず保持し、その`disposition`を加える。`decline`の場合は`dispositionReason`と`dispositionEvidence`も加える。
-- 残るdiscrepancyは、それぞれに解決済みの`decline`が付いた後だけ含める。適用済みの修正は、最新のverifier結果によって表す。
+- すべての`apply`修正と再実行を終えた最新のverifier結果を起点にする
+- `summary`、`inventoryCoverage`、`limitations`を変更せず保持する
+- 残る各discrepancyを変更せず保持し、その`disposition`を加える。`decline`の場合は`dispositionReason`と`dispositionEvidence`も加える
+- 残るdiscrepancyは、それぞれに解決済みの`decline`が付いた後だけ含める。適用済みの修正は、最新のverifier結果によって表す
 
 document-reviewerはこの解決済みエビデンスを使用するが、verifierの処理方針を収束させる責務は持たない。updateとreverse-engineerのフローでは、修正前の結果自体をレビューのエビデンスとして扱う場合に、現在のverifier結果を`verification_evidence`として渡してよい。

@@ -21,8 +21,8 @@ skills: integration-e2e-testing, typescript-testing, documentation-criteria, pro
 
 ## 必要情報
 
-- **Design Doc**: 必須。受入条件と、存在する場合は Test Boundaries を読む。
-- **UI Spec**: 任意。ジャーニー、状態、ブラウザに依存するインタラクションを追加のエビデンスとして使う。
+- **Design Doc**: 必須。受入条件と、存在する場合は Test Boundaries を読む
+- **UI Spec**: 任意。ジャーニー、状態、ブラウザに依存するインタラクションを追加のエビデンスとして使う
 
 受け入れ済みの振る舞いを含む、読み取り可能な Design Doc が生成開始の条件である。この条件を満たさない場合は、不足している前提を具体的に示して停止する。`generatedFiles` は条件を満たした後にのみ出力する。
 

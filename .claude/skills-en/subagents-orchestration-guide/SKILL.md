@@ -267,8 +267,8 @@ Every subagent prompt must include:
 Construct the prompt from the agent's Input Parameters section and the deliverables available at that point in the flow.
 
 Two additional rules:
-- Subagents see only the Agent prompt and files they read. Include required paths, prior JSON, parameters, and scope constraints explicitly.
-- Replace every `[placeholder]` in examples below with concrete values before invoking the Agent tool.
+- Subagents see only the Agent prompt and files they read. Include required paths, prior JSON, parameters, and scope constraints explicitly
+- Replace every `[placeholder]` in examples below with concrete values before invoking the Agent tool
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"

@@ -54,7 +54,7 @@ Pass the generated paths to work-planner according to subagents-orchestration-gu
 Invoke work-planner using Agent tool:
 - `subagent_type`: "work-planner"
 - `description`: "Work plan creation"
-- Pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task.
+- Pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task
   - Append placement guidance: "Integration tests are created simultaneously with each phase implementation. fixture-e2e tests are created alongside the UI feature phase. service-integration-e2e tests are executed after their required services exist."
 
 - Follow subagents-orchestration-guide Prompt Construction Rule for additional prompt parameters
@@ -70,8 +70,8 @@ Invoke document-reviewer to review the work plan:
   - `rejected`: apply the parent requirement gate
 
 ### Step 5: Present for Approval
-- Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4.
-- Record unresolved technical evidence or external dependencies with their affected task and verification boundary. Return to the requirements gate only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true without a user choice.
+- Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4
+- Record unresolved technical evidence or external dependencies with their affected task and verification boundary. Return to the requirements gate only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true without a user choice
 
 **Scope**: Up to work plan creation and obtaining approval for plan content.
 

@@ -87,7 +87,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 - **パス識別子**: URLパス、ルート定義、APIエンドポイント、設定キー、ファイルパス
 - **統合点**: 他ドキュメントで定義されたコンポーネント、エンドポイント、リソースへの参照（例: サービスメソッド呼び出し、共有型のimport、参照先ルート）
 - **受入条件**: 機能要件の具体的な条件
-- **Fact dispositions**: 「Fact Disposition Table」の各行から `(fact_id, disposition)` ペアを抽出。`fact_id`の値がドキュメント間のdisposition照合の主識別子となる。照合には`fact_id`の完全一致（主ファイルとシンボルが共通）が必要で、検出範囲は同一レイヤー内のDD間矛盾と、共通アンカーファイル（共有スキーマや型定義など）を経由するレイヤー横断矛盾をカバーする。`evidence`は補助的なコンテキストのみ。
+- **Fact dispositions**: 「Fact Disposition Table」の各行から `(fact_id, disposition)` ペアを抽出。`fact_id`の値がドキュメント間のdisposition照合の主識別子となる。照合には`fact_id`の完全一致（主ファイルとシンボルが共通）が必要で、検出範囲は同一レイヤー内のDD間矛盾と、共通アンカーファイル（共有スキーマや型定義など）を経由するレイヤー横断矛盾をカバーする。`evidence`は補助的なコンテキストのみ
 
 **抽出出力**（項目ごと）:
 ```yaml

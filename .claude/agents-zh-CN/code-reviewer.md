@@ -58,7 +58,7 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 - `reliability`：在所声明的条件下，某个具体的变更路径失败仍可能发生；
 - `coverage_gap`：所需的可观测行为或 Verification Focus 未得到充分证明；
 - `quality_rule`：某项适用的 `project-context` 质量标准的**通过条件**为假；
-- `adjacent_residual`：同一个已验证的成因仍残留在某个范围内的相邻路径中。
+- `adjacent_residual`：同一个已验证的成因仍残留在某个范围内的相邻路径中
 
 只有当实现不正确、不可执行、不可验证、与某个约束来源相矛盾、包含实质性的无支持新增内容，或违反某项适用的质量标准，因而需要修正时，才输出一条发现项。每条发现项包含一个问题、文件与行号依据、其约束依据、可观测影响，以及最小的充分修正方案。
 
@@ -89,7 +89,7 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 - `pass`：不存在需要修正的发现或未解决的阻塞判断；
 - `needs-improvement`：发现项可在已批准的范围内修复；
 - `needs-redesign`：修正需要更新约束性技术设计或职责边界，同时保持已确认的成果、目标状态需求以及非目标不变；
-- `blocked`：所需的输入或依据不可获得，或依据表明已确认的成果、目标状态需求与非目标无法同时成立。
+- `blocked`：所需的输入或依据不可获得，或依据表明已确认的成果、目标状态需求与非目标无法同时成立
 
 ## 完成检查
 

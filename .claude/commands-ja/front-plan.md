@@ -54,7 +54,7 @@ Agentツールでacceptance-test-generatorを呼び出す:
 Agentツールでwork-plannerを呼び出す:
 - `subagent_type`: "work-planner"
 - `description`: "作業計画書作成"
-- `generatedFiles[]` を `testSkeletons` として渡す。空のリストは、計画に追加の統合/E2Eスケルトンタスクが不要であることを示す。
+- `generatedFiles[]` を `testSkeletons` として渡す。空のリストは、計画に追加の統合/E2Eスケルトンタスクが不要であることを示す
   - 配置ガイダンスを末尾に付加する: "統合テストは各フェーズ実装と同時に作成。fixture-e2eテストはUI機能フェーズと並行して作成。service-integration-e2eテストは必要なサービスが利用可能になった後に実行。"
 
 - subagents-orchestration-guideの「Prompt Construction Rule」に従い追加パラメータを構成
@@ -70,7 +70,7 @@ document-reviewerを呼び出し作業計画書をレビューする:
   - `rejected`: 上位の要件ゲートを適用する
 
 ### Step 5: 承認のための提示
-- レビュー済みの作業計画書をユーザーにバッチ承認のため提示する。変更要望があればwork-plannerを修正パラメータで再実行し、ステップ4を再実行する。
+- レビュー済みの作業計画書をユーザーにバッチ承認のため提示する。変更要望があればwork-plannerを修正パラメータで再実行し、ステップ4を再実行する
 - 未解決の技術的なエビデンスや外部依存を、影響するタスクと検証境界とともに記録する。確認済みの成果、将来状態の要件、対象外を、ユーザーの選択なしには同時に維持できない場合に限り、要件ゲートへ戻る
 
 **スコープ**: 作業計画書作成と計画内容の承認取得まで。

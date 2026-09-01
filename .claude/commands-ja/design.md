@@ -93,9 +93,9 @@ Design Doc は完全な実装設計を所有し、documentation-criteria テン�
 
 `document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6の `verification_evidence` で呼び出す。
 
-- `approved`: 次へ進む。
-- `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、影響を受けた境界についてステップ6〜7を再実行する。
-- `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る。
+- `approved`: 次へ進む
+- `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、影響を受けた境界についてステップ6〜7を再実行する
+- `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
 
 他のDesign Doc との整合性のために `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。Design Doc が1つしか存在しない場合は `SKIPPED` として明確に報告する。
 
@@ -103,9 +103,9 @@ Design Doc、承認済みADRのパス、記録した decline、design-sync の�
 
 ## 完了条件
 
-- スコープと構造スケールを、成果と責務境界から確認した。
-- ADRは両方のフィルタを通過した決定ポイントに対してのみ存在し、バッチ全体が1回のレビューと承認を受けた。
-- ADRの要否にかかわらず、Design Doc が存在する。
-- 該当する既存の振る舞い・契約・前提・等価性・検証の安全策が Design Doc に反映されている。
-- レビュー対応が `needs_revision` の issue のみを修正作業へ回した。
-- すべての停止点でユーザーの明示的な確認を得た。
+- スコープと構造スケールを、成果と責務境界から確認した
+- ADRは両方のフィルタを通過した決定ポイントに対してのみ存在し、バッチ全体が1回のレビューと承認を受けた
+- ADRの要否にかかわらず、Design Doc が存在する
+- 該当する既存の振る舞い・契約・前提・等価性・検証の安全策が Design Doc に反映されている
+- レビュー対応が `needs_revision` の issue のみを修正作業へ回した
+- すべての停止点でユーザーの明示的な確認を得た

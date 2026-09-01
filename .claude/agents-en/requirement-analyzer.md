@@ -74,9 +74,9 @@ Use `null` for `apparentOutcome` when the request states no outcome.
 
 ## Completion Check
 
-- Every material request signal retains one primary category, verbatim wording, and its input source.
-- Evaluation requests, speculative ideas, and prescribed mechanisms remain judgment-only candidates until the user explicitly confirms a current requirement.
-- Scope and cost evidence is shallow, compact, and source-backed.
-- Every question names the decision its answer can change.
-- Convergence, Structural Scale, ADR, and implementation-scope decisions remain outside this role.
-- The response is one valid JSON object.
+- Every material request signal retains one primary category, verbatim wording, and its input source
+- Evaluation requests, speculative ideas, and prescribed mechanisms remain judgment-only candidates until the user explicitly confirms a current requirement
+- Scope and cost evidence is shallow, compact, and source-backed
+- Every question names the decision its answer can change
+- Convergence, Structural Scale, ADR, and implementation-scope decisions remain outside this role
+- The response is one valid JSON object

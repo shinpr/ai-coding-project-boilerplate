@@ -265,8 +265,8 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 エージェントのInput Parametersセクションと、フロー内のその時点で利用可能な成果物からプロンプトを構成する。
 
 追加の2つのルール:
-- サブエージェントは Agent prompt と自身が読み込んだファイルしか参照できない。必須のパス、先行 JSON、パラメータ、スコープ制約をプロンプトに明示的に注入する。
-- 以下の例の `[placeholder]` は Agent ツール呼び出し前にすべて具体値へ置換する。
+- サブエージェントは Agent prompt と自身が読み込んだファイルしか参照できない。必須のパス、先行 JSON、パラメータ、スコープ制約をプロンプトに明示的に注入する
+- 以下の例の `[placeholder]` は Agent ツール呼び出し前にすべて具体値へ置換する
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"

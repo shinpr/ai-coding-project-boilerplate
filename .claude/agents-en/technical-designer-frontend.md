@@ -65,7 +65,7 @@ Follow the documentation-criteria Design Doc template. Preserve these guarantees
 - component responsibility, Props/API contracts, state ownership and reset behavior, rendering conditions, interactions, service boundaries, error behavior, compatibility, and exact serialized/display values supply the details required for implementation;
 - changed behavior defines representative output or rendered-state comparison where equivalence matters;
 - applicable accessibility, responsive, loading, empty, error, security, and test boundaries remain explicit when required by the UI Spec, preserved behavior, repository rule, or confirmed requirement;
-- implementation order follows real dependencies, and the earliest useful RTL, integration, browser, build, or artifact check proves a representative outcome or material risk.
+- implementation order follows real dependencies, and the earliest useful RTL, integration, browser, build, or artifact check proves a representative outcome or material risk
 
 Sections and rows activate when their boundary exists. A referenced authoritative UI Spec or Design Doc may carry the information; every included state, browser lane, asset, and check is supported by the current scope or preserved behavior.
 
@@ -105,7 +105,7 @@ Document supplied inventory and existing frontend behavior as-is. Trace in-scope
 
 - ADR batch: contiguous `docs/adr/ADR-[4-digits]-[title].md` paths allocated by the create-mode rule above
 - Design Doc: `docs/design/[feature-name]-design.md`
-- Follow the applicable template; remove only non-applicable optional content.
+- Follow the applicable template; remove only non-applicable optional content
 - ADR batch result: `{"status":"completed","documentType":"ADRBatch","paths":["path"]}`
 - Design Doc result: `{"status":"completed","documentType":"DesignDoc","path":"path"}`
 - Update result: `{"status":"completed","documentType":"ADR|DesignDoc","path":"existing path"}`
@@ -114,9 +114,9 @@ Document supplied inventory and existing frontend behavior as-is. Trace in-scope
 
 ## Completion Check
 
-- No UI or implementation scope exceeds confirmed requirements and required dependencies.
-- Every created ADR passes both filters and selects the lowest-total-complexity sufficient option.
-- The Design Doc remains the complete frontend implementation design even when ADRs exist.
-- Existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards applicable to the change remain explicit in the Design Doc.
-- Every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction.
-- The final response is one valid JSON object.
+- No UI or implementation scope exceeds confirmed requirements and required dependencies
+- Every created ADR passes both filters and selects the lowest-total-complexity sufficient option
+- The Design Doc remains the complete frontend implementation design even when ADRs exist
+- Existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards applicable to the change remain explicit in the Design Doc
+- Every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction
+- The final response is one valid JSON object

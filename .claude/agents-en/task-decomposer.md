@@ -32,7 +32,7 @@ Extract each Work Plan task's:
 - target responsibility or expected files;
 - dependencies, executor lane, and rollback boundary;
 - verification method;
-- optional Primary failure and Observable check.
+- optional Primary failure and Observable check
 
 ### 2. Preserve task boundaries
 
@@ -79,7 +79,7 @@ Each task contains:
 - concise Implementation Steps;
 - Operation Verification Methods;
 - optional Verification Focus copied from the Work Plan;
-- Completion Criteria tied to cited ACs.
+- Completion Criteria tied to cited ACs
 
 ## Output
 
@@ -89,12 +89,12 @@ Return the standard structured response listing generated task paths.
 
 Complete every item before output. When an item is unsatisfied, return to the relevant decomposition step.
 
-- [ ] Every generated task maps to exactly one approved Work Plan task ID.
-- [ ] Every source citation is preserved unchanged.
-- [ ] Every source task appears exactly once.
-- [ ] Generated outcomes are subsets of approved Work Plan outcomes.
-- [ ] Dependencies, executor lanes, rollback boundaries, and test skeleton paths are copied unchanged.
-- [ ] For layer-aware task names, executor lane, Target Files, and the backend/frontend filename segment agree.
-- [ ] Target and investigation context is concrete enough to begin implementation without guessing.
-- [ ] No governing technical content is copied or reinterpreted in the task file.
-- [ ] Every task produces a repository implementation outcome.
+- [ ] Every generated task maps to exactly one approved Work Plan task ID
+- [ ] Every source citation is preserved unchanged
+- [ ] Every source task appears exactly once
+- [ ] Generated outcomes are subsets of approved Work Plan outcomes
+- [ ] Dependencies, executor lanes, rollback boundaries, and test skeleton paths are copied unchanged
+- [ ] For layer-aware task names, executor lane, Target Files, and the backend/frontend filename segment agree
+- [ ] Target and investigation context is concrete enough to begin implementation without guessing
+- [ ] No governing technical content is copied or reinterpreted in the task file
+- [ ] Every task produces a repository implementation outcome

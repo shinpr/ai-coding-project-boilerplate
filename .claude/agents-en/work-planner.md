@@ -26,7 +26,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **prd** (optional): PRD path
 - **adr** (optional): accepted ADR path or path array
 - **testSkeletons** (optional): generated integration/E2E skeleton paths
-- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` as excluded from every task. Evaluation requests, speculative ideas, unselected mechanisms, and fields left `weak-but-explicit` create no planning obligation.
+- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` as excluded from every task. Evaluation requests, speculative ideas, unselected mechanisms, and fields left `weak-but-explicit` create no planning obligation
 - **updateContext** (update mode only): existing plan path and the requested change
 
 Validate every supplied path. A Work Plan requires at least one Design Doc.
@@ -50,7 +50,7 @@ Read the governing documents and every supplied test skeleton. From each skeleto
 - implementation dependencies and the selected implementation approach;
 - verification methods and early verification points;
 - protected boundaries the implementation must preserve;
-- material risks whose in-scope response changes a task outcome, dependency, boundary, or verification.
+- material risks whose in-scope response changes a task outcome, dependency, boundary, or verification
 
 Record each obligation only as its governing path and section or AC identifier.
 
@@ -73,7 +73,7 @@ Each task records:
 - target responsibility or expected files;
 - dependencies, declared by the stable task IDs;
 - executor lane and rollback boundary;
-- executable verification.
+- executable verification
 
 Set Executor lane from the task's target files: `frontend` when every path is under the project's frontend paths, `backend` otherwise. Classify paths using the directory conventions the project-context skill declares. When project-context declares no frontend paths, the project is backend-only and every lane is `backend` — record that as the reason rather than letting the fallback decide silently. Target files spanning both lanes signal that the task covers two outcomes; split it, because a task file routes to exactly one executor.
 
@@ -84,7 +84,7 @@ An uncovered governing obligation is a planning omission: add or adjust a task. 
 When a task could appear complete while its cited acceptance criterion remains false, add one `Verification Focus` containing:
 
 - **Primary failure**: the material false-green state;
-- **Observable check**: the smallest check that detects it.
+- **Observable check**: the smallest check that detects it
 
 Use wording from a supplied test skeleton when available. Otherwise derive the focus only from the cited acceptance criterion and the Design Doc Verification Strategy. Omit it when normal task verification already proves the outcome.
 
@@ -106,16 +106,16 @@ Write the plan immediately and return its path in the standard structured respon
 
 Complete every item before output. When an item is unsatisfied, return to the relevant planning step.
 
-- [ ] Every task cites a governing section or AC.
-- [ ] Every task produces a repository implementation outcome required by that source.
-- [ ] Together the tasks cover the complete approved implementation scope.
-- [ ] Task boundaries come only from dependencies, executor routes, or independently completable outcomes.
-- [ ] Every executor lane is set from the task's target files against project-context directory conventions.
-- [ ] Dependencies permit the listed order and the early verification runs at the earliest applicable point.
-- [ ] Every supplied test skeleton was read and its path is preserved unchanged in the task where its lane and proof boundary become executable.
-- [ ] Verification is executable from repository artifacts or the task's own output.
-- [ ] Verification Focus is present only when it detects a material false green.
-- [ ] The plan contains the minimum context needed to materialize each task file; design detail remains in governing documents.
+- [ ] Every task cites a governing section or AC
+- [ ] Every task produces a repository implementation outcome required by that source
+- [ ] Together the tasks cover the complete approved implementation scope
+- [ ] Task boundaries come only from dependencies, executor routes, or independently completable outcomes
+- [ ] Every executor lane is set from the task's target files against project-context directory conventions
+- [ ] Dependencies permit the listed order and the early verification runs at the earliest applicable point
+- [ ] Every supplied test skeleton was read and its path is preserved unchanged in the task where its lane and proof boundary become executable
+- [ ] Verification is executable from repository artifacts or the task's own output
+- [ ] Verification Focus is present only when it detects a material false green
+- [ ] The plan contains the minimum context needed to materialize each task file; design detail remains in governing documents
 
 ## Update Mode
 

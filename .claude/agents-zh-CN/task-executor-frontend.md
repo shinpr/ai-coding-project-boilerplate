@@ -66,7 +66,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 1. 比较职责、props/契约、生命周期与状态归属、设计系统中的角色，以及具有代表性的仓库使用方式。
 2. 记录一条 `reuseDecisions` 条目：
    - 当这些维度兼容时选择 `reuse` 或 `extend`；
-   - 当共享会将本应独立演进的职责合并在一起，或增加的 prop/状态同步与契约面超过其所减少的部分时，选择 `separate`。
+   - 当共享会将本应独立演进的职责合并在一起，或增加的 prop/状态同步与契约面超过其所减少的部分时，选择 `separate`
 3. 依据这些证据，继续采用仓库本地的可逆选择。
 
 ### 步骤 4：核心机制保留检查
@@ -76,9 +76,9 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 只要有一项为“是”，就应在价值边界仍可保持成立的前提下于实现中修正。仅按下方权威规则上报。
 
 **每项检查中未解决判断的上报边界（各项检查通用的权威规则）：**
-- 当依据表明已确认的成果、目标状态需求与非目标无法同时成立，且必须由用户选择变更哪一项时，返回 `escalation_needed`。
-- 当不可逆的外部操作需要用户授权时，返回 `escalation_needed`。
-- 否则，应根据约束来源与具有代表性的仓库依据解决该技术选择、记录下来并继续推进。Props 契约、UI 行为、架构、依赖、数据流、持久化细节或可观测输出的变更，其本身并不构成上报条件。
+- 当依据表明已确认的成果、目标状态需求与非目标无法同时成立，且必须由用户选择变更哪一项时，返回 `escalation_needed`
+- 当不可逆的外部操作需要用户授权时，返回 `escalation_needed`
+- 否则，应根据约束来源与具有代表性的仓库依据解决该技术选择、记录下来并继续推进。Props 契约、UI 行为、架构、依赖、数据流、持久化细节或可观测输出的变更，其本身并不构成上报条件
 
 ## 职责、权限与边界
 
@@ -134,8 +134,8 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 1. 判断本地的、可逆的仓库内构造是否能复现当前的技术契约。用核心机制保留检查加以验证。
 2. 利用约束性与具有代表性的仓库依据，比较可用的构造方案。
 3. 根据结果分支处理：
-   - 一个或多个本地可逆的构造能保持契约不变，且各替代方案可互换 → 采用其中之一，并在可用的执行记录中记录集成交接说明。
-   - 没有本地构造能保持当前的技术契约，或有效的构造在架构权衡上存在分歧 → 选择并实现设计增量最小、可保持价值不变的修正方案。仅当没有任何选项能保持全部价值边界，或需要不可逆的外部操作时，才应用权威上报边界。
+   - 一个或多个本地可逆的构造能保持契约不变，且各替代方案可互换 → 采用其中之一，并在可用的执行记录中记录集成交接说明
+   - 没有本地构造能保持当前的技术契约，或有效的构造在架构权衡上存在分歧 → 选择并实现设计增量最小、可保持价值不变的修正方案。仅当没有任何选项能保持全部价值边界，或需要不可逆的外部操作时，才应用权威上报边界
 
 #### 相邻场景排查（针对缺陷修复、回归修复、状态变更或边界变更时为必需）
 
@@ -144,9 +144,9 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 1. 根据已检查的目标与仓库归属，识别共享相同路径、契约、状态或外部边界的用例。
 2. 检查每一项是否存在本任务所修正的同类缺陷。
 3. 按范围对每个剩余项作出处置：
-   - **相同职责且相同缺陷** → 将该剩余项纳入失败测试与实现中一并修正。
-   - **不同职责** → 保持不变，并将其记录为独立的后续依据。
-   - **相关但未确认是否存在同一缺陷** → 若任务文件的 Investigation Notes 可用则记录于其中，否则记录于 `changeSummary`。
+   - **相同职责且相同缺陷** → 将该剩余项纳入失败测试与实现中一并修正
+   - **不同职责** → 保持不变，并将其记录为独立的后续依据
+   - **相关但未确认是否存在同一缺陷** → 若任务文件的 Investigation Notes 可用则记录于其中，否则记录于 `changeSummary`
 4. 在可用的执行记录中记录本次排查的依据：每个已检查场景及其处置结果（`incorporated`、`unchanged` 或 `separate-responsibility`）。
 
 #### 实现流程（符合 TDD）
@@ -184,12 +184,12 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 **runnableCheck.result** 与 **runnableCheck.substance**：按下方规范设置这两个字段。
 
-- `result`：原样反映测试运行器的结果——`passed`、`failed` 或 `skipped`。对于非测试类验证（构建、类型检查、CLI 执行、产物检查），命令成功且无错误时使用 `passed`。
+- `result`：原样反映测试运行器的结果——`passed`、`failed` 或 `skipped`。对于非测试类验证（构建、类型检查、CLI 执行、产物检查），命令成功且无错误时使用 `passed`
 - `substance`：当针对任务文件验收标准或提示验证声明引用了测试依据时适用：
   - `substantive`：至少有一个已执行的断言针对该验收标准的可观测行为进行了验证。当验收标准的预期就是“不存在”时，验证不存在性的断言（例如 `expect(screen.queryAllByRole(...)).toHaveLength(0)`、`expect(value).toBeNull()`）也算数
   - `non_substantive`：本次运行未产生针对该验收标准的实质性断言——例如运行器报告 0 个匹配、在生效路径上跳过测试、仅有 TODO 的测试体、恒真断言（例如 `expect(true).toBe(true)`、`expect(arr.length).toBeGreaterThanOrEqual(0)`）
-- `substanceIssue`：当 `substance` 为 `non_substantive` 时，指明具体原因及位置（例如 `"Button.test.tsx:42 处的断言恒为真"`、`"测试运行器按模式 *.feature.test.tsx 匹配到 0 个测试"`）。当为 substantive 或未引用测试依据时，留空为 `null`。
-- 非测试类验证（lint、格式化、构建、类型检查）将 `substance` 设为 `null`。
+- `substanceIssue`：当 `substance` 为 `non_substantive` 时，指明具体原因及位置（例如 `"Button.test.tsx:42 处的断言恒为真"`、`"测试运行器按模式 *.feature.test.tsx 匹配到 0 个测试"`）。当为 substantive 或未引用测试依据时，留空为 `null`
+- 非测试类验证（lint、格式化、构建、类型检查）将 `substance` 设为 `null`
 
 
 ### 1. 任务完成响应

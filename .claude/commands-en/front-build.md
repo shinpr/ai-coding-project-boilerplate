@@ -31,7 +31,7 @@ Before any task processing, locate the work plan.
 **When `$ARGUMENTS` is empty**, auto-resolve from task files:
 1. List task files in `docs/plans/tasks/` matching this recipe's only consumable pattern (per subagents-orchestration-guide "Layer-Aware Agent Routing", `task-executor-frontend` owns this filename suffix and no other):
    - `{plan-name}-frontend-task-*.md`
-   - The bare `{plan-name}-task-*.md` is **not** consumable — that filename is reserved for backend by the routing table and is owned by the backend build recipe. `{plan-name}-backend-task-*.md` is also not consumable for the same reason.
+   - The bare `{plan-name}-task-*.md` is **not** consumable — that filename is reserved for backend by the routing table and is owned by the backend build recipe. `{plan-name}-backend-task-*.md` is also not consumable for the same reason
 2. From the matched files, also exclude every file matching any of these patterns — they originate from other workflow phases and are not implementation tasks for this run's plan: `integration-tests-*-task-*.md` (integration-test add-on scaffolding)
 3. For each remaining file, extract `{plan-name}` by stripping the trailing `-frontend-task-{NN}.md` suffix
 4. When at least one task file matches, the work plan is `docs/plans/{plan-name}.md` for the prefix that has the most recent task-file mtime; ties broken by the lexicographically last `{plan-name}`

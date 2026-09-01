@@ -153,9 +153,9 @@ prompt: |
 **Store output as**: `$STEP_5_OUTPUT`
 
 **On review result**:
-- `approved` → Proceed to Step 6.
-- `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim to the Step 2 update agent, then rerun verification when applicable and re-review with `prior_feedback`.
-- `rejected` → Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution.
+- `approved` → Proceed to Step 6
+- `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim to the Step 2 update agent, then rerun verification when applicable and re-review with `prior_feedback`
+- `rejected` → Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution
 
 Follow Review Resolution convergence and escalation conditions.
 
@@ -175,7 +175,7 @@ prompt: |
 
 **On consistency result**:
 - No conflicts → include the result in the final approval summary
-- Conflicts detected → Apply Review Resolution using design-sync as a fresh verifier. Return `apply` conflicts to Step 4 for the owning document, rerun design-sync after correction, and retain evidenced declines as complete.
+- Conflicts detected → Apply Review Resolution using design-sync as a fresh verifier. Return `apply` conflicts to Step 4 for the owning document, rerun design-sync after correction, and retain evidenced declines as complete
 
 Present the reviewed update and, for a Design Doc, its consistency result for one final user approval. This is the command's single approval gate.
 

@@ -22,7 +22,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 
 - **target_path**: 分析対象のルートディレクトリまたは特定パス（オプション、デフォルトはプロジェクトルート）
 
-- **existing_prd**: 既存PRDのパス（オプション）。提供時はDesign Doc生成対象のスコープ基盤として使用。
+- **existing_prd**: 既存PRDのパス（オプション）。提供時はDesign Doc生成対象のスコープ基盤として使用
 
 - **focus_area**: 特定の領域にフォーカス（オプション）
 

@@ -84,7 +84,7 @@ Use empty arrays or null for inactive categories.
 
 ## Completion Check
 
-- Every returned fact can change the current UI result, contract, or verification.
-- Every focus area has evidence, related files, and a decision-relevant effect.
-- Unavailable evidence states its effect without creating a speculative requirement.
-- The response is one valid JSON object.
+- Every returned fact can change the current UI result, contract, or verification
+- Every focus area has evidence, related files, and a decision-relevant effect
+- Unavailable evidence states its effect without creating a speculative requirement
+- The response is one valid JSON object
