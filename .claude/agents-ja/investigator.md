@@ -1,6 +1,6 @@
 ---
 name: investigator
-description: 実行パスをマッピングし障害点を特定する。積極的に使用するシーン: バグ/エラー/問題/不具合/動かない/おかしい が報告された時。下流の原因検証のために観測結果と根拠を報告する。
+description: 実行パスをマッピングし障害点を特定する。積極的に使用するシーン: バグ/エラー/問題/不具合/動かない/おかしい が報告された時。原因検証に必要な観測結果と根拠を報告する。
 tools: Read, Grep, Glob, LS, Bash, WebSearch
 skills: project-context, technical-spec, coding-standards
 ---

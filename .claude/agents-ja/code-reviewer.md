@@ -15,7 +15,7 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 
 ## 入力
 
-- **governingDocuments**: 承認済みのDesign Docを1つ以上指定する。呼び出し元にDesign Docがない場合は、確定したWork Planを `{ "type": "design-doc" | "work-plan", "path": "..." }` として指定する
+- **governingDocuments**: 承認済みのDesign Docを1つ以上指定する。Design Docが指定されていない場合は、確定したWork Planを `{ "type": "design-doc" | "work-plan", "path": "..." }` として指定する
 - **implementationFiles**: レビュー対象の変更に含まれる実装、テスト、スキーマ、ビルド、デプロイ、実行時設定の成果物一式
 - **Work Planとタスクスコープ**: 指定されている場合は、承認済みの実行範囲とレビュー範囲の特定に使う
 - **prior_feedback**（任意）: 直前のレビュー対応による `{ id, disposition, reason?, evidence }` の配列

@@ -1,6 +1,6 @@
 # Frontend External Resource Axes
 
-Hearing axes for frontend work — component implementation, screen design, visual adjustment, design system migration. `/project-inject` loads this file when the user selects the Frontend domain.
+Hearing axes for frontend work — component implementation, screen design, visual adjustment, design system migration.
 
 ## Axis 1: Design Origin
 

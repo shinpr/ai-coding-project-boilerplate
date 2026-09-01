@@ -1,6 +1,6 @@
 # インフラストラクチャ外部リソース軸
 
-デプロイ、環境設定、Infrastructure as Code に関する作業向けのヒアリング軸。`/project-inject` はユーザーがインフラストラクチャドメインを選択したときにこのファイルを読み込む。
+デプロイ、環境設定、Infrastructure as Code に関する作業向けのヒアリング軸。
 
 ## Axis 1: IaC ソース
 

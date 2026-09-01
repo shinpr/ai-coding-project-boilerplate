@@ -96,7 +96,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
    - **テストファイル**: ユニットのソース領域に一致するテストファイルをGlobする（一般的な規則: `*test*`, `*spec*`, `*Test*`）。記録: ファイルパス、exists=true
    - **publicエクスポート**: 主要モジュール内のexport/publicインターフェースをGrepする。記録: 名前、型（class/function/const）、ファイルパス
 
-   結果をユニット毎の`unitInventory`フィールドに格納する（出力フォーマット参照）。このインベントリは下流エージェントが網羅性を検証するために使用する。
+   結果をユニットごとの`unitInventory`フィールドに格納する（出力フォーマット参照）。このインベントリを網羅性のエビデンスとする。
 
 6. **境界検証**
    - 各ユニットが明確なユーザー価値を提供することを確認

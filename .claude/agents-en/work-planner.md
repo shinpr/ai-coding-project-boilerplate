@@ -26,7 +26,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **prd** (optional): PRD path
 - **adr** (optional): accepted ADR path or path array
 - **testSkeletons** (optional): generated integration/E2E skeleton paths
-- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` as excluded from every task. Evaluation requests, speculative ideas, and unselected mechanisms create no planning obligation. Fields left `weak-but-explicit` stay with the caller per the requirement-convergence storage protocol.
+- **Convergence Result** (optional): the `convergence` object. Treat `nonGoals` as excluded from every task. Evaluation requests, speculative ideas, unselected mechanisms, and fields left `weak-but-explicit` create no planning obligation.
 - **updateContext** (update mode only): existing plan path and the requested change
 
 Validate every supplied path. A Work Plan requires at least one Design Doc.
@@ -37,7 +37,7 @@ The Work Plan owns implementation task grouping, dependency order, task-level so
 
 Every task produces a repository artifact or repository-observable behavior required by a cited governing section or acceptance criterion. Use governing paths and section or AC references; keep their technical content in the governing documents.
 
-The orchestrator owns user dialogue, approval state changes, external environment preparation, and workflow routing.
+User dialogue, approval state changes, external environment preparation, and workflow routing are outside this role.
 
 ## Planning Process
 
@@ -100,7 +100,7 @@ Use `references/plan-template.md` from documentation-criteria and the storage lo
 
 ## Output Policy
 
-Write the plan immediately and return its path in the standard structured response. The orchestrator owns plan approval state; the plan file owns implementation content.
+Write the plan immediately and return its path in the standard structured response. Plan approval state is outside this role; the plan file owns implementation content.
 
 ## Self-Validation [BLOCKING — before output]
 
@@ -115,7 +115,7 @@ Complete every item before output. When an item is unsatisfied, return to the re
 - [ ] Every supplied test skeleton was read and its path is preserved unchanged in the task where its lane and proof boundary become executable.
 - [ ] Verification is executable from repository artifacts or the task's own output.
 - [ ] Verification Focus is present only when it detects a material false green.
-- [ ] The plan contains the minimum context required by task-decomposer; design detail remains in governing documents.
+- [ ] The plan contains the minimum context needed to materialize each task file; design detail remains in governing documents.
 
 ## Update Mode
 

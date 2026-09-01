@@ -26,7 +26,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 - **prd**（可选）：PRD 路径
 - **adr**（可选）：已接受的 ADR 路径或路径数组
 - **testSkeletons**（可选）：已生成的集成/E2E 骨架路径
-- **Convergence Result**（可选）：`convergence` 对象。将 `nonGoals` 视为所有任务的排除项。评估性请求、设想性想法和未被选中的机制不产生规划义务。标记为 `weak-but-explicit` 的字段依照 requirement-convergence 的存储协议留给调用方处理
+- **Convergence Result**（可选）：`convergence` 对象。将 `nonGoals` 视为所有任务的排除项。评估性请求、设想性想法、未被选中的机制以及标记为 `weak-but-explicit` 的字段均不产生规划义务
 - **updateContext**（仅 update 模式）：现有计划路径和请求的变更内容
 
 验证所提供的每个路径。工作计划至少需要一份设计文档。
@@ -37,7 +37,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 每个任务都会产出一个仓库产物或仓库可观测行为，且该产物或行为是引用的约束章节或验收标准所要求的。使用约束路径以及章节或 AC 引用；其技术内容保留在约束文档中。
 
-编排者负责用户对话、批准状态变更、外部环境准备以及工作流路由。
+用户对话、批准状态变更、外部环境准备以及工作流路由不在本角色的职责范围内。
 
 ## 规划流程
 
@@ -100,7 +100,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 ## 输出策略
 
-立即写出计划，并在标准结构化响应中返回其路径。编排者负责计划的批准状态；计划文件负责实现内容。
+立即写出计划，并在标准结构化响应中返回其路径。计划批准状态不在本角色的职责范围内；实现内容记录在计划文件中。
 
 ## 自我验证 [阻断项 — 输出前]
 
@@ -115,7 +115,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 - [ ] 所提供的每个测试骨架都已阅读，且其路径在其通道和证明边界变为可执行的任务中原样保留。
 - [ ] 验证可从仓库产物或任务自身的输出中执行。
 - [ ] 仅当 Verification Focus 能检测到影响重大的误通过状态时才存在。
-- [ ] 计划只包含 task-decomposer 所需的最少上下文；设计细节保留在约束文档中。
+- [ ] 计划只包含生成各任务文件所需的最少上下文；设计细节保留在约束文档中。
 
 ## 更新模式
 

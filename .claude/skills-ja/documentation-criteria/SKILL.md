@@ -59,7 +59,7 @@ description: 変更に必要なPRD、ADR、UI Spec、Design Doc、作業計画�
 | UI Specアセット | `docs/ui-spec/assets/{feature-name}/` | プロトタイプコードファイル | - |
 | Design Doc | `docs/design/` | `[feature-name]-design.md` | [design-template.md](references/design-template.md) |
 | 作業計画書 | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | [plan-template.md](references/plan-template.md) |
-| タスクファイル | `docs/plans/tasks/` | task-decomposerのファイル名表を参照 | [task-template.md](references/task-template.md) |
+| タスクファイル | `docs/plans/tasks/` | `{plan-name}-task-{NN}.md`（backendのみの計画）、`{plan-name}-backend-task-{NN}.md`（frontendを含む計画のbackend）、`{plan-name}-frontend-task-{NN}.md`（frontend） | [task-template.md](references/task-template.md) |
 
 生成パスの可変部分は、小文字ASCIIのkebab-case slugとする。非ASCIIの入力はパス作成前にこの形式へ変換する。
 

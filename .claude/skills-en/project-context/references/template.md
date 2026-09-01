@@ -1,6 +1,6 @@
 # Project Context Section Catalog
 
-This file is the section catalog used by `/project-inject`. Consumer agents load `SKILL.md` only; this file is loaded only during update operations.
+Defines the section catalog and per-section output structure for project context.
 
 ## Section Index
 
@@ -168,8 +168,8 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 
 ## Output Assembly Rules
 
-After hearing completes, the calling command (`/project-inject`) assembles the configured `SKILL.md` per the order it specifies. This file owns the per-section content shape (above) and these cross-section rules:
+After hearing completes, assemble the configured `SKILL.md` in Section Index order. The catalog defines the per-section content shape above and these cross-section rules:
 
 1. Sections marked for omission produce zero output lines. The rebuilt body advances directly to the next included section.
 2. Domain blocks within External Resources appear in catalog order (Frontend → Backend → API contract → Infrastructure), regardless of the order in which the user selected them during hearing.
-3. The Vagueness rejection rule (defined in `/project-inject` Step 3) is a hearing-time filter applied to every `add` and `update` section. The captured rules that pass the filter are written through normal section output; the filter contributes zero output lines of its own.
+3. Apply this hearing-time filter to every `add` and `update` section: when a user-provided rule uses subjective phrasing (for example, "be careful about performance"), ask, "How would AI verify this rule passes? Restate it as a measurable check, or reply 'drop' to omit." Keep rules supplied in measurable form, replace subjective rules with the user's restated version, and omit a rule when the user replies `drop`. Write retained rules through normal section output; the filter contributes zero output lines of its own.

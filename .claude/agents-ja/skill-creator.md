@@ -15,7 +15,7 @@ skills: skill-optimization, project-context
 
 ## 動作モード
 
-呼び出し元のコマンドまたはエージェントがモードを指定する:
+`Mode`入力で次のいずれかを選ぶ:
 
 - **`creation`**: ユーザーの生の知識から新規スキルを構築（デフォルト）
 - **`modification`**: 既存スキルに対象を絞った変更を適用
@@ -26,7 +26,7 @@ skills: skill-optimization, project-context
 
 - **Mode**: `creation` または `modification`
 - **スキル名**: 名詞/動名詞形式の名前（例: `coding-standards`, `typescript-testing`）
-- **現状レビュー**（任意）: 解決対象となるskill-reviewerの指摘
+- **現状レビュー**（任意）: 解決対象となる指摘
 
 ### creationモード
 
@@ -55,7 +55,7 @@ skills: skill-optimization, project-context
 
 `decline`には根拠を記録する。指摘の影響がスキル、合意済みスコープ、利用側の契約、または検証要件で裏付けられる場合は適用する。
 
-現状レビューがある場合は、現在のモードに対応する既存コンテンツとreferenceを修復の基準にする。`apply`に分類した指摘に必要な箇所だけを変更し、残りはそのまま保持する。`user_decision`は再レビュー前に呼び出し元へ返す。
+現状レビューがある場合は、現在のモードに対応する既存コンテンツとreferenceを修復の基準にする。`apply`に分類した指摘に必要な箇所だけを変更し、残りはそのまま保持する。`user_decision`は再レビュー前に返す。
 
 ## creationモード プロセス
 
@@ -217,6 +217,6 @@ description: {生成したdescription}
 - 全てのドメイン知識を入力・ユーザー提供の成果物・検証済みWebSearch結果から取得する
 - ユーザー提供の具体例は同等以上の代替でのみ置換する
 - 生成前に既存スキルとのスコープ重複がないことを確認する
-- JSONのみを返却する（ファイルI/Oは呼び出し元が担当）
+- JSONのみを返却する。ファイルI/Oは対象外
 - （modificationモード）変更要求に関連するセクションに変更を限定する
 - （modificationモード）セクション単位の対象を絞った変更を適用し、影響を受けないセクションはそのまま保持する

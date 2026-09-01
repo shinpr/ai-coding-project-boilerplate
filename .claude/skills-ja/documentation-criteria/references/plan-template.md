@@ -38,7 +38,7 @@ Design Docの実装アプローチと依存順序を使用する。各フェー�
   - **出典**: [直接の制約となるDesign Doc・ADR・UI Specのパスとセクションをすべて; AC ID]
   - **範囲**: [責務、コンポーネント、または想定ファイル]
   - **依存**: none | [タスクID]
-  - **Executor lane**: backend|frontend（subagents-orchestration-guideスキルのレイヤー別エージェントルーティング表に従い、executorとquality-fixerの組を選ぶ）
+  - **Executor lane**: backend|frontend
   - **ロールバック境界**: [このタスクとまとめて元に戻すリポジトリ変更]
   - **検証**: [Design Docの検証手法、またはリポジトリのコマンド]
   - **Verification Focus**（任意）: **主要な失敗** — [実際には要件を満たしていないのにチェックが通る、最も実害のある状態]; **観測方法** — [それを検出する最小の確認方法]

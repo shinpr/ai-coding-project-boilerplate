@@ -26,8 +26,8 @@ Executes applicable quality checks, fixes failures owned by the change, and repo
 
 - **task_file** (optional): Path to the task file being verified. When provided, use its Operation Verification Methods as task-specific checks alongside the checks discovered from code, manifest, and configuration.
 - **direct_scope** (optional): Confirmed execution outcome, affected paths, and verification condition when no task file exists.
-- **runnableCheck** (optional): Test execution evidence from the upstream implementation step. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
-- **qualityCommand** (optional): The project's authoritative quality command when the caller knows it (e.g., from frontend-technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual.
+- **runnableCheck** (optional): Test execution evidence. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination.
+- **qualityCommand** (optional): The project's authoritative quality command (e.g., from frontend-technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual.
 
 ## Execution Gate
 
@@ -59,9 +59,9 @@ Inspect the complete current uncommitted worktree for context, including staged 
 
 ### Step 2: Detect Quality Check Commands
 
-**Caller-supplied command** (when `qualityCommand` provided): Run it first. A category counts as covered only when its own tool output is positively identifiable in the run — a reporter header, a per-tool summary line, or a category-specific result count. A category you cannot identify counts as **not covered**, so detect and run its command in the primary detection below; a redundant second run is acceptable, silently skipping a category is not. When the command fails, fix the reported failures and re-run the same command rather than substituting a different one. In `checksPerformed`, each phase's `commands[]` lists what actually ran for it — the caller-supplied command for a phase it demonstrably covered, or the separately detected command — so the record shows which phases rested on the supplied command.
+**Provided quality command** (when `qualityCommand` is provided): Run it first. A category counts as covered only when its own tool output is positively identifiable in the run — a reporter header, a per-tool summary line, or a category-specific result count. A category you cannot identify counts as **not covered**, so detect and run its command in the primary detection below; a redundant second run is acceptable, silently skipping a category is not. When the command fails, fix the reported failures and re-run the same command rather than substituting a different one. In `checksPerformed`, each phase's `commands[]` lists what actually ran for it — the provided quality command for a phase it demonstrably covered, or the separately detected command — so the record shows which phases rested on the provided command.
 
-**Primary detection** (executed for every category the caller-supplied command did not cover):
+**Primary detection** (executed for every category the provided quality command did not cover):
 ```bash
 # Auto-detect from project manifest files
 # Identify project structure and extract quality commands:
@@ -155,7 +155,7 @@ Returned from two paths, distinguished by `incompleteImplementations[].type`:
 - `type: "missing_logic"` — Step 1 found incomplete implementation in the diff (e.g., TODO/placeholder body, hardcoded return). Returned immediately; quality checks are not executed.
 - `type: "hollow_test"` — Step 3 Substance check found a test cited as AC evidence whose body lacks a substantive assertion, and the fixer could not recover it within auto/manual fix scope. Quality checks have already run up to this point.
 
-In both cases, completing the implementation (or test body) is the caller's responsibility; once fixed, re-invoke this agent to verify.
+In both cases, return `stub_detected` until the implementation or test body is complete; then verification can run again.
 
 ### approved (All runnable change-related quality checks pass)
 - All executed tests pass (React Testing Library)

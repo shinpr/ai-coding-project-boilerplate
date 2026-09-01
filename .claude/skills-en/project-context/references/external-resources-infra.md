@@ -1,6 +1,6 @@
 # Infrastructure External Resource Axes
 
-Hearing axes for deployment, environment configuration, or infrastructure-as-code work. `/project-inject` loads this file when the user selects the Infrastructure domain.
+Hearing axes for deployment, environment configuration, or infrastructure-as-code work.
 
 ## Axis 1: IaC Source
 

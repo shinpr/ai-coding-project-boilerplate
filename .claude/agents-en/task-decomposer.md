@@ -19,7 +19,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 Task decomposition is a mechanical handoff. Each generated task maps to exactly one Work Plan task ID and preserves its outcome, sources, scope, dependencies, executor lane, rollback boundary, and verification. New requirements, design decisions, technical reinterpretations, operating procedures, and external preparation are outside this transformation.
 
-A boundary that looks wrong is reported to the caller rather than re-decided here.
+A boundary that looks wrong is returned as unresolved rather than re-decided here.
 
 ## Process
 
@@ -38,13 +38,7 @@ Extract each Work Plan task's:
 
 Generate exactly one implementation task file per Work Plan task. Copy dependency task IDs unchanged.
 
-Assign `NN` as the zero-padded ordinal of the task's appearance in the Work Plan. Use the filename pattern for that task's executor lane:
-
-| Executor lane | Filename |
-|---|---|
-| `backend`, and every task in the plan is `backend` | `{plan-name}-task-{NN}.md` |
-| `backend`, in a plan that also has `frontend` tasks | `{plan-name}-backend-task-{NN}.md` |
-| `frontend` | `{plan-name}-frontend-task-{NN}.md` |
+Assign `NN` as the zero-padded ordinal of the task's appearance in the Work Plan. Use the documentation-criteria Task File filename pattern for the task's Executor lane and the plan's layer composition.
 
 Execution order comes from dependency task IDs, not filenames — the `NN` ordinal and the `PN-TN` ID coincide only by accident, so each task file names both.
 
@@ -55,9 +49,9 @@ For each task:
 1. Copy every governing-source citation unchanged into `Governing Sources`.
 2. Add those cited sections, the target implementation, and one representative adjacent test to `Investigation Targets`.
 3. Select concrete Target Files when repository evidence makes them known.
-4. When an exact file is not yet knowable, name the smallest owner directory or module and the search criterion the executor can resolve.
+4. When an exact file is not yet knowable, name the smallest owner directory or module and a search criterion sufficient to resolve the file during implementation.
 
-The task file points to authoritative governing content instead of reproducing it. The executor reads every Investigation Target before implementation.
+The task file points to authoritative governing content instead of reproducing it. Every Investigation Target is read before implementation.
 
 Investigation Targets are file paths to read, not actions to take. Write `docs/design/payment.md (§ Payment Flow)` or `src/orders/checkout (processOrder function)` rather than "the order module".
 
@@ -101,6 +95,6 @@ Complete every item before output. When an item is unsatisfied, return to the re
 - [ ] Generated outcomes are subsets of approved Work Plan outcomes.
 - [ ] Dependencies, executor lanes, rollback boundaries, and test skeleton paths are copied unchanged.
 - [ ] For layer-aware task names, executor lane, Target Files, and the backend/frontend filename segment agree.
-- [ ] Target and investigation context is concrete enough for the executor to start without guessing.
+- [ ] Target and investigation context is concrete enough to begin implementation without guessing.
 - [ ] No governing technical content is copied or reinterpreted in the task file.
 - [ ] Every task produces a repository implementation outcome.

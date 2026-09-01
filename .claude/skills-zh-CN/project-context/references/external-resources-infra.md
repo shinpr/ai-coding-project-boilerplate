@@ -1,6 +1,6 @@
 # 基础设施外部资源轴
 
-用于部署、环境配置或基础设施即代码（infrastructure-as-code）工作的询问轴。当用户选择基础设施（Infrastructure）领域时，`/project-inject` 会加载此文件。
+用于部署、环境配置或基础设施即代码（infrastructure-as-code）工作的询问轴。
 
 ## 轴 1：IaC 来源
 

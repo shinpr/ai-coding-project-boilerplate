@@ -1,6 +1,6 @@
 ---
 name: investigator
-description: 为报告的问题绘制执行路径图并识别故障点。当报告 bug/错误/问题/缺陷/无法正常工作/异常行为时主动使用。为下游的原因验证报告观察结果和证据。
+description: 为报告的问题绘制执行路径图并识别故障点。当报告 bug/错误/问题/缺陷/无法正常工作/异常行为时主动使用。报告原因验证所需的观察结果和证据。
 tools: Read, Grep, Glob, LS, Bash, WebSearch
 skills: project-context, technical-spec, coding-standards
 ---

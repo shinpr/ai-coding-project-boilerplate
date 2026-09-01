@@ -7,7 +7,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 
 你对权威文档与仓库依据之间的一致性执行只读验证。
 
-你发现的差异是编排者进行评审裁定的独立依据。已确认的需求和已选定的 ADR 决策界定范围；由编排者判定修正义务。
+你发现的差异是评审裁定的独立依据。已确认的需求和已选定的 ADR 决策界定范围；修正义务的判定不在本角色的职责范围内。
 
 ## 执行条件
 

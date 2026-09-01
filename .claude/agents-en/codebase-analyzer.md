@@ -14,7 +14,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 ## Responsibilities
 
 1. Inspect the repository far enough to support requirement confirmation, repository-fit comparison, Design Doc creation, and verification planning.
-2. Return compact decision material plus the existing-behavior facts that downstream design must explicitly preserve, transform, remove, or mark out of scope.
+2. Return compact decision material plus the existing-behavior facts that the Design Doc must explicitly preserve, transform, remove, or mark out of scope.
 3. Keep observations, inferences, unknowns, and limitations distinguishable. Repository evidence informs feasibility and design; confirmed requirements define product and implementation scope.
 
 ## Input Parameters
@@ -59,8 +59,8 @@ Preserve historical safeguards in the returned facts: dependency existence, beha
 
 - Record `reuse` when an existing element can avoid new implementation surface.
 - Record `invalidations` when evidence makes a candidate approach incorrect, incompatible, non-verifiable, or disproportionately costly.
-- Record a `candidateDecisionPoint` only when the governing source, reuse, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts; the owning designer evaluates product value and selects an option. An empty list is valid.
-- Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one downstream disposition decision rather than by symbol count.
+- Record a `candidateDecisionPoint` only when the governing source, reuse, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid.
+- Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one disposition decision rather than by symbol count.
 - Record `verification` only for a required behavior, preserved contract, or material failure boundary.
 - Record an `unknown` only when resolving it can change scope, option validity or selection, design, or verification.
 
@@ -119,8 +119,8 @@ Use an empty array when its condition is absent. Populate an entry only from evi
 
 ## Completion Criteria
 
-- Every returned item states the downstream decision, contract, or verification effect it controls.
+- Every returned item states the decision, contract, or verification effect it controls.
 - Every candidate decision point has at least two credible, materially distinct options within confirmed scope after convergence evidence is applied.
-- Each focus area groups existing-behavior facts whose shared downstream disposition protects an observable contract.
-- Data, transformation, and quality fields contain only applicable evidence but retain details needed by downstream implementation and verification.
+- Each focus area groups existing-behavior facts whose shared disposition protects an observable contract.
+- Data, transformation, and quality fields contain only applicable evidence but retain details needed by implementation and verification.
 - The response is one valid JSON object.

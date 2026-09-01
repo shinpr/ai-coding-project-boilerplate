@@ -15,7 +15,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 ## Operating Modes
 
-The calling command or agent specifies the mode:
+The `Mode` input selects one of these modes:
 
 - **`creation`**: Build a new skill from raw user knowledge (default)
 - **`modification`**: Apply targeted changes to an existing skill
@@ -26,7 +26,7 @@ The calling command or agent specifies the mode:
 
 - **Mode**: `creation` or `modification`
 - **Skill name**: Gerund-form name (e.g., `coding-standards`, `typescript-testing`)
-- **Current review** (optional): skill-reviewer findings to resolve
+- **Current review** (optional): Findings to resolve
 
 ### Creation mode
 
@@ -55,7 +55,7 @@ When a current review is provided, resolve each `findings` entry as:
 
 Record evidence for `decline`. Apply a finding when its stated effect is supported by the skill, accepted scope, consumer contract, or verification requirement.
 
-When a current review is provided, use the current mode's existing content and references as the repair base. Modify only content required by `apply` decisions and preserve the remainder verbatim. Return `user_decision` to the caller before re-review.
+When a current review is provided, use the current mode's existing content and references as the repair base. Modify only content required by `apply` decisions and preserve the remainder verbatim. Return `user_decision` before re-review.
 
 ## Creation Mode Process
 
@@ -217,6 +217,6 @@ Return results as structured JSON:
 - Source all domain knowledge from raw input, user-provided artifacts, or verified WebSearch findings
 - Replace user-provided examples only with equivalent or improved alternatives
 - Verify no scope overlap with existing skills before generating
-- Return JSON only; the calling command handles all file I/O
+- Return JSON only; file I/O is outside scope
 - (Modification mode) Limit changes to sections related to the modification request
 - (Modification mode) Apply targeted section-level changes; preserve unaffected sections verbatim

@@ -19,7 +19,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 任务分解是一次机械化的交接。每个生成的任务对应且仅对应一个工作计划任务 ID，并保留其结果、来源、范围、依赖、执行者通道、回滚边界和验证方式。新增需求、设计决策、技术再解释、操作流程和外部准备工作都不属于这次转换的范畴。
 
-看起来有问题的边界应报告给调用方，而不是在此重新决定。
+看起来有问题的边界应作为未解决项返回，而不是在此重新决定。
 
 ## 流程
 
@@ -38,13 +38,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 每个工作计划任务生成且仅生成一个实现任务文件。依赖任务 ID 原样复制。
 
-将 `NN` 设为该任务在工作计划中出现顺序的补零序号。使用该任务执行者通道所对应的文件名：
-
-| 执行者通道 | 文件名 |
-|---|---|
-| `backend`，且计划中所有任务均为 `backend` | `{plan-name}-task-{NN}.md` |
-| `backend`，但计划中还包含 `frontend` 任务 | `{plan-name}-backend-task-{NN}.md` |
-| `frontend` | `{plan-name}-frontend-task-{NN}.md` |
+将 `NN` 设为该任务在工作计划中出现顺序的补零序号。根据任务的执行者通道和计划的分层构成，使用 documentation-criteria 中的任务文件命名规则。
 
 执行顺序来自依赖任务 ID，而非文件名——`NN` 序号与 `PN-TN` ID 只是碰巧一致，因此每个任务文件都要同时标注两者。
 
@@ -55,9 +49,9 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 1. 将每条约束来源引用原样复制到 `Governing Sources` 一节。
 2. 将这些引用章节、目标实现以及一个具有代表性的相邻测试添加到 `Investigation Targets`。
 3. 当仓库依据能够确定具体文件时，选定明确的 Target Files。
-4. 当尚无法确定确切文件时，指出最小的责任目录或模块，以及执行者可用于解析的搜索准则。
+4. 当尚无法确定确切文件时，指出最小的责任目录或模块，以及足以在实现阶段确定文件的搜索准则。
 
-任务文件指向权威的约束来源内容，而不是复制该内容。执行者在实现前需阅读每个 Investigation Target。
+任务文件指向权威的约束来源内容，而不是复制该内容。每个 Investigation Target 均需在实现前阅读。
 
 Investigation Targets 是待阅读的文件路径，而非待执行的操作。应写作 `docs/design/payment.md (§ Payment Flow)` 或 `src/orders/checkout (processOrder function)`，而不是“订单模块”。
 
@@ -101,6 +95,6 @@ Investigation Targets 是待阅读的文件路径，而非待执行的操作。�
 - [ ] 生成的结果是已批准工作计划结果的子集。
 - [ ] 依赖、执行者通道、回滚边界和测试骨架路径均原样复制。
 - [ ] 对于区分层级的任务名称，执行者通道、Target Files 与文件名中的 backend/frontend 段一致。
-- [ ] 目标和调查上下文足够具体，执行者无需猜测即可开始。
+- [ ] 目标和调查上下文足够具体，无需猜测即可开始实现。
 - [ ] 任务文件中未复制或重新解释任何约束性技术内容。
 - [ ] 每个任务都会产出一个仓库实现结果。

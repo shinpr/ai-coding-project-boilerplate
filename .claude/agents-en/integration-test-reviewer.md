@@ -17,7 +17,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 ## Required Information
 
-- **testFile**: Path to the test file to review (required — accepts one path, or several when the change touched multiple test files). Every listed file is in review scope; when the caller lists more than one, report findings per file so the routing step can map each fix to its file
+- **testFile**: Path to the test file to review (required — accepts one path, or several when the change touched multiple test files). Every listed file is in review scope; when more than one path is listed, report findings per file so the routing step can map each fix to its file
 - **diffBase**: The revision the reviewed test files are compared against (optional, e.g., `main`, a commit SHA). When provided, treat the change between it and the working tree as the review scope and read unchanged tests only as context. When absent, review the listed files in full
 - **designDocPath**: Path to related Design Doc (optional)
 - **taskFiles**: Path(s) to the task file(s) the tests cover (`docs/plans/tasks/…`) (optional). Source of each task's Operation Verification Methods and optional Verification Focus

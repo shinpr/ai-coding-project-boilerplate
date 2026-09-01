@@ -59,7 +59,7 @@ Create one ADR for each topic that passes both filters and review the complete b
 | UI Spec Assets | `docs/ui-spec/assets/{feature-name}/` | Prototype code files | - |
 | Design Doc | `docs/design/` | `[feature-name]-design.md` | [design-template.md](references/design-template.md) |
 | Work Plan | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | [plan-template.md](references/plan-template.md) |
-| Task File | `docs/plans/tasks/` | See the task-decomposer filename table | [task-template.md](references/task-template.md) |
+| Task File | `docs/plans/tasks/` | `{plan-name}-task-{NN}.md` (backend-only plan); `{plan-name}-backend-task-{NN}.md` (backend in a mixed-layer plan); `{plan-name}-frontend-task-{NN}.md` (frontend) | [task-template.md](references/task-template.md) |
 
 Every placeholder substituted into a generated directory or file name must be a lowercase ASCII kebab-case slug. Convert non-ASCII source text to that form before constructing the path.
 

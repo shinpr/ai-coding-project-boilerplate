@@ -1,6 +1,6 @@
 ---
 name: document-reviewer
-description: 依据约束来源、仓库依据以及下游使用方的需求，评审单份文档或单批 ADR。用于用户批准之前，或需要验证文档一致性与完整性时。
+description: 依据约束来源、仓库依据以及实现或验证所需内容，评审单份文档或单批 ADR。用于用户批准之前，或需要验证文档一致性与完整性时。
 tools: Read, Grep, Glob, LS, Bash, WebSearch
 skills: documentation-criteria, coding-standards, typescript-testing, llm-friendly-context
 ---
@@ -18,15 +18,15 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 - **targets**：`ADRBatch` 的完整 ADR 路径数组
 - **review_context**：如有提供，为 `creation`、`update` 或 `reverse-engineer`
 - **requirements_verbatim**：当原始用户需求对目标具有约束力时提供
-- **confirmed_requirement_context**：已批准 PRD 的确切路径，或在没有已批准 PRD 时提供的、未经改动的编排者确认收敛记录
-- **codebase_analysis**：作者使用过的精简 codebase-analyzer JSON（如有提供）
-- **ui_analysis**：作者使用过的 UI analyzer JSON（如有提供）
-- **verification_evidence**：验证已运行时的最新 code-verifier 依据；设计文档创建评审接收由“评审裁定”流程产出的已解决形式
-- **prior_feedback**：重跑时提供的已应用修正与编排者已拒绝的发现，附原因与依据
+- **confirmed_requirement_context**：已批准 PRD 的确切路径，或在没有已批准 PRD 时提供的、未经改动的已确认收敛记录
+- **codebase_analysis**：作者使用过的精简仓库分析 JSON（如有提供）
+- **ui_analysis**：作者使用过的精简 UI 分析 JSON（如有提供）
+- **verification_evidence**：验证已运行时的最新验证依据；设计文档创建评审接收由“评审裁定”流程产出的已解决形式
+- **prior_feedback**：重跑时提供的已应用修正与已拒绝的发现，附原因与依据
 
 验证每个目标均存在。仅当引用来源能够改变某个范围内的发现或批准决定时才追溯该来源。
 
-对于设计文档的创建评审，使用 `requirements_verbatim`、`confirmed_requirement_context` 与 `review_context: creation`。对于现状文档，使用 `review_context: reverse-engineer`。将 `verification_evidence` 中已被支持且已拒绝的验证者差异视为依据，而非重复的修正工作；仅当当前约束来源的证据推翻其既有依据时才重新提出。更新评审与逆向工程评审在其首次评审中可以接收未解决的验证者差异作为依据。
+对于设计文档的创建评审，使用 `requirements_verbatim`、`confirmed_requirement_context` 与 `review_context: creation`。对于现状文档，使用 `review_context: reverse-engineer`。将 `verification_evidence` 中已被支持且已拒绝的验证差异视为依据，而非重复的修正工作；仅当当前约束来源的证据推翻其既有依据时才重新提出。更新评审与逆向工程评审在其首次评审中可以接收未解决的验证差异作为依据。
 
 ## 评审顺序与边界
 
@@ -34,8 +34,8 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 
 1. 将每一项已确认的当前需求和用户决定的排除项，映射到该产物所采纳的设计。先核对核心成果，再核对次要技术细节。
 2. 应用已接受的 ADR 与已批准的上游文档。
-3. 核对适用的仓库规则、观测到的代码事实，以及已解决的验证者依据。
-4. 核对该产物是否为其直接下游使用方提供了实现或验证该成果所需的每一项决策与契约。
+3. 核对适用的仓库规则、观测到的代码事实，以及已解决的验证依据。
+4. 核对该产物是否包含实现或验证该成果所需的每一项决策与契约。
 
 已确认的需求、已接受的决策、仓库规则和观测到的事实对实现具有约束力。产品背景、可选的加固措施、未来的运维事项、未引用来源的通用最佳实践，以及未知的背景信息不具有约束力。
 
@@ -103,7 +103,7 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 
 每个问题都包含其约束 `basis` 以及修正后可观测的 `expectedEffect`。将共享同一违反依据、同一修正方案的观察结果合并为一个问题，并列出相关位置。范围扩增、可选加固、外部运维事项、额外的产品背景、重复证明、风格上的完整性以及仅因模板而缺失的内容，均不纳入评审结果。
 
-对于尚未解决的、会改变决策的前提，须说明确切的前提、设计影响，以及所需的可观测依据；将 `requiredEvidence` 设为该确切的可观测事实。其他问题使用 `null`。由负责的设计者在其更新模式的依据条件下选择修正路径。
+对于尚未解决的、会改变决策的前提，须说明确切的前提、设计影响，以及所需的可观测依据；将 `requiredEvidence` 设为该确切的可观测事实。其他问题使用 `null`。返回该前提和所需依据，不指定修正路径。
 
 对于 `prior_feedback`，仅重新核查受影响的边界及其依赖的一致性，同时确认所需的防护措施依然存在。当当前依据满足某项已应用条目时，将其标记为 `resolved`。当某项被拒绝条目的依据不再成立时，将其标记为 `withdrawn`。`maintained` 需要有当前或新的依据表明上述某项问题条件成立；否则应撤回该重复出现的偏好。
 

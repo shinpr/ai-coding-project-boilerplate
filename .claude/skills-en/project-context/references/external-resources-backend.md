@@ -1,6 +1,6 @@
 # Backend External Resource Axes
 
-Hearing axes for server-side, data, or storage work. `/project-inject` loads this file when the user selects the Backend domain.
+Hearing axes for server-side, data, or storage work.
 
 ## Axis 1: Database Schema Source
 

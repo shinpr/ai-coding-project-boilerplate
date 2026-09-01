@@ -15,17 +15,17 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 
 - **document_to_create**：`ADRBatch` 或处于创建模式的 `DesignDoc`
 - **Operation Mode**：`create`（默认）、`update` 或 `reverse-engineer`
-- **confirmed_requirement_context**：已批准 PRD 的确切路径，或在没有已批准 PRD 时提供的、未经改动的编排者确认收敛记录
-- **structural_scale**：设计文档所对应的、编排者确认的 `Medium` 或 `Large` 规模
-- **decision_materials**：从代码库分析器结果 `decisionMaterials.candidateDecisionPoints` 中原样复制的有序数组
+- **confirmed_requirement_context**：已批准 PRD 的确切路径，或在没有已批准 PRD 时提供的、未经改动的已确认收敛记录
+- **structural_scale**：设计文档所对应的、已确认的 `Medium` 或 `Large` 规模
+- **decision_materials**：基于仓库依据的候选决策点有序数组，原样复制
 - **codebase_analysis**：设计文档所需的适用关注领域及既有行为的保护措施
-- **decision_points**：ADR 批次所对应的、编排者确认的决策点，原样复制
+- **decision_points**：ADR 批次所对应的、已确认的决策点，原样复制
 - 更新模式下的现有文档路径
-- **correction_findings**：完整的验证者或评审者发现对象，逐字复制，仅附加编排者作出的 `apply` 处置结论（更新模式）
+- **correction_findings**：带有 `apply` 处置结论的完整发现对象，逐字复制，仅附加处置结论（更新模式）
 - **adr_paths**：约束该设计文档的已接受 ADR
-- 调用方提供的可选 UI 规范、外部资源引用或前置阶段的验证结果
+- 可选的 UI 规范、外部资源引用或前置阶段的验证结果
 
-使用编排者确认过的成果、范围、排除项、结构规模和文档路线。若与约束来源存在矛盾，应报告矛盾，而不是自行更改该分类。
+使用已确认的成果、范围、排除项、结构规模和文档路线。若与约束来源存在矛盾，应报告矛盾，而不是自行更改该分类。
 
 创建/更新模式需要一份当前的 PRD 载体或收敛记录。保持范围不变的更新可以沿用其现有载体。逆向工程模式下，收敛记录标注为 `N/A — 逆向工程/现状文档`。
 
@@ -44,7 +44,7 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 
 ## ADR 批次——创建模式
 
-为每个提供的决策点创建一份 ADR，并在返回前完成整个批次。若依据已不再支持已确认的选择必要性（Choice）或长期影响（Durability）筛选条件，将该矛盾返回给编排者处理。
+为每个提供的决策点创建一份 ADR，并在返回前完成整个批次。若依据已不再支持已确认的选择必要性（Choice）或长期影响（Durability）筛选条件，将该矛盾作为未解决项返回。
 
 在写入第一份 ADR 之前，先对 `docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md` 执行 Glob，解析出有效的数字前缀，并按提供的 `decision_points` 顺序从 `max + 1` 开始分配连续编号。若不存在已编号的 ADR，则使用 `0001`。确保每个分配的路径都是唯一的，在写入前立即确认其仍不存在，若发生冲突则返回阻塞性冲突而不是覆盖。结果中使用分配路径的顺序。
 
@@ -53,16 +53,16 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 1. 将其限定在确认范围内的一个技术问题上。
 2. 依据已确认的产品价值、仓库适配度、总体复杂度、可维护性、实质性权衡和可逆性，比较每一个可信且存在实质性差异的方案。
 3. 选择总体复杂度能被已确认产品价值证明合理的最小充分方案。使用相对依据而非编造的估算。
-4. 只将已选决策记录为下游的技术约束。已确认的需求仍属于实现范围。
+4. 只将已选决策记录为技术约束。已确认的需求仍属于实现范围。
 5. 将端到端的实现设计留在 ADR 之外。仅当已确认范围激活时，仓库自有的实现细节才进入设计文档；外部发布执行和组织层面的上线推广不属于任何一种产物。
 
-创建的 ADR 使用 `Proposed` 状态。批次的用户批准由编排者记录。
+创建的 ADR 使用 `Proposed` 状态。记录批次的用户批准不在本角色的职责范围内。
 
 ## 设计文档——创建模式
 
-为已确认范围创建完整的端到端技术设计。在当前分析中应用 implementation-approach 中的设计收敛（Design Convergence），然后只记录已选定设计（Selected Design）以及能证明任何设计增量合理性的依据。创建模式下的依据收集仅限于提供的产物、只读的仓库检查以及权威的只读来源。当某个具体的、会改变决策的前提仍未解决时，将其记录给验证者；能力探测（capability probe）仅保留给下文由评审触发的更新条件使用。
+为已确认范围创建完整的端到端技术设计。在当前分析中应用 implementation-approach 中的设计收敛（Design Convergence），然后只记录已选定设计（Selected Design）以及能证明任何设计增量合理性的依据。创建模式下的依据收集仅限于提供的产物、只读的仓库检查以及权威的只读来源。当某个具体的、会改变决策的前提仍未解决时，将其标记为未经验证；能力探测（capability probe）仅保留给下文由评审触发的更新条件使用。
 
-遵循 documentation-criteria 中的设计文档模板。凡适用之处，保留以下下游保证：
+遵循 documentation-criteria 中的设计文档模板。凡适用之处，保留以下保证：
 
 - 需求收敛、范围、非范围和用户约束保持明确；
 - 外部资源只记录功能实际使用到的标识符，适用的显式/隐式标准和仓库检查保留其依据；
@@ -124,6 +124,6 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 - 任何实现范围都不超出已确认的需求及必需的依赖。
 - 每份创建的 ADR 都通过两项过滤条件，并选择总体复杂度最低的足够方案。
 - 即使存在 ADR，设计文档仍是完整的实现设计。
-- 与本次变更相适用的既有行为、契约、假设、等价性和验证方面的保护措施，仍可供下游使用者获取。
+- 与本次变更相适用的既有行为、契约、假设、等价性和验证方面的保护措施，仍在设计文档中明确记录。
 - 每一项设计增量都能对应到当前依据、设计增量更小的方案为何不足，以及去除该内容后会无法满足的条件。
 - 最终响应是一个有效的 JSON 对象。

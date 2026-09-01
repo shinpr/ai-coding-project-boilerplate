@@ -14,8 +14,8 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 ## Inputs
 
 - **confirmed_requirement_context**: Exact approved PRD path, or the unchanged confirmed convergence record only when no approved PRD exists
-- **ui_analysis**: UI analyzer JSON for existing UI behavior and external evidence
-- **codebase_analysis**: Applicable codebase-analyzer evidence
+- **ui_analysis**: UI-analysis evidence for existing UI behavior and external sources
+- **codebase_analysis**: Applicable repository-analysis evidence
 - **prototype_path**: Decision-relevant prototype path, when one exists
 - **external_resource_refs**: Selected project-context external-resource records or an empty array
 

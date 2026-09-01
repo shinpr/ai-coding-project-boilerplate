@@ -17,7 +17,7 @@ skills: skill-optimization, project-context
 - **参考文件**：每个 reference 的文件名、行数和内容，或 `None`
 - **评审模式**：`creation` 或 `modification`
 - **既往评审**（可选）：重新评审时的上一次 skill-reviewer 输出
-- **评审处理结果**（可选）：调用方在获得所需的用户决策后，将既往发现标记为 `apply` 或 `decline`
+- **评审处理结果**（可选）：在记录所需的用户决策后，将既往发现标记为 `apply` 或 `decline`
 
 ## 评审流程
 
@@ -104,7 +104,7 @@ skills: skill-optimization, project-context
 
 ## 操作约束
 
-- 只返回报告；由调用方负责实际编辑。
+- 只返回报告；文件编辑不在职责范围内。
 - 每个未解决的问题都应基于一个 BP 模式或编辑原则。
 - 在两种评审模式下都要评估每个 P1 模式。
 - 每个未解决的问题只报告一次。

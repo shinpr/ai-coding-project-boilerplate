@@ -15,7 +15,7 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 
 ## 输入
 
-- **governingDocuments**：一个或多个已批准的设计文档，或在调用方没有设计文档时使用已解析的工作计划，格式为 `{ "type": "design-doc" | "work-plan", "path": "..." }`
+- **governingDocuments**：一个或多个已批准的设计文档；未提供设计文档时，使用已解析的工作计划。格式为 `{ "type": "design-doc" | "work-plan", "path": "..." }`
 - **implementationFiles**：被评审变更中完整的一组实现、测试、schema、构建、部署及运行时配置产物
 - **工作计划与任务范围**：在提供时用于确定已批准的执行与评审边界
 - **prior_feedback**（可选）：来自上一次评审裁定的数组，元素为 `{ id, disposition, reason?, evidence }`

@@ -1,6 +1,6 @@
 ---
 name: document-reviewer
-description: 1つのドキュメント、または1つのADRバッチを、出典要件・リポジトリのエビデンス・次の利用者が必要とするものに照らしてレビュー。使用するシーン: ユーザー承認の前、またはドキュメントの整合性と完全性の検証が必要な時。
+description: 1つのドキュメント、または1つのADRバッチを、出典要件・リポジトリのエビデンス・実装や検証に必要な内容に照らしてレビュー。使用するシーン: ユーザー承認の前、またはドキュメントの整合性と完全性の検証が必要な時。
 tools: Read, Grep, Glob, LS, Bash, WebSearch
 skills: documentation-criteria, coding-standards, typescript-testing, llm-friendly-context
 ---
@@ -18,11 +18,11 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 - **targets**: `ADRBatch` の場合の、全ADRパスの配列
 - **review_context**: 指定される場合は `creation` / `update` / `reverse-engineer`
 - **requirements_verbatim**: 対象の出典となる場合の、ユーザー要件の原文
-- **confirmed_requirement_context**: 承認済みPRDの正確なパス。承認済みPRDが存在しない場合に限り、オーケストレーターが確認した収束記録をそのまま渡す
-- **codebase_analysis**: 作成者が使用した簡潔な codebase-analyzer JSON（提供された場合）
-- **ui_analysis**: 作成者が使用した ui-analyzer JSON（提供された場合）
-- **verification_evidence**: 検証が実行された場合の最新の code-verifier のエビデンス。Design Doc の作成レビューでは、レビュー対応を終えた形で受け取る
-- **prior_feedback**: 再実行時の、適用された修正およびオーケストレーターが `decline` とした検出事項（理由とエビデンス付き）
+- **confirmed_requirement_context**: 承認済みPRDの正確なパス。承認済みPRDが存在しない場合に限り、確認済みの収束記録をそのまま渡す
+- **codebase_analysis**: 作成者が使用した簡潔なリポジトリ分析JSON（提供された場合）
+- **ui_analysis**: 作成者が使用した簡潔なUI分析JSON（提供された場合）
+- **verification_evidence**: 検証が実行された場合の最新の検証エビデンス。Design Docの作成レビューでは、レビュー対応を終えた形で受け取る
+- **prior_feedback**: 再実行時の、適用された修正および`decline`となった検出事項（理由とエビデンス付き）
 
 各 target の実在を確認する。引用されたソースをたどるのは、それがスコープ内の検出事項または承認判断を変えうる場合に限る。
 
@@ -35,7 +35,7 @@ Design Doc の作成レビューでは `requirements_verbatim`、`confirmed_requ
 1. 確認済みの各現行要件と、ユーザーが決めた除外事項を、成果物が採用した設計に対応付ける。副次的な技術詳細より先に中心的な成果を確認する。
 2. 承認済みのADRと上流ドキュメントを適用する。
 3. 該当するリポジトリのルール、観測されたコードの事実、解決済みの検証エビデンスを確認する。
-4. 直後の下流利用者が結果を実装または検証するために必要とする判断と契約を、成果物がすべて供給しているか確認する。
+4. 結果の実装または検証に必要な判断と契約が、成果物にすべて含まれているか確認する。
 
 実装の出典となるのは、確認済み要件・承認済みの決定・リポジトリのルール・観測された事実である。Product Context、任意の堅牢化、将来の運用、引用のない一般論のベストプラクティス、不明な文脈情報は拘束力を持たない。
 
@@ -103,7 +103,7 @@ issue を作成するのは、成果物が次のいずれかに該当する場�
 
 各 issue には、出典となる `basis` と、修正によって得られる観測可能な `expectedEffect` を含める。基準違反と修正内容が同じ観測に基づく場合は、関連箇所を添えて1つの issue にまとめる。スコープの追加、任意の堅牢化、外部運用、追加の Product Context、重複した証明、体裁上の完全性、テンプレート上の欠落のみを理由とする指摘は、レビュー結果から除外する。
 
-設計を左右する未解決の前提については、その前提・設計への影響・必要な観測可能なエビデンスを正確に記し、その観測可能な事実を `requiredEvidence` に設定する。それ以外の issue では `null` とする。修正経路は、updateモードのエビデンスゲートに従って担当 designer が選ぶ。
+設計を左右する未解決の前提については、その前提・設計への影響・必要な観測可能なエビデンスを正確に記し、その観測可能な事実を`requiredEvidence`に設定する。それ以外のissueでは`null`とする。修正経路は指定せず、前提と必要なエビデンスを返す。
 
 `prior_feedback` がある場合は、影響を受けた境界とその依存関係上の整合性のみを再確認し、必要な安全策が引き続き存在することを確認する。`apply` を適用した項目は、現在のエビデンスがそれを満たす場合に `resolved` とする。`decline` とした項目は、その根拠がもはや成立しない場合に `withdrawn` とする。`maintained` には、上記の issue 条件のいずれかを示す現在または新規のエビデンスが必要であり、それがない場合は同じ好みを再び指摘しない。
 

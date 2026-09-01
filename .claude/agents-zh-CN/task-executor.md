@@ -9,7 +9,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 ## 输入参数
 
-工作流调用方使用下列适用的规范字段：
+使用下列适用的规范字段：
 
 - **task_file**：用于计划性执行的任务文件路径
 - **direct_scope**：已确认的成果与排除范围，或用于仅提示执行的其他实现目标
@@ -17,7 +17,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 - **target_paths**：建议的起始写入与调查路径
 - **observable_verification**：证明 direct_scope 已完成的行为、产物状态或命令结果
 - **correction_findings**：来自评审裁定阶段的完整 `apply` 发现项对象，除其处置结果外保持不变
-- **incompleteImplementations**：从 quality-fixer 转来待补全的完整项
+- **incompleteImplementations**：转来待补全的完整实现项
 
 接受等价标签、以自然语言描述的实现目标，以及旧版字段名 `incomplete_implementations`，将可用的含义归一化为一个执行指令视图。从可读或可唯一重新定位的 `task_file` 中解析目标；否则从 `direct_scope` 或直接调用中解析；否则针对临时任务调用，选择下一个未完成的 `docs/plans/tasks/*-task-*.md`。当存在多个来源时，任务文件决定执行范围与价值边界，一致的直接取值可对其加以补充，而其技术层面的“如何做”仍是可根据依据修正的基线。
 
@@ -34,7 +34,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 ### 应用于实现
 在实现过程中应用已加载的架构/编码/测试规则，包括所选的测试先行或行为保持型重构流程。当当前依据支持时，遵循任务文件中的实现模式；当仓库依据表明技术层面的“如何做”已失效时，应用并记录设计增量最小、可保持价值不变的修正方案。
 
-交付的成果应满足边界处的契约、显式传播或处理的错误，以及断言该任务所交付行为的测试。下游的质量保证会再次检查这些属性。
+交付的成果应满足边界处的契约、显式传播或处理的错误，以及断言该任务所交付行为的测试。
 
 ## 设计增量检查（强制判断之前）
 
@@ -81,7 +81,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 **范围内**：执行提示中明确的实现范围或提供的任务文件，创建实现与测试，并应用 Red→Green→Refactor 的 TDD 流程。仅当进度产物存在且提示已将其分配给本工作流时才更新它们。
 
-**下游职责**：整体质量检查由 quality-fixer 负责，提交在质量批准之后进行。价值保持型的技术产物修正，通过其所属工作流回传。
+**职责边界**：完成指定范围内的实现和任务级检查。仓库整体质量批准和提交创建不在职责范围内。
 
 **上报**：仅在满足上方权威上报规则时返回 `escalation_needed`。
 
@@ -189,7 +189,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 - 非测试类验证（lint、格式化、构建、类型检查）将 `substance` 设为 `null`。
 
 ### 1. 任务完成响应
-任务完成后按以下 JSON 格式报告。编排者负责质量检查与提交：
+任务完成后按以下 JSON 格式报告。质量检查与提交不在职责范围内：
 
 ```json
 {

@@ -38,7 +38,7 @@
   - **来源**：[每一个直接构成约束的 Design Doc、ADR 或 UI Spec 路径及章节；AC ID]
   - **范围**：[职责、组件或预期文件]
   - **依赖于**：无 | [任务 ID]
-  - **Executor lane**：backend|frontend（根据 subagents-orchestration-guide 技能中的“分层感知智能体路由”表选择执行者与质量修复者配对）
+  - **Executor lane**：backend|frontend
   - **回滚边界**：[随该任务回滚的仓库变更]
   - **验证**：[Design Doc 中的验证方法或仓库命令]
   - **Verification Focus**（可选）：**主要失败点** — [影响最大的误通过状态]；**可观测检查** — [能检测到该状态的最小检查]

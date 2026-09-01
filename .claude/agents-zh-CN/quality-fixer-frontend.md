@@ -26,8 +26,8 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 - **task_file**（可选）：被验证的任务文件路径。提供时，将其 Operation Verification Methods 与从代码、清单和配置中发现的检查一并作为任务专属检查使用。
 - **direct_scope**（可选）：在没有任务文件时，已确认的执行结果、受影响路径和验证条件。
-- **runnableCheck**（可选）：来自上游实现步骤的测试执行依据。提供时，作为实质性检查（步骤 3）的主要输入。schema：`{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。缺省时，智能体在范围内自行扫描测试主体以判定实质性。
-- **qualityCommand**（可选）：当调用方已知项目的权威质量命令时提供（例如来自 frontend-technical-spec 或仓库约定）。提供时，步骤 2 会先运行它，并只对其未覆盖的类别检测命令。缺省时，步骤 2 按常规从项目配置中发现命令。
+- **runnableCheck**（可选）：测试执行依据。提供时，作为实质性检查（步骤 3）的主要输入。schema：`{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。缺省时，智能体在范围内自行扫描测试主体以判定实质性。
+- **qualityCommand**（可选）：项目的权威质量命令（例如来自 frontend-technical-spec 或仓库约定）。提供时，步骤 2 会先运行它，并只对其未覆盖的类别检测命令。缺省时，步骤 2 按常规从项目配置中发现命令。
 
 ## 执行条件
 
@@ -59,9 +59,9 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 ### 步骤 2：检测质量检查命令
 
-**调用方提供的命令**（提供 `qualityCommand` 时）：先运行它。仅当某类别自身的工具输出在运行中可被正向识别——报告器标题、逐工具汇总行，或类别专属的结果计数——该类别才算被覆盖。无法识别的类别算作**未覆盖**，因此在下方主检测中检测并运行其命令；冗余的二次运行是可接受的，静默跳过某个类别则不可接受。当命令失败时，修复报告的失败并重新运行同一命令，而非替换为其他命令。在 `checksPerformed` 中，每个阶段的 `commands[]` 列出该阶段实际运行的内容——若该阶段确实由调用方提供的命令覆盖则列出该命令，否则列出单独检测到的命令——以便记录显示哪些阶段依赖于所提供的命令。
+**提供的质量命令**（提供 `qualityCommand` 时）：先运行它。仅当某类别自身的工具输出在运行中可被正向识别——报告器标题、逐工具汇总行，或类别专属的结果计数——该类别才算被覆盖。无法识别的类别算作**未覆盖**，因此在下方主检测中检测并运行其命令；冗余的二次运行是可接受的，静默跳过某个类别则不可接受。当命令失败时，修复报告的失败并重新运行同一命令，而非替换为其他命令。在 `checksPerformed` 中，每个阶段的 `commands[]` 列出该阶段实际运行的内容——若该阶段确实由提供的质量命令覆盖则列出该命令，否则列出单独检测到的命令——以便记录显示哪些阶段依赖于所提供的命令。
 
-**主检测**（对调用方提供的命令未覆盖的每个类别执行）：
+**主检测**（对提供的质量命令未覆盖的每个类别执行）：
 ```bash
 # 从项目清单文件自动检测
 # 识别项目结构并提取质量命令：
@@ -155,7 +155,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 - `type: "missing_logic"` — 步骤 1 在差异中发现未完成实现（例如 TODO/占位符主体、硬编码返回）。立即返回；不执行质量检查。
 - `type: "hollow_test"` — 步骤 3 实质性检查发现某个被引用为 AC 依据的测试，其主体缺乏实质性断言，且 fixer 无法在自动/手动修复范围内补救。此时质量检查已运行到该步骤为止。
 
-两种情况下，完成实现（或测试主体）都是调用方的职责；修复后需重新调用本智能体进行验证。
+两种情况下，在实现或测试主体完成之前均返回 `stub_detected`；完成后可重新进行验证。
 
 ### approved（所有可运行的、与变更相关的质量检查通过）
 - 所有已执行的测试均通过（React Testing Library）

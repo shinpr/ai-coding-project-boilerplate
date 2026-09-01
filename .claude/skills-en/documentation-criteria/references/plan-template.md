@@ -38,7 +38,7 @@ Each `PN-TN` checkbox entry is one implementation task. `PN-TN` is its stable ID
   - **Source**: [every directly constraining Design Doc, ADR, or UI Spec path and section; AC IDs]
   - **Scope**: [responsibility, component, or expected files]
   - **Depends on**: none | [task IDs]
-  - **Executor lane**: backend|frontend (selects the executor and quality-fixer pair per the Layer-Aware Agent Routing table in subagents-orchestration-guide skill)
+  - **Executor lane**: backend|frontend
   - **Rollback boundary**: [repository change that reverts with this task]
   - **Verification**: [Design Doc verification method or repository command]
   - **Verification Focus** (optional): **Primary failure** — [most material false-green state]; **Observable check** — [smallest check that detects it]

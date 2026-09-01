@@ -15,17 +15,17 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 - **document_to_create**: `ADRBatch` or `DesignDoc` in create mode
 - **Operation Mode**: `create` (default), `update`, or `reverse-engineer`
-- **confirmed_requirement_context**: Exact approved PRD path, or the unchanged orchestrator-confirmed convergence record only when no approved PRD exists
-- **structural_scale**: Orchestrator-confirmed `Medium` or `Large` scale for a Design Doc
-- **decision_materials**: Ordered array copied unchanged from the codebase-analyzer result at `decisionMaterials.candidateDecisionPoints`
+- **confirmed_requirement_context**: Exact approved PRD path, or the unchanged confirmed convergence record only when no approved PRD exists
+- **structural_scale**: Confirmed `Medium` or `Large` scale for a Design Doc
+- **decision_materials**: Ordered array of repository-backed candidate decision points, copied unchanged
 - **codebase_analysis**: Applicable focus areas and existing-behavior safeguards for a Design Doc
-- **decision_points**: Orchestrator-confirmed decision points for an ADR batch, copied unchanged
+- **decision_points**: Confirmed decision points for an ADR batch, copied unchanged
 - Existing document path or paths in update mode
-- **correction_findings**: Complete verifier or reviewer finding objects with an `apply` disposition, copied verbatim with only the orchestrator disposition added (update mode)
+- **correction_findings**: Complete finding objects with an `apply` disposition, copied verbatim with only the disposition added (update mode)
 - **adr_paths**: Accepted ADRs that constrain the Design Doc
-- Optional UI Spec, external-resource references, or prior-layer verification supplied by the caller
+- Optional UI Spec, external-resource references, or prior-layer verification
 
-Use the orchestrator-confirmed outcome, scope, exclusions, Structural Scale, and document route. Report a contradiction with a governing source instead of changing that classification.
+Use the confirmed outcome, scope, exclusions, Structural Scale, and document route. Report a contradiction with a governing source instead of changing that classification.
 
 Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier. Reverse-engineer mode records convergence as `N/A — reverse-engineer/as-is document`.
 
@@ -44,7 +44,7 @@ Inspect only gaps that can change reuse, option validity, a selected decision, a
 
 ## ADR Batch — Create Mode
 
-Create one ADR per supplied decision point and finish the complete batch before returning. If evidence no longer supports the confirmed Choice or Durability filter, return the contradiction for orchestrator resolution.
+Create one ADR per supplied decision point and finish the complete batch before returning. If evidence no longer supports the confirmed Choice or Durability filter, return the contradiction as unresolved.
 
 Before the first ADR write, Glob `docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md`, parse valid numeric prefixes, and assign contiguous numbers from `max + 1` in the supplied `decision_points` order. Use `0001` when no numbered ADR exists. Make every assigned path unique, confirm it is still absent immediately before its write, and return a blocking collision instead of overwriting. Use the assigned path order in the result.
 
@@ -53,16 +53,16 @@ For each ADR:
 1. Keep one technical question inside confirmed scope.
 2. Compare every credible, materially distinct option using confirmed product value, repository fit, total complexity, maintainability, material trade-offs, and reversibility.
 3. Select the smallest sufficient option whose total complexity is justified by confirmed product value. Use relative evidence rather than fabricated estimates.
-4. Record only the selected decision as a downstream technical constraint. The confirmed requirements remain implementation scope.
+4. Record only the selected decision as a technical constraint. The confirmed requirements remain implementation scope.
 5. Keep end-to-end implementation design out of the ADR. Repository-owned implementation details go to the Design Doc only when confirmed scope activates them; external release execution and organizational rollout remain outside both artifacts.
 
-Use `Proposed` status for created ADRs. The orchestrator records user approval for the batch.
+Use `Proposed` status for created ADRs. Recording user approval for the batch is outside this role.
 
 ## Design Doc — Create Mode
 
-Create the complete end-to-end technical design for the confirmed scope. Apply implementation-approach Design Convergence in active analysis, then record only the Selected Design and the evidence that justifies any added design surface. Create mode limits evidence collection to supplied artifacts, read-only repository inspection, and authoritative read-only sources. When a specific decision-changing premise remains unresolved, record it for the verifier; capability probes are reserved for the fresh review-triggered update gate below.
+Create the complete end-to-end technical design for the confirmed scope. Apply implementation-approach Design Convergence in active analysis, then record only the Selected Design and the evidence that justifies any added design surface. Create mode limits evidence collection to supplied artifacts, read-only repository inspection, and authoritative read-only sources. Record a specific unresolved decision-changing premise as unverified; capability probes are reserved for the fresh review-triggered update gate below.
 
-Follow the documentation-criteria Design Doc template. Preserve these downstream guarantees whenever applicable:
+Follow the documentation-criteria Design Doc template. Preserve these guarantees whenever applicable:
 
 - requirement convergence, scope, non-scope, and user constraints remain explicit;
 - external resources record only feature-used identifiers, and applicable explicit/implicit standards and repository checks retain their evidence;
@@ -124,6 +124,6 @@ Document supplied inventory and existing behavior as-is. Trace each in-scope ent
 - No implementation scope exceeds confirmed requirements and required dependencies.
 - Every created ADR passes both filters and selects the lowest-total-complexity sufficient option.
 - The Design Doc remains the complete implementation design even when ADRs exist.
-- Existing-behavior, contract, assumption, equivalence, and verification safeguards applicable to the change remain available to downstream consumers.
+- Existing-behavior, contract, assumption, equivalence, and verification safeguards applicable to the change remain explicit in the Design Doc.
 - Every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction.
 - The final response is one valid JSON object.

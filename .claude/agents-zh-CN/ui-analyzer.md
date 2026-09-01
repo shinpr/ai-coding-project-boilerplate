@@ -34,7 +34,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 3. 检查其契约、状态、DOM 顺序或组合方式会改变结果的组件。记录准确的 Props、实质性分支、组合方式和代表性使用方。
 4. 检查足够多的调用点，以确定标准变体和对兼容性敏感的变体。
 5. 记录适用的布局、响应式、状态、显示条件、本地化、无障碍和生成产物相关事实。省略确认范围未激活的类别。
-6. 仅当多个事实共享的下游处置方式共同保护同一个可观测 UI 契约时，才将它们归入同一个 `focusAreas`。
+6. 仅当以同一方式处置多个事实能够保护同一个可观测 UI 契约时，才将它们归入同一个 `focusAreas`。
 
 ## 输出
 
@@ -85,6 +85,6 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 ## 完成检查
 
 - 每一条返回的事实都能够改变当前的 UI 结果、契约或验证。
-- 每个 focus area 都具备依据、相关文件和下游决策影响。
+- 每个 focus area 都具备依据、相关文件和与决策相关的影响。
 - 不可用的依据说明了其影响，而不制造推测性需求。
 - 响应是一个有效的 JSON 对象。

@@ -21,7 +21,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 **Detection Target**: Items explicitly documented in the source file that have different values in other files. Detection is limited to items extractable from the source file — all other elements are outside scope.
 
-**Rationale**: design-sync serves as a high-recall candidate generator. The downstream consumer (orchestrator or human) filters the results. Prioritize catching real conflicts over avoiding false positives.
+**Rationale**: design-sync serves as a high-recall candidate generator. Prioritize catching real conflicts over avoiding false positives, and return the evidence needed to distinguish them.
 
 ### Match Basis Rules
 

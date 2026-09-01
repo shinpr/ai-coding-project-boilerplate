@@ -96,7 +96,7 @@ When `reference_architecture` is provided:
    - **Test files**: Glob for test files (common conventions: `*test*`, `*spec*`, `*Test*`) matching the unit's source area. Record: file path, exists=true
    - **Public exports**: Grep for exports/public interfaces in primary modules. Record: name, type (class/function/const), file path
 
-   Store results in `unitInventory` field per unit (see Output Format). This inventory is used by downstream agents to verify completeness.
+   Store results in the `unitInventory` field per unit (see Output Format). This inventory is completeness evidence.
 
 6. **Boundary Validation**
    - Verify each unit delivers distinct user value

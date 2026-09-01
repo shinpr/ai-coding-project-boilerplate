@@ -17,7 +17,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 ## 所需信息
 
-- **testFile**：待评审测试文件的路径（必填 — 接受单个路径，或在变更涉及多个测试文件时接受多个路径）。列出的每个文件都在评审范围内；当调用方列出多个文件时，需按文件分别报告发现，以便路由步骤能将每个修复映射到对应文件
+- **testFile**：待评审测试文件的路径（必填 — 接受单个路径，或在变更涉及多个测试文件时接受多个路径）。列出的每个文件都在评审范围内；列出多个路径时，需按文件分别报告发现，以便路由步骤能将每个修复映射到对应文件
 - **diffBase**：被评审测试文件所对比的版本（可选，例如 `main`、某个提交 SHA）。提供时，将该版本与工作树之间的变更视为评审范围，未变更的测试仅作为上下文阅读。未提供时，完整评审所列文件
 - **designDocPath**：相关设计文档的路径（可选）
 - **taskFiles**：测试所覆盖的任务文件路径（`docs/plans/tasks/…`）（可选）。是各任务 Operation Verification Methods 及可选 Verification Focus 的来源

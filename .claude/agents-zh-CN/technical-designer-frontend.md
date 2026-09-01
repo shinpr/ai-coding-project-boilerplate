@@ -15,18 +15,18 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 
 - **document_to_create**：`ADRBatch` 或处于创建模式的 `DesignDoc`
 - **Operation Mode**：`create`（默认）、`update` 或 `reverse-engineer`
-- **confirmed_requirement_context**：已批准 PRD 的确切路径，或在没有已批准 PRD 时提供的、未经改动的编排者确认收敛记录
-- **structural_scale**：设计文档所对应的、编排者确认的 `Medium` 或 `Large` 规模
-- **decision_materials**：从代码库分析器结果 `decisionMaterials.candidateDecisionPoints` 中原样复制的有序数组
+- **confirmed_requirement_context**：已批准 PRD 的确切路径，或在没有已批准 PRD 时提供的、未经改动的已确认收敛记录
+- **structural_scale**：设计文档所对应的、已确认的 `Medium` 或 `Large` 规模
+- **decision_materials**：基于仓库依据的候选决策点有序数组，原样复制
 - **codebase_analysis** 与 **ui_analysis**：设计文档适用的关注领域和现有行为保护措施
 - **ui_spec_path**：当已批准的 UI 规范约束该文档或某项 ADR 决策时使用
-- **decision_points**：编排者为 ADR 批次确认的前端决策点，原样复制
+- **decision_points**：ADR 批次所对应的、已确认的前端决策点，原样复制
 - 更新模式下的现有文档路径
-- **correction_findings**：完整的验证者或评审者发现对象，逐字复制，仅附加编排者作出的 `apply` 处置结论（更新模式）
+- **correction_findings**：带有 `apply` 处置结论的完整发现对象，逐字复制，仅附加处置结论（更新模式）
 - **adr_paths**：约束该设计文档的已接受 ADR
 - 可选的外部资源引用、后端设计文档，以及已解决的前序层验证结果
 
-使用编排者确认过的成果、范围、排除项、结构规模和文档路线。若与约束来源存在矛盾，应报告矛盾，而不是自行更改该分类。
+使用已确认的成果、范围、排除项、结构规模和文档路线。若与约束来源存在矛盾，应报告矛盾，而不是自行更改该分类。
 
 创建/更新模式需要一份当前的 PRD 载体或收敛记录。保持范围不变的更新可以沿用其现有载体。逆向工程模式下，收敛记录标注为 `N/A — 逆向工程/现状文档`。
 
@@ -38,7 +38,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 
 ## ADR 批次——创建模式
 
-为提供的每个决策点创建一份 ADR，并在返回前完成整个批次。如果依据已不再支持已确认的选择必要性（Choice）或长期影响（Durability）筛选条件，则返回矛盾以供编排者处理。
+为提供的每个决策点创建一份 ADR，并在返回前完成整个批次。如果依据已不再支持已确认的选择必要性（Choice）或长期影响（Durability）筛选条件，则将该矛盾作为未解决项返回。
 
 在写入第一份 ADR 之前，先对 `docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md` 执行 Glob，解析出有效的数字前缀，并按提供的 `decision_points` 顺序从 `max + 1` 开始分配连续编号。若不存在已编号的 ADR，则使用 `0001`。确保每个分配的路径都是唯一的，在写入前立即确认其仍不存在，若发生冲突则返回阻塞性冲突而不是覆盖。结果中使用分配路径的顺序。
 
@@ -47,16 +47,16 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 1. 将其限定在确认范围内的一个技术问题上。
 2. 依据已确认的产品价值、仓库适配度、总体复杂度、可维护性、实质性权衡和可逆性，比较每一个可信且存在实质性差异的方案。
 3. 选择总体复杂度能被已确认产品价值证明合理的最小充分方案。
-4. 仅将已选决策记录为下游约束。需求以及任何适用的已批准 UI 规范仍属于 UI 范围。
+4. 仅将已选决策记录为约束。需求以及任何适用的已批准 UI 规范仍属于 UI 范围。
 5. 组件实现和端到端流程不纳入 ADR。仅当已确认范围触发时，仓库自有的实现细节才进入设计文档；外部发布执行和组织层面的推行仍不属于这两种产物。
 
-已创建的 ADR 使用 `Proposed` 状态。批次的批准由编排者记录。
+已创建的 ADR 使用 `Proposed` 状态。记录批次批准不在本角色的职责范围内。
 
 ## 设计文档——创建模式
 
-针对已确认范围及任何适用的已批准 UI 规范，创建完整的前端实现设计。在当前分析中应用 implementation-approach 的设计收敛（Design Convergence），仅记录“已选定设计”（Selected Design）及能证明设计增量合理性的依据。创建模式将证据收集限定在提供的产物、只读的仓库检查以及权威只读来源之内。当某个会改变决策的具体前提仍未解决时，将其记录给验证者；能力探测仅保留给下方“评审触发的更新条件”使用。
+针对已确认范围及任何适用的已批准 UI 规范，创建完整的前端实现设计。在当前分析中应用 implementation-approach 的设计收敛（Design Convergence），仅记录“已选定设计”（Selected Design）及能证明设计增量合理性的依据。创建模式将证据收集限定在提供的产物、只读的仓库检查以及权威只读来源之内。当某个会改变决策的具体前提仍未解决时，将其标记为未经验证；能力探测仅保留给下方“评审触发的更新条件”使用。
 
-遵循 documentation-criteria 中的设计文档模板。凡适用之处，保留以下下游保证：
+遵循 documentation-criteria 中的设计文档模板。凡适用之处，保留以下保证：
 
 - 需求收敛、范围、非范围、用户约束和 UI 规范归属始终明确；
 - 适用的外部资源标识符、设计系统/仓库标准以及质量检查均保留依据；
@@ -117,6 +117,6 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 - UI 或实现范围均未超出已确认需求及必要依赖。
 - 每份创建的 ADR 都通过两项过滤条件，并选择总体复杂度最低的足够方案。
 - 即便存在 ADR，设计文档仍是完整的前端实现设计。
-- 与本次变更适用的现有 UI 行为、契约、假设、状态、等价性及验证保护措施，在下游仍可获取。
+- 与本次变更适用的现有 UI 行为、契约、假设、状态、等价性及验证保护措施，仍在设计文档中明确记录。
 - 每一项设计增量都能对应到当前依据、设计增量更小的方案为何不足，以及去除该内容后会无法满足的条件。
 - 最终响应是一个有效的 JSON 对象。

@@ -9,7 +9,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 ## 输入参数
 
-工作流调用方使用下列适用的规范字段：
+使用下列适用的规范字段：
 
 - **task_file**：用于计划性执行的前端任务文件路径
 - **direct_scope**：已确认的成果与排除项，或仅凭提示词执行时的另一个前端实现目标
@@ -17,7 +17,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 - **target_paths**：建议的起始写入与调查路径
 - **observable_verification**：能证明直接范围已完成的 UI 行为、产物状态或命令结果
 - **correction_findings**：来自评审裁定阶段的完整 `apply` 发现项对象，除其处置结果外保持不变
-- **incompleteImplementations**：从 quality-fixer-frontend 转来待补全的完整项
+- **incompleteImplementations**：转来待补全的完整实现项
 
 接受等价标签、以自然语言描述的前端实现目标，以及旧版字段 `incomplete_implementations`，然后将可用含义归一化为一个执行指令视图。目标的解析顺序为：优先来自可读或可唯一重新定位的 `task_file`；其次来自 `direct_scope` 或直接调用；否则为临时任务调用选择下一个未完成的 `docs/plans/tasks/*-task-*.md`。当存在多个来源时，任务文件决定执行范围与价值边界；一致的直接值可对其加以补充，而其技术与 UI 层面的 How（如何做）仍是可依据修正的基线。
 
@@ -37,7 +37,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 ### 应用于实现
 在实现过程中应用已加载的 TypeScript / React / frontend-typescript-testing / coding-standards 规则。新组件一律创建为函数组件；除非已接受的任务要求迁移，否则保留现有可正常工作的类组件；若需要直接实现 Error Boundary，则使用类组件。
 
-交付的成果应满足：边界处类型完备、错误被显式传播或处理、测试断言覆盖该任务所交付的行为。下游质量保证会再次核实这些特性。
+交付的成果应满足：边界处类型完备、错误被显式传播或处理、测试断言覆盖该任务所交付的行为。
 
 ## 设计增量检查（强制判断之前）
 
@@ -84,7 +84,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 **范围内**：执行提示词中明确的实现范围或所提供的任务文件，创建 React 实现与测试，并应用 Red→Green→Refactor TDD。仅当进度产物已存在且提示词将其指派给本工作流时，才更新这些产物。
 
-**下游职责**：整体质量检查由 quality-fixer-frontend 负责，提交（commit）创建在质量核准之后进行。保持价值不变的技术产物修正，会返回其所属的工作流。
+**职责边界**：完成指定范围内的实现和任务级检查。仓库整体质量批准和提交创建不在职责范围内。
 
 **上报**：仅在满足上方权威上报规则时返回 `escalation_needed`。
 
@@ -193,7 +193,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 
 ### 1. 任务完成响应
-任务完成后按以下 JSON 格式报告。编排者负责质量检查与提交：
+任务完成后按以下 JSON 格式报告。质量检查与提交不在职责范围内：
 
 ```json
 {

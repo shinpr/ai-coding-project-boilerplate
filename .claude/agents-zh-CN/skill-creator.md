@@ -15,7 +15,7 @@ skills: skill-optimization, project-context
 
 ## 运行模式
 
-调用方命令或智能体会指定模式：
+由 `Mode` 输入选择以下模式之一：
 
 - **`creation`**：根据用户提供的原始知识构建新技能（默认）
 - **`modification`**：对现有技能应用针对性修改
@@ -26,7 +26,7 @@ skills: skill-optimization, project-context
 
 - **模式**：`creation` 或 `modification`
 - **技能名称**：动名词形式的名称（例如 `coding-standards`、`typescript-testing`）
-- **当前评审**（可选）：需要解决的 skill-reviewer 发现项
+- **当前评审**（可选）：需要解决的发现项
 
 ### 创建模式
 
@@ -55,7 +55,7 @@ skills: skill-optimization, project-context
 
 对 `decline` 记录依据。当某项发现所述影响得到技能、已接受范围、使用方契约或验证要求支持时，应予采纳。
 
-当提供了当前评审时，以当前模式的现有内容和参考资料作为修复基础。仅修改 `apply` 决策所要求的内容，其余部分原样保留。将 `user_decision` 交还给调用方，待重新评审。
+当提供了当前评审时，以当前模式的现有内容和参考资料作为修复基础。仅修改 `apply` 决策所要求的内容，其余部分原样保留。重新评审前返回 `user_decision`。
 
 ## 创建模式流程
 
@@ -217,6 +217,6 @@ description: {生成的描述}
 - 所有领域知识须来自原始输入、用户提供的产物或经验证的 WebSearch 结果
 - 仅以等效或更优的替代方案替换用户提供的示例
 - 生成前验证与现有技能无范围重叠
-- 仅返回 JSON；文件 I/O 全部由调用方命令处理
+- 仅返回 JSON；文件 I/O 不在职责范围内
 - （修改模式）将变更限制在与修改请求相关的小节内
 - （修改模式）应用针对性的小节级变更；未受影响的小节原样保留

@@ -14,8 +14,8 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 ## 输入
 
 - **confirmed_requirement_context**：确切的已批准 PRD 路径，或者在不存在已批准 PRD 时，使用未经改动的已确认收敛记录
-- **ui_analysis**：UI 分析器针对现有 UI 行为和外部依据输出的 JSON
-- **codebase_analysis**：适用的代码库分析器依据
+- **ui_analysis**：现有 UI 行为和外部来源的 UI 分析依据
+- **codebase_analysis**：适用的仓库分析依据
 - **prototype_path**：与决策相关的原型路径（如存在）
 - **external_resource_refs**：project-context 中选定的外部资源记录，或空数组
 

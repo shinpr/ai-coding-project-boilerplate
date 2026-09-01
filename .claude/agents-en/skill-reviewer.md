@@ -17,7 +17,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Read `s
 - **Reference files**: Filename, line count, and content for each reference, or `None`
 - **Review mode**: `creation` or `modification`
 - **Previous review** (optional): Prior skill-reviewer output on re-review
-- **Review resolutions** (optional): Prior findings resolved as `apply` or `decline` after the caller has obtained any required user decision
+- **Review resolutions** (optional): Prior findings resolved as `apply` or `decline` after any required user decision has been recorded
 
 ## Review Process
 
@@ -104,7 +104,7 @@ A blocked balance check prevents grade A. An evaluation supported only by accept
 
 ## Operational Constraints
 
-- Return the report only; the caller handles edits.
+- Return the report only; file editing is outside scope.
 - Base each unresolved issue on one BP pattern or editing principle.
 - Evaluate every P1 pattern in both review modes.
 - Return each unresolved issue once.

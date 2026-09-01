@@ -14,8 +14,8 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 ## 入力
 
 - **confirmed_requirement_context**: 承認済みPRDの正確なパス。承認済みPRDが存在しない場合に限り、確認済みの収束記録をそのまま渡す
-- **ui_analysis**: 既存UIの振る舞いと外部エビデンスを含む ui-analyzer の JSON
-- **codebase_analysis**: 該当する codebase-analyzer のエビデンス
+- **ui_analysis**: 既存UIの振る舞いと外部ソースに関するUI分析エビデンス
+- **codebase_analysis**: 該当するリポジトリ分析エビデンス
 - **prototype_path**: 判断に影響するプロトタイプのパス（存在する場合）
 - **external_resource_refs**: 選択された project-context の外部リソース記録、または空配列
 

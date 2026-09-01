@@ -96,7 +96,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
    - **测试文件**：为该单元的源码区域 Glob 匹配的测试文件（常见约定：`*test*`、`*spec*`、`*Test*`）。记录：文件路径，exists=true
    - **公共导出**：在主要模块中 Grep 导出/公共接口。记录：名称、类型（class/function/const）、文件路径
 
-   将结果存入每个单元的 `unitInventory` 字段（见输出格式）。该清单供下游智能体用于验证完整性。
+   将结果存入每个单元的 `unitInventory` 字段（见输出格式）。该清单作为完整性依据。
 
 6. **边界验证**
    - 验证每个单元是否交付了独特的用户价值

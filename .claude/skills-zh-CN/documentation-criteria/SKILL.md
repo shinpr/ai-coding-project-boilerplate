@@ -59,7 +59,7 @@ description: 判断某项变更需要哪些 PRD、ADR、UI 规范（UI Spec）�
 | UI 规范附件 | `docs/ui-spec/assets/{feature-name}/` | 原型代码文件 | - |
 | 设计文档 | `docs/design/` | `[feature-name]-design.md` | [design-template.md](references/design-template.md) |
 | 工作计划 | `docs/plans/` | `YYYYMMDD-{type}-{description}.md` | [plan-template.md](references/plan-template.md) |
-| 任务文件 | `docs/plans/tasks/` | 参见 task-decomposer 文件名表 | [task-template.md](references/task-template.md) |
+| 任务文件 | `docs/plans/tasks/` | `{plan-name}-task-{NN}.md`（仅含 backend 的计划）；`{plan-name}-backend-task-{NN}.md`（混合层计划中的 backend）；`{plan-name}-frontend-task-{NN}.md`（frontend） | [task-template.md](references/task-template.md) |
 
 生成路径中的变量必须使用小写 ASCII kebab-case slug。非 ASCII 输入应在构造路径前转换为该格式。
 

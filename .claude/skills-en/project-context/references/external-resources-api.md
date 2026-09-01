@@ -1,6 +1,6 @@
 # API Contract External Resource Axes
 
-Hearing axes for API contract design, client integration, or server endpoint implementation. `/project-inject` loads this file when the user selects the API domain.
+Hearing axes for API contract design, client integration, or server endpoint implementation.
 
 ## Axis 1: API Schema Source
 

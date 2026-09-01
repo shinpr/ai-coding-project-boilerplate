@@ -19,7 +19,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 タスク分解は機械的な引き渡しである。生成する各タスクは、作業計画書のタスクIDちょうど1つに対応し、その成果・出典・範囲・依存関係・Executor lane・ロールバック境界・検証を保持する。新たな要件、設計判断、技術的な再解釈、運用手順、外部準備は、この変換の対象外である。
 
-境界が誤っていると見える場合は、ここで判断し直さず呼び出し元に報告する。
+境界が誤っていると見える場合は、ここで判断し直さず未解決として返す。
 
 ## プロセス
 
@@ -38,13 +38,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 作業計画書のタスク1つにつき、実装タスクファイルをちょうど1つ生成する。依存タスクIDは変更せずコピーする。
 
-`NN`には作業計画書での出現順を0埋めした連番を割り当てる。そのタスクのExecutor laneに対応するファイル名を使う:
-
-| Executor lane | タスクファイル名 |
-|---|---|
-| `backend`、かつ計画書の全タスクが `backend` | `{plan-name}-task-{NN}.md` |
-| `backend`、かつ計画書に `frontend` のタスクもある | `{plan-name}-backend-task-{NN}.md` |
-| `frontend` | `{plan-name}-frontend-task-{NN}.md` |
+`NN`には作業計画書での出現順を0埋めした連番を割り当てる。タスクのExecutor laneと計画書のレイヤー構成に対応する、documentation-criteriaのタスクファイル命名規則を使う。
 
 実行順序はファイル名ではなく依存タスクIDから決まる — `NN` の連番と `PN-TN` のIDが一致するのは偶然にすぎないため、各タスクファイルには両方を記載する。
 
@@ -55,9 +49,9 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 1. 出典の引用をすべて変更せず `Governing Sources` にコピーする。
 2. 引用されたセクション、対象実装、隣接する代表的なテスト1つを `Investigation Targets` に加える。
 3. リポジトリ上の根拠から確定できる場合は、具体的な Target Files を選ぶ。
-4. 正確なファイルがまだ判明しない場合は、最小の所有ディレクトリまたはモジュールと、executor が解決できる探索条件を示す。
+4. 正確なファイルがまだ判明しない場合は、最小の所有ディレクトリまたはモジュールと、実装時にファイルを特定できる探索条件を示す。
 
-タスクファイルは正典の内容を再掲せず、そこを指し示す。executor は実装前にすべての Investigation Target を読む。
+タスクファイルは正典の内容を再掲せず、そこを指し示す。すべてのInvestigation Targetは実装前に読む。
 
 Investigation Targets は読むべきファイルパスであり、実行するアクションではない。「注文モジュール」ではなく `docs/design/payment.md (§ 決済フロー)` や `src/orders/checkout (processOrder関数)` と書く。
 
@@ -101,6 +95,6 @@ documentation-criteriaのtask-templateを使用し、`docs/plans/tasks/` 配下�
 - [ ] 生成した成果が、承認済み作業計画書の成果の範囲内に収まっている
 - [ ] 依存関係・Executor lane・ロールバック境界・テストスケルトンのパスが変更されずコピーされている
 - [ ] レイヤー対応のタスク名で、Executor lane・Target Files・backend/frontend のファイル名要素が一致している
-- [ ] 対象と調査のコンテキストが、executor が推測せず着手できる具体度になっている
+- [ ] 対象と調査のコンテキストが、推測せず実装に着手できる具体度になっている
 - [ ] 出典の技術的内容をタスクファイルにコピーまたは再解釈していない
 - [ ] 各タスクがリポジトリ上の実装成果を生む

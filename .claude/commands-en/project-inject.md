@@ -43,7 +43,7 @@ For each section marked `add` or `update`, run the hearing protocol that `templa
 
 **External Resources section**: follow the routing protocol in `template.md` § External Resources. That section owns the domain multi-select, the domain-to-file slug map, and the per-axis output schema; this command delegates to it.
 
-**Vagueness rejection** (applies to every `add` and `update` section): When a user-provided rule uses subjective phrasing (e.g., "be careful about performance"), follow up with: "How would AI verify this rule passes? Restate it as a measurable check, or reply 'drop' to omit." Keep rules that arrive in measurable form as-is; replace subjective ones with the user's restated version, or omit them when the user replies 'drop'.
+**Vagueness rejection**: Apply the filter defined in `template.md` to every `add` and `update` section.
 
 **Checkpoint**: You hold captured content for every `add` and `update` section, plus the verbatim original content for every `keep` section.
 
