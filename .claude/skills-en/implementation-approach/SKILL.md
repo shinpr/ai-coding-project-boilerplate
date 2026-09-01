@@ -41,11 +41,11 @@ Complete these steps in order before exploring implementation strategies:
 3. **Targeted Comparison**: For each unmet condition, test reuse, derivation from existing data, on-demand computation, or responsibility at the current caller or boundary before adding design surface. Compare viable choices by total complexity across the dimensions that materially differ: user decisions, settings, modes, concepts, outputs, persistent state, implementation paths, UX, runtime, implementation, testing, documentation, and maintenance. Select the lowest-total-complexity choice that satisfies the condition.
 4. **Subtraction Check**: Remove each proposed addition and re-test its governing condition. Retain it only when the confirmed outcome, a required boundary, or necessary proof becomes unmet.
 
-Candidate paths and rejected additions remain active analysis. The durable output is the **Selected Design**: the complete chosen path plus evidence for each added design surface and the condition that fails when it is removed. An accepted ADR may retain alternatives as decision history. An implementer uses the same convergence check without producing a separate artifact.
+Candidate paths and rejected additions remain active analysis. The durable output is the **Selected Design**: the complete chosen path plus evidence for each added design surface and the condition that fails when it is removed. Only an accepted ADR may retain alternatives as decision history. During implementation, use the same convergence check without producing a separate artifact.
 
 **Completion evidence**: one complete Selected Design; every added design surface names its current evidence, why lower-surface resolutions fail, and its subtraction result.
 
-**Transition**: proceed when every supporting claim is observed, explicitly inferred with evidence, or recorded as unknown; route an unknown that blocks the next step as an exact evidence prerequisite. The caller's value-boundary and irreversible-action gates determine whether user interaction is required.
+**Transition**: proceed when every supporting claim is observed, explicitly inferred with evidence, or recorded as unknown; route an unknown that blocks the next step as an exact evidence prerequisite. User interaction is required only when the unknown requires changing the confirmed outcome, desired-future requirements, or non-goals, or authorizing an irreversible action.
 
 ### Phase 3: Strategy Exploration and Creation
 
@@ -97,7 +97,7 @@ Incident Response: Rollback procedures, log/metrics preparation, communication s
 
 **Completion evidence**: each material risk has likelihood/impact evidence, one preventive or containment control, and a verification point.
 
-**Transition**: proceed when no high-impact risk lacks a control or blocking escalation.
+**Transition**: proceed when every high-impact risk has either a control or a blocking escalation.
 
 ### Phase 5: Constraint Compatibility Verification
 
@@ -163,7 +163,7 @@ Candidate approaches and rejection reasoning remain active analysis unless an ac
 
 Priority for completion verification of each task:
 
-- **L1: Functional Operation Verification** - Operates as end-user feature (e.g., search executable)
+- **L1: Functional Operation Verification** - Operates as an end-user feature (e.g., a user can execute a search and receive results)
 - **L2: Test Operation Verification** - New tests added and passing (e.g., type definition tests)
 - **L3: Build Success Verification** - No compile errors (e.g., interface definitions)
 
@@ -186,7 +186,7 @@ Define integration points according to selected strategy:
 - [ ] Every hard constraint maps to the selected approach
 - [ ] Phase 7 output records the selection, total-complexity basis, and added design surface; alternatives appear only in an accepted ADR
 
-When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence prerequisite. The caller's value-boundary and irreversible-action gates determine whether user interaction is required.
+When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence prerequisite. User interaction is required only when the unknown requires changing the confirmed outcome, desired-future requirements, or non-goals, or authorizing an irreversible action.
 
 ## Guidelines for Meta-cognitive Execution
 

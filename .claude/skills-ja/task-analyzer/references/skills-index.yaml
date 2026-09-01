@@ -4,7 +4,7 @@
 skills:
   coding-standards:
     skill: "coding-standards"
-    tags: [anti-patterns, technical-judgment, debugging, rule-of-three, implementation, type-safety, refactoring, code-reading, best-practices, impact-analysis, unused-code, code-deletion, testing, tdd]
+    tags: [universal, anti-patterns, refactoring, type-safety, testing, code-deletion, rule-of-three, fail-fast, impact-analysis]
     typical-use: "全ドメイン共通の技術的判断基準、アンチパターン検出、デバッグ手法、実装時のベストプラクティス、影響範囲調査、未使用コード削除、テスト設計原則"
     size: large
     key-references:
@@ -37,7 +37,7 @@ skills:
 
   typescript-rules:
     skill: "typescript-rules"
-    tags: [implementation, type-safety, async, coding-style, functional-programming, dependency-injection, backend]
+    tags: [implementation, type-safety, async, coding-style, dependency-injection, error-handling, backend]
     typical-use: "バックエンドTypeScriptコードの作成・修正、クラス使用判断、DI実装"
     size: medium
     key-references:
@@ -51,7 +51,7 @@ skills:
 
   typescript-testing:
     skill: "typescript-testing"
-    tags: [quality, testing, vitest, backend, implementation]
+    tags: [quality, testing, tdd, vitest, implementation, debugging, refactoring, backend]
     typical-use: "バックエンドテスト作成、Vitest設定、テスト品質基準"
     size: medium
     key-references:
@@ -91,7 +91,7 @@ skills:
 
   documentation-criteria:
     skill: "documentation-criteria"
-    tags: [documentation, decision-making, adr, prd, ui-spec, design-doc, planning, process, verification-strategy]
+    tags: [documentation, adr, prd, ui-spec, design-doc, work-plan, decision-matrix, verification-strategy]
     typical-use: "実装開始時の規模判定、ドキュメント作成判定、ADR/PRD/Design Doc/作業計画書の作成基準"
     size: medium
     key-references:
@@ -185,7 +185,7 @@ skills:
     size: medium
     key-references:
       - "禁止形より肯定形の実行可能な指示"
-      - "エージェント間ハンドオフの観察可能な成功基準"
+      - "エージェント間ハンドオフの観測可能な成功基準"
       - "暗黙の曖昧さより明示的な未解決項目"
     sections:
       - "中核ルール"
@@ -213,7 +213,7 @@ skills:
 
   frontend-typescript-testing:
     skill: "frontend-typescript-testing"
-    tags: [frontend, react, quality, testing, vitest, react-testing-library, msw, component-testing, implementation, playwright, e2e]
+    tags: [frontend, react, quality, testing, tdd, vitest, react-testing-library, msw, implementation, playwright, e2e]
     typical-use: "Reactコンポーネントのテスト作成、React Testing Library、MSW、Co-location、Playwright E2Eテスト"
     size: medium
     key-references:
@@ -232,7 +232,7 @@ skills:
 
   frontend-technical-spec:
     skill: "frontend-technical-spec"
-    tags: [frontend, react, architecture, design, documentation, environment, data-flow, implementation, vite, security, client-side, state-management, context-api, hooks, lighthouse, bundle-size, non-functional-requirements]
+    tags: [frontend, react, vite, architecture, design, environment, data-flow, implementation, performance]
     typical-use: "フロントエンド技術設計、環境変数管理（Vite）、セキュリティ制約、アーキテクチャ設計、状態管理パターン、実装方針決定、非機能要件の確認"
     size: medium
     key-references:
@@ -253,7 +253,7 @@ skills:
   requirement-convergence:
     skill: "requirement-convergence"
     tags: [cross-cutting, requirements, scope, non-goals, outcome, rough-estimate, trade-off, hearing-protocol, convergence]
-    typical-use: "設計前に何を作るかを収束させる。成果と要件レイヤーの分離、ユーザーが挙げた非ゴールの記録、振る舞いではなく構造からのコストのバンド付け"
+    typical-use: "設計前に何を作るかを収束させる。成果と要件レイヤーの分離、ユーザーが挙げた非ゴールの記録、振る舞いではなく構造からのコスト概算"
     size: small
     key-references:
       - "references/criteria.md"
@@ -262,6 +262,6 @@ skills:
       - "収束フィールド"
       - "ヒアリングプロトコル"
       - "保存プロトコル"
-      - "参照プロトコル（下流の消費者向け）"
+      - "参照プロトコル"
       - "品質チェックリスト"
       - "References"

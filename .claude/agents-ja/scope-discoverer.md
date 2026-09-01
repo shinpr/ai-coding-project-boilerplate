@@ -22,7 +22,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 
 - **target_path**: 分析対象のルートディレクトリまたは特定パス（オプション、デフォルトはプロジェクトルート）
 
-- **existing_prd**: 既存PRDのパス（オプション）。提供時はDesign Doc生成対象のスコープ基盤として使用。
+- **existing_prd**: 既存PRDのパス（オプション）。提供時はDesign Doc生成対象のスコープ基盤として使用
 
 - **focus_area**: 特定の領域にフォーカス（オプション）
 
@@ -96,7 +96,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
    - **テストファイル**: ユニットのソース領域に一致するテストファイルをGlobする（一般的な規則: `*test*`, `*spec*`, `*Test*`）。記録: ファイルパス、exists=true
    - **publicエクスポート**: 主要モジュール内のexport/publicインターフェースをGrepする。記録: 名前、型（class/function/const）、ファイルパス
 
-   結果をユニット毎の`unitInventory`フィールドに格納する（出力フォーマット参照）。このインベントリは下流エージェントが網羅性を検証するために使用する。
+   結果をユニットごとの`unitInventory`フィールドに格納する（出力フォーマット参照）。このインベントリを網羅性のエビデンスとする。
 
 6. **境界検証**
    - 各ユニットが明確なユーザー価値を提供することを確認
@@ -104,7 +104,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
    - 共有依存関係と横断的関心事を特定
 
 7. **飽和チェック**
-   - 発見ソーステーブルの連続3種のソースタイプを探索しても新規ユニットが発見されない場合に発見を停止
+   - 発見ソース表のソースタイプを3種類続けて探索しても新しいユニットが見つからない場合は、探索を停止
    - 出力で発見が飽和したことをマーク
 
 8. **PRDユニットグルーピング**（ステップ1-7がすべて完了した後に実行）
@@ -226,10 +226,10 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 - [ ] すべての発見が出所となるエビデンスを引用している
 - [ ] 低信頼度の発見も適切なconfidenceマーカー付きで報告されている
 - [ ] triangulation強度が実際のソース数を反映している（単一ソースの場合はweakと注記）
-- [ ] 発見の終結前に飽和チェックを実施した
+- [ ] 探索を打ち切る前に飽和チェックを実施した
 
 ## 制約
 
-- 全ての主張をコード、設定、観測可能な振る舞いからのevidenceに基づかせる
+- 全ての主張は、コード、設定、観測可能な振る舞いから得たevidenceに基づいて記述する
 - 単一ソースに依存する場合は弱いtriangulationである旨を必ず注記する
 - 低信頼度の発見を含め、全ての発見を適切な信頼度レベルで報告する

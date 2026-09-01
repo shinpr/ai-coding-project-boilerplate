@@ -22,7 +22,7 @@ These patterns have low false-positive rates and are detectable through grep or 
 - Detection approach: search for these function calls where the argument is not a static literal
 
 ### Insecure Deserialization
-- `pickle.loads()`, `yaml.load()` without SafeLoader, `marshal.loads()` with untrusted input
+- Deserializing untrusted input with `pickle.loads()`, `yaml.load()` without SafeLoader, or `marshal.loads()`
 - `JSON.parse()` followed by direct use in `eval()` or `Function()`
 - Detection approach: search for deserialization calls that accept external input without safe loader configuration
 

@@ -1,6 +1,6 @@
 # Frontend External Resource Axes
 
-Hearing axes for frontend work — component implementation, screen design, visual adjustment, design system migration. `/project-inject` loads this file when the user selects the Frontend domain.
+Hearing axes for frontend work — component implementation, screen design, visual adjustment, design system migration.
 
 ## Axis 1: Design Origin
 
@@ -14,8 +14,8 @@ The canonical source of the visual specification.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields (Source type is set by the choice above):
-- **Location**: public URL, repository file path, or MCP target identifier.
-- **Access method**: WebFetch, file read, MCP server name, or manual screenshot procedure.
+- **Location**: public URL, repository file path, or MCP target identifier
+- **Access method**: WebFetch, file read, MCP server name, or manual screenshot procedure
 
 ## Axis 2: Design System
 
@@ -30,8 +30,8 @@ Reusable component library and design tokens.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: Storybook URL, package name, or internal documentation path.
-- **Access method**: WebFetch, file read, or MCP server name.
+- **Location**: Storybook URL, package name, or internal documentation path
+- **Access method**: WebFetch, file read, or MCP server name
 
 ## Axis 3: Guidelines
 
@@ -45,8 +45,8 @@ Usage guidance, accessibility rules, anti-patterns, naming conventions for UI wo
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: file path or URL.
-- **Access method**: file read or WebFetch.
+- **Location**: file path or URL
+- **Access method**: file read or WebFetch
 
 When multiple files address different concerns (CSS, accessibility, i18n), capture each as a separate entry per the multiple-instance rule in `template.md`.
 
@@ -62,8 +62,8 @@ How rendered output is confirmed during implementation.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: preview URL, MCP target, or test runner identifier.
-- **Access method**: entry command, MCP server name, or browser automation tool name.
+- **Location**: preview URL, MCP target, or test runner identifier
+- **Access method**: entry command, MCP server name, or browser automation tool name
 
 ## Self-Declaration Phase
 

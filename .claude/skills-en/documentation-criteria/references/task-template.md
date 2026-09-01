@@ -14,7 +14,7 @@ A dependency names the prerequisite by its stable Work Plan task ID and the task
 
 ## Governing Sources
 
-Every directly constraining citation, preserved unchanged from the Work Plan so the executor reads the authoritative contract at its source.
+Every directly constraining citation, preserved unchanged from the Work Plan as the authoritative contract source.
 
 - [Design Doc path (§ section); AC IDs]
 - [UI Spec or ADR path (§ section), when directly constraining]
@@ -48,7 +48,7 @@ The smallest representative set to read before implementation, each a file path 
 
 - **Verification method**: [Governing verification method or repository command]
 - **Success criteria**: [Observable result tied to the cited ACs]
-- **Verification level**: [L1: functional operation as an end-user feature / L2: new tests added and passing / L3: code builds without errors — per implementation-approach skill]
+- **Verification level**: [L1: functional operation as an end-user feature / L2: new tests added and passing / L3: code builds without errors]
 
 ## Verification Focus
 

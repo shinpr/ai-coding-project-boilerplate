@@ -88,25 +88,25 @@ When `adrDecisionPoints` is non-empty:
 
 Invoke `technical-designer-frontend` with:
 
-- `document_to_create: DesignDoc`;
-- `confirmed_requirement_context`;
-- `structural_scale`;
-- the applicable approved `ui_spec_path` and selected external-resource records;
-- `adr_paths: [accepted paths or []]`;
-- the complete Step 2 `codebase_analysis` unchanged;
-- the complete Step 3 `ui_analysis` unchanged when present.
+- `document_to_create: DesignDoc`
+- `confirmed_requirement_context`
+- `structural_scale`
+- the applicable approved `ui_spec_path` and selected external-resource records
+- `adr_paths: [accepted paths or []]`
+- the complete Step 2 `codebase_analysis` unchanged
+- the complete Step 3 `ui_analysis` unchanged when present
 
 The Design Doc owns the complete component-to-service implementation and retains all applicable downstream safeguards.
 
 ## Step 8: Verify, Review, and Approve
 
-Invoke `code-verifier` with `doc_type: design-doc` and the returned Design Doc path, leaving `code_paths` absent. Apply Review Resolution before document review; send applied findings to a fresh technical-designer-frontend invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate for an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun verification after an applied correction. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue when every remaining discrepancy carries a resolved disposition.
+Invoke `code-verifier` with `doc_type: design-doc` and the returned Design Doc path, leaving `code_paths` absent. Apply Review Resolution before document review; send findings with an `apply` disposition to a fresh technical-designer-frontend invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate for an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun verification after an applied correction. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue when every remaining discrepancy carries a resolved disposition.
 
 Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc path, `review_context: creation`, original user requirements, `confirmed_requirement_context`, the unchanged analysis inputs supplied to the designer, and `verification_evidence`.
 
-- `approved`: continue.
-- `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete applied findings, and rerun verification and review for the affected boundary.
-- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes.
+- `approved`: continue
+- `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete findings with an `apply` disposition, and rerun verification and review for the affected boundary
+- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 
 Invoke `design-sync` with the returned Design Doc as source, apply Review Resolution to actionable conflicts, and report `SKIPPED` distinctly when only one Design Doc exists.
 
@@ -114,10 +114,10 @@ Present the applicable UI Spec, Design Doc, accepted ADR paths, recorded decline
 
 ## Completion Criteria
 
-- External and prototype evidence was requested only when it controlled a current decision.
-- Scope and Structural Scale were confirmed from outcomes and responsibility boundaries.
-- ADRs exist only for points passing both filters, and the batch received one review and approval.
-- An applicable UI Spec and a complete frontend Design Doc exist regardless of ADR need.
-- Applicable existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards reached the Design Doc.
-- Review Resolution routed only `needs_revision` issues into correction work.
-- All stop points received explicit user confirmation.
+- External and prototype evidence was requested only when it controlled a current decision
+- Scope and Structural Scale were confirmed from outcomes and responsibility boundaries
+- ADRs exist only for points passing both filters, and the batch received one review and approval
+- An applicable UI Spec and a complete frontend Design Doc exist regardless of ADR need
+- Applicable existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards reached the Design Doc
+- Review Resolution routed only `needs_revision` issues into correction work
+- All stop points received explicit user confirmation

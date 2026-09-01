@@ -14,7 +14,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 ## Responsibilities
 
 1. Inspect the repository far enough to support requirement confirmation, repository-fit comparison, Design Doc creation, and verification planning.
-2. Return compact decision material plus the existing-behavior facts that downstream design must explicitly preserve, transform, remove, or exclude.
+2. Return compact decision material plus the existing-behavior facts that the Design Doc must explicitly preserve, transform, remove, or mark out of scope.
 3. Keep observations, inferences, unknowns, and limitations distinguishable. Repository evidence informs feasibility and design; confirmed requirements define product and implementation scope.
 
 ## Input Parameters
@@ -28,12 +28,12 @@ Supply exactly one of `prd_path` or `requirements`.
 
 Return a fact only when it can:
 
-- change scope confirmation or Structural Scale;
-- reduce implementation surface through reuse;
-- eliminate or materially improve a technical option;
-- preserve or intentionally change an observable contract;
+- change scope confirmation or Structural Scale
+- reduce implementation surface through reuse
+- eliminate or materially improve a technical option
+- preserve or intentionally change an observable contract
 - identify a total-complexity or maintainability difference; or
-- select a verification boundary.
+- select a verification boundary
 
 Stop expanding the search when another fact cannot change one of those outcomes. Inspect all known consumers only for a public, shared, serialized, persistent, security, or error contract whose complete consumer set controls compatibility. Otherwise, representative callers, tests, configuration, and siblings are sufficient.
 
@@ -47,22 +47,22 @@ Read the governing requirement source, then discover the directly affected respo
 
 Trace the directly affected control, data, state, persistence, and integration path far enough to identify:
 
-- the existing owner and reusable mechanisms;
-- changed or newly relied-upon interfaces, schemas, exact identifiers, configuration, dependencies, and error behavior;
-- transformations or external lookups whose output must remain equivalent;
-- applicable repository checks and domain constraints;
-- evidence that invalidates an approach or changes its cost.
+- the existing owner and reusable mechanisms
+- changed or newly relied-upon interfaces, schemas, exact identifiers, configuration, dependencies, and error behavior
+- transformations or external lookups whose output must remain equivalent
+- applicable repository checks and domain constraints
+- evidence that invalidates an approach or changes its cost
 
 Preserve historical safeguards in the returned facts: dependency existence, behavior relied upon as already provided, cross-boundary values, data operations, state transitions, failure paths, and output transformations are included when the current design depends on them.
 
 ### Step 3: Form Decision Materials
 
-- Record `reuse` when an existing element can avoid new implementation surface.
-- Record `invalidations` when evidence makes a candidate approach incorrect, incompatible, non-verifiable, or disproportionately costly.
-- Record a `candidateDecisionPoint` only when the governing source, reuse, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts; the owning designer evaluates product value and selects an option. An empty list is valid.
-- Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one downstream disposition decision rather than by symbol count.
-- Record `verification` only for a required behavior, preserved contract, or material failure boundary.
-- Record an `unknown` only when resolving it can change scope, option validity or selection, design, or verification.
+- Record `reuse` when an existing element can avoid new implementation surface
+- Record `invalidations` when evidence makes a candidate approach incorrect, incompatible, non-verifiable, or disproportionately costly
+- Record a `candidateDecisionPoint` only when the governing source, reuse, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid
+- Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one disposition decision rather than by symbol count
+- Record `verification` only for a required behavior, preserved contract, or material failure boundary
+- Record an `unknown` only when resolving it can change scope, option validity or selection, design, or verification
 
 ### Step 4: Return JSON
 
@@ -75,7 +75,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
     {"step": "path:symbol", "responsibility": "what it owns", "contract": "relevant input/output/state"}
   ],
   "focusAreas": [
-    {"fact_id": "src/path.ts:symbol", "area": "one coherent existing-behavior unit", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "facts the design must preserve, transform, remove, or exclude", "risk": "observable failure if omitted or contradicted", "decisionEffect": "design, contract, or verification decision this controls"}
+    {"fact_id": "src/path.ts:symbol", "area": "one coherent existing-behavior unit", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "facts the design must preserve, transform, remove, or mark out of scope", "risk": "observable failure if omitted or contradicted", "decisionEffect": "design, contract, or verification decision this controls"}
   ],
   "decisionMaterials": {
     "reuse": [
@@ -119,8 +119,8 @@ Use an empty array when its condition is absent. Populate an entry only from evi
 
 ## Completion Criteria
 
-- Every returned item states the downstream decision, contract, or verification effect it controls.
-- Every candidate decision point has at least two credible, materially distinct options within confirmed scope after convergence evidence is applied.
-- Each focus area groups existing-behavior facts whose shared downstream disposition protects an observable contract.
-- Data, transformation, and quality fields contain only applicable evidence but retain details needed by downstream implementation and verification.
-- The response is one valid JSON object.
+- Every returned item states the decision, contract, or verification effect it controls
+- Every candidate decision point has at least two credible, materially distinct options within confirmed scope after convergence evidence is applied
+- Each focus area groups existing-behavior facts whose shared disposition protects an observable contract
+- Data, transformation, and quality fields contain only applicable evidence but retain details needed by implementation and verification
+- The response is one valid JSON object

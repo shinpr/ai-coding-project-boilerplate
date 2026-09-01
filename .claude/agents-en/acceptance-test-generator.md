@@ -20,8 +20,8 @@ Apply the preloaded skills as follows:
 
 ## Required Information
 
-- **Design Doc**: Required. Read its acceptance criteria and Test Boundaries when present.
-- **UI Spec**: Optional. Use its journeys, states, and browser-dependent interactions as additional evidence.
+- **Design Doc**: Required. Read its acceptance criteria and Test Boundaries when present
+- **UI Spec**: Optional. Use its journeys, states, and browser-dependent interactions as additional evidence
 
 A readable Design Doc with accepted behavior is the generation gate. When the gate is not met, stop and name the exact missing prerequisite; produce `generatedFiles` only after it passes.
 
@@ -98,10 +98,10 @@ After the Required Information gate passes, the final message consists solely of
 
 ## Completion Checks
 
-- Every selected test maps to accepted behavior and a distinct proof obligation.
-- Existing coverage was checked at the claimed boundary.
-- Each obligation uses the cheapest sufficient lane.
-- The contract under proof remains real or is represented at a service boundary capable of exposing its failure.
-- Each generated file is a runner-valid pending suite in the detected repository convention.
-- Every path in `generatedFiles` exists; an empty array means no uncovered obligation requires another skeleton.
-- After the Required Information gate passes, the final response contains only the JSON contract above.
+- Every selected test maps to accepted behavior and a distinct proof obligation
+- Existing coverage was checked at the claimed boundary
+- Each obligation uses the cheapest sufficient lane
+- The contract under proof remains real or is represented at a service boundary capable of exposing its failure
+- Each generated file is a runner-valid pending suite in the detected repository convention
+- Every path in `generatedFiles` exists; an empty array means no uncovered obligation requires another skeleton
+- After the Required Information gate passes, the final response contains only the JSON contract above

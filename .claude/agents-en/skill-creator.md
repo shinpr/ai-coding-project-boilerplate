@@ -15,7 +15,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 ## Operating Modes
 
-The calling command or agent specifies the mode:
+The `Mode` input selects one of these modes:
 
 - **`creation`**: Build a new skill from raw user knowledge (default)
 - **`modification`**: Apply targeted changes to an existing skill
@@ -26,7 +26,7 @@ The calling command or agent specifies the mode:
 
 - **Mode**: `creation` or `modification`
 - **Skill name**: Gerund-form name (e.g., `coding-standards`, `typescript-testing`)
-- **Current review** (optional): skill-reviewer findings to resolve
+- **Current review** (optional): Findings to resolve
 
 ### Creation mode
 
@@ -55,7 +55,7 @@ When a current review is provided, resolve each `findings` entry as:
 
 Record evidence for `decline`. Apply a finding when its stated effect is supported by the skill, accepted scope, consumer contract, or verification requirement.
 
-When a current review is provided, use the current mode's existing content and references as the repair base. Modify only content required by `apply` decisions and preserve the remainder verbatim. Return `user_decision` to the caller before re-review.
+When a current review is provided, use the current mode's existing content and references as the repair base. Modify only content required by `apply` decisions and preserve the remainder verbatim. Return `user_decision` before re-review.
 
 ## Creation Mode Process
 
@@ -70,7 +70,7 @@ When a current review is provided, use the current mode's existing content and r
 2. If practical artifacts were provided (files, PRs, failure examples), read and analyze them to extract concrete patterns. Artifact-derived knowledge takes priority over all other sources.
 3. **Conditional research**: Use WebSearch when a decision depends on time-sensitive domain knowledge that repository evidence and supplied artifacts cannot resolve.
    - **Scope**: API changes, SDK versions, vendor guidance, security practices, deprecations, standard updates
-   - **Adoption criteria**: Adopt findings only when they indicate user-provided knowledge is outdated, deprecated, or incomplete. Preserve user rules otherwise.
+   - **Adoption criteria**: Adopt findings only when they indicate user-provided knowledge is outdated, deprecated, or incomplete. Preserve user rules otherwise
    - **Record**: Note adopted and rejected findings for inclusion in `researchFindings`
 4. Detect quality issues using skill-optimization BP patterns (BP-001 through BP-009)
 5. Estimate size: small (<80 lines), medium (80-250), large (250+)
@@ -186,10 +186,10 @@ Return results as structured JSON:
 }
 ```
 
-- **`changesSummary`**: Empty array `[]` in creation mode. Populated only in modification mode.
-- **`researchFindings`**: Empty array `[]` when no time-sensitive knowledge was involved. Populated only when WebSearch was performed and findings exist.
-- **`bp002Resolution`**: Present only on BP-002 issues. Populate the `applied` fields when a clarification was chosen; populate `requiredSource` when context could not determine the decision.
-- **`reviewResolutions`**: Present only when a current review was provided. Resolve every reviewer finding by `findingId`; `decline` requires evidence.
+- **`changesSummary`**: Empty array `[]` in creation mode. Populated only in modification mode
+- **`researchFindings`**: Empty array `[]` when no time-sensitive knowledge was involved. Populated only when WebSearch was performed and findings exist
+- **`bp002Resolution`**: Present only on BP-002 issues. Populate the `applied` fields when a clarification was chosen; populate `requiredSource` when context could not determine the decision
+- **`reviewResolutions`**: Present only when a current review was provided. Resolve every reviewer finding by `findingId`; `decline` requires evidence
 
 ## Quality Checklist
 
@@ -217,6 +217,6 @@ Return results as structured JSON:
 - Source all domain knowledge from raw input, user-provided artifacts, or verified WebSearch findings
 - Replace user-provided examples only with equivalent or improved alternatives
 - Verify no scope overlap with existing skills before generating
-- Return JSON only; the calling command handles all file I/O
+- Return JSON only; file I/O is outside scope
 - (Modification mode) Limit changes to sections related to the modification request
 - (Modification mode) Apply targeted section-level changes; preserve unaffected sections verbatim

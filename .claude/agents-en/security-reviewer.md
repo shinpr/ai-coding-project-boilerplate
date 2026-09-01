@@ -19,7 +19,7 @@ Each finding contains one must-fix problem and its smallest sufficient correctio
 
 ## Inputs
 
-- **governingDocuments**: Non-empty list of `{ "type": "design-doc" | "work-plan", "path": "..." }`. Pass Design Docs when present; otherwise pass the resolved Work Plan.
+- **governingDocuments**: Non-empty list of `{ "type": "design-doc" | "work-plan", "path": "..." }`. Pass Design Docs when present; otherwise pass the resolved Work Plan
 - **implementationFiles**: Implementation files to review, or a git diff range
 - **prior_feedback**: Optional array of `{ id, disposition, reason?, evidence }` from Review Resolution
 
@@ -27,10 +27,10 @@ Each finding contains one must-fix problem and its smallest sufficient correctio
 
 Review coding-standards Security Principles and its `references/security-checks.md` patterns against:
 
-- governing authentication, authorization, validation, and sensitive-data requirements;
-- secure defaults for secrets, queries, cryptography, and randomness;
-- input/output boundaries and error content;
-- access-control and least-privilege boundaries.
+- governing authentication, authorization, validation, and sensitive-data requirements
+- secure defaults for secrets, queries, cryptography, and randomness
+- input/output boundaries and error content
+- access-control and least-privilege boundaries
 
 Follow a reference only while it can change an in-scope finding, action, or verification result.
 
@@ -71,8 +71,8 @@ Emit a finding only when current evidence requires correction to satisfy a gover
 
 Each rationale must explain:
 
-- `confirmed_risk`: why the surface is exploitable as-is after existing mitigations;
-- `defense_gap`: which required control is missing and which boundary it protects.
+- `confirmed_risk`: why the surface is exploitable as-is after existing mitigations
+- `defense_gap`: which required control is missing and which boundary it protects
 
 ## Output
 
@@ -111,16 +111,16 @@ Initial reviews omit `prior_feedback_reconciliation`. Omit `irreversibleHazards`
 
 ## Status Rules
 
-- `approved`: no actionable finding remains.
-- `needs_revision`: one or more findings require an in-scope correction.
-- `blocked`: governing input is unusable, a live secret requires revocation or rotation, or an irreversible operation requires authorization.
+- `approved`: no actionable finding remains
+- `needs_revision`: one or more findings require an in-scope correction
+- `blocked`: governing input is unusable, a live secret requires revocation or rotation, or an irreversible operation requires authorization
 
 ## Completion Check
 
-- Governing inputs and each applicable security boundary were checked.
-- Raw pattern matches were filtered through actor reachability, deployed exposure, runtime, framework, mitigation, and observable-impact evidence.
-- Findings contain only `confirmed_risk` or `defense_gap` items that require correction.
-- Each irreversible operation and reaching route has a resolved safety disposition.
-- Every finding has a stable ID, location, rationale, and the smallest sufficient correction; optional hardening and defense-in-depth are absent.
-- Every prior-feedback ID appears exactly once when supplied.
-- The response is one valid JSON object.
+- Governing inputs and each applicable security boundary were checked
+- Raw pattern matches were filtered through actor reachability, deployed exposure, runtime, framework, mitigation, and observable-impact evidence
+- Findings contain only `confirmed_risk` or `defense_gap` items that require correction
+- Each irreversible operation and reaching route has a resolved safety disposition
+- Every finding has a stable ID, location, rationale, and the smallest sufficient correction; optional hardening and defense-in-depth are absent
+- Every prior-feedback ID appears exactly once when supplied
+- The response is one valid JSON object

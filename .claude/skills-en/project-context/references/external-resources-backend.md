@@ -1,6 +1,6 @@
 # Backend External Resource Axes
 
-Hearing axes for server-side, data, or storage work. `/project-inject` loads this file when the user selects the Backend domain.
+Hearing axes for server-side, data, or storage work.
 
 ## Axis 1: Database Schema Source
 
@@ -15,8 +15,8 @@ The canonical source of the database schema (tables, columns, indexes, constrain
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: file path, URL, or MCP target identifier.
-- **Access method**: file read, WebFetch, or MCP server name.
+- **Location**: file path, URL, or MCP target identifier
+- **Access method**: file read, WebFetch, or MCP server name
 
 When multiple databases exist (primary, analytics, cache), capture each as a separate entry per the multiple-instance rule in `template.md`, using the database purpose as the disambiguating suffix.
 
@@ -32,8 +32,8 @@ How schema changes are tracked over time.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: directory path or migration tool name.
-- **Access method**: CLI command for manual runs, or CI step / deployment hook name when migrations apply automatically.
+- **Location**: directory path or migration tool name
+- **Access method**: CLI command for manual runs, or CI step / deployment hook name when migrations apply automatically
 
 ## Axis 3: Secret Store
 
@@ -47,8 +47,8 @@ Where credentials, API keys, and other secrets are stored and accessed.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: secret manager service name or MCP target.
-- **Access method**: MCP server name, CLI command, or SDK call used to read secrets.
+- **Location**: secret manager service name or MCP target
+- **Access method**: MCP server name, CLI command, or SDK call used to read secrets
 
 The actual secret values live in the store and are read from there at runtime — capture only how to reach them.
 
@@ -64,8 +64,8 @@ How asynchronous work is dispatched and observed.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: queue name or scheduler identifier.
-- **Access method**: enqueue command, inspect command, or platform console URL.
+- **Location**: queue name or scheduler identifier
+- **Access method**: enqueue command, inspect command, or platform console URL
 
 ## Self-Declaration Phase
 

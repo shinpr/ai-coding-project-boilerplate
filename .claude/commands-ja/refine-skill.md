@@ -20,8 +20,8 @@ Step 1-6を順番に完了する。現在のステップで定められた出力
 - 具体的な変更内容
 
 対象ファイル特定：
-- スキル名が明示 → Read: `.claude/skills/{スキル名}/SKILL.md`（`~/.claude/skills/`も確認）
-- 部分的に判明 → Glob: `.claude/skills/*{キーワード}*/SKILL.md`, `~/.claude/skills/*{キーワード}*/SKILL.md`
+- スキル名が明示 → Read: `.claude/skills/{skill-name}/SKILL.md`（`~/.claude/skills/`も確認）
+- 部分的に判明 → Glob: `.claude/skills/*{keyword}*/SKILL.md`, `~/.claude/skills/*{keyword}*/SKILL.md`
 - 不明 → Glob: `.claude/skills/*/SKILL.md`, `~/.claude/skills/*/SKILL.md` で全件確認 → ユーザーに選択
 
 ### Step 2: ユーザーフレーズの収集（任意）
@@ -81,9 +81,9 @@ skill-reviewerエージェントをAgent toolで起動:
 **レビュー結果の処理:**
 - グレードAまたはB: Step 6へ進行
 - グレードC: referenceを含む直前のskill-creator出力を修復の基準とし、直前のレビューを`Current review`としてskill-creatorを再起動する
-- 各指摘を`apply`、`decline`、`user_decision`に裁定し、適用対象を修正して、根拠付き却下を再レビューする
+- 各指摘を`apply`、`decline`、`user_decision`に分類し、適用対象を修正して、根拠付き却下を再レビューする
 - `user_decision`はユーザーへ確認し、回答を成果またはスコープを決める情報としてskill-creatorへ戻す。再レビュー前に、その指摘を`apply`または根拠付き`decline`へ確定する
-- reviewerが却下済みの指摘を維持できるのは、正しさまたは検証可能性に関する新しい根拠がある場合だけとする。新しい根拠を伴わない同じ選好は作業を妨げない
+- reviewerが却下済みの指摘を維持できるのは、正しさまたは検証可能性に関する新しい根拠がある場合だけとする。新しい根拠を伴わない同じ好みは作業を妨げない
 - 自動修復は2回の修復・再レビューで終了する
 - 変更スコープ外の問題を検出: 別の改善機会としてユーザーに報告
 
@@ -116,6 +116,6 @@ skill-reviewerエージェントをAgent toolで起動:
 | 大規模変更検出（ファイルの50%以上） | 段階的実施を提案 |
 | 他スキルとの責務重複 | 責務境界を確認しユーザーに判断を委ねる |
 | 2回の修復・再レビューでもグレードC | 変更内容と残存指摘を提示し、ユーザーに判断を委ねる |
-| reviewerが退行を検出 | 退行原因の変更を取り消し、skill-creatorを再起動 |
+| reviewerがリグレッションを検出 | 原因となった変更を取り消し、skill-creatorを再起動 |
 
 **スコープ**: ユーザーの変更要求理解と品質評価付き最適化実装。変更実行はskill-creator（modificationモード）に委譲。品質評価はskill-reviewerエージェントに委譲。メタデータ同期は/sync-skills連携。

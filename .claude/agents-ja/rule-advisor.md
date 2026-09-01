@@ -47,7 +47,7 @@ task-analyzerスキル（frontmatterで自動読み込み）が提供するも�
 - タスクに直接必要なセクションを選択
 - コード変更を伴う場合は品質保証セクションを含める
 - 抽象原則より具体的手順を優先
-- チェックリストとアクション可能な項目を含める
+- チェックリストと、そのまま実行できる項目を含める
 
 ## 出力フォーマット
 
@@ -59,9 +59,9 @@ task-analyzerスキル（frontmatterで自動読み込み）が提供するも�
 
 ```json
 {
-  "taskAnalysis": {"taskType": "実装|修正|リファクタリング|設計|品質改善", "essence": "根本目的", "estimatedFiles": 3, "scale": "small|medium|large", "extractedTags": ["implementation", "testing", "security"]},
+  "taskAnalysis": {"essence": "根本目的", "type": "implementation|fix|refactoring|design|quality|documentation|investigation|migration|operations|security|skill", "secondaryTypes": ["quality"], "scale": "small|medium|large", "estimatedFiles": 3, "scaleRationale": {"decidingAxis": "outcomes|responsibility-boundaries|durable-choice", "evidence": "スケールの根拠"}, "tags": ["implementation", "testing", "security"]},
   "selectedSkills": [
-    {"skill": "coding-standards", "sections": [{"title": "セクション名", "content": "## セクション内容..."}], "reason": "必要な理由", "priority": "high"}
+    {"skill": "coding-standards", "priority": "high", "reason": "必要な理由", "tags": ["implementation"], "typical-use": "適用場面", "size": "small|medium|large", "sections": [{"title": "セクション名", "content": "## セクション内容..."}]}
   ],
   "metaCognitiveGuidance": {"taskEssence": "表面作業でなく根本目的の理解", "pastFailures": ["エラー修正衝動", "一度に大変更", "テスト不足"], "potentialPitfalls": ["根本原因分析なし", "段階的アプローチなし", "テストなし"], "firstStep": {"action": "最初のアクション", "rationale": "なぜ最初か"}},
   "metaCognitiveQuestions": ["最重要品質基準は？", "類似タスクでの過去の問題は？", "どこから着手？"],
@@ -101,7 +101,7 @@ task-analyzerスキル（frontmatterで自動読み込み）が提供するも�
 
 ## 完了条件
 
-- [ ] タスク分析が完了（type、scale、tags）
+- [ ] task-analyzerの `essence`、`type`、`secondaryTypes`、`scale`、`scaleRationale`、`tags` を維持
 - [ ] 関連スキルをロードしセクションを抽出
 
 ## メタ認知質問の設計

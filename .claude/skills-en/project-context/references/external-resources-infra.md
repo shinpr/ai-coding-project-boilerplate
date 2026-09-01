@@ -1,6 +1,6 @@
 # Infrastructure External Resource Axes
 
-Hearing axes for deployment, environment configuration, or infrastructure-as-code work. `/project-inject` loads this file when the user selects the Infrastructure domain.
+Hearing axes for deployment, environment configuration, or infrastructure-as-code work.
 
 ## Axis 1: IaC Source
 
@@ -15,8 +15,8 @@ The canonical source of infrastructure definitions.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: directory path.
-- **Access method**: CI pipeline name when plan/apply runs automatically, or CLI command when an operator runs it manually.
+- **Location**: directory path
+- **Access method**: CI pipeline name when plan/apply runs automatically, or CLI command when an operator runs it manually
 
 ## Axis 2: Environment Configuration
 
@@ -30,8 +30,8 @@ How per-environment settings (development, staging, production) differ.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: configuration file paths, platform setting names, or workspace identifiers where environment-specific values are stored.
-- **Access method**: file read, platform console URL, or CLI command.
+- **Location**: configuration file paths, platform setting names, or workspace identifiers where environment-specific values are stored
+- **Access method**: file read, platform console URL, or CLI command
 
 When multiple environments are tracked separately (development, staging, production), capture each as a separate entry per the multiple-instance rule in `template.md`, using the environment name as the disambiguating suffix.
 
@@ -47,8 +47,8 @@ How infrastructure code references secrets while keeping their values out of sou
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: secret manager service name or IaC data source identifier.
-- **Access method**: data lookup syntax, environment variable name, or apply-time injection mechanism.
+- **Location**: secret manager service name or IaC data source identifier
+- **Access method**: data lookup syntax, environment variable name, or apply-time injection mechanism
 
 When the same secret store appears in the Backend domain, render this axis as a cross-axis reference back to that location (notation defined in `template.md`).
 
@@ -64,8 +64,8 @@ How infrastructure and application changes reach environments.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: CI pipeline name or deployment platform identifier.
-- **Access method**: branch / tag convention that triggers each environment, plus any required manual approval step.
+- **Location**: CI pipeline name or deployment platform identifier
+- **Access method**: branch / tag convention that triggers each environment, plus any required manual approval step
 
 ## Self-Declaration Phase
 

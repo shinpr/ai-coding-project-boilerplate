@@ -19,7 +19,7 @@ TypeScriptリポジトリに、Claude Codeを使った開発環境を組み込�
 - 完了した実装が合意した成果とリポジトリの基準を満たし、不要な変更を含まず、機能、信頼性、セキュリティに重大な問題がないことを確認する
 - リポジトリに用意されたテスト、型チェック、lint、ビルドをワークフロー内で実行する
 - プロジェクト固有の前提を記録し、繰り返し使うチームの知識をスキルとして追加する
-- 同じ構成を日本語・英語のどちらでも利用する
+- 同じ構成を日本語・英語・簡体字中国語で利用する
 
 ## リポジトリに追加されるもの
 
@@ -40,7 +40,7 @@ TypeScriptリポジトリに、Claude Codeを使った開発環境を組み込�
 ```bash
 npx create-ai-project my-project --lang=ja
 cd my-project
-npm install
+pnpm install
 claude
 ```
 
@@ -54,7 +54,7 @@ npx create-ai-project update
 claude
 ```
 
-更新コマンドは、管理対象の`CLAUDE.md`、コマンド、エージェント、スキルを更新します。ソースコードや`package.json`の設定は置き換えません。
+更新コマンドは、管理対象の`CLAUDE.md`、コマンド、エージェント、スキルを更新します。ソースコードや既存の`package.json`設定は置き換えません。
 
 Claude Codeを起動したら、次のコマンドを実行します。
 
@@ -111,9 +111,10 @@ Claude Codeは、最初に変更の目的を確認し、既存の実装を調べ
 Claude Codeで使用する言語環境は次のコマンドで切り替えられます。
 
 ```bash
-npm run lang:ja
-npm run lang:en
-npm run lang:status
+pnpm lang:ja
+pnpm lang:en
+pnpm lang:zh-CN
+pnpm lang:status
 ```
 
 ワークフローは、リポジトリの設定からパッケージマネージャーと品質チェック用のコマンドを検出します。生成したプロジェクトで異なるコマンドを使う場合は、`package.json`の`packageManager`と該当するscriptを変更してください。

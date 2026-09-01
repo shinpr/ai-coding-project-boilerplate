@@ -1,6 +1,6 @@
 ---
 name: task-decomposer
-description: 承認済み作業計画書を、実行可能な最小数の実装タスクファイルに変換。使用するシーン: 作業計画書が承認され、タスクの実体化が必要な時。
+description: 承認済み作業計画書を、実行可能な最小数の実装タスクファイルに変換。使用するシーン: 作業計画書が承認され、タスクファイルの生成が必要な時。
 tools: Read, Write, Grep, Glob, LS, Bash
 skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach, llm-friendly-context
 ---
@@ -19,7 +19,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 タスク分解は機械的な引き渡しである。生成する各タスクは、作業計画書のタスクIDちょうど1つに対応し、その成果・出典・範囲・依存関係・Executor lane・ロールバック境界・検証を保持する。新たな要件、設計判断、技術的な再解釈、運用手順、外部準備は、この変換の対象外である。
 
-境界が誤っていると見える場合は、ここで判断し直さず呼び出し元に報告する。
+境界が誤っていると見える場合は、ここで判断し直さず未解決として返す。
 
 ## プロセス
 
@@ -32,19 +32,13 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 - 対象とする責務、または想定ファイル
 - 依存関係、Executor lane、ロールバック境界
 - 検証手法
-- 任意の主要な故障と観察チェック
+- 任意の主要な失敗と観測方法
 
 ### 2. タスク境界を保持する
 
 作業計画書のタスク1つにつき、実装タスクファイルをちょうど1つ生成する。依存タスクIDは変更せずコピーする。
 
-`NN` には作業計画書での出現順を0埋めした連番を割り当て、ファイル名はそのタスクの Executor lane から決める。buildレシピはファイル名で消費するため、lane がどの executor に渡るかを決める:
-
-| Executor lane | タスクファイル名 |
-|---|---|
-| `backend`、かつ計画書の全タスクが `backend` | `{plan-name}-task-{NN}.md` |
-| `backend`、かつ計画書に `frontend` のタスクもある | `{plan-name}-backend-task-{NN}.md` |
-| `frontend` | `{plan-name}-frontend-task-{NN}.md` |
+`NN`には作業計画書での出現順を0埋めした連番を割り当てる。タスクのExecutor laneと計画書のレイヤー構成に対応する、documentation-criteriaのタスクファイル命名規則を使う。
 
 実行順序はファイル名ではなく依存タスクIDから決まる — `NN` の連番と `PN-TN` のIDが一致するのは偶然にすぎないため、各タスクファイルには両方を記載する。
 
@@ -55,17 +49,17 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 1. 出典の引用をすべて変更せず `Governing Sources` にコピーする。
 2. 引用されたセクション、対象実装、隣接する代表的なテスト1つを `Investigation Targets` に加える。
 3. リポジトリ上の根拠から確定できる場合は、具体的な Target Files を選ぶ。
-4. 正確なファイルがまだ判明しない場合は、最小の所有ディレクトリまたはモジュールと、executor が解決できる探索条件を示す。
+4. 正確なファイルがまだ判明しない場合は、最小の所有ディレクトリまたはモジュールと、実装時にファイルを特定できる探索条件を示す。
 
-タスクファイルは正典の内容を再掲せず、そこを指し示す。executor は実装前にすべての Investigation Target を読む。
+タスクファイルは正典の内容を再掲せず、そこを指し示す。すべてのInvestigation Targetは実装前に読む。
 
 Investigation Targets は読むべきファイルパスであり、実行するアクションではない。「注文モジュール」ではなく `docs/design/payment.md (§ 決済フロー)` や `src/orders/checkout (processOrder関数)` と書く。
 
-作業計画書が名指しした既存の生成済みテストスケルトンは、確定した Target File である。そのパスと完成を、タスクの成果と完了条件に保持する。
+作業計画書で指定された既存の生成済みテストスケルトンは、確定した Target File である。そのパスと、それを完成させることを、タスクの成果と完了条件に明記する。
 
 ### 4. 検証の意図を保持する
 
-作業計画書タスクの検証と、引用された出典セクションから Operation Verification Methods を作成する。正確な契約と保護境界は引用元を正典としたまま、その観測可能な効果を検証する。検証レベル（L1/L2/L3）は implementation-approach スキルに従って選ぶ。
+作業計画書タスクの検証と、引用された出典セクションから Operation Verification Methods を作成する。正確な契約と保護境界の正典は引用元に置いたまま、その観測可能な効果を検証する。検証レベル（L1/L2/L3）は implementation-approach スキルに従って選ぶ。
 
 作業計画書が `Verification Focus` を提供している場合は変更せずコピーする。ない場合はそのタスクの通常の検証を用いる。
 
@@ -98,9 +92,9 @@ documentation-criteriaのtask-templateを使用し、`docs/plans/tasks/` 配下�
 - [ ] 生成した各タスクが、承認済み作業計画書のタスクIDちょうど1つに対応している
 - [ ] 出典の引用がすべて変更されずに保持されている
 - [ ] 各ソースタスクがちょうど1回だけ現れる
-- [ ] 生成した成果が、承認済み作業計画書の成果の部分集合になっている
+- [ ] 生成した成果が、承認済み作業計画書の成果の範囲内に収まっている
 - [ ] 依存関係・Executor lane・ロールバック境界・テストスケルトンのパスが変更されずコピーされている
 - [ ] レイヤー対応のタスク名で、Executor lane・Target Files・backend/frontend のファイル名要素が一致している
-- [ ] 対象と調査のコンテキストが、executor が推測せず着手できる具体度になっている
+- [ ] 対象と調査のコンテキストが、推測せず実装に着手できる具体度になっている
 - [ ] 出典の技術的内容をタスクファイルにコピーまたは再解釈していない
 - [ ] 各タスクがリポジトリ上の実装成果を生む

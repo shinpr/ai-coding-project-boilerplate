@@ -1,2 +1,2 @@
-npx lint-staged
-npm run check:skills-index
+pnpm exec lint-staged
+pnpm run check:skills-index

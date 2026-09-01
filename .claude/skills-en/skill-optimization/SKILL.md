@@ -113,7 +113,7 @@ Issues that reduce skill effectiveness when addressed.
 | Skill assumes knowledge not stated | Add Prerequisites section listing required context |
 | Domain terms used without definition | Add definitions inline or in a glossary table. **Skill exception**: Terms within the LLM's baseline knowledge (widely-used technical terminology, standard domain vocabulary) require no definition. Only project-specific terms, internal naming conventions, or domain jargon outside common LLM training data need explicit definition. |
 | No "when to use" guidance | Add trigger conditions with concrete scenarios |
-| Duplicated, distracting, or unactionable context with no downstream effect | Condense repeated facts into one operative statement; keep raw background behind a path or reference when only an extracted fact is needed; name the source for project-specific facts |
+| Context that has no downstream effect and is duplicated, distracting, or unactionable | Condense repeated facts into one operative statement; keep raw background behind a path or reference when only an extracted fact is needed; name the source for project-specific facts |
 
 **Skill example:**
 - Before: "Apply the strangler pattern for migration"

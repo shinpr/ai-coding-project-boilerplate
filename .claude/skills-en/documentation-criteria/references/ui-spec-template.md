@@ -20,7 +20,7 @@ Prototype code is an **attachment** to this UI Spec. This document and the Desig
 - **Attachment path**: [docs/ui-spec/assets/{feature-name}/]
 - **Version identification**: [commit SHA / tag]
 - **Compliance premise**: [e.g., design system compliance, component library usage]
-- **Relationship to canonical spec**: Differences between prototype and this spec are resolved in favor of this document. Use the prototype as a visual/behavioral reference.
+- **Relationship to canonical spec**: Differences between prototype and this spec are resolved in favor of this document. Use the prototype as a visual/behavioral reference
 
 ## AC Traceability (Prototype)
 

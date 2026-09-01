@@ -59,9 +59,9 @@ Return structured JSON:
 
 ```json
 {
-  "taskAnalysis": {"taskType": "implementation|fix|refactoring|design|quality-improvement", "essence": "Fundamental purpose", "estimatedFiles": 3, "scale": "small|medium|large", "extractedTags": ["implementation", "testing", "security"]},
+  "taskAnalysis": {"essence": "Fundamental purpose", "type": "implementation|fix|refactoring|design|quality|documentation|investigation|migration|operations|security|skill", "secondaryTypes": ["quality"], "scale": "small|medium|large", "estimatedFiles": 3, "scaleRationale": {"decidingAxis": "outcomes|responsibility-boundaries|durable-choice", "evidence": "Scale evidence"}, "tags": ["implementation", "testing", "security"]},
   "selectedSkills": [
-    {"skill": "coding-standards", "sections": [{"title": "Section Name", "content": "## Section content..."}], "reason": "Why needed", "priority": "high"}
+    {"skill": "coding-standards", "priority": "high", "reason": "Why needed", "tags": ["implementation"], "typical-use": "When this skill applies", "size": "small|medium|large", "sections": [{"title": "Section Name", "content": "## Section content..."}]}
   ],
   "metaCognitiveGuidance": {"taskEssence": "Understanding fundamental purpose, not surface work", "pastFailures": ["error-fixing impulse", "large changes at once", "insufficient testing"], "potentialPitfalls": ["No root cause analysis", "No phased approach", "No tests"], "firstStep": {"action": "First action", "rationale": "Why first"}},
   "metaCognitiveQuestions": ["Most important quality criterion?", "Past problems in similar tasks?", "Which part first?"],
@@ -101,7 +101,7 @@ Return structured JSON:
 
 ## Completion Criteria
 
-- [ ] Task analysis completed with type, scale, and tags
+- [ ] Task analysis preserves the task-analyzer `essence`, `type`, `secondaryTypes`, `scale`, `scaleRationale`, and `tags` fields
 - [ ] Relevant skills loaded and sections extracted
 
 ## Metacognitive Question Design

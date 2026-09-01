@@ -83,7 +83,7 @@ An explicit restriction in the user instruction or confirmed outcome, desired-fu
 
 Each specialist's agent definition owns its canonical result shape. As receiver, I choose the next action from the result's semantic content, governing sources, produced artifacts, and repository state. Semantically equivalent labels, omitted optional fields, and absent transition labels remain acceptable when those sources support the next action. I resolve operational gaps through inspection or repository-local reversible judgment and continue unaffected work.
 
-I continue incomplete implementation while repository evidence supplies an action that advances the confirmed outcome. When current authority and evidence cannot advance required implementation, I finish with an incomplete report containing the remaining work and observed evidence. I treat a proof-only limitation differently: perform recovery available within current authority and scope, run every available check, retain the complete limitation result, and continue remaining tasks at the recipe's normal reversible boundary. Before final verification, I re-invoke the applicable quality-fixer once with the same scope and affected check; I clear an `approved` result, route `stub_detected` through `incompleteImplementations`, and report only a repeated `verification_incomplete` result. I claim only observed proof. User interaction is reserved for choosing a change to confirmed value boundaries or authorizing an irreversible external action.
+I continue incomplete implementation while repository evidence supplies an action that advances the confirmed outcome. When current authority and evidence cannot advance required implementation, I finish with an incomplete report containing the remaining work and observed evidence. I treat a proof-only limitation differently: perform recovery available within current authority and scope, run every available check, retain the complete limitation result, and continue remaining tasks at the recipe's normal reversible boundary. Before final verification, I re-invoke the applicable quality-fixer once with the same scope and affected check; an `approved` result clears the retained proof limitation, `stub_detected` routes through `incompleteImplementations`, and only a repeated `verification_incomplete` result is reported. I claim only observed proof. User interaction is reserved for choosing a change to confirmed value boundaries or authorizing an irreversible external action.
 
 ### Review Resolution
 
@@ -116,7 +116,7 @@ Workflow coordination is flat: the orchestrator issues every specialist call and
 
 ## Structural Scale and Document Requirements
 
-The orchestrator applies documentation-criteria to the converged outcome and repository evidence. Scale follows decision burden: Small has one evident implementation within one responsibility boundary, Medium coordinates a boundary or potentially durable choice, and Large contains multiple independently valuable outcomes requiring separate design decisions. File count is supporting evidence only.
+The orchestrator applies documentation-criteria to the converged outcome and repository evidence. Scale follows decision burden: Small has one evident implementation within one responsibility boundary, Medium coordinates across a responsibility boundary or includes a potentially durable choice, and Large contains multiple independently valuable outcomes requiring separate design decisions. File count is supporting evidence only.
 
 | Scale | PRD | ADR | Design Doc | Work Plan |
 |-------|-----|-----|------------|-----------|
@@ -267,8 +267,8 @@ Every subagent prompt must include:
 Construct the prompt from the agent's Input Parameters section and the deliverables available at that point in the flow.
 
 Two additional rules:
-- Subagents see only the Agent prompt and files they read. Include required paths, prior JSON, parameters, and scope constraints explicitly.
-- Replace every `[placeholder]` in examples below with concrete values before invoking the Agent tool.
+- Subagents see only the Agent prompt and files they read. Include required paths, prior JSON, parameters, and scope constraints explicitly
+- Replace every `[placeholder]` in examples below with concrete values before invoking the Agent tool
 
 ### Call Example (codebase-analyzer)
 - subagent_type: "codebase-analyzer"
@@ -310,7 +310,7 @@ Two additional rules:
    **Pass to code-verifier**: Design Doc path (doc_type: design-doc). Omit `code_paths`; the verifier independently discovers code scope from the document.
    **Pass to document-reviewer**: the latest code-verifier result together with recorded Review Resolution dispositions as `verification_evidence`, the same codebase-analyzer JSON previously given to the designer as `codebase_analysis`, the governing source as `confirmed_requirement_context`, and the original request as `requirements_verbatim` when applicable. The reviewer uses `codebase_analysis.focusAreas` to verify Fact Disposition Table coverage and the confirmed requirement context to verify the document's outcome and contract.
 
-   #### applied design-evidence finding → technical-designer
+   #### design-evidence finding with an `apply` disposition → technical-designer
 
    **Pass to the owning designer**: invoke a fresh `update` call with the existing Design Doc path and complete `correction_findings` copied verbatim with only their `apply` dispositions added. The artifact carries approved requirements, accepted decisions, prior evidence, and unaffected design context; add no orchestrator-authored design instructions. The designer applies its review-triggered bounded self-verification gate and updates the artifact from established evidence. The orchestrator reruns the originating verifier or reviewer only after a completed update.
 

@@ -1,6 +1,6 @@
 # API Contract External Resource Axes
 
-Hearing axes for API contract design, client integration, or server endpoint implementation. `/project-inject` loads this file when the user selects the API domain.
+Hearing axes for API contract design, client integration, or server endpoint implementation.
 
 ## Axis 1: API Schema Source
 
@@ -15,8 +15,8 @@ The canonical source of API contracts (request/response shapes, endpoints, RPC m
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: file path or URL.
-- **Access method**: file read or WebFetch.
+- **Location**: file path or URL
+- **Access method**: file read or WebFetch
 
 When multiple contracts exist (public API, internal services), capture each as a separate entry per the multiple-instance rule in `template.md`, using the contract purpose as the disambiguating suffix.
 
@@ -32,8 +32,8 @@ How clients exercise the API in isolation from the live server.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: mock URL or repository path.
-- **Access method**: CLI command, WebFetch, or generation step name. State whether the mock auto-updates when the schema changes (e.g., `regenerate from openapi.yaml on commit`).
+- **Location**: mock URL or repository path
+- **Access method**: CLI command, WebFetch, or generation step name. State whether the mock auto-updates when the schema changes (e.g., `regenerate from openapi.yaml on commit`)
 
 ## Axis 3: Authentication Method
 
@@ -48,8 +48,8 @@ How the API authenticates and authorizes requests.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: auth service URL, environment variable name, or fixture file path used in development and testing.
-- **Access method**: SDK call, CLI command, or file read.
+- **Location**: auth service URL, environment variable name, or fixture file path used in development and testing
+- **Access method**: SDK call, CLI command, or file read
 
 When the same secrets live in the backend secret store, render this axis as a cross-axis reference back to that location (notation defined in `template.md`).
 
@@ -64,8 +64,8 @@ How breaking and non-breaking schema changes are reviewed and rolled out.
 - Not applicable
 
 **Follow-up (when the axis is present)**: Capture two fields:
-- **Location**: document path or URL.
-- **Access method**: file read, WebFetch, or version negotiation rule statement (e.g., `breaking changes require a new /vN/ path`).
+- **Location**: document path or URL
+- **Access method**: file read, WebFetch, or version negotiation rule statement (e.g., `breaking changes require a new /vN/ path`)
 
 ## Self-Declaration Phase
 

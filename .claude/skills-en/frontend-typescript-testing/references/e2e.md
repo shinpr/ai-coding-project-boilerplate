@@ -2,7 +2,7 @@
 
 Inspect the repository's browser-test configuration, scripts, fixtures, neighboring tests, and CI routing. Preserve the existing harness, imports, locator conventions, setup lifecycle, file naming, and test location.
 
-When no browser harness exists, use integration-e2e-testing to determine whether browser-level proof is necessary. If it is, select the lowest-surface sufficient harness from repository and applicable external evidence; if it is not, use the cheaper observable boundary. Report an unavailable execution environment as a proof limitation rather than a user decision.
+When no browser harness exists, require browser-level proof only when the target behavior must be observed through a real browser and no cheaper available check can prove it. If required, select the lowest-surface sufficient harness from repository and applicable external evidence; otherwise use the cheaper observable boundary. Report an unavailable execution environment as a proof limitation rather than a user decision.
 
 ## Lane Selection
 
@@ -33,24 +33,24 @@ Everything lives under `tests/e2e/`: test files at its root, page objects in `pa
 
 ## Test Structure Rules
 
-- Extract a page object per the Rule of Three: keep interactions inline on first use, consider extracting on the second, and extract on the third substantially shared interaction. Extract earlier only when the shared interaction is itself complex (multi-step, waits on intermediate state) or when a representative page object for that page already exists — then follow it.
-- Put shared setup that every test in a file needs — authentication in particular — in a fixture rather than repeating the steps per test, so a test body contains only the behavior it verifies.
+- Extract a page object per the Rule of Three: keep interactions inline on first use, consider extracting on the second, and extract on the third substantially shared interaction. Extract earlier only when the shared interaction is itself complex (multi-step, waits on intermediate state) or when a representative page object for that page already exists — then follow it
+- Put shared setup that every test in a file needs — authentication in particular — in a fixture rather than repeating the steps per test, so a test body contains only the behavior it verifies
 
 ## What to Assert
 
 Assert the state the user can observe after the journey, not the steps taken to get there:
 
-- **Navigation** — the URL or the landmark that identifies the destination, not both as separate proofs of the same transition.
-- **Rendered outcome** — the specific content the journey was supposed to produce, identified by role and accessible name. A visibility check on a container proves the container rendered, not that it holds the right thing.
-- **Absence** — when the expectation is that something is gone or was never shown, assert absence explicitly rather than asserting that something else is present.
-- **Persisted effect** — when a requirement or contract states that the change survives a reload or a fresh navigation, assert it there too, since an in-page update can pass while persistence fails. Transient state with no such contract — filter selections, modal open/close, wizard progress — is asserted in place; adding a reload assertion there would test a guarantee the feature never made.
+- **Navigation** — the URL or the landmark that identifies the destination, not both as separate proofs of the same transition
+- **Rendered outcome** — the specific content the journey was supposed to produce, identified by role and accessible name. A visibility check on a container proves the container rendered, not that it holds the right thing
+- **Absence** — when the expectation is that something is gone or was never shown, assert absence explicitly rather than asserting that something else is present
+- **Persisted effect** — when a requirement or contract states that the change survives a reload or a fresh navigation, assert it there too, since an in-page update can pass while persistence fails. Transient state with no such contract — filter selections, modal open/close, wizard progress — is asserted in place; adding a reload assertion there would test a guarantee the feature never made
 
 ## Fixture-Based Backend (fixture-e2e)
 
 fixture-e2e tests run a real browser against deterministic fixtures — no live backend, no DB, no external services. Fake the network either by intercepting every backend call the journey makes with `page.route()` and fulfilling it from a committed fixture, or by loading that fixture through a route helper or an app-level test mode. Intercept every call the journey reaches, not only the first — an unintercepted route silently hits the real network and makes the test environment-dependent.
 
 **Principles for fixture-e2e**:
-- Backend is faked, not running. No `npm run start:backend` required to execute these tests
+- Backend is faked, not running. No backend start script is required to execute these tests
 - Fixtures are versioned in the repo (`tests/e2e/data/`) so tests are deterministic across machines
 - When the journey requires an authenticated state but does not verify real authentication, establish auth with a deterministic test cookie or fixture-mode session
 - These tests run in CI without provisioning external infrastructure

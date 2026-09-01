@@ -47,15 +47,15 @@ Invoke rule-advisor using Agent tool:
 - `prompt`: "Identify the essence and required skills for this problem: [Problem reported by user]"
 
 Confirm from rule-advisor output:
-- `taskAnalysis.mainFocus`: Primary focus of the problem
-- `mandatoryChecks.taskEssence`: Root problem beyond surface symptoms
+- `taskAnalysis.essence`: Root problem beyond surface symptoms
+- `taskAnalysis.type` and `taskAnalysis.tags`: Problem classification and matching terms
 - `selectedSkills`: Applicable skill sections
 - `warningPatterns`: Patterns to avoid
 
 ### 0.4 Reflecting in investigator Prompt
 
 **Include the following in investigator prompt**:
-1. Problem essence (taskEssence)
+1. Problem essence (`taskAnalysis.essence`)
 2. Key applicable skills summary (from selectedSkills)
 3. Investigation focus (investigationFocus): Convert warningPatterns to "points prone to confusion or oversight in this investigation"
 4. **For change failures, additionally include**:

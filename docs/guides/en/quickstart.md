@@ -9,7 +9,7 @@ For a new project:
 ```bash
 npx create-ai-project my-project
 cd my-project
-npm install
+pnpm install
 ```
 
 For an existing project, run the updater from its root:

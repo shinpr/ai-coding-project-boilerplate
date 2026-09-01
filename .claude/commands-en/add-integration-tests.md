@@ -113,7 +113,7 @@ Check the result:
 
 On `approved` or `verification_incomplete`, commit the completed test change using the repository's normal commit boundary and message convention.
 
-After every layer has a clean commit boundary, apply the proof-limitation retry in Specialist Result Acceptance with the same layer quality-fixer inputs. Clear an `approved` result, route `stub_detected` through Steps 3→6, and retain a repeated `verification_incomplete` result for the completion report while continuing the workflow.
+After every layer has a clean commit boundary, apply the proof-limitation retry in Specialist Result Acceptance with the same layer quality-fixer inputs. An `approved` result clears the retained proof limitation; route `stub_detected` through Steps 3→6, and retain a repeated `verification_incomplete` result for the completion report while continuing the workflow.
 
 In the completion report, list each repeated verification limitation and each declined actionable finding with its ID, governing reason, and evidence when any occurred.
 

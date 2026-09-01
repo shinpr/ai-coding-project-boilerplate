@@ -32,22 +32,22 @@ const user = raw // narrowed to User
 ```
 
 ## Component and State Design
-- **Function components only.** Class components are allowed solely for Error Boundaries (no hook equivalent exists).
-- **Type Props explicitly** with a named type and destructure: `function UserCard({ user, onSelect }: UserCardProps)`. Type props directly on the function so the props contract stays explicit.
-- **Props-driven:** pass dependencies as props when one explicit parent owns them. Use Context or established global state when multiple non-adjacent descendants share the value and prop forwarding would add intermediate components with no ownership role.
-- **Custom hooks** are the unit of logic reuse and dependency injection (inject collaborators through the hook for testability).
-- **Function parameters:** 0-2 positional; for 3+ take a single options object.
-- **State shape:** type state explicitly; for multi-field state with discrete transitions, use `useReducer` with a discriminated-union action type rather than many `useState` calls.
-- **Server/Client boundary** (RSC frameworks only — e.g. Next.js App Router): default to server components for data fetching/rendering and isolate interactivity behind a `"use client"` boundary at the smallest scope that needs it; keep browser-only APIs (`window`, `localStorage`, event handlers) inside client components, since calling them in a server component breaks the render. N/A for client-only SPAs (e.g. Vite) — skip when the project has no server-component runtime.
+- **Function components only.** Class components are allowed solely for Error Boundaries (no hook equivalent exists)
+- **Type Props explicitly** with a named type and destructure: `function UserCard({ user, onSelect }: UserCardProps)`. Type props directly on the function so the props contract stays explicit
+- **Props-driven:** pass dependencies as props when one explicit parent owns them. Use Context or established global state when multiple non-adjacent descendants share the value and prop forwarding would add intermediate components with no ownership role
+- **Custom hooks** are the unit of logic reuse and dependency injection (inject collaborators through the hook for testability)
+- **Function parameters:** 0-2 positional; for 3+ take a single options object
+- **State shape:** type state explicitly; for multi-field state with discrete transitions, use `useReducer` with a discriminated-union action type rather than many `useState` calls
+- **Server/Client boundary** (RSC frameworks only — e.g. Next.js App Router): default to server components for data fetching/rendering and isolate interactivity behind a `"use client"` boundary at the smallest scope that needs it; keep browser-only APIs (`window`, `localStorage`, event handlers) inside client components, since calling them in a server component breaks the render. N/A for client-only SPAs (e.g. Vite) — skip when the project has no server-component runtime
 
 ## Error Handling
-- Give every error one explicit outcome: convert it to a typed expected failure, handle it at the owning UI boundary, or propagate it with its diagnostic context. Log at the layer that owns observability so the same failure is not logged repeatedly.
-- **Fail fast:** on an invalid state, throw rather than returning a silent fallback.
-- Represent expected failures as values with a `Result` type; reserve `throw` for unexpected/unrecoverable cases.
-- Use purpose-specific error classes extending a base `AppError` carrying a `code` (e.g. ValidationError, ApiError, NotFoundError).
-- **Layer responsibilities:** the API layer converts transport errors into domain errors; hooks propagate `AppError` upward; an Error Boundary catches render-time errors and shows fallback UI.
-- **Effect race/cleanup:** guard `useEffect` data fetches against out-of-order responses and post-unmount state updates — abort or ignore stale results (`AbortController` or a mounted flag), or use a server-state library (React Query/SWR) that cancels and dedupes. `try-catch` alone does not cover this.
-- Log only diagnostic fields approved for the current trust boundary; redact credentials, tokens, payment data, and other sensitive values before logging.
+- Give every error one explicit outcome: convert it to a typed expected failure, handle it at the owning UI boundary, or propagate it with its diagnostic context. Log at the layer that owns observability so the same failure is not logged repeatedly
+- **Fail fast:** on an invalid state, throw rather than returning a silent fallback
+- Represent expected failures as values with a `Result` type; reserve `throw` for unexpected/unrecoverable cases
+- Use purpose-specific error classes extending a base `AppError` carrying a `code` (e.g. ValidationError, ApiError, NotFoundError)
+- **Layer responsibilities:** the API layer converts transport errors into domain errors; hooks propagate `AppError` upward; an Error Boundary catches render-time errors and shows fallback UI
+- **Effect race/cleanup:** guard `useEffect` data fetches against out-of-order responses and post-unmount state updates — abort or ignore stale results (`AbortController` or a mounted flag), or use a server-state library (React Query/SWR) that cancels and dedupes. `try-catch` alone does not cover this
+- Log only diagnostic fields approved for the current trust boundary; redact credentials, tokens, payment data, and other sensitive values before logging
 
 ```typescript
 type Result<T, E> = { ok: true; value: T } | { ok: false; error: E }
@@ -69,8 +69,8 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode; fallbac
 ```
 
 ## Project Conventions
-- **Environment variables:** read client-side env through the configured bundler's exposed accessor. Match the observed bundler: Vite `import.meta.env.VITE_*`, Next.js public `process.env.NEXT_PUBLIC_*`, CRA `process.env.REACT_APP_*`. Frontend bundles contain public configuration; secret values remain behind a server-side boundary.
-- **Bundle & performance:** monitor bundle size with the `build` script against the project's budget; code-split with `React.lazy` + `Suspense`; structure state to minimize re-renders. Memoization: when React Compiler is enabled, rely on it; reach for manual `React.memo`/`useMemo`/`useCallback` only as a profiler- or identity-justified escape hatch (a measured bottleneck, or stable reference identity for third-party APIs / effect dependencies).
-- **Naming:** components/types `PascalCase`; variables/functions `camelCase`; hooks `use`-prefixed; constants `SCREAMING_SNAKE_CASE`.
-- **Imports:** follow the alias and import-order rules observed in `tsconfig`, lint configuration, and representative files. Use `src/` absolute paths only when the configured alias supports them.
-- **Formatting:** follow the repository's configured formatter; when Biome is present, semicolons and style come from its project configuration.
+- **Environment variables:** read client-side env through the configured bundler's exposed accessor. Match the observed bundler: Vite `import.meta.env.VITE_*`, Next.js public `process.env.NEXT_PUBLIC_*`, CRA `process.env.REACT_APP_*`. Frontend bundles contain public configuration; secret values remain behind a server-side boundary
+- **Bundle & performance:** monitor bundle size with the `build` script against the project's budget; code-split with `React.lazy` + `Suspense`; structure state to minimize re-renders. Memoization: when React Compiler is enabled, rely on it; reach for manual `React.memo`/`useMemo`/`useCallback` only as a profiler- or identity-justified escape hatch (a measured bottleneck, or stable reference identity for third-party APIs / effect dependencies)
+- **Naming:** components/types `PascalCase`; variables/functions `camelCase`; hooks `use`-prefixed; constants `SCREAMING_SNAKE_CASE`
+- **Imports:** follow the alias and import-order rules observed in `tsconfig`, lint configuration, and representative files. Use `src/` absolute paths only when the configured alias supports them
+- **Formatting:** follow the repository's configured formatter; when Biome is present, semicolons and style come from its project configuration

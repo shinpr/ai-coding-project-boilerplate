@@ -17,8 +17,8 @@ Complete Steps 1-6 in order. Advance only when the current step's stated checkpo
 ### Step 1: Load Inputs
 
 1. Read `.claude/skills/project-context/SKILL.md` to learn the current state. Distinguish the two cases by the count of catalog section headings (`## Project Overview`, `## Domain Constraints`, `## Quality Standards`, `## Development Phase`, `## Directory Conventions`, `## External Resources`) present in the body:
-   - **Unconfigured** — the body has zero catalog section headings.
-   - **Configured** — the body has one or more catalog section headings.
+   - **Unconfigured** — the body has zero catalog section headings
+   - **Configured** — the body has one or more catalog section headings
 2. Read `.claude/skills/project-context/references/template.md` to obtain the section catalog.
 
 **Checkpoint**: You hold the section catalog from `template.md` and the configured-or-unconfigured state of `SKILL.md`.
@@ -28,12 +28,12 @@ Complete Steps 1-6 in order. Advance only when the current step's stated checkpo
 Produce a per-section plan (`add` / `keep` / `update` / `remove` / `skip`) covering every section in the catalog.
 
 **Unconfigured case**:
-- Project Overview: `add` (mandatory; the section's inclusion rule is "Always").
-- For each remaining catalog section, AskUserQuestion: "Add the `<section name>` section?" Options: "Yes, add it" / "No, skip". Mark `add` or `skip` accordingly.
+- Project Overview: `add` (mandatory; the section's inclusion rule is "Always")
+- For each remaining catalog section, AskUserQuestion: "Add the `<section name>` section?" Options: "Yes, add it" / "No, skip". Mark `add` or `skip` accordingly
 
 **Configured case**:
-- For each currently populated section, AskUserQuestion: "Action for the existing `<section name>` section?" Options: "Keep as-is" (mark `keep`) / "Update — replace existing content" (mark `update`) / "Remove — drop from rebuilt SKILL.md" (mark `remove`).
-- For each catalog section that is still empty in the existing SKILL.md, AskUserQuestion: "Add the `<section name>` section?" Options: "Yes, add it" (mark `add`) / "No, skip" (mark `skip`).
+- For each currently populated section, AskUserQuestion: "Action for the existing `<section name>` section?" Options: "Keep as-is" (mark `keep`) / "Update — replace existing content" (mark `update`) / "Remove — drop from rebuilt SKILL.md" (mark `remove`)
+- For each catalog section that is still empty in the existing SKILL.md, AskUserQuestion: "Add the `<section name>` section?" Options: "Yes, add it" (mark `add`) / "No, skip" (mark `skip`)
 
 **Checkpoint**: Every catalog section has exactly one disposition: `add`, `keep`, `update`, `remove`, or `skip`.
 
@@ -43,7 +43,7 @@ For each section marked `add` or `update`, run the hearing protocol that `templa
 
 **External Resources section**: follow the routing protocol in `template.md` § External Resources. That section owns the domain multi-select, the domain-to-file slug map, and the per-axis output schema; this command delegates to it.
 
-**Vagueness rejection** (applies to every `add` and `update` section): When a user-provided rule uses subjective phrasing (e.g., "be careful about performance"), follow up with: "How would AI verify this rule passes? Restate it as a measurable check, or reply 'drop' to omit." Keep rules that arrive in measurable form as-is; replace subjective ones with the user's restated version, or omit them when the user replies 'drop'.
+**Vagueness rejection**: Apply the filter defined in `template.md` to every `add` and `update` section.
 
 **Checkpoint**: You hold captured content for every `add` and `update` section, plus the verbatim original content for every `keep` section.
 
@@ -67,13 +67,13 @@ Write the assembled content to `.claude/skills/project-context/SKILL.md`. This s
 
 Apply each check below to the rebuilt `.claude/skills/project-context/SKILL.md`:
 
-- [ ] Frontmatter matches the canonical block in Step 4 verbatim.
-- [ ] Every section heading in the body is followed by captured content from the hearing (concrete values, lists, or sub-blocks).
-- [ ] Every populated section's content matches the output structure that `template.md` defines for it.
-- [ ] Every section in the body has disposition `add`, `keep`, or `update` AND satisfies its inclusion rule.
-- [ ] Domain constraint statements are pass/fail checkable (e.g., "log entries use anonymized IDs" passes; "logs are clean" fails this check).
-- [ ] Every quality standard has an observable applicability condition, one positive observable accepted state, and supporting evidence.
-- [ ] Project Context content is limited to repository-specific constraints, quality standards, phases, conventions, and external resources. Technology stack details belong in the `technical-spec` skill; general implementation principles belong in the `coding-standards` skill.
+- [ ] Frontmatter matches the canonical block in Step 4 verbatim
+- [ ] Every section heading in the body is followed by captured content from the hearing (concrete values, lists, or sub-blocks)
+- [ ] Every populated section's content matches the output structure that `template.md` defines for it
+- [ ] Every section in the body has disposition `add`, `keep`, or `update` AND satisfies its inclusion rule
+- [ ] Domain constraint statements are pass/fail checkable (e.g., "log entries use anonymized IDs" passes; "logs are clean" fails this check)
+- [ ] Every quality standard has an observable applicability condition, one positive observable accepted state, and supporting evidence
+- [ ] Project Context content is limited to repository-specific constraints, quality standards, phases, conventions, and external resources. Technology stack details belong in the `technical-spec` skill; general implementation principles belong in the `coding-standards` skill
 
 When any check fails, report the failing check to the user with the specific line and propose either a re-hearing for the affected section or a manual edit. Re-run Step 5 after the fix.
 

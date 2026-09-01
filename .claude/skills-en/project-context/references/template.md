@@ -1,6 +1,6 @@
 # Project Context Section Catalog
 
-This file is the section catalog used by `/project-inject`. Consumer agents load `SKILL.md` only; this file is loaded only during update operations.
+Defines the section catalog and per-section output structure for project context.
 
 ## Section Index
 
@@ -21,7 +21,7 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 
 **Hearing**:
 - AskUserQuestion 1: "What does this project do? (1–2 sentences)"
-- AskUserQuestion 2: "What domain does it belong to?" with concrete option examples drawn from common categories (e.g., developer tooling, fintech, healthcare, e-commerce, internal platform). Always include "Other".
+- AskUserQuestion 2: "What domain does it belong to?" with concrete option examples drawn from common categories (e.g., developer tooling, fintech, healthcare, e-commerce, internal platform). Always include "Other"
 
 **Output structure**:
 ```markdown
@@ -35,9 +35,9 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 **Inclusion**: Include when at least one constraint, if ignored, would cause a bug or compliance failure.
 
 **Hearing**:
-- AskUserQuestion: "Are there domain-specific rules that AI must follow when making decisions in this project?" Options: "Yes, I will list them" / "No, no domain constraints apply".
-- When "Yes": for each rule (cap at 3), capture the rule statement plus a measurable check. Accept statements only when they evaluate as pass/fail; reframe subjective phrasings into measurable form (e.g., turn "be careful with PII" into "log output uses anonymized patient IDs").
-- Adapt example phrasings to the domain captured in Project Overview (e.g., for fintech: "every monetary mutation appends an audit log entry"; for developer tooling: "generated code keeps lockfile commands invocable").
+- AskUserQuestion: "Are there domain-specific rules that AI must follow when making decisions in this project?" Options: "Yes, I will list them" / "No, no domain constraints apply"
+- When "Yes": for each rule (cap at 3), capture the rule statement plus a measurable check. Accept statements only when they evaluate as pass/fail; reframe subjective phrasings into measurable form (e.g., turn "be careful with PII" into "log output uses anonymized patient IDs")
+- Adapt example phrasings to the domain captured in Project Overview (e.g., for fintech: "every monetary mutation appends an audit log entry"; for developer tooling: "generated code keeps lockfile commands invocable")
 
 **Output structure** (omit the section entirely when zero constraints):
 ```markdown
@@ -52,10 +52,10 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 **Inclusion**: Include when this repository enforces at least one standard beyond general language or framework guidance that changes whether an implementation is accepted.
 
 **Hearing**:
-- AskUserQuestion: "Are there repository-specific quality standards that agents should apply during both implementation and review?" Options: "Yes, propose them from repository evidence" / "Yes, I will provide them" / "No repository-specific standards apply".
-- Build proposals only from user-provided policy or acceptance conditions expressed or enforced by repository instructions, contributor documentation, CI, manifests and scripts, schemas and public contracts, tests, or representative implementation patterns. Inspect supporting and contradicting evidence only where it can change a proposal's applicability, accepted state, or ownership by this repository.
-- Retain a proposal only when failing it would change implementation acceptance. Give it the narrowest useful **Applies when** condition, one positive and observable **Pass** condition, and the repository reference or user-confirmed policy that supports it as **Evidence**. Consolidate proposals that would produce the same failure and correction; omit proposals whose required evidence is unavailable and report what is missing.
-- For an update, ask which standards should change and preserve every other standard verbatim. Before capture, present the proposed additions, changes, and removals with the unchanged remainder, show evidence that supports or contradicts each change, and obtain explicit user confirmation.
+- AskUserQuestion: "Are there repository-specific quality standards that agents should apply during both implementation and review?" Options: "Yes, propose them from repository evidence" / "Yes, I will provide them" / "No repository-specific standards apply"
+- Build proposals only from user-provided policy or acceptance conditions expressed or enforced by repository instructions, contributor documentation, CI, manifests and scripts, schemas and public contracts, tests, or representative implementation patterns. Inspect supporting and contradicting evidence only where it can change a proposal's applicability, accepted state, or ownership by this repository
+- Retain a proposal only when failing it would change implementation acceptance. Give it the narrowest useful **Applies when** condition, one positive and observable **Pass** condition, and the repository reference or user-confirmed policy that supports it as **Evidence**. Consolidate proposals that would produce the same failure and correction; omit proposals whose required evidence is unavailable and report what is missing
+- For an update, ask which standards should change and preserve every other standard verbatim. Before capture, present the proposed additions, changes, and removals with the unchanged remainder, show evidence that supports or contradicts each change, and obtain explicit user confirmation
 
 **Output structure** (omit the section entirely when zero standards remain):
 ```markdown
@@ -72,8 +72,8 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 **Inclusion**: Include when phase materially changes AI behavior. Skip when behavior is identical across phases.
 
 **Hearing**:
-- AskUserQuestion: "Which phase is this project in?" Options: "Prototype", "Production", "In operation", "No meaningful difference between phases".
-- When "No meaningful difference": omit the section.
+- AskUserQuestion: "Which phase is this project in?" Options: "Prototype", "Production", "In operation", "No meaningful difference between phases"
+- When "No meaningful difference": omit the section
 
 **Output structure**:
 ```markdown
@@ -86,8 +86,8 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 **Inclusion**: Include when at least one file placement rule is non-obvious from the repository structure (i.e., a contributor reading the tree would guess wrong).
 
 **Hearing**:
-- AskUserQuestion: "Are there file placement rules that AI should follow?" Options: "Yes" / "No".
-- When "Yes": capture each rule as a single line stating the trigger and the destination (e.g., "Temporary working files: place under `./tmp/` and remove on completion").
+- AskUserQuestion: "Are there file placement rules that AI should follow?" Options: "Yes" / "No"
+- When "Yes": capture each rule as a single line stating the trigger and the destination (e.g., "Temporary working files: place under `./tmp/` and remove on completion")
 
 **Output structure** (omit the section entirely when zero rules):
 ```markdown
@@ -107,7 +107,7 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
   - API contract (schema source, mocks, authentication, schema change process)
   - Infrastructure (IaC source, environment configuration, infrastructure secrets, deployment trigger)
   - None apply
-- For each selected domain, load the matching reference file using the slug map below and run its hearing protocol.
+- For each selected domain, load the matching reference file using the slug map below and run its hearing protocol
 
 **Domain to file slug mapping**:
 | Domain (user-facing label) | Reference file |
@@ -130,8 +130,8 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 **Axis output rules**:
 
 1. **Axis output is conditional on whether the schema can be filled.** Render the axis block when the user's choice points to an external resource with identifiable **Location** and **Access method** values. The following choices produce zero output lines for that axis:
-   - Listed absence-declaring choices: "Not applicable", "No <resource>", "No <resource> required", "No documented <resource>", "Ad-hoc <resource>", "Manual <process> (no <resource>)".
-   - Any other choice whose Location and Access method values resolve to blank.
+   - Listed absence-declaring choices: "Not applicable", "No <resource>", "No <resource> required", "No documented <resource>", "Ad-hoc <resource>", "Manual <process> (no <resource>)"
+   - Any other choice whose Location and Access method values resolve to blank
 
 2. **Multiple instances within one axis** (e.g., primary and analytics databases, separate guideline files for CSS and accessibility) — repeat the axis block with a disambiguating suffix:
    ```markdown
@@ -168,8 +168,8 @@ This file is the section catalog used by `/project-inject`. Consumer agents load
 
 ## Output Assembly Rules
 
-After hearing completes, the calling command (`/project-inject`) assembles the configured `SKILL.md` per the order it specifies. This file owns the per-section content shape (above) and these cross-section rules:
+After hearing completes, assemble the configured `SKILL.md` in Section Index order. The catalog defines the per-section content shape above and these cross-section rules:
 
 1. Sections marked for omission produce zero output lines. The rebuilt body advances directly to the next included section.
 2. Domain blocks within External Resources appear in catalog order (Frontend → Backend → API contract → Infrastructure), regardless of the order in which the user selected them during hearing.
-3. The Vagueness rejection rule (defined in `/project-inject` Step 3) is a hearing-time filter applied to every `add` and `update` section. The captured rules that pass the filter are written through normal section output; the filter contributes zero output lines of its own.
+3. Apply this hearing-time filter to every `add` and `update` section: when a user-provided rule uses subjective phrasing (for example, "be careful about performance"), ask, "How would AI verify this rule passes? Restate it as a measurable check, or reply 'drop' to omit." Keep rules supplied in measurable form, replace subjective rules with the user's restated version, and omit a rule when the user replies `drop`. Write retained rules through normal section output; the filter contributes zero output lines of its own.

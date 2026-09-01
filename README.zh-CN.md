@@ -19,7 +19,7 @@
 - 评审已完成的实现，确认其符合约定的目标和仓库标准，没有不必要的改动，也没有功能、可靠性或安全方面的严重问题
 - 在工作流中运行仓库适用的测试、类型检查、lint 和构建检查
 - 记录项目特有的上下文，并将团队反复使用的知识整理为可复用技能
-- 使用同一套配置的英文或日文版本
+- 使用同一套配置的英文、日文或简体中文版本
 
 ## 它会向仓库添加什么
 
@@ -38,9 +38,9 @@
 ### 创建新项目
 
 ```bash
-npx create-ai-project my-project
+npx create-ai-project my-project --lang=zh-CN
 cd my-project
-npm install
+pnpm install
 claude
 ```
 
@@ -54,7 +54,7 @@ npx create-ai-project update
 claude
 ```
 
-更新程序会刷新受管理的 `CLAUDE.md`、命令、智能体和技能，不会替换你的源代码或 `package.json` 配置。
+更新程序会刷新受管理的 `CLAUDE.md`、命令、智能体和技能，不会替换源代码或现有的 `package.json` 设置。
 
 启动 Claude Code 后，运行：
 
@@ -89,7 +89,7 @@ Claude Code 会先确认变更要实现的目标，并检查现有实现。路�
 
 | 命令 | 用途 |
 |---|---|
-| `/implement` | 从需求确认一直完成到实现和验证 |
+| `/implement` | 从需求确认推进至实现和验证完成 |
 | `/design`、`/front-design` | 在实现前设计变更 |
 | `/plan`、`/front-plan` | 将已批准的设计转化为可执行计划 |
 | `/build`、`/front-build` | 从已批准的计划继续实现 |
@@ -111,9 +111,10 @@ Claude Code 会先确认变更要实现的目标，并检查现有实现。路�
 通过以下命令切换 Claude Code 当前使用的语言环境：
 
 ```bash
-npm run lang:en
-npm run lang:ja
-npm run lang:status
+pnpm lang:en
+pnpm lang:ja
+pnpm lang:zh-CN
+pnpm lang:status
 ```
 
 工作流会从仓库配置中发现包管理器和质量检查命令。如果生成的项目使用其他命令，请修改 `package.json` 中的 `packageManager` 和相应 scripts。

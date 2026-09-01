@@ -75,11 +75,11 @@ When `adrDecisionPoints` is non-empty:
 
 Invoke `technical-designer` with exactly:
 
-- `document_to_create: DesignDoc`;
-- `confirmed_requirement_context`;
-- `structural_scale`;
-- `adr_paths: [accepted paths or []]`;
-- `codebase_analysis: [complete Step 2 JSON unchanged]`.
+- `document_to_create: DesignDoc`
+- `confirmed_requirement_context`
+- `structural_scale`
+- `adr_paths: [accepted paths or []]`
+- `codebase_analysis: [complete Step 2 JSON unchanged]`
 
 The Design Doc owns the complete implementation design and retains all applicable downstream safeguards in the documentation-criteria template.
 
@@ -93,9 +93,9 @@ Apply Review Resolution to every discrepancy before document review. Send only `
 
 Invoke `document-reviewer` with `doc_type: DesignDoc`, `target`, `review_context: creation`, the original user requirements as `requirements_verbatim`, `confirmed_requirement_context`, `codebase_analysis`, and `verification_evidence` from Step 6.
 
-- `approved`: continue.
-- `needs_revision`: apply Review Resolution, update through a fresh technical-designer invocation using the existing path and complete applied findings, then rerun Steps 6-7 for the affected boundary.
-- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes.
+- `approved`: continue
+- `needs_revision`: apply Review Resolution, update through a fresh technical-designer invocation using the existing path and complete findings with an `apply` disposition, then rerun Steps 6-7 for the affected boundary
+- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 
 Invoke `design-sync` for consistency with other Design Docs and apply Review Resolution to actionable conflicts. Report `SKIPPED` distinctly when only one Design Doc exists.
 
@@ -103,9 +103,9 @@ Present the Design Doc, accepted ADR paths, recorded declines, and design-sync r
 
 ## Completion Criteria
 
-- Scope and Structural Scale were confirmed from outcomes and responsibility boundaries.
-- ADRs exist only for decision points passing both filters, and the complete batch received one review and approval.
-- A Design Doc exists regardless of whether ADRs were needed.
-- Applicable existing-behavior, contract, assumption, equivalence, and verification safeguards reached the Design Doc.
-- Review Resolution routed only `needs_revision` issues into correction work.
-- All stop points received explicit user confirmation.
+- Scope and Structural Scale were confirmed from outcomes and responsibility boundaries
+- ADRs exist only for decision points passing both filters, and the complete batch received one review and approval
+- A Design Doc exists regardless of whether ADRs were needed
+- Applicable existing-behavior, contract, assumption, equivalence, and verification safeguards reached the Design Doc
+- Review Resolution routed only `needs_revision` issues into correction work
+- All stop points received explicit user confirmation

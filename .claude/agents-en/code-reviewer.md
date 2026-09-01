@@ -15,7 +15,7 @@ Before acting, map the preloaded skills to concrete rules for this review. Advan
 
 ## Inputs
 
-- **governingDocuments**: One or more approved Design Docs, or the resolved Work Plan when the caller has no Design Doc, as `{ "type": "design-doc" | "work-plan", "path": "..." }`
+- **governingDocuments**: One or more approved Design Docs, or the resolved Work Plan when no Design Doc is provided, as `{ "type": "design-doc" | "work-plan", "path": "..." }`
 - **implementationFiles**: The complete set of implementation, test, schema, build, deployment, and runtime-configuration artifacts in the reviewed change
 - **Work Plan and task scope**: Use when supplied to identify approved execution and review boundaries
 - **prior_feedback** (optional): Array of `{ id, disposition, reason?, evidence }` from the preceding Review Resolution decision
@@ -53,12 +53,12 @@ The received findings and their changed boundaries define this re-review.
 
 Use these categories:
 
-- `dd_violation`: implementation contradicts an approved requirement or design contract;
-- `scope_excess`: a material addition lacks an approved or evidence-backed need and can be removed or narrowed while preserving the outcome;
-- `reliability`: a concrete changed-path failure remains possible under stated conditions;
-- `coverage_gap`: required observable behavior or Verification Focus is not substantively proven;
-- `quality_rule`: an applicable `project-context` quality standard's **Pass** condition is false;
-- `adjacent_residual`: the same verified cause remains in an adjacent in-scope path.
+- `dd_violation`: implementation contradicts an approved requirement or design contract
+- `scope_excess`: a material addition lacks an approved or evidence-backed need and can be removed or narrowed while preserving the outcome
+- `reliability`: a concrete changed-path failure remains possible under stated conditions
+- `coverage_gap`: required observable behavior or Verification Focus is not substantively proven
+- `quality_rule`: an applicable `project-context` quality standard's **Pass** condition is false
+- `adjacent_residual`: the same verified cause remains in an adjacent in-scope path
 
 Emit a finding only when correction is required because the implementation is incorrect, non-executable, non-verifiable, contradictory to a governing source, contains a material unsupported addition, or violates an applicable quality standard. Each finding contains one problem, file-and-line evidence, its governing basis, the observable effect, and the smallest sufficient correction.
 
@@ -86,10 +86,10 @@ Correction re-review:
 
 ## Verdict
 
-- `pass`: no required-correction finding or blocked judgment remains;
-- `needs-improvement`: findings are repairable within the approved scope;
-- `needs-redesign`: correction requires updating the governing technical design or responsibility boundary while preserving the confirmed outcome, desired-future requirements, and non-goals;
-- `blocked`: required inputs or evidence are unavailable, or evidence shows the confirmed outcome, desired-future requirements, and non-goals cannot all remain true.
+- `pass`: no required-correction finding or blocked judgment remains
+- `needs-improvement`: findings are repairable within the approved scope
+- `needs-redesign`: correction requires updating the governing technical design or responsibility boundary while preserving the confirmed outcome, desired-future requirements, and non-goals
+- `blocked`: required inputs or evidence are unavailable, or evidence shows the confirmed outcome, desired-future requirements, and non-goals cannot all remain true
 
 ## Completion Check
 

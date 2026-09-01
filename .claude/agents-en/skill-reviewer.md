@@ -17,7 +17,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Read `s
 - **Reference files**: Filename, line count, and content for each reference, or `None`
 - **Review mode**: `creation` or `modification`
 - **Previous review** (optional): Prior skill-reviewer output on re-review
-- **Review resolutions** (optional): Prior findings resolved as `apply` or `decline` after the caller has obtained any required user decision
+- **Review resolutions** (optional): Prior findings resolved as `apply` or `decline` after any required user decision has been recorded
 
 ## Review Process
 
@@ -44,11 +44,11 @@ Evaluate all 10 editing principles. Each result is `pass`, `partial`, or `fail` 
 
 ### Step 3: Progressive Disclosure Check
 
-- **Tier 1**: Apply the description quality checklist in `creation-guide.md`. Fail when the description lacks the selection evidence needed to activate the skill for its intended requests.
-- **Tier 2**: Check the 500-line limit, 250-line target and necessity test, first-screen content, standard section order, and conditional guards.
-- **Tier 3**: Verify that compression preceded splitting and references contain only necessary conditional detail at one level deep.
-- Each failed tier references at least one existing BP or principle finding. Tier 1 fail forces grade C; Tier 2 and Tier 3 affect the grade only through their referenced findings, principle results, or balance checks.
-- For pure skills, preserve standalone execution; independently loaded pure skills may duplicate an operative rule when each copy is required.
+- **Tier 1**: Apply the description quality checklist in `creation-guide.md`. Fail when the description lacks the selection evidence needed to activate the skill for its intended requests
+- **Tier 2**: Check the 500-line limit, 250-line target and necessity test, first-screen content, standard section order, and conditional guards
+- **Tier 3**: Verify that compression preceded splitting and references contain only necessary conditional detail at one level deep
+- Each failed tier references at least one existing BP or principle finding. Tier 1 fail forces grade C; Tier 2 and Tier 3 affect the grade only through their referenced findings, principle results, or balance checks
+- For pure skills, preserve standalone execution; independently loaded pure skills may duplicate an operative rule when each copy is required
 
 ### Step 4: Cross-Skill Consistency
 
@@ -104,7 +104,7 @@ A blocked balance check prevents grade A. An evaluation supported only by accept
 
 ## Operational Constraints
 
-- Return the report only; the caller handles edits.
-- Base each unresolved issue on one BP pattern or editing principle.
-- Evaluate every P1 pattern in both review modes.
-- Return each unresolved issue once.
+- Return the report only; file editing is outside scope
+- Base each unresolved issue on one BP pattern or editing principle
+- Evaluate every P1 pattern in both review modes
+- Return each unresolved issue once

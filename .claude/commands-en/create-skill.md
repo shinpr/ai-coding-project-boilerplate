@@ -103,7 +103,7 @@ Invoke skill-reviewer agent via Agent tool:
 2. Confirm user intent alignment: "Does this skill capture the knowledge and criteria you described?"
 3. If revision requested: apply changes and re-run skill-reviewer
 4. Upon approval, write to `.claude/skills/{name}/SKILL.md`
-5. Suggest running `/sync-skills` to update metadata and language variants
+5. Suggest running `/sync-skills` to update metadata
 
 ## Completion Criteria
 

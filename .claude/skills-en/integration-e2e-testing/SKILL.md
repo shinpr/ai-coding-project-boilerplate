@@ -30,17 +30,17 @@ Start from accepted proof obligations, assign each to the cheapest boundary that
 
 An integration/E2E candidate states:
 
-- an observable result at the boundary named by the accepted behavior;
-- a material failure that crosses the components exercised by the selected lane;
-- an automated harness or controlled environment capable of reproducing that failure.
+- an observable result at the boundary named by the accepted behavior
+- a material failure that crosses the components exercised by the selected lane
+- an automated harness or controlled environment capable of reproducing that failure
 
 Route behavior observable in isolation to unit/component verification. Record an unavailable controlled environment as a proof prerequisite for service-integration-e2e.
 
 ### Candidate Routing
 
-- Keep business-logic accuracy, data integrity, user-visible behavior, and observable error handling in the integration/E2E pool when they require those boundaries.
-- Route pure implementation details and data transformations to unit tests, performance claims to performance verification, and layout-only claims to visual or UI checks.
-- Represent external contracts with service-level stubs or a controlled local service when that contract is the proof target.
+- Keep business-logic accuracy, data integrity, user-visible behavior, and observable error handling in the integration/E2E pool when they require those boundaries
+- Route pure implementation details and data transformations to unit tests, performance claims to performance verification, and layout-only claims to visual or UI checks
+- Represent external contracts with service-level stubs or a controlled local service when that contract is the proof target
 
 ## Skeleton Specification
 
@@ -79,10 +79,10 @@ Each test MUST include the following annotations.
 2. For each obligation, name the material failure that must make a test fail and the observable state that exposes it.
 3. Search existing tests. Reuse coverage only when it exercises the same boundary and would fail for that failure.
 4. Assign the obligation to the narrowest sufficient lane:
-   - unit/component when isolated execution exposes the behavior;
-   - integration for in-process component contracts;
-   - fixture-e2e for browser behavior whose backend may be deterministic;
-   - service-integration-e2e for persistence, transactions, messages, or external contracts whose failure is exposed only through that running boundary.
+   - unit/component when isolated execution exposes the behavior
+   - integration for in-process component contracts
+   - fixture-e2e for browser behavior whose backend may be deterministic
+   - service-integration-e2e for persistence, transactions, messages, or external contracts whose failure is exposed only through that running boundary
 5. Merge obligations when one scenario proves them while preserving a clear assertion-to-failure mapping. Keep distinct setup and failure modes in separate scenarios.
 6. Emit only the remaining minimal covering set. Record the accepted behavior, primary failure, proof obligation, selected lane, and mock boundary in each skeleton.
 

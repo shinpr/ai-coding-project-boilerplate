@@ -136,7 +136,7 @@ skills: project-context, technical-spec, coding-standards
   ],
   "conclusion": {
     "confirmedFailurePoints": [
-      {"failurePointId": "FP1", "description": "障害の内容", "location": "file:line", "symptomId": "S1", "symptomExplained": "この障害が観察された症状にどうつながるか", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "finalStatus": "supported|weakened", "causalChain": ["現象", "→ 直接原因", "→ 根本原因"], "impactScope": ["影響を受けるファイルパス"], "recurrenceRisk": "low|medium|high"}
+      {"failurePointId": "FP1", "description": "障害の内容", "location": "file:line", "symptomId": "S1", "symptomExplained": "この障害が観測された症状にどうつながるか", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "finalStatus": "supported|weakened", "causalChain": ["現象", "→ 直接原因", "→ 根本原因"], "impactScope": ["影響を受けるファイルパス"], "recurrenceRisk": "low|medium|high"}
     ],
     "refutedFailurePoints": [
       {"failurePointId": "FP2", "reason": "反証された理由"}

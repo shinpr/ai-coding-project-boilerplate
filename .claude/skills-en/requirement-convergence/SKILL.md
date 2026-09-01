@@ -30,32 +30,32 @@ Judgment rules per field: [references/criteria.md](references/criteria.md).
 
 ## Hearing Protocol
 
-The orchestrator owns both elicitation and judgment. It uses the analyzer's scope and cost evidence, then asks only for product choices that the repository cannot answer. Re-run the analyzer only when an answer changes the analysis target or required scope evidence.
+Use the available scope and cost evidence for both elicitation and judgment, then ask only for product choices that the repository cannot answer. Repeat scope and cost analysis only when an answer changes the analysis target or required scope evidence.
 
 Register these steps before starting and record each step's evidence as it completes:
 
 | Step | Action | Completion evidence |
 |------|--------|---------------------|
-| 1 | State the scope facts the analysis produced, then separately what they imply for the requirement | Facts listed with the analysis output they came from |
+| 1 | State the available scope facts, then separately what they imply for the requirement | Facts listed with their analysis evidence |
 | 2 | Ask about the fields below `ready`, at most two questions per message | One question per field below `ready` |
 | 3 | Record each answer as that field's value | The value is the option the user selected or the wording the user supplied |
 | 4 | Re-ask once when a recorded value still fails its pass condition, then mark the field `weak-but-explicit` when the user agrees to leave the second answer as it stands | Two recorded answers, or the user's agreement to stop |
-| 5 | Judge each field against its pass condition and pass the completed record downstream | A convergence record with every field labeled |
+| 5 | Judge each field against its pass condition and finalize the completed record | A convergence record with every field labeled |
 
 ## Storage Protocol
 
-| Carrier | Holds | Written by |
-|---------|-------|------------|
-| The orchestrator's convergence record | Every field with its readiness label | Orchestrator |
-| PRD `Success Criteria` and `Out of Scope` | `outcome`; user-authored `nonGoals` | The agent that owns the PRD |
-| Design Doc `Requirement Convergence` | The same when no PRD exists, and the fields left `weak-but-explicit` in every case | The agent that owns the Design Doc |
+| Carrier | Holds |
+|---------|-------|
+| The active convergence record | Every field with its readiness label |
+| PRD `Success Criteria` and `Out of Scope` | `outcome`; user-authored `nonGoals` |
+| Design Doc `Requirement Convergence` | The same when no PRD exists, and the fields left `weak-but-explicit` in every case |
 
-A flow that produces neither document carries the record in its own context to the next step.
+When neither document exists, retain the record in the active context.
 
-## Reference Protocol (For Downstream Consumers)
+## Reference Protocol
 
 1. Read the convergence record from the prompt.
-2. Treat `nonGoals` as excluded from the current change and `desired-future` requirements as buildable scope. Evaluation requests, speculative ideas, and prescribed mechanisms that were not promoted create no downstream obligation; an accepted ADR may retain evaluated options as decision history.
+2. Treat `nonGoals` as excluded from the current change and `desired-future` requirements as buildable scope. Evaluation requests, speculative ideas, and prescribed mechanisms that were not promoted create no implementation obligation; an accepted ADR may retain evaluated options as decision history.
 3. Treat a `weak-but-explicit` field as a recorded open question rather than a settled decision, and escalate when the work depends on resolving it.
 
 ## Quality Checklist

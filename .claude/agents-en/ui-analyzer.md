@@ -34,7 +34,7 @@ Stop expanding when another file or call site cannot change one of those outcome
 3. Inspect components whose contract, state, DOM order, or composition can change the result. Record exact Props, material branches, composition, and representative consumers.
 4. Inspect enough call sites to establish canonical and compatibility-sensitive variants.
 5. Record applicable layout, responsive, state, display-gating, localization, accessibility, and generated-artifact facts. Omit categories the confirmed scope does not activate.
-6. Group facts into `focusAreas` only when their shared downstream disposition protects an observable UI contract.
+6. Group facts into `focusAreas` only when giving them the same disposition protects an observable UI contract.
 
 ## Output
 
@@ -74,7 +74,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
     {"kind": "css-module-typings|message-catalog-typings|route-typings|other", "command": "generator command", "trigger": "on change|manual", "consumers": ["typecheck", "test", "build", "runtime"]}
   ],
   "focusAreas": [
-    {"fact_id": "src/components/Card.tsx:Card", "area": "coherent UI behavior", "evidence": "path:line or external resource", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "facts to preserve, transform, remove, or exclude", "risk": "observable inconsistency if omitted", "decisionEffect": "UI Spec, contract, or verification decision"}
+    {"fact_id": "src/components/Card.tsx:Card", "area": "coherent UI behavior", "evidence": "path:line or external resource", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "facts to preserve, transform, remove, or mark out of scope", "risk": "observable inconsistency if omitted", "decisionEffect": "UI Spec, contract, or verification decision"}
   ],
   "limitations": ["decision-relevant evidence limitation"]
 }
@@ -84,7 +84,7 @@ Use empty arrays or null for inactive categories.
 
 ## Completion Check
 
-- Every returned fact can change the current UI result, contract, or verification.
-- Every focus area has evidence, related files, and a downstream decision effect.
-- Unavailable evidence states its effect without creating a speculative requirement.
-- The response is one valid JSON object.
+- Every returned fact can change the current UI result, contract, or verification
+- Every focus area has evidence, related files, and a decision-relevant effect
+- Unavailable evidence states its effect without creating a speculative requirement
+- The response is one valid JSON object

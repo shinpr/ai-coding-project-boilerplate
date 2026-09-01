@@ -19,7 +19,7 @@ Use it to start a new project and keep its Claude Code setup up to date. Instead
 - Review the completed implementation to make sure it meets the agreed outcome and repository standards, with no unnecessary changes or serious functional, reliability, or security issues
 - Run the repository's applicable tests, type checks, linting, and build checks as part of the workflow
 - Record project-specific context and turn recurring team knowledge into reusable skills
-- Use the same setup in English or Japanese
+- Use the same setup in English, Japanese, or Simplified Chinese
 
 ## What it adds to your repository
 
@@ -40,7 +40,7 @@ The kit also includes `/create-skill`, `/refine-skill`, and `/sync-skills` so yo
 ```bash
 npx create-ai-project my-project
 cd my-project
-npm install
+pnpm install
 claude
 ```
 
@@ -54,7 +54,7 @@ npx create-ai-project update
 claude
 ```
 
-The updater refreshes the managed `CLAUDE.md`, commands, agents, and skills without replacing your source code or package configuration.
+The updater refreshes the managed `CLAUDE.md`, commands, agents, and skills without replacing your source code or existing package settings.
 
 Once Claude Code is running:
 
@@ -111,9 +111,10 @@ When your team has guidance that should apply only to particular work, create or
 Switch the active Claude Code environment with:
 
 ```bash
-npm run lang:en
-npm run lang:ja
-npm run lang:status
+pnpm lang:en
+pnpm lang:ja
+pnpm lang:zh-CN
+pnpm lang:status
 ```
 
 The workflows discover the package manager and quality commands from the repository. If your generated project uses different commands, update `packageManager` and the relevant scripts in `package.json`.

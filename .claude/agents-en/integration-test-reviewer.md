@@ -17,7 +17,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 ## Required Information
 
-- **testFile**: Path to the test file to review (required — accepts one path, or several when the change touched multiple test files). Every listed file is in review scope; when the caller lists more than one, report findings per file so the routing step can map each fix to its file
+- **testFile**: Path to the test file to review (required — accepts one path, or several when the change touched multiple test files). Every listed file is in review scope; when more than one path is listed, report findings per file so the routing step can map each fix to its file
 - **diffBase**: The revision the reviewed test files are compared against (optional, e.g., `main`, a commit SHA). When provided, treat the change between it and the working tree as the review scope and read unchanged tests only as context. When absent, review the listed files in full
 - **designDocPath**: Path to related Design Doc (optional)
 - **taskFiles**: Path(s) to the task file(s) the tests cover (`docs/plans/tasks/…`) (optional). Source of each task's Operation Verification Methods and optional Verification Focus
@@ -119,11 +119,11 @@ When `taskFiles` are provided, also read each task's Operation Verification Meth
 **Claims are scoped to the task, not to a single file.** One task's claims may be split across several test files, so resolve coverage across the whole reviewed set before judging any of it. A claim covered by any reviewed file counts as covered; emit one `proof_insufficient` issue only when no reviewed file proves it.
 
 Confirm each test proves its selected-basis claim: an assertion observes the promised behavior so the test fails if that behavior regresses. Record a `proof_insufficient` issue for each claim left unproven across all reviewed files:
-- The test turns red under the recorded detectable failure (an assertion observes the specific promised behavior, so a regression in it fails the test). When a Verification Focus is present, the stated Observable check is what detects its Primary failure.
-- When the selected claim names a public or integration boundary, the test exercises that boundary directly.
-- When the selected claim names a state change, side effect, rollback, non-mutating mode, idempotency, or persistence, the test asserts the observable state before the action, the action, and the observable state after.
-- Each mocked boundary is an external dependency, with the boundary under test left real, and a comment records why that boundary may be mocked.
-- Integration and E2E tests use bounded fixtures and assert outcomes that hold regardless of shared state, real data volume, or execution order.
+- The test turns red under the recorded detectable failure (an assertion observes the specific promised behavior, so a regression in it fails the test). When a Verification Focus is present, the stated Observable check is what detects its Primary failure
+- When the selected claim names a public or integration boundary, the test exercises that boundary directly
+- When the selected claim names a state change, side effect, rollback, non-mutating mode, idempotency, or persistence, the test asserts the observable state before the action, the action, and the observable state after
+- Each mocked boundary is an external dependency, with the boundary under test left real, and a comment records why that boundary may be mocked
+- Integration and E2E tests use bounded fixtures and assert outcomes that hold regardless of shared state, real data volume, or execution order
 
 ## Output Format
 
@@ -172,7 +172,7 @@ Each criterion reads the claims from the file's `reviewBasis` — skeleton annot
 
 ### blocked (No Review Target)
 
-- No listed or semantically resolved changed test file is readable. Set `blockingReason` to the attempted paths and discovery evidence. A missing claim basis is not a blocking condition.
+- No listed or semantically resolved changed test file is readable. Set `blockingReason` to the attempted paths and discovery evidence. A missing claim basis is not a blocking condition
 
 ## Verification Priority
 

@@ -21,7 +21,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 
 **検出対象**: 基準ファイルから抽出可能な項目で、他ファイルと値が異なる場合。基準ファイルから抽出できない要素はすべてスコープ外。
 
-**設計方針**: design-syncは高recallの候補生成器として機能する。下流の消費者（オーケストレーターまたは人間）が結果をフィルタリングする前提。偽陽性の回避よりも、実際の矛盾の検出漏れ防止を優先する。
+**設計方針**: design-syncは取りこぼしを避けて候補を広く洗い出す。偽陽性の回避よりも実際の矛盾の検出漏れ防止を優先し、両者を区別するためのエビデンスを返す。
 
 ### マッチ基準ルール（Match Basis Rules）
 
@@ -87,7 +87,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 - **パス識別子**: URLパス、ルート定義、APIエンドポイント、設定キー、ファイルパス
 - **統合点**: 他ドキュメントで定義されたコンポーネント、エンドポイント、リソースへの参照（例: サービスメソッド呼び出し、共有型のimport、参照先ルート）
 - **受入条件**: 機能要件の具体的な条件
-- **Fact dispositions**: 「Fact Disposition Table」の各行から `(fact_id, disposition)` ペアを抽出。`fact_id`の値がドキュメント間のdisposition照合の主識別子となる。照合には`fact_id`の完全一致（主ファイルとシンボルが共通）が必要で、検出範囲は同一レイヤー内のDD間矛盾と、共通アンカーファイル（共有スキーマや型定義など）を経由するレイヤー横断矛盾をカバーする。`evidence`は補助的なコンテキストのみ。
+- **Fact dispositions**: 「Fact Disposition Table」の各行から `(fact_id, disposition)` ペアを抽出。`fact_id`の値がドキュメント間のdisposition照合の主識別子となる。照合には`fact_id`の完全一致（主ファイルとシンボルが共通）が必要で、検出範囲は同一レイヤー内のDD間矛盾と、共通アンカーファイル（共有スキーマや型定義など）を経由するレイヤー横断矛盾をカバーする。`evidence`は補助的なコンテキストのみ
 
 **抽出出力**（項目ごと）:
 ```yaml

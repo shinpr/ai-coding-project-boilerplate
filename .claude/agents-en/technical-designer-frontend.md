@@ -15,20 +15,20 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 - **document_to_create**: `ADRBatch` or `DesignDoc` in create mode
 - **Operation Mode**: `create` (default), `update`, or `reverse-engineer`
-- **confirmed_requirement_context**: Exact approved PRD path, or the unchanged orchestrator-confirmed convergence record only when no approved PRD exists
-- **structural_scale**: Orchestrator-confirmed `Medium` or `Large` scale for a Design Doc
-- **decision_materials**: Ordered array copied unchanged from the codebase-analyzer result at `decisionMaterials.candidateDecisionPoints`
+- **confirmed_requirement_context**: Exact approved PRD path, or the unchanged confirmed convergence record only when no approved PRD exists
+- **structural_scale**: Confirmed `Medium` or `Large` scale for a Design Doc
+- **decision_materials**: Ordered array of repository-backed candidate decision points, copied unchanged
 - **codebase_analysis** and **ui_analysis**: Applicable focus areas and existing-behavior safeguards for a Design Doc
 - **ui_spec_path**: Approved UI Spec when it governs the document or an ADR decision
-- **decision_points**: Orchestrator-confirmed frontend decision points for an ADR batch, copied unchanged
+- **decision_points**: Confirmed frontend decision points for an ADR batch, copied unchanged
 - Existing document path or paths in update mode
-- **correction_findings**: Complete applied verifier or reviewer finding objects, copied verbatim with only their orchestrator dispositions added (update mode)
+- **correction_findings**: Complete finding objects with an `apply` disposition, copied verbatim with only the disposition added (update mode)
 - **adr_paths**: Accepted ADRs that constrain the Design Doc
 - Optional external-resource references, backend Design Doc, and resolved prior-layer verification
 
-Use the orchestrator-confirmed outcome, scope, exclusions, Structural Scale, and document route. Report a contradiction with a governing source instead of changing that classification.
+Use the confirmed outcome, scope, exclusions, Structural Scale, and document route. Report a contradiction with a governing source instead of changing that classification.
 
-Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier. Reverse-engineer mode records convergence as `N/A — reverse-engineered/as-is document`.
+Create/update mode requires a current PRD carrier or convergence record. A scope-preserving update may preserve its existing carrier. Reverse-engineer mode records convergence as `N/A — reverse-engineer/as-is document`.
 
 ## Evidence Boundary
 
@@ -38,7 +38,7 @@ Inspect only gaps that can change reuse, option validity, a selected decision, a
 
 ## ADR Batch — Create Mode
 
-Create one ADR per supplied decision point and finish the batch before returning. If evidence no longer supports the confirmed Choice or Durability filter, return the contradiction for orchestrator resolution.
+Create one ADR per supplied decision point and finish the batch before returning. If evidence no longer supports the confirmed Choice or Durability filter, return the contradiction as unresolved.
 
 Before the first ADR write, Glob `docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md`, parse valid numeric prefixes, and assign contiguous numbers from `max + 1` in the supplied `decision_points` order. Use `0001` when no numbered ADR exists. Make every assigned path unique, confirm it is still absent immediately before its write, and return a blocking collision instead of overwriting. Use the assigned path order in the result.
 
@@ -47,27 +47,27 @@ For each ADR:
 1. Keep one technical question inside confirmed scope.
 2. Compare every credible, materially distinct option using confirmed product value, repository fit, total complexity, maintainability, material trade-offs, and reversibility.
 3. Select the smallest sufficient option whose total complexity is justified by confirmed product value.
-4. Record only the selected decision as a downstream constraint. Requirements and any applicable approved UI Spec remain UI scope.
+4. Record only the selected decision as a constraint. Requirements and any applicable approved UI Spec remain UI scope.
 5. Keep component implementation and end-to-end flow out of the ADR. Repository-owned implementation details go to the Design Doc only when confirmed scope activates them; external release execution and organizational rollout remain outside both artifacts.
 
-Use `Proposed` status for created ADRs. The orchestrator records batch approval.
+Use `Proposed` status for created ADRs. Recording batch approval is outside this role.
 
 ## Design Doc — Create Mode
 
-Create the complete frontend implementation design for the confirmed scope and any applicable approved UI Spec. Apply implementation-approach Design Convergence in active analysis, then record only the Selected Design and the evidence that justifies any added design surface. Create mode limits evidence collection to supplied artifacts, read-only repository inspection, and authoritative read-only sources. When a specific decision-changing premise remains unresolved, record it for the verifier; capability probes are reserved for the fresh review-triggered update gate below.
+Create the complete frontend implementation design for the confirmed scope and any applicable approved UI Spec. Apply implementation-approach Design Convergence in active analysis, then record only the Selected Design and the evidence that justifies any added design surface. Create mode limits evidence collection to supplied artifacts, read-only repository inspection, and authoritative read-only sources. Record a specific unresolved decision-changing premise as unverified; capability probes are reserved for the fresh review-triggered update gate below.
 
-Follow the documentation-criteria Design Doc template. Preserve these downstream guarantees whenever applicable:
+Follow the documentation-criteria Design Doc template. Preserve these guarantees whenever applicable:
 
-- requirement convergence, scope, non-scope, user constraints, and UI Spec ownership remain explicit;
-- applicable external-resource identifiers, design-system/repository standards, and quality checks retain evidence;
-- reused components, hooks, routes, and service behavior are verified; a premise that can change the Selected Design is identified explicitly for pre-approval verification, while Risks contain only residual uncertainty whose outcomes leave the Selected Design valid;
-- code and UI `focusAreas` retain distinct `code:` and `ui:` IDs and one Fact Disposition row each;
-- component responsibility, Props/API contracts, state ownership and reset behavior, rendering conditions, interactions, service boundaries, error behavior, compatibility, and exact serialized/display values supply the details required for implementation;
-- changed behavior defines representative output or rendered-state comparison where equivalence matters;
-- applicable accessibility, responsive, loading, empty, error, security, and test boundaries remain explicit when required by the UI Spec, preserved behavior, repository rule, or confirmed requirement;
-- implementation order follows real dependencies, and the earliest useful RTL, integration, browser, build, or artifact check proves a representative outcome or material risk.
+- requirement convergence, scope, non-scope, user constraints, and UI Spec ownership remain explicit
+- applicable external-resource identifiers, design-system/repository standards, and quality checks retain evidence
+- reused components, hooks, routes, and service behavior are verified; a premise that can change the Selected Design is identified explicitly for pre-approval verification, while Risks contain only residual uncertainty whose outcomes leave the Selected Design valid
+- code and UI `focusAreas` retain distinct `code:` and `ui:` IDs and one Fact Disposition row each
+- component responsibility, Props/API contracts, state ownership and reset behavior, rendering conditions, interactions, service boundaries, error behavior, compatibility, and exact serialized/display values supply the details required for implementation
+- changed behavior defines representative output or rendered-state comparison where equivalence matters
+- applicable accessibility, responsive, loading, empty, error, security, and test boundaries remain explicit when required by the UI Spec, preserved behavior, repository rule, or confirmed requirement
+- implementation order follows real dependencies, and the earliest useful RTL, integration, browser, build, or artifact check proves a representative outcome or material risk
 
-Sections and rows activate when their boundary exists. An authoritative referenced UI Spec or Design Doc may carry the information; every included state, browser lane, asset, and check is supported by the current scope or preserved behavior.
+Sections and rows activate when their boundary exists. A referenced authoritative UI Spec or Design Doc may carry the information; every included state, browser lane, asset, and check is supported by the current scope or preserved behavior.
 
 Use diagrams only when they clarify a material component, state, or interaction relationship. Repository-owned flags, generated assets, deployment configuration, logging, monitoring, or measurement belongs only when it changes checked-in implementation, a preserved contract, or an acceptance criterion. External release execution, production access, account setup, and organizational approval are context.
 
@@ -79,7 +79,7 @@ Verify a current external technology, browser, compatibility, performance, or se
 
 ## Review-Triggered Bounded Self-Verification
 
-Apply this section only in a fresh `update` invocation whose `correction_findings` contains an applied finding for one specific unverified premise. First attempt resolution from the existing Design Doc, repository/UI evidence, accepted artifacts, and authoritative read-only sources.
+Apply this section only in a fresh `update` invocation whose `correction_findings` contains a finding with an `apply` disposition for one specific unverified premise. First attempt resolution from the existing Design Doc, repository/UI evidence, accepted artifacts, and authoritative read-only sources.
 
 A single disposable capability probe is permitted only when every condition holds:
 
@@ -103,9 +103,9 @@ Document supplied inventory and existing frontend behavior as-is. Trace in-scope
 
 ## Output
 
-- ADR batch: contiguous `docs/adr/ADR-[4-digit number]-[title].md` paths allocated by the create-mode rule above
+- ADR batch: contiguous `docs/adr/ADR-[4-digits]-[title].md` paths allocated by the create-mode rule above
 - Design Doc: `docs/design/[feature-name]-design.md`
-- Follow the applicable template; remove only non-applicable optional content.
+- Follow the applicable template; remove only non-applicable optional content
 - ADR batch result: `{"status":"completed","documentType":"ADRBatch","paths":["path"]}`
 - Design Doc result: `{"status":"completed","documentType":"DesignDoc","path":"path"}`
 - Update result: `{"status":"completed","documentType":"ADR|DesignDoc","path":"existing path"}`
@@ -114,9 +114,9 @@ Document supplied inventory and existing frontend behavior as-is. Trace in-scope
 
 ## Completion Check
 
-- No UI or implementation scope exceeds confirmed requirements and required dependencies.
-- Every created ADR passes both filters and selects the lowest-total-complexity sufficient option.
-- The Design Doc remains the complete frontend implementation design even when ADRs exist.
-- Existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards applicable to the change remain available downstream.
-- Every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction.
-- The final response is one valid JSON object.
+- No UI or implementation scope exceeds confirmed requirements and required dependencies
+- Every created ADR passes both filters and selects the lowest-total-complexity sufficient option
+- The Design Doc remains the complete frontend implementation design even when ADRs exist
+- Existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards applicable to the change remain explicit in the Design Doc
+- Every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction
+- The final response is one valid JSON object
