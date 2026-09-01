@@ -24,6 +24,7 @@ knip.json
 .DS_Store
 
 # Claude Code generated/local files
+CLAUDE.md
 .claude/settings.local.json
 .claude/agents/
 .claude/commands/

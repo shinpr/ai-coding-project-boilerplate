@@ -90,11 +90,11 @@ function showNextSteps() {
  */
 function main() {
   try {
-    // Initialize git repository
-    initGit()
-
     // Clean up setup-specific files
     cleanupFiles()
+
+    // Initialize git repository after the generated project is complete
+    initGit()
 
     // Show next steps
     showNextSteps()

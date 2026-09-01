@@ -192,13 +192,7 @@ async function setupProject() {
     console.log('📝 Creating .gitignore with language-specific exclusions...')
     createGitignore(targetRoot)
 
-    console.log('🔧 Running post-setup tasks...')
-    const postSetupScript = path.join(sourceRoot, 'scripts', 'post-setup.js')
-    if (fs.existsSync(postSetupScript)) {
-      execSync(`node ${postSetupScript}`, { stdio: 'inherit', cwd: targetRoot })
-    }
-
-    // Create .create-ai-project.json manifest
+    // Create .create-ai-project.json manifest before the initial commit
     const packageJson = JSON.parse(fs.readFileSync(path.join(sourceRoot, 'package.json'), 'utf8'))
     const manifest = {
       version: packageJson.version,
@@ -211,6 +205,12 @@ async function setupProject() {
       `${JSON.stringify(manifest, null, 2)}\n`
     )
     console.log('📋 Created .create-ai-project.json manifest.')
+
+    console.log('🔧 Running post-setup tasks...')
+    const postSetupScript = path.join(sourceRoot, 'scripts', 'post-setup.js')
+    if (fs.existsSync(postSetupScript)) {
+      execSync(`node ${postSetupScript}`, { stdio: 'inherit', cwd: targetRoot })
+    }
 
     console.log('✅ Project setup completed!')
   } catch (error) {
