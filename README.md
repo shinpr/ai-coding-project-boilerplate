@@ -38,9 +38,9 @@ The kit also includes `/create-skill`, `/refine-skill`, and `/sync-skills` so yo
 ### Start a new project
 
 ```bash
-npx create-ai-project my-project
+pnpm dlx create-ai-project my-project
 cd my-project
-npm install
+pnpm install
 claude
 ```
 
@@ -49,12 +49,13 @@ claude
 Run these commands from the project root:
 
 ```bash
-npx create-ai-project update --dry-run
-npx create-ai-project update
+pnpm dlx create-ai-project update --dry-run
+pnpm dlx create-ai-project update
 claude
 ```
 
 The updater refreshes the managed `CLAUDE.md`, commands, agents, and skills without replacing your source code or existing package settings.
+Projects that still use npm can continue to run the updater with `npx create-ai-project update`.
 
 Once Claude Code is running:
 
@@ -111,10 +112,10 @@ When your team has guidance that should apply only to particular work, create or
 Switch the active Claude Code environment with:
 
 ```bash
-npm run lang:en
-npm run lang:ja
-npm run lang:zh-CN
-npm run lang:status
+pnpm lang:en
+pnpm lang:ja
+pnpm lang:zh-CN
+pnpm lang:status
 ```
 
 The workflows discover the package manager and quality commands from the repository. If your generated project uses different commands, update `packageManager` and the relevant scripts in `package.json`.

@@ -50,7 +50,7 @@ Assert the state the user can observe after the journey, not the steps taken to 
 fixture-e2e tests run a real browser against deterministic fixtures — no live backend, no DB, no external services. Fake the network either by intercepting every backend call the journey makes with `page.route()` and fulfilling it from a committed fixture, or by loading that fixture through a route helper or an app-level test mode. Intercept every call the journey reaches, not only the first — an unintercepted route silently hits the real network and makes the test environment-dependent.
 
 **Principles for fixture-e2e**:
-- Backend is faked, not running. No `npm run start:backend` required to execute these tests
+- Backend is faked, not running. No backend start script is required to execute these tests
 - Fixtures are versioned in the repo (`tests/e2e/data/`) so tests are deterministic across machines
 - When the journey requires an authenticated state but does not verify real authentication, establish auth with a deterministic test cookie or fixture-mode session
 - These tests run in CI without provisioning external infrastructure

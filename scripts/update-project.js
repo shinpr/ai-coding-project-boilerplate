@@ -407,14 +407,14 @@ function migrateNewLanguageTooling(migration) {
     migration.packageJson.scripts[`lang:${NEW_LANGUAGE}`] =
       `node scripts/set-language.js ${NEW_LANGUAGE}`
     fs.writeFileSync(migration.packagePath, `${JSON.stringify(migration.packageJson, null, 2)}\n`)
-    console.log(`  Added npm script lang:${NEW_LANGUAGE}.`)
+    console.log(`  Added package script lang:${NEW_LANGUAGE}.`)
   }
 
   if (migration.requiresManualLanguageScriptMigration) {
     console.warn(`  Preserved customized or missing ${LANGUAGE_SWITCH_SCRIPT}.`)
     console.warn(`  Add '${NEW_LANGUAGE}' to its SUPPORTED_LANGUAGES list.`)
     if (!migration.packageJson.scripts[`lang:${NEW_LANGUAGE}`]) {
-      console.warn(`  Then add npm script lang:${NEW_LANGUAGE}.`)
+      console.warn(`  Then add package script lang:${NEW_LANGUAGE}.`)
     }
   }
 }

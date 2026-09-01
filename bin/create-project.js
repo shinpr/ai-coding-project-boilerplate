@@ -32,6 +32,8 @@ if (args[0] === 'update') {
 🚀 AI Coding Project Boilerplate
 
 Usage:
+  pnpm dlx create-ai-project <project-name> [options]
+  pnpm dlx create-ai-project update [options]
   npx create-ai-project <project-name> [options]
   npx create-ai-project update [options]
   npm init ai-project <project-name> [options]
@@ -49,12 +51,12 @@ Update Options:
   --unignore <category> [name] Remove a resource from the ignore list
 
 Examples:
-  npx create-ai-project my-project
-  npx create-ai-project my-project --lang=ja
-  npx create-ai-project my-project --lang=zh-CN
-  npx create-ai-project update
-  npx create-ai-project update --dry-run
-  npx create-ai-project update --ignore skills project-context
+  pnpm dlx create-ai-project my-project
+  pnpm dlx create-ai-project my-project --lang=ja
+  pnpm dlx create-ai-project my-project --lang=zh-CN
+  pnpm dlx create-ai-project update
+  pnpm dlx create-ai-project update --dry-run
+  pnpm dlx create-ai-project update --ignore skills project-context
   `)
   process.exit(0)
 } else {
@@ -110,8 +112,8 @@ Examples:
     console.log(`\n✅ Project created successfully!`)
     console.log(`\n📖 Next steps:`)
     console.log(`   cd ${projectName}`)
-    console.log(`   npm install`)
-    console.log(`   npm run dev\n`)
+    console.log(`   pnpm install`)
+    console.log(`   pnpm dev\n`)
   })
 
   setupProcess.on('error', (err) => {

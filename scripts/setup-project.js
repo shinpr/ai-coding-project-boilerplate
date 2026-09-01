@@ -34,6 +34,7 @@ const excludeList = [
   'CHANGELOG.md',
   'LICENSE',
   'package-lock.json',
+  'pnpm-lock.yaml',
   '.claude/commands',
   '.claude/agents',
   '.claude/skills',

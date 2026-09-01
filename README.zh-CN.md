@@ -38,9 +38,9 @@
 ### 创建新项目
 
 ```bash
-npx create-ai-project my-project --lang=zh-CN
+pnpm dlx create-ai-project my-project --lang=zh-CN
 cd my-project
-npm install
+pnpm install
 claude
 ```
 
@@ -49,12 +49,13 @@ claude
 在项目根目录运行：
 
 ```bash
-npx create-ai-project update --dry-run
-npx create-ai-project update
+pnpm dlx create-ai-project update --dry-run
+pnpm dlx create-ai-project update
 claude
 ```
 
 更新程序会刷新受管理的 `CLAUDE.md`、命令、智能体和技能，不会替换源代码或现有的 `package.json` 设置。
+仍使用 npm 的现有项目可以继续通过 `npx create-ai-project update` 运行更新程序。
 
 启动 Claude Code 后，运行：
 
@@ -111,10 +112,10 @@ Claude Code 会先确认变更要实现的目标，并检查现有实现。路�
 通过以下命令切换 Claude Code 当前使用的语言环境：
 
 ```bash
-npm run lang:en
-npm run lang:ja
-npm run lang:zh-CN
-npm run lang:status
+pnpm lang:en
+pnpm lang:ja
+pnpm lang:zh-CN
+pnpm lang:status
 ```
 
 工作流会从仓库配置中发现包管理器和质量检查命令。如果生成的项目使用其他命令，请修改 `package.json` 中的 `packageManager` 和相应 scripts。

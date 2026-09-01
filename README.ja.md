@@ -38,9 +38,9 @@ TypeScriptリポジトリに、Claude Codeを使った開発環境を組み込�
 ### 新しいプロジェクトを作成する
 
 ```bash
-npx create-ai-project my-project --lang=ja
+pnpm dlx create-ai-project my-project --lang=ja
 cd my-project
-npm install
+pnpm install
 claude
 ```
 
@@ -49,12 +49,13 @@ claude
 プロジェクトルートで実行します。
 
 ```bash
-npx create-ai-project update --dry-run
-npx create-ai-project update
+pnpm dlx create-ai-project update --dry-run
+pnpm dlx create-ai-project update
 claude
 ```
 
 更新コマンドは、管理対象の`CLAUDE.md`、コマンド、エージェント、スキルを更新します。ソースコードや既存の`package.json`設定は置き換えません。
+npmを使い続ける既存プロジェクトでは、`npx create-ai-project update`で更新できます。
 
 Claude Codeを起動したら、次のコマンドを実行します。
 
@@ -111,10 +112,10 @@ Claude Codeは、最初に変更の目的を確認し、既存の実装を調べ
 Claude Codeで使用する言語環境は次のコマンドで切り替えられます。
 
 ```bash
-npm run lang:ja
-npm run lang:en
-npm run lang:zh-CN
-npm run lang:status
+pnpm lang:ja
+pnpm lang:en
+pnpm lang:zh-CN
+pnpm lang:status
 ```
 
 ワークフローは、リポジトリの設定からパッケージマネージャーと品質チェック用のコマンドを検出します。生成したプロジェクトで異なるコマンドを使う場合は、`package.json`の`packageManager`と該当するscriptを変更してください。
