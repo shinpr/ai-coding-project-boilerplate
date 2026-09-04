@@ -17,12 +17,13 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **ui_analysis**: UI-analysis evidence for existing UI behavior and external sources
 - **codebase_analysis**: Applicable repository-analysis evidence
 - **prototype_path**: Decision-relevant prototype path, when one exists
+- **prototype_reference_strength**: `binding` or `reference`, accompanying `prototype_path`
 - **external_resource_refs**: Selected project-context external-resource records or an empty array
 
 ## Process
 
 1. Extract confirmed UI behaviors and acceptance criteria from `confirmed_requirement_context`, preserving existing AC IDs. Map only UI-relevant requirements to screens, states, and interactions.
-2. When `prototype_path` is supplied, inspect only the screens and imports required for the confirmed outcome. Place or reference the prototype under `docs/ui-spec/assets/{feature-name}/` and record adoption decisions for applicable behavior.
+2. When `prototype_path` is supplied, inspect only the screens and imports required for the confirmed outcome. Place or reference the prototype under `docs/ui-spec/assets/{feature-name}/` and record the prototype display decisions required by the UI Spec template for that analyzed surface.
 3. Use `ui_analysis` and applicable `codebase_analysis` as primary evidence. Expand repository inspection only when it can change reuse, an in-scope component/state contract, or verification.
 4. Create `docs/ui-spec/{feature-name}-ui-spec.md` from the documentation-criteria template. Fill applicable screens, transitions, component decomposition, state/display matrices, interactions, reuse decisions, tokens, visual criteria, accessibility requirements, and external-resource identifiers actually used.
 
@@ -44,6 +45,7 @@ Return `{"status":"blocked","reason":"governing conflict or unusable required in
 - Component states exist only when activated by current evidence
 - Reuse/extend/new decisions cover each in-scope component responsibility
 - Applicable transitions, accessibility, exact visible contracts, and verification criteria are explicit
-- Prototype and external resources remain evidence; the UI Spec is canonical
+- When a prototype is provided, the prototype display decisions required by the UI Spec template are complete
+- External resources remain evidence, and the UI Spec remains canonical. When a prototype is provided, Prototype Management records its reference strength: `binding` follows the prototype's rendering except where the UI Spec differs; `reference` carries only what the UI Spec records into implementation
 - Component headings are unique
 - The response is one valid JSON object

@@ -200,6 +200,8 @@ Evaluate existing structures: semantic fit, responsibility fit, lifecycle fit, b
 
 ### Data Contract
 
+When a UI Spec states that a surface displays a value, the contract feeding that surface carries it. A field set that cannot render a specified display is incomplete, not a simplification.
+
 #### Component 1
 
 ```yaml

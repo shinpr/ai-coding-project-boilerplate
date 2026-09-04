@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2026-09-04
+
+### Fixed
+
+- **Prototype-backed UI specifications** — Clarified binding/reference handling, required display value sources without enumerating volatile visual attributes, and kept UI Spec-driven data contracts complete across en/ja/zh-CN.
+
 ## [2.0.0] - 2026-09-01
 
 ### Added

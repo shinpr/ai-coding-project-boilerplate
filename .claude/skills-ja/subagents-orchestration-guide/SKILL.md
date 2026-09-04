@@ -294,6 +294,7 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
    - **prd-creator**（PRDを新規作成または更新する場合）: `outcome` は `成功基準` に、ユーザーが挙げた `nonGoals` は `Out of Scope` に残す。PRDには確認済みの要件と境界だけを残し、評価依頼、推測的なアイデア、未選択の実装手段は要件確認前の収束コンテキストに留める
    - **technical-designer / technical-designer-frontend**: PRDがない場合は同じ内容を Design Doc の `Requirement Convergence` へ記録し、`weak-but-explicit` のまま残ったフィールドも必ずそこへ残す
    - **ui-spec-designer**（フロントエンド/フルスタック）: 確認済みのUI要件と、ユーザーが挙げた `nonGoals` を受け取る。未選択の候補からUI Specの内容を作らない
+     - `prototype_path` がある場合は `prototype_reference_strength` も渡す。プロトタイプの表示に従って実装するなら `binding`、UI Specに記録した内容だけを実装へ渡すなら `reference` とする。ユーザーがプロトタイプについて述べた内容から判断し、どちらとも判断できない場合に限り確認する
    - **work-planner**: `nonGoals` は全タスクエントリから除外し、未選択の候補から計画上の作業を作らない。小規模では作業計画書を作らないため、`weak-but-explicit` のフィールドは保存プロトコルに従いオーケストレーター自身のコンテキストに留め、executorのプロンプトをブロックする項目にはしない
 
    #### codebase-analyzer → technical-designer

@@ -296,6 +296,7 @@ Small 不产生工作计划或任务文件。新发现的合格 ADR 会将工作
    - **prd-creator**（创建或更新 PRD 时）：将 `outcome` 写入“成功标准”，将用户撰写的 `nonGoals` 写入“范围外”；PRD 包含已确认的需求和边界，而评估性请求、设想性想法和未被选中的机制仅保留在确认前的收敛上下文中
    - **technical-designer / technical-designer-frontend**：在不存在 PRD 时将同样的内容写入设计文档的“需求收敛”，并始终在其中记录被标记为 `weak-but-explicit` 的字段
    - **ui-spec-designer**（前端/全栈）：接收已确认的 UI 需求和用户撰写的 `nonGoals`；未被选中的候选项不产生任何 UI 规范内容
+     - 当存在 `prototype_path` 时，同时传递 `prototype_reference_strength`：若实现应遵循原型的呈现，则为 `binding`；若只有 UI 规范记录的内容才进入实现，则为 `reference`。根据用户已就该原型作出的说明判断；只有两种解读都缺乏依据时才询问
    - **work-planner**：将 `nonGoals` 视为排除在每个任务条目之外；未被选中的候选项不产生任何规划义务。在 Small 规模下不产生工作计划，因此按照存储协议，`weak-but-explicit` 字段保留在编排者自身的上下文中，而不会成为执行者提示中的阻塞项
 
    #### codebase-analyzer → technical-designer

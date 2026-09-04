@@ -296,6 +296,7 @@ Two additional rules:
    - **prd-creator** (when a PRD is created or updated): persists `outcome` to `Success Criteria` and user-authored `nonGoals` to `Out of Scope`; the PRD contains confirmed requirements and boundaries while evaluation requests, speculative ideas, and unselected mechanisms remain only in pre-confirmation convergence context
    - **technical-designer / technical-designer-frontend**: persists the same to the Design Doc's `Requirement Convergence` when no PRD exists, and always records the fields left `weak-but-explicit` there
    - **ui-spec-designer** (frontend/fullstack): receives confirmed UI requirements and user-authored `nonGoals`; unselected candidates create no UI Spec content
+     - When `prototype_path` is present, pass `prototype_reference_strength`: `binding` when implementation follows the prototype's rendering, or `reference` when only what the UI Spec records reaches implementation. Resolve it from what the user already stated about the prototype; ask only when neither reading is supported
    - **work-planner**: treats `nonGoals` as excluded from every task entry; unselected candidates create no planning obligation. At Small scale no Work Plan is produced, so the `weak-but-explicit` fields stay in the orchestrator's own context per the storage protocol rather than becoming blocking items in the executor prompt
 
    #### codebase-analyzer → technical-designer

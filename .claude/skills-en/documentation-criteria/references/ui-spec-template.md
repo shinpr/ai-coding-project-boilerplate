@@ -20,7 +20,8 @@ Prototype code is an **attachment** to this UI Spec. This document and the Desig
 - **Attachment path**: [docs/ui-spec/assets/{feature-name}/]
 - **Version identification**: [commit SHA / tag]
 - **Compliance premise**: [e.g., design system compliance, component library usage]
-- **Relationship to canonical spec**: Differences between prototype and this spec are resolved in favor of this document. Use the prototype as a visual/behavioral reference
+- **Reference strength**: [`binding` — implementation follows the attachment's rendering except where this document states otherwise | `reference` — only what this document records reaches implementation]
+- **Relationship to canonical spec**: Differences between prototype and this spec are resolved in favor of this document under either strength
 
 ## AC Traceability (Prototype)
 
@@ -67,9 +68,11 @@ Add a screen-transition or component-tree Mermaid diagram only when the material
 
 The matrix contains one row for each state supported by confirmed requirements, approved UI direction, preserved behavior, or repository/design-system rules.
 
+The Display cell records the rendered outcome and, when it includes data or copy, the value source. With a prototype, within the surface analyzed for the confirmed outcome, these cells account for every adopted data- or copy-bearing element. Record each data- or copy-bearing element that is not adopted and its reason directly below the applicable component's matrix. Presentation properties such as dimensions, spacing, color, and icon glyphs are governed collectively by the recorded reference strength; they can change without a requirement change, and enumerating them would make this document stale.
+
 | State | Trigger | Display | Interaction / Recovery | Evidence |
 |-------|---------|---------|------------------------|----------|
-| [Applicable state] | [Condition that activates it] | [Rendered outcome] | [Available action or N/A] | [Requirement, UI evidence, or repository rule] |
+| [Applicable state] | [Condition that activates it] | [Rendered outcome; include the value source for data/copy] | [Available action or N/A] | [Requirement, UI evidence, or repository rule] |
 
 #### Interaction Definition
 

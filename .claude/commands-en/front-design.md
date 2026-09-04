@@ -70,7 +70,7 @@ Present what the user decides on: the outcome and the requirements to build, the
 
 Run this step only when Step 3 determined that a UI Spec applies.
 
-Invoke `ui-spec-designer` with `confirmed_requirement_context`, the complete `ui_analysis` and `codebase_analysis` unchanged, a decision-relevant `prototype_path` when one exists, and selected `external_resource_refs` or `[]`.
+Invoke `ui-spec-designer` with `confirmed_requirement_context`, the complete `ui_analysis` and `codebase_analysis` unchanged, a decision-relevant `prototype_path` and its `prototype_reference_strength` when one exists, and selected `external_resource_refs` or `[]`.
 
 Invoke `document-reviewer` with `doc_type: UISpec` and `target` as the returned UI Spec path. `approved` presents the UI Spec; `needs_revision` applies Review Resolution and re-reviews after correction; `rejected` resolves the governing-source conflict before another review. `[Stop: UI Spec approval]`.
 

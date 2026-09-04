@@ -70,7 +70,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 仅当步骤 3 判定 UI 规范适用时才执行本步骤。
 
-调用 `ui-spec-designer`，传入 `confirmed_requirement_context`、原样未改动的完整 `ui_analysis` 和 `codebase_analysis`、存在时与决策相关的 `prototype_path`，以及选取的 `external_resource_refs` 或 `[]`。
+调用 `ui-spec-designer`，传入 `confirmed_requirement_context`、原样未改动的完整 `ui_analysis` 和 `codebase_analysis`、存在时与决策相关的 `prototype_path` 及其 `prototype_reference_strength`，以及选取的 `external_resource_refs` 或 `[]`。
 
 调用 `document-reviewer`，传入 `doc_type: UISpec`，`target` 为返回的 UI 规范路径。`approved` 则呈现该 UI 规范；`needs_revision` 则应用评审裁定并在修正后重新评审；`rejected` 则先解决约束来源冲突再进行下一次评审。`[停止：UI 规范批准]`。
 
