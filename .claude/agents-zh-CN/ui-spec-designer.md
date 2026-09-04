@@ -17,12 +17,13 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 - **ui_analysis**：现有 UI 行为和外部来源的 UI 分析依据
 - **codebase_analysis**：适用的仓库分析依据
 - **prototype_path**：与决策相关的原型路径（如存在）
+- **prototype_reference_strength**：与 `prototype_path` 配套提供的 `binding` 或 `reference`
 - **external_resource_refs**：project-context 中选定的外部资源记录，或空数组
 
 ## 流程
 
 1. 从 `confirmed_requirement_context` 中提取已确认的 UI 行为和验收标准，保留原有的 AC ID。仅将与 UI 相关的需求映射到界面、状态和交互。
-2. 当提供了 `prototype_path` 时，仅检查为达成已确认成果所需的界面和引入项。将原型放置或引用到 `docs/ui-spec/assets/{feature-name}/` 下，并记录适用行为的采纳决策。
+2. 当提供了 `prototype_path` 时，仅检查为达成已确认成果所需的界面和引入项。将原型放置或引用到 `docs/ui-spec/assets/{feature-name}/` 下，并记录 UI 规范模板对该检查范围要求的原型展示决策。
 3. 将 `ui_analysis` 和适用的 `codebase_analysis` 作为主要依据。仅在能够改变复用方式、范围内的组件/状态契约或验证方式时，才扩大对仓库的检查范围。
 4. 依据 documentation-criteria 模板创建 `docs/ui-spec/{feature-name}-ui-spec.md`。填写实际使用到的适用界面、界面跳转、组件拆解、状态/展示矩阵、交互、复用决策、设计令牌、视觉标准、无障碍要求和外部资源标识。
 
@@ -44,6 +45,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 - 组件状态仅在当前依据支持的情况下才存在
 - 复用/扩展/新建的决策覆盖了范围内的每一项组件职责
 - 适用的界面跳转、无障碍要求、精确的可见契约和验证标准均已明确列出
-- 原型和外部资源仍属于依据；UI 规范才是权威来源
+- 提供原型时，已完整记录 UI 规范模板要求的原型展示决策
+- 外部资源仍作为依据，UI 规范仍是权威来源。提供原型时，原型管理记录遵循级别：`binding` 表示除 UI 规范另有规定外，实现遵循原型的呈现；`reference` 表示只有 UI 规范记录的内容才进入实现
 - 组件标题各不相同
 - 响应是一个有效的 JSON 对象

@@ -70,7 +70,7 @@ UI Spec が該当する場合、project-context の外部リソースを選択�
 
 このステップは、ステップ3で UI Spec が該当すると判定した場合にのみ実行する。
 
-`ui-spec-designer` を、`confirmed_requirement_context`、変更していない `ui_analysis` と `codebase_analysis` の全体、存在する場合は判断に影響する `prototype_path`、選択した `external_resource_refs`（または `[]`）で呼び出す。
+`ui-spec-designer` を、`confirmed_requirement_context`、変更していない `ui_analysis` と `codebase_analysis` の全体、存在する場合は判断に影響する `prototype_path` とその `prototype_reference_strength`、選択した `external_resource_refs`（または `[]`）で呼び出す。
 
 `document-reviewer` を `doc_type: UISpec` と、返却されたUI Spec のパスを `target` として呼び出す。`approved` の場合はUI Spec を提示する。`needs_revision` はレビュー対応を適用し、修正後に再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。`[停止: UI Spec承認]`。
 
