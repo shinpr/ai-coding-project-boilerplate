@@ -8,39 +8,39 @@
     "paths": {
       "src/*": ["./src/*"]
     },
-    
+
     // Output configuration
     "outDir": "./dist",
     "rootDir": "./src",
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    
+
     // Strict type checking (this is important!)
-    "strict": true,                          // Enable all strict checks
-    "noImplicitAny": true,                   // Prohibit implicit any
-    "strictNullChecks": true,                // Strict null/undefined checks
-    "strictFunctionTypes": true,             // Strict function type checks
-    "strictBindCallApply": true,             // Strict bind/call/apply checks
-    "strictPropertyInitialization": true,    // Strict property initialization checks
-    "noImplicitThis": true,                  // Prohibit implicit this
-    "alwaysStrict": true,                    // Always enable strict mode
-    
-    // Additional safety checks (currently disabled in this PR)
-    "noUncheckedIndexedAccess": true,       // Safety checks for index access
-    "exactOptionalPropertyTypes": true,      // Strict type checking for optional properties
+    "strict": true, // Enable all strict checks
+    "noImplicitAny": true, // Prohibit implicit any
+    "strictNullChecks": true, // Strict null/undefined checks
+    "strictFunctionTypes": true, // Strict function type checks
+    "strictBindCallApply": true, // Strict bind/call/apply checks
+    "strictPropertyInitialization": true, // Strict property initialization checks
+    "noImplicitThis": true, // Prohibit implicit this
+    "alwaysStrict": true, // Always enable strict mode
+
+    // Additional safety checks
+    "noUncheckedIndexedAccess": true, // Safety checks for index access
+    "exactOptionalPropertyTypes": true, // Strict type checking for optional properties
     "noPropertyAccessFromIndexSignature": true, // Prohibit property access from index signature
-    
+
     // Error detection
-    "noFallthroughCasesInSwitch": true,     // Prohibit fallthrough in switch statements
-    "noImplicitReturns": true,              // Prohibit implicit returns
-    "noImplicitOverride": true,             // Require override keyword
-    "noUnusedLocals": true,                 // Detect unused local variables
-    "noUnusedParameters": true,             // Detect unused parameters
-    
+    "noFallthroughCasesInSwitch": true, // Prohibit fallthrough in switch statements
+    "noImplicitReturns": true, // Prohibit implicit returns
+    "noImplicitOverride": true, // Require override keyword
+    "noUnusedLocals": true, // Detect unused local variables
+    "noUnusedParameters": true, // Detect unused parameters
+
     // Module resolution
     "esModuleInterop": true,
-    "skipLibCheck": true,                    // Skip type checking of declaration files (build optimization)
+    "skipLibCheck": true, // Skip type checking of declaration files (build optimization)
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },

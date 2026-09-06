@@ -1,6 +1,6 @@
 {
   "name": "create-ai-project",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "packageManager": "pnpm@11.25.0",
   "description": "Evidence-driven Claude Code workflows for TypeScript projects, from design and implementation through review and quality checks.",
   "keywords": [
@@ -38,25 +38,26 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "format": "biome format --write src",
-    "format:check": "biome format src",
-    "lint": "biome lint src",
-    "lint:fix": "biome lint --write src",
-    "check": "biome check src",
-    "check:fix": "biome check --write src",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint . --error-on-warnings",
+    "lint:fix": "biome lint --write . --error-on-warnings",
+    "check": "biome check . --error-on-warnings",
+    "check:fix": "biome check --write . --error-on-warnings",
     "check:unused": "knip --include exports",
     "check:deps": "dpdm --no-warning --no-tree --exit-code circular:1 --ext .ts --exclude \"__tests__|.test.ts$|.spec.ts$\" --tsconfig ./tsconfig.json -T \"src/**/*.ts\"",
     "check:skills-index": "node scripts/check-skills-index.mjs",
-    "check:code": "pnpm run check && pnpm run check:unused && pnpm run check:deps && pnpm run build",
+    "check:code": "pnpm run check && pnpm run check:unused && pnpm run check:deps && pnpm run build && pnpm run type-check:test",
     "check:all": "pnpm run check:code && pnpm run test",
     "lang:ja": "node scripts/set-language.js ja",
     "lang:en": "node scripts/set-language.js en",
     "lang:zh-CN": "node scripts/set-language.js zh-CN",
     "lang:status": "node scripts/set-language.js --status",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check:test": "tsc -p tsconfig.test.json --noEmit"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.9",
+    "@biomejs/biome": "2.5.9",
     "@types/node": "^24.13.3",
     "dpdm": "^4.3.0",
     "fast-check": "^4.9.0",
@@ -73,9 +74,6 @@
     "node": ">=24.15.0"
   },
   "lint-staged": {
-    "src/**/*.{ts,tsx}": [
-      "biome check --write --no-errors-on-unmatched",
-      "biome format --write --no-errors-on-unmatched"
-    ]
+    "*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc}": "biome check --write --error-on-warnings --no-errors-on-unmatched"
   }
 }

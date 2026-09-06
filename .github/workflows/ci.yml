@@ -37,7 +37,7 @@ jobs:
       run: pnpm run format:check
 
     - name: Type check
-      run: pnpm run build
+      run: pnpm run build && pnpm run type-check:test
 
     # TODO: Enable tests when test files are added
     # - name: Run tests

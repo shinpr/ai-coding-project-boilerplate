@@ -1,3 +1,4 @@
 #!/bin/sh
 pnpm run check
 pnpm run build
+pnpm run type-check:test

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2026-09-06
+
+### Changed
+
+- **LLM maintenance baseline** — Strengthened Biome contract checks, expanded lint and test type-check coverage, pinned Biome, and added contract-preserving lint guidance across en/ja/zh-CN.
+
 ## [2.0.1] - 2026-09-04
 
 ### Fixed

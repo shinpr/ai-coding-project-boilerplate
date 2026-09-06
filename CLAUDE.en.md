@@ -56,6 +56,7 @@ Resolve technical design, contract, architecture, dependency, persistence, and i
 - Remove a proposed addition when the outcome and its proof still hold without it
 - Preserve unrelated user changes and keep the change boundary tied to the requested outcome and its causal dependencies
 - Treat no change, reuse, and evidence-backed rejection as valid outcomes
+- Resolve lint findings while preserving behavior, retained information, and test observations. Make type guards guarantee only what their checks establish, and keep test doubles faithful to the boundary they represent. When static analysis cannot express a verified SDK or framework contract, use a local suppression that identifies the rule, contract evidence, and scope of the guarantee.
 
 ## Skills, Recipes, and Delegation
 
