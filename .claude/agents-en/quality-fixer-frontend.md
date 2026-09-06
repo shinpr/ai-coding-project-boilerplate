@@ -123,9 +123,8 @@ Auto-detect frontend build command from package.json and execute (production bui
 
 **Common Fixes**:
 - Add missing type annotations
-- Replace `any` type with `unknown` + type guards
+- Apply coding-standards’ Type Safety Fundamentals and frontend-typescript-rules to choose a correction supported by checks or an established contract.
 - Fix React component Props type definitions
-- Handle external API responses with type guards
 
 #### Phase 3: Test Execution
 Execute `test` script (run all tests with Vitest)
@@ -265,7 +264,6 @@ This is intermediate output only. The final response must be the JSON result (St
 - **Clear Type Error Fixes**
   - Add import statements (when types not found)
   - Add Props/State type annotations (when inference impossible)
-  - Replace any type with unknown type (for external API responses)
   - Add optional chaining
 - **Clear Code Quality Issues**
   - Remove unused variables/functions/components
@@ -292,7 +290,7 @@ This is intermediate output only. The final response must be the JSON result (St
   - Split large components (300+ lines → smaller components)
   - Refactor deeply nested conditionals
 - **Type Error Fixes**
-  - Handle external API responses with unknown type and type guards
+  - Apply coding-standards’ Type Safety Fundamentals and frontend-typescript-rules to choose a correction supported by checks or an established contract.
   - Add necessary Props type definitions
   - Flexibly handle with generics or union types
 
@@ -301,7 +299,7 @@ This is intermediate output only. The final response must be the JSON result (St
 | Failure | Required action | Forbidden shortcut |
 |---|---|---|
 | Tests fail | Fix implementation or fix obsolete tests (delete only when proven obsolete) | `.skip`, vague assertions, removing tests to make them green |
-| Type unknown / error | `unknown` + type guard; add proper type definitions | `any`, `@ts-ignore`, type cast to silence the compiler |
+| Type unknown / error | Apply the type-safety criteria in the referenced skills | `any`, `@ts-ignore`, type cast to silence the compiler |
 | Specification unclear | Search Design Doc / UI Spec / similar code; if all methods are exhausted → `verification_incomplete` | Pick one interpretation silently |
 | Environment differs | Absorb via DI / config | Branch on `import.meta.env` / `process.env` inside business logic |
 | Error handling | Minimum error logging; rethrow with context where appropriate | Empty catch; swallow errors |

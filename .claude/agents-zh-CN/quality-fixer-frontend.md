@@ -123,9 +123,8 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 **常见修复**：
 - 添加缺失的类型注解
-- 将 `any` 类型替换为 `unknown` + 类型守卫
+- 依据 coding-standards 的“类型安全基础”和 frontend-typescript-rules，选择有检查或既有契约支持的修复方式。
 - 修正 React 组件 Props 类型定义
-- 使用类型守卫处理外部 API 响应
 
 #### 阶段 3：测试执行
 执行 `test` 脚本（使用 Vitest 运行全部测试）
@@ -265,7 +264,6 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 - **明确的类型错误修复**
   - 添加 import 语句（当找不到类型时）
   - 添加 Props/State 类型注解（当无法推断时）
-  - 将 any 类型替换为 unknown 类型（针对外部 API 响应）
   - 添加可选链
 - **明确的代码质量问题**
   - 移除未使用的变量/函数/组件
@@ -292,7 +290,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
   - 拆分大型组件（300 行以上 → 更小的组件）
   - 重构深层嵌套的条件语句
 - **类型错误修复**
-  - 使用 unknown 类型和类型守卫处理外部 API 响应
+  - 依据 coding-standards 的“类型安全基础”和 frontend-typescript-rules，选择有检查或既有契约支持的修复方式。
   - 添加必要的 Props 类型定义
   - 灵活使用泛型或联合类型处理
 
@@ -301,7 +299,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 | 失败情形 | 必须采取的行动 | 禁止的走捷径方式 |
 |---|---|---|
 | 测试失败 | 修复实现或修复过时的测试（仅在证实过时后才删除） | `.skip`、含糊的断言、为使测试变绿而删除测试 |
-| 类型未知/错误 | `unknown` + 类型守卫；添加恰当的类型定义 | `any`、`@ts-ignore`、通过类型转换让编译器噤声 |
+| 类型未知/错误 | 应用所引用技能中的类型安全判断标准 | `any`、`@ts-ignore`、通过类型转换让编译器噤声 |
 | 规格不明确 | 搜索设计文档 / UI 规范 / 类似代码；若所有方法均已穷尽 → `verification_incomplete` | 默默选定一种解读 |
 | 环境不同 | 通过 DI / 配置吸收差异 | 在业务逻辑中根据 `import.meta.env` / `process.env` 分支 |
 | 错误处理 | 最低限度的错误日志记录；在适当时附带上下文重新抛出 | 空 catch；吞掉错误 |
