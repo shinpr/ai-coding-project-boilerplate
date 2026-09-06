@@ -16,15 +16,8 @@
     "declaration": true,
     "declarationMap": true,
 
-    // Strict type checking (this is important!)
+    // Strict type checking
     "strict": true, // Enable all strict checks
-    "noImplicitAny": true, // Prohibit implicit any
-    "strictNullChecks": true, // Strict null/undefined checks
-    "strictFunctionTypes": true, // Strict function type checks
-    "strictBindCallApply": true, // Strict bind/call/apply checks
-    "strictPropertyInitialization": true, // Strict property initialization checks
-    "noImplicitThis": true, // Prohibit implicit this
-    "alwaysStrict": true, // Always enable strict mode
 
     // Additional safety checks
     "noUncheckedIndexedAccess": true, // Safety checks for index access
@@ -40,7 +33,7 @@
 
     // Module resolution
     "esModuleInterop": true,
-    "skipLibCheck": true, // Skip type checking of declaration files (build optimization)
+    "skipLibCheck": false, // Check declaration files as well as application code
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
