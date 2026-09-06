@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2026-09-06
+
+### Changed
+
+- **LLM maintenance baseline** — Strengthened Biome contract checks, expanded lint and test type-check coverage, pinned Biome, consolidated strict TypeScript settings with declaration checking, and clarified existing type-safety guidance across en/ja/zh-CN.
+
 ## [2.0.1] - 2026-09-04
 
 ### Fixed

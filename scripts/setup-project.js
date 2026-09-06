@@ -8,16 +8,16 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // Get command line arguments
-const projectName = process.argv[2]
+const requestedProjectName = process.argv[2]
 const language = process.argv[3] || 'en'
 
-if (!projectName) {
+if (!requestedProjectName) {
   console.error('❌ Project name is required')
   process.exit(1)
 }
 
 const sourceRoot = path.join(__dirname, '..')
-const targetRoot = path.resolve(process.cwd(), projectName)
+const targetRoot = path.resolve(process.cwd(), requestedProjectName)
 
 // Files and directories to exclude from copying
 const excludeList = [
@@ -113,7 +113,7 @@ function processTemplateFile(source, target, projectName) {
 
     // Remove scripts related to package maintenance
     delete packageJson.scripts['lang:status']
-    content = JSON.stringify(packageJson, null, 2)
+    content = `${JSON.stringify(packageJson, null, 2)}\n`
   } else if (
     fileName === 'README.md' ||
     fileName === 'README.ja.md' ||
@@ -174,13 +174,13 @@ docs/guides/zh-CN/
 /**
  * Main setup process
  */
-async function setupProject() {
+function setupProject() {
   try {
     console.log('📁 Creating project directory...')
     fs.mkdirSync(targetRoot, { recursive: true })
 
     console.log('📋 Copying project files...')
-    copyDirectory(sourceRoot, targetRoot, projectName)
+    copyDirectory(sourceRoot, targetRoot, requestedProjectName)
 
     console.log('🔧 Setting up language configuration...')
     // Change to project directory and run language setup

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFile, access } from 'node:fs/promises'
+import { access, readFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -22,7 +22,9 @@ function parseSkillsIndex(content) {
       continue
     }
 
-    if (!currentSkill) continue
+    if (!currentSkill) {
+      continue
+    }
 
     const tagsMatch = /^ {4}tags:\s*\[(.*)\]\s*$/.exec(line)
     if (tagsMatch) {
@@ -67,7 +69,11 @@ function diffArrays(expected, actual) {
   const mismatches = []
   for (let i = 0; i < max; i++) {
     if (expected[i] !== actual[i]) {
-      mismatches.push({ index: i, expected: expected[i] ?? '<missing>', actual: actual[i] ?? '<missing>' })
+      mismatches.push({
+        index: i,
+        expected: expected[i] ?? '<missing>',
+        actual: actual[i] ?? '<missing>',
+      })
     }
   }
   return mismatches
@@ -87,7 +93,14 @@ async function checkLanguage(lang) {
   const indexPath = join(skillsDir, 'task-analyzer', 'references', 'skills-index.yaml')
 
   if (!(await exists(indexPath))) {
-    return { lang, skipped: true, reason: `no skills-index.yaml at ${indexPath}`, failed: 0, total: 0, reports: [] }
+    return {
+      lang,
+      skipped: true,
+      reason: `no skills-index.yaml at ${indexPath}`,
+      failed: 0,
+      total: 0,
+      reports: [],
+    }
   }
 
   const indexContent = await readFile(indexPath, 'utf8')
@@ -100,7 +113,9 @@ async function checkLanguage(lang) {
       skipped: false,
       failed: 1,
       total: 0,
-      reports: [`[${lang}] check-skills-index: no skill entries parsed from skills-index.yaml — parser may be broken`],
+      reports: [
+        `[${lang}] check-skills-index: no skill entries parsed from skills-index.yaml — parser may be broken`,
+      ],
     }
   }
 
@@ -113,7 +128,9 @@ async function checkLanguage(lang) {
     try {
       markdown = await readFile(skillMdPath, 'utf8')
     } catch {
-      reports.push(`[${lang}] ✗ ${name}: SKILL.md not found at ${skillMdPath} (yaml entry references a non-existent skill)`)
+      reports.push(
+        `[${lang}] ✗ ${name}: SKILL.md not found at ${skillMdPath} (yaml entry references a non-existent skill)`
+      )
       failed++
       continue
     }
@@ -178,7 +195,9 @@ async function main() {
       for (const [name, expected] of Object.entries(canonical.skills)) {
         const actual = result.skills[name]
         if (!actual) {
-          allReports.push(`[${result.lang}] ✗ ${name}: missing skill entry required by en skills-index.yaml`)
+          allReports.push(
+            `[${result.lang}] ✗ ${name}: missing skill entry required by en skills-index.yaml`
+          )
           totalFailed++
           continue
         }
@@ -190,13 +209,19 @@ async function main() {
         }
 
         allReports.push(`[${result.lang}] ✗ ${name}: tags differ from en`)
-        if (missing.length > 0) allReports.push(`         missing: ${missing.join(', ')}`)
-        if (extra.length > 0) allReports.push(`         extra: ${extra.join(', ')}`)
+        if (missing.length > 0) {
+          allReports.push(`         missing: ${missing.join(', ')}`)
+        }
+        if (extra.length > 0) {
+          allReports.push(`         extra: ${extra.join(', ')}`)
+        }
         totalFailed++
       }
 
       for (const name of Object.keys(result.skills).filter((item) => !canonical.skills[item])) {
-        allReports.push(`[${result.lang}] ✗ ${name}: extra skill entry not present in en skills-index.yaml`)
+        allReports.push(
+          `[${result.lang}] ✗ ${name}: extra skill entry not present in en skills-index.yaml`
+        )
         totalFailed++
       }
     }
@@ -213,12 +238,16 @@ async function main() {
 
   if (totalFailed > 0) {
     console.error(`\ncheck-skills-index: ${totalFailed} skill(s) failed`)
-    console.error('Update each skills-index.yaml so headings match its SKILL.md files and non-English tag sets match en.')
+    console.error(
+      'Update each skills-index.yaml so headings match its SKILL.md files and non-English tag sets match en.'
+    )
     console.error('Heading order matters; tag order does not.')
     process.exit(1)
   }
 
-  console.log(`\ncheck-skills-index: all ${totalChecked} skill(s) consistent across ${LANGUAGES.join(', ')}`)
+  console.log(
+    `\ncheck-skills-index: all ${totalChecked} skill(s) consistent across ${LANGUAGES.join(', ')}`
+  )
 }
 
 main().catch((err) => {

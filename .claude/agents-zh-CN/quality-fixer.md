@@ -230,7 +230,6 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 - **明确的类型错误修复**
   - 添加 import 语句（当找不到类型时）
   - 添加类型注解（当无法推断时）
-  - 将 any 类型替换为 unknown 类型
   - 添加可选链
 - **明确的代码质量问题**
   - 移除未使用的变量/函数
@@ -253,7 +252,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
   - 添加校验逻辑
   - 添加边界情况处理
 - **类型错误修复**
-  - 使用 unknown 类型和类型守卫处理（绝对禁止使用 any 类型）
+  - 依据 coding-standards 的“类型安全基础”和 typescript-rules，选择有检查或既有契约支持的修复方式。
   - 添加必要的类型定义
   - 灵活使用泛型或联合类型处理
 
@@ -262,7 +261,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 | 失败情形 | 必须采取的行动 | 禁止的走捷径方式 |
 |---|---|---|
 | 测试失败 | 修复实现或修复过时的测试（仅在证实过时后才删除） | `.skip`、含糊的断言、为使测试变绿而删除测试 |
-| 类型未知/错误 | `unknown` + 类型守卫；添加恰当的类型定义 | `any`、`@ts-ignore`、通过类型转换让编译器噤声 |
+| 类型未知/错误 | 应用所引用技能中的类型安全判断标准 | `any`、`@ts-ignore`、通过类型转换让编译器噤声 |
 | 规范不明确 | 搜索设计文档 / PRD / 类似代码；若所有方法都已穷尽 → `verification_incomplete` | 悄悄选定一种解释 |
 | 环境不同 | 通过 DI / 配置吸收差异 | 在业务逻辑中对 `NODE_ENV` 分支处理 |
 | 错误处理 | 最低限度的错误日志记录；在适当时附带上下文重新抛出 | 空 catch；吞掉错误 |

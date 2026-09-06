@@ -1,6 +1,12 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
-  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
   "formatter": {
     "enabled": true,
     "formatWithErrors": false,
@@ -11,30 +17,40 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
+      "complexity": {
+        "useLiteralKeys": "off",
+        "noVoid": "error"
+      },
       "style": {
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "error",
+        "useBlockStatements": "error",
+        "noNestedTernary": "error",
+        "useErrorCause": "error",
+        "useThrowOnlyError": "error"
       },
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "error",
+        "noUnnecessaryConditions": "error",
+        "noShadow": "error",
+        "noEvolvingTypes": "error",
+        "noImplicitAnyLet": "error",
+        "noTsIgnore": "error",
+        "useErrorMessage": "error"
       },
-      "complexity": {
-        "useLiteralKeys": "off"
+      "correctness": {
+        "noUndeclaredDependencies": "error"
+      },
+      "nursery": {
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+        "useAwaitThenable": "error",
+        "useExhaustiveSwitchCases": "error",
+        "noUnsafeTypeAssertion": "error",
+        "noBaseToString": "error"
       }
     }
   },
-  "overrides": [
-    {
-      "includes": ["**/__tests__/**/*.ts", "**/*.test.ts", "**/*.spec.ts"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noExplicitAny": "off"
-          }
-        }
-      }
-    }
-  ],
   "javascript": {
     "formatter": {
       "semicolons": "asNeeded",
@@ -43,6 +59,16 @@
     }
   },
   "files": {
-    "includes": ["**/src/**/*.ts", "**/src/**/*.js", "!**/node_modules/**", "!**/dist/**"]
+    "includes": [
+      "**/*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc}",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/coverage"
+    ]
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
   }
 }

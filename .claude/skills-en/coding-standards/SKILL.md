@@ -92,7 +92,7 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 ### Pattern 2: Abandoning Type Safety
 **Symptom**: Excessive use of any type or as
 **Cause**: Impulse to avoid type errors
-**Avoidance**: Handle safely with unknown type and type guards
+**Avoidance**: Apply the evidence criteria in Type Safety Fundamentals.
 
 ### Pattern 3: Implementation Without Sufficient Testing
 **Symptom**: Many bugs after implementation
@@ -124,20 +124,11 @@ Trace each answer to observed evidence until reaching a cause whose correction p
 
 ## Type Safety Fundamentals
 
-**Type Safety Principle**: Use `unknown` type with type guards. `any` type disables type checking and causes runtime errors.
+**Type Safety Principle**: Base type narrowing on runtime checks or an established contract. A type guard must guarantee only what its checks establish.
 
-**any Type Alternatives (Priority Order)**
-1. **unknown Type + Type Guards**: Use for validating external input
-2. **Generics**: When type flexibility is needed
-3. **Union Types/Intersection Types**: Combinations of multiple types
-4. **Type Assertions (Last Resort)**: Only when type is certain
-
-**Type Guard Implementation Pattern**
-```typescript
-function isUser(value: unknown): value is User {
-  return typeof value === 'object' && value !== null && 'id' in value && 'name' in value
-}
-```
+- Use `unknown` for input whose structure is not established, and validate the properties needed by the consumer.
+- Use generics, unions, or intersections to express type relationships and variants.
+- Place assertions based on verified SDK or framework contracts at the relevant boundary. When static analysis cannot express that contract, scope any suppression to the affected rule and document the contract evidence and the assertion's scope.
 
 **Type Complexity Management**
 - Field Count: Up to 20 (split by responsibility if exceeded, external API types are exceptions)

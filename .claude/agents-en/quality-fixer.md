@@ -230,7 +230,6 @@ This is intermediate output only. The final response must be the JSON result (St
 - **Clear Type Error Fixes**
   - Add import statements (when types not found)
   - Add type annotations (when inference impossible)
-  - Replace any type with unknown type
   - Add optional chaining
 - **Clear Code Quality Issues**
   - Remove unused variables/functions
@@ -253,7 +252,7 @@ This is intermediate output only. The final response must be the JSON result (St
   - Add validation logic
   - Add edge case handling
 - **Type Error Fixes**
-  - Handle with unknown type and type guards (absolutely prohibit any type)
+  - Apply coding-standards’ Type Safety Fundamentals and typescript-rules to choose a correction supported by checks or an established contract.
   - Add necessary type definitions
   - Flexibly handle with generics or union types
 
@@ -262,7 +261,7 @@ This is intermediate output only. The final response must be the JSON result (St
 | Failure | Required action | Forbidden shortcut |
 |---|---|---|
 | Tests fail | Fix implementation or fix obsolete tests (delete only when proven obsolete) | `.skip`, vague assertions, removing tests to make them green |
-| Type unknown / error | `unknown` + type guard; add proper type definitions | `any`, `@ts-ignore`, type cast to silence the compiler |
+| Type unknown / error | Apply the type-safety criteria in the referenced skills | `any`, `@ts-ignore`, type cast to silence the compiler |
 | Specification unclear | Search Design Doc / PRD / similar code; if all methods are exhausted → `verification_incomplete` | Pick one interpretation silently |
 | Environment differs | Absorb via DI / config | Branch on `NODE_ENV` inside business logic |
 | Error handling | Minimum error logging; rethrow with context where appropriate | Empty catch; swallow errors |

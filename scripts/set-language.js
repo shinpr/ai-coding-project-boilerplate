@@ -230,4 +230,4 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main()
 }
 
-export { switchLanguage, detectCurrentLanguage, showStatus, SUPPORTED_LANGUAGES }
+export { detectCurrentLanguage, SUPPORTED_LANGUAGES, showStatus, switchLanguage }
