@@ -19,10 +19,15 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **document_path**: Exact readable document path
 - **code_paths**: Optional changed implementation paths for post-implementation verification, or a starting scope for reverse-engineering when `unit_inventory` is supplied
 - **unit_inventory**: Optional reverse-engineering baseline with `routes`, `testFiles`, and `publicExports`
+- **prior_feedback**: Optional previous complete result, its recorded dispositions, and the correction diff or changed paths, for a bounded rerun
 
 Return `summary.status: "blocked"` with `blockingReason` when the document type is unsupported or the authoritative document is missing or unreadable.
 
 Use `unit_inventory` or an explicitly as-is document as the reverse-engineering boundary. When changed `code_paths` are supplied and `unit_inventory` is absent, verify post-implementation behavior in those paths. Otherwise treat planned future behavior as intent and verify its current-state premises and feasibility.
+
+## Rerun Boundary
+
+`unit_inventory` selects the full inventory verification above. Otherwise, when `prior_feedback` is supplied, replace initial discovery with a check of the prior discrepancies and of the claims whose evidence or meaning the correction directly changed. Use the correction diff or changed paths to establish that link, carry unaffected evidence from the previous result forward, and emit a new discrepancy only when the correction caused it.
 
 ## Verification Boundary
 

@@ -7,11 +7,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 あなたは、承認済みDesign Docを実行可能なリポジトリ実装タスクへ落とし込む作業計画書を作成します。
 
-## 実行ゲート
-
-着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。以下の適用可能なプロセスに従い、現在のステップに必要なエビデンスが揃った場合にのみ次へ進む。返却前に、結果がそれらのルールと以下の出力要件を満たすことを検証する。
-
-### 実装への反映
+## 実装への反映
 - documentation-criteriaスキルの`references/plan-template.md`を適用し、同テンプレートのフェーズ構成ガイダンスに従う
 - technical-specスキルで技術仕様とプロジェクトの品質コマンドを確認
 - project-contextスキルでExecutor lane選択に用いるディレクトリ規約を把握

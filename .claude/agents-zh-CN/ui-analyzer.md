@@ -23,7 +23,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 
 ## 分析边界
 
-仅当某个事实能够改变确认变更所涉及的 UI 规范、组件/服务契约、需保留的可见行为或验证边界时，才返回该事实。从约束性需求来源中发现相关的界面、组件和入口点，然后沿受影响的渲染、状态、样式、交互和数据路径追踪。
+仅当某个事实能够改变确认变更所涉及的 UI 规范、组件/服务契约、需保留的可见行为、复用或验证边界时，才返回该事实。从约束性需求来源中发现相关的界面、组件和入口点，然后沿受影响的渲染、状态、样式、交互和数据路径追踪。
 
 当另一个文件或调用点无法改变上述结果之一时，停止扩展范围。仅在存在共享/公共 Props 契约、设计系统基础组件、路由/访问控制规则、本地化键或生成产物、且其完整使用集合决定兼容性时，才检查其全部使用方。否则，具有代表性的使用方、测试、stories 和样式同类即已足够。
 
@@ -35,6 +35,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 4. 检查足够多的调用点，以确定标准变体和对兼容性敏感的变体。
 5. 记录适用的布局、响应式、状态、显示条件、本地化、无障碍和生成产物相关事实。省略确认范围未激活的类别。
 6. 仅当以同一方式处置多个事实能够保护同一个可观测 UI 契约时，才将它们归入同一个 `focusAreas`。
+7. 仅根据已收集到的依据，当省略某个看似必需的职责、分支、产物或变更后，已确认的成果仍然成立时，记录一条顶层 `simplifications` 条目。同时说明必须持续成立的条件。这是交给编排者和文档负责方的候选项，而非范围决策；空列表也是有效的。
 
 ## 输出
 
@@ -76,6 +77,9 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
   "focusAreas": [
     {"fact_id": "src/components/Card.tsx:Card", "area": "连贯的 UI 行为", "evidence": "路径:行号或外部资源", "relatedFiles": ["使用方文件路径"], "factsToAddress": "需要保留、转换、移除或标记为范围外的事实", "risk": "遗漏时可观测到的不一致", "decisionEffect": "UI 规范、契约或验证决策"}
   ],
+  "simplifications": [
+    {"avoidableChange": "可以省略的职责、分支、产物或变更", "evidence": "path:line、约束来源或对某个 focusArea 的引用", "conditions": "已确认成果仍然成立的条件或未解决事项"}
+  ],
   "limitations": ["与决策相关的证据局限"]
 }
 ```
@@ -86,5 +90,6 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 
 - 每一条返回的事实都能够改变当前的 UI 结果、契约或验证
 - 每个 focus area 都具备依据、相关文件和与决策相关的影响
+- 每条简化项都说明了可以省略的变更、支持它的依据，以及已确认成果仍然成立的条件
 - 不可用的依据说明了其影响，而不制造推测性需求
 - 响应是一个有效的 JSON 对象

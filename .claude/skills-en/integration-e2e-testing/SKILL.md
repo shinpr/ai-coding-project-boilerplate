@@ -137,7 +137,7 @@ Take the first row that matches the claim under review:
 - Run in CI with the deterministic fixture setup
 
 **service-integration-e2e**:
-- Execute only in the final phase, after all components are implemented and the local stack is up
+- Execute in the earliest phase where the components under verification exist and the services it exercises are running
 - Exercise components under verification through real local services or service-level stubs (`@dependency: full-system`)
 
 ## Review Criteria

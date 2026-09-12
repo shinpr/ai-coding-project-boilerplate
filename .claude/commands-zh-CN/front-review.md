@@ -96,7 +96,8 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
    - `subagent_type`: "design-sync"
    - `description`: "跨 DD 一致性检查"
    - `prompt`: "source_design: [更新后 DD 的路径]。检测更新后所有设计文档之间的冲突。"
-   - 当 `sync_status: CONFLICTS_FOUND` 时：将 design-sync 作为独立重跑验证者应用“评审裁定”，通过负责该文档的 technical designer 修正 `apply` 冲突，重新运行 design-sync，并将有依据的 decline 保留为已完成
+   - `prior_feedback`（仅重新执行时）：上一次的完整结果、其处置方式，以及修正差异或变更路径
+   - 当 `sync_status: CONFLICTS_FOUND` 时：应用“评审裁定”，并遵循其范围受限验证者的交接与收敛规则，通过负责该文档的 technical designer 修正 `apply` 冲突
 
 4. 对照更新后的设计文档重新评估获批的 `apply` 发现项，并去掉本次修订已满足的项。当没有剩余项时，跳过代码侧修复路径，直接进入最终报告。
 
@@ -115,7 +116,9 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 使用 Agent 工具调用 quality-fixer-frontend：
 - `subagent_type`: "quality-fixer-frontend"
 - `description`: "质量检查"
-- `prompt`: "direct_scope: { outcome: [传递给第 6 步的已批准代码侧发现项], affectedPaths: [这些发现项及其所需一致性变更所覆盖的路径], verificationCondition: 适用的前端质量检查通过 }。确认当前未提交工作树整体通过质量检查。"
+- `direct_scope`：传递给步骤 6 的已批准代码侧发现项、这些发现项及其所需一致性变更所覆盖的路径，以及作为验证条件的步骤 6 `observable_verification`
+- `runnableCheck`：步骤 6 执行者结果中的 `runnableCheck`
+- `prompt`: "确认当前完整未提交工作树（含未跟踪、已删除和重命名的路径）通过质量检查。"
 
 依据其响应分支：
 - `approved` → 进入步骤 8
@@ -125,7 +128,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 ### 步骤 8：重新验证 code-reviewer
 
-在本次调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
+仅当步骤 6 修正了 code-reviewer 所属的发现项时才执行本步骤；返回过通过（passing）结果的评审者不再重新运行。在调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
 
 使用 Agent 工具调用 code-reviewer：
 - `subagent_type`: "code-reviewer"
@@ -134,18 +137,18 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 ### 步骤 9：重新验证 security-reviewer
 
-在本次调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
+仅当步骤 6 修正了 security-reviewer 所属的发现项时才执行本步骤；返回过通过（passing）结果的评审者不再重新运行。在调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
 
-当 subagents-orchestration-guide 的实现后“重新运行规则”要求一份最新的安全结果时，调用 security-reviewer：
+使用 Agent 工具调用 security-reviewer：
 - `subagent_type`: "security-reviewer"
 - `description`: "安全性的重新验证"
 - `prompt`: "修正后重新验证安全性。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。在评审方的修正复评范围内，核对先前的每一项。"
 
 ### 步骤 10：处置修正结果
 
-对步骤 8 和步骤 9 的每一份结果应用“评审裁定”。被维持的 `apply` 发现项返回步骤 6，然后重复适用的质量检查与修正复评。当“评审裁定”达到其收敛条件时继续。
+对已执行的步骤 8 和步骤 9 的每一份结果应用“评审裁定”。被维持的 `apply` 发现项返回步骤 6，然后重复适用的质量检查与修正复评。当“评审裁定”达到其收敛条件时继续。
 
-在第 11 步之前，以相同的第 7 步输入和受影响的检查，对每一项保留的 quality-fixer-frontend 局限重试一次。`approved` 结果即解除该局限；将新发现的不完整实现经第 6-10 步路由，并报告再次出现的 `verification_incomplete` 结果。当重试改变了仓库时，在报告前对变更后的代码重复第 8-10 步。
+在第 11 步之前，以相同的第 7 步输入和受影响的检查，对每一项保留的 quality-fixer-frontend 局限重试一次。`approved` 结果即解除该局限；将新发现的不完整实现经第 6-10 步路由，并报告再次出现的 `verification_incomplete` 结果。
 
 ### 步骤 11：最终报告
 

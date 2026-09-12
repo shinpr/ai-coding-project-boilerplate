@@ -103,7 +103,6 @@ Invoke skill-reviewer agent via Agent tool:
 2. Confirm user intent alignment: "Does this skill capture the knowledge and criteria you described?"
 3. If revision requested: apply changes and re-run skill-reviewer
 4. Upon approval, write to `.claude/skills/{name}/SKILL.md`
-5. Suggest running `/sync-skills` to update metadata
 
 ## Completion Criteria
 
@@ -115,7 +114,6 @@ Invoke skill-reviewer agent via Agent tool:
 - [ ] skill-reviewer agent returned grade A or B
 - [ ] User approved final content
 - [ ] File written to `.claude/skills/{name}/SKILL.md`
-- [ ] `/sync-skills` suggested to user
 
 ## Error Handling
 
@@ -130,4 +128,4 @@ Invoke skill-reviewer agent via Agent tool:
 ## Scope Boundary
 
 **This command handles**: Interactive knowledge collection, orchestration of creator and reviewer agents, file writing.
-**This command does NOT handle**: Skill content optimization logic (delegated to skill-creator), quality evaluation logic (delegated to skill-reviewer), metadata sync (delegated to `/sync-skills`).
+**This command does NOT handle**: Skill content optimization logic (delegated to skill-creator), quality evaluation logic (delegated to skill-reviewer).

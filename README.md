@@ -31,7 +31,7 @@ Use it to start a new project and keep its Claude Code setup up to date. Instead
 | `.claude/skills/` | Development guidance that Claude loads when it is relevant to the current work |
 | `docs/guides/` | Setup, command, and skill-editing guides for project users |
 
-The kit also includes `/create-skill`, `/refine-skill`, and `/sync-skills` so you can add project-specific guidance without maintaining the skill structure by hand.
+The kit also includes `/create-skill` and `/refine-skill` so you can add project-specific guidance without maintaining the skill structure by hand.
 
 ## Quick start
 

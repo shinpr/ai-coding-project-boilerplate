@@ -96,7 +96,6 @@ prompt: |
 5. 使用适当的工具应用变更
 6. 用 git diff 验证
 7. 若评审方标记了变更范围之外的问题，将其列为可选的后续事项
-8. 建议执行 `/sync-skills`
 
 ## 完成标准
 
@@ -106,7 +105,6 @@ prompt: |
 - [ ] skill-reviewer 返回等级 A 或 B
 - [ ] 已获得用户批准
 - [ ] 已应用变更并用 git diff 确认
-- [ ] 已建议执行 /sync-skills
 
 ## 错误处理
 
@@ -118,4 +116,4 @@ prompt: |
 | 2 轮修复/重新评审迭代后仍为等级 C | 呈现变更内容及遗留发现项，由用户判断 |
 | 评审方识别出回归 | 撤销导致回归的具体变更，重新调用 skill-creator |
 
-**范围**：理解用户的变更请求，并以质量评估配套的优化方式实现。变更执行委派给 skill-creator（modification 模式）。质量评估委派给 skill-reviewer 智能体。元数据同步通过 /sync-skills 联动。
+**范围**：理解用户的变更请求，并以质量评估配套的优化方式实现。变更执行委派给 skill-creator（modification 模式）。质量评估委派给 skill-reviewer 智能体。

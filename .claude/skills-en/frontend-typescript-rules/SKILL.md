@@ -18,7 +18,6 @@ Signals that trigger a design change:
 - Props count over 10 → split the component (3-7 is the working range)
 - Optional props over 50% → introduce defaults or Context
 - Props nesting deeper than 2 levels → flatten
-- The same `as` assertion appearing 3+ times → revisit the type design
 
 ## Type Safety at Boundaries
 Receive untrusted or unavailable types as `unknown` and narrow them with a type guard. Use `as` only when a runtime/framework invariant proves the asserted type and record that invariant in a nearby comment. Existing generated or third-party declarations that contain `any` are boundary inputs to wrap, not justification for spreading `any` into application contracts.

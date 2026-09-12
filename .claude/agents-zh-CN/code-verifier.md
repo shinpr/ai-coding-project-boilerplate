@@ -19,10 +19,15 @@ skills: documentation-criteria, implementation-approach, coding-standards
 - **document_path**：可读文档的确切路径
 - **code_paths**：可选，用于实现后验证的已变更实现路径；若提供了 `unit_inventory`，则作为逆向工程的起始范围
 - **unit_inventory**：可选的逆向工程基线，包含 `routes`、`testFiles` 和 `publicExports`
+- **prior_feedback**：可选。用于范围受限的重新执行，包含上一次的完整结果、已记录的处置方式，以及修正差异或变更路径
 
 当文档类型不受支持，或权威文档缺失、不可读时，返回 `summary.status: "blocked"` 并附带 `blockingReason`。
 
 使用 `unit_inventory` 或明确标注为现状（as-is）的文档作为逆向工程边界。当提供了已变更的 `code_paths` 且未提供 `unit_inventory` 时，验证这些路径中的实现后行为。否则将计划中的未来行为视为意图，验证其现状前提和可行性。
+
+## 重新执行的边界
+
+当提供了 `unit_inventory` 时，执行上述的清单全量验证。否则，当提供了 `prior_feedback` 时，用以下检查取代首次探索：上一次的不一致项，以及修正直接改变了其依据或含义的主张。用修正差异或变更路径建立这一对应关系，未受影响的依据从上一次结果沿用，仅当某个新的不一致项由该修正引起时才提出它。
 
 ## 验证边界
 

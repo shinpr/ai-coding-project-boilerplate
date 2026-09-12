@@ -29,7 +29,7 @@ skills: coding-standards, llm-friendly-context
 事実を返すのは、それが次のいずれかを可能にする場合に限る:
 
 - スコープ確認または構造スケール（Structural Scale）を変える
-- 再利用によって新規実装の範囲を減らす
+- 再利用または省略によって新規実装の範囲を減らす
 - 技術選択肢を排除する、または実質的に改善する
 - 観測可能な契約を維持する、または意図的に変更する
 - 総合的な複雑性または保守性の差を特定する
@@ -58,8 +58,9 @@ skills: coding-standards, llm-friendly-context
 ### ステップ3: 判断材料の形成
 
 - 既存要素によって新規実装を避けられる場合に `reuse` を記録する
+- すでに収集したエビデンスから、必要に見える責務・分岐・成果物・変更を省いても確認済みの成果が成立する場合に、最上位の `simplifications` エントリを記録する。成立し続けなければならない条件も述べる。これはオーケストレーターとdesignerに渡す候補であって、スコープの決定ではない。空リストも妥当である
 - エビデンスによって候補アプローチが不正確・非互換・検証不能・不釣り合いに高コストとなる場合に `invalidations` を記録する
-- `candidateDecisionPoint`を記録するのは、出典ソース・`reuse`・`invalidations`・代表的なリポジトリのエビデンスを適用してもなお1つの十分なアプローチに収束せず、妥当かつ実質的に異なる選択肢が2つ以上残る場合に限る。リポジトリへの適合、ライフサイクルコストの要因、保守性に関する事実を判断材料として返し、妥当な各選択肢を残す。空リストも妥当である
+- `candidateDecisionPoint`を記録するのは、出典ソース・`reuse`・`simplifications`・`invalidations`・代表的なリポジトリのエビデンスを適用してもなお1つの十分なアプローチに収束せず、妥当かつ実質的に異なる選択肢が2つ以上残る場合に限る。リポジトリへの適合、ライフサイクルコストの要因、保守性に関する事実を判断材料として返し、妥当な各選択肢を残す。空リストも妥当である
 - `focusArea`を記録するのは、まとまりのある既存の振る舞いの事実群を省略または矛盾させると、Design Docが不正確・実行不能・検証不能になりうる場合に限る。事実はシンボル数ではなく、1つのdisposition判断でグルーピングする
 - `verification` を記録するのは、要求される振る舞い・維持される契約・実害のある失敗境界に対してのみとする
 - `unknown` を記録するのは、それを解消することでスコープ・選択肢の妥当性や選定・設計・検証が変わりうる場合に限る
@@ -76,6 +77,9 @@ skills: coding-standards, llm-friendly-context
   ],
   "focusAreas": [
     {"fact_id": "src/path.ts:symbol", "area": "まとまりのある既存の振る舞い1単位", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "設計が preserve / transform / remove / out-of-scope のいずれかで扱うべき事実", "risk": "省略または矛盾させた場合に観測される失敗", "decisionEffect": "これが左右する設計・契約・検証の判断"}
+  ],
+  "simplifications": [
+    {"avoidableChange": "省ける責務・分岐・成果物・変更", "evidence": "path:line、出典ソース、または reuse エントリ", "conditions": "確認済みの成果が成立し続ける条件または未解決事項"}
   ],
   "decisionMaterials": {
     "reuse": [
@@ -122,5 +126,6 @@ skills: coding-standards, llm-friendly-context
 - 返した各項目が、それが左右する判断・契約・検証への影響を述べている
 - 各 candidate decision point が、収束のエビデンスを適用した後も、確認済みスコープ内に妥当かつ実質的に異なる選択肢を2つ以上持つ
 - 各focus areaが、共有されるdispositionによって観測可能な契約を保護する既存の振る舞いの事実をまとめている
+- 各 simplification が、省ける変更・その裏付けとなるエビデンス・確認済みの成果が成立し続ける条件を示している
 - データ・変換・品質のフィールドには該当するエビデンスのみを含めつつ、実装と検証に必要な詳細を保持している
 - レスポンスが妥当な JSON オブジェクト1個である

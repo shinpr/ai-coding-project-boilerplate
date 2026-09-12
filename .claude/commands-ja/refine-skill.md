@@ -96,7 +96,6 @@ skill-reviewerエージェントをAgent toolで起動:
 5. 適切なツールで変更適用
 6. git diffで変更内容を最終確認
 7. 変更スコープ外の問題があれば、任意の改善事項として提示
-8. `/sync-skills`実行を提案
 
 ## 完了条件
 
@@ -106,7 +105,6 @@ skill-reviewerエージェントをAgent toolで起動:
 - [ ] skill-reviewerがグレードAまたはBを返却した
 - [ ] ユーザー承認を取得した
 - [ ] 変更を適用しgit diffで確認した
-- [ ] /sync-skills実行を提案した
 
 ## エラーハンドリング
 
@@ -118,4 +116,4 @@ skill-reviewerエージェントをAgent toolで起動:
 | 2回の修復・再レビューでもグレードC | 変更内容と残存指摘を提示し、ユーザーに判断を委ねる |
 | reviewerがリグレッションを検出 | 原因となった変更を取り消し、skill-creatorを再起動 |
 
-**スコープ**: ユーザーの変更要求理解と品質評価付き最適化実装。変更実行はskill-creator（modificationモード）に委譲。品質評価はskill-reviewerエージェントに委譲。メタデータ同期は/sync-skills連携。
+**スコープ**: ユーザーの変更要求理解と品質評価付き最適化実装。変更実行はskill-creator（modificationモード）に委譲。品質評価はskill-reviewerエージェントに委譲。

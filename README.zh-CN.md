@@ -31,7 +31,7 @@
 | `.claude/skills/` | Claude 在与当前工作相关时加载的开发指导 |
 | `docs/guides/` | 面向项目使用者的配置、命令和技能编辑指南 |
 
-套件还包含 `/create-skill`、`/refine-skill` 和 `/sync-skills`，因此你可以添加项目特有的指导，而无需手动维护技能结构。
+套件还包含 `/create-skill` 和 `/refine-skill`，因此你可以添加项目特有的指导，而无需手动维护技能结构。
 
 ## 快速开始
 

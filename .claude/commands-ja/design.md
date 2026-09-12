@@ -52,14 +52,14 @@ Medium/Large の作業では、Design Doc が常に完全な実装設計であ�
 
 構造スケールは成果と責務境界から判定する。ファイル数は補助的なエビデンスにとどまる。
 
-`decisionMaterials.candidateDecisionPoints` を、出典となる要件ソース・`reuse`・`invalidations` に照らして解決する。それらのエビデンスで既に1つの十分なアプローチに収束する決定ポイントは除外する。残った各項目に、documentation-criteria のフィルタを順に適用する:
+`decisionMaterials.candidateDecisionPoints` を、出典となる要件ソース・該当する `simplifications`・`reuse`・`invalidations` に照らして解決する。それらのエビデンスで既に1つの十分なアプローチに収束する決定ポイントは除外する。残った各項目に、documentation-criteria のフィルタを順に適用する:
 
 1. 選択（Choice）: 確認済みスコープ内に、妥当かつ実質的に異なる選択肢が2つ以上あり、判断を要する。
 2. 長期影響（Durability）: その選択が後続作業に長く影響する。
 
 通過した項目をすべて `adrDecisionPoints` として記録する。空リストの場合はそのまま Design Doc へ進む。
 
-ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・ADR適格性・コストのエビデンスはオーケストレーターの記録に留める — ADRバッチと Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
+ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務、および該当する各 simplification と、それを省いても確認済みの成果が成立する条件。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・ADR適格性・コストのエビデンスはオーケストレーターの記録に留める — ADRバッチと Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
 
 ## ステップ4: 必要な場合のADRバッチ作成と承認
 
@@ -87,7 +87,7 @@ Design Doc は完全な実装設計を所有し、documentation-criteria テン�
 
 `code-verifier` を `doc_type: design-doc` と Design Doc のパスで呼び出す。将来の振る舞いは意図として扱ったままにし、現状の前提と実現可能性だけを検証させるため、`code_paths` は指定しない。
 
-ドキュメントレビューの前に、各 discrepancy にレビュー対応を適用する。`apply` の検出事項だけを、新しい technical-designer 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提が finding に記されている場合、designer はレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は code-verifier を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。続行するのは、未解決の `apply` が残っていない場合に限る。
+ドキュメントレビューの前に、各 discrepancy にレビュー対応を適用する。`apply` の検出事項だけを、新しい technical-designer 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提が finding に記されている場合、designer はレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は、前回の完全な結果・記録した処理方針・修正差分または変更パスを `prior_feedback` として渡して code-verifier を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。続行するのは、未解決の `apply` が残っていない場合に限る。
 
 ## ステップ7: レビューと承認
 

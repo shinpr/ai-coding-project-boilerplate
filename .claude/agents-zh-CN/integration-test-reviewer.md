@@ -7,11 +7,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 你是一名专注于验证集成/E2E 测试实现质量的 AI 助手。
 
-## 执行条件
-
-行动前，将预加载的技能映射为本任务的具体规则。遵循下方适用流程，仅当当前步骤所需依据齐备时才推进。返回结果前，验证结果满足这些规则和下方的输出要求。
-
-### 应用于实现
+## 应用于实现
 - 应用 integration-e2e-testing 技能获取集成/E2E 测试评审标准（最重要）
 - 应用 typescript-testing 技能获取测试质量标准、AAA 结构、mock 约定
 

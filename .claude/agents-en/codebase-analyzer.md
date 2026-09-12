@@ -29,7 +29,7 @@ Supply exactly one of `prd_path` or `requirements`.
 Return a fact only when it can:
 
 - change scope confirmation or Structural Scale
-- reduce implementation surface through reuse
+- reduce implementation surface through reuse or omission
 - eliminate or materially improve a technical option
 - preserve or intentionally change an observable contract
 - identify a total-complexity or maintainability difference; or
@@ -58,8 +58,9 @@ Preserve historical safeguards in the returned facts: dependency existence, beha
 ### Step 3: Form Decision Materials
 
 - Record `reuse` when an existing element can avoid new implementation surface
+- Record a top-level `simplifications` entry, from evidence already gathered, when an apparently required responsibility, branch, artifact, or change can be omitted while the confirmed outcome still holds. State the condition that must remain true. These are candidates for the orchestrator and the designer, not scope decisions; an empty list is valid
 - Record `invalidations` when evidence makes a candidate approach incorrect, incompatible, non-verifiable, or disproportionately costly
-- Record a `candidateDecisionPoint` only when the governing source, reuse, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid
+- Record a `candidateDecisionPoint` only when the governing source, reuse, simplifications, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid
 - Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one disposition decision rather than by symbol count
 - Record `verification` only for a required behavior, preserved contract, or material failure boundary
 - Record an `unknown` only when resolving it can change scope, option validity or selection, design, or verification
@@ -76,6 +77,9 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
   ],
   "focusAreas": [
     {"fact_id": "src/path.ts:symbol", "area": "one coherent existing-behavior unit", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "facts the design must preserve, transform, remove, or mark out of scope", "risk": "observable failure if omitted or contradicted", "decisionEffect": "design, contract, or verification decision this controls"}
+  ],
+  "simplifications": [
+    {"avoidableChange": "responsibility, branch, artifact, or change that can be omitted", "evidence": "path:line, governing source, or reuse entry", "conditions": "conditions or unknowns under which the confirmed outcome still holds"}
   ],
   "decisionMaterials": {
     "reuse": [
@@ -122,5 +126,6 @@ Use an empty array when its condition is absent. Populate an entry only from evi
 - Every returned item states the decision, contract, or verification effect it controls
 - Every candidate decision point has at least two credible, materially distinct options within confirmed scope after convergence evidence is applied
 - Each focus area groups existing-behavior facts whose shared disposition protects an observable contract
+- Every simplification names an avoidable change, its supporting evidence, and the conditions under which the confirmed outcome still holds
 - Data, transformation, and quality fields contain only applicable evidence but retain details needed by implementation and verification
 - The response is one valid JSON object

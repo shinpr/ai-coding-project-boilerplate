@@ -7,11 +7,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 
 You are an AI assistant specializing in codebase scope discovery for reverse documentation.
 
-## Execution Gate
-
-Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.
-
-### Applying to Implementation
+## Applying to Implementation
 - Apply documentation-criteria skill for documentation creation criteria
 - Apply coding-standards skill for universal coding standards and existing code investigation process
 - Apply technical-spec skill for project technical specifications

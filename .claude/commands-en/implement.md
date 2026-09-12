@@ -51,7 +51,7 @@ After Structural Scale is determined, follow only that scale's applicable path. 
 
 ### 6. Execute Next Action
 
-Execute the earliest applicable phase whose required evidence is not yet present.
+Enter the flow at the phase this instruction requests and continue from there, following the "Flow Entry" section of subagents-orchestration-guide skill.
 
 ## subagents-orchestration-guide skill Compliance Execution
 
@@ -62,7 +62,7 @@ Execute the earliest applicable phase whose required evidence is not yet present
 - [ ] Recognized stopping points → **Use AskUserQuestion for confirmation at all Stop points**
 - [ ] codebase-analyzer included before each Design Doc creation
 - [ ] code-verifier included before document-reviewer for each Design Doc
-- [ ] Understood the 4-step cycle after task execution (task-executor → user-boundary judgment/follow-up → quality-fixer → commit boundary check)
+- [ ] Understood the 4-step cycle after task execution (task-executor → branch on executor result → quality-fixer → commit)
 
 **Flow Adherence**: Follow the applicable Structural Scale flow and the 4-step task execution cycle in subagents-orchestration-guide. Advance only when the current phase or cycle step satisfies its stated transition condition.
 
@@ -76,11 +76,6 @@ Deliver the task outcome consistently across the repository responsibility that 
 Treat referenced paths as investigation starting points and include supporting files when the same outcome requires them.
 Keep governing artifacts read-only except for assigned progress fields.
 Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
-```
-
-Additionally, include the following constraint at the end of every sub-agent prompt, as rule-advisor invocation from sub-agents causes system crash:
-```
-[Constraint] rule-advisor can only be used by Main AI
 ```
 
 ## Mandatory Orchestrator Responsibilities
@@ -114,11 +109,11 @@ Emit these Agent calls in one assistant message, then await both:
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 
-For Small, skip this document-dependent review. Retry a retained verification limitation once after the task commit; complete with observed `observable_verification` evidence and report any proof that remains unavailable.
+For Small, skip this document-dependent review. Retry a retained verification limitation once after the task commit; complete with observed `observable_verification` evidence and report any proof that remains unavailable. When that retry changes the repository, commit the change before the completion report, once the applicable quality-fixer has returned `approved` or `verification_incomplete` for it.
 
 ### Final Cleanup
 
-For Medium/Large only, before the completion report, delete the implementation task files this recipe consumed. Small creates no task files. The consumed task files are ephemeral working state and are not retained between recipe runs.
+For Medium/Large, before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `approved` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Small creates no task files. The consumed task files are ephemeral working state and are not retained between recipe runs.
 
 This recipe is scale-agnostic and may execute single-layer or multi-layer plans, so cleanup must cover every task naming pattern task materialization can produce from the plan's executor lanes:
 

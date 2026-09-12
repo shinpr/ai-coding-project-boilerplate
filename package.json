@@ -1,6 +1,6 @@
 {
   "name": "create-ai-project",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "packageManager": "pnpm@11.25.0",
   "description": "Evidence-driven Claude Code workflows for TypeScript projects, from design and implementation through review and quality checks.",
   "keywords": [
@@ -46,7 +46,6 @@
     "check:fix": "biome check --write . --error-on-warnings",
     "check:unused": "knip --include exports",
     "check:deps": "dpdm --no-warning --no-tree --exit-code circular:1 --ext .ts --exclude \"__tests__|.test.ts$|.spec.ts$\" --tsconfig ./tsconfig.json -T \"src/**/*.ts\"",
-    "check:skills-index": "node scripts/check-skills-index.mjs",
     "check:code": "pnpm run check && pnpm run check:unused && pnpm run check:deps && pnpm run build && pnpm run type-check:test",
     "check:all": "pnpm run check:code && pnpm run test",
     "lang:ja": "node scripts/set-language.js ja",

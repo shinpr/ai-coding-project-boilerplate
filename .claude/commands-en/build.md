@@ -12,11 +12,11 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 
 **Execution Protocol**:
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
-2. **Follow the 4-step task cycle exactly**: task-executor → escalation check → quality-fixer → commit
+2. **Follow the 4-step task cycle exactly**: task-executor → branch on executor result → quality-fixer → commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
 4. **Scope**: Complete consumed task-set execution, post-implementation review, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a confirmed value-boundary choice or irreversible-action authorization. Advance only when the current phase's stated transition condition is satisfied.
 
-**CRITICAL**: Run quality-fixer before every commit.
+**CRITICAL**: Commit only after quality-fixer returns `approved` or `verification_incomplete`. That result authorizes a commit at the commit points this recipe defines; it does not create one.
 
 Work plan: $ARGUMENTS
 
@@ -58,8 +58,8 @@ Analyze the Consumed Task Set and determine the action required. Reaching this s
 | State | Criteria | Next Action |
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
-| No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | Confirm with user → run task-decomposer |
-| No tasks + plan auto-resolved | Consumed Task Set empty AND plan came from auto-resolution AND Step 6 confirmed every task declares `Executor lane: backend` | Confirm with user → run task-decomposer (Step 6 already excluded frontend and lane-less plans, so this is safe) |
+| No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | User's execution instruction serves as batch approval → Run task-decomposer |
+| No tasks + plan auto-resolved | Consumed Task Set empty AND plan came from auto-resolution AND Step 6 confirmed every task declares `Executor lane: backend` | User's execution instruction serves as batch approval → Run task-decomposer (Step 6 already excluded frontend and lane-less plans) |
 
 To bootstrap from a Design Doc when no plan exists yet, run the planning recipe first to produce a work plan, then re-invoke this recipe — Work Plan Resolution above intentionally requires a resolved work plan rather than auto-creating one, to keep the layer decision explicit.
 
@@ -67,21 +67,13 @@ To bootstrap from a Design Doc when no plan exists yet, run the planning recipe 
 
 When the Consumed Task Set is empty:
 
-### 1. User Confirmation
-```
-No task files in the Consumed Task Set.
-Work plan: docs/plans/[plan-name].md
-
-Generate tasks from the work plan? (y/n):
-```
-
-### 2. Task Materialization (if approved)
+### 1. Task Materialization
 Invoke task-decomposer using Agent tool:
 - `subagent_type`: "task-decomposer"
 - `description`: "Materialize work plan tasks"
 - `prompt`: "Read work plan at docs/plans/[plan-name].md and output one single-commit task file per work plan implementation item in docs/plans/tasks/, selecting each filename from the item's Executor lane."
 
-### 3. Verify Generation
+### 2. Verify Generation
 Recompute the Consumed Task Set using the same restricted pattern from the Consumed Task Set section above. Confirm it is now non-empty. If it is still empty, escalate to the user — task-decomposer either failed silently or produced files that don't match the expected pattern.
 
 **Flow**: Task generation → Consumed Task Set recompute → Autonomous execution (in this order)
@@ -95,7 +87,7 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
   - Test and quality-tool limitations → Subagents run unaffected checks and record exactly what could not run
 
 ## Task Execution Cycle (4-Step Cycle)
-**MANDATORY EXECUTION CYCLE**: `task-executor → escalation check → quality-fixer → commit`
+**MANDATORY EXECUTION CYCLE**: `task-executor → branch on executor result → quality-fixer → commit`
 
 For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke task-executor to implement the task (cross-layer: see Layer-Aware Agent Routing in subagents-orchestration-guide)
@@ -143,7 +135,7 @@ Apply subagents-orchestration-guide's Post-Implementation Review status-routing 
 
 ## Final Cleanup
 
-Before the completion report, delete the implementation task files this recipe consumed. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
+Before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `approved` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Their work is then committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
 
 - Delete every file in the Consumed Task Set
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review

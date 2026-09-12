@@ -12,11 +12,11 @@ description: 以自主执行模式执行已生成的前端任务文件
 
 **执行协议**：
 1. **通过 Agent 工具委派全部工作** —— 调用子智能体、在它们之间传递交付物路径、并报告结果（允许使用的工具：参见 subagents-orchestration-guide 的“编排者可用工具”）
-2. **严格遵循 4 步任务循环**：task-executor-frontend → 上报检查 → quality-fixer-frontend → 提交
+2. **严格遵循 4 步任务循环**：task-executor-frontend → 根据执行者结果分支 → quality-fixer-frontend → 提交
 3. 当用户在已有任务文件的情况下给出执行指令时，**进入自主模式** — 这本身就是批量批准
 4. **范围**：按顺序完成本次处理任务集的执行、实现后评审、本次处理任务的清理和完成报告；或者当需要就已确认的价值边界作出选择、或需要授权不可逆操作时，在当前阶段停止自主执行。仅当满足当前阶段声明的转移条件时才推进。
 
-**关键**：在每次提交前运行 quality-fixer-frontend。
+**关键**：仅在 quality-fixer-frontend 返回 `approved` 或 `verification_incomplete` 之后才提交。该结果只是授权在本流程定义的提交点进行提交，本身不会产生提交。
 
 工作计划：$ARGUMENTS
 
@@ -53,7 +53,7 @@ description: 以自主执行模式执行已生成的前端任务文件
 | 状态 | 判定标准 | 下一步操作 |
 |-------|----------|-------------|
 | 存在任务 | 本次处理任务集非空 | 用户的执行指令即为批量批准 → 立即进入自主执行 |
-| 无任务 + 通过 `$ARGUMENTS` 提供了计划 | 提供了 `$ARGUMENTS` 且本次处理任务集为空 | 与用户确认 → 运行 task-decomposer（它会为每个声明了 `Executor lane: frontend` 的任务条目输出 `*-frontend-task-*.md`） |
+| 无任务 + 通过 `$ARGUMENTS` 提供了计划 | 提供了 `$ARGUMENTS` 且本次处理任务集为空 | 用户的执行指令即为批量批准 → 运行 task-decomposer（它会为每个声明了 `Executor lane: frontend` 的任务条目输出 `*-frontend-task-*.md`） |
 | 两者都不存在 + 存在设计文档 + 提供了 `$ARGUMENTS` | 提供了 `$ARGUMENTS`，无计划，无本次处理任务集，但存在 docs/design/*.md | 调用 work-planner 从设计文档创建工作计划，然后在生成任务文件之前运行**工作计划评审**（见下文） |
 | 两者都不存在 | 无 `$ARGUMENTS`，无计划，无本次处理任务集，无设计文档 | 向用户报告缺失的前提条件并停止 |
 
@@ -74,21 +74,13 @@ description: 以自主执行模式执行已生成的前端任务文件
 
 当本次处理任务集为空时：
 
-### 1. 用户确认
-```
-本次处理任务集中没有任务文件。
-工作计划：docs/plans/[plan-name].md
-
-从工作计划生成任务？ (y/n)：
-```
-
-### 2. 生成任务文件（若获批准）
+### 1. 生成任务文件
 使用 Agent 工具调用 task-decomposer：
 - `subagent_type`："task-decomposer"
 - `description`："生成工作计划任务文件"
 - `prompt`："读取 docs/plans/[plan-name].md 处的工作计划，并在 docs/plans/tasks/ 中为每个工作计划实现条目输出一个单次提交粒度的任务文件，各文件名从该条目的 Executor lane 中选择。"
 
-### 3. 验证生成结果
+### 2. 验证生成结果
 使用上面“本次处理任务集”一节中相同的受限模式重新计算本次处理任务集。确认它现在非空。如果仍为空，上报给用户 — task-decomposer 要么静默失败，要么产出了不匹配预期模式的文件。
 
 **流程**：任务生成 → 本次处理任务集重新计算 → 自主执行（按此顺序）
@@ -102,7 +94,7 @@ description: 以自主执行模式执行已生成的前端任务文件
   - 测试和质量工具的限制 → 子智能体运行不受影响的检查，并准确记录哪些无法运行
 
 ## 任务执行循环（4 步循环）
-**强制执行循环**：`task-executor-frontend → 上报检查 → quality-fixer-frontend → 提交`
+**强制执行循环**：`task-executor-frontend → 根据执行者结果分支 → quality-fixer-frontend → 提交`
 
 对本次处理任务集中的每一个任务，你必须：
 1. **执行**：调用 **Agent 工具**（subagent_type: "task-executor-frontend"）→ 在提示词中传入任务文件路径，接收结构化响应
@@ -150,7 +142,7 @@ description: 以自主执行模式执行已生成的前端任务文件
 
 ## 最终清理
 
-在完成报告之前，删除本流程处理的实现任务文件。它们的工作已提交；`docs/plans/` 是临时工作状态，不在流程各次运行之间保留：
+在完成报告之前，若评审修正或证明局限重试在最后一次任务提交之后遗留了未提交的变更，先在相应的 quality-fixer-frontend 对其返回 `approved` 或 `verification_incomplete` 之后提交这些变更。随后删除本流程处理的实现任务文件。至此它们的工作已提交；`docs/plans/` 是临时工作状态，不在流程各次运行之间保留：
 
 - 删除本次处理任务集中的每一个文件
 - 保留工作计划本身（`docs/plans/{plan-name}.md`）—— 由用户决定是否在最终评审后删除它

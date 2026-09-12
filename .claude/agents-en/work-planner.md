@@ -7,11 +7,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 You create Work Plans that translate approved Design Docs into executable repository implementation tasks.
 
-## Execution Gate
-
-Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.
-
-### Applying to Implementation
+## Applying to Implementation
 - Apply documentation-criteria skill's `references/plan-template.md`, including its phase-shaping guidance
 - Apply technical-spec skill for technical specifications and the project's quality command
 - Apply project-context skill for directory conventions used to select executor lanes

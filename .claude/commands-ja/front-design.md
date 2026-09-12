@@ -62,9 +62,9 @@ UI Spec が該当する場合、project-context の外部リソースを選択�
 
 4つの収束フィールドをすべて判定する。`cost` はステップ2の構造的エビデンスから割り当て、残る不明点を記録する。ヒアリングは `ready` に達していないフィールドについてのみ実施する。
 
-構造スケールは成果と責務境界から判定し、ファイル数は補助的なエビデンスにとどめる。候補となる決定ポイントを、出典ソース・`reuse`・`invalidations` に照らして解決する。該当するUIの事実は、残った選択肢を支持することも否定することもある。documentation-criteria の 選択（Choice）フィルタと長期影響（Durability）フィルタは、この収束の後にのみ適用し、通過した決定ポイントを `adrDecisionPoints` として記録する。空リストも妥当である。
+構造スケールは成果と責務境界から判定し、ファイル数は補助的なエビデンスにとどめる。候補となる決定ポイントを、出典ソース・該当する `simplifications`・`reuse`・`invalidations` に照らして解決する。該当するUIの事実は、残った選択肢を支持することも否定することもある。documentation-criteria の 選択（Choice）フィルタと長期影響（Durability）フィルタは、この収束の後にのみ適用し、通過した決定ポイントを `adrDecisionPoints` として記録する。空リストも妥当である。
 
-ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・UI Spec の要否・ADR適格性・コストのエビデンスはオーケストレーターの記録に留める — UI Spec・ADRバッチ・Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「修正して再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
+ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務、および該当する各 simplification と、それを省いても確認済みの成果が成立する条件。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・UI Spec の要否・ADR適格性・コストのエビデンスはオーケストレーターの記録に留める — UI Spec・ADRバッチ・Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「修正して再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
 
 ## ステップ5: UI Specの作成と承認
 
@@ -100,9 +100,9 @@ Design Doc はコンポーネントからサービスまでの完全な実装を
 
 ## ステップ8: 検証・レビュー・承認
 
-`code-verifier` を `doc_type: design-doc` と返却された Design Doc のパスで呼び出し、`code_paths` は指定しない。ドキュメントレビューの前にレビュー対応を適用する。apply 対象の finding は、新しい technical-designer-frontend 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提には、designer がレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は検証を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。残るすべての discrepancy に処理方針が付いた時点で次へ進む。
+`code-verifier` を `doc_type: design-doc` と返却された Design Doc のパスで呼び出し、`code_paths` は指定しない。ドキュメントレビューの前にレビュー対応を適用する。apply 対象の finding は、新しい technical-designer-frontend 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提には、designer がレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は、前回の完全な結果・記録した処理方針・修正差分または変更パスを `prior_feedback` として渡して検証を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。残るすべての discrepancy に処理方針が付いた時点で次へ進む。
 
-`document-reviewer` を、`doc_type: DesignDoc`、返却された Design Doc のパス、`review_context: creation`、ユーザー要件の原文、`confirmed_requirement_context`、設計者に渡したものと同じ変更していない分析入力、`verification_evidence` で呼び出す。
+`document-reviewer` を、`doc_type: DesignDoc`、返却された Design Doc のパス、`review_context: creation`、ユーザー要件の原文、`confirmed_requirement_context`、designerに渡したものと同じ変更していない分析入力、`verification_evidence` で呼び出す。
 
 - `approved`: 次へ進む
 - `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer-frontend 呼び出しで更新した上で、影響を受けた境界について検証とレビューを再実行する

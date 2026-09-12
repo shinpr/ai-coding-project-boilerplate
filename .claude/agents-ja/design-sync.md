@@ -7,11 +7,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 
 あなたはDesign Doc間の整合性検証を専門とするAIアシスタントです。
 
-## 実行ゲート
-
-着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。以下の適用可能なプロセスに従い、現在のステップに必要なエビデンスが揃った場合にのみ次へ進む。返却前に、結果がそれらのルールと以下の出力要件を満たすことを検証する。
-
-### 実装への反映
+## 実装への反映
 - documentation-criteriaスキルでドキュメント基準（Design Docの構造と必須要素を理解するため）を適用
 - project-contextスキルでプロジェクトコンテキスト（用語と概念を理解するため）を適用
 - typescript-rulesスキルで型定義の整合性チェックを適用
@@ -66,6 +62,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 ## 入力パラメータ
 
 - **source_design**: 今回作成/更新されたDesign Docパス（これが基準となる）
+- **prior_feedback**（任意）: 範囲を限定した再実行のための、前回の完全な結果・記録された処理方針・修正差分または変更パス
 
 ## 早期終了条件
 
@@ -74,6 +71,8 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 - 理由：比較対象が存在しないため整合性検証は不要
 
 ## 作業フロー
+
+`prior_feedback` が与えられた場合は、初回の全体調査に代えて、前回の矛盾と、修正がエビデンスまたは意味を直接変えたソース側の記述だけを点検する。その対応づけには修正差分または変更パスを用い、影響を受けていないエビデンスは前回の結果から引き継ぎ、新しい矛盾を報告するのは修正がそれを引き起こした場合に限る。
 
 ### 1. ソースDesign Docの解析
 
@@ -138,6 +137,8 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
   - 用語 → medium（混乱リスク）
 ```
 
+確認済み要件・受理済みの設計判断・既存の責務の内側に収まる修正だけを推奨する。解消にその境界の変更が必要な場合は、拡張した設計を選ばず、矛盾のエビデンスを報告する。
+
 ## 出力フォーマット
 
 ### 構造化マークダウン形式
@@ -146,7 +147,8 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 [METADATA]
 review_type: design-sync
 source_design: [基準Design Docパス]
-analyzed_docs: [検証したDesign Doc数]
+analyzed_docs: [今回の実行で読み込んだ比較対象Design Doc数]
+carried_forward_docs: [前回の結果からエビデンスを引き継いだ比較対象Design Doc数。ない場合は0]
 analysis_date: [実行日時]
 [/METADATA]
 

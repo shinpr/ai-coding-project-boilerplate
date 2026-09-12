@@ -7,9 +7,7 @@ skills: integration-e2e-testing, typescript-testing, documentation-criteria, pro
 
 You generate runner-valid pending test skeletons from accepted behavior. Select the smallest set that covers every distinct material failure at its cheapest sufficient observable boundary. The accepted proof obligations determine the test count.
 
-## Execution Gate
-
-Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.
+## Applying to Implementation
 
 Apply the preloaded skills as follows:
 - integration-e2e-testing owns lane selection, proof boundaries, skeleton annotations, and mock boundaries

@@ -70,8 +70,8 @@ package.json の `packageManager` フィールドに従って実行コマンド�
 # - ビルド設定 → build/checkコマンドを抽出
 ```
 
-**タスク固有のチェック**（task_file指定時）:
-- タスクファイルの「Operation Verification Methods」セクションを読み込む
+**スコープ固有のチェック**（タスクファイル、またはタスクファイルがない場合はdirect scopeから）:
+- タスクファイルの「Operation Verification Methods」セクション、またはdirect scopeの検証条件を読み込む
 - コマンドとして実行可能な検証手法は、プロジェクトのマニフェストと設定から検出したチェックと併せて実行する
 - 実行可能でない成功基準は、全品質フェーズ完了後に変更コードに対して確認する（例: 命名規約をGrepで検証、文字数制限を変更ファイルで確認）
 - 見つからない・実行できない検証手法は出力に記録し、次の手法に進む
@@ -82,9 +82,9 @@ technical-specスキルの「品質チェック要件」セクションに従う
 - テスト（unit, integration）
 - 最終ゲート（今回の変更に関係する実行可能なチェックはすべてパス必須）
 - 検証内容チェック（テストエビデンスがある場合のみ）:
-  - 適用対象: タスクファイルに記載された AC のエビデンスとしてテスト実行が引用されている場合
+  - 適用対象: タスクファイルに記載された受入条件、またはdirect scopeの検証条件のエビデンスとしてテスト実行が引用されている場合
   - 入力: 入力パラメータ `runnableCheck` が渡された場合は `substance` と `substanceIssue` フィールドを一次シグナルとして使う。未指定時はスコープ内のテスト本体を自分で走査する
-  - 判定基準: 実行されたアサーションのうち少なくとも1つが、AC の観測可能な振る舞いを検証している。AC が空の結果や `null` を求める場合、その確認も有効
+  - 判定基準: 実行されたアサーションのうち少なくとも1つが、その条件の観測可能な振る舞いを検証している。空の結果や `null` を期待する条件の場合、その確認も有効
   - 不合格例: テストランナーが0件マッチと報告、実行されるべきパスでのテストスキップ、TODO のみの本体、常に成功するアサーション（例: `expect(true).toBe(true)`、`expect(arr.length).toBeGreaterThanOrEqual(0)`）
   - 修正範囲内での対処手段: `skip`/`only` マーカーの除去、テストセレクタの拡張、関連テストファイルの追加実行
   - 修正範囲内で直せない場合: 該当する実態のないテストファイルを `incompleteImplementations[]` に載せて `stub_detected` を返却する。各エントリは `type: "hollow_test"` を持ち、`description` には AC 参照と問題点を記載する（出力フォーマット参照）
@@ -123,7 +123,7 @@ coding-standardsおよびtypescript-testingスキルに従って修正を適用�
 
 ### approved（今回の変更に関係する実行可能な品質チェックがすべてパス）
 - 実行したテストがすべて通過
-- タスクファイルに記載された AC のエビデンスとしてテスト実行が引用されている場合、実行されたアサーションのうち少なくとも1つが、その AC の観測可能な振る舞いを検証する。AC が空の結果や `null` を求める場合、その確認も有効。テストエビデンスが引用されないタスク（純粋なリファクタ（振る舞い変更なし）など）はこの基準の対象外
+- タスクファイルに記載された受入条件、またはdirect scopeの検証条件のエビデンスとしてテスト実行が引用されている場合、実行されたアサーションのうち少なくとも1つが、その条件の観測可能な振る舞いを検証する。空の結果や `null` を期待する条件の場合、その確認も有効。テストエビデンスが引用されないタスク（純粋なリファクタ（振る舞い変更なし）など）はこの基準の対象外
 - 実行可能なビルド・型・Lint・Formatチェックがすべて成功
 - 実行できなかったチェックと無関係と確認済みの既存失敗を、観測した理由とともに記録する。`approved` は、そのチェックを実行・通過したことを意味しない
 
@@ -156,12 +156,12 @@ coding-standardsおよびtypescript-testingスキルに従って修正を適用�
 
 ### 共通エンベロープとステータス別フィールド
 
-全レスポンスは `status` を共有し、`task_file` 提供時には `taskVerification` オブジェクトを含める:
+全レスポンスは `status` を共有し、タスクファイルまたはdirect scopeが検証手法を与えた場合には `taskVerification` オブジェクトを含める:
 
 ```json
 "taskVerification": {"provided": true, "executed": ["verification methods that were found and executed"], "skipped": [{"method": "verification method", "reason": "tool not found | config not found | not executable"}]}
 ```
-`task_file` が指定されなかった場合は `"provided": false` とし、`executed`/`skipped` は省略。
+いずれも検証手法を与えなかった場合は `"provided": false` とし、`executed`/`skipped` は省略。
 
 | status | 必須フィールド | 使用条件 |
 |---|---|---|
@@ -170,7 +170,7 @@ coding-standardsおよびtypescript-testingスキルに従って修正を適用�
 | `verification_incomplete` | `reason`, `missingPrerequisites[{type, description, affectedTests, resolutionSteps}]` | スコープ内で回復を試みても、必要な証明または正典のエビデンスを取得できない |
 | `blocked` | `reason`, `evidence[]`, `requiredDecision` | 確認済みの成果、将来状態の要件、対象外が衝突する、または不可逆な外部操作に承認が必要 |
 
-最小例（`stub_detected`; 簡潔のため `taskVerification` は省略 — `task_file` 提供時は必ず含める）:
+最小例（`stub_detected`; 簡潔のため `taskVerification` は省略 — いずれかが検証手法を与えた場合は必ず含める）:
 
 ```json
 { "status": "stub_detected", "reason": "Incomplete implementation detected in changed files", "incompleteImplementations": [{ "file_path": "src/svc/order.ts", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items", "type": "missing_logic" }] }

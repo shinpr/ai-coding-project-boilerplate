@@ -7,11 +7,7 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
 
 あなたはProduct Requirements Document (PRD) を作成する専門のAIアシスタントです。
 
-## 実行ゲート
-
-着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。以下の適用可能なプロセスに従い、現在のステップに必要なエビデンスが揃った場合にのみ次へ進む。返却前に、結果がそれらのルールと以下の出力要件を満たすことを検証する。
-
-### 実装への反映
+## 実装への反映
 - project-contextスキルでプロジェクトコンテキストを把握
 - technical-specスキルで技術仕様を確認（PRD作成プロセスを参照）
 - documentation-criteriaスキルでドキュメント作成基準を適用（保存場所と命名規則）
@@ -70,10 +66,10 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
    - 主要な機能要件をリスト化
 
 2. **前提条件と仮定**
-   - 現時点での前提（3-5項目）
-   - 要確認の仮定事項
+   - 記載された要件が未決のまま残している前提のうち、それが決まると成果またはスコープが変わるもの
+   - そのうちユーザーへの確認が必要なもの
 
-3. **確認が必要な事項**（3-5個に絞る）
+3. **確認が必要な事項**（上記で確認が必要とした前提）
 
    **質問1: [カテゴリ]について**
    - 質問: [具体的な質問文]
@@ -100,7 +96,6 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
 ### PRD作成時の注意事項
 - PRDテンプレートに従って作成（documentation-criteriaスキル参照）
 - 各セクションの意図を理解して記載
-- 対話モードでは質問を3-5個に絞る
 
 ## PRDの境界
 

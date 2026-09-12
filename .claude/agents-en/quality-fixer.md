@@ -70,8 +70,8 @@ Inspect the complete current uncommitted worktree for context, including staged 
 # - Build configuration → extract build/check commands
 ```
 
-**Task-specific checks** (when task_file provided):
-- Read the task file's "Operation Verification Methods" section
+**Scope-specific checks** (from the task file, or from the direct scope when no task file exists):
+- Read the task file's "Operation Verification Methods" section, or the direct scope's verification condition
 - Run each verification method that is executable as a command, alongside the checks discovered from project manifests and configuration
 - Verify each non-executable success criterion against the changed code after all quality phases complete (e.g., confirm naming conventions via Grep, confirm length limits in changed files)
 - When a method cannot be found or executed, note it in the output and continue to the next one
@@ -82,9 +82,9 @@ Follow technical-spec skill "Quality Check Requirements" section:
 - Tests (unit, integration)
 - Final gate (every runnable change-related check must pass)
 - Substance check (test evidence only):
-  - When applies: a test run is cited as evidence for the AC(s) listed in the task file
+  - When applies: a test run is cited as evidence for the acceptance criteria listed in the task file, or for the direct scope's verification condition
   - Inputs: when the `runnableCheck` input parameter is provided, read its `substance` and `substanceIssue` fields as the primary signal; otherwise self-scan test bodies within scope
-  - Counts as substantive: at least one executed assertion exercises the AC's observable behavior. Intentional-absence assertions (e.g., empty result, null return) count when absence is the AC's expectation
+  - Counts as substantive: at least one executed assertion exercises that criterion's observable behavior. Intentional-absence assertions (e.g., empty result, null return) count when absence is the expectation
   - Non-substantive examples: 0-match runner reports, skipped tests on running paths, TODO-only bodies, always-true assertions (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`)
   - Recovery within fixer scope: remove `skip`/`only` markers, widen test selectors, or run additional related test files
   - If substance still cannot be achieved by fixer-level changes: return `stub_detected` with the hollow test files in `incompleteImplementations[]`, each entry carrying `type: "hollow_test"` and a `description` citing the AC reference and the substance issue (see Output Format)
@@ -124,7 +124,7 @@ In both cases, return `stub_detected` until the implementation or test body is c
 
 ### approved (All runnable change-related quality checks pass)
 - All executed tests pass
-- When a test run is cited as evidence for the AC(s) listed in the task file, at least one executed assertion exercises that AC's observable behavior (intentional-absence assertions count when absence is the AC's expectation). Tasks without cited test evidence (e.g., pure refactor with no behavior change) are unaffected by this criterion
+- When a test run is cited as evidence for the acceptance criteria listed in the task file, or for the direct scope's verification condition, at least one executed assertion exercises that criterion's observable behavior (intentional-absence assertions count when absence is the expectation). Tasks without cited test evidence (e.g., pure refactor with no behavior change) are unaffected by this criterion
 - Every runnable build, type, lint, and format check succeeds
 - Any check that could not run, and any verified unrelated baseline failure, is named with its observed reason; `approved` does not claim that such a check ran or passed
 
@@ -157,12 +157,12 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 
 ### Common envelope and per-status fields
 
-All responses share `status` plus a `taskVerification` object when `task_file` is provided:
+All responses share `status` plus a `taskVerification` object when a task file or direct scope supplied a verification method:
 
 ```json
 "taskVerification": {"provided": true, "executed": ["verification methods that were found and executed"], "skipped": [{"method": "verification method", "reason": "tool not found | config not found | not executable"}]}
 ```
-When `task_file` is not provided, set `"provided": false` and omit `executed`/`skipped`.
+When neither source supplied a verification method, set `"provided": false` and omit `executed`/`skipped`.
 
 | status | required fields | when to use |
 |---|---|---|
@@ -171,7 +171,7 @@ When `task_file` is not provided, set `"provided": false` and omit `executed`/`s
 | `verification_incomplete` | `reason`, `missingPrerequisites[{type, description, affectedTests, resolutionSteps}]` | Required proof or governing evidence remains unavailable after in-scope recovery |
 | `blocked` | `reason`, `evidence[]`, `requiredDecision` | Confirmed value boundaries conflict, or an irreversible external action requires authorization |
 
-Minimal example (`stub_detected`; omits `taskVerification` for brevity — include it whenever `task_file` is provided):
+Minimal example (`stub_detected`; omits `taskVerification` for brevity — include it whenever either source supplied a verification method):
 
 ```json
 { "status": "stub_detected", "reason": "Incomplete implementation detected in changed files", "incompleteImplementations": [{ "file_path": "src/svc/order.ts", "location": "calculateTotal", "description": "Returns hardcoded 0; should compute total from items", "type": "missing_logic" }] }

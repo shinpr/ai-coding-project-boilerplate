@@ -70,8 +70,8 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 # - 构建配置 → 提取 build/check 命令
 ```
 
-**任务专属检查**（提供 task_file 时）：
-- 阅读任务文件的 Operation Verification Methods 部分
+**范围专属检查**（来自任务文件；没有任务文件时来自直接范围）：
+- 阅读任务文件的 Operation Verification Methods 部分，或直接范围的验证条件
 - 运行每一个可作为命令执行的验证方法，与从项目清单和配置中发现的检查一并进行
 - 在所有质量阶段完成后，针对已变更代码验证每一项不可执行的成功标准（例如通过 Grep 确认命名约定，确认已变更文件中的长度限制）
 - 当某方法无法找到或执行时，在输出中注明并继续下一项
@@ -82,9 +82,9 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 - 测试（单元、集成）
 - 最终检查（每一项可运行的、与变更相关的检查都必须通过）
 - 实质性检查（仅限测试依据）：
-  - 适用情形：某次测试运行被引用为任务文件中列出的 AC 的依据
+  - 适用情形：某次测试运行被引用为任务文件中列出的验收标准，或直接范围的验证条件的依据
   - 输入：提供 `runnableCheck` 输入参数时，读取其 `substance` 和 `substanceIssue` 字段作为主要信号；否则在范围内自行扫描测试主体
-  - 算作实质性：至少有一个被执行的断言验证了该 AC 的可观测行为。有意为之的“不存在”类断言（例如空结果、null 返回）在“不存在”正是该 AC 预期时也算数
+  - 算作实质性：至少有一个被执行的断言验证了该条件的可观测行为。有意为之的“不存在”类断言（例如空结果、null 返回）在“不存在”正是该条件的预期时也算数
   - 非实质性示例：0 匹配的运行器报告、在运行路径上被跳过的测试、仅含 TODO 的测试体、恒真断言（例如 `expect(true).toBe(true)`、`expect(arr.length).toBeGreaterThanOrEqual(0)`）
   - fixer 范围内的补救：移除 `skip`/`only` 标记、放宽测试选择器，或运行额外的相关测试文件
   - 若在 fixer 层级的变更下仍无法达到实质性：返回 `stub_detected`，将空洞测试文件列入 `incompleteImplementations[]`，每项携带 `type: "hollow_test"` 和引用 AC 编号及实质性问题的 `description`（见输出格式）
@@ -124,7 +124,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 ### approved（所有可运行的、与变更相关的质量检查通过）
 - 所有已执行的测试通过
-- 当某次测试运行被引用为任务文件中列出的 AC 的依据时，至少有一个被执行的断言验证了该 AC 的可观测行为（有意为之的“不存在”类断言在“不存在”正是该 AC 预期时也算数）。未引用测试依据的任务（例如无行为变化的纯重构）不受此标准影响
+- 当某次测试运行被引用为任务文件中列出的验收标准，或直接范围的验证条件的依据时，至少有一个被执行的断言验证了该条件的可观测行为（有意为之的“不存在”类断言在“不存在”正是该条件的预期时也算数）。未引用测试依据的任务（例如无行为变化的纯重构）不受此标准影响
 - 每一项可运行的 build、type、lint 和 format 检查都成功
 - 任何无法运行的检查，以及任何已验证的无关基线失败，都需注明其观察到的原因；`approved` 不声称此类检查已运行或已通过
 
@@ -157,12 +157,12 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 ### 通用信封与各状态字段
 
-所有响应共享 `status`，并在提供 `task_file` 时附带 `taskVerification` 对象：
+所有响应共享 `status`，并在任务文件或直接范围提供了验证方法时附带 `taskVerification` 对象：
 
 ```json
 "taskVerification": {"provided": true, "executed": ["已找到并执行的验证方法"], "skipped": [{"method": "验证方法", "reason": "工具未找到 | 配置未找到 | 无法执行"}]}
 ```
-未提供 `task_file` 时，设置 `"provided": false` 并省略 `executed`/`skipped`。
+两者都未提供验证方法时，设置 `"provided": false` 并省略 `executed`/`skipped`。
 
 | status | 必需字段 | 使用场景 |
 |---|---|---|
@@ -171,7 +171,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 | `verification_incomplete` | `reason`、`missingPrerequisites[{type, description, affectedTests, resolutionSteps}]` | 范围内补救后，所需的证明或约束依据仍不可得 |
 | `blocked` | `reason`、`evidence[]`、`requiredDecision` | 已确认的价值边界冲突，或不可逆的外部操作需要授权 |
 
-最小示例（`stub_detected`；为简洁起见省略 `taskVerification` —— 只要提供了 `task_file` 就应包含它）：
+最小示例（`stub_detected`；为简洁起见省略 `taskVerification` —— 只要其中一方提供了验证方法就应包含它）：
 
 ```json
 { "status": "stub_detected", "reason": "在变更文件中检测到未完成的实现", "incompleteImplementations": [{ "file_path": "src/svc/order.ts", "location": "calculateTotal", "description": "当前固定返回 0；应根据各项计算总额", "type": "missing_logic" }] }

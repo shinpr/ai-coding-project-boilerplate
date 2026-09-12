@@ -24,7 +24,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 
 1. 从 `confirmed_requirement_context` 中提取已确认的 UI 行为和验收标准，保留原有的 AC ID。仅将与 UI 相关的需求映射到界面、状态和交互。
 2. 当提供了 `prototype_path` 时，仅检查为达成已确认成果所需的界面和引入项。将原型放置或引用到 `docs/ui-spec/assets/{feature-name}/` 下，并记录 UI 规范模板对该检查范围要求的原型展示决策。
-3. 将 `ui_analysis` 和适用的 `codebase_analysis` 作为主要依据。仅在能够改变复用方式、范围内的组件/状态契约或验证方式时，才扩大对仓库的检查范围。
+3. 将 `ui_analysis` 和适用的 `codebase_analysis` 作为主要依据。仅在能够改变复用方式、范围内的组件/状态契约或验证方式时，才扩大对仓库的检查范围。所传入的 `simplifications` 条目，在其所记录的条件成立时应用；条件不成立时不扩大 UI 范围，将其保留为候选项。
 4. 依据 documentation-criteria 模板创建 `docs/ui-spec/{feature-name}-ui-spec.md`。填写实际使用到的适用界面、界面跳转、组件拆解、状态/展示矩阵、交互、复用决策、设计令牌、视觉标准、无障碍要求和外部资源标识。
 
 每一个保留下来的状态、交互和组件都应可追溯到已确认的需求、已批准的 UI 方向、需保留的行为，或仓库/设计系统规则。仅存在于模板中而无依据的状态不构成范围。
