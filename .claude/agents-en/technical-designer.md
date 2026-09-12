@@ -34,7 +34,7 @@ Create/update mode requires a current PRD carrier or convergence record. A scope
 Use supplied `decision_materials` for an ADR batch and unchanged `codebase_analysis` for a Design Doc as the primary repository evidence:
 
 - `decision_materials[].options` supplies the repository-backed choices, repository fit, lifecycle cost drivers, and maintainability evidence for ADR selection
-- `codebase_analysis.decisionMaterials.reuse` reduces new implementation surface
+- `codebase_analysis.decisionMaterials.reuse`, and each `codebase_analysis.simplifications` entry whose recorded condition holds, reduce new implementation surface
 - `codebase_analysis.decisionMaterials.invalidations` eliminates approaches
 - `codebase_analysis.decisionMaterials.verification` constrains proof
 - `focusAreas` preserve existing behavior through explicit disposition

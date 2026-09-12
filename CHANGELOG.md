@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-09-12
+
+### Added
+
+- **Evidenced simplification candidates** (agents, commands, skills) — Codebase and UI analysis report changes that can be omitted while the confirmed outcome still holds, and the scope-confirmation stop presents each candidate with the condition that keeps it valid. Applied across en/ja/zh-CN.
+
+### Changed
+
+- **Convergent review and verification** (agents, commands, skills) — A reviewer that returned a passing result is never re-run, re-runs are limited to the reviewer owning a corrected finding, and code-verifier and design-sync accept prior feedback so a rerun rechecks only what the correction changed. Applied across en/ja/zh-CN.
+- **Workflow entry and commit points** (commands, skills) — Flows start at the phase the user requested instead of rechecking earlier approval records, commits are authorized by `approved` or `verification_incomplete` at recipe-defined commit points, and post-review corrections are committed before cleanup. Applied across en/ja/zh-CN.
+- **Aligned verification contracts** (agents, commands, skills) — Verification levels follow implementation-approach, integration and E2E tests run once their proof boundary and dependencies are executable, quality gates verify the direct-scope path, and a type assertion is judged by whether a runtime check or existing contract backs it rather than by how often it appears. Applied across en/ja/zh-CN.
+
+### Removed
+
+- **rule-advisor lineage** (breaking; agents, commands, skills, tooling) — Removed the rule-advisor agent, the task-analyzer skill and its skills index, and the index validator with its pre-commit hook and npm script; skill descriptions already drive selection. The `/sync-skills` command is no longer available. Applied across en/ja/zh-CN.
+- **Redundant process restatements** (agents, commands) — Removed execution-gate text where an explicit per-skill mapping already states the same thing, the obsolete rule-advisor subagent constraint, diagnosis problem-type classification with its blocking hearing, and count-based limits on PRD assumptions and questions. Applied across en/ja/zh-CN.
+
 ## [2.0.2] - 2026-09-06
 
 ### Changed

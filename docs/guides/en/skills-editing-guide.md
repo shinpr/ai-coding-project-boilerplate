@@ -131,7 +131,6 @@ Use the repository commands when possible:
 ```text
 /create-skill Define the API compatibility rules used by this project
 /refine-skill Remove file-count thresholds from api-contracts and use consumer evidence instead
-/sync-skills
 ```
 
 For a manual or reviewed change, use three gates:
@@ -139,8 +138,6 @@ For a manual or reviewed change, use three gates:
 1. **Analysis** — preserve the intended outcome and requirements; inspect the complete skill and required references; scan BP-001 through BP-009; identify the decision or output that is wrong.
 2. **Optimization** — resolve each supported finding at the owning rule; add a constraint only when it removes an outcome-relevant ambiguity or protects a named requirement.
 3. **Balance** — verify intent preservation, decision sufficiency, information density, constraint necessity, work proportionality, and traceability; remove additions that change no decision or valid output.
-
-After editing, run `/sync-skills` and the repository's skill-index check.
 
 ## Audit each rule
 

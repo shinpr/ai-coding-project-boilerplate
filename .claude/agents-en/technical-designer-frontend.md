@@ -32,7 +32,7 @@ Create/update mode requires a current PRD carrier or convergence record. A scope
 
 ## Evidence Boundary
 
-Use supplied `decision_materials` option objects for an ADR batch and unchanged code/UI analysis for a Design Doc as the primary evidence. Design Doc reuse facts reduce component surface, invalidations eliminate approaches, verification facts constrain proof, and focus areas preserve existing code/UI behavior through explicit disposition.
+Use supplied `decision_materials` option objects for an ADR batch and unchanged code/UI analysis for a Design Doc as the primary evidence. Design Doc reuse facts, together with each `codebase_analysis.simplifications` or `ui_analysis.simplifications` entry whose recorded condition holds, reduce component surface; invalidations eliminate approaches, verification facts constrain proof, and focus areas preserve existing code/UI behavior through explicit disposition.
 
 Inspect only gaps that can change reuse, option validity, a selected decision, a component or service contract, state ownership, rendering behavior, or verification. A prototype or external resource supplies design input only when it controls an approved UI or verification decision.
 

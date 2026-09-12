@@ -29,8 +29,6 @@ Implement the confirmed outcome and the maintenance, tests, and adjacent correct
 
 ## Mandatory Rules
 
-Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.
-
 ### Package Manager
 Use the appropriate run command based on the `packageManager` field in package.json.
 
@@ -153,7 +151,7 @@ Classify the work from the execution outcome and changed boundary, then run this
 
 Iterate over each incomplete task-file item, or treat a prompt-only implementation outcome as one execution item. Normalize `correction_findings` and `incompleteImplementations` into additional implementation items inside the same execution scope.
 
-For each implementation item, apply the applicable test-first or behavior-preserving flow from the loaded testing rules and the task's Operation Verification Methods. Update only assigned progress artifacts that exist after the item is verified. Create and execute integration tests with implementation; execute E2E tests in the final phase only.
+For each implementation item, apply the applicable test-first or behavior-preserving flow from the loaded testing rules and the task's Operation Verification Methods. Update only assigned progress artifacts that exist after the item is verified. Create and execute each integration or E2E test in the item that implements the behavior it proves, once that test's declared proof boundary and dependencies are executable.
 
 #### Operation Verification
 - Execute the task file's Operation Verification Methods or the prompt's observable verification condition
@@ -206,7 +204,7 @@ Report in the following JSON format upon task completion. Quality checks and com
   "newTestsPassed": true,
   "reuseDecisions": [{"candidate": "[path:component]", "decision": "reuse | extend | separate", "evidence": "[Responsibility, Props and contract, lifecycle and state ownership, design-system role, and repository-representativeness evidence]"}],
   "progressUpdated": {"taskFile": "5/8 items completed", "workPlan": "Relevant sections updated", "designDoc": "Progress section updated or N/A"},
-  "runnableCheck": {"level": "L1: Unit test (React Testing Library) / L2: Integration test / L3: E2E test", "executed": true, "command": "test -- Button.test.tsx", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null (non-test verification)", "substanceIssue": "null when substantive or non-test; cause and location when non_substantive", "reason": "Test execution reason/verification content"},
+  "runnableCheck": {"level": "L1: Functional Operation Verification / L2: Test Operation Verification / L3: Build Success Verification", "executed": true, "command": "Executed verification command", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null (non-test verification)", "substanceIssue": "null when substantive or non-test; cause and location when non_substantive", "reason": "Verification content, or the exact limitation when it could not run"},
   "readyForQualityCheck": true,
   "nextActions": "Overall quality verification by quality assurance process"
 }

@@ -29,8 +29,6 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 ## 强制规则
 
-行动前，将预加载的技能映射为本任务的具体规则。遵循下方适用流程，仅当当前步骤所需依据齐备时才推进。返回结果前，验证结果满足这些规则和下方的输出要求。
-
 ### 应用于实现
 在实现过程中应用已加载的架构/编码/测试规则，包括所选的测试先行或行为保持型重构流程。当当前依据支持时，遵循任务文件中的实现模式；当仓库依据表明技术层面的“如何做”已失效时，应用并记录设计增量最小、可保持价值不变的修正方案。
 
@@ -150,7 +148,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 遍历任务文件中每个未完成的条目，或将仅有提示的实现成果视为一个执行项。将 `correction_findings` 与 `incompleteImplementations` 归一化为同一执行范围内的额外实现项。
 
-对每个实现项，应用已加载测试规则中适用的测试先行或行为保持型流程，以及任务的 Operation Verification Methods。仅在该条目被验证后，才更新已分配且确实存在的进度产物。集成测试随实现一并创建并执行；E2E 测试仅在最后阶段执行。
+对每个实现项，应用已加载测试规则中适用的测试先行或行为保持型流程，以及任务的 Operation Verification Methods。仅在该条目被验证后，才更新已分配且确实存在的进度产物。每个集成测试和 E2E 测试，在其声明的证明边界和依赖变为可执行之后，于实现该行为的条目中创建并执行。
 
 #### 操作验证
 - 执行任务文件的 Operation Verification Methods 或提示中的可观测验证条件
@@ -202,7 +200,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
   "newTestsPassed": true,
   "reuseDecisions": [{"candidate": "[路径:符号]", "decision": "reuse | extend | separate", "evidence": "[职责、契约、生命周期与仓库代表性方面的依据]"}],
   "progressUpdated": {"taskFile": "已完成 5/8 项", "workPlan": "相关章节已更新", "designDoc": "进度章节已更新或 N/A"},
-  "runnableCheck": {"level": "L1: 单元测试 / L2: 集成测试 / L3: E2E 测试", "executed": true, "command": "已执行的测试命令", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null（非测试验证）", "substanceIssue": "实质性验证或非测试验证时为 null；非实质性验证时填写原因与位置", "reason": "测试执行原因/验证内容"},
+  "runnableCheck": {"level": "L1：功能运行验证 / L2：测试运行验证 / L3：构建成功验证", "executed": true, "command": "已执行的验证命令", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null（非测试验证）", "substanceIssue": "实质性验证或非测试验证时为 null；非实质性验证时填写原因与位置", "reason": "验证内容；若无法执行则填写确切的限制"},
   "readyForQualityCheck": true,
   "nextActions": "由质量保证流程执行整体质量验证"
 }

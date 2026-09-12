@@ -35,7 +35,6 @@ Start with the [Quick Start](./quickstart.md) if the project is not configured y
 | `/project-inject` | Record project-specific prerequisites and quality standards in `project-context` |
 | `/create-skill <knowledge>` | Create a new skill through an interactive hearing and review |
 | `/refine-skill <change>` | Apply a targeted change to an existing skill and review the result |
-| `/sync-skills` | Synchronize skill metadata after skill content changes |
 
 ## Common flows
 
@@ -119,12 +118,6 @@ File count is evidence about the change surface, not the scale rule.
 ## Customizing project behavior
 
 Use `/project-inject` for facts, constraints, and quality standards that apply to this repository. Use a skill for reusable judgment that should load only for a particular responsibility. Do not copy feature-specific decisions into a global rule; keep them in the applicable PRD, ADR, UI Spec, or Design Doc.
-
-After changing skill content, run:
-
-```text
-/sync-skills
-```
 
 See the [Skills Editing Guide](./skills-editing-guide.md) for placement and validation guidance.
 

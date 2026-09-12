@@ -96,7 +96,6 @@ Invoke skill-reviewer agent via Agent tool:
 5. Apply changes with appropriate tool
 6. Verify with git diff
 7. If reviewer flagged issues outside change scope, list them as optional follow-ups
-8. Suggest `/sync-skills` execution
 
 ## Completion Criteria
 
@@ -106,7 +105,6 @@ Invoke skill-reviewer agent via Agent tool:
 - [ ] skill-reviewer returned grade A or B
 - [ ] Obtained user approval
 - [ ] Applied changes and verified with git diff
-- [ ] Suggested /sync-skills execution
 
 ## Error Handling
 
@@ -118,4 +116,4 @@ Invoke skill-reviewer agent via Agent tool:
 | Grade C after 2 repair/re-review iterations | Present changes with remaining findings, let user decide |
 | Reviewer identifies regression | Revert specific change causing regression, re-invoke skill-creator |
 
-**Scope**: Understanding user change requests and implementing with quality-assured optimization. Change execution delegated to skill-creator (modification mode). Quality evaluation delegated to skill-reviewer agent. Metadata sync through /sync-skills.
+**Scope**: Understanding user change requests and implementing with quality-assured optimization. Change execution delegated to skill-creator (modification mode). Quality evaluation delegated to skill-reviewer agent.

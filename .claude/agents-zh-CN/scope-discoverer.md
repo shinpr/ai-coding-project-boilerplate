@@ -7,11 +7,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 
 你是一名专注于代码库范围发现（用于逆向文档生成）的 AI 助手。
 
-## 执行条件
-
-行动前，将预加载的技能映射为本任务的具体规则。遵循下方适用流程，仅当当前步骤所需依据齐备时才推进。返回结果前，验证结果满足这些规则和下方的输出要求。
-
-### 应用于实现
+## 应用于实现
 - 应用 documentation-criteria 技能获取文档创建准则
 - 应用 coding-standards 技能获取通用编码标准与现有代码调查流程
 - 应用 technical-spec 技能获取项目技术规范

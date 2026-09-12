@@ -12,11 +12,11 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 **実行プロトコル**:
 1. **全作業をAgentツールでサブエージェントに委譲** — サブエージェントの呼び出し、成果物パスの受け渡し、結果の報告（許可ツール: subagents-orchestration-guideスキル「オーケストレーターの許可ツール」参照）
-2. **4ステップサイクルに厳密に従う**: task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit
+2. **4ステップサイクルに厳密に従う**: task-executor-frontend → 実行結果で分岐 → quality-fixer-frontend → コミット
 3. **自律実行モード移行**: ユーザーの実行指示とタスクファイルの存在をバッチ承認とみなす
 4. **スコープ**: Consumed Task Setの実行、実装後レビュー、処理したタスクのクリーンアップ、完了報告を順番に完了する。または、確認済みの成果・将来状態の要件・対象外のどれを変更するかという選択や不可逆な操作の承認が必要な場合は、現在のフェーズで自律実行を停止する。現在のフェーズで定められた遷移条件を満たした場合にのみ次へ進む。
 
-**重要**: 全てのコミット前にquality-fixer-frontendを実行。
+**重要**: quality-fixer-frontend が `approved` または `verification_incomplete` を返した後にのみコミットする。その結果は本レシピが定めるコミットポイントでのコミットを許可するだけで、コミットを生むものではない。
 
 作業計画書: $ARGUMENTS
 
@@ -53,7 +53,7 @@ Consumed Task Set を確認し、適切な対応を決定する。注: `$ARGUMEN
 | 状態 | 基準 | 次のアクション |
 |------|------|--------------|
 | タスク存在 | Consumed Task Set が非空 | ユーザーの実行指示をバッチ承認として自律実行へ移行 |
-| タスクなし + `$ARGUMENTS`で計画書指定 | `$ARGUMENTS`が提供され Consumed Task Set が空 | ユーザーに確認 → task-decomposer実行（`Executor lane: frontend` を宣言する各タスクエントリについて `*-frontend-task-*.md` を出力する） |
+| タスクなし + `$ARGUMENTS`で計画書指定 | `$ARGUMENTS`が提供され Consumed Task Set が空 | ユーザーの実行指示をバッチ承認として task-decomposer 実行（`Executor lane: frontend` を宣言する各タスクエントリについて `*-frontend-task-*.md` を出力する） |
 | どちらもなし＋Design Docあり + `$ARGUMENTS`提供 | `$ARGUMENTS`が提供され、計画書なし、Consumed Task Setなし、ただし docs/design/*.md が存在 | work-plannerでDesign Docから作業計画書を作成し、タスクファイル生成の前に**作業計画書レビュー**（下記参照）を行う |
 | どちらもなし | `$ARGUMENTS`なし、計画書なし、Consumed Task Setなし、Design Docなし | 前提条件未達成をユーザーに報告して停止 |
 
@@ -74,21 +74,13 @@ Consumed Task Set を確認し、適切な対応を決定する。注: `$ARGUMEN
 
 Consumed Task Set が空の場合：
 
-### 1. ユーザー確認
-```
-Consumed Task Set にタスクファイルがありません。
-作業計画書: docs/plans/[plan-name].md
-
-作業計画書からタスクを生成しますか？ (y/n):
-```
-
-### 2. タスクファイルの生成（承認された場合）
+### 1. タスクファイルの生成
 Agentツールでtask-decomposerを呼び出す:
 - `subagent_type`: "task-decomposer"
 - `description`: "作業計画書からタスクファイルを生成"
 - `prompt`: "docs/plans/[plan-name].md の作業計画書を読み込み、実装項目ごとに1コミット粒度のタスクファイル1つを docs/plans/tasks/ 配下に出力する。各ファイル名はその項目の Executor lane から選ぶ。"
 
-### 3. 生成確認
+### 2. 生成確認
 上記「Consumed Task Set」セクションの制限パターンを使って Consumed Task Set を再計算し、非空であることを確認する。依然として空の場合はユーザーにエスカレーション — task-decomposer がエラーを出さずに失敗したか、想定パターンに合致しないファイルを生成した可能性がある。
 
 **フロー**: タスク生成 → Consumed Task Set 再計算 → 自律実行（この順序）
@@ -102,7 +94,7 @@ Agentツールでtask-decomposerを呼び出す:
   - テストまたは品質ツールを利用できない場合 → サブエージェントは影響を受けないチェックを実行し、実行できなかった内容を正確に記録する
 
 ## タスク実行サイクル（4ステップサイクル）
-**必須実行サイクル**: `task-executor-frontend → エスカレーションチェック → quality-fixer-frontend → commit`
+**必須実行サイクル**: `task-executor-frontend → 実行結果で分岐 → quality-fixer-frontend → コミット`
 
 Consumed Task Set 内の各タスクで必須：
 1. **EXECUTE**: task-executor-frontend を呼び出してタスク実装を実行
@@ -150,7 +142,7 @@ subagents-orchestration-guideの実装後レビューにあるステータスの
 
 ## 最終クリーンアップ
 
-完了レポートの前に、本レシピが処理した実装タスクファイルを削除する。作業内容はコミット済みで、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である:
+完了レポートの前に、レビュー由来の修正や証明不足の再試行が最後のタスクコミット以降に未コミットで残した変更を、該当するquality-fixer-frontendが `approved` または `verification_incomplete` を返した後にコミットする。その後、本レシピが処理した実装タスクファイルを削除する。これで作業内容はコミット済みとなり、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である:
 
 - Consumed Task Set 内のすべてのファイルを削除する
 - 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する

@@ -21,47 +21,9 @@ description: 调查问题、验证发现并推导解决方案
 
 **执行条件**：下面的每个步骤都建立下一个决策所需的依据。按顺序完成步骤 0-6，包括每一次必需的调查与验证重试。仅在满足当前步骤所述的质量条件或覆盖度条件时才继续推进；只有在覆盖度闭合之后才调用 solver。
 
-## 步骤 0：问题结构化（调用 investigator 之前）
+## 步骤 0：界定问题（调用 investigator 之前）
 
-### 0.1 问题类型判定
-
-| 类型 | 判定标准 |
-|------|----------|
-| 变更导致的失败 | 表明在问题出现之前发生过某些变更 |
-| 新发现 | 未表明与变更存在关联 |
-
-如果不确定，向用户询问在问题出现前是否进行过任何变更。
-
-### 0.2 变更导致的失败所需的信息补充
-
-如果以下内容不明确，在继续之前**使用 AskUserQuestion 询问**：
-- 变更了什么（原因变更）
-- 什么出现了故障（受影响范围）
-- 两者之间的关系（共享组件等）
-
-### 0.3 理解问题本质
-
-使用 Agent 工具调用 rule-advisor：
-- `subagent_type`: "rule-advisor"
-- `description`: "识别问题本质"
-- `prompt`: "请识别以下问题的本质以及所需的技能：[用户报告的问题]"
-
-从 rule-advisor 的输出中确认：
-- `taskAnalysis.essence`：表面症状之外的根本问题
-- `taskAnalysis.type` 与 `taskAnalysis.tags`：问题分类与匹配词
-- `selectedSkills`：适用的技能章节
-- `warningPatterns`：需要避免的模式
-
-### 0.4 反映到 investigator 提示词中
-
-**在 investigator 提示词中包含以下内容**：
-1. 问题本质（`taskAnalysis.essence`）
-2. 适用技能的要点摘要（来自 selectedSkills）
-3. 调查焦点（investigationFocus）：将 warningPatterns 转换为“本次调查中容易混淆或遗漏的点”
-4. **对于变更导致的失败，额外包含**：
-   - 变更内容的详细分析
-   - 原因变更与受影响范围之间的共性
-   - 判定该变更是“正确的修复”还是“新的缺陷”，并据此选择比较基准
+从用户报告的问题和仓库依据出发，记录现象、其发生条件，以及报告或仓库依据能够确认的先行变更，并连同受影响范围和两者共享的组件一并记录。仍未解决的部分不向用户提问，而是作为调查对象传入 investigator 提示词。
 
 ## 诊断流程概览
 
@@ -87,14 +49,8 @@ description: 调查问题、验证发现并推导解决方案
     请全面收集与以下现象相关的信息。
 
     现象：[用户报告的问题]
-
-    问题本质：[步骤 0.3 中的 taskEssence]
-    调查焦点：[步骤 0.4 中的 investigationFocus]
-
-    [对于变更导致的失败，额外包含：]
-    变更内容：[变更了什么]
-    受影响范围：[什么出现了故障]
-    共享组件：[原因与受影响范围之间的共性]
+    发生条件：[步骤 0 中记录的条件]
+    先行变更：[步骤 0 中记录的变更、受影响范围和共享组件；仍未解决的部分作为调查对象传入]
 
 **预期输出**：pathMap（每个症状的执行路径）、failurePoints（在各节点发现的故障点）、每个故障点的 impactAnalysis、未探索的区域、调查的局限性
 
@@ -107,8 +63,6 @@ description: 调查问题、验证发现并推导解决方案
 - [ ] 每个故障点都包含：`location`、`upstreamDependency`、`symptomExplained`、`causalChain`（达到某个停止条件）、`checkStatus`、带有引用具体文件或位置的 `source` 的 `evidence`
 - [ ] 每个故障点都有 `comparisonAnalysis`（找到 normalImplementation，或明确为 null）
 - [ ] 每个故障点的 `causeCategory` 为以下之一：typo / logic_error / missing_constraint / design_gap / external_factor
-- [ ] `investigationSources` 至少覆盖 3 种不同的来源类型（code、history、dependency、config、document、external）
-- [ ] 调查覆盖了 `investigationFocus` 中的各项（当步骤 0.4 提供时）
 - [ ] 已映射路径上的所有节点都已被检查（没有在发现第一个故障后就放弃某条路径）
 
 **如果质量不足**：明确指出缺失项并重新运行 investigator：

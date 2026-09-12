@@ -99,7 +99,6 @@ Step 4の結果で分岐する:
 - `description`: "最終品質保証"
 - `direct_scope`: Step 3のdirect scopeと対象パスを再利用する
 - `runnableCheck`: 最新のexecutor結果にある`runnableCheck`
-- `prompt`: "このワークフローで追加したテストに適用される、リポジトリで設定済みの品質チェックをすべて実行し、意図した観測可能な振る舞いを検証する。"
 
 **期待出力**: `status`（`approved`、`stub_detected`、`verification_incomplete`、`blocked`）
 

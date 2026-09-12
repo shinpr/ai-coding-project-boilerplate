@@ -62,9 +62,9 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 判定全部四个收敛字段。依据第 2 步的结构性依据赋予 `cost`，并记录其未知项；仅对未达到 `ready` 的字段进行访谈。
 
-从成果和职责边界确定结构规模；文件数量仅作为辅助依据。对照约束来源、`reuse` 和 `invalidations` 解决候选决策点；适用的 UI 事实可支持或否定其余选项。仅在此收敛之后才应用 documentation-criteria 的选择必要性（Choice）与长期影响（Durability）筛选，并将通过的决策点记录为 `adrDecisionPoints`；空列表也是有效的。
+从成果和职责边界确定结构规模；文件数量仅作为辅助依据。对照约束来源、适用的 `simplifications`、`reuse` 和 `invalidations` 解决候选决策点；适用的 UI 事实可支持或否定其余选项。仅在此收敛之后才应用 documentation-criteria 的选择必要性（Choice）与长期影响（Durability）筛选，并将通过的决策点记录为 `adrDecisionPoints`；空列表也是有效的。
 
-呈现需要用户决定的内容：要达成的成果与要构建的需求、排除项，以及本次变更所针对的职责。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模、UI 规范适用性、ADR 资格判定和成本依据保留在编排者记录中——UI 规范、ADR 批次和设计文档各有其自己的批准停止点。提供两个选项：就此继续推进，或修正后重新运行。仅当每个收敛字段均为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
+呈现需要用户决定的内容：要达成的成果与要构建的需求、排除项、本次变更所针对的职责，以及每一条适用的简化项及其“省略后已确认成果仍然成立”的条件。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模、UI 规范适用性、ADR 资格判定和成本依据保留在编排者记录中——UI 规范、ADR 批次和设计文档各有其自己的批准停止点。提供两个选项：就此继续推进，或修正后重新运行。仅当每个收敛字段均为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
 
 ## 步骤 5：创建并批准 UI 规范
 
@@ -100,7 +100,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 ## 步骤 8：验证、评审与批准
 
-调用 `code-verifier`，传入 `doc_type: design-doc` 和返回的设计文档路径，不传 `code_paths`。在文档评审前应用评审裁定；将处置为 `apply` 的发现项发送给一次全新的 technical-designer-frontend 调用，传入 `Operation Mode: update`、`Existing Document: [设计文档路径]` 和 `correction_findings: [除处置方针外未作改动的完整发现项]`。该设计者会对未经验证且会改变决策的前提，应用“评审触发的有界自我验证”；这个全新的设计者是唯一的修正专家，并由其选择获取依据的路径。在应用修正后重新运行验证。将最新的验证器结果连同已记录的处置方针一并作为 `verification_evidence` 传递。当每一条剩余的不一致都带有已解决的处置方针时，继续。
+调用 `code-verifier`，传入 `doc_type: design-doc` 和返回的设计文档路径，不传 `code_paths`。在文档评审前应用评审裁定；将处置为 `apply` 的发现项发送给一次全新的 technical-designer-frontend 调用，传入 `Operation Mode: update`、`Existing Document: [设计文档路径]` 和 `correction_findings: [除处置方针外未作改动的完整发现项]`。该设计者会对未经验证且会改变决策的前提，应用“评审触发的有界自我验证”；这个全新的设计者是唯一的修正专家，并由其选择获取依据的路径。在应用修正后，将上一次的完整结果、已记录的处置方针，以及修正差异或变更路径作为 `prior_feedback` 传入，重新运行验证。将最新的验证器结果连同已记录的处置方针一并作为 `verification_evidence` 传递。当每一条剩余的不一致都带有已解决的处置方针时，继续。
 
 调用 `document-reviewer`，传入 `doc_type: DesignDoc`、返回的设计文档路径、`review_context: creation`、原始用户需求、`confirmed_requirement_context`、提供给设计者的原样未改动的分析输入，以及 `verification_evidence`。
 

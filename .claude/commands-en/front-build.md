@@ -12,11 +12,11 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 
 **Execution Protocol**:
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass deliverable paths between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
-2. **Follow the 4-step task cycle exactly**: task-executor-frontend → escalation check → quality-fixer-frontend → commit
+2. **Follow the 4-step task cycle exactly**: task-executor-frontend → branch on executor result → quality-fixer-frontend → commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
 4. **Scope**: Complete consumed task-set execution, post-implementation review, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a confirmed value-boundary choice or irreversible-action authorization. Advance only when the current phase's stated transition condition is satisfied.
 
-**CRITICAL**: Run quality-fixer-frontend before every commit.
+**CRITICAL**: Commit only after quality-fixer-frontend returns `approved` or `verification_incomplete`. That result authorizes a commit at the commit points this recipe defines; it does not create one.
 
 Work plan: $ARGUMENTS
 
@@ -53,7 +53,7 @@ Analyze the Consumed Task Set and determine the action required. Note: when `$AR
 | State | Criteria | Next Action |
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
-| No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | Confirm with user → run task-decomposer (which emits `*-frontend-task-*.md` for every task entry declaring `Executor lane: frontend`) |
+| No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | User's execution instruction serves as batch approval → Run task-decomposer (which emits `*-frontend-task-*.md` for every task entry declaring `Executor lane: frontend`) |
 | Neither exists + Design Doc exists + `$ARGUMENTS` provided | `$ARGUMENTS` provided, no plan, no Consumed Task Set, but docs/design/*.md exists | Invoke work-planner to create work plan from Design Doc, then run **Work Plan Review** (see below) before task materialization |
 | Neither exists | No `$ARGUMENTS`, no plan, no Consumed Task Set, no Design Doc | Report missing prerequisites to user and stop |
 
@@ -74,21 +74,13 @@ When the decision flow above created the work plan from a Design Doc, review it 
 
 When the Consumed Task Set is empty:
 
-### 1. User Confirmation
-```
-No task files in the Consumed Task Set.
-Work plan: docs/plans/[plan-name].md
-
-Generate tasks from the work plan? (y/n):
-```
-
-### 2. Task Materialization (if approved)
+### 1. Task Materialization
 Invoke task-decomposer using Agent tool:
 - `subagent_type`: "task-decomposer"
 - `description`: "Materialize work plan tasks"
 - `prompt`: "Read work plan at docs/plans/[plan-name].md and output one single-commit task file per work plan implementation item in docs/plans/tasks/, selecting each filename from the item's Executor lane."
 
-### 3. Verify Generation
+### 2. Verify Generation
 Recompute the Consumed Task Set using the same restricted pattern from the Consumed Task Set section above. Confirm it is now non-empty. If it is still empty, escalate to the user — task-decomposer either failed silently or produced files that don't match the expected pattern.
 
 **Flow**: Task generation → Consumed Task Set recompute → Autonomous execution (in this order)
@@ -102,7 +94,7 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
   - Test and quality-tool limitations → Subagents run unaffected checks and record exactly what could not run
 
 ## Task Execution Cycle (4-Step Cycle)
-**MANDATORY EXECUTION CYCLE**: `task-executor-frontend → escalation check → quality-fixer-frontend → commit`
+**MANDATORY EXECUTION CYCLE**: `task-executor-frontend → branch on executor result → quality-fixer-frontend → commit`
 
 For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke the **Agent tool** (subagent_type: "task-executor-frontend") → Pass task file path in prompt, receive structured response
@@ -150,7 +142,7 @@ Apply subagents-orchestration-guide's Post-Implementation Review status-routing 
 
 ## Final Cleanup
 
-Before the completion report, delete the implementation task files this recipe consumed. Their work is committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
+Before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `approved` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Their work is then committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
 
 - Delete every file in the Consumed Task Set
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review

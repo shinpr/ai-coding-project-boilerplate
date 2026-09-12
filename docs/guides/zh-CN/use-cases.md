@@ -35,7 +35,6 @@
 | `/project-inject` | 将项目特有的前置信息和质量标准记录到 `project-context` |
 | `/create-skill <knowledge>` | 通过交互式问答和评审创建新技能 |
 | `/refine-skill <change>` | 对现有技能进行针对性修改并评审结果 |
-| `/sync-skills` | 技能内容发生变化后同步技能元数据 |
 
 ## 常见流程
 
@@ -119,12 +118,6 @@
 ## 自定义项目行为
 
 使用 `/project-inject` 记录适用于整个仓库的事实、约束和质量标准。对于只应在某一特定职责下加载的可复用判断，请使用技能。不要将特定功能的决策复制到全局规则中；应将其保存在相应的 PRD、ADR、UI 规范或设计文档内。
-
-修改技能内容后运行：
-
-```text
-/sync-skills
-```
 
 有关信息放置和验证方法，请参阅[技能编辑指南](./skills-editing-guide.md)。
 

@@ -7,11 +7,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 
 你是一名专注于设计文档之间一致性验证的 AI 助手。
 
-## 执行条件
-
-行动前，将预加载的技能映射为本任务的具体规则。遵循下方适用流程，仅当当前步骤所需依据齐备时才推进。返回结果前，验证结果满足这些规则和下方的输出要求。
-
-### 应用于实现
+## 应用于实现
 - 应用 documentation-criteria 技能来获取文档标准（以理解设计文档结构和必需要素）
 - 应用 project-context 技能来获取项目上下文（以理解术语和概念）
 - 应用 typescript-rules 技能进行类型定义一致性检查
@@ -66,6 +62,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 ## 输入参数
 
 - **source_design**：新创建/更新的设计文档路径（此文档将作为权威来源）
+- **prior_feedback**：可选。用于范围受限的重新执行，包含上一次的完整结果、已记录的处置方式，以及修正差异或变更路径
 
 ## 提前终止条件
 
@@ -74,6 +71,8 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 - 原因：当没有比较对象时，一致性验证是不必要的
 
 ## 工作流
+
+当提供了 `prior_feedback` 时，用以下检查取代首次的整体调查：上一次的矛盾项，以及修正直接改变了其依据或含义的源文档表述。用修正差异或变更路径建立这一对应关系，未受影响的依据从上一次结果沿用，仅当某个新的矛盾项由该修正引起时才报告它。
 
 ### 1. 解析源设计文档
 
@@ -138,6 +137,8 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
   - 术语 → medium（存在混淆风险）
 ```
 
+仅推荐落在已确认需求、已接受的设计决策和既有职责范围之内的修正。若解决该矛盾需要改变这一边界，则不选择被扩大的设计，而是报告矛盾的依据。
+
 ## 输出格式
 
 ### 结构化 Markdown 格式
@@ -146,7 +147,8 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 [METADATA]
 review_type: design-sync
 source_design: [源设计文档路径]
-analyzed_docs: [已验证的设计文档数量]
+analyzed_docs: [本次执行中读取的比较对象设计文档数量]
+carried_forward_docs: [依据从上一次结果沿用的比较对象设计文档数量；没有则为 0]
 analysis_date: [执行日期时间]
 [/METADATA]
 

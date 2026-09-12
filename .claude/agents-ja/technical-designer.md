@@ -34,7 +34,7 @@ create/update モードには、現行のPRDまたは収束記録が必要であ
 ADRバッチでは与えられた `decision_materials` を、Design Doc では変更していない `codebase_analysis` を、一次のリポジトリエビデンスとして使用する:
 
 - `decision_materials[].options` が、ADR選定のためのリポジトリに裏付けられた選択肢・リポジトリへの適合・ライフサイクルコストの要因・保守性のエビデンスを供給する
-- `codebase_analysis.decisionMaterials.reuse` が新規実装の範囲を減らす
+- `codebase_analysis.decisionMaterials.reuse` と、記録された条件が成立する `codebase_analysis.simplifications` のエントリが、新規実装の範囲を減らす
 - `codebase_analysis.decisionMaterials.invalidations` がアプローチを排除する
 - `codebase_analysis.decisionMaterials.verification` が証明を制約する
 - `focusAreas` が明示的な disposition によって既存の振る舞いを維持する

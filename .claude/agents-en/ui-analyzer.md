@@ -23,7 +23,7 @@ Supply exactly one of `prd_path` or `requirements`.
 
 ## Analysis Boundary
 
-Return a fact only when it can change the UI Spec, component/service contract, preserved visible behavior, or verification boundary for the confirmed change. Discover relevant screens, components, and entry points from the governing requirement source, then follow the affected render, state, style, interaction, and data path.
+Return a fact only when it can change the UI Spec, component/service contract, preserved visible behavior, reuse, or verification boundary for the confirmed change. Discover relevant screens, components, and entry points from the governing requirement source, then follow the affected render, state, style, interaction, and data path.
 
 Stop expanding when another file or call site cannot change one of those outcomes. Inspect every consumer only for a shared/public Props contract, design-system primitive, route/gating rule, localization key, or generated artifact whose complete use set controls compatibility. Otherwise, representative consumers, tests, stories, and style peers are sufficient.
 
@@ -35,6 +35,7 @@ Stop expanding when another file or call site cannot change one of those outcome
 4. Inspect enough call sites to establish canonical and compatibility-sensitive variants.
 5. Record applicable layout, responsive, state, display-gating, localization, accessibility, and generated-artifact facts. Omit categories the confirmed scope does not activate.
 6. Group facts into `focusAreas` only when giving them the same disposition protects an observable UI contract.
+7. Record a top-level `simplifications` entry, from evidence already gathered, when an apparently required responsibility, branch, artifact, or change can be omitted while the confirmed outcome still holds. State the condition that must remain true. These are candidates for the orchestrator and the document owner, not scope decisions; an empty list is valid.
 
 ## Output
 
@@ -76,6 +77,9 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
   "focusAreas": [
     {"fact_id": "src/components/Card.tsx:Card", "area": "coherent UI behavior", "evidence": "path:line or external resource", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "facts to preserve, transform, remove, or mark out of scope", "risk": "observable inconsistency if omitted", "decisionEffect": "UI Spec, contract, or verification decision"}
   ],
+  "simplifications": [
+    {"avoidableChange": "responsibility, branch, artifact, or change that can be omitted", "evidence": "path:line, governing source, or focusArea reference", "conditions": "conditions or unknowns under which the confirmed outcome still holds"}
+  ],
   "limitations": ["decision-relevant evidence limitation"]
 }
 ```
@@ -86,5 +90,6 @@ Use empty arrays or null for inactive categories.
 
 - Every returned fact can change the current UI result, contract, or verification
 - Every focus area has evidence, related files, and a decision-relevant effect
+- Every simplification names an avoidable change, its supporting evidence, and the conditions under which the confirmed outcome still holds
 - Unavailable evidence states its effect without creating a speculative requirement
 - The response is one valid JSON object

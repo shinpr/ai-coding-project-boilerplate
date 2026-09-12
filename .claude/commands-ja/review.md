@@ -92,7 +92,8 @@ decline: [ID] — [出典ソース上の理由]
    - `subagent_type`: "design-sync"
    - `description`: "DD間整合性チェック"
    - `prompt`: "source_design: [更新後DDのパス]。更新後の全Design Doc間の矛盾を検出。"
-   - `sync_status: CONFLICTS_FOUND` の場合: design-syncを新しいverifierとしてレビュー対応を適用し、`apply`の矛盾を担当するtechnical-designerで修正し、design-syncを再実行し、エビデンスに基づく却下は完了として維持する
+   - `prior_feedback`（再実行時のみ）: 前回の完全な結果・その処理方針・修正差分または変更パス
+   - `sync_status: CONFLICTS_FOUND` の場合: レビュー対応を適用し、その「範囲を限定したverifier」のハンドオフと収束の規則に従って、`apply`の矛盾を担当するtechnical-designerで修正する
 
 4. 承認済みの `apply` 検出事項を更新後の Design Doc に対して再評価し、改訂で既に満たされたものは除外する。残りがない場合はコード側の修正パスをスキップして最終レポートへ進む。
 
@@ -112,7 +113,9 @@ Agent toolでtask-executorを呼び出す:
 Agent toolでquality-fixerを呼び出す:
 - `subagent_type`: "quality-fixer"
 - `description`: "品質ゲートチェック"
-- `prompt`: "direct_scope: { outcome: [ステップ6へ渡した承認済みのコード側検出事項], affectedPaths: [検出事項と、その整合性を保つために必要な変更が対象とするパス], verificationCondition: 適用対象のプロジェクト品質チェックがパスする }。現在の未コミットのワークツリー全体について品質ゲート通過を確認する。"
+- `direct_scope`: ステップ6へ渡した承認済みのコード側検出事項、それらの検出事項とその整合性を保つために必要な変更が対象とするパス、およびステップ6の `observable_verification` を検証条件として渡す
+- `runnableCheck`: ステップ6のexecutor結果の `runnableCheck`
+- `prompt`: "未追跡・削除・リネームを含む現在の未コミットのワークツリー全体について、品質ゲート通過を確認する。"
 
 レスポンスで分岐する:
 - `approved` → ステップ8へ進む
@@ -122,7 +125,7 @@ Agent toolでquality-fixerを呼び出す:
 
 ### 8. code-reviewer再検証
 
-この呼び出しの直前に、ステップ1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
+このステップを実行するのは、ステップ6でcode-reviewerが所有する検出事項を修正した場合に限る。passingの結果を返したレビュアーは再実行しない。呼び出しの直前に、ステップ1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
 
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
@@ -131,18 +134,18 @@ Agent toolでcode-reviewerを呼び出す:
 
 ### 9. security-reviewer再検証
 
-この呼び出しの直前に、ステップ1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
+このステップを実行するのは、ステップ6でsecurity-reviewerが所有する検出事項を修正した場合に限る。passingの結果を返したレビュアーは再実行しない。呼び出しの直前に、ステップ1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
 
-subagents-orchestration-guideの実装後レビューの再実行規則によって現在のセキュリティ結果が必要な場合、security-reviewerを呼び出す:
+Agent toolでsecurity-reviewerを呼び出す:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティの再検証"
 - `prompt`: "修正後にセキュリティを再検証。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
 
 ### 10. 修正結果の解決
 
-ステップ8とステップ9の各結果にレビュー対応を適用する。`prior_disposition: apply`の`maintained`はステップ6へ戻し、該当する品質確認と修正再レビューをもう一度行う。レビュー対応が収束条件に達した後に進む。
+実行したステップ8とステップ9の各結果にレビュー対応を適用する。`prior_disposition: apply`の`maintained`はステップ6へ戻し、該当する品質確認と修正再レビューをもう一度行う。レビュー対応が収束条件に達した後に進む。
 
-ステップ11の前に、quality-fixerが検証できなかった各項目を、ステップ7と同じ入力と対象チェックで1回だけ再試行する。`approved`なら検証上の制約を解消し、新たに未完成の実装が見つかった場合はステップ6〜10へ戻し、`verification_incomplete`が再度返った場合は報告する。再試行によってリポジトリが変わった場合は、変更後のコードに対してステップ8〜10を繰り返してから報告する。
+ステップ11の前に、quality-fixerが検証できなかった各項目を、ステップ7と同じ入力と対象チェックで1回だけ再試行する。`approved`なら検証上の制約を解消し、新たに未完成の実装が見つかった場合はステップ6〜10へ戻し、`verification_incomplete`が再度返った場合は報告する。
 
 ### 11. 最終レポート
 

@@ -103,7 +103,6 @@ description: 通过交互式对话与优化，从用户知识创建新技能
 2. 确认与用户意图一致：“这个技能是否捕捉到了你所描述的知识与标准？”
 3. 如果要求修订：应用变更并重新运行 skill-reviewer
 4. 获得批准后，写入 `.claude/skills/{name}/SKILL.md`
-5. 建议运行 `/sync-skills` 以更新元数据
 
 ## 完成标准
 
@@ -115,7 +114,6 @@ description: 通过交互式对话与优化，从用户知识创建新技能
 - [ ] skill-reviewer 智能体返回了等级 A 或 B
 - [ ] 用户已批准最终内容
 - [ ] 文件已写入 `.claude/skills/{name}/SKILL.md`
-- [ ] 已向用户建议 `/sync-skills`
 
 ## 错误处理
 
@@ -130,4 +128,4 @@ description: 通过交互式对话与优化，从用户知识创建新技能
 ## 范围边界
 
 **本命令负责**：交互式知识收集、creator 与 reviewer 智能体的编排、文件写入。
-**本命令不负责**：技能内容优化逻辑（委托给 skill-creator）、质量评估逻辑（委托给 skill-reviewer）、元数据同步（委托给 `/sync-skills`）。
+**本命令不负责**：技能内容优化逻辑（委托给 skill-creator）、质量评估逻辑（委托给 skill-reviewer）。

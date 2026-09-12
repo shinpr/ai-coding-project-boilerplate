@@ -103,7 +103,6 @@ skill-reviewerエージェントをAgent toolで起動:
 2. 意図の整合性を確認: 「このスキルは説明いただいた知識と基準を正しく反映していますか？」
 3. 修正要望がある場合: 変更を適用しskill-reviewerを再実行
 4. 承認後、`.claude/skills/{skill-name}/SKILL.md`に書き込み
-5. `/sync-skills`の実行を提案
 
 ## 完了条件
 
@@ -115,7 +114,6 @@ skill-reviewerエージェントをAgent toolで起動:
 - [ ] skill-reviewerがグレードAまたはBを返却
 - [ ] ユーザーが最終コンテンツを承認済み
 - [ ] `.claude/skills/{skill-name}/SKILL.md`に書き込み済み
-- [ ] `/sync-skills`の実行を提案済み
 
 ## エラーハンドリング
 
@@ -130,4 +128,4 @@ skill-reviewerエージェントをAgent toolで起動:
 ## スコープ境界
 
 **このコマンドが担当**: 対話による知識収集、creatorとreviewerエージェントの連携、ファイル書き込み。
-**このコマンドは担当しない**: スキルコンテンツの最適化ロジック（skill-creatorに委譲）、品質評価ロジック（skill-reviewerに委譲）、メタデータ同期（`/sync-skills`に委譲）。
+**このコマンドは担当しない**: スキルコンテンツの最適化ロジック（skill-creatorに委譲）、品質評価ロジック（skill-reviewerに委譲）。

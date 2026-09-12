@@ -52,14 +52,14 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 结构规模由成果和职责边界判定。文件数量仅作为辅助依据。
 
-对照约束来源、`reuse` 和 `invalidations` 处理 `decisionMaterials.candidateDecisionPoints`。当这些依据已经收敛到唯一充分的方案时，移除该决策点。对每一个剩余项，按顺序应用 documentation-criteria 的筛选条件：
+对照约束来源、适用的 `simplifications`、`reuse` 和 `invalidations` 处理 `decisionMaterials.candidateDecisionPoints`。当这些依据已经收敛到唯一充分的方案时，移除该决策点。对每一个剩余项，按顺序应用 documentation-criteria 的筛选条件：
 
 1. 该选择需要在已确认范围内，于至少两个可信且实质不同的选项之间作出判断。
 2. 该选择会对后续工作产生长期且实质性的影响。
 
 将每一个通过筛选的项记录为 `adrDecisionPoints`；空列表则直接路由到设计文档。
 
-只呈现需要用户判断的内容：成果与要构建的需求、排除项，以及本次变更所针对的职责。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模、ADR 资格判定和成本依据保留在编排者的记录中——ADR 批次和设计文档各有自己的批准停止点。提供两个选项：继续推进，或修正范围后重新运行分析。仅当每个收敛字段为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
+只呈现需要用户判断的内容：成果与要构建的需求、排除项、本次变更所针对的职责，以及每一条适用的简化项及其“省略后已确认成果仍然成立”的条件。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模、ADR 资格判定和成本依据保留在编排者的记录中——ADR 批次和设计文档各有自己的批准停止点。提供两个选项：继续推进，或修正范围后重新运行分析。仅当每个收敛字段为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
 
 ## 步骤 4：必要时创建并批准 ADR 批次
 
@@ -87,7 +87,7 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 调用 `code-verifier`，传入 `doc_type: design-doc` 和设计文档路径。不提供 `code_paths`，以便将未来行为保持为意图，而对当前的前提与可行性进行验证。
 
-在文档评审之前，对每一处不一致应用评审裁定。仅将 `apply` 类发现项发送给一次全新的 technical-designer 调用，传入 `Operation Mode: update`、`Existing Document: [设计文档路径]` 和 `correction_findings: [除处置方针外未作改动的完整发现项]`。当某条发现项指出一个未经验证且会改变决策的前提时，该设计者应用“评审触发的有界自我验证”；这个全新的设计者是唯一负责修正的专职智能体，并自行选择获取依据的路线。修正之后重新运行 code-verifier。将最新的 verifier 结果连同已记录的处置方针一起作为 `verification_evidence` 传递。仅当其中不含未解决的 `apply` 项时才继续。
+在文档评审之前，对每一处不一致应用评审裁定。仅将 `apply` 类发现项发送给一次全新的 technical-designer 调用，传入 `Operation Mode: update`、`Existing Document: [设计文档路径]` 和 `correction_findings: [除处置方针外未作改动的完整发现项]`。当某条发现项指出一个未经验证且会改变决策的前提时，该设计者应用“评审触发的有界自我验证”；这个全新的设计者是唯一负责修正的专职智能体，并自行选择获取依据的路线。修正之后，将上一次的完整结果、已记录的处置方针，以及修正差异或变更路径作为 `prior_feedback` 传入，重新运行 code-verifier。将最新的 verifier 结果连同已记录的处置方针一起作为 `verification_evidence` 传递。仅当其中不含未解决的 `apply` 项时才继续。
 
 ## 步骤 7：评审与批准
 

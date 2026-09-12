@@ -52,14 +52,14 @@ Judge all four convergence fields. Assign `cost` from Step 2 structural evidence
 
 Determine Structural Scale from outcomes and responsibility boundaries. File count is supporting evidence only.
 
-Resolve `decisionMaterials.candidateDecisionPoints` against the governing requirement source, `reuse`, and `invalidations`. Remove a point when that evidence already converges on one sufficient approach. For each remaining item, apply documentation-criteria filters in order:
+Resolve `decisionMaterials.candidateDecisionPoints` against the governing requirement source, applicable `simplifications`, `reuse`, and `invalidations`. Remove a point when that evidence already converges on one sufficient approach. For each remaining item, apply documentation-criteria filters in order:
 
 1. Choice requires judgment between at least two credible, materially distinct options inside confirmed scope.
 2. The selection has durable material impact.
 
 Record every passing item as `adrDecisionPoints`; an empty list routes directly to the Design Doc.
 
-Present what the user decides on: the outcome and the requirements to build, the exclusions, and the responsibilities the change targets. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, ADR qualification, and cost evidence stay in the orchestrator record — the ADR batch and the Design Doc have their own approval stops. Offer proceed, or correct scope and re-run analysis. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
+Present what the user decides on: the outcome and the requirements to build, the exclusions, the responsibilities the change targets, and each applicable simplification with the condition under which the confirmed outcome still holds without it. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, ADR qualification, and cost evidence stay in the orchestrator record — the ADR batch and the Design Doc have their own approval stops. Offer proceed, or correct scope and re-run analysis. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
 
 ## Step 4: Create and Approve an ADR Batch When Needed
 
@@ -87,7 +87,7 @@ The Design Doc owns the complete implementation design and retains all applicabl
 
 Invoke `code-verifier` with `doc_type: design-doc` and the Design Doc path. Leave `code_paths` absent so future behavior remains intent and current premises and feasibility are verified.
 
-Apply Review Resolution to every discrepancy before document review. Send only `apply` findings to a fresh technical-designer invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate when a finding names an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun code-verifier after a correction. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue only when it contains no unresolved `apply` item.
+Apply Review Resolution to every discrepancy before document review. Send only `apply` findings to a fresh technical-designer invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate when a finding names an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun code-verifier after a correction, passing the previous complete result, the recorded dispositions, and the correction diff or changed paths as `prior_feedback`. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue only when it contains no unresolved `apply` item.
 
 ## Step 7: Review and Approve
 

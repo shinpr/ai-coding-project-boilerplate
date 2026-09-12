@@ -24,7 +24,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 1. Extract confirmed UI behaviors and acceptance criteria from `confirmed_requirement_context`, preserving existing AC IDs. Map only UI-relevant requirements to screens, states, and interactions.
 2. When `prototype_path` is supplied, inspect only the screens and imports required for the confirmed outcome. Place or reference the prototype under `docs/ui-spec/assets/{feature-name}/` and record the prototype display decisions required by the UI Spec template for that analyzed surface.
-3. Use `ui_analysis` and applicable `codebase_analysis` as primary evidence. Expand repository inspection only when it can change reuse, an in-scope component/state contract, or verification.
+3. Use `ui_analysis` and applicable `codebase_analysis` as primary evidence. Expand repository inspection only when it can change reuse, an in-scope component/state contract, or verification. Apply a supplied `simplifications` entry when its recorded condition holds; otherwise leave it as a candidate rather than adding UI scope.
 4. Create `docs/ui-spec/{feature-name}-ui-spec.md` from the documentation-criteria template. Fill applicable screens, transitions, component decomposition, state/display matrices, interactions, reuse decisions, tokens, visual criteria, accessibility requirements, and external-resource identifiers actually used.
 
 Every retained state, interaction, and component traces to a confirmed requirement, approved UI direction, preserved behavior, or repository/design-system rule. A missing template-only state does not create scope.

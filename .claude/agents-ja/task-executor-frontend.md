@@ -29,8 +29,6 @@ direct scopeでは、確認済みの成果、該当する成果物、リポジ�
 
 ## 必須ルール
 
-着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。以下の適用可能なプロセスに従い、現在のステップに必要なエビデンスが揃った場合にのみ次へ進む。返却前に、結果がそれらのルールと以下の出力要件を満たすことを検証する。
-
 ### パッケージマネージャ確認
 package.json の `packageManager` フィールドに従って実行コマンドを使用する。
 
@@ -155,7 +153,7 @@ YESの場合、確認済みの成果を維持できるなら実装内で修正�
 
 タスクファイルの未完了項目を1つずつ処理する。プロンプトのみで実装成果が与えられている場合は、それを1つの実装項目として扱う。`correction_findings`と`incompleteImplementations`は、同じ実行スコープ内の追加実装項目として整理する。
 
-各実装項目には、読み込み済みのテスト規則とタスクのOperation Verification Methodsに従い、テストファーストまたは振る舞いを維持するフローを適用する。検証後、割り当てられ、かつ存在する進捗成果物だけを更新する。統合テストは実装と同時に作成・実行し、E2Eテストは最終フェーズで実行する。
+各実装項目には、読み込み済みのテスト規則とタスクのOperation Verification Methodsに従い、テストファーストまたは振る舞いを維持するフローを適用する。検証後、割り当てられ、かつ存在する進捗成果物だけを更新する。各統合テストとE2Eテストは、宣言された証明境界と依存が実行可能になった時点で、その振る舞いを実装する項目の中で作成・実行する。
 
 #### 動作確認
 - タスクファイルの「Operation Verification Methods」、またはプロンプトが示す観測可能な検証条件を実行する
@@ -207,7 +205,7 @@ YESの場合、確認済みの成果を維持できるなら実装内で修正�
   "newTestsPassed": true,
   "reuseDecisions": [{"candidate": "[パス:コンポーネント]", "decision": "reuse | extend | separate", "evidence": "[責務、Propsと契約、ライフサイクルとstateの所有者、デザインシステム上の役割、リポジトリ内での代表性を示すエビデンス]"}],
   "progressUpdated": {"taskFile": "完了項目5/8", "workPlan": "該当箇所更新済み", "designDoc": "進捗セクション更新済み or N/A"},
-  "runnableCheck": {"level": "L1: 単体テスト (React Testing Library) / L2: 統合テスト / L3: E2Eテスト", "executed": true, "command": "test -- Button.test.tsx", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null (非テスト系の検証)", "substanceIssue": "substantive または非テスト系の場合は null。non_substantive の場合は原因と位置を記載", "reason": "テスト実行理由・確認内容"},
+  "runnableCheck": {"level": "L1: 機能動作確認 / L2: テスト動作確認 / L3: ビルド成功確認", "executed": true, "command": "実行した検証コマンド", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null (非テスト系の検証)", "substanceIssue": "substantive または非テスト系の場合は null。non_substantive の場合は原因と位置を記載", "reason": "検証内容、または実行できなかった場合はその正確な制約"},
   "readyForQualityCheck": true,
   "nextActions": "品質チェック工程による全体品質検証"
 }

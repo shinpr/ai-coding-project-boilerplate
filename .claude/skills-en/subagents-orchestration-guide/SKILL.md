@@ -105,7 +105,7 @@ I understand each subagent's responsibilities and assign work appropriately:
 
 ### Standard Flow I Manage
 
-**Basic Cycle**: I manage the 4-step cycle of `task-executor -> user-boundary judgment/follow-up -> quality-fixer -> commit`.
+**Basic Cycle**: I manage the 4-step cycle of `task-executor -> branch on executor result -> quality-fixer -> commit`.
 I repeat this cycle for each task to ensure quality.
 
 **Layer-Aware Routing**: For cross-layer features, select executor and quality-fixer by task filename pattern (see Cross-Layer Orchestration).
@@ -186,7 +186,9 @@ When receiving new features or change requests, first collect requirement eviden
 
 Small produces no Work Plan or task file. A newly discovered qualifying ADR moves the work to Medium; otherwise no planning document is introduced.
 
-Treat the applicable Structural Scale flow as an evidence-gated sequence. Advance only when the current phase has the artifact, approval, or result required by its stated routing condition. Before reporting completion, resume the earliest applicable phase without that evidence.
+### Flow Entry
+
+Start the applicable Structural Scale flow at the phase the user requested. That instruction accepts the preceding phases, so continue from that entry point rather than rechecking earlier review or approval records. Before reporting completion, verify the artifacts and results every applicable phase from that entry point requires, and complete missing work inside those phases. Return to an earlier phase only when a material change invalidates its outcome, applying Requirement Change Detection.
 
 ## Cross-Layer Orchestration
 
@@ -304,6 +306,7 @@ Two additional rules:
    **Pass to codebase-analyzer**: exactly one governing source — the approved PRD path when one exists, otherwise the confirmed requirements
    **Pass to technical-designer**: codebase-analyzer JSON output as additional context in the Design Doc creation prompt. Required downstream uses:
    - `focusAreas` → canonical disposition-target list for the Fact Disposition Table (one row per focusArea, carrying through `fact_id` and `evidence` verbatim)
+   - `simplifications` → each entry whose recorded condition holds reduces new implementation surface; the orchestrator presents the set at the scope stop and passes it unchanged
    - `dataModel`, `dataTransformationPipelines`, `qualityAssurance` → Existing Codebase Analysis and Verification Strategy sections
 
    #### code-verifier → document-reviewer (Design Doc review)
@@ -340,7 +343,7 @@ Two additional rules:
 
 ## Important Constraints
 
-- **Quality check**: A task commit is permitted after quality-fixer returns `approved`
+- **Quality check**: A commit is permitted after quality-fixer returns `approved` or `verification_incomplete`, at the commit points the invoked recipe defines
 - **Structured response**: Information passed between subagents uses the declared JSON fields
 - **Approval management**: Document creation is followed by document-reviewer and the named user-approval stop before the next phase
 - **Flow confirmation**: After approval, select the next step from the confirmed large/medium/small flow
@@ -357,4 +360,4 @@ Reviewer findings are candidates. Create correction work only from the Review Re
 
 **Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers.
 
-**Re-run rule**: After any applied post-implementation correction, re-run each reviewer with at least one correction applied from its latest result. Retain any other reviewer result only when repository evidence establishes that the correction preserved its review boundary; otherwise re-run that reviewer. After recovering a blocked review prerequisite, re-run that reviewer. Review Resolution convergence governs acceptance and preserves resolved declines.
+**Re-run rule**: A reviewer that has returned a passing result is never re-run. Re-run only a reviewer whose latest result still carries a corrected finding, passing its recorded dispositions as `prior_feedback` and the re-derived implementation file set so the rerun reconciles against the corrected state. After recovering a blocked review prerequisite, re-run that reviewer. Review Resolution convergence governs acceptance and preserves resolved declines.

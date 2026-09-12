@@ -32,7 +32,7 @@ create/update モードには、現行のPRDまたは収束記録が必要であ
 
 ## エビデンス境界
 
-ADRバッチでは与えられた `decision_materials` の option オブジェクトを、Design Doc では変更していないコード分析とUI分析を、一次のエビデンスとして使用する。Design Doc では、reuse の事実が新規コンポーネントの量を減らし、invalidations がアプローチを排除し、verification の事実が証明を制約し、focus area が明示的な disposition によって既存のコード/UIの振る舞いを維持する。
+ADRバッチでは与えられた `decision_materials` の option オブジェクトを、Design Doc では変更していないコード分析とUI分析を、一次のエビデンスとして使用する。Design Doc では、reuse の事実と、記録された条件が成立する `codebase_analysis.simplifications` または `ui_analysis.simplifications` のエントリが新規コンポーネントの量を減らし、invalidations がアプローチを排除し、verification の事実が証明を制約し、focus area が明示的な disposition によって既存のコード/UIの振る舞いを維持する。
 
 追加調査するのは、再利用・選択肢の妥当性・選択された決定・コンポーネントやサービスの契約・状態の所有・レンダリングの振る舞い・検証のいずれかを変えうるギャップのみとする。プロトタイプや外部リソースが設計入力となるのは、承認されたUIまたは検証の判断を左右する場合に限る。
 

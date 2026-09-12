@@ -99,7 +99,6 @@ Invoke the current layer's quality-fixer:
 - `description`: "Final quality assurance"
 - `direct_scope`: Reuse the Step 3 direct scope and affected paths
 - `runnableCheck`: The latest executor result's `runnableCheck`
-- `prompt`: "Run every repository-configured quality check applicable to the tests added in this workflow and verify their intended observable behavior."
 
 **Expected output**: `status` (`approved`, `stub_detected`, `verification_incomplete`, or `blocked`)
 

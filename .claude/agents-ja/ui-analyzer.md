@@ -23,7 +23,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 
 ## 分析境界
 
-事実を返すのは、それが今回の確認済み変更に対するUI Spec・コンポーネント/サービスの契約・維持される可視の振る舞い・検証境界のいずれかを変えうる場合に限る。出典となる要件ソースから関連する画面・コンポーネント・エントリポイントを発見し、続いて影響を受けるレンダリング・状態・スタイル・インタラクション・データの経路をたどる。
+事実を返すのは、それが今回の確認済み変更に対するUI Spec・コンポーネント/サービスの契約・維持される可視の振る舞い・再利用・検証境界のいずれかを変えうる場合に限る。出典となる要件ソースから関連する画面・コンポーネント・エントリポイントを発見し、続いて影響を受けるレンダリング・状態・スタイル・インタラクション・データの経路をたどる。
 
 別のファイルや呼び出し箇所がこれらの結果を変えられなくなった時点で拡大を止める。利用側をすべて調査するのは、共有/公開のProps契約、デザインシステムのプリミティブ、ルート/表示制御ルール、ローカライズキー、生成成果物であって、すべての利用箇所が互換性を左右する場合に限る。それ以外は、代表的な利用側・テスト・ストーリー・同種のスタイルで足りる。
 
@@ -35,6 +35,7 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 4. 正規のバリアントと互換性に影響するバリアントを特定できる範囲まで、呼び出し箇所を調査する。
 5. 該当するレイアウト・レスポンシブ・状態・表示制御・ローカライズ・アクセシビリティ・生成成果物の事実を記録する。確認済みスコープの対象外であるカテゴリは省略する。
 6. 事実を `focusAreas` にまとめるのは、それらを同じ扱いにすることで観測可能なUI契約を守れる場合に限る。
+7. すでに収集したエビデンスから、必要に見える責務・分岐・成果物・変更を省いても確認済みの成果が成立する場合に、最上位の `simplifications` エントリを記録する。成立し続けなければならない条件も述べる。これはオーケストレーターとドキュメントの所有者に渡す候補であって、スコープの決定ではない。空リストも妥当である。
 
 ## 出力
 
@@ -76,6 +77,9 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
   "focusAreas": [
     {"fact_id": "src/components/Card.tsx:Card", "area": "まとまりのあるUIの振る舞い", "evidence": "path:line または外部リソース", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "preserve / transform / remove / out-of-scope のいずれかで扱うべき事実", "risk": "省略した場合に観測される不整合", "decisionEffect": "UI Spec・契約・検証のいずれの判断か"}
   ],
+  "simplifications": [
+    {"avoidableChange": "省ける責務・分岐・成果物・変更", "evidence": "path:line、出典ソース、または focusArea への参照", "conditions": "確認済みの成果が成立し続ける条件または未解決事項"}
+  ],
   "limitations": ["判断に影響するエビデンス上の限界"]
 }
 ```
@@ -86,5 +90,6 @@ skills: frontend-typescript-rules, frontend-technical-spec, project-context, llm
 
 - 返した各事実が、現在のUIの結果・契約・検証のいずれかを変えうる
 - 各 focus area が、エビデンス・関連ファイル・判断に影響する内容を持つ
+- 各 simplification が、省ける変更・その裏付けとなるエビデンス・確認済みの成果が成立し続ける条件を示している
 - 入手できなかったエビデンスは、推測的な要件を作らずにその影響を述べている
 - レスポンスが妥当な JSON オブジェクト1個である

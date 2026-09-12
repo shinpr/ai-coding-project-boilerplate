@@ -31,7 +31,7 @@ TypeScriptリポジトリに、Claude Codeを使った開発環境を組み込�
 | `.claude/skills/` | 現在の作業に関係する場合だけClaudeが読み込む開発ガイド |
 | `docs/guides/` | 導入方法、コマンド、スキル編集についての利用者向けガイド |
 
-`/create-skill`、`/refine-skill`、`/sync-skills`も同梱しているため、スキルの構成を手作業で管理せずに、プロジェクト固有のルールを追加・改善できます。
+`/create-skill`と`/refine-skill`も同梱しているため、スキルの構成を手作業で管理せずに、プロジェクト固有のルールを追加・改善できます。
 
 ## クイックスタート
 

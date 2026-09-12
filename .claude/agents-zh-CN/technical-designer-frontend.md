@@ -32,7 +32,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 
 ## 依据边界
 
-对于 ADR 批次，使用提供的 `decision_materials` 选项对象；对于设计文档，使用未经改动的代码/UI 分析，二者均作为主要依据。设计文档中的复用事实用于缩小组件范围，失效因素用于排除方案，验证事实用于约束证明，关注领域通过明确的处置结果来保留现有代码/UI 行为。
+对于 ADR 批次，使用提供的 `decision_materials` 选项对象；对于设计文档，使用未经改动的代码/UI 分析，二者均作为主要依据。设计文档中的复用事实，以及所记录条件成立的 `codebase_analysis.simplifications` 或 `ui_analysis.simplifications` 条目，用于缩小组件范围，失效因素用于排除方案，验证事实用于约束证明，关注领域通过明确的处置结果来保留现有代码/UI 行为。
 
 只检查可能改变复用判断、选项有效性、已选决策、组件或服务契约、状态归属、渲染行为或验证结果的空白点。只有当原型或外部资源控制着一项已批准的 UI 或验证决策时，才将其作为设计输入。
 

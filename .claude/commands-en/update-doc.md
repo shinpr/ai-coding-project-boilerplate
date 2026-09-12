@@ -171,11 +171,12 @@ prompt: |
   Verify consistency of the updated Design Doc with other design documents.
 
   Updated document: [path from Step 1]
+  prior_feedback (rerun only): [previous complete result, its dispositions, and the correction diff or changed paths]
 ```
 
 **On consistency result**:
 - No conflicts → include the result in the final approval summary
-- Conflicts detected → Apply Review Resolution using design-sync as a fresh verifier. Return `apply` conflicts to Step 4 for the owning document, rerun design-sync after correction, and retain evidenced declines as complete
+- Conflicts detected → Apply Review Resolution and follow its bounded-verifier handoff and convergence rules, returning `apply` conflicts to Step 4 for the owning document
 
 Present the reviewed update and, for a Design Doc, its consistency result for one final user approval. This is the command's single approval gate.
 

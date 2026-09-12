@@ -99,7 +99,6 @@ description: 使用设计文档为现有代码库添加集成/E2E 测试
 - `description`: "最终质量保证"
 - `direct_scope`: 复用第 3 步的直接范围和受影响路径
 - `runnableCheck`: 最近一次执行者结果中的 `runnableCheck`
-- `prompt`: "运行仓库中已配置的、适用于本工作流所添加测试的每一项质量检查，并验证其预期的可观测行为。"
 
 **期望输出**：`status`（`approved`、`stub_detected`、`verification_incomplete` 或 `blocked`）
 

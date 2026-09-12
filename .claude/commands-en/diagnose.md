@@ -21,47 +21,9 @@ Orchestrator invokes sub-agents and passes structured JSON between them.
 
 **Execution Gate**: Each step below establishes evidence required by the next decision. Complete Steps 0-6 in order, including every required investigation and verification retry. Advance only through the current step's stated quality or coverage condition; invoke solver only after coverage is closed.
 
-## Step 0: Problem Structuring (Before investigator invocation)
+## Step 0: Frame the Problem (Before investigator invocation)
 
-### 0.1 Problem Type Determination
-
-| Type | Criteria |
-|------|----------|
-| Change Failure | Indicates some change occurred before the problem appeared |
-| New Discovery | No relation to changes is indicated |
-
-If uncertain, ask the user whether any changes were made right before the problem occurred.
-
-### 0.2 Information Supplementation for Change Failures
-
-If the following are unclear, **ask with AskUserQuestion** before proceeding:
-- What was changed (cause change)
-- What broke (affected area)
-- Relationship between both (shared components, etc.)
-
-### 0.3 Problem Essence Understanding
-
-Invoke rule-advisor using Agent tool:
-- `subagent_type`: "rule-advisor"
-- `description`: "Identify problem essence"
-- `prompt`: "Identify the essence and required skills for this problem: [Problem reported by user]"
-
-Confirm from rule-advisor output:
-- `taskAnalysis.essence`: Root problem beyond surface symptoms
-- `taskAnalysis.type` and `taskAnalysis.tags`: Problem classification and matching terms
-- `selectedSkills`: Applicable skill sections
-- `warningPatterns`: Patterns to avoid
-
-### 0.4 Reflecting in investigator Prompt
-
-**Include the following in investigator prompt**:
-1. Problem essence (`taskAnalysis.essence`)
-2. Key applicable skills summary (from selectedSkills)
-3. Investigation focus (investigationFocus): Convert warningPatterns to "points prone to confusion or oversight in this investigation"
-4. **For change failures, additionally include**:
-   - Detailed analysis of the change content
-   - Commonalities between cause change and affected area
-   - Determination of whether the change is a "correct fix" or "new bug" with comparison baseline selection
+From the reported problem and repository evidence, record the phenomenon, the conditions under which it occurs, and any preceding change the report or repository evidence establishes together with its affected area and the components both share. Carry anything that stays unresolved into the investigator prompt as an investigation target rather than asking the user.
 
 ## Diagnosis Flow Overview
 
@@ -87,14 +49,8 @@ Invoke investigator using Agent tool:
     Comprehensively collect information related to the following phenomenon.
 
     Phenomenon: [Problem reported by user]
-
-    Problem essence: [taskEssence from Step 0.3]
-    Investigation focus: [investigationFocus from Step 0.4]
-
-    [For change failures, additionally include:]
-    Change details: [What was changed]
-    Affected area: [What broke]
-    Shared components: [Commonalities between cause and effect]
+    Occurrence conditions: [Step 0 conditions]
+    Preceding change: [Step 0 change, affected area, and shared components, or the unresolved items as investigation targets]
 
 **Expected output**: pathMap (execution paths per symptom), failurePoints (faults found at each node), impactAnalysis per failure point, unexplored areas, investigation limitations
 
@@ -107,8 +63,6 @@ Review investigation output:
 - [ ] Each failure point has: `location`, `upstreamDependency`, `symptomExplained`, `causalChain` (reaching a stop condition), `checkStatus`, `evidence` with a `source` citing a specific file or location
 - [ ] Each failure point has `comparisonAnalysis` (normalImplementation found or explicitly null)
 - [ ] `causeCategory` for each failure point is one of: typo / logic_error / missing_constraint / design_gap / external_factor
-- [ ] `investigationSources` covers at least 3 distinct source types (code, history, dependency, config, document, external)
-- [ ] Investigation covers `investigationFocus` items (when provided in Step 0.4)
 - [ ] All nodes on mapped paths have been checked (no path was abandoned after finding the first fault)
 
 **If quality insufficient**: Re-run investigator specifying missing items explicitly:

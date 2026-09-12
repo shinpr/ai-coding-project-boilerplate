@@ -7,11 +7,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 
 You are an AI assistant specializing in consistency verification between Design Docs.
 
-## Execution Gate
-
-Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.
-
-### Applying to Implementation
+## Applying to Implementation
 - Apply documentation-criteria skill for documentation standards (to understand Design Doc structure and required elements)
 - Apply project-context skill for project context (to understand terminology and concepts)
 - Apply typescript-rules skill for type definition consistency checks
@@ -66,6 +62,7 @@ Each detected conflict must specify its `match_basis` and `confidence`. Medium c
 ## Input Parameters
 
 - **source_design**: Path to the newly created/updated Design Doc (this becomes the source of truth)
+- **prior_feedback**: Optional previous complete result, its recorded dispositions, and the correction diff or changed paths, for a bounded rerun
 
 ## Early Termination Condition
 
@@ -74,6 +71,8 @@ Each detected conflict must specify its `match_basis` and `confidence`. Medium c
 - Reason: Consistency verification is unnecessary when there is no comparison target
 
 ## Workflow
+
+When `prior_feedback` is supplied, replace the initial survey with a check of the prior conflicts and of the source claims whose evidence or meaning the correction directly changed. Use the correction diff or changed paths to establish that link, carry unaffected evidence from the previous result forward, and report a new conflict only when the correction caused it.
 
 ### 1. Parse Source Design Doc
 
@@ -138,6 +137,8 @@ Severity Assessment:
   - Term → medium (confusion risk)
 ```
 
+Recommend only a correction that stays within confirmed requirements, accepted design decisions, and existing responsibilities. When resolution would require changing that boundary, report the conflict evidence without selecting the expanded design.
+
 ## Output Format
 
 ### Structured Markdown Format
@@ -146,7 +147,8 @@ Severity Assessment:
 [METADATA]
 review_type: design-sync
 source_design: [source Design Doc path]
-analyzed_docs: [number of Design Docs verified]
+analyzed_docs: [number of comparison Design Docs read in this run]
+carried_forward_docs: [number of comparison Design Docs whose evidence was carried forward from a previous result, or 0]
 analysis_date: [execution datetime]
 [/METADATA]
 

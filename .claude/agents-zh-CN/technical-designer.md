@@ -34,7 +34,7 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 对于 ADR 批次使用提供的 `decision_materials`，对于设计文档使用未经改动的 `codebase_analysis`，将其作为主要的仓库依据：
 
 - `decision_materials[].options` 提供了 ADR 选型所需的、有仓库支撑的可选方案、仓库适配度、生命周期成本驱动因素以及可维护性依据；
-- `codebase_analysis.decisionMaterials.reuse` 减少新增实现面；
+- `codebase_analysis.decisionMaterials.reuse`，以及所记录条件成立的 `codebase_analysis.simplifications` 条目，减少新增实现面；
 - `codebase_analysis.decisionMaterials.invalidations` 排除不可行方案；
 - `codebase_analysis.decisionMaterials.verification` 约束证明方式；
 - `focusAreas` 通过明确的处置结论保留既有行为；

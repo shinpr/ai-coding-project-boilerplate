@@ -96,7 +96,8 @@ Run this step only when the approved route keeps the accepted implementation and
    - `subagent_type`: "design-sync"
    - `description`: "Cross-DD consistency check"
    - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
-   - When `sync_status: CONFLICTS_FOUND`: apply Review Resolution using design-sync as a fresh verifier, correct `apply` conflicts through the owning technical designer, rerun design-sync, and retain evidenced declines as complete
+   - `prior_feedback` (rerun only): the previous complete result, its dispositions, and the correction diff or changed paths
+   - When `sync_status: CONFLICTS_FOUND`: apply Review Resolution and follow its bounded-verifier handoff and convergence rules, correcting `apply` conflicts through the owning technical designer
 
 4. Re-evaluate the approved `apply` findings against the updated Design Doc and drop any the revision already satisfies. When none remains, skip the code-side fix path and proceed to the final report.
 
@@ -115,7 +116,9 @@ Invoke task-executor-frontend using Agent tool:
 Invoke quality-fixer-frontend using Agent tool:
 - `subagent_type`: "quality-fixer-frontend"
 - `description`: "Quality gate check"
-- `prompt`: "direct_scope: { outcome: [approved code-side findings passed to Step 6], affectedPaths: [paths covered by those findings and their required consistency changes], verificationCondition: applicable frontend quality checks pass }. Confirm quality gate passage for the complete current uncommitted worktree."
+- `direct_scope`: The approved code-side findings passed to Step 6, the paths those findings and their required consistency changes cover, and the Step 6 `observable_verification` as the verification condition
+- `runnableCheck`: The Step 6 executor result's `runnableCheck`
+- `prompt`: "Confirm quality gate passage for the complete current uncommitted worktree, including untracked, deleted, and renamed paths."
 
 Branch on its response:
 - `approved` → Proceed to Step 8
@@ -125,7 +128,7 @@ Branch on its response:
 
 ### Step 8: Re-validate code-reviewer
 
-Immediately before this invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
+Run this step only when Step 6 corrected a finding code-reviewer owns; a reviewer that returned a passing result is never re-run. Immediately before the invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
 
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
@@ -134,18 +137,18 @@ Invoke code-reviewer using Agent tool:
 
 ### Step 9: Re-validate security-reviewer
 
-Immediately before this invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
+Run this step only when Step 6 corrected a finding security-reviewer owns; a reviewer that returned a passing result is never re-run. Immediately before the invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
 
-Invoke security-reviewer when subagents-orchestration-guide's post-implementation Re-run rule requires a current security result:
+Invoke security-reviewer using Agent tool:
 - `subagent_type`: "security-reviewer"
 - `description`: "Re-validate security"
 - `prompt`: "Re-validate security after fixes. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
 
 ### Step 10: Resolve Corrections
 
-Apply Review Resolution to every Step 8 and Step 9 result. A maintained `apply` finding returns to Step 6 and then repeats the applicable quality and correction review. Proceed when Review Resolution reaches its convergence condition.
+Apply Review Resolution to every executed Step 8 and Step 9 result. A maintained `apply` finding returns to Step 6 and then repeats the applicable quality and correction review. Proceed when Review Resolution reaches its convergence condition.
 
-Before Step 11, retry each retained quality-fixer-frontend limitation once with the same Step 7 inputs and affected check. An `approved` result clears the retained limitation; route newly discovered incomplete implementation through Steps 6-10, and report a repeated `verification_incomplete` result. When the retry changes the repository, repeat Steps 8-10 for the changed code before reporting.
+Before Step 11, retry each retained quality-fixer-frontend limitation once with the same Step 7 inputs and affected check. An `approved` result clears the retained limitation; route newly discovered incomplete implementation through Steps 6-10, and report a repeated `verification_incomplete` result.
 
 ### Step 11: Final Report
 

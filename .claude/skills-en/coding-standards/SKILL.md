@@ -16,7 +16,7 @@ When any pattern below is detected, pause implementation and record: the trigger
 4. **Making changes without checking dependencies** - Potential for unexpected impacts
 5. **Disabling code with comments** - Should use version control
 6. **Error suppression** - Hiding problems creates technical debt
-7. **Excessive use of type assertions (as)** - Abandoning type safety
+7. **Type assertions standing in for a guarantee** - Declaring a type that neither a runtime check nor an existing contract establishes
 
 ### Design Anti-patterns
 - **"Make it work for now" thinking** - Accumulation of technical debt
@@ -89,8 +89,8 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 **Cause**: Surface-level fixes without understanding root cause
 **Avoidance**: Identify root cause with 5 Whys before fixing
 
-### Pattern 2: Abandoning Type Safety
-**Symptom**: Excessive use of any type or as
+### Pattern 2: Circumventing Type Guarantees
+**Symptom**: `any` or `as` declares a type that no check or contract establishes
 **Cause**: Impulse to avoid type errors
 **Avoidance**: Apply the evidence criteria in Type Safety Fundamentals.
 
@@ -134,7 +134,6 @@ Trace each answer to observed evidence until reaching a cause whose correction p
 - Field Count: Up to 20 (split by responsibility if exceeded, external API types are exceptions)
 - Optional Ratio: Up to 30% (separate required/optional if exceeded)
 - Nesting Depth: Up to 3 levels (flatten if exceeded)
-- Type Assertions: Review design if used 3+ times
 - **External API Types**: Relax constraints and define according to reality (convert appropriately internally)
 
 ## Refactoring Techniques
