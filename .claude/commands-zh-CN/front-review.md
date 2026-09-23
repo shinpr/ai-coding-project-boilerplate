@@ -22,7 +22,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 - **代码侧修复路径**：修复实现 → task-executor-frontend；修正复评 → code-reviewer / security-reviewer；最终质量检查 → quality-fixer-frontend
 - **设计侧更新路径**：DD 修订 → technical-designer-frontend（update 模式）；DD 评审 → document-reviewer；跨 DD 一致性 → design-sync（当存在多个 DD 时）；重新验证 → code-reviewer
 
-编排者调用子智能体，并在它们之间传递结构化 JSON。当差异反映的是代码本身正确、而设计文档已过时（而非代码违反了设计文档）时，适用设计侧路径。
+编排者调用子智能体，并在它们之间传递结构化 JSON。当设计文档对已确认成果而言已过时、过度或有误时，适用设计侧路径。两条路径都不会默认把现有实现或先前的设计视为权威。
 
 设计文档（省略时使用最新的一份）：$ARGUMENTS
 
@@ -51,7 +51,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 当任一评审方返回 blocked 或其他不可用的结果时，针对其语义成因应用 subagents-orchestration-guide 的“专家结果受理”。仅将仍然存在的验证局限带入报告。
 
-对两份输出应用“评审裁定”。其 `apply` 与 `decline` 处置决定路由。对每一项 `apply` 发现项：当实现已经满足已接受状态、但某项技术产物不再符合现状时，交由负责该文档的作者处理；当必须变更实现才能达到已接受状态时，交由执行者处理。
+对两份输出应用“评审裁定”。其 `apply` 与 `decline` 处置决定路由。按“评审裁定”第 2 节为每一项 `apply` 发现项选择修正责任方。
 
 呈现处置后的结果：
 
@@ -61,7 +61,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
   - [fulfilled] [项目]：[依据]
   - [unfulfilled] [项目] -> [对应的 finding ID]
   必需修正：
-  - [id] [类别] [位置]：[说明] — [依据及影响] [推荐：代码侧修正 | 设计侧更新]
+  - [id] [类别] [位置]：[说明] — [依据及影响] [推荐：代码侧修正 | 设计侧更新 | 先设计侧缩减、再代码侧移除]
   局限：
   - [无法验证的判断及其影响]
 
@@ -79,7 +79,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 ### 步骤 5：设计侧更新
 
-仅当获批路由保留已接受的实现并修正过时的设计文档时，才执行本步骤。
+仅当获批路由会变更设计文档时，才执行本步骤。
 
 1. 使用 Agent 工具以 update 模式调用 technical-designer-frontend：
    - `subagent_type`: "technical-designer-frontend"
@@ -99,7 +99,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
    - `prior_feedback`（仅重新执行时）：上一次的完整结果、其处置方式，以及修正差异或变更路径
    - 当 `sync_status: CONFLICTS_FOUND` 时：应用“评审裁定”，并遵循其范围受限验证者的交接与收敛规则，通过负责该文档的 technical designer 修正 `apply` 冲突
 
-4. 对照更新后的设计文档重新评估获批的 `apply` 发现项，并去掉本次修订已满足的项。当没有剩余项时，跳过代码侧修复路径，直接进入最终报告。
+4. 对照更新后的设计文档重新评估获批的 `apply` 发现项，并去掉本次修订已满足的项；仅修订设计文档并不能满足缩减所要求的实现移除。当没有剩余项时，跳过代码侧修复路径，直接进入最终报告。
 
 ### 步骤 6：执行修正
 使用 Agent 工具调用 task-executor-frontend：
@@ -121,7 +121,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 - `prompt`: "确认当前完整未提交工作树（含未跟踪、已删除和重命名的路径）通过质量检查。"
 
 依据其响应分支：
-- `approved` → 进入步骤 8
+- `pass` → 进入步骤 8
 - `stub_detected` → 保持 `incompleteImplementations` 不变返回步骤 6，然后重复步骤 7
 - `verification_incomplete` → 保留完整结果并进入步骤 8
 - `blocked` → 应用“专家结果受理”
@@ -148,7 +148,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 对已执行的步骤 8 和步骤 9 的每一份结果应用“评审裁定”。被维持的 `apply` 发现项返回步骤 6，然后重复适用的质量检查与修正复评。当“评审裁定”达到其收敛条件时继续。
 
-在第 11 步之前，以相同的第 7 步输入和受影响的检查，对每一项保留的 quality-fixer-frontend 局限重试一次。`approved` 结果即解除该局限；将新发现的不完整实现经第 6-10 步路由，并报告再次出现的 `verification_incomplete` 结果。
+在第 11 步之前，以相同的第 7 步输入和受影响的检查，对每一项保留的 quality-fixer-frontend 局限重试一次。`pass` 结果即解除该局限；将新发现的不完整实现经第 6-10 步路由，并报告再次出现的 `verification_incomplete` 结果。
 
 ### 步骤 11：最终报告
 
@@ -166,7 +166,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
   核对：[按发现项 ID 的 resolved / withdrawn / maintained]
 
 质量检查：
-  最终结果：[approved / verification_incomplete / 未执行 — 无代码变更]
+  最终结果：[pass / verification_incomplete / 未执行 — 无代码变更]
 
 仍然存在的证明局限：
 - [理由 — 受影响的检查与依据]（仅在重试后仍然存在时）

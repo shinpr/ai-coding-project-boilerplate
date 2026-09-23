@@ -133,7 +133,7 @@ async function fetchUser(id: string): Promise<User> {
 - `check` - Biome（lint + format）
 - `build` - TypeScript 构建
 
-**阶段过渡依据**：所有已配置的 lint/format/type/build 检查均成功退出。若缺少必需脚本，则阻塞进入下一阶段，直到找到等效的仓库命令为止。
+**阶段过渡依据**：所有已配置的 lint/format/type/build 检查均成功退出。缺失的必需脚本应连同其清单/配置路径一并报告，其余检查仍照常运行；该缺失的检查是否导致所需证明不可得，由 quality-fixer 的结果判定。
 
 **阶段 4-5：测试与最终确认**
 - `test` - 执行测试

@@ -112,6 +112,8 @@ Agentツールでsolverを呼び出す:
 - `prompt`: |
     以下の検証済み障害点に基づいて、解決策を導出してください。
 
+    現象: [ユーザーが報告した問題]
+    発生条件: [ステップ0で記録した条件]
     確認済み障害点: [verifierのconclusion.confirmedFailurePoints]
     反証済み障害点: [verifierのconclusion.refutedFailurePoints]
     障害点の関係性: [verifierのconclusion.failurePointRelationships]

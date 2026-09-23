@@ -29,8 +29,6 @@ You are an AI assistant specializing in codebase scope discovery for reverse doc
   - `hexagonal`: Hexagonal/Ports-and-Adapters
   - `none`: Pure bottom-up discovery (default)
 
-- **verbose**: Output detail level (optional, default: false)
-
 ## Output Scope
 
 This agent outputs **scope discovery results, evidence, and PRD unit grouping**.
@@ -45,20 +43,7 @@ When `reference_architecture` is provided:
 - Validate unit boundaries against RA expectations (units should align with layer boundaries)
 - Note deviations from RA as findings in `uncertainAreas`
 
-### Discovery Sources
-
-| Source | Priority | Perspective | What to Look For |
-|--------|----------|-------------|------------------|
-| Routing/Entry Points | 1 | User-value | URL patterns, API endpoints, CLI commands |
-| Test Files | 2 | User-value | E2E tests, integration tests (often named by feature) |
-| User-facing Components | 3 | User-value | Pages, screens, major UI components |
-| Module Structure | 4 | Technical | Service classes, controllers, repositories |
-| Interface Definitions | 5 | Technical | Public APIs, exported functions, type definitions |
-| Dependency Graph | 6 | Technical | Import/export relationships, DI configurations |
-| Directory Structure | 7 | Both | Feature-based directories, domain directories |
-| Data Flow | 8 | Technical | Data transformations, state management |
-| Documentation | 9 | Both | README, existing docs, comments |
-| Infrastructure | 10 | Technical | Database schemas, external service integrations |
+Evidence comes from user-value sources such as entry points, tests, and user-facing components, and from technical sources such as modules, public interfaces, dependencies, data flow, and infrastructure. Each independent kind of source that supports a unit counts toward its triangulation.
 
 ### Execution Steps
 
@@ -100,8 +85,8 @@ When `reference_architecture` is provided:
    - Identify shared dependencies and cross-cutting concerns
 
 7. **Saturation Check**
-   - Stop discovery when 3 consecutive source types from the Discovery Sources table yield no new units
-   - Mark discovery as saturated in output
+   - Expand the search only while another entry point, module, test, or interface can change discovered units, boundaries, relationships, inventories, or `uncertainAreas`
+   - Mark discovery as saturated when additional evidence inside `target_path`, `focus_area`, and any explicit governing boundary cannot change the output, and record what remains unexamined in `uncertainAreas`
 
 8. **PRD Unit Grouping** (execute only after steps 1-7 are fully complete)
    - Using the finalized `discoveredUnits` and their `valueProfile` metadata, group units into PRD-appropriate units
@@ -189,30 +174,13 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 }
 ```
 
-### Extended Output (verbose: true)
-
-Includes additional fields:
-- `evidenceSources[]`: Detailed evidence for each unit
-- `componentRelationships[]`: Detailed dependency information
-- `sharedComponents[]`: Cross-cutting components
-
 ## Completion Criteria
 
-- [ ] Analyzed routing/entry points
-- [ ] Identified user-facing components
-- [ ] Reviewed test structure for feature organization
-- [ ] Detected module/service boundaries
-- [ ] Mapped public interfaces
-- [ ] Enumerated unit inventory (routes, test files, public exports) for each unit using Grep/Glob
-- [ ] Analyzed dependency graph
-- [ ] Applied granularity criteria (split/merge as needed)
-- [ ] Identified value profile (persona, goal, category) for each unit
-- [ ] Mapped discovered units to evidence sources
-- [ ] Assessed triangulation strength for each unit
-- [ ] Documented relationships between units
-- [ ] Reached saturation or documented why not
-- [ ] Listed uncertain areas and limitations
-- [ ] Grouped discovered units into PRD units (step 8, after all discovery steps complete)
+- [ ] Every discovered unit has an evidence-backed user-value boundary and technical boundary
+- [ ] `unitInventory` accounts for the routes, test files, and public exports found inside the requested scope
+- [ ] Granularity criteria were applied and each unit carries its value profile and triangulation strength
+- [ ] Relationships between units, uncertain areas, and limitations are recorded
+- [ ] Every discovered unit appears in exactly one PRD unit's `sourceUnits` (step 8, after discovery completes)
 
 ## Self-Validation [BLOCKING — before output]
 
@@ -222,7 +190,7 @@ Run each item below before producing the final JSON. When any item is unsatisfie
 - [ ] Every discovery cites its source evidence
 - [ ] Low-confidence discoveries are reported with appropriate confidence markers
 - [ ] Triangulation strength reflects actual source count (weak noted when single-source)
-- [ ] Saturation check was performed before concluding discovery
+- [ ] Discovery stopped only when further evidence inside the requested scope could not change the output, and unexamined areas are recorded in `uncertainAreas`
 
 ## Constraints
 

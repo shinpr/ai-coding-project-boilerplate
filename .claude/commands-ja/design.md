@@ -10,7 +10,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 ## 成果と担当範囲
 
-リポジトリのエビデンスから承認済みDesign Docまでの設計フェーズを統括する。要件の収束、構造スケール（Structural Scale）、ADRの適格性判定、エビデンスの選択、レビュー対応はオーケストレーターが担う。内容面の調査と成果物の執筆は、指定された各スペシャリストが担う。
+リポジトリのエビデンスから承認済みDesign Docまでの設計フェーズを統括する。プロダクト要件と対象外はユーザーが持ち、収束の判定、構造スケール（Structural Scale）、ADRの適格性判定、エビデンスの選択、レビュー対応はオーケストレーターが担う。内容面の調査と成果物の執筆は、指定された各スペシャリストが担う。
 
 Medium/Large の作業では、Design Doc が常に完全な実装設計である。適格なADRバッチは Design Doc の前に技術的な選択を絞り込むが、完全なフローと実装境界は Design Doc が保持する。
 
@@ -52,14 +52,9 @@ Medium/Large の作業では、Design Doc が常に完全な実装設計であ�
 
 構造スケールは成果と責務境界から判定する。ファイル数は補助的なエビデンスにとどまる。
 
-`decisionMaterials.candidateDecisionPoints` を、出典となる要件ソース・該当する `simplifications`・`reuse`・`invalidations` に照らして解決する。それらのエビデンスで既に1つの十分なアプローチに収束する決定ポイントは除外する。残った各項目に、documentation-criteria のフィルタを順に適用する:
+`decisionMaterials.candidateDecisionPoints` を、出典となる要件ソース・該当する `simplifications`・`reuse`・`invalidations` に照らして解決する。それらのエビデンスで既に1つの十分なアプローチに収束する決定ポイントは除外する。残った各項目に、documentation-criteria の選択（Choice）フィルタと長期影響（Durability）フィルタを順に適用する。通過した項目をすべて `adrDecisionPoints` として記録する。空リストの場合はそのまま Design Doc へ進む。
 
-1. 選択（Choice）: 確認済みスコープ内に、妥当かつ実質的に異なる選択肢が2つ以上あり、判断を要する。
-2. 長期影響（Durability）: その選択が後続作業に長く影響する。
-
-通過した項目をすべて `adrDecisionPoints` として記録する。空リストの場合はそのまま Design Doc へ進む。
-
-ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務、および該当する各 simplification と、それを省いても確認済みの成果が成立する条件。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・ADR適格性・コストのエビデンスはオーケストレーターの記録に留める — ADRバッチと Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
+ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務、該当する各 simplification と、それを省いても確認済みの成果が成立する条件、およびコストの区分と残っている不明点。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・ADR適格性はオーケストレーターの記録に留める — ADRバッチと Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
 
 ## ステップ4: 必要な場合のADRバッチ作成と承認
 
@@ -67,9 +62,9 @@ Medium/Large の作業では、Design Doc が常に完全な実装設計であ�
 
 1. `technical-designer` を1回呼び出す。`document_to_create: ADRBatch`、`confirmed_requirement_context`、順序付きの `decision_points`、およびステップ2からそのままコピーした対応する `decision_materials` を渡す。
 2. `document-reviewer` を1回呼び出す。`doc_type: ADRBatch`、`targets: [返却された全パス]`、`confirmed_requirement_context` を渡す。
-3. まず verdict でルーティングする。`approved` は次へ進む。`needs_revision` はレビュー対応を適用し、パスごとに1つのADRを順に更新してから、バッチ全体を再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。
-4. バッチの判断をユーザーに提示するのは、レビューが approved になった後のみとする。`[停止: ADRバッチ承認]`。
-5. ユーザー承認後、各ADRのステータスを `Accepted` に更新し、その変更を確認する。
+3. まず verdict でルーティングする。`pass` は次へ進む。`needs_revision` はレビュー対応を適用し、パスごとに1つのADRを順に更新してから、バッチ全体を再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。
+4. バッチの判断をユーザーに提示するのは、レビューが `pass` になった後のみとする。`[停止: ADRバッチ承認]`。
+5. ユーザー承認後、ADRのパスごとに `technical-designer` を update モードで呼び出してステータスを `Accepted` に設定させ、その変更を確認する。
 
 ## ステップ5: Design Docの作成
 
@@ -93,11 +88,11 @@ Design Doc は完全な実装設計を所有し、documentation-criteria テン�
 
 `document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6の `verification_evidence` で呼び出す。
 
-- `approved`: 次へ進む
+- `pass`: 次へ進む
 - `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、影響を受けた境界についてステップ6〜7を再実行する
 - `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
 
-他のDesign Doc との整合性のために `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。Design Doc が1つしか存在しない場合は `SKIPPED` として明確に報告する。
+Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果が `analyzed_docs: 0` の場合は、他の Design Doc が存在しないため整合性検証を省略したと報告する。
 
 Design Doc、承認済みADRのパス、記録した decline、design-sync の結果を提示する。`[停止: 設計承認]`。
 
@@ -107,5 +102,5 @@ Design Doc、承認済みADRのパス、記録した decline、design-sync の�
 - ADRは両方のフィルタを通過した決定ポイントに対してのみ存在し、バッチ全体が1回のレビューと承認を受けた
 - ADRの要否にかかわらず、Design Doc が存在する
 - 該当する既存の振る舞い・契約・前提・等価性・検証の安全策が Design Doc に反映されている
-- レビュー対応が `needs_revision` の issue のみを修正作業へ回した
+- レビュー対応が `apply` となった検出事項のみを修正作業へ回した
 - すべての停止点でユーザーの明示的な確認を得た

@@ -28,10 +28,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 AskUserQuestionで以下を確認:
 1. **対象パス**: どのディレクトリ/モジュールをドキュメント化するか
 2. **深度**: PRDのみ、またはPRD + Design Doc
-3. **参照アーキテクチャ**: layered / mvc / clean / hexagonal / none
-4. **人間レビュー**: あり（推奨） / なし（自律実行）
-5. **フルスタック設計**: Yes / No
-   - Yes: ユニット毎にbackend + frontendのDesign Doc生成を有効化
+3. **人間レビュー**: あり（推奨） / なし（自律実行）
 
 ### 0.2 出力設定
 
@@ -49,7 +46,7 @@ AskUserQuestionで以下を確認:
 フェーズ2: Design Doc生成（要求された場合）
   ステップ6: Design Docスコープマッピング（ステップ1の結果を再利用）
   ステップ7-10: ユニット毎ループ（生成 → 検証 → レビュー → 修正）
-  ※ fullstack=Yes: ユニットのスコープに応じてbackend + frontend Design Docを生成
+  ※ 各ユニットは、スコープに応じてbackend Design Doc、frontend Design Doc、またはその両方を生成
 ```
 
 ## フェーズ1: PRD生成
@@ -63,7 +60,7 @@ prompt: |
   コードベースから機能スコープ対象を発見する。
 
   target_path: $USER_TARGET_PATH
-  reference_architecture: $USER_RA_CHOICE
+  reference_architecture: [ユーザーの依頼が参照アーキテクチャを指定している場合のみ。それ以外は省略し、ボトムアップで探索させる]
   focus_area: $USER_FOCUS_AREA (指定時)
 ```
 
@@ -117,9 +114,10 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
+  unit_inventory: [現在のPRDユニットの`sourceUnits`に含まれる各discovered unitの`unitInventory`を統合し、重複を除いたもの]
 ```
 
-注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見することで、scope-discovererの出力に制約されない独立した検証を実現する。
+注: `code_paths`は意図的に未指定。検証エージェントはドキュメントからコードスコープを発見する。`unit_inventory` は網羅性の基準としてのみ使うため、探索はscope-discovererのファイル一覧に縛られない。
 
 続行する前に `summary.status` を読む: `blocked` の場合は入力ゲートが失敗し何も検証されていないため、結果を渡さず停止して `blockingReason` をユーザーに報告する。`discrepancies` が空だと、下流では問題なしと解釈されてしまう。
 
@@ -147,11 +145,11 @@ prompt: |
 
 #### ステップ5: 修正（条件付き）
 
-`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `prd-creator` の update モードに渡し、その後 `prior_feedback` を添えてステップ3〜4を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
+`verdict.decision` で分岐する。`pass` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `correction_findings` として `prd-creator` の update モードに渡し、その後同じ `unit_inventory` と `prior_feedback` を添えてステップ3〜4を再実行する。却下だけの結果はレビュー完了とする。`rejected` はレビュー対応の判定ゲートに従って処理する。
 
 #### ユニット完了
 
-- [ ] レビュー verdict が `approved`
+- [ ] レビューがレビュー対応の収束条件に達した（`pass`、または残るすべての検出事項を却下）
 - [ ] 人間レビュー通過（ステップ0で有効化時）
 
 **次へ**: 次のユニットへ進む。全ユニット完了後 → フェーズ2。
@@ -164,7 +162,7 @@ prompt: |
 
 **追加の探索は不要。** `$STEP_1_OUTPUT.discoveredUnits`（実装粒度のユニット）を技術プロファイルとして使用する。`$STEP_1_OUTPUT.prdUnits[].sourceUnits`で各PRDユニットに属するdiscoveredUnitsを追跡する。
 
-fullstack=Yesの場合、ユニットの`relatedFiles`と`technicalProfile.primaryModules`のパスパターンからbackend / frontend / 両方のいずれが必要かをユニット毎に判定する（technical-specスキルのプロジェクト構造定義を参照）。
+ユニットの`relatedFiles`と`technicalProfile.primaryModules`のパスパターンからbackend / frontend / 両方のいずれが必要かをユニット毎に判定する（technical-specスキルのプロジェクト構造定義を参照）。
 
 `$STEP_1_OUTPUT`のユニットから以下を引き継ぐ:
 - `technicalProfile.primaryModules` → 主要ファイル
@@ -183,11 +181,11 @@ fullstack=Yesの場合、ユニットの`relatedFiles`と`technicalProfile.prima
 
 `$STEP_6_OUTPUT`のマッピング結果に基づき、ユニット毎に必要なDesign Docを生成する。
 
-fullstack=Yesの場合、7aの後に7bを逐次実行する（7bは7aの出力に依存）。
+backendのスコープを持つユニットには7a、frontendのスコープを持つユニットには7bを実行する。両方が必要なユニットでは、7bが7aの出力を参照できるよう、7aの後に7bを逐次実行する。
 
 **7a.** バックエンドDesign Doc（technical-designer）:
 
-fullstack=Yes時: promptに「対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」を追加する。
+そのユニットがfrontend Design Docも必要とする場合: promptに「対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」を追加する。
 
 **Task呼び出し**:
 ```
@@ -204,14 +202,14 @@ prompt: |
   依存関係: $UNIT_DEPENDENCIES
   ユニットインベントリ: $UNIT_INVENTORY（スコープ発見で得たルート、テストファイル、publicエクスポート）
 
-  親PRD: $APPROVED_PRD_PATH
+  親PRD: [フェーズ1でレビュー済みの、このユニットのPRDパス]
 
   現在のアーキテクチャを現状のままドキュメント化する。ユニットインベントリを網羅性の検証基準として使用する — すべてのルートとエクスポートがDesign Docに反映されていること。
 ```
 
-**出力を保存**: `$STEP_7_OUTPUT`
+**出力を保存**: `$STEP_7_OUTPUT`（technical-designerの結果）。`status` が `completed` の場合は `$STEP_7_OUTPUT.path` をDesign Docのパスとし、それ以外の結果は生成失敗として扱う。
 
-**7b.** フロントエンドDesign Doc（fullstack、フロントエンドスコープを含むユニット）:
+**7b.** フロントエンドDesign Doc（フロントエンドスコープを含むユニット）:
 
 ```
 subagent_type: technical-designer-frontend
@@ -227,15 +225,15 @@ prompt: |
   依存関係: $UNIT_DEPENDENCIES
   ユニットインベントリ: $UNIT_INVENTORY
 
-  親PRD: $APPROVED_PRD_PATH
-  バックエンドDesign Doc: $STEP_7_OUTPUT
+  親PRD: [フェーズ1でレビュー済みの、このユニットのPRDパス]
+  バックエンドDesign Doc: $STEP_7_OUTPUT.path（このユニットで7aが完了した場合のみ）
 
-  バックエンドDesign DocのAPIコントラクトを参照。
+  バックエンドDesign Docが渡された場合は、そのAPIコントラクトを参照。
   対象: コンポーネント階層、状態管理、UI操作、データ取得。
   現在のアーキテクチャを現状のままドキュメント化する。ユニットインベントリを網羅性の検証基準として使用する。
 ```
 
-**出力を保存**: `$STEP_7_FRONTEND_OUTPUT`
+**出力を保存**: `$STEP_7_FRONTEND_OUTPUT`（technical-designer-frontendの結果）。`status` が `completed` の場合は `$STEP_7_FRONTEND_OUTPUT.path` をDesign Docのパスとし、それ以外の結果は生成失敗として扱う。
 
 #### ステップ8: コード検証
 
@@ -248,10 +246,11 @@ prompt: |
   Design Docとコード実装の整合性を検証する。
 
   doc_type: design-doc
-  document_path: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
+  document_path: $STEP_7_OUTPUT.path または $STEP_7_FRONTEND_OUTPUT.path
+  unit_inventory: [現在のDesign Doc対象のステップ6のunitInventory]
 ```
 
-注: `code_paths`は意図的に未指定。検証エージェントがドキュメントからコードスコープを独自に発見する。
+注: `code_paths`は意図的に未指定。検証エージェントはドキュメントからコードスコープを発見する。`unit_inventory` は網羅性の基準としてのみ使う。
 
 続行する前に `summary.status` を読む: `blocked` の場合は、その Design Doc について停止し `blockingReason` を報告する。document-reviewer に結果を渡さない。
 
@@ -269,11 +268,9 @@ prompt: |
 
   doc_type: DesignDoc
   review_context: reverse-engineer
-  target: $STEP_7_OUTPUT または $STEP_7_FRONTEND_OUTPUT
+  target: $STEP_7_OUTPUT.path または $STEP_7_FRONTEND_OUTPUT.path
   verification_evidence: $STEP_8_OUTPUT
-
-  ## 親PRD
-  $APPROVED_PRD_PATH
+  confirmed_requirement_context: [フェーズ1でレビュー済みの、このユニットのPRDパス]
 
   ## 追加レビュー観点
   - ドキュメント化されたインターフェースの技術的正確性
@@ -285,11 +282,11 @@ prompt: |
 
 #### ステップ10: 修正（条件付き）
 
-`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後 `prior_feedback` を添えてステップ8〜9を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
+`verdict.decision` で分岐する。`pass` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `correction_findings` として `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後同じ `unit_inventory` と `prior_feedback` を添えてステップ8〜9を再実行する。却下だけの結果はレビュー完了とする。`rejected` はレビュー対応の判定ゲートに従って処理する。
 
 #### ユニット完了
 
-- [ ] レビュー verdict が `approved`
+- [ ] レビューがレビュー対応の収束条件に達した（`pass`、または残るすべての検出事項を却下）
 - [ ] 人間レビュー通過（ステップ0で有効化時）
 
 **次へ**: 次のユニットへ進む。全ユニット完了後 → 最終レポート。
@@ -308,4 +305,4 @@ prompt: |
 | 探索で何も見つからない | ユーザーにプロジェクト構造のヒントを求める |
 | 生成が失敗 | 失敗をログ、他のユニットで続行、サマリで報告 |
 | 検証エージェントが `blocked` を返す | 停止して `blockingReason` を報告 |
-| レビュアーが `rejected` を返す | 上位の要件ゲートを適用 |
+| レビュアーが `rejected` を返す | レビュー対応の判定ゲートに従って処理 |

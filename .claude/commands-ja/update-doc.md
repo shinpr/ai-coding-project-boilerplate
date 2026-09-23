@@ -83,7 +83,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 **ADR更新ガイダンス**:
 - **軽微な変更**（明確化、誤字修正、小規模なスコープ調整）: 既存ADRファイルを更新
-- **大きな変更**（決定の変更、大規模なスコープ変更）: 元のADRを置き換える新しいADRを作成
+- **大きな変更**（決定の変更、大規模なスコープ変更）: 置き換える判断は設計レシピのADRバッチで扱う。置き換えが受け入れられた後、本レシピでは元のADRを `Superseded` として記録する更新だけを行う
 
 ### ステップ3: 変更内容の確定
 
@@ -141,7 +141,7 @@ prompt: |
   target: [ステップ1のパス]（DesignDoc または PRD）
   targets: [[ステップ1のパス]]（ADRBatch のみ）
   requirements_verbatim: [ステップ3の変更要求（原文）]（Design Docのみ）
-  confirmed_requirement_context: [ステップ3で確認した変更内容の理解]（Design Docのみ）
+  confirmed_requirement_context: [Design Docを規定する承認済みPRDのパス。存在する場合]（Design Docのみ）
   verification_evidence: $CODE_VERIFICATION_OUTPUT（Design Docのみ、PRD/ADRBatch では省略）
 
   注力ポイント:
@@ -153,15 +153,15 @@ prompt: |
 **出力を保存**: `$STEP_5_OUTPUT`
 
 **レビュー結果に基づく対応**:
-- `approved` → ステップ6へ進む
-- `needs_revision` → レビュー対応を適用し、`apply` の issue オブジェクト一式を逐語でステップ2の更新エージェントに渡す。その後、該当する場合は検証を再実行し、`prior_feedback` を添えて再レビューする
+- `pass` → ステップ6へ進む
+- `needs_revision` → レビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `correction_findings` としてステップ2の更新エージェントに渡す。その後、該当する場合は検証を再実行し、`prior_feedback` を添えて再レビューする
 - `rejected` → 確認済みの成果、将来状態の要件、対象外を同時には維持できない場合は上位の要件ゲートを適用する。それ以外の技術上の衝突はレビュー対応で解消する
 
 レビュー対応の収束条件とエスカレーション条件に従う。
 
 ### ステップ6: 整合性検証と最終承認 [停止]
 
-PRDまたはADRでは、承認されたドキュメントレビューから以下の最終承認へ進む。
+PRDまたはADRでは、`pass` となったドキュメントレビューから以下の最終承認へ進む。
 
 Design Docの場合、design-syncを呼び出す:
 ```
@@ -170,7 +170,7 @@ description: "整合性を検証"
 prompt: |
   更新されたDesign Docと他の設計ドキュメントとの整合性を検証する。
 
-  更新されたドキュメント: [ステップ1のパス]
+  source_design: [ステップ1のパス]
   prior_feedback（再実行時のみ）: [前回の完全な結果・その処理方針・修正差分または変更パス]
 ```
 

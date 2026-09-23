@@ -10,7 +10,7 @@ Execute the `subagents-orchestration-guide` skill before invoking agents or reso
 
 ## Outcome and Ownership
 
-Coordinate the design phase from repository evidence to an approved Design Doc. The orchestrator owns requirement convergence, Structural Scale, ADR qualification, evidence selection, and Review Resolution. Named specialists own semantic investigation and artifact authorship.
+Coordinate the design phase from repository evidence to an approved Design Doc. The user owns product requirements and exclusions; the orchestrator owns convergence readiness, Structural Scale, ADR qualification, evidence selection, and Review Resolution. Named specialists own semantic investigation and artifact authorship.
 
 The Design Doc is always the complete implementation design for Medium/Large work. A qualifying ADR batch narrows technical choices before the Design Doc, which retains the complete flow and implementation boundary.
 
@@ -52,14 +52,9 @@ Judge all four convergence fields. Assign `cost` from Step 2 structural evidence
 
 Determine Structural Scale from outcomes and responsibility boundaries. File count is supporting evidence only.
 
-Resolve `decisionMaterials.candidateDecisionPoints` against the governing requirement source, applicable `simplifications`, `reuse`, and `invalidations`. Remove a point when that evidence already converges on one sufficient approach. For each remaining item, apply documentation-criteria filters in order:
+Resolve `decisionMaterials.candidateDecisionPoints` against the governing requirement source, applicable `simplifications`, `reuse`, and `invalidations`. Remove a point when that evidence already converges on one sufficient approach. Apply the documentation-criteria Choice and Durability filters in order to each remaining item. Record every passing item as `adrDecisionPoints`; an empty list routes directly to the Design Doc.
 
-1. Choice requires judgment between at least two credible, materially distinct options inside confirmed scope.
-2. The selection has durable material impact.
-
-Record every passing item as `adrDecisionPoints`; an empty list routes directly to the Design Doc.
-
-Present what the user decides on: the outcome and the requirements to build, the exclusions, the responsibilities the change targets, and each applicable simplification with the condition under which the confirmed outcome still holds without it. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, ADR qualification, and cost evidence stay in the orchestrator record — the ADR batch and the Design Doc have their own approval stops. Offer proceed, or correct scope and re-run analysis. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
+Present what the user decides on: the outcome and the requirements to build, the exclusions, the responsibilities the change targets, each applicable simplification with the condition under which the confirmed outcome still holds without it, and the cost band with its remaining unknowns. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale and ADR qualification stay in the orchestrator record — the ADR batch and the Design Doc have their own approval stops. Offer proceed, or correct scope and re-run analysis. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
 
 ## Step 4: Create and Approve an ADR Batch When Needed
 
@@ -67,9 +62,9 @@ When `adrDecisionPoints` is non-empty:
 
 1. Invoke `technical-designer` once with `document_to_create: ADRBatch`, `confirmed_requirement_context`, the ordered `decision_points`, and the corresponding `decision_materials` copied unchanged from Step 2.
 2. Invoke `document-reviewer` once with `doc_type: ADRBatch`, `targets: [all returned paths]`, and `confirmed_requirement_context`.
-3. Route the verdict first: `approved` proceeds; `needs_revision` applies Review Resolution, updates one ADR per path serially, and re-reviews the complete batch; `rejected` resolves the governing-source conflict before another review.
-4. Present one batch decision only after an approved review. `[Stop: ADR batch approval]`.
-5. After user approval, update each ADR status to `Accepted` and verify the change.
+3. Route the verdict first: `pass` proceeds; `needs_revision` applies Review Resolution, updates one ADR per path serially, and re-reviews the complete batch; `rejected` resolves the governing-source conflict before another review.
+4. Present one batch decision only after a `pass` review. `[Stop: ADR batch approval]`.
+5. After user approval, invoke `technical-designer` in update mode for each ADR path to set its status to `Accepted`, and verify the change.
 
 ## Step 5: Create the Design Doc
 
@@ -93,11 +88,11 @@ Apply Review Resolution to every discrepancy before document review. Send only `
 
 Invoke `document-reviewer` with `doc_type: DesignDoc`, `target`, `review_context: creation`, the original user requirements as `requirements_verbatim`, `confirmed_requirement_context`, `codebase_analysis`, and `verification_evidence` from Step 6.
 
-- `approved`: continue
+- `pass`: continue
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer invocation using the existing path and complete findings with an `apply` disposition, then rerun Steps 6-7 for the affected boundary
 - `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 
-Invoke `design-sync` for consistency with other Design Docs and apply Review Resolution to actionable conflicts. Report `SKIPPED` distinctly when only one Design Doc exists.
+Invoke `design-sync` with the Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. When the result reports `analyzed_docs: 0`, report consistency verification as skipped because no other Design Doc exists.
 
 Present the Design Doc, accepted ADR paths, recorded declines, and design-sync result. `[Stop: Design approval]`.
 
@@ -107,5 +102,5 @@ Present the Design Doc, accepted ADR paths, recorded declines, and design-sync r
 - ADRs exist only for decision points passing both filters, and the complete batch received one review and approval
 - A Design Doc exists regardless of whether ADRs were needed
 - Applicable existing-behavior, contract, assumption, equivalence, and verification safeguards reached the Design Doc
-- Review Resolution routed only `needs_revision` issues into correction work
+- Review Resolution routed only `apply` findings into correction work
 - All stop points received explicit user confirmation

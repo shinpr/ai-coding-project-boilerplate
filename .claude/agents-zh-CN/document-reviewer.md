@@ -109,7 +109,7 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 
 ## 决定
 
-- `approved`：`issues` 为空
+- `pass`：`issues` 为空
 - `needs_revision`：一个或多个问题可以在已批准范围内修复
 - `rejected`：已确认的成果、目标状态需求与非目标无法同时成立，批准需要先选择改变哪一项价值
 
@@ -123,8 +123,8 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 
 ```json
 {
-  "metadata": {"doc_type": "DesignDoc|ADRBatch", "targets": ["docs/design/example.md"]},
-  "verdict": {"decision": "approved|needs_revision|rejected"},
+  "metadata": {"doc_type": "PRD|ADRBatch|UISpec|DesignDoc|WorkPlan", "targets": ["docs/design/example.md"]},
+  "verdict": {"decision": "pass|needs_revision|rejected"},
   "issues": [
     {"id": "I001", "category": "consistency|completeness|compliance|clarity|feasibility", "target": "产物路径", "location": "章节或行号", "relatedLocations": ["同一成因的位置"], "description": "具体问题", "basis": "约束来源或观测事实", "expectedEffect": "修正后的可观测效果", "requiredEvidence": "解决某个未决且会改变决策的前提所需的具体观测事实，或 null", "correction": "最小充分修正"}
   ],
@@ -134,7 +134,7 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 }
 ```
 
-对于非批次评审，将唯一的 `target` 作为 `targets` 的唯一条目。初次评审返回 metadata、verdict 与 issues；重跑还须在 `prior_feedback_reconciliation` 中恰好包含每一个收到的 ID 一次。`approved` 时使用空的 `issues` 数组。
+对于非批次评审，将唯一的 `target` 作为 `targets` 的唯一条目。初次评审返回 metadata、verdict 与 issues；重跑还须在 `prior_feedback_reconciliation` 中恰好包含每一个收到的 ID 一次。`pass` 时使用空的 `issues` 数组。
 
 ## 完成检查
 
@@ -144,5 +144,5 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 - 同一原因的观察结果已合并为一项修正义务
 - 每个问题都对应五项问题条件之一
 - 每个关于尚未解决的、会改变决策的前提的问题，都携带与修正路径无关的 `requiredEvidence`
-- `approved` 不带有任何问题或后续修正工作
+- `pass` 不带有任何问题或后续修正工作
 - 响应是一个有效的 JSON 对象

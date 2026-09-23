@@ -112,6 +112,8 @@ Invoke solver using Agent tool:
 - `prompt`: |
     Derive solutions based on the following verified failure points.
 
+    Phenomenon: [Problem reported by user]
+    Occurrence conditions: [Step 0 conditions]
     Confirmed failure points: [verifier's conclusion.confirmedFailurePoints]
     Refuted failure points: [verifier's conclusion.refutedFailurePoints]
     Failure point relationships: [verifier's conclusion.failurePointRelationships]

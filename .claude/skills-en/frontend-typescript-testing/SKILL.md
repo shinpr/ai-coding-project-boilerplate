@@ -49,9 +49,8 @@ For shared components, custom hooks, and utilities reused across features, cover
    - No actual DB connections (backend manages DB)
    - Verify flows that implement a primary acceptance criterion or coordinate multiple rendered components
 
-3. **Cross-functional Verification in E2E Tests**
-   - Mandatory verification of impact on existing features when adding new features
-   - Classify each integration point: High when failure breaks a primary user journey or contract, Medium when failure degrades a secondary observable behavior. Cover High and Medium
+3. **Cross-functional Verification**
+   - When a new feature reaches a shared integration point, continuity of the existing feature becomes a proof obligation if its failure would break a primary user journey or contract, or degrade a secondary observable behavior. Prove it at the cheapest boundary that can expose its failure
    - Verification pattern: Existing feature operation -> Enable new feature -> Verify continuity of existing features
    - Success criteria: Preserve the displayed content and interaction behavior named by the source acceptance criteria; apply a rendering-time threshold only when project configuration or a requirement defines its value and measurement method
    - Designed for automatic execution in CI/CD pipelines

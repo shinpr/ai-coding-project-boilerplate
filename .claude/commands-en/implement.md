@@ -36,7 +36,9 @@ When the orchestrator determines from `scopeEvidence.affectedLayers` that the wo
 
 ### 4. After requirement-analyzer [Stop]
 
-Use `requestSignals`, `scopeEvidence`, `costEvidence`, and `questions` to run the requirement-convergence hearing. The orchestrator judges the convergence record and Structural Scale.
+Execute the `requirement-convergence` skill before running the hearing.
+
+Build the convergence record from the user's retained wording, using requirement-analyzer `scopeEvidence`, `costEvidence`, and `questions` as supporting facts, then run the requirement-convergence hearing. The orchestrator judges the convergence record and Structural Scale.
 
 When user responds to questions:
 - Record the answer in the convergence record and re-judge the affected field and Structural Scale
@@ -59,7 +61,7 @@ Enter the flow at the phase this instruction requests and continue from there, f
 - [ ] Confirmed relevant subagents-orchestration-guide skill flow
 - [ ] Identified current progress position
 - [ ] Clarified next step
-- [ ] Recognized stopping points → **Use AskUserQuestion for confirmation at all Stop points**
+- [ ] Recognized stopping points → **Wait for explicit user confirmation at every Stop point**
 - [ ] codebase-analyzer included before each Design Doc creation
 - [ ] code-verifier included before document-reviewer for each Design Doc
 - [ ] Understood the 4-step cycle after task execution (task-executor → branch on executor result → quality-fixer → commit)
@@ -82,20 +84,20 @@ Return to Requirement Change Detection when confirmed outcome, desired-future re
 
 ### Task Execution Quality Cycle
 Execute the following dependency-ordered steps, advancing only when the current step's response condition is satisfied:
-1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly; do not create a task file.
+1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly as the execution scope, since Small produces no task file.
 2. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → Apply subagents-orchestration-guide Specialist Result Acceptance
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the original execution scope plus the complete `apply` quality-issue objects passed verbatim as `correction_findings`
      - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to step 3
-     - `approved` → Proceed to step 3
+     - `pass` → Proceed to step 3
    - Otherwise → Proceed to step 3
 3. **INVOKE quality-fixer**: Execute all quality checks and fixes against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Medium/Large also pass the current `task_file`; Small passes the direct execution scope. Pass the implementation step's `runnableCheck` and `qualityCommand` when the governing source or repository convention names one.
    - `stub_detected` → Return to step 1 and re-invoke task-executor with the original execution scope and `incompleteImplementations[]`
    - `blocked` → Apply Specialist Result Acceptance
    - `verification_incomplete` → Retain the complete result for final retry and proceed to step 4
-   - `approved` → Proceed to step 4
-4. **COMMIT**: Commit the completed task change set after `approved` or `verification_incomplete`
+   - `pass` → Proceed to step 4
+4. **COMMIT**: Commit the completed task change set after `pass` or `verification_incomplete`
 
 ### Post-Implementation Review (Medium/Large, After All Tasks Complete)
 
@@ -105,15 +107,15 @@ Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
 Emit these Agent calls in one assistant message, then await both:
 - code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved typed `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
-- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments`
+- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments` and `implementationFiles`
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 
-For Small, skip this document-dependent review. Retry a retained verification limitation once after the task commit; complete with observed `observable_verification` evidence and report any proof that remains unavailable. When that retry changes the repository, commit the change before the completion report, once the applicable quality-fixer has returned `approved` or `verification_incomplete` for it.
+For Small, skip this document-dependent review. Retry a retained verification limitation once after the task commit; complete with observed `observable_verification` evidence and report any proof that remains unavailable. When that retry changes the repository, commit the change before the completion report, once the applicable quality-fixer has returned `pass` or `verification_incomplete` for it.
 
 ### Final Cleanup
 
-For Medium/Large, before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `approved` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Small creates no task files. The consumed task files are ephemeral working state and are not retained between recipe runs.
+For Medium/Large, before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `pass` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Small creates no task files. The consumed task files are ephemeral working state and are not retained between recipe runs.
 
 This recipe is scale-agnostic and may execute single-layer or multi-layer plans, so cleanup must cover every task naming pattern task materialization can produce from the plan's executor lanes:
 
@@ -121,10 +123,9 @@ This recipe is scale-agnostic and may execute single-layer or multi-layer plans,
   - `docs/plans/tasks/{plan-name}-task-*.md` (single-layer tasks)
   - `docs/plans/tasks/{plan-name}-backend-task-*.md` (backend portion of multi-layer plan)
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md` (frontend portion of multi-layer plan)
-- From those matches, exclude `integration-tests-*-task-*.md` (this originates from another workflow phase)
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review
 
-If task files cannot be deleted (filesystem error), report the failure but do not block the completion report.
+If a filesystem error leaves task files behind, continue the completion report with that cleanup failure recorded.
 
 ## Execution Method
 

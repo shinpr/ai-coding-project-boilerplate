@@ -28,10 +28,7 @@ Target: $ARGUMENTS
 Use AskUserQuestion to confirm:
 1. **Target path**: Which directory/module to document
 2. **Depth**: PRD only, or PRD + Design Docs
-3. **Reference Architecture**: layered / mvc / clean / hexagonal / none
-4. **Human review**: Yes (recommended) / No (fully autonomous)
-5. **Fullstack design**: Yes / No
-   - Yes: Enable per-unit backend + frontend Design Doc generation
+3. **Human review**: Yes (recommended) / No (fully autonomous)
 
 ### 0.2 Output Configuration
 
@@ -49,7 +46,7 @@ Phase 1: PRD Generation
 Phase 2: Design Doc Generation (if requested)
   Step 6: Design Doc Scope Mapping (reuse Step 1 results, no re-discovery)
   Step 7-10: Per-unit loop (Generation → Verification → Review → Revision)
-  ※ fullstack=Yes: units may produce backend + frontend Design Docs based on scope
+  ※ Each unit produces a backend Design Doc, a frontend Design Doc, or both, based on its scope
 ```
 
 ## Phase 1: PRD Generation
@@ -63,7 +60,7 @@ prompt: |
   Discover functional scope targets in the codebase.
 
   target_path: $USER_TARGET_PATH
-  reference_architecture: $USER_RA_CHOICE
+  reference_architecture: [only when the user's request names one; otherwise omit for bottom-up discovery]
   focus_area: $USER_FOCUS_AREA (if specified)
 ```
 
@@ -117,9 +114,10 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
+  unit_inventory: [the `unitInventory` of every discovered unit in the current PRD unit's `sourceUnits`, merged with duplicates removed]
 ```
 
-Note: `code_paths` is intentionally NOT provided. The verifier independently discovers code scope from the document, ensuring independent verification not constrained by scope-discoverer's output.
+Note: `code_paths` is intentionally NOT provided. The verifier discovers code scope from the document; `unit_inventory` serves only as the completeness baseline, so the search stays independent of scope-discoverer's file lists.
 
 Read `summary.status` before continuing: when it is `blocked`, the Input Gate failed and nothing was verified — stop and report `blockingReason` to the user rather than passing the result on, because its empty `discrepancies` would read downstream as a clean verification.
 
@@ -147,11 +145,11 @@ prompt: |
 
 #### Step 5: Revision (conditional)
 
-Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution, pass complete `apply` issue objects verbatim to `prd-creator` in update mode, then rerun Steps 3-4 with `prior_feedback`. A decline-only result completes the review. For `rejected`, apply the parent requirement gate.
+Branch on `verdict.decision`. `pass` completes the unit. For `needs_revision`, apply Review Resolution, pass complete `apply` issue objects verbatim as `correction_findings` to `prd-creator` in update mode, then rerun Steps 3-4 with the same `unit_inventory` and `prior_feedback`. A decline-only result completes the review. For `rejected`, route through the Review Resolution Verdict Gate.
 
 #### Unit Completion
 
-- [ ] Review verdict is `approved`
+- [ ] Review reached Review Resolution convergence (`pass`, or every remaining finding declined)
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units → Phase 2.
@@ -164,7 +162,7 @@ Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision
 
 **No additional discovery required.** Use `$STEP_1_OUTPUT.discoveredUnits` (implementation-granularity units) for technical profiles. Use `$STEP_1_OUTPUT.prdUnits[].sourceUnits` to trace which discovered units belong to each PRD unit.
 
-When fullstack=Yes, determine per unit whether backend / frontend / both Design Docs are needed based on path patterns in the unit's `relatedFiles` and `technicalProfile.primaryModules` (refer to project structure defined in technical-spec skill).
+Determine per unit whether backend / frontend / both Design Docs are needed based on path patterns in the unit's `relatedFiles` and `technicalProfile.primaryModules` (refer to project structure defined in technical-spec skill).
 
 Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
 - `technicalProfile.primaryModules` → Primary Files
@@ -183,11 +181,11 @@ Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
 
 Generate Design Docs per unit based on `$STEP_6_OUTPUT` mapping.
 
-When fullstack=Yes, invoke 7a then 7b sequentially (7b depends on 7a output).
+Invoke 7a for a unit with backend scope and 7b for a unit with frontend scope. When a unit needs both, invoke 7a then 7b sequentially so 7b can reference 7a's output.
 
 **7a.** Backend Design Doc (technical-designer):
 
-When fullstack=Yes: append "Focus on: API contracts, data layer, business logic, service architecture." to the prompt.
+When the unit also needs a frontend Design Doc: append "Focus on: API contracts, data layer, business logic, service architecture." to the prompt.
 
 **Task invocation**:
 ```
@@ -204,14 +202,14 @@ prompt: |
   Dependencies: $UNIT_DEPENDENCIES
   Unit Inventory: $UNIT_INVENTORY (routes, test files, public exports from scope discovery)
 
-  Parent PRD: $APPROVED_PRD_PATH
+  Parent PRD: [this unit's reviewed PRD path from Phase 1]
 
   Document current architecture as-is. Use Unit Inventory as a completeness baseline — all routes and exports should be accounted for in the Design Doc.
 ```
 
-**Store output as**: `$STEP_7_OUTPUT`
+**Store output as**: `$STEP_7_OUTPUT` (technical-designer result). When its `status` is `completed`, `$STEP_7_OUTPUT.path` is the Design Doc path; any other result is a generation failure.
 
-**7b.** Frontend Design Doc (fullstack, units with frontend scope):
+**7b.** Frontend Design Doc (units with frontend scope):
 
 ```
 subagent_type: technical-designer-frontend
@@ -227,15 +225,15 @@ prompt: |
   Dependencies: $UNIT_DEPENDENCIES
   Unit Inventory: $UNIT_INVENTORY
 
-  Parent PRD: $APPROVED_PRD_PATH
-  Backend Design Doc: $STEP_7_OUTPUT
+  Parent PRD: [this unit's reviewed PRD path from Phase 1]
+  Backend Design Doc: $STEP_7_OUTPUT.path (only when 7a completed for this unit)
 
-  Reference backend Design Doc for API contracts.
+  When a backend Design Doc is supplied, reference it for API contracts.
   Focus on: component hierarchy, state management, UI interactions, data fetching.
   Document current architecture as-is. Use Unit Inventory as completeness baseline.
 ```
 
-**Store output as**: `$STEP_7_FRONTEND_OUTPUT`
+**Store output as**: `$STEP_7_FRONTEND_OUTPUT` (technical-designer-frontend result). When its `status` is `completed`, `$STEP_7_FRONTEND_OUTPUT.path` is the Design Doc path; any other result is a generation failure.
 
 #### Step 8: Code Verification
 
@@ -248,10 +246,11 @@ prompt: |
   Verify consistency between Design Doc and code implementation.
 
   doc_type: design-doc
-  document_path: $STEP_7_OUTPUT or $STEP_7_FRONTEND_OUTPUT
+  document_path: $STEP_7_OUTPUT.path or $STEP_7_FRONTEND_OUTPUT.path
+  unit_inventory: [the current Design Doc target's Step 6 unitInventory]
 ```
 
-Note: `code_paths` is intentionally NOT provided. The verifier independently discovers code scope from the document.
+Note: `code_paths` is intentionally NOT provided. The verifier discovers code scope from the document; `unit_inventory` serves only as the completeness baseline.
 
 Read `summary.status` before continuing: when it is `blocked`, stop and report `blockingReason` for that Design Doc rather than passing the result to document-reviewer.
 
@@ -269,11 +268,9 @@ prompt: |
 
   doc_type: DesignDoc
   review_context: reverse-engineer
-  target: $STEP_7_OUTPUT or $STEP_7_FRONTEND_OUTPUT
+  target: $STEP_7_OUTPUT.path or $STEP_7_FRONTEND_OUTPUT.path
   verification_evidence: $STEP_8_OUTPUT
-
-  ## Parent PRD
-  $APPROVED_PRD_PATH
+  confirmed_requirement_context: [this unit's reviewed PRD path from Phase 1]
 
   ## Additional Review Focus
   - Technical accuracy of documented interfaces
@@ -285,11 +282,11 @@ prompt: |
 
 #### Step 10: Revision (conditional)
 
-Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution and pass complete `apply` issue objects verbatim to `technical-designer` or `technical-designer-frontend` in update mode, then rerun Steps 8-9 with `prior_feedback`. A decline-only result completes the review. For `rejected`, apply the parent requirement gate.
+Branch on `verdict.decision`. `pass` completes the unit. For `needs_revision`, apply Review Resolution and pass complete `apply` issue objects verbatim as `correction_findings` to `technical-designer` or `technical-designer-frontend` in update mode, then rerun Steps 8-9 with the same `unit_inventory` and `prior_feedback`. A decline-only result completes the review. For `rejected`, route through the Review Resolution Verdict Gate.
 
 #### Unit Completion
 
-- [ ] Review verdict is `approved`
+- [ ] Review reached Review Resolution convergence (`pass`, or every remaining finding declined)
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units → Final Report.
@@ -308,4 +305,4 @@ Output summary including:
 | Discovery finds nothing | Ask user for project structure hints |
 | Generation fails | Log failure, continue with other units, report in summary |
 | Verifier returns `blocked` | Stop and report `blockingReason` |
-| Reviewer returns `rejected` | Apply the parent requirement gate |
+| Reviewer returns `rejected` | Route through the Review Resolution Verdict Gate |

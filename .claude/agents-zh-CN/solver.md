@@ -102,7 +102,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 - 每个步骤可独立验证
 - 明确说明步骤间的依赖关系
 - 为每个步骤定义完成条件
-- 包含回滚流程
+- 若某个步骤失败后会留下必须恢复的状态，为该步骤包含回滚流程
 
 ## 输出格式
 
@@ -134,13 +134,13 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
   },
   "implementationPlan": {
     "steps": [
-      {"order": 1, "action": "具体行动", "verification": "如何验证此步骤", "rollback": "出现问题时的回滚流程"}
+      {"order": 1, "action": "具体行动", "verification": "如何验证此步骤", "rollback": "失败后会留下需恢复的状态时的恢复流程，否则为 null"}
     ],
     "criticalPoints": ["需要特别注意的要点"]
   },
   "uncertaintyHandling": {
     "residualRisks": ["解决后可能仍然存在的风险"],
-    "monitoringPlan": "解决后的监控计划"
+    "monitoringPlan": "解决后仍存在剩余风险时对其的监控，否则为 null"
   }
 }
 ```

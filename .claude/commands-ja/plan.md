@@ -19,13 +19,13 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
    - **完了前に停止し、計画内容の承認を取得する**
 3. **スコープ**: 作業計画書が承認されたら完了
 
-**重要**: ユーザーがテスト生成を要求した場合、acceptance-test-generatorは必ず実行する。
+**重要**: work-plannerの前に必ずacceptance-test-generatorを実行すること — テストスケルトンはsubagents-orchestration-guideの中規模/大規模フローで必須の入力。
 
 ## スコープ境界
 
 **実行内容**:
 - 設計書の選択
-- E2Eテストスケルトン生成（オプション、ユーザー確認後）
+- acceptance-test-generatorによるテストスケルトン生成
 - work-plannerによる作業計画書作成
 - document-reviewerによる作業計画書レビュー
 - 計画承認の取得
@@ -41,19 +41,18 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
    - それ以外では、リポジトリのドキュメント規約と内容からDesign Docを探す
    - 複数の妥当なドキュメントによって異なる計画になる場合に限り、選択肢を提示する
 
-2. **テストスケルトンの生成確認**
-   - テストスケルトン（統合 + E2Eレーン）を先に生成するかユーザーに確認
-   - 生成を希望する場合: acceptance-test-generator を呼び出す
-   - 生成結果を subagents-orchestration-guideスキル の連携仕様に従って次工程に引き継ぐ
+2. **テストスケルトン生成**
+   Agentツールでacceptance-test-generatorを呼び出す:
+   - `subagent_type`: "acceptance-test-generator"
+   - `description`: "テストスケルトン生成"
+   - `prompt`: "[パス]のDesign Docからテストスケルトンを生成。"
+   - 生成されたパスを、subagents-orchestration-guideの「acceptance-test-generator → work-planner」セクションに従いwork-plannerに渡す
 
 3. **作業計画書の作成**
    Agentツールでwork-plannerを呼び出す:
    - `subagent_type`: "work-planner"
    - `description`: "作業計画書作成"
-   - ステップ2でテストスケルトン生成を実行した場合、`generatedFiles[]` を `testSkeletons` として渡す。空のリストは、計画に追加の統合/E2Eスケルトンタスクが不要であることを示す
-     - 配置ガイダンスを末尾に付加する: "統合テストは各フェーズ実装と同時に作成。fixture-e2eテストはUI機能フェーズと並行して作成。service-integration-e2eテストは必要なサービスが利用可能になった後に実行。"
-   - テストスケルトンを生成しなかった場合:
-     `prompt`: "[パス]のDesign Docから作業計画を作成。"
+   - `generatedFiles[]` を `testSkeletons` として渡す。空のリストは、計画に追加の統合/E2Eスケルトンタスクが不要であることを示す
 
    - subagents-orchestration-guideの「Prompt Construction Rule」に従い追加パラメータを構成
 
@@ -64,8 +63,8 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
    - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md。作業計画書自身の実装スコープ、タスク、完了条件、依存関係、実行順序、引用アンカーの実在、実行可能な検証をレビューする。出典ソースは対象文書の Governing Documents から解決する。"
    - 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘はユーザー入力なしで解消する。reviewerの `verdict.decision` で分岐する:
      - `needs_revision`: レビュー対応を修正後の再レビューから収束まで進め、該当条件を満たす場合は親ワークフローの要件変更判定または権限判定へ移行する。差し戻す修正には work-planner を update モードで用いる
-     - `approved`、またはレビュー対応が収束条件に達した場合: ステップ5へ進む
-     - `rejected`: 上位の要件ゲートを適用する
+     - `pass`、またはレビュー対応が収束条件に達した場合: ステップ5へ進む
+     - `rejected`: レビュー対応の判定ゲートに従って処理する
 
 5. **承認のための提示**
    - レビュー済みの作業計画書をユーザーにバッチ承認のため提示する。変更要望があればwork-plannerを修正パラメータで再実行し、ステップ4を再実行する

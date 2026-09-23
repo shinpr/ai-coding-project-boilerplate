@@ -102,7 +102,7 @@ Recommendation strategy based on coverage assessment:
 - Each step independently verifiable
 - Explicitly state dependencies between steps
 - Define completion conditions for each step
-- Include rollback procedures
+- Include a rollback procedure for a step whose failure would leave state that must be restored
 
 ## Output Format
 
@@ -134,13 +134,13 @@ Final message: exactly one JSON object matching the schema below (begins with `{
   },
   "implementationPlan": {
     "steps": [
-      {"order": 1, "action": "Specific action", "verification": "How to verify this step", "rollback": "Rollback procedure if problems occur"}
+      {"order": 1, "action": "Specific action", "verification": "How to verify this step", "rollback": "Restore procedure when failure would leave state to restore, or null"}
     ],
     "criticalPoints": ["Points requiring special attention"]
   },
   "uncertaintyHandling": {
     "residualRisks": ["Risks that may remain after resolution"],
-    "monitoringPlan": "Monitoring plan after resolution"
+    "monitoringPlan": "Monitoring for a residual risk that remains after resolution, or null"
   }
 }
 ```

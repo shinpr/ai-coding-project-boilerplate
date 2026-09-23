@@ -25,8 +25,6 @@ Capabilities deliberately excluded from this change, authored by the user.
 
 Present the cost band and its unknowns first — or, when cost is not banded, the scope facts the analysis returned — then ask what to leave out. `userAgreedNone` records that the user considered exclusions and found none; only the user sets it.
 
-An adjacent capability noticed during analysis is a question for the user, not a non-goal.
-
 ## cost
 
 Cost follows structure and count, not behavior, so it is decided from these inputs alone:

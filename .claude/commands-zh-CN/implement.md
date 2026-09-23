@@ -36,7 +36,9 @@ description: 编排从需求到部署的完整实现生命周期
 
 ### 4. requirement-analyzer 之后 [停止]
 
-使用 `requestSignals`、`scopeEvidence`、`costEvidence` 和 `questions` 执行 requirement-convergence 访谈。收敛记录与结构规模（Structural Scale）由编排者判断。
+执行访谈前，先执行 `requirement-convergence` 技能。
+
+以所保留的用户原话为基础构建收敛记录，并以 requirement-analyzer 的 `scopeEvidence`、`costEvidence` 和 `questions` 作为辅助事实，然后执行 requirement-convergence 访谈。收敛记录与结构规模（Structural Scale）由编排者判断。
 
 当用户回答问题时：
 - 将答案记入收敛记录，并重新判断受影响的字段与结构规模
@@ -59,7 +61,7 @@ description: 编排从需求到部署的完整实现生命周期
 - [ ] 已确认相关的 subagents-orchestration-guide 技能流程
 - [ ] 已识别当前进度所处位置
 - [ ] 已明确下一步
-- [ ] 已认识到停止点 → **在所有停止点使用 AskUserQuestion 进行确认**
+- [ ] 已认识到停止点 → **在每个停止点等待用户的明确确认**
 - [ ] 每次创建设计文档前均包含 codebase-analyzer
 - [ ] 每份设计文档在 document-reviewer 之前均包含 code-verifier
 - [ ] 已理解任务执行后的 4 步循环（task-executor → 根据执行者结果分支 → quality-fixer → 提交）
@@ -82,20 +84,20 @@ description: 编排从需求到部署的完整实现生命周期
 
 ### 任务执行质量循环
 执行以下按依赖顺序排列的步骤，仅当当前步骤所述的响应条件被满足时才推进：
-1. **调用 task-executor**：执行实现（跨层时参见“分层感知智能体路由”）。Medium/Large 传递任务文件。Small 直接传递已批准的成果、约束来源、受影响路径和验证条件；不创建任务文件。
+1. **调用 task-executor**：执行实现（跨层时参见“分层感知智能体路由”）。Medium/Large 传递任务文件。Small 不产生任务文件，因此直接将已批准的成果、约束来源、受影响路径和验证条件作为执行范围传递。
 2. **检查 task-executor 的响应**：
    - `status: "escalation_needed"` 或 `"blocked"` → 应用 subagents-orchestration-guide 的“专家结果受理”
    - `requiresTestReview` 为 `true` → 执行 **integration-test-reviewer**，传递已变更的集成/E2E 测试路径和 `diffBase: HEAD`。对于 Medium/Large 还需传递 `taskFiles: [当前任务文件路径]`；对于 Small 则改为传递直接范围的验证主张。然后依据其 `status` 分支
      - `needs_revision` → 应用评审裁定，并带着原有的执行范围以及作为 `correction_findings` 逐字传递的完整 `apply` 质量问题对象返回步骤 1
      - `blocked` → 从当前差异中解析被移动或重命名的测试路径，并在解析后的输入改变了评审目标时重新运行。如果尽管 `requiresTestReview: true` 却不存在可读的已变更测试，则将该执行者输出缺陷作为 `correction_findings` 返回步骤 1；否则将该评审记录为未运行并附上其 `blockingReason`，然后进入步骤 3
-     - `approved` → 推进到步骤 3
+     - `pass` → 推进到步骤 3
    - 其他情况 → 推进到步骤 3
 3. **调用 quality-fixer**：针对当前完整的未提交工作树执行所有质量检查与修复，包括未跟踪、已删除和已重命名的路径（跨层时参见“分层感知智能体路由”）。Medium/Large 还需传递当前的 `task_file`；Small 传递直接的执行范围。当约束来源或仓库惯例指明时，传递实现步骤的 `runnableCheck` 和 `qualityCommand`。
    - `stub_detected` → 返回步骤 1，并以原有的执行范围和 `incompleteImplementations[]` 重新调用 task-executor
    - `blocked` → 应用“专家结果受理”
    - `verification_incomplete` → 保留完整结果以供最终重试，并进入步骤 4
-   - `approved` → 推进到步骤 4
-4. **提交**：在 `approved` 或 `verification_incomplete` 之后提交已完成任务的变更集
+   - `pass` → 推进到步骤 4
+4. **提交**：在 `pass` 或 `verification_incomplete` 之后提交已完成任务的变更集
 
 ### 实现后评审（Medium/Large，所有任务完成后）
 
@@ -105,15 +107,15 @@ description: 编排从需求到部署的完整实现生命周期
 
 在一条助手消息中发出以下 Agent 调用，然后等待两者：
 - code-reviewer（subagent_type: "code-reviewer"）→ 使用解析出的带类型 `governingDocuments`、已完成任务实际变更的文件作为 `implementationFiles`、以及工作计划路径，评审已完成的实现
-- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的带类型 `governingDocuments` 评审已完成的实现
+- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的带类型 `governingDocuments` 和 `implementationFiles` 评审已完成的实现
 
 应用 subagents-orchestration-guide 的实现后评审状态路由与修复/重跑规则。呈现统一报告；在完整评审集达到评审裁定的收敛条件之后，进入最终清理。
 
-对于 Small，跳过此依赖文档的评审。在任务提交后，对保留的证明局限重试一次；以观测到的 `observable_verification` 依据完成，并报告任何仍然无法取得的证据。当该次重试改变了仓库时，在相应的 quality-fixer 对其返回 `approved` 或 `verification_incomplete` 之后，于完成报告之前提交该变更。
+对于 Small，跳过此依赖文档的评审。在任务提交后，对保留的证明局限重试一次；以观测到的 `observable_verification` 依据完成，并报告任何仍然无法取得的证据。当该次重试改变了仓库时，在相应的 quality-fixer 对其返回 `pass` 或 `verification_incomplete` 之后，于完成报告之前提交该变更。
 
 ### 最终清理
 
-对于 Medium/Large，在完成报告之前，若评审修正或证明局限重试在最后一次任务提交之后遗留了未提交的变更，先在相应的 quality-fixer 对其返回 `approved` 或 `verification_incomplete` 之后提交这些变更。随后删除本流程所消耗的实现任务文件。Small 不创建任务文件。所消耗的任务文件是临时的工作状态，不在流程的多次运行之间保留。
+对于 Medium/Large，在完成报告之前，若评审修正或证明局限重试在最后一次任务提交之后遗留了未提交的变更，先在相应的 quality-fixer 对其返回 `pass` 或 `verification_incomplete` 之后提交这些变更。随后删除本流程所消耗的实现任务文件。Small 不创建任务文件。所消耗的任务文件是临时的工作状态，不在流程的多次运行之间保留。
 
 本流程与规模无关，可能执行单层或多层计划，因此清理必须覆盖从计划的执行者通道生成任务文件时可能产生的每一种任务命名模式：
 
@@ -121,10 +123,9 @@ description: 编排从需求到部署的完整实现生命周期
   - `docs/plans/tasks/{plan-name}-task-*.md`（单层任务）
   - `docs/plans/tasks/{plan-name}-backend-task-*.md`（多层计划的后端部分）
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md`（多层计划的前端部分）
-- 从这些匹配项中排除 `integration-tests-*-task-*.md`（这来自另一个工作流阶段）
 - 保留工作计划本身（`docs/plans/{plan-name}.md`）—— 由用户决定是否在最终评审后删除它
 
-若任务文件无法删除（文件系统错误），报告该失败，但不要阻断完成报告。
+如果文件系统错误导致任务文件残留，记录该清理失败并继续完成报告。
 
 ## 执行方式
 

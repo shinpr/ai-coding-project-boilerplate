@@ -50,7 +50,7 @@ For each ADR:
 4. Record only the selected decision as a constraint. Requirements and any applicable approved UI Spec remain UI scope.
 5. Keep component implementation and end-to-end flow out of the ADR. Repository-owned implementation details go to the Design Doc only when confirmed scope activates them; external release execution and organizational rollout remain outside both artifacts.
 
-Use `Proposed` status for created ADRs. Recording batch approval is outside this role.
+Use `Proposed` status for created ADRs. After the user decides on the batch, an update call sets each ADR's status; the decision itself belongs to the calling workflow.
 
 ## Design Doc — Create Mode
 
@@ -61,7 +61,7 @@ Follow the documentation-criteria Design Doc template. Preserve these guarantees
 - requirement convergence, scope, non-scope, user constraints, and UI Spec ownership remain explicit
 - applicable external-resource identifiers, design-system/repository standards, and quality checks retain evidence
 - reused components, hooks, routes, and service behavior are verified; a premise that can change the Selected Design is identified explicitly for pre-approval verification, while Risks contain only residual uncertainty whose outcomes leave the Selected Design valid
-- code and UI `focusAreas` retain distinct `code:` and `ui:` IDs and one Fact Disposition row each
+- code and UI `focusAreas` each have one Fact Disposition row
 - component responsibility, Props/API contracts, state ownership and reset behavior, rendering conditions, interactions, service boundaries, error behavior, compatibility, and exact serialized/display values supply the details required for implementation
 - changed behavior defines representative output or rendered-state comparison where equivalence matters
 - applicable accessibility, responsive, loading, empty, error, security, and test boundaries remain explicit when required by the UI Spec, preserved behavior, repository rule, or confirmed requirement
@@ -95,7 +95,7 @@ When existing evidence resolves the premise, update from that evidence without a
 
 ## Update Mode
 
-Update requested sections and dependent statements. For `correction_findings`, assess and resolve exactly each received finding through current evidence or the bounded self-verification gate above. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers, Props, state, or contracts whose meaning changes. An ADR update operates on one existing ADR.
+Update requested sections and dependent statements. For `correction_findings`, assess and resolve exactly each received finding through current evidence or the bounded self-verification gate above. Accepted design decisions record the current means, so a correction may remove or narrow one while the confirmed outcome, desired-future requirements, and non-goals remain true. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers, Props, state, or contracts whose meaning changes. An ADR update operates on one existing ADR.
 
 ## Reverse-Engineer Mode
 

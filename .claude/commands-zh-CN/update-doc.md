@@ -83,7 +83,7 @@ description: 带评审地更新既有设计文档（Design Doc / PRD / ADR）
 
 **ADR 更新指引**：
 - **小幅变更**（澄清、错别字修正、小范围调整）：更新既有 ADR 文件
-- **重大变更**（决策变更、范围显著变化）：创建一个取代原 ADR 的新 ADR
+- **重大变更**（决策变更、范围显著变化）：通过设计流程的 ADR 批次处理替代决策；替代决策被接受后，本流程仅将原 ADR 更新为 `Superseded`
 
 ### 第 3 步：变更内容确定
 
@@ -141,7 +141,7 @@ prompt: |
   target: [第 1 步得到的路径]（DesignDoc 或 PRD）
   targets: [[第 1 步得到的路径]]（仅限 ADRBatch）
   requirements_verbatim: [第 3 步所请求的变更，逐字照录]（仅限 Design Doc）
-  confirmed_requirement_context: [第 3 步对变更的已确认理解]（仅限 Design Doc）
+  confirmed_requirement_context: [约束该 Design Doc 的已批准 PRD 路径，如存在]（仅限 Design Doc）
   verification_evidence: $CODE_VERIFICATION_OUTPUT（仅限 Design Doc，PRD/ADRBatch 时省略）
 
   重点关注：
@@ -153,15 +153,15 @@ prompt: |
 **将输出保存为**：`$STEP_5_OUTPUT`
 
 **依据评审结果**：
-- `approved` → 进入第 6 步
-- `needs_revision` → 应用评审裁定，将完整的 `apply` issue 对象逐字传给第 2 步的更新智能体，随后在适用时重新运行验证，并带上 `prior_feedback` 重新评审
+- `pass` → 进入第 6 步
+- `needs_revision` → 应用评审裁定，将完整的 `apply` issue 对象作为 `correction_findings` 逐字传给第 2 步的更新智能体，随后在适用时重新运行验证，并带上 `prior_feedback` 重新评审
 - `rejected` → 当已确认的成果、目标状态需求与非目标无法全部同时成立时，应用上级“需求变更检测”；否则通过评审裁定解决技术冲突
 
 遵循评审裁定的收敛与上报条件。
 
 ### 第 6 步：一致性验证与最终批准 [停止]
 
-对于 PRD 或 ADR，从已批准的文档评审直接进入下方的最终批准。
+对于 PRD 或 ADR，从已通过的文档评审直接进入下方的最终批准。
 
 对于 Design Doc，调用 design-sync：
 ```
@@ -170,7 +170,7 @@ description: "验证一致性"
 prompt: |
   验证更新后的 Design Doc 与其他设计文档的一致性。
 
-  更新后的文档：[第 1 步得到的路径]
+  source_design: [第 1 步得到的路径]
   prior_feedback（仅重新执行时）：[上一次的完整结果、其处置方式，以及修正差异或变更路径]
 ```
 

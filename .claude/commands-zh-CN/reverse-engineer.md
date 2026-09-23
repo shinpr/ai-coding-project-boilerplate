@@ -28,10 +28,7 @@ description: 通过探索、生成、验证与评审工作流，从现有代码�
 使用 AskUserQuestion 确认：
 1. **目标路径**：要为哪个目录/模块编写文档
 2. **深度**：仅 PRD，或 PRD + 设计文档
-3. **参考架构**：layered / mvc / clean / hexagonal / none
-4. **人工评审**：是（推荐）/ 否（完全自主）
-5. **全栈设计**：是 / 否
-   - 是：启用按单元生成后端 + 前端设计文档
+3. **人工评审**：是（推荐）/ 否（完全自主）
 
 ### 0.2 输出配置
 
@@ -49,7 +46,7 @@ description: 通过探索、生成、验证与评审工作流，从现有代码�
 阶段 2：设计文档生成（若已请求）
   步骤 6：设计文档范围映射（复用步骤 1 的结果，不重新探索）
   步骤 7-10：按单元循环（生成 → 验证 → 评审 → 修订）
-  ※ fullstack=Yes：单元可根据范围产出后端 + 前端设计文档
+  ※ 每个单元根据其范围产出后端设计文档、前端设计文档或两者
 ```
 
 ## 阶段 1：PRD 生成
@@ -63,7 +60,7 @@ prompt: |
   在代码库中探索功能范围目标。
 
   target_path: $USER_TARGET_PATH
-  reference_architecture: $USER_RA_CHOICE
+  reference_architecture: [仅当用户的请求指定了参考架构时传入；否则省略，采用自下而上的发现]
   focus_area: $USER_FOCUS_AREA（如已指定）
 ```
 
@@ -117,9 +114,10 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
+  unit_inventory: [将当前 PRD 单元 `sourceUnits` 中每个已发现单元的 `unitInventory` 合并并去重后的结果]
 ```
 
-注意：有意不提供 `code_paths`。验证者从文档独立探索代码范围，从而确保验证独立进行、不受 scope-discoverer 输出的限制。
+注意：有意不提供 `code_paths`。验证者从文档探索代码范围；`unit_inventory` 仅作为完整性基准，因此搜索仍不受 scope-discoverer 文件清单的限制。
 
 继续之前先读取 `summary.status`：当其为 `blocked` 时，说明输入条件未满足且未进行任何验证 —— 停止并向用户报告 `blockingReason`，而不要把结果继续传递下去，因为其空的 `discrepancies` 会在下游被读成验证通过。
 
@@ -147,11 +145,11 @@ prompt: |
 
 #### 步骤 5：修订（条件性）
 
-依据 `verdict.decision` 分支。`approved` 表示该单元完成。对于 `needs_revision`，应用评审裁定，将完整的 `apply` 问题对象原样传给处于 update 模式的 `prd-creator`，然后带 `prior_feedback` 重跑步骤 3-4。仅包含 decline 的结果即表示评审完成。对于 `rejected`，应用上级“需求变更检测”。
+依据 `verdict.decision` 分支。`pass` 表示该单元完成。对于 `needs_revision`，应用评审裁定，将完整的 `apply` 问题对象作为 `correction_findings` 原样传给处于 update 模式的 `prd-creator`，然后带相同的 `unit_inventory` 和 `prior_feedback` 重跑步骤 3-4。仅包含 decline 的结果即表示评审完成。对于 `rejected`，按评审裁定的“评审结论条件”处理。
 
 #### 单元完成
 
-- [ ] 评审结论为 `approved`
+- [ ] 评审已达到评审裁定的收敛（`pass`，或其余发现均已 decline）
 - [ ] 人工评审通过（若在步骤 0 中启用）
 
 **下一步**：处理下一个单元。所有单元完成后 → 阶段 2。
@@ -164,7 +162,7 @@ prompt: |
 
 **无需额外探索。** 使用 `$STEP_1_OUTPUT.discoveredUnits`（实现粒度的单元）获取技术画像。使用 `$STEP_1_OUTPUT.prdUnits[].sourceUnits` 追溯哪些已发现单元属于各个 PRD 单元。
 
-当 fullstack=Yes 时，根据单元的 `relatedFiles` 和 `technicalProfile.primaryModules` 中的路径模式，按单元判定需要后端 / 前端 / 两者的设计文档（参考 technical-spec 技能中定义的项目结构）。
+根据单元的 `relatedFiles` 和 `technicalProfile.primaryModules` 中的路径模式，按单元判定需要后端 / 前端 / 两者的设计文档（参考 technical-spec 技能中定义的项目结构）。
 
 将 `$STEP_1_OUTPUT` 的单元映射到设计文档生成目标，并向前传递：
 - `technicalProfile.primaryModules` → 主要文件
@@ -183,11 +181,11 @@ prompt: |
 
 依据 `$STEP_6_OUTPUT` 的映射，按单元生成设计文档。
 
-当 fullstack=Yes 时，依次调用 7a 再调用 7b（7b 依赖 7a 的输出）。
+对具有后端范围的单元调用 7a，对具有前端范围的单元调用 7b。单元同时需要两者时，先调用 7a 再调用 7b，使 7b 能够参考 7a 的输出。
 
 **7a.** 后端设计文档（technical-designer）：
 
-当 fullstack=Yes 时：在提示中追加“重点关注：API 契约、数据层、业务逻辑、服务架构。”。
+当该单元还需要前端设计文档时：在提示中追加“重点关注：API 契约、数据层、业务逻辑、服务架构。”。
 
 **Task 调用**：
 ```
@@ -204,14 +202,14 @@ prompt: |
   Dependencies: $UNIT_DEPENDENCIES
   Unit Inventory: $UNIT_INVENTORY（来自范围探索的路由、测试文件、公开导出）
 
-  Parent PRD: $APPROVED_PRD_PATH
+  Parent PRD: [本单元在阶段 1 中通过评审的 PRD 路径]
 
   按现状记录当前架构。将单元清单作为完整性基线 —— 所有路由和导出都应在设计文档中有所交代。
 ```
 
-**将输出保存为**：`$STEP_7_OUTPUT`
+**将输出保存为**：`$STEP_7_OUTPUT`（technical-designer 的结果）。其 `status` 为 `completed` 时，`$STEP_7_OUTPUT.path` 即设计文档路径；其他结果均视为生成失败。
 
-**7b.** 前端设计文档（全栈，具有前端范围的单元）：
+**7b.** 前端设计文档（具有前端范围的单元）：
 
 ```
 subagent_type: technical-designer-frontend
@@ -227,15 +225,15 @@ prompt: |
   Dependencies: $UNIT_DEPENDENCIES
   Unit Inventory: $UNIT_INVENTORY
 
-  Parent PRD: $APPROVED_PRD_PATH
-  Backend Design Doc: $STEP_7_OUTPUT
+  Parent PRD: [本单元在阶段 1 中通过评审的 PRD 路径]
+  Backend Design Doc: $STEP_7_OUTPUT.path（仅当本单元的 7a 已完成时）
 
-  参考后端设计文档的 API 契约。
+  提供了后端设计文档时，参考其 API 契约。
   重点关注：组件层级、状态管理、UI 交互、数据获取。
   按现状记录当前架构。将单元清单作为完整性基线。
 ```
 
-**将输出保存为**：`$STEP_7_FRONTEND_OUTPUT`
+**将输出保存为**：`$STEP_7_FRONTEND_OUTPUT`（technical-designer-frontend 的结果）。其 `status` 为 `completed` 时，`$STEP_7_FRONTEND_OUTPUT.path` 即设计文档路径；其他结果均视为生成失败。
 
 #### 步骤 8：代码验证
 
@@ -248,10 +246,11 @@ prompt: |
   验证设计文档与代码实现之间的一致性。
 
   doc_type: design-doc
-  document_path: $STEP_7_OUTPUT 或 $STEP_7_FRONTEND_OUTPUT
+  document_path: $STEP_7_OUTPUT.path 或 $STEP_7_FRONTEND_OUTPUT.path
+  unit_inventory: [当前设计文档目标在步骤 6 中的 unitInventory]
 ```
 
-注意：有意不提供 `code_paths`。验证者从文档独立探索代码范围。
+注意：有意不提供 `code_paths`。验证者从文档探索代码范围；`unit_inventory` 仅作为完整性基准。
 
 继续之前先读取 `summary.status`：当其为 `blocked` 时，停止并报告该设计文档的 `blockingReason`，而不要把结果传给 document-reviewer。
 
@@ -269,11 +268,9 @@ prompt: |
 
   doc_type: DesignDoc
   review_context: reverse-engineer
-  target: $STEP_7_OUTPUT 或 $STEP_7_FRONTEND_OUTPUT
+  target: $STEP_7_OUTPUT.path 或 $STEP_7_FRONTEND_OUTPUT.path
   verification_evidence: $STEP_8_OUTPUT
-
-  ## 上级 PRD
-  $APPROVED_PRD_PATH
+  confirmed_requirement_context: [本单元在阶段 1 中通过评审的 PRD 路径]
 
   ## 额外评审重点
   - 所记录接口的技术准确性
@@ -285,11 +282,11 @@ prompt: |
 
 #### 步骤 10：修订（条件性）
 
-依据 `verdict.decision` 分支。`approved` 表示该单元完成。对于 `needs_revision`，应用评审裁定，将完整的 `apply` 问题对象原样传给处于 update 模式的 `technical-designer` 或 `technical-designer-frontend`，然后带 `prior_feedback` 重跑步骤 8-9。仅包含 decline 的结果即表示评审完成。对于 `rejected`，应用上级“需求变更检测”。
+依据 `verdict.decision` 分支。`pass` 表示该单元完成。对于 `needs_revision`，应用评审裁定，将完整的 `apply` 问题对象作为 `correction_findings` 原样传给处于 update 模式的 `technical-designer` 或 `technical-designer-frontend`，然后带相同的 `unit_inventory` 和 `prior_feedback` 重跑步骤 8-9。仅包含 decline 的结果即表示评审完成。对于 `rejected`，按评审裁定的“评审结论条件”处理。
 
 #### 单元完成
 
-- [ ] 评审结论为 `approved`
+- [ ] 评审已达到评审裁定的收敛（`pass`，或其余发现均已 decline）
 - [ ] 人工评审通过（若在步骤 0 中启用）
 
 **下一步**：处理下一个单元。所有单元完成后 → 最终报告。
@@ -308,4 +305,4 @@ prompt: |
 | 探索未发现任何内容 | 向用户询问项目结构提示信息 |
 | 生成失败 | 记录失败，继续处理其他单元，在摘要中报告 |
 | 验证者返回 `blocked` | 停止并报告 `blockingReason` |
-| 评审者返回 `rejected` | 应用上级“需求变更检测” |
+| 评审者返回 `rejected` | 按评审裁定的“评审结论条件”处理 |

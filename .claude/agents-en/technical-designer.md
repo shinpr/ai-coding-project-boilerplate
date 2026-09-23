@@ -56,7 +56,7 @@ For each ADR:
 4. Record only the selected decision as a technical constraint. The confirmed requirements remain implementation scope.
 5. Keep end-to-end implementation design out of the ADR. Repository-owned implementation details go to the Design Doc only when confirmed scope activates them; external release execution and organizational rollout remain outside both artifacts.
 
-Use `Proposed` status for created ADRs. Recording user approval for the batch is outside this role.
+Use `Proposed` status for created ADRs. After the user decides on the batch, an update call sets each ADR's status; the decision itself belongs to the calling workflow.
 
 ## Design Doc — Create Mode
 
@@ -102,7 +102,7 @@ When existing evidence resolves the premise, update from that evidence without a
 
 ## Update Mode
 
-Update requested sections and dependent statements. For `correction_findings`, assess and resolve exactly each received finding through current evidence or the bounded self-verification gate above. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers or contracts whose meaning the update changes. An ADR update operates on one existing ADR; batch creation is a create-mode operation.
+Update requested sections and dependent statements. For `correction_findings`, assess and resolve exactly each received finding through current evidence or the bounded self-verification gate above. Accepted design decisions record the current means, so a correction may remove or narrow one while the confirmed outcome, desired-future requirements, and non-goals remain true. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers or contracts whose meaning the update changes. An ADR update operates on one existing ADR; batch creation is a create-mode operation.
 
 ## Reverse-Engineer Mode
 

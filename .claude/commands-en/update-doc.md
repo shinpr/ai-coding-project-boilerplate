@@ -83,7 +83,7 @@ Read the document and determine its layer from content signals:
 
 **ADR Update Guidance**:
 - **Minor changes** (clarification, typo fix, small scope adjustment): Update the existing ADR file
-- **Major changes** (decision reversal, significant scope change): Create a new ADR that supersedes the original
+- **Major changes** (decision reversal, significant scope change): route the replacing decision through the design recipe's ADR batch; after the replacement is accepted, update the original ADR here only to record it as `Superseded`
 
 ### Step 3: Change Content Resolution
 
@@ -141,7 +141,7 @@ prompt: |
   target: [path from Step 1] (DesignDoc or PRD)
   targets: [[path from Step 1]] (ADRBatch only)
   requirements_verbatim: [Step 3 requested changes, verbatim] (Design Doc only)
-  confirmed_requirement_context: [Step 3 confirmed understanding of the changes] (Design Doc only)
+  confirmed_requirement_context: [approved PRD path governing the Design Doc, when one exists] (Design Doc only)
   verification_evidence: $CODE_VERIFICATION_OUTPUT (Design Doc only, omit for PRD/ADRBatch)
 
   Focus on:
@@ -153,15 +153,15 @@ prompt: |
 **Store output as**: `$STEP_5_OUTPUT`
 
 **On review result**:
-- `approved` → Proceed to Step 6
-- `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim to the Step 2 update agent, then rerun verification when applicable and re-review with `prior_feedback`
+- `pass` → Proceed to Step 6
+- `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim as `correction_findings` to the Step 2 update agent, then rerun verification when applicable and re-review with `prior_feedback`
 - `rejected` → Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution
 
 Follow Review Resolution convergence and escalation conditions.
 
 ### Step 6: Consistency Verification and Final Approval [Stop]
 
-For PRD or ADR, proceed from the approved document review to the final approval below.
+For PRD or ADR, proceed from the passed document review to the final approval below.
 
 For Design Doc, invoke design-sync:
 ```
@@ -170,7 +170,7 @@ description: "Verify consistency"
 prompt: |
   Verify consistency of the updated Design Doc with other design documents.
 
-  Updated document: [path from Step 1]
+  source_design: [path from Step 1]
   prior_feedback (rerun only): [previous complete result, its dispositions, and the correction diff or changed paths]
 ```
 

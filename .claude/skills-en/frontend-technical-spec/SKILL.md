@@ -133,7 +133,7 @@ Quality checks are mandatory upon implementation completion:
 - `check` - Biome (lint + format)
 - `build` - TypeScript build
 
-**Transition evidence**: every configured lint/format/type/build check exits successfully. A missing required script blocks the next phase until an equivalent repository command is identified.
+**Transition evidence**: every configured lint/format/type/build check exits successfully. A missing required script is reported with the manifest/configuration path, and the remaining checks still run; whether the missing check leaves required proof unavailable is decided by the quality-fixer result.
 
 **Phase 4-5: Tests and Final Confirmation**
 - `test` - Test execution

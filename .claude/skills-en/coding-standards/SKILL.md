@@ -149,37 +149,13 @@ Trace each answer to observed evidence until reaching a cause whose correction p
 
 ## Implementation Completeness Assurance
 
-### Required Procedure for Impact Analysis
+### Impact Tracing
 
-**Completion Criteria**: Complete all 3 stages
-
-#### 1. Discovery
-```bash
-Grep -n "TargetClass\|TargetMethod" -o content
-Grep -n "DependencyClass" -o content
-Grep -n "targetData\|SetData\|UpdateData" -o content
-```
-
-#### 2. Understanding
-**Mandatory**: Read all discovered files and include necessary parts in context:
-- Caller's purpose and context
-- Dependency direction
-- Data flow: generation -> modification -> reference
-
-#### 3. Identification
-Structured impact report (mandatory):
-```
-## Impact Analysis
-### Direct Impact: ClassA, ClassB (with reasons)
-### Indirect Impact: SystemX, ComponentY (with integration paths)
-### Processing Flow: Input -> Process1 -> Process2 -> Output
-```
-
-**Completion gate**: Discovery, Understanding, and Identification must all contain the required evidence before implementation begins.
+Before implementation, trace callers, dependencies, and data flow (generation -> modification -> reference) of the changed code until another file cannot change the change boundary defined in Change Boundary and Reference Representativeness. Carry the direct and indirect impact that the implementation or its verification relies on into that work.
 
 ### Unused Code Deletion Rule
 
-When unused code is detected, ask whether a current requirement and reachable call path use it before task completion.
+When unused code is detected, determine from current requirements and reachable call paths whether it is used before task completion.
 - Yes -> connect it to that call path and verify the requirement
 - No -> remove it; version control retains the prior implementation
 

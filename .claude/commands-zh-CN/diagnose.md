@@ -112,6 +112,8 @@ description: 调查问题、验证发现并推导解决方案
 - `prompt`: |
     请基于以下已验证的故障点推导解决方案。
 
+    现象：[用户报告的问题]
+    发生条件：[步骤 0 中记录的条件]
     已确认的故障点：[verifier 的 conclusion.confirmedFailurePoints]
     已被驳斥的故障点：[verifier 的 conclusion.refutedFailurePoints]
     故障点之间的关系：[verifier 的 conclusion.failurePointRelationships]

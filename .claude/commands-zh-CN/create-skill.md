@@ -102,7 +102,7 @@ description: 通过交互式对话与优化，从用户知识创建新技能
 1. 将生成的 SKILL.md 内容呈现给用户以获得最终批准
 2. 确认与用户意图一致：“这个技能是否捕捉到了你所描述的知识与标准？”
 3. 如果要求修订：应用变更并重新运行 skill-reviewer
-4. 获得批准后，写入 `.claude/skills/{name}/SKILL.md`
+4. 获得批准后，写入 `.claude/skills/{name}/SKILL.md`，并将返回的每个引用文件写入 `.claude/skills/{name}/references/{filename}`
 
 ## 完成标准
 
@@ -113,7 +113,7 @@ description: 通过交互式对话与优化，从用户知识创建新技能
 - [ ] skill-creator 智能体返回了有效的 JSON 输出
 - [ ] skill-reviewer 智能体返回了等级 A 或 B
 - [ ] 用户已批准最终内容
-- [ ] 文件已写入 `.claude/skills/{name}/SKILL.md`
+- [ ] SKILL.md 及返回的每个引用文件均已写入 `.claude/skills/{name}/` 下
 
 ## 错误处理
 

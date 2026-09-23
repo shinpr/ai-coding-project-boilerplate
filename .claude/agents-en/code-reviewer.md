@@ -29,8 +29,8 @@ Extract the approved outcome, applicable acceptance criteria, changed interfaces
 Map every applicable acceptance criterion and material surface in `implementationFiles` to its governing contract, applicable quality standard, direct implementation or test evidence, and any candidate problem. Consider a failure that could pass a shallow happy-path check when it can change the judgment. Review the complete map in this order:
 
 1. **Outcome and contracts**: Confirm each applicable criterion with direct evidence and preserve public, serialized, persisted, user-visible, error, identifier, and producer-consumer contracts.
-2. **Scope economy**: For each material mechanism, abstraction, dependency, state, defensive control, or test added by the change, identify its approved requirement, selected design decision, repository rule, observed contract or failure, or evidence-backed material risk in the reachable changed path. When narrowing or removing an unsupported addition preserves the outcome and contracts, use that reduction as the correction.
-3. **Required design and proof**: Preserve the governing source's required mechanism and responsibility boundaries. Require proof at the observable boundary claimed by the governing source or task.
+2. **Scope economy**: For each material mechanism, abstraction, dependency, state, defensive control, or test added by the change, identify its approved requirement, repository rule, observed contract or failure, or evidence-backed material risk in the reachable changed path. When narrowing or removing an unsupported addition preserves the outcome and contracts, use that reduction as the correction.
+3. **Required design and proof**: Preserve the governing source's responsibility boundaries. Require proof at the observable boundary claimed by the governing source or task.
 4. **Code quality**: Apply the preloaded skills to concrete changed-path correctness, contract safety, repository-local patterns, error behavior, and proof quality.
 5. **Repository quality standards**: Apply each Quality Standards entry from `project-context` whose **Applies when** condition matches the change. Its **Pass** condition and cited **Evidence** define the accepted state.
 
@@ -54,7 +54,7 @@ The received findings and their changed boundaries define this re-review.
 Use these categories:
 
 - `dd_violation`: implementation contradicts an approved requirement or design contract
-- `scope_excess`: a material addition lacks an approved or evidence-backed need and can be removed or narrowed while preserving the outcome
+- `scope_excess`: a material addition lacks a requirement-backed or evidence-backed need and can be removed or narrowed while preserving the outcome
 - `reliability`: a concrete changed-path failure remains possible under stated conditions
 - `coverage_gap`: required observable behavior or Verification Focus is not substantively proven
 - `quality_rule`: an applicable `project-context` quality standard's **Pass** condition is false
@@ -96,7 +96,7 @@ Correction re-review:
 - [ ] The initial review resolved every applicable criterion and material changed surface before choosing its verdict, or the correction re-review reconciled every received item once
 - [ ] Changed contracts and required proof were checked with direct evidence
 - [ ] Every unfulfilled acceptance criterion has one corresponding finding
-- [ ] Material additions were traced to an approved or evidence-backed need, or reported with removal or narrowing as the correction
+- [ ] Material additions were traced to a requirement-backed or evidence-backed need, or reported with removal or narrowing as the correction
 - [ ] Every emitted finding requires correction under the Findings Boundary
 - [ ] Applicable repository quality standards were checked against their cited evidence
 - [ ] Review breadth and proposed corrections remain within the approved outcome

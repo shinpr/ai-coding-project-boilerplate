@@ -82,12 +82,12 @@ integration-test-reviewerを呼び出す:
 - `designDocPath`: 該当レイヤーのDesign Doc
 - 変更されたテストファイル内にスケルトンの注釈がない場合は、レビュー対象の主張として生成されたスケルトンのパスをプロンプトに記載する
 
-**期待出力**: `status`（`approved`、`needs_revision`、`blocked`）、`qualityIssues[]`。修正後の再レビューでは、該当する場合に`prior_feedback_reconciliation`も返す。
+**期待出力**: `status`（`pass`、`needs_revision`、`blocked`）、`qualityIssues[]`。修正後の再レビューでは、該当する場合に`prior_feedback_reconciliation`も返す。
 
 ### Step 5: レビュー修正の適用
 
 Step 4の結果で分岐する:
-- `approved` → Step 6へ進む
+- `pass` → Step 6へ進む
 - `blocked` → 専門エージェントの結果の受理を適用する
 - `needs_revision` → レビュー対応を適用し、Step 3と同じスコープに`apply`としたquality-issueオブジェクト一式を`correction_findings`として加えて同じexecutorを再実行し、`prior_feedback`を渡してStep 4へ戻る
 
@@ -100,19 +100,19 @@ Step 4の結果で分岐する:
 - `direct_scope`: Step 3のdirect scopeと対象パスを再利用する
 - `runnableCheck`: 最新のexecutor結果にある`runnableCheck`
 
-**期待出力**: `status`（`approved`、`stub_detected`、`verification_incomplete`、`blocked`）
+**期待出力**: `status`（`pass`、`stub_detected`、`verification_incomplete`、`blocked`）
 
 結果で分岐する:
 - `stub_detected` → `incompleteImplementations`を変更せずStep 3へ戻し、Step 3→4→5→6を再実行する
 - `blocked` → 専門エージェントの結果の受理を適用する
 - `verification_incomplete` → 結果全体を「専門エージェントの結果の受理」にある再試行まで保持し、Step 7へ進む
-- `approved` → Step 7へ進む
+- `pass` → Step 7へ進む
 
 ### Step 7: コミットと検証不足の再試行
 
-quality-fixerが`approved`または`verification_incomplete`を返したら、リポジトリの通常のコミット境界とメッセージ規約に従って、完成したテスト変更をコミットする。
+quality-fixerが`pass`または`verification_incomplete`を返したら、リポジトリの通常のコミット境界とメッセージ規約に従って、完成したテスト変更をコミットする。
 
-すべてのレイヤーがクリーンなコミット境界に到達した後、同じレイヤーのquality-fixer入力で「専門エージェントの結果の受理」にある証明不足の再試行を適用する。`approved`なら証明不足を解消し、`stub_detected`ならStep 3〜6へ戻し、`verification_incomplete`が再度返った場合は完了報告に残してワークフローを続ける。
+すべてのレイヤーがクリーンなコミット境界に到達した後、同じレイヤーのquality-fixer入力で「専門エージェントの結果の受理」にある証明不足の再試行を適用する。`pass`なら証明不足を解消し、`stub_detected`ならStep 3〜6へ戻し、`verification_incomplete`が再度返った場合は完了報告に残してワークフローを続ける。
 
 完了報告には、再試行後も残った検証不足と、`decline`とした対応可能な検出事項がある場合に、それぞれのID、正典上の理由、エビデンスを記載する。
 

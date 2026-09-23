@@ -22,7 +22,7 @@ This skill converges **what to build**. How to build it, and which documents the
 
 `cost` is a rough band, not the effort estimate a work plan schedules against; requirements cannot support person-days. Its unknowns carry more decision weight than its size.
 
-Keep request signals classified as evaluation requests, speculative ideas, or prescribed mechanisms in active convergence context as judgment-only candidates. `requirements[]` and durable documents receive a candidate only after explicit user confirmation.
+Classify from the user's own retained wording rather than an analyzer's restatement of it. Wording that asks for an evaluation, describes a speculative idea, or suggests a mechanism stays in active convergence context as a judgment-only candidate. `requirements[]` and durable documents receive a candidate only after explicit user confirmation.
 
 Each field carries its own readiness label: `ready`, `weak`, or `weak-but-explicit` (weak, and the user agreed to leave it unresolved). Only the user sets `weak-but-explicit`. Requirements are converged when every applicable field is `ready` or `weak-but-explicit`.
 
@@ -30,7 +30,7 @@ Judgment rules per field: [references/criteria.md](references/criteria.md).
 
 ## Hearing Protocol
 
-Use the available scope and cost evidence for both elicitation and judgment, then ask only for product choices that the repository cannot answer. Repeat scope and cost analysis only when an answer changes the analysis target or required scope evidence.
+Use the available scope and cost evidence for both elicitation and judgment, then ask only for product choices that the repository cannot answer. Build `requirements[]` and the exclusion hearing from capabilities the user requested; an adjacent capability noticed during analysis stays out of both, so the user need not reject a capability they did not request. Repeat scope and cost analysis only when an answer changes the analysis target or required scope evidence.
 
 Register these steps before starting and record each step's evidence as it completes:
 
@@ -38,7 +38,7 @@ Register these steps before starting and record each step's evidence as it compl
 |------|--------|---------------------|
 | 1 | State the available scope facts, then separately what they imply for the requirement | Facts listed with their analysis evidence |
 | 2 | Ask about the fields below `ready`, at most two questions per message | One question per field below `ready` |
-| 3 | Record each answer as that field's value | The value is the option the user selected or the wording the user supplied |
+| 3 | Record each answer as that field's value | The value is the option the user explicitly selected or the wording the user supplied |
 | 4 | Re-ask once when a recorded value still fails its pass condition, then mark the field `weak-but-explicit` when the user agrees to leave the second answer as it stands | Two recorded answers, or the user's agreement to stop |
 | 5 | Judge each field against its pass condition and finalize the completed record | A convergence record with every field labeled |
 
@@ -55,7 +55,7 @@ When neither document exists, retain the record in the active context.
 ## Reference Protocol
 
 1. Read the convergence record from the prompt.
-2. Treat `nonGoals` as excluded from the current change and `desired-future` requirements as buildable scope. Evaluation requests, speculative ideas, and prescribed mechanisms that were not promoted create no implementation obligation; an accepted ADR may retain evaluated options as decision history.
+2. Treat `nonGoals` as excluded from the current change and `desired-future` requirements as buildable scope. Evaluation requests, speculative ideas, prescribed mechanisms, and agent-proposed capabilities that were not promoted create no implementation obligation; an accepted ADR may retain evaluated options as decision history.
 3. Treat a `weak-but-explicit` field as a recorded open question rather than a settled decision, and escalate when the work depends on resolving it.
 
 ## Quality Checklist

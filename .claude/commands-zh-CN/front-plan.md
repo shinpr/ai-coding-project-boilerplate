@@ -55,7 +55,6 @@ description: 从设计文档创建前端工作计划并获得计划批准
 - `subagent_type`: "work-planner"
 - `description`: "工作计划创建"
 - 将 `generatedFiles[]` 作为 `testSkeletons` 传递。空列表表示该计划不需要额外的集成/E2E 骨架任务
-  - 在末尾追加放置指引："集成测试与各阶段实现同时创建。fixture-e2e 测试与 UI 功能阶段并行创建。service-integration-e2e 测试在其所需的服务就绪之后执行。"
 
 - 其他提示词参数遵循 subagents-orchestration-guide 的“提示构建规则”
 
@@ -66,8 +65,8 @@ description: 从设计文档创建前端工作计划并获得计划批准
 - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md。评审工作计划自身的实现范围、任务、完成标准、依赖关系、执行顺序、来源锚点是否确切存在，以及验证是否可执行。从目标文档的‘约束文档’一节确定本次评审应采用哪些约束来源。"
 - 工作计划是设计文档的派生物，因此计划保真度方面的评审意见无需用户介入即可解决。根据评审者的 `verdict.decision` 分支处理：
   - `needs_revision`：推进评审裁定的修正复评与收敛；当相应条件成立时，退出至父工作流的“需求变更检测”或不可逆操作授权条件。对于退回的修正使用 update 模式的 work-planner
-  - `approved`，或评审裁定达到其收敛条件：进入步骤 5
-  - `rejected`：应用上级“需求变更检测”
+  - `pass`，或评审裁定达到其收敛条件：进入步骤 5
+  - `rejected`：按评审裁定的“评审结论条件”处理
 
 ### 步骤 5：提请批准
 - 将评审后的工作计划提交给用户进行批量批准。如果用户要求修改，使用修订后的参数重新调用 work-planner，并重新执行步骤 4

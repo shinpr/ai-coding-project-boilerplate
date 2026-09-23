@@ -15,7 +15,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
    - 执行适用于前端项目的质量检查
    - 修复与当前变更相关的失败，或保持该变更一致性所需承担的责任范围内的失败；将无关的失败单独记录
    - 在阶段 4 进行最终确认
-   - 当实现已完成且每一项与变更相关的可运行检查都通过时返回 `approved`；记录无法运行的检查和无关的基线失败，而不将其视为产品决策
+   - 当实现已完成且每一项与变更相关的可运行检查都通过时返回 `pass`；记录无法运行的检查和无关的基线失败，而不将其视为产品决策
 
 2. **完全自包含的修复执行**
    - 分析错误根因，自主执行自动修复和手动修复
@@ -96,14 +96,14 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 - 由当前变更引起的失败，或已确认成果所需依赖中的失败 → 修复并重新运行该检查
 - 与已确认成果及其所需依赖无关的、已验证的预先存在的失败 → 运行每一项不受影响的检查，并在 `checksPerformed` 中记录命令、失败情况和基线依据
-- 不可用的工具、服务、凭据、种子数据或环境前提 → 运行每一项不受影响的检查，并在 `checksPerformed` 及适用时的 `taskVerification.skipped` 中记录方法和确切原因
-- 实现已完成且每一项可运行的、与变更相关的检查都通过 → 返回 `approved`；结果准确说明哪些已运行、哪些无法运行
+- 不可用的工具、服务、凭据、种子数据或环境前提 → 运行每一项不受影响的检查，并在 `checksPerformed` 及适用时的 `taskVerification.skipped` 中记录方法和确切原因。若无法运行的检查是任务验证方法或验收标准所需的证明，则返回 `verification_incomplete`；否则继续朝 `pass` 推进
+- 实现已完成且每一项可运行的、与变更相关的检查都通过 → 返回 `pass`；结果准确说明哪些已运行、哪些无法运行
 - 无法从所提供的约束依据和仓库依据中确定所需行为 → 返回 `verification_incomplete`，并说明缺失的约束依据和受影响的检查
 - 已确认的成果、目标状态需求和非目标无法同时成立，需要用户选择变更哪一项，或某项不可逆的外部操作需要授权 → 返回 `blocked`
 
 ### 步骤 6：返回 JSON 结果
 将以下之一作为最终响应返回（schema 见输出格式）：
-- `status: "approved"` — 实现已完成，且每一项可运行的、与变更相关的检查都通过；无法运行的检查和无关的基线失败已在现有检查结果中记录
+- `status: "pass"` — 实现已完成，且每一项可运行的、与变更相关的检查都通过；无法运行的检查和无关的基线失败已在现有检查结果中记录
 - `status: "stub_detected"` — 步骤 1 发现未完成实现（`type: "missing_logic"`），或步骤 3 实质性检查发现无法在 fixer 范围内修复的空洞测试（`type: "hollow_test"`）
 - `status: "verification_incomplete"` — 所需的证明或约束依据仍不可得
 - `status: "blocked"` — 一个已确认的价值边界选择或不可逆的外部操作授权属于用户的职责
@@ -144,7 +144,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 #### 阶段 4：最终确认
 - 确认所有阶段的结果
-- 判定 approved 状态
+- 判定 `pass` 状态
 **通过标准**：阶段 1-3 均通过且零错误
 
 ## 状态判定标准
@@ -156,11 +156,11 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 两种情况下，在实现或测试主体完成之前均返回 `stub_detected`；完成后可重新进行验证。
 
-### approved（所有可运行的、与变更相关的质量检查通过）
+### pass（所有可运行的、与变更相关的质量检查通过）
 - 所有已执行的测试均通过（React Testing Library）
 - 当某次测试运行被引用为任务文件中列出的验收标准，或直接范围的验证条件的依据时，至少有一个被执行的断言验证了该条件的可观测行为（有意为之的“不存在”类断言在“不存在”正是该条件的预期时也算数）。未引用测试依据的任务（例如无行为变化的纯重构）不受此标准影响
 - 每一项可运行的 build、type、lint 和 format 检查都成功
-- 任何无法运行的检查，以及任何已验证的无关基线失败，都需注明其观察到的原因；`approved` 不声称此类检查已运行或已通过
+- 任何无法运行的检查，以及任何已验证的无关基线失败，都需注明其观察到的原因；`pass` 不声称此类检查已运行或已通过
 
 ### verification_incomplete（所需证明仍不可得）
 
@@ -200,7 +200,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 | status | 必需字段 | 使用场景 |
 |---|---|---|
-| `approved` | `summary`、`checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}`（各自为 `{status, commands[], …}`；`phase3_tests` 可包含 `testsRun`、`testsPassed`）、`fixesApplied[{type: auto\|manual, category, description, filesCount}]`、`metrics: {totalErrors, totalWarnings, executionTime}`、`nextActions` | 实现已完成且每个可运行的、与变更相关的阶段均通过；无法运行的检查和无关的基线失败已在既有检查结果中明确说明 |
+| `pass` | `summary`、`checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}`（各自为 `{status, commands[], …}`；`phase3_tests` 可包含 `testsRun`、`testsPassed`）、`fixesApplied[{type: auto\|manual, category, description, filesCount}]`、`metrics: {totalErrors, totalWarnings, executionTime}`、`nextActions` | 实现已完成且每个可运行的、与变更相关的阶段均通过；无法运行的检查和无关的基线失败已在既有检查结果中明确说明 |
 | `stub_detected` | `reason`、`incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | 步骤 1 在范围内发现桩代码/TODO/占位符（`type: "missing_logic"`，立即返回，早于任何质量检查）；或实质性检查（步骤 3）发现无法在 fixer 范围内修复的空洞测试（`type: "hollow_test"`） |
 | `verification_incomplete` | `reason`、`missingPrerequisites[{type, description, affectedTests, resolutionSteps}]` | 范围内补救后，所需的证明或约束依据仍不可得 |
 | `blocked` | `reason`、`evidence[]`、`requiredDecision` | 已确认的价值边界冲突，或不可逆的外部操作需要授权 |
@@ -218,7 +218,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 ```
 
 **处理规则**（内部）：
-- 发现与变更相关的错误 → 立即修复并继续，直到 `approved`
+- 发现与变更相关的错误 → 立即修复并继续，直到 `pass`
 - `blocked` 仅保留给已确认的价值边界选择或不可逆的外部操作授权
 
 ## 中间进度报告
@@ -245,7 +245,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 ## 完成标准
 
-- [ ] 最终响应是单个 JSON，状态为 `approved`、`stub_detected`、`verification_incomplete` 或 `blocked` 之一
+- [ ] 最终响应是单个 JSON，状态为 `pass`、`stub_detected`、`verification_incomplete` 或 `blocked` 之一
 
 ## 修复执行策略
 
