@@ -36,6 +36,8 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 
 ### 4. requirement-analyzer後 [停止]
 
+ヒアリングを実行する前に、`requirement-convergence` スキルを実行する。
+
 保持しているユーザーの文言から収束記録を組み立て、requirement-analyzer の `scopeEvidence`、`costEvidence`、`questions` を裏付けとなる事実として用いて、requirement-convergence のヒアリングを実行する。収束記録と構造スケール（Structural Scale）を判定するのはオーケストレーターである。
 
 ユーザーが質問に回答した時：
@@ -82,7 +84,7 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 
 ### タスク実行品質サイクル
 以下の依存順のステップを実行し、現在のステップで定められたレスポンス条件を満たした場合にのみ次へ進む：
-1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small では承認済みの成果・出典・影響パス・検証条件を直接渡し、タスクファイルは作成しない。
+1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small ではタスクファイルを作らないため、承認済みの成果・出典・影響パス・検証条件を実行スコープとして直接渡す。
 2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → subagents-orchestration-guideの「専門エージェントの結果の受理」を適用する
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスと `diffBase: HEAD` を渡す。Medium/Large ではさらに `taskFiles: [現在のタスクファイルパス]` を渡し、Small では直接スコープの検証主張を渡す。その後 `status` で分岐する
@@ -123,7 +125,7 @@ Medium/Large では、完了レポートの前に、レビュー由来の修正�
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md`（複層計画のfrontend部分）
 - 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
 
-タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが完了レポートをブロックしない。
+ファイルシステムエラーによってタスクファイルが残った場合は、そのクリーンアップ失敗を記録したうえで完了レポートを続ける。
 
 ## 実行方法
 

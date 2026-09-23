@@ -36,6 +36,8 @@ When the orchestrator determines from `scopeEvidence.affectedLayers` that the wo
 
 ### 4. After requirement-analyzer [Stop]
 
+Execute the `requirement-convergence` skill before running the hearing.
+
 Build the convergence record from the user's retained wording, using requirement-analyzer `scopeEvidence`, `costEvidence`, and `questions` as supporting facts, then run the requirement-convergence hearing. The orchestrator judges the convergence record and Structural Scale.
 
 When user responds to questions:
@@ -82,7 +84,7 @@ Return to Requirement Change Detection when confirmed outcome, desired-future re
 
 ### Task Execution Quality Cycle
 Execute the following dependency-ordered steps, advancing only when the current step's response condition is satisfied:
-1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly; do not create a task file.
+1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly as the execution scope, since Small produces no task file.
 2. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → Apply subagents-orchestration-guide Specialist Result Acceptance
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
@@ -123,7 +125,7 @@ This recipe is scale-agnostic and may execute single-layer or multi-layer plans,
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md` (frontend portion of multi-layer plan)
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review
 
-If task files cannot be deleted (filesystem error), report the failure but do not block the completion report.
+If a filesystem error leaves task files behind, continue the completion report with that cleanup failure recorded.
 
 ## Execution Method
 

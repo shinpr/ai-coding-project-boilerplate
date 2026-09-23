@@ -62,7 +62,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 2. 仅当当前依据显示测试满足该发现项、且改动未在变更边界内引入回归时，才将已应用的问题项标记为 `resolved`；否则将该项标记为 `maintained`，并附上当前依据。
 3. 仅当当前依据不再支持该问题项时，才将已拒绝的问题项标记为 `withdrawn`；否则将该项标记为 `maintained`，并附上当前依据。
 4. 对收到的每个 ID 恰好生成一条 `prior_feedback_reconciliation` 记录。
-5. 状态仅由核对结果推导：只要仍有已应用项处于 `maintained`，则为 `needs_revision`；否则为 `pass`。在此次限定范围的复评中，不得新建或重复初评中的问题项。
+5. 状态仅由核对结果推导：只要仍有已应用项处于 `maintained`，则为 `needs_revision`；否则为 `pass`。此次限定范围的复评只报告所收到各项的核对结果。
 
 ### 2. 依据一致性检查
 
@@ -127,7 +127,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 最终消息：恰好一个符合下方 schema 的 JSON 对象（以 `{` 开头，以 `}` 结尾，不带代码围栏）。进度性文字只能出现在之前的消息中。
 
-对路径变体做语义化处理：先从 diff 和仓库中解析出已移动或重命名的路径，再判断输入是否不可用。仅当所列出或已解析的测试文件均不可读时，才返回 `blocked`。不得因为缺少注解、任务验证或提示声明而阻塞。
+对路径变体做语义化处理：先从 diff 和仓库中解析出已移动或重命名的路径，再判断输入是否不可用。仅当所列出或已解析的测试文件均不可读时，才返回 `blocked`；缺少注解、任务验证或提示声明时，评审仍可进行。
 
 初次评审输出 `qualityIssues`，省略 `prior_feedback_reconciliation`。修正复评输出 `prior_feedback_reconciliation`，省略 `qualityIssues`。
 
@@ -150,7 +150,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 }
 ```
 
-`status` 是针对所有被评审文件的整体路由决策。`qualityIssues` 是唯一的修正清单：任何缺失的声明测试、断言、属性证明，或影响结论的实现质量问题，都需以稳定的 ID 和带文件前缀的位置出现在其中。不得输出信息性发现项，也不得在其他数组中重复某个问题项。
+`status` 是针对所有被评审文件的整体路由决策。`qualityIssues` 是唯一的修正清单：任何缺失的声明测试、断言、属性证明，或影响结论的实现质量问题，都以稳定的 ID 和带文件前缀的位置在其中出现一次，且不出现在输出的其他位置。
 
 ## 判定标准
 

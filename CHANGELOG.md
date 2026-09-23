@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- **Workflow handoffs** (agents, commands, skills) — Corrected missing or mismatched inputs and results across reverse-engineering, review, planning, diagnosis, and skill creation, and quality checks now report required proof that cannot run as `verification_incomplete`. Applied across en/ja/zh-CN.
+- **Workflow handoffs** (agents, commands, skills) — Corrected missing or mismatched inputs and results across reverse-engineering, review, planning, diagnosis, and skill creation, the implement recipe loads requirement-convergence before the requirements hearing, and quality checks now report required proof that cannot run as `verification_incomplete`. Applied across en/ja/zh-CN.
 
 ### Removed
 

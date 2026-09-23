@@ -91,7 +91,7 @@ UI Specでレスポンシブ動作が定義されている場合、UI Specが挙
 
 ## スケルトンコメント形式
 
-E2Eテストスケルトンは、integration-e2e-testing の「必須スケルトン形式」に従う。保留スイートの形と必須アノテーションもそれに含まれる。`@lane:` には `fixture-e2e` または `service-integration-e2e` を指定する（上記「レーン選択」参照）。
+E2Eテストスケルトンは保留スイートであり、`AC`・`Behavior`・`@lane`・`@dependency`・`Primary failure mode`・`Proof obligation` のコメントが、実装するテストが証明すべき内容を定める。これらのコメントを残したまま、保留中の各ケースを実装したテストに置き換える。`@lane` は `fixture-e2e` または `service-integration-e2e` である（上記「レーン選択」参照）。
 
 **レーン別の `@dependency` 選択**:
 - `fixture-e2e` → `@dependency: full-ui (mocked backend)`（ライブサービスなし、`page.route()` またはフィクスチャローダーでネットワークを傍受）

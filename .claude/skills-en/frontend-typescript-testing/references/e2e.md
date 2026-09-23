@@ -91,7 +91,7 @@ When the UI Spec defines responsive behavior, assert it at each viewport the UI 
 
 ## Skeleton Comment Format
 
-E2E test skeletons use the integration-e2e-testing Required Skeleton Format, including its pending-suite form and required annotations, with `@lane:` set to `fixture-e2e` or `service-integration-e2e` (see Lane Selection above).
+An E2E test skeleton is a pending suite whose `AC`, `Behavior`, `@lane`, `@dependency`, `Primary failure mode`, and `Proof obligation` comments define what the implemented test must prove. Keep those comments and replace each pending case with the implemented test; `@lane` is `fixture-e2e` or `service-integration-e2e` (see Lane Selection above).
 
 **`@dependency` selection by lane**:
 - `fixture-e2e` → `@dependency: full-ui (mocked backend)` (no live services; intercept network via `page.route()` or fixture loaders)

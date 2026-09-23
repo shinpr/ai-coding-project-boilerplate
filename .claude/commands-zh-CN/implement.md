@@ -36,6 +36,8 @@ description: 编排从需求到部署的完整实现生命周期
 
 ### 4. requirement-analyzer 之后 [停止]
 
+执行访谈前，先执行 `requirement-convergence` 技能。
+
 以所保留的用户原话为基础构建收敛记录，并以 requirement-analyzer 的 `scopeEvidence`、`costEvidence` 和 `questions` 作为辅助事实，然后执行 requirement-convergence 访谈。收敛记录与结构规模（Structural Scale）由编排者判断。
 
 当用户回答问题时：
@@ -82,7 +84,7 @@ description: 编排从需求到部署的完整实现生命周期
 
 ### 任务执行质量循环
 执行以下按依赖顺序排列的步骤，仅当当前步骤所述的响应条件被满足时才推进：
-1. **调用 task-executor**：执行实现（跨层时参见“分层感知智能体路由”）。Medium/Large 传递任务文件。Small 直接传递已批准的成果、约束来源、受影响路径和验证条件；不创建任务文件。
+1. **调用 task-executor**：执行实现（跨层时参见“分层感知智能体路由”）。Medium/Large 传递任务文件。Small 不产生任务文件，因此直接将已批准的成果、约束来源、受影响路径和验证条件作为执行范围传递。
 2. **检查 task-executor 的响应**：
    - `status: "escalation_needed"` 或 `"blocked"` → 应用 subagents-orchestration-guide 的“专家结果受理”
    - `requiresTestReview` 为 `true` → 执行 **integration-test-reviewer**，传递已变更的集成/E2E 测试路径和 `diffBase: HEAD`。对于 Medium/Large 还需传递 `taskFiles: [当前任务文件路径]`；对于 Small 则改为传递直接范围的验证主张。然后依据其 `status` 分支
@@ -123,7 +125,7 @@ description: 编排从需求到部署的完整实现生命周期
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md`（多层计划的前端部分）
 - 保留工作计划本身（`docs/plans/{plan-name}.md`）—— 由用户决定是否在最终评审后删除它
 
-若任务文件无法删除（文件系统错误），报告该失败，但不要阻断完成报告。
+如果文件系统错误导致任务文件残留，记录该清理失败并继续完成报告。
 
 ## 执行方式
 

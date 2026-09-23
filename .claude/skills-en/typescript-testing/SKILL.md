@@ -35,7 +35,7 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
    - Verify flows that implement a primary acceptance criterion or cross an in-process component boundary
 
 3. **Cross-functional Verification**
-   - When a new feature reaches a shared integration point, continuity of the existing feature becomes a proof obligation if its failure would break a primary user journey or public contract, or degrade a secondary observable behavior. Select the boundary that proves it per integration-e2e-testing
+   - When a new feature reaches a shared integration point, continuity of the existing feature becomes a proof obligation if its failure would break a primary user journey or public contract, or degrade a secondary observable behavior. Prove it at the cheapest boundary that can expose its failure
    - Verification pattern: Existing feature operation -> Enable new feature -> Verify continuity of existing features
    - Success criteria: Preserve the response fields and observable behavior named by the source acceptance criteria; apply a processing-time threshold only when a requirement or project configuration defines its value and measurement method
    - Designed for automatic execution in CI/CD pipelines

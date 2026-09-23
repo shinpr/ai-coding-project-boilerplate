@@ -30,7 +30,7 @@ Judgment rules per field: [references/criteria.md](references/criteria.md).
 
 ## Hearing Protocol
 
-Use the available scope and cost evidence for both elicitation and judgment, then ask only for product choices that the repository cannot answer. Repeat scope and cost analysis only when an answer changes the analysis target or required scope evidence.
+Use the available scope and cost evidence for both elicitation and judgment, then ask only for product choices that the repository cannot answer. Build `requirements[]` and the exclusion hearing from capabilities the user requested; an adjacent capability noticed during analysis stays out of both, so the user need not reject a capability they did not request. Repeat scope and cost analysis only when an answer changes the analysis target or required scope evidence.
 
 Register these steps before starting and record each step's evidence as it completes:
 

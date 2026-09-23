@@ -91,7 +91,7 @@ service-integration-e2e 测试需要一个正在运行、具有真实数据状�
 
 ## 骨架注释格式
 
-E2E 测试骨架采用 integration-e2e-testing 的“必需的骨架格式”，包括其中的挂起（pending）套件形式和必需注解，并将 `@lane:` 设为 `fixture-e2e` 或 `service-integration-e2e`（见上文测试通道选择）。
+E2E 测试骨架是挂起（pending）套件，其中的 `AC`、`Behavior`、`@lane`、`@dependency`、`Primary failure mode` 和 `Proof obligation` 注释规定了实现后的测试必须证明的内容。保留这些注释，并将每个挂起用例替换为实现后的测试；`@lane` 为 `fixture-e2e` 或 `service-integration-e2e`（见上文测试通道选择）。
 
 **按通道选择 `@dependency`**：
 - `fixture-e2e` → `@dependency: full-ui (mocked backend)`（无真实服务；通过 `page.route()` 或 fixture 加载器拦截网络）
