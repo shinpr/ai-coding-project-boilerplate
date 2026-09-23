@@ -36,7 +36,7 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 
 ### 4. requirement-analyzer後に停止
 
-`requestSignals`、`scopeEvidence`、`costEvidence`、`questions` を用いて requirement-convergence のヒアリングを実行する。収束記録と構造スケール（Structural Scale）を判定するのはオーケストレーターである。
+保持しているユーザーの文言から収束記録を組み立て、requirement-analyzer の `scopeEvidence`、`costEvidence`、`questions` を裏付けとなる事実として用いて、requirement-convergence のヒアリングを実行する。収束記録と構造スケール（Structural Scale）を判定するのはオーケストレーターである。
 
 ユーザーが質問に回答した時：
 - 回答を収束記録に記録し、影響を受けたフィールドと構造スケールを再判定する
@@ -59,7 +59,7 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 - [ ] subagents-orchestration-guideスキルの該当フローを確認した
 - [ ] 現在の進捗位置を特定した
 - [ ] 次のステップを明確にした
-- [ ] 停止ポイントを認識した → **全ての停止ポイントでAskUserQuestionを使用**
+- [ ] 停止ポイントを認識した → **全ての停止ポイントでユーザーの明示的な確認を待つ**
 - [ ] 各Design Doc作成前にcodebase-analyzerを含めた
 - [ ] 各Design Docについて document-reviewer の前に code-verifier を含めた
 - [ ] タスク実行後の4ステップサイクル（task-executor → 実行結果で分岐 → quality-fixer → コミット）を理解した
@@ -88,14 +88,14 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスと `diffBase: HEAD` を渡す。Medium/Large ではさらに `taskFiles: [現在のタスクファイルパス]` を渡し、Small では直接スコープの検証主張を渡す。その後 `status` で分岐する
      - `needs_revision` → レビュー対応を適用し、元の実行スコープに、`apply`のquality-issueオブジェクト一式を`correction_findings`として逐語で加えてステップ1に戻る
      - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻し、それ以外はレビューを未実行として`blockingReason`を記録してステップ3へ進む
-     - `approved` → ステップ3 へ
+     - `pass` → ステップ3 へ
    - それ以外 → ステップ3 へ
 3. **quality-fixer を呼び出す**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して、全品質チェックと修正を実行する（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large では現在の `task_file` も渡し、Small では直接の実行スコープを渡す。実装ステップの `runnableCheck` と、出典ソースまたはリポジトリの規約が正となる品質コマンドを定めている場合は `qualityCommand` を渡す。
    - `stub_detected` → 元の実行スコープと`incompleteImplementations[]`を渡してtask-executorを再実行し、ステップ1に戻る
    - `blocked` → 専門エージェントの結果の受理を適用する
    - `verification_incomplete` → 結果を省略せず最終再試行まで保持し、ステップ4へ進む
-   - `approved` → ステップ4へ
-4. **コミット**: `approved`または`verification_incomplete`の後に、完了したタスクの変更セットをコミットする
+   - `pass` → ステップ4へ
+4. **コミット**: `pass`または`verification_incomplete`の後に、完了したタスクの変更セットをコミットする
 
 ### 実装後レビュー（Medium/Large、全タスク完了後）
 
@@ -109,11 +109,11 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 
 subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー対応の収束条件に達した後、最終クリーンアップへ進む。
 
-Smallでは、このドキュメント依存のレビューを省く。タスクのコミット後、保持した証明不足を1回再試行し、観測した`observable_verification`のエビデンスをもって完了する。なお証明できない内容があれば報告する。その再試行がリポジトリを変更した場合は、該当するquality-fixerが `approved` または `verification_incomplete` を返した後に、完了レポートの前でその変更をコミットする。
+Smallでは、このドキュメント依存のレビューを省く。タスクのコミット後、保持した証明不足を1回再試行し、観測した`observable_verification`のエビデンスをもって完了する。なお証明できない内容があれば報告する。その再試行がリポジトリを変更した場合は、該当するquality-fixerが `pass` または `verification_incomplete` を返した後に、完了レポートの前でその変更をコミットする。
 
 ### 最終クリーンアップ
 
-Medium/Large では、完了レポートの前に、レビュー由来の修正や証明不足の再試行が最後のタスクコミット以降に未コミットで残した変更を、該当するquality-fixerが `approved` または `verification_incomplete` を返した後にコミットする。その後、本レシピが処理した実装タスクファイルを削除する。Small ではタスクファイルを作成しない。処理したタスクファイルはレシピ実行間で保持しない一時的な作業状態である。
+Medium/Large では、完了レポートの前に、レビュー由来の修正や証明不足の再試行が最後のタスクコミット以降に未コミットで残した変更を、該当するquality-fixerが `pass` または `verification_incomplete` を返した後にコミットする。その後、本レシピが処理した実装タスクファイルを削除する。Small ではタスクファイルを作成しない。処理したタスクファイルはレシピ実行間で保持しない一時的な作業状態である。
 
 本レシピは規模に依存せず、単層・複層のいずれの計画も実行する可能性があるため、クリーンアップは、計画書の Executor lane から生成されうるすべてのタスク命名パターンを対象とする:
 

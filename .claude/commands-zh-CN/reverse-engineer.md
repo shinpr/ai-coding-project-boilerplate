@@ -147,11 +147,11 @@ prompt: |
 
 #### 步骤 5：修订（条件性）
 
-依据 `verdict.decision` 分支。`approved` 表示该单元完成。对于 `needs_revision`，应用评审裁定，将完整的 `apply` 问题对象原样传给处于 update 模式的 `prd-creator`，然后带 `prior_feedback` 重跑步骤 3-4。仅包含 decline 的结果即表示评审完成。对于 `rejected`，应用上级“需求变更检测”。
+依据 `verdict.decision` 分支。`pass` 表示该单元完成。对于 `needs_revision`，应用评审裁定，将完整的 `apply` 问题对象原样传给处于 update 模式的 `prd-creator`，然后带 `prior_feedback` 重跑步骤 3-4。仅包含 decline 的结果即表示评审完成。对于 `rejected`，应用上级“需求变更检测”。
 
 #### 单元完成
 
-- [ ] 评审结论为 `approved`
+- [ ] 评审结论为 `pass`
 - [ ] 人工评审通过（若在步骤 0 中启用）
 
 **下一步**：处理下一个单元。所有单元完成后 → 阶段 2。
@@ -285,11 +285,11 @@ prompt: |
 
 #### 步骤 10：修订（条件性）
 
-依据 `verdict.decision` 分支。`approved` 表示该单元完成。对于 `needs_revision`，应用评审裁定，将完整的 `apply` 问题对象原样传给处于 update 模式的 `technical-designer` 或 `technical-designer-frontend`，然后带 `prior_feedback` 重跑步骤 8-9。仅包含 decline 的结果即表示评审完成。对于 `rejected`，应用上级“需求变更检测”。
+依据 `verdict.decision` 分支。`pass` 表示该单元完成。对于 `needs_revision`，应用评审裁定，将完整的 `apply` 问题对象原样传给处于 update 模式的 `technical-designer` 或 `technical-designer-frontend`，然后带 `prior_feedback` 重跑步骤 8-9。仅包含 decline 的结果即表示评审完成。对于 `rejected`，应用上级“需求变更检测”。
 
 #### 单元完成
 
-- [ ] 评审结论为 `approved`
+- [ ] 评审结论为 `pass`
 - [ ] 人工评审通过（若在步骤 0 中启用）
 
 **下一步**：处理下一个单元。所有单元完成后 → 最终报告。

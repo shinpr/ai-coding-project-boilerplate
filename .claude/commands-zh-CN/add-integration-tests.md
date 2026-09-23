@@ -82,12 +82,12 @@ description: 使用设计文档为现有代码库添加集成/E2E 测试
 - `designDocPath`: 该层对应的设计文档
 - 当已变更的测试文件中没有骨架的注释标注时，在提示词中指明所生成的骨架路径，作为被评审的主张
 
-**期望输出**：`status`（`approved`、`needs_revision` 或 `blocked`）、`qualityIssues[]`，以及在适用时用于修正后复评的 `prior_feedback_reconciliation`
+**期望输出**：`status`（`pass`、`needs_revision` 或 `blocked`）、`qualityIssues[]`，以及在适用时用于修正后复评的 `prior_feedback_reconciliation`
 
 ### 第 5 步：应用评审修复
 
 检查第 4 步的结果：
-- `approved` → 进入第 6 步
+- `pass` → 进入第 6 步
 - `blocked` → 应用“专家结果受理”
 - `needs_revision` → 应用“评审裁定”，以第 3 步的原始范围加上完整的 `apply` 质量问题对象作为 `correction_findings`，重新调用同一层的执行者，然后带着 `prior_feedback` 回到第 4 步
 
@@ -100,19 +100,19 @@ description: 使用设计文档为现有代码库添加集成/E2E 测试
 - `direct_scope`: 复用第 3 步的直接范围和受影响路径
 - `runnableCheck`: 最近一次执行者结果中的 `runnableCheck`
 
-**期望输出**：`status`（`approved`、`stub_detected`、`verification_incomplete` 或 `blocked`）
+**期望输出**：`status`（`pass`、`stub_detected`、`verification_incomplete` 或 `blocked`）
 
 检查结果：
 - `stub_detected` → 保持 `incompleteImplementations` 不变回到第 3 步，然后重新执行第 3→4→5→6 步
 - `blocked` → 应用“专家结果受理”
 - `verification_incomplete` → 完整保留该结果，直到“专家结果受理”中的重试环节，并进入第 7 步
-- `approved` → 进入第 7 步
+- `pass` → 进入第 7 步
 
 ### 第 7 步：提交与保留的证明局限重试
 
-当结果为 `approved` 或 `verification_incomplete` 时，按照仓库常规的提交边界和提交信息约定，提交已完成的测试变更。
+当结果为 `pass` 或 `verification_incomplete` 时，按照仓库常规的提交边界和提交信息约定，提交已完成的测试变更。
 
-在每一层都达到干净的提交边界之后，使用相同的该层 quality-fixer 输入，应用“专家结果受理”中的证明局限重试。结果为 `approved` 时解除该证明局限；`stub_detected` 则回到第 3→6 步处理；再次返回 `verification_incomplete` 时，将该结果保留至完成报告，同时继续推进工作流。
+在每一层都达到干净的提交边界之后，使用相同的该层 quality-fixer 输入，应用“专家结果受理”中的证明局限重试。结果为 `pass` 时解除该证明局限；`stub_detected` 则回到第 3→6 步处理；再次返回 `verification_incomplete` 时，将该结果保留至完成报告，同时继续推进工作流。
 
 在完成报告中，列出每一项重复出现的验证局限，以及处置为 `decline` 的每一项可处理的发现项，并在存在时附上其 ID、约束来源上的理由和依据。
 

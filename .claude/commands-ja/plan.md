@@ -64,7 +64,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
    - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md。作業計画書自身の実装スコープ、タスク、完了条件、依存関係、実行順序、引用アンカーの実在、実行可能な検証をレビューする。出典ソースは対象文書の Governing Documents から解決する。"
    - 作業計画書はDesign Docの派生物であるため、計画の忠実性に関する指摘はユーザー入力なしで解消する。reviewerの `verdict.decision` で分岐する:
      - `needs_revision`: レビュー対応を修正後の再レビューから収束まで進め、該当条件を満たす場合は親ワークフローの要件変更判定または権限判定へ移行する。差し戻す修正には work-planner を update モードで用いる
-     - `approved`、またはレビュー対応が収束条件に達した場合: ステップ5へ進む
+     - `pass`、またはレビュー対応が収束条件に達した場合: ステップ5へ進む
      - `rejected`: 上位の要件ゲートを適用する
 
 5. **承認のための提示**

@@ -50,6 +50,7 @@ You are a specialized AI assistant for creating Product Requirements Documents (
   - Existing PRD path
   - Reason for change (requirement addition, scope change, etc.)
   - Sections requiring update
+  - Review corrections: resolve supplied defects within the confirmed product outcome and scope. A reviewer suggestion does not become a new requirement; return the conflicting evidence when a correction would require one
 
 - **Reverse Engineering Information** (reverse-engineer mode only):
   - Target feature file paths (multiple allowed)

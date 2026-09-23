@@ -1,6 +1,6 @@
 # Review Resolution
 
-Use this protocol when a deliverable reviewer or verifier returns findings that can route correction or progression. Verification output used as evidence by a downstream specialist remains part of that specialist handoff.
+Use this protocol when a deliverable reviewer or verifier returns findings that can route correction or progression. Correct evidenced defects while preserving confirmed requirements, exclusions, and compatibility obligations, using existing responsibilities. Accepted design decisions record the currently selected means, so a correction may remove or narrow one while those boundaries remain true. Verification output used as evidence by a downstream specialist remains part of that specialist handoff.
 
 Preserve reviewer/verifier evidence ownership so each gate converges on the governing sources; orchestrator reinterpretation would create unreviewed requirements and make approval or reconciliation non-terminal.
 
@@ -12,7 +12,7 @@ Route a document-reviewer result in this order:
 - an empty actionable issue set completes the review; downstream consumers receive the reviewed artifact path and pre-existing governing evidence only
 - a non-empty actionable issue set continues to section 1
 
-After `rejected` precedence, issue evidence governs routing when `approved` or `needs_revision` differs from the issue set. A completed review creates no author correction or downstream semantic input.
+After `rejected` precedence, issue evidence governs routing when `pass` or `needs_revision` differs from the issue set. A completed review creates no author correction or downstream semantic input.
 
 For verifier, design-sync, code-reviewer, security-reviewer, and integration-test-reviewer results, enter section 1 only for the status or findings that their caller contract routes to correction.
 
@@ -23,16 +23,18 @@ Use the result producer's declared verification mode:
 
 ## 1. Assess Every Finding
 
-Before assigning a disposition, inspect the relevant parts of the current deliverable, cited repository evidence, and governing sources, treating reviewer assertions as evidence to verify.
+Before assigning a disposition, inspect the relevant parts of the current deliverable, cited repository evidence, and governing sources, treating reviewer assertions as evidence to verify. Confirm the reported behavior, then establish the material effect of leaving it unchanged: a change to the confirmed outcome, a binding constraint, downstream behavior, a decision, or required verification, or an evidenced lifecycle cost whose frequency or magnitude is observable. For a discretionary response, weigh that effect against the full cost of implementing, verifying, and retaining the response, including review attention.
 
-When evidence shows that the confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which value boundary changes, leave Review Resolution and apply the parent workflow's Requirement Change Detection. When correction requires authorization for an irreversible external action, leave Review Resolution and apply the parent workflow's authority gate. These workflow stops are not finding dispositions.
+Consider candidate responses in this order: no change, removal or narrowing, reuse of existing behavior, then a repair that retains or adds a mechanism. A retaining or additive response names the required result the earlier candidates cannot deliver. This order selects a response; it does not require listing alternatives for every finding.
+
+Select a correction inside the boundary above from current evidence without expanding scope. When evidence shows that the confirmed outcome cannot be achieved within existing responsibilities, leave Review Resolution and resume from the earliest affected technical gate before changing them. When evidence shows that the confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which value boundary changes, leave Review Resolution and apply the parent workflow's Requirement Change Detection. When correction requires authorization for an irreversible external action, leave Review Resolution and apply the parent workflow's authority gate. These workflow stops are not finding dispositions.
 
 The orchestrator records one disposition for every actionable finding:
 
 | Disposition | Use when |
 |---|---|
-| `apply` | Leaving the current deliverable unchanged would prevent the confirmed outcome, violate a binding requirement, design decision, or repository rule, leave required correctness or verification unsupported, or commit downstream work to added design surface whose total complexity lacks current evidence. |
-| `decline` | Leaving the current deliverable unchanged still achieves the confirmed outcome and satisfies binding constraints and required correctness and verification; the finding instead proposes added scope, a reversed exclusion, optional hardening or generic cleanup, duplicate proof, depends on a property outside the reviewer's declared artifact boundary, or concerns other work outside that boundary. |
+| `apply` | Leaving the current deliverable unchanged would prevent the confirmed outcome, violate a binding requirement, design decision, or repository rule, leave required correctness or verification unsupported, or commit downstream work to added design surface whose total complexity lacks current evidence; or, outside those conditions, the material effect exceeds the response cost. |
+| `decline` | No material effect is established; the finding lies outside the boundary above or the reviewer's declared artifact boundary, or reverses an exclusion; or the response cost equals or exceeds the material effect. |
 
 A confirmed security risk, implementation divergence, or governing-source contradiction receives `apply` when correction preserves the confirmed value boundaries; cost alone leaves that classification unchanged. Technical design, contract, or implementation changes are correction work rather than user decisions when those boundaries remain true.
 
@@ -53,8 +55,9 @@ Select the existing correction owner from the accepted state each finding requir
 
 - use the owning document author when the implementation already satisfies the confirmed value boundaries and the technical artifact must change
 - use the executor when the implementation must change to reach the accepted state
+- use both, author first, when the correction removes a mechanism that a technical artifact selected and the confirmed outcome does not need; the author deletes the selecting statement and the executor removes the implementation it authorized
 
-For a mixed set, complete author-owned corrections first and re-evaluate executor-owned findings against the corrected governing artifact. Pass complete `apply` finding objects verbatim with their dispositions to the selected owner. Invoke a document author as a fresh update call with the original target and those findings; the artifact supplies unaffected context. When an executor is used, preserve its original `task_file` or four direct-scope fields and add the findings as `correction_findings`; correction remains inside the original execution scope.
+For a mixed set, complete author-owned corrections first and re-evaluate executor-owned findings against the corrected governing artifact. The artifact revision alone does not satisfy a reduction's implementation removal. Pass complete `apply` finding objects verbatim with their dispositions to the selected owner. Invoke a document author as a fresh update call with the original target and those findings; the artifact supplies unaffected context. When an executor is used, preserve its original `task_file` or four direct-scope fields and add the findings as `correction_findings`; correction remains inside the original execution scope.
 
 For a Design Doc finding with an `apply` disposition about an unverified decision-changing premise, the fresh technical-designer invocation applies its bounded self-verification gate. The finding carries the exact premise and required evidence; the designer selects existing evidence, a smaller design valid under every unresolved outcome, or a probe when all gate conditions hold. Rerun the originating verifier or reviewer after the update.
 

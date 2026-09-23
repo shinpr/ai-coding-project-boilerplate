@@ -10,7 +10,7 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 ## 成果与职责归属
 
-统管从仓库依据到已批准设计文档的设计阶段。需求收敛、结构规模、ADR 资格判定、依据选择和评审裁定由编排者负责。语义调查和产物撰写由指名的各专职智能体负责。
+统管从仓库依据到已批准设计文档的设计阶段。产品需求和排除项归用户所有；收敛就绪度、结构规模、ADR 资格判定、依据选择和评审裁定由编排者负责。语义调查和产物撰写由指名的各专职智能体负责。
 
 对于中型/大型工作，设计文档始终是完整的实现设计。符合条件的 ADR 批次在设计文档之前收窄技术选择，而完整流程和实现边界由设计文档保留。
 
@@ -59,7 +59,7 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 将每一个通过筛选的项记录为 `adrDecisionPoints`；空列表则直接路由到设计文档。
 
-只呈现需要用户判断的内容：成果与要构建的需求、排除项、本次变更所针对的职责，以及每一条适用的简化项及其“省略后已确认成果仍然成立”的条件。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模、ADR 资格判定和成本依据保留在编排者的记录中——ADR 批次和设计文档各有自己的批准停止点。提供两个选项：继续推进，或修正范围后重新运行分析。仅当每个收敛字段为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
+呈现 requirement-convergence 的范围确认。其中的**判断依据**列出本次变更所针对的职责及其最有力的文件依据，以及每一条适用的简化项及其“省略后已确认成果仍然成立”的条件。结构规模和 ADR 资格判定保留在编排者的记录中，因为 ADR 批次和设计文档各有自己的批准停止点。提供两个选项：继续推进，或修正范围后重新运行分析。仅当每个收敛字段为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
 
 ## 步骤 4：必要时创建并批准 ADR 批次
 
@@ -67,8 +67,8 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 1. 调用一次 `technical-designer`，传入 `document_to_create: ADRBatch`、`confirmed_requirement_context`、有序的 `decision_points`，以及从第 2 步原样复制的对应 `decision_materials`。
 2. 调用一次 `document-reviewer`，传入 `doc_type: ADRBatch`、`targets: [返回的全部路径]` 和 `confirmed_requirement_context`。
-3. 先按评审结论路由：`approved` 则继续；`needs_revision` 则应用评审裁定，按路径逐个串行更新每份 ADR，并重新评审完整批次；`rejected` 则先解决约束来源冲突，再进行下一次评审。
-4. 仅在评审为 approved 之后，才呈现一次批次决策。`[停止：ADR 批次批准]`。
+3. 先按评审结论路由：`pass` 则继续；`needs_revision` 则应用评审裁定，按路径逐个串行更新每份 ADR，并重新评审完整批次；`rejected` 则先解决约束来源冲突，再进行下一次评审。
+4. 仅在评审为 `pass` 之后，才呈现一次批次决策。`[停止：ADR 批次批准]`。
 5. 用户批准后，将每份 ADR 的状态更新为 `Accepted` 并验证该变更。
 
 ## 步骤 5：创建设计文档
@@ -93,7 +93,7 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 调用 `document-reviewer`，传入 `doc_type: DesignDoc`、`target`、`review_context: creation`、作为 `requirements_verbatim` 的原始用户需求、`confirmed_requirement_context`、`codebase_analysis`，以及来自第 6 步的 `verification_evidence`。
 
-- `approved`：继续
+- `pass`：继续
 - `needs_revision`：应用评审裁定，通过一次全新的 technical-designer 调用、传入现有路径和完整的、处置为 `apply` 的发现项进行更新，然后针对受影响的边界重新运行第 6-7 步
 - `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 

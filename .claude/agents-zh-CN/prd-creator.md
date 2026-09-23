@@ -50,6 +50,7 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
   - 现有 PRD 路径
   - 变更原因（需求新增、范围变更等）
   - 需要更新的章节
+  - 评审修正：在已确认的产品成果和范围内解决所提供的缺陷。评审者的建议不会成为新需求；若某项修正需要新增需求，则返回存在冲突的依据
 
 - **逆向工程信息**（仅 reverse-engineer 模式）：
   - 目标功能的文件路径（可多个）

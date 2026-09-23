@@ -10,7 +10,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 ## 成果と担当範囲
 
-リポジトリのエビデンスから承認済みDesign Docまでの設計フェーズを統括する。要件の収束、構造スケール（Structural Scale）、ADRの適格性判定、エビデンスの選択、レビュー対応はオーケストレーターが担う。内容面の調査と成果物の執筆は、指定された各スペシャリストが担う。
+リポジトリのエビデンスから承認済みDesign Docまでの設計フェーズを統括する。プロダクト要件と対象外はユーザーが持ち、収束の判定、構造スケール（Structural Scale）、ADRの適格性判定、エビデンスの選択、レビュー対応はオーケストレーターが担う。内容面の調査と成果物の執筆は、指定された各スペシャリストが担う。
 
 Medium/Large の作業では、Design Doc が常に完全な実装設計である。適格なADRバッチは Design Doc の前に技術的な選択を絞り込むが、完全なフローと実装境界は Design Doc が保持する。
 
@@ -59,7 +59,7 @@ Medium/Large の作業では、Design Doc が常に完全な実装設計であ�
 
 通過した項目をすべて `adrDecisionPoints` として記録する。空リストの場合はそのまま Design Doc へ進む。
 
-ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務、および該当する各 simplification と、それを省いても確認済みの成果が成立する条件。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・ADR適格性・コストのエビデンスはオーケストレーターの記録に留める — ADRバッチと Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
+requirement-convergence のスコープ確認を提示する。その **判断材料** には、変更が対象とする責務と最も有力なファイル上のエビデンス、および該当する各 simplification と、それを省いても確認済みの成果が成立する条件を含める。構造スケールとADR適格性はオーケストレーターの記録に留める。ADRバッチと Design Doc がそれぞれ独自の承認停止点を持つためである。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
 
 ## ステップ4: 必要な場合のADRバッチ作成と承認
 
@@ -67,8 +67,8 @@ Medium/Large の作業では、Design Doc が常に完全な実装設計であ�
 
 1. `technical-designer` を1回呼び出す。`document_to_create: ADRBatch`、`confirmed_requirement_context`、順序付きの `decision_points`、およびステップ2からそのままコピーした対応する `decision_materials` を渡す。
 2. `document-reviewer` を1回呼び出す。`doc_type: ADRBatch`、`targets: [返却された全パス]`、`confirmed_requirement_context` を渡す。
-3. まず verdict でルーティングする。`approved` は次へ進む。`needs_revision` はレビュー対応を適用し、パスごとに1つのADRを順に更新してから、バッチ全体を再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。
-4. バッチの判断をユーザーに提示するのは、レビューが approved になった後のみとする。`[停止: ADRバッチ承認]`。
+3. まず verdict でルーティングする。`pass` は次へ進む。`needs_revision` はレビュー対応を適用し、パスごとに1つのADRを順に更新してから、バッチ全体を再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。
+4. バッチの判断をユーザーに提示するのは、レビューが `pass` になった後のみとする。`[停止: ADRバッチ承認]`。
 5. ユーザー承認後、各ADRのステータスを `Accepted` に更新し、その変更を確認する。
 
 ## ステップ5: Design Docの作成
@@ -93,7 +93,7 @@ Design Doc は完全な実装設計を所有し、documentation-criteria テン�
 
 `document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6の `verification_evidence` で呼び出す。
 
-- `approved`: 次へ進む
+- `pass`: 次へ進む
 - `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、影響を受けた境界についてステップ6〜7を再実行する
 - `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
 

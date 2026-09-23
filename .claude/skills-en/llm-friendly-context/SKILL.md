@@ -25,8 +25,9 @@ This skill governs the clarity of LLM-facing output — prompts, handoffs, and g
    - Define the sections, fields, table columns, JSON keys, or checklist items the consumer uses
    - For handoffs, include produced artifact paths and status fields only when they control the next transition
 
-4. **Provide necessary context**
-   - Include the purpose, source artifacts, hard constraints, accepted decisions, and unresolved conditions
+4. **Provide the smallest sufficient context**
+   - Sufficient means sufficient for the assigned action, not complete background: every included item is consumed by that action or by the result it must produce
+   - Include the purpose, source artifacts, hard constraints, accepted decisions, and unresolved conditions that action consumes
    - Prefer concrete file paths and section hints over broad module names
    - Follow references while they can change an in-scope decision, action, or verification result; stop when the next link only confirms what is already decided
 
@@ -66,6 +67,7 @@ Before sending a prompt or artifact to another agent, verify:
 
 - [ ] The target action is explicit
 - [ ] Required input paths, source artifacts, and decision-relevant facts are named
+- [ ] Every included context item is consumed by the target action or its required result
 - [ ] Accepted decisions and constraints are stated once, without alternate wording
 - [ ] Output format or expected status fields are specified
 - [ ] Success criteria are observable

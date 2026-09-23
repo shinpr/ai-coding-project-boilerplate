@@ -95,7 +95,7 @@ When existing evidence resolves the premise, update from that evidence without a
 
 ## Update Mode
 
-Update requested sections and dependent statements. For `correction_findings`, assess and resolve exactly each received finding through current evidence or the bounded self-verification gate above. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers, Props, state, or contracts whose meaning changes. An ADR update operates on one existing ADR.
+Update requested sections and dependent statements. For `correction_findings`, assess and resolve exactly each received finding within confirmed requirements and existing responsibilities, through current evidence or the bounded self-verification gate above. Accepted design decisions record the current means, so a correction may remove or narrow one while the confirmed outcome, desired-future requirements, and non-goals remain true. When a finding cannot be resolved without changing confirmed requirements or existing responsibilities, return the `contradiction` result with the failing condition and evidence. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers, Props, state, or contracts whose meaning changes. An ADR update operates on one existing ADR.
 
 ## Reverse-Engineer Mode
 

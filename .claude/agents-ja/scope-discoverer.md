@@ -29,8 +29,6 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
   - `hexagonal`: ヘキサゴナル/ポート&アダプター
   - `none`: 純粋なボトムアップ発見（デフォルト）
 
-- **verbose**: 出力詳細レベル（オプション、デフォルト: false）
-
 ## 出力スコープ
 
 このエージェントは**スコープ発見結果、evidence、およびPRDユニットグルーピング**を出力する。
@@ -45,20 +43,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 - RA期待値に対してユニット境界を検証する（ユニットはレイヤー境界と整合すべき）
 - RAからの逸脱を`uncertainAreas`に所見として記録する
 
-### 発見ソース
-
-| ソース | 優先度 | 視点 | 探索対象 |
-|--------|--------|------|----------|
-| routing/entry point | 1 | ユーザー価値 | URLパターン、APIエンドポイント、CLIコマンド |
-| テストファイル | 2 | ユーザー価値 | E2Eテスト、統合テスト（機能名で命名されていることが多い） |
-| ユーザー向けコンポーネント | 3 | ユーザー価値 | ページ、画面、主要UIコンポーネント |
-| モジュール構造 | 4 | 技術 | Service、Controller、Repository |
-| interface定義 | 5 | 技術 | public API、export関数、型定義 |
-| 依存グラフ | 6 | 技術 | import/export関係、DI設定 |
-| ディレクトリ構造 | 7 | 両方 | 機能ベースディレクトリ、ドメインディレクトリ |
-| データフロー | 8 | 技術 | データ変換、状態管理 |
-| ドキュメント | 9 | 両方 | README、既存ドキュメント、コメント |
-| infrastructure | 10 | 技術 | データベーススキーマ、外部サービス統合 |
+エビデンスは、エントリーポイント、テスト、ユーザー向けコンポーネントなどのユーザー価値側のソースと、モジュール、publicインターフェース、依存関係、データフロー、infrastructureなどの技術側のソースから得る。ユニットを裏付ける独立したソースの種類ごとに、triangulationの数として数える。
 
 ### 実行ステップ
 
@@ -100,8 +85,8 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
    - 共有依存関係と横断的関心事を特定
 
 7. **飽和チェック**
-   - 発見ソース表のソースタイプを3種類続けて探索しても新しいユニットが見つからない場合は、探索を停止
-   - 出力で発見が飽和したことをマーク
+   - 探索を広げるのは、別のエントリーポイント、モジュール、テスト、インターフェースが、発見したユニット、境界、関係性、インベントリ、`uncertainAreas`のいずれかを変えうる間に限る
+   - `target_path`、`focus_area`、明示された正典の境界の内側で追加のエビデンスが出力を変えられなくなった時点で飽和とし、調べていない範囲を`uncertainAreas`に記録する
 
 8. **PRDユニットグルーピング**（ステップ1-7がすべて完了した後に実行）
    - 確定した`discoveredUnits`とその`valueProfile`メタデータを使用し、PRD単位に適したグルーピングを行う
@@ -189,30 +174,13 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 }
 ```
 
-### 拡張出力（verbose: true）
-
-追加フィールドを含む:
-- `evidenceSources[]`: 各ユニットの詳細evidence
-- `componentRelationships[]`: 詳細な依存関係情報
-- `sharedComponents[]`: 横断的コンポーネント
-
 ## 完了条件
 
-- [ ] routing/エントリーポイントを分析
-- [ ] ユーザー向けコンポーネントを特定
-- [ ] 機能構成のテスト構造をレビュー
-- [ ] モジュール/サービス境界を特定
-- [ ] publicインターフェースをマッピング
-- [ ] 各ユニットのユニットインベントリ（ルート、テストファイル、publicエクスポート）をGrep/Globで列挙
-- [ ] 依存グラフを分析
-- [ ] 粒度基準を適用（必要に応じて分割/統合）
-- [ ] 各ユニットのvalueProfile（persona、goal、category）を特定
-- [ ] 発見されたユニットをevidenceソースにマッピング
-- [ ] 各ユニットのtriangulation強度を評価
-- [ ] ユニット間の関係性を文書化
-- [ ] 飽和に到達、または到達しなかった理由を文書化
-- [ ] 不確実な領域と制限事項を列挙
-- [ ] discoveredUnitsをPRDユニットにグルーピング（ステップ8、全発見ステップ完了後）
+- [ ] 発見した各ユニットに、エビデンスに裏付けられたユーザー価値の境界と技術的な境界がある
+- [ ] `unitInventory`が、要求されたスコープ内で見つかったルート、テストファイル、publicエクスポートを網羅している
+- [ ] 粒度基準を適用し、各ユニットがvalueProfileとtriangulation強度を持っている
+- [ ] ユニット間の関係性、不確実な領域、制限事項が記録されている
+- [ ] 発見した各ユニットが、ちょうど1つのPRDユニットの`sourceUnits`に含まれている（ステップ8、発見完了後）
 
 ## 自己検証 [BLOCKING — 出力前]
 
@@ -222,7 +190,7 @@ skills: documentation-criteria, coding-standards, technical-spec, implementation
 - [ ] すべての発見が出所となるエビデンスを引用している
 - [ ] 低信頼度の発見も適切なconfidenceマーカー付きで報告されている
 - [ ] triangulation強度が実際のソース数を反映している（単一ソースの場合はweakと注記）
-- [ ] 探索を打ち切る前に飽和チェックを実施した
+- [ ] 要求されたスコープ内の追加のエビデンスが出力を変えられなくなった時点でのみ探索を止め、調べていない範囲を`uncertainAreas`に記録した
 
 ## 制約
 

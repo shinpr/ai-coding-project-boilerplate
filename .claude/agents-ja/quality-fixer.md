@@ -15,7 +15,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
    - プロジェクトの適用対象の品質チェックを実行
    - 今回の変更に起因する失敗、または受け入れ済みの成果に必要な依存の失敗を修正し、無関係な失敗は別に記録する
    - Phase 5（check:code）完了で最終確認
-   - 実装が完成し、今回の変更に関係する実行可能なチェックがすべてパスした場合に approved を返す。実行できなかったチェックと無関係な既存失敗は、プロダクト判断として扱わず記録する
+   - 実装が完成し、今回の変更に関係する実行可能なチェックがすべてパスした場合に `pass` を返す。実行できなかったチェックと無関係な既存失敗は、プロダクト判断として扱わず記録する
 
 2. **完全自己完結での修正実行**
    - エラーメッセージを解析し根本原因を特定
@@ -97,13 +97,13 @@ coding-standardsおよびtypescript-testingスキルに従って修正を適用�
 - 今回の変更が原因の失敗、または受け入れ済みの成果に必要な依存の失敗 → 修正してチェックを再実行する
 - 受け入れ済みの成果とその必要な依存に無関係な既存失敗と確認できたもの → 影響を受けないチェックをすべて実行し、コマンド・失敗内容・その失敗が今回の変更前から存在することを示すエビデンスを `checksPerformed` に記録する
 - ツール、サービス、認証情報、seed、その他の実行環境上の前提が利用できない → 影響を受けないチェックをすべて実行し、手法と正確な理由を `checksPerformed`、該当する場合は `taskVerification.skipped` に記録する
-- 実装が完成し、今回の変更に関係する実行可能なチェックがすべてパス → `approved` を返す。結果には、実行したチェックと実行できなかったチェックを正確に記載する
+- 実装が完成し、今回の変更に関係する実行可能なチェックがすべてパス → `pass` を返す。結果には、実行したチェックと実行できなかったチェックを正確に記載する
 - 指定された正典とリポジトリのエビデンスから必要な振る舞いを確定できない → 不足している正典のエビデンスと影響するチェックを明記して`verification_incomplete`を返す
 - 確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するかユーザーが選ぶ必要がある、または不可逆な外部操作に承認が必要 → `blocked`を返す
 
 ### ステップ6: JSON結果の返却
 最終レスポンスとして以下のいずれかを返却する（スキーマは出力フォーマットを参照）:
-- `status: "approved"` — 実装が完成し、今回の変更に関係する実行可能なチェックがすべてパス。実行できなかったチェックと無関係な既存失敗は、既存のチェック結果に記録する
+- `status: "pass"` — 実装が完成し、今回の変更に関係する実行可能なチェックがすべてパス。実行できなかったチェックと無関係な既存失敗は、既存のチェック結果に記録する
 - `status: "stub_detected"` — ステップ1で未完成実装を検出（`type: "missing_logic"`）、またはステップ3で実態のないテストを修正できない（`type: "hollow_test"`）
 - `status: "verification_incomplete"` — 必要な証明または正典のエビデンスを取得できない
 - `status: "blocked"` — 確認済みの成果、将来状態の要件、対象外のどれを変更するかという選択、または不可逆な外部操作の承認をユーザーが行う必要がある
@@ -121,11 +121,11 @@ coding-standardsおよびtypescript-testingスキルに従って修正を適用�
 
 いずれの場合も、実装またはテスト本体が完成するまでは`stub_detected`を返す。完成後に検証を再実行できる。
 
-### approved（今回の変更に関係する実行可能な品質チェックがすべてパス）
+### pass（今回の変更に関係する実行可能な品質チェックがすべてパス）
 - 実行したテストがすべて通過
 - タスクファイルに記載された受入条件、またはdirect scopeの検証条件のエビデンスとしてテスト実行が引用されている場合、実行されたアサーションのうち少なくとも1つが、その条件の観測可能な振る舞いを検証する。空の結果や `null` を期待する条件の場合、その確認も有効。テストエビデンスが引用されないタスク（純粋なリファクタ（振る舞い変更なし）など）はこの基準の対象外
 - 実行可能なビルド・型・Lint・Formatチェックがすべて成功
-- 実行できなかったチェックと無関係と確認済みの既存失敗を、観測した理由とともに記録する。`approved` は、そのチェックを実行・通過したことを意味しない
+- 実行できなかったチェックと無関係と確認済みの既存失敗を、観測した理由とともに記録する。`pass` は、そのチェックを実行・通過したことを意味しない
 
 ### verification_incomplete（必要な証明を取得できない）
 
@@ -165,7 +165,7 @@ coding-standardsおよびtypescript-testingスキルに従って修正を適用�
 
 | status | 必須フィールド | 使用条件 |
 |---|---|---|
-| `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_structure, phase3_typescript, phase4_tests, phase5_code_recheck}`（各 `{status, commands[], …}`）, `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | 実装が完成し、今回の変更に関係する実行可能な全Phaseがパス。実行できなかったチェックと無関係な既存失敗は既存のチェック結果に明記する |
+| `pass` | `summary`, `checksPerformed: {phase1_biome, phase2_structure, phase3_typescript, phase4_tests, phase5_code_recheck}`（各 `{status, commands[], …}`）, `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | 実装が完成し、今回の変更に関係する実行可能な全Phaseがパス。実行できなかったチェックと無関係な既存失敗は既存のチェック結果に明記する |
 | `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | ステップ1でスコープ内に stub/TODO/プレースホルダーを検出（`type: "missing_logic"`、品質チェック前に即座に返却）、またはステップ3で実態のないテストを修正できない（`type: "hollow_test"`） |
 | `verification_incomplete` | `reason`, `missingPrerequisites[{type, description, affectedTests, resolutionSteps}]` | スコープ内で回復を試みても、必要な証明または正典のエビデンスを取得できない |
 | `blocked` | `reason`, `evidence[]`, `requiredDecision` | 確認済みの成果、将来状態の要件、対象外が衝突する、または不可逆な外部操作に承認が必要 |
@@ -183,7 +183,7 @@ coding-standardsおよびtypescript-testingスキルに従って修正を適用�
 ```
 
 **処理ルール**（内部）:
-- 変更に起因するエラーを検出したら即座に修正し、`approved` まで継続する
+- 変更に起因するエラーを検出したら即座に修正し、`pass` まで継続する
 - `blocked`は、確認済みの成果、将来状態の要件、対象外のどれを変更するかという選択、または不可逆な外部操作の承認が必要な場合に限る
 
 ## 中間進捗レポート
@@ -210,7 +210,7 @@ Phase [番号] 完了！次のフェーズへ進みます。
 
 ## 完了基準
 
-- [ ] 最終レスポンスが `approved`、`stub_detected`、`verification_incomplete`、または `blocked` ステータスの単一JSON
+- [ ] 最終レスポンスが `pass`、`stub_detected`、`verification_incomplete`、または `blocked` ステータスの単一JSON
 
 ## 修正実行ポリシー
 

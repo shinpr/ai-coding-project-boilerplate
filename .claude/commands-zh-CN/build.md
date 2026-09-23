@@ -16,7 +16,7 @@ description: 以自主执行模式执行已生成的任务文件
 3. 当用户在已有任务文件的情况下给出执行指令时，**进入自主模式** — 这本身就是批量批准
 4. **范围**：按顺序完成本次处理任务集的执行、实现后评审、本次处理任务的清理和完成报告；或者当需要就已确认的价值边界作出选择、或需要授权不可逆操作时，在当前阶段停止自主执行。仅当满足当前阶段声明的转移条件时才推进。
 
-**关键**：仅在 quality-fixer 返回 `approved` 或 `verification_incomplete` 之后才提交。该结果只是授权在本流程定义的提交点进行提交，本身不会产生提交。
+**关键**：仅在 quality-fixer 返回 `pass` 或 `verification_incomplete` 之后才提交。该结果只是授权在本流程定义的提交点进行提交，本身不会产生提交。
 
 工作计划：$ARGUMENTS
 
@@ -96,14 +96,14 @@ description: 以自主执行模式执行已生成的任务文件
    - `requiresTestReview` 为 `true` → 执行 **integration-test-reviewer**，将实现步骤 `testsAdded` 中的每一个路径作为 `testFile` 传入，`taskFiles: [当前任务文件路径]`（以便评审者可以读取该任务的 Operation Verification Methods 和 Verification Focus），`diffBase: HEAD`（此时该任务的更改尚未提交，因此 HEAD 是其 diff 的基点）。然后根据其 `status` 分支
      - `needs_revision` → 应用“评审裁定”，并带着相同的 `task_file` 以及作为 `correction_findings` 逐字传入的完整 `apply` 质量问题对象返回步骤 1
      - `blocked` → 从当前差异中解析被移动或重命名的测试路径，并在解析后的输入改变了评审目标时重新运行。如果尽管 `requiresTestReview: true` 却不存在可读的已变更测试，则将该执行者输出缺陷作为 `correction_findings` 返回步骤 1；否则将该评审记录为未运行并附上其 `blockingReason`，然后进入步骤 3
-     - `approved` → 进入步骤 3
+     - `pass` → 进入步骤 3
    - `readyForQualityCheck: true` → 进入步骤 3
 3. **质量修复**：针对完整的当前未提交工作树调用 quality-fixer，包括未跟踪、已删除和已重命名的路径（跨层时：参见“分层感知智能体路由”）。传入当前的 `task_file`、实现步骤的 `runnableCheck`，以及当 technical-spec 或仓库约定指定了某个命令时的 `qualityCommand`。然后根据其响应分支：
    - `stub_detected` → 返回步骤 1，并用相同的 `task_file` 和 `incompleteImplementations[]` 数组重新调用 task-executor
    - `blocked` → 应用“专家结果受理”
    - `verification_incomplete` → 保留完整结果以供最终重试，并进入步骤 4
-   - `approved` → 进入步骤 4
-4. **提交**：在 `approved` 或 `verification_incomplete` 之后提交已完成任务的变更集
+   - `pass` → 进入步骤 4
+4. **提交**：在 `pass` 或 `verification_incomplete` 之后提交已完成任务的变更集
 
 **关键**：解析每个子智能体响应的路由含义。在步骤 4 之后进入下一个任务，保留任何 `verification_incomplete` 结果以供最终重试。
 
@@ -135,7 +135,7 @@ description: 以自主执行模式执行已生成的任务文件
 
 ## 最终清理
 
-在完成报告之前，若评审修正或证明局限重试在最后一次任务提交之后遗留了未提交的变更，先在相应的 quality-fixer 对其返回 `approved` 或 `verification_incomplete` 之后提交这些变更。随后删除本流程处理的实现任务文件。至此它们的工作已提交；`docs/plans/` 是临时工作状态，不在流程各次运行之间保留：
+在完成报告之前，若评审修正或证明局限重试在最后一次任务提交之后遗留了未提交的变更，先在相应的 quality-fixer 对其返回 `pass` 或 `verification_incomplete` 之后提交这些变更。随后删除本流程处理的实现任务文件。至此它们的工作已提交；`docs/plans/` 是临时工作状态，不在流程各次运行之间保留：
 
 - 删除本次处理任务集中的每一个文件
 - 保留工作计划本身（`docs/plans/{plan-name}.md`）—— 由用户决定是否在最终评审后删除它

@@ -82,12 +82,12 @@ Invoke integration-test-reviewer:
 - `designDocPath`: Layer-specific Design Doc
 - In the prompt, name the generated skeleton paths as the claims being reviewed when their annotations are not present in the changed test files
 
-**Expected output**: `status` (`approved`, `needs_revision`, or `blocked`), `qualityIssues[]`, and correction re-review `prior_feedback_reconciliation` when applicable
+**Expected output**: `status` (`pass`, `needs_revision`, or `blocked`), `qualityIssues[]`, and correction re-review `prior_feedback_reconciliation` when applicable
 
 ### Step 5: Apply Review Fixes
 
 Check Step 4 result:
-- `approved` → Proceed to Step 6
+- `pass` → Proceed to Step 6
 - `blocked` → Apply Specialist Result Acceptance
 - `needs_revision` → Apply Review Resolution, re-invoke the same layer executor with the original Step 3 scope plus the complete `apply` quality-issue objects as `correction_findings`, then return to Step 4 with `prior_feedback`
 
@@ -100,19 +100,19 @@ Invoke the current layer's quality-fixer:
 - `direct_scope`: Reuse the Step 3 direct scope and affected paths
 - `runnableCheck`: The latest executor result's `runnableCheck`
 
-**Expected output**: `status` (`approved`, `stub_detected`, `verification_incomplete`, or `blocked`)
+**Expected output**: `status` (`pass`, `stub_detected`, `verification_incomplete`, or `blocked`)
 
 Check the result:
 - `stub_detected` → Return to Step 3 with `incompleteImplementations` unchanged, then re-execute Steps 3→4→5→6
 - `blocked` → Apply Specialist Result Acceptance
 - `verification_incomplete` → Retain the complete result for the Specialist Result Acceptance retry and proceed to Step 7
-- `approved` → Proceed to Step 7
+- `pass` → Proceed to Step 7
 
 ### Step 7: Commit and Retained-Limitation Retry
 
-On `approved` or `verification_incomplete`, commit the completed test change using the repository's normal commit boundary and message convention.
+On `pass` or `verification_incomplete`, commit the completed test change using the repository's normal commit boundary and message convention.
 
-After every layer has a clean commit boundary, apply the proof-limitation retry in Specialist Result Acceptance with the same layer quality-fixer inputs. An `approved` result clears the retained proof limitation; route `stub_detected` through Steps 3→6, and retain a repeated `verification_incomplete` result for the completion report while continuing the workflow.
+After every layer has a clean commit boundary, apply the proof-limitation retry in Specialist Result Acceptance with the same layer quality-fixer inputs. An `pass` result clears the retained proof limitation; route `stub_detected` through Steps 3→6, and retain a repeated `verification_incomplete` result for the completion report while continuing the workflow.
 
 In the completion report, list each repeated verification limitation and each declined actionable finding with its ID, governing reason, and evidence when any occurred.
 

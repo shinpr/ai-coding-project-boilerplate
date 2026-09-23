@@ -15,7 +15,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 The response is a must-fix exception list. Emit a finding only when current evidence shows that the approved scope cannot be accepted without correction because the implementation violates an explicit governing requirement or repository rule, or a concrete material security failure exists in the actual reachable trust model. Evaluate that decision against actor reachability, deployed exposure, the project's runtime environment, framework protections, existing mitigations, and observable impact.
 
-Each finding contains one must-fix problem and its smallest sufficient correction. Optional hardening and defense-in-depth are absent from the response; when only those candidates exist, return `approved`.
+Each finding contains one must-fix problem and its smallest sufficient correction. Optional hardening and defense-in-depth are absent from the response; when only those candidates exist, return `pass`.
 
 ## Inputs
 
@@ -46,7 +46,7 @@ When `prior_feedback` is present, reconcile every received item against current 
 
 ### 2. Cover Irreversible Operations and Shared Mutation Routes
 
-For destructive operations, persistent-state mutations, or boundary changes reaching a mutation, enumerate each operation and reaching route. Resolve mutation authorization, incomplete evidence and safe default, retry, concurrency, identity, and input-route parity as `covered`, `not_applicable`, or `blocked`.
+For destructive operations, persistent-state mutations, or boundary changes reaching a mutation, identify the operation, its reaching routes, and its safe behavior under incomplete evidence. Check mutation authorization, retry, concurrency, identity, and input-route handling where they can change that operation's safety.
 
 Use `blocked` only when an irreversible operation depends on an authoritative safety decision that the governing sources do not make. Return that decision in `irreversibleHazards`. Otherwise record a finding for an uncovered route or unsafe default that is correctable inside approved scope.
 
@@ -54,7 +54,9 @@ When multiple routes reach the same mutation, compare validation, classification
 
 ### 3. Check Principles and Detection Patterns
 
-Verify each applicable Security Principles boundary, then execute the stable and trend-sensitive detection patterns from `security-checks.md` against the implementation scope. Search current advisories for the detected stack only when the result can change a finding.
+Verify each Security Principles boundary that the changed attack surface activates, then execute the applicable stable and trend-sensitive detection patterns from `security-checks.md` against the implementation scope.
+
+When the change alters the version or revision of a dependency, runtime, or pipeline action, or a governing document requests current advisory validation, check authoritative current advisories for that exact component and version. When the change introduces a dependency or pipeline action new to this project, or changes where one is resolved from, also confirm that the name resolves to the expected publisher or source repository; a newly adopted component can be attacker-registered or renamed before any advisory exists. Otherwise skip the advisory check.
 
 Evaluate raw matches against actor reachability, deployed exposure, the runtime environment, framework protections, existing mitigations, and observable impact before retaining them.
 
@@ -80,7 +82,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
 
 ```json
 {
-  "status": "approved|needs_revision|blocked",
+  "status": "pass|needs_revision|blocked",
   "summary": "one or two sentence result",
   "findings": [
     {
@@ -111,7 +113,7 @@ Initial reviews omit `prior_feedback_reconciliation`. Omit `irreversibleHazards`
 
 ## Status Rules
 
-- `approved`: no actionable finding remains
+- `pass`: no actionable finding remains
 - `needs_revision`: one or more findings require an in-scope correction
 - `blocked`: governing input is unusable, a live secret requires revocation or rotation, or an irreversible operation requires authorization
 
@@ -120,7 +122,8 @@ Initial reviews omit `prior_feedback_reconciliation`. Omit `irreversibleHazards`
 - Governing inputs and each applicable security boundary were checked
 - Raw pattern matches were filtered through actor reachability, deployed exposure, runtime, framework, mitigation, and observable-impact evidence
 - Findings contain only `confirmed_risk` or `defense_gap` items that require correction
-- Each irreversible operation and reaching route has a resolved safety disposition
+- Each irreversible operation the change reaches has its routes and safe incomplete-evidence behavior checked
+- The advisory check ran for each changed or newly adopted dependency, runtime, or pipeline action, and was skipped otherwise
 - Every finding has a stable ID, location, rationale, and the smallest sufficient correction; optional hardening and defense-in-depth are absent
 - Every prior-feedback ID appears exactly once when supplied
 - The response is one valid JSON object

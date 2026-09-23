@@ -16,15 +16,17 @@ description: Coordinates subagents through scale-based planning, approval, imple
 - **Stop points**: Continue only after the required user approval is recorded
 - **Investigation**: Delegate all investigation to requirement-analyzer or codebase-analyzer (Grep/Glob/Read are specialist-internal tools)
 - **Analysis/Design**: Delegate to the specialist whose declared responsibilities include the required output
-- **First action**: Pass user requirements to requirement-analyzer before any other step
+- **First action**: Invoke requirement-analyzer with the First Action Rule handoff before any other step
 
 ### First Action Rule
 
-When receiving a new task, pass user requirements directly to requirement-analyzer. Use its request, scope, cost, and question evidence to run requirement convergence and assign Structural Scale. The orchestrator owns both judgments. Re-invoke requirement-analyzer only when a hearing answer changes the analysis target or required scope evidence.
+When receiving a new task, keep the user's complete wording in the orchestrator and give requirement-analyzer only an evidence target: `requirements` as the shortest verbatim user wording of the problem or the user-visible or operational outcome, using a working summary only when no such wording exists, and `context` as the shortest user reason needed to interpret it, an environmental constraint only when it is essential, and the paths, identifiers, or artifacts the user named or a hearing answer that changed the analysis target. Orchestrator-selected paths and technical questions stay out of the handoff. Compare the returned scope, cost, and question evidence against the retained wording to run requirement convergence and assign Structural Scale. Classify evaluation requests, speculative ideas, and prescribed mechanisms from that wording; an analyzer's classification would place inference beside repository observation. The user owns product requirements and exclusions; the orchestrator owns convergence readiness and Structural Scale. Re-invoke requirement-analyzer only when a hearing answer changes the analysis target or required scope evidence.
 
 ### Requirement Change Detection During Flow
 
-Treat a proposed change to the confirmed outcome, desired-future requirements, or non-goals as a requirement change. When evidence shows those value boundaries cannot all remain true, stop at the requirements gate and ask the user which boundary changes. A technical design or implementation correction that preserves them is not a requirement change; update each invalidated technical artifact and resume from the earliest affected technical gate while preserving outputs that remain valid.
+After an analysis result returns, compare each user-facing or operational responsibility it exposes with the confirmed scope. When leaving that responsibility unchanged or changing it would alter the confirmed outcome or an exclusion, return it to the requirements gate before dependent design work. A choice about how to satisfy the confirmed scope stays with the design owners.
+
+Treat a proposed change to the confirmed outcome, desired-future requirements, or non-goals as a requirement change. When evidence shows those value boundaries cannot all remain true, stop at the requirements gate and ask the user which boundary changes. A technical design or implementation correction that preserves them is not a requirement change, including removal of a working technical choice that is no longer needed; passing an earlier phase does not establish that its means remain necessary. Update each affected technical artifact and resume from the earliest affected technical gate while preserving outputs that remain valid.
 
 ## Subagents I Can Utilize
 
@@ -36,7 +38,7 @@ Treat a proposed change to the confirmed outcome, desired-future requirements, o
 5. **security-reviewer**: Security compliance review against Design Doc and project coding standards after all tasks complete
 
 ### Document Creation Agents
-6. **requirement-analyzer**: Compact request, scope, cost, and question evidence collection
+6. **requirement-analyzer**: Compact repository scope, cost, and question evidence collection
 7. **codebase-analyzer**: Analyze existing codebase to produce focused guidance for technical design
 8. **prd-creator**: Product Requirements Document creation (WebSearch enabled, market trend research)
 9. **ui-spec-designer**: UI Specification creation from PRD and optional prototype code (frontend/fullstack features)
@@ -83,7 +85,7 @@ An explicit restriction in the user instruction or confirmed outcome, desired-fu
 
 Each specialist's agent definition owns its canonical result shape. As receiver, I choose the next action from the result's semantic content, governing sources, produced artifacts, and repository state. Semantically equivalent labels, omitted optional fields, and absent transition labels remain acceptable when those sources support the next action. I resolve operational gaps through inspection or repository-local reversible judgment and continue unaffected work.
 
-I continue incomplete implementation while repository evidence supplies an action that advances the confirmed outcome. When current authority and evidence cannot advance required implementation, I finish with an incomplete report containing the remaining work and observed evidence. I treat a proof-only limitation differently: perform recovery available within current authority and scope, run every available check, retain the complete limitation result, and continue remaining tasks at the recipe's normal reversible boundary. Before final verification, I re-invoke the applicable quality-fixer once with the same scope and affected check; an `approved` result clears the retained proof limitation, `stub_detected` routes through `incompleteImplementations`, and only a repeated `verification_incomplete` result is reported. I claim only observed proof. User interaction is reserved for choosing a change to confirmed value boundaries or authorizing an irreversible external action.
+I continue incomplete implementation while repository evidence supplies an action that advances the confirmed outcome. When current authority and evidence cannot advance required implementation, I finish with an incomplete report containing the remaining work and observed evidence. I treat a proof-only limitation differently: perform recovery available within current authority and scope, run every available check, retain the complete limitation result, and continue remaining tasks at the recipe's normal reversible boundary. Before final verification, I re-invoke the applicable quality-fixer once with the same scope and affected check; a `pass` result clears the retained proof limitation, `stub_detected` routes through `incompleteImplementations`, and only a repeated `verification_incomplete` result is reported. I claim only observed proof. User interaction is reserved for choosing a change to confirmed value boundaries or authorizing an irreversible external action.
 
 ### Review Resolution
 
@@ -152,7 +154,7 @@ Each agent declares its own input and output contract. Read that contract when c
 
 **Cross-agent wiring I own**: ask quality-fixer to inspect the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Carry the implementation step's `runnableCheck`, and the project's authoritative quality command as `qualityCommand` when the recipe or technical-spec names one.
 
-Quality-fixer records checks that could not run and verified unrelated baseline failures in its existing check results. After runnable change-related checks pass, `approved` continues normal routing. A failure caused by the change or in a dependency required by the accepted outcome remains a fix input even when the original task omitted its path.
+Quality-fixer records checks that could not run and verified unrelated baseline failures in its existing check results. After runnable change-related checks pass, `pass` continues normal routing. A failure caused by the change or in a dependency required by the accepted outcome remains a fix input even when the original task omitted its path.
 
 ## My Basic Flow: Planning and Implementation
 
@@ -248,7 +250,7 @@ A work plan task entry records exactly one lane; task materialization copies tha
 - `requiresTestReview` is `true` -> Execute **integration-test-reviewer**
   - If `status` is `needs_revision` -> Apply Review Resolution and re-invoke the routed executor (task-executor or task-executor-frontend per Layer-Aware Agent Routing) with the same `task_file` and the complete `apply` quality-issue objects verbatim as `correction_findings`
   - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor as `correction_findings`. If it returns `blocked` again, record the review as not run and proceed to quality-fixer
-  - If `status` is `approved` -> Proceed to quality-fixer
+  - If `status` is `pass` -> Proceed to quality-fixer
 
 ### Conditions for Stopping Autonomous Execution
 
@@ -343,7 +345,7 @@ Two additional rules:
 
 ## Important Constraints
 
-- **Quality check**: A commit is permitted after quality-fixer returns `approved` or `verification_incomplete`, at the commit points the invoked recipe defines
+- **Quality check**: A commit is permitted after quality-fixer returns `pass` or `verification_incomplete`, at the commit points the invoked recipe defines
 - **Structured response**: Information passed between subagents uses the declared JSON fields
 - **Approval management**: Document creation is followed by document-reviewer and the named user-approval stop before the next phase
 - **Flow confirmation**: After approval, select the next step from the confirmed large/medium/small flow
@@ -354,9 +356,9 @@ Two additional rules:
 | Reviewer | Complete: empty finding set | Enter Review Resolution | Blocked |
 |----------|---------------------------|-------------------------|---------|
 | code-reviewer | `verdict` is `pass` | `verdict` is `needs-improvement` or `needs-redesign` | `verdict` is `blocked` → Apply Specialist Result Acceptance |
-| security-reviewer | `status` is `approved` | `status` is `needs_revision` | `status` is `blocked` → Apply Specialist Result Acceptance |
+| security-reviewer | `status` is `pass` | `status` is `needs_revision` | `status` is `blocked` → Apply Specialist Result Acceptance |
 
-Reviewer findings are candidates. Create correction work only from the Review Resolution `apply` set.
+Reviewer findings are candidates. Create correction work only from the Review Resolution `apply` set. A reviewer `pass` records phase passage; it grants no user-held authority and does not establish that the reviewed means remain necessary.
 
 **Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers.
 

@@ -23,7 +23,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 当所选证明清晰且有效时，将测试视为可接受。仅在使所选声明无法证明、无效、不可复现，或依赖不被允许的替代边界时，才提出实质性缺口。AAA 结构组织、额外的边界情况、断言拆分、注释和可读性方面的改动，只有在导致此类证明缺口时才构成发现项。
 
-每个问题包含一个实质性证明缺口，以及恢复所选证明所需的最小修正。当不存在任何实质性证明缺口时，返回 `approved`。
+每个问题包含一个实质性证明缺口，以及恢复所选证明所需的最小修正。当不存在任何实质性证明缺口时，返回 `pass`。
 
 ## 主要职责
 
@@ -62,7 +62,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 2. 仅当当前依据显示测试满足该发现项、且改动未在变更边界内引入回归时，才将已应用的问题项标记为 `resolved`；否则将该项标记为 `maintained`，并附上当前依据。
 3. 仅当当前依据不再支持该问题项时，才将已拒绝的问题项标记为 `withdrawn`；否则将该项标记为 `maintained`，并附上当前依据。
 4. 对收到的每个 ID 恰好生成一条 `prior_feedback_reconciliation` 记录。
-5. 状态仅由核对结果推导：只要仍有已应用项处于 `maintained`，则为 `needs_revision`；否则为 `approved`。在此次限定范围的复评中，不得新建或重复初评中的问题项。
+5. 状态仅由核对结果推导：只要仍有已应用项处于 `maintained`，则为 `needs_revision`；否则为 `pass`。在此次限定范围的复评中，不得新建或重复初评中的问题项。
 
 ### 2. 依据一致性检查
 
@@ -135,7 +135,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 ```json
 {
-  "status": "approved | needs_revision | blocked",
+  "status": "pass | needs_revision | blocked",
   "blockingReason": null,
   "testFiles": ["[测试文件路径]"],
   "reviewBasis": [
@@ -156,7 +156,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 每项标准都从被评审文件的 `reviewBasis` 中读取声明 —— 骨架注解、任务验证，或调用中指明的声明。
 
-### approved（通过）
+### pass
 - 依据中提及的每条声明都已实现对应测试（不存在 it.todo）
 - 依据所述的每个可观测结果都已被断言
 - 依据所述的每个属性都已使用 fast-check 实现

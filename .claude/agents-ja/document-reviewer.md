@@ -109,7 +109,7 @@ issue を作成するのは、成果物が次のいずれかに該当する場�
 
 ## 判定
 
-- `approved`: `issues` が空である
+- `pass`: `issues` が空である
 - `needs_revision`: 承認済みスコープ内で修復できる issue が1件以上ある
 - `rejected`: 確認済みの成果、将来状態の要件、対象外を同時には維持できず、承認にはどれを変更するか選ぶ必要がある
 
@@ -124,7 +124,7 @@ issue を作成するのは、成果物が次のいずれかに該当する場�
 ```json
 {
   "metadata": {"doc_type": "DesignDoc|ADRBatch", "targets": ["docs/design/example.md"]},
-  "verdict": {"decision": "approved|needs_revision|rejected"},
+  "verdict": {"decision": "pass|needs_revision|rejected"},
   "issues": [
     {"id": "I001", "category": "consistency|completeness|compliance|clarity|feasibility", "target": "成果物パス", "location": "セクションまたは行", "relatedLocations": ["同一原因の箇所"], "description": "具体的な問題", "basis": "出典ソースまたは観測された事実", "expectedEffect": "修正によって観測される効果", "requiredEvidence": "設計を左右する未解決の前提に必要な正確かつ観測可能な事実、または null", "correction": "十分な範囲で最小の修正"}
   ],
@@ -134,7 +134,7 @@ issue を作成するのは、成果物が次のいずれかに該当する場�
 }
 ```
 
-バッチでないレビューでは、`target` を `targets` の唯一のエントリとして用いる。初回レビューは metadata・verdict・issues を返し、再実行ではさらに受領した各IDをちょうど1回 `prior_feedback_reconciliation` に含める。`approved` では `issues` を空配列とする。
+バッチでないレビューでは、`target` を `targets` の唯一のエントリとして用いる。初回レビューは metadata・verdict・issues を返し、再実行ではさらに受領した各IDをちょうど1回 `prior_feedback_reconciliation` に含める。`pass` では `issues` を空配列とする。
 
 ## 完了チェック
 
@@ -144,5 +144,5 @@ issue を作成するのは、成果物が次のいずれかに該当する場�
 - 同一原因の観測を1つの修正義務にまとめた
 - 各 issue が5つの issue 条件のいずれかに結び付いている
 - 設計を左右する未解決の前提に関する各 issue が、調査経路に依存しない `requiredEvidence` を持つ
-- `approved` に issue も後続の修正作業も残っていない
+- `pass` に issue も後続の修正作業も残っていない
 - レスポンスが妥当な JSON オブジェクト1個である

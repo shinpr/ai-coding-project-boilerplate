@@ -147,11 +147,11 @@ prompt: |
 
 #### ステップ5: 修正（条件付き）
 
-`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `prd-creator` の update モードに渡し、その後 `prior_feedback` を添えてステップ3〜4を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
+`verdict.decision` で分岐する。`pass` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `prd-creator` の update モードに渡し、その後 `prior_feedback` を添えてステップ3〜4を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
 
 #### ユニット完了
 
-- [ ] レビュー verdict が `approved`
+- [ ] レビュー verdict が `pass`
 - [ ] 人間レビュー通過（ステップ0で有効化時）
 
 **次へ**: 次のユニットへ進む。全ユニット完了後 → フェーズ2。
@@ -285,11 +285,11 @@ prompt: |
 
 #### ステップ10: 修正（条件付き）
 
-`verdict.decision` で分岐する。`approved` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後 `prior_feedback` を添えてステップ8〜9を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
+`verdict.decision` で分岐する。`pass` はユニット完了。`needs_revision` はレビュー対応を適用し、`apply` の issue オブジェクト一式を逐語で `technical-designer` または `technical-designer-frontend` の update モードに渡し、その後 `prior_feedback` を添えてステップ8〜9を再実行する。却下だけの結果はレビュー完了とする。`rejected` は上位の要件ゲートを適用する。
 
 #### ユニット完了
 
-- [ ] レビュー verdict が `approved`
+- [ ] レビュー verdict が `pass`
 - [ ] 人間レビュー通過（ステップ0で有効化時）
 
 **次へ**: 次のユニットへ進む。全ユニット完了後 → 最終レポート。

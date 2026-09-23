@@ -147,11 +147,11 @@ prompt: |
 
 #### Step 5: Revision (conditional)
 
-Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution, pass complete `apply` issue objects verbatim to `prd-creator` in update mode, then rerun Steps 3-4 with `prior_feedback`. A decline-only result completes the review. For `rejected`, apply the parent requirement gate.
+Branch on `verdict.decision`. `pass` completes the unit. For `needs_revision`, apply Review Resolution, pass complete `apply` issue objects verbatim to `prd-creator` in update mode, then rerun Steps 3-4 with `prior_feedback`. A decline-only result completes the review. For `rejected`, apply the parent requirement gate.
 
 #### Unit Completion
 
-- [ ] Review verdict is `approved`
+- [ ] Review verdict is `pass`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units → Phase 2.
@@ -285,11 +285,11 @@ prompt: |
 
 #### Step 10: Revision (conditional)
 
-Branch on `verdict.decision`. `approved` completes the unit. For `needs_revision`, apply Review Resolution and pass complete `apply` issue objects verbatim to `technical-designer` or `technical-designer-frontend` in update mode, then rerun Steps 8-9 with `prior_feedback`. A decline-only result completes the review. For `rejected`, apply the parent requirement gate.
+Branch on `verdict.decision`. `pass` completes the unit. For `needs_revision`, apply Review Resolution and pass complete `apply` issue objects verbatim to `technical-designer` or `technical-designer-frontend` in update mode, then rerun Steps 8-9 with `prior_feedback`. A decline-only result completes the review. For `rejected`, apply the parent requirement gate.
 
 #### Unit Completion
 
-- [ ] Review verdict is `approved`
+- [ ] Review verdict is `pass`
 - [ ] Human review passed (if enabled in Step 0)
 
 **Next**: Proceed to next unit. After all units → Final Report.

@@ -153,7 +153,7 @@ prompt: |
 **Store output as**: `$STEP_5_OUTPUT`
 
 **On review result**:
-- `approved` → Proceed to Step 6
+- `pass` → Proceed to Step 6
 - `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim to the Step 2 update agent, then rerun verification when applicable and re-review with `prior_feedback`
 - `rejected` → Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution
 
@@ -161,7 +161,7 @@ Follow Review Resolution convergence and escalation conditions.
 
 ### Step 6: Consistency Verification and Final Approval [Stop]
 
-For PRD or ADR, proceed from the approved document review to the final approval below.
+For PRD or ADR, proceed from the passed document review to the final approval below.
 
 For Design Doc, invoke design-sync:
 ```

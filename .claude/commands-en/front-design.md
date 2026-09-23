@@ -10,7 +10,7 @@ Execute the `subagents-orchestration-guide` skill before invoking agents or reso
 
 ## Outcome and Ownership
 
-Coordinate a Medium/Large frontend design from evidence to an applicable UI Spec and approved Design Doc. The orchestrator owns requirement convergence, Structural Scale, document routing, ADR qualification, evidence selection, and Review Resolution. Named specialists own semantic investigation and artifacts.
+Coordinate a Medium/Large frontend design from evidence to an applicable UI Spec and approved Design Doc. The user owns product requirements and exclusions; the orchestrator owns convergence readiness, Structural Scale, document routing, ADR qualification, evidence selection, and Review Resolution. Named specialists own semantic investigation and artifacts.
 
 The frontend Design Doc always carries the complete implementation design. An ADR batch narrows qualifying technical choices; an applicable UI Spec owns UI structure and behavior that remain to be designed.
 
@@ -64,7 +64,7 @@ Judge all four convergence fields. Assign `cost` from Step 2 structural evidence
 
 Determine Structural Scale from outcomes and responsibility boundaries; file count is supporting evidence only. Resolve candidate decision points against the governing source, applicable `simplifications`, `reuse`, and `invalidations`; applicable UI facts may support or contradict the remaining options. Apply documentation-criteria Choice and Durability filters only after this convergence and record passing points as `adrDecisionPoints`; an empty list is valid.
 
-Present what the user decides on: the outcome and the requirements to build, the exclusions, the responsibilities the change targets, and each applicable simplification with the condition under which the confirmed outcome still holds without it. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, UI Spec applicability, ADR qualification, and cost evidence stay in the orchestrator record — the UI Spec, ADR batch, and Design Doc have their own approval stops. Offer proceed, or correct and re-run. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
+Present the requirement-convergence Scope Confirmation. Its **Decision evidence** carries the responsibilities the change targets and each applicable simplification with the condition under which the confirmed outcome still holds without it. Structural Scale, UI Spec applicability, and ADR qualification stay in the orchestrator record because the UI Spec, ADR batch, and Design Doc have their own approval stops. Offer proceed, or correct and re-run. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
 
 ## Step 5: Create and Approve the UI Spec
 
@@ -72,7 +72,7 @@ Run this step only when Step 3 determined that a UI Spec applies.
 
 Invoke `ui-spec-designer` with `confirmed_requirement_context`, the complete `ui_analysis` and `codebase_analysis` unchanged, a decision-relevant `prototype_path` and its `prototype_reference_strength` when one exists, and selected `external_resource_refs` or `[]`.
 
-Invoke `document-reviewer` with `doc_type: UISpec` and `target` as the returned UI Spec path. `approved` presents the UI Spec; `needs_revision` applies Review Resolution and re-reviews after correction; `rejected` resolves the governing-source conflict before another review. `[Stop: UI Spec approval]`.
+Invoke `document-reviewer` with `doc_type: UISpec` and `target` as the returned UI Spec path. `pass` presents the UI Spec; `needs_revision` applies Review Resolution and re-reviews after correction; `rejected` resolves the governing-source conflict before another review. `[Stop: UI Spec approval]`.
 
 ## Step 6: Create and Approve an ADR Batch When Needed
 
@@ -80,8 +80,8 @@ When `adrDecisionPoints` is non-empty:
 
 1. Route shared/backend-owned points to technical-designer first, then frontend-owned points to technical-designer-frontend. Invoke each owner with `document_to_create: ADRBatch`, `confirmed_requirement_context`, its ordered `decision_points`, corresponding unchanged `decision_materials`, and `ui_spec_path` only when the approved UI Spec constrains that decision.
 2. Collect all returned paths and invoke `document-reviewer` once with `doc_type: ADRBatch`, `targets: [all paths]`, and `confirmed_requirement_context`.
-3. Route the verdict first: `approved` proceeds; `needs_revision` applies Review Resolution, updates one ADR per path serially, and re-reviews the complete batch; `rejected` resolves the governing-source conflict before another review.
-4. Present one batch decision only after an approved review. `[Stop: ADR batch approval]`.
+3. Route the verdict first: `pass` proceeds; `needs_revision` applies Review Resolution, updates one ADR per path serially, and re-reviews the complete batch; `rejected` resolves the governing-source conflict before another review.
+4. Present one batch decision only after a `pass` review. `[Stop: ADR batch approval]`.
 5. After user approval, set every ADR status to `Accepted` and verify the changes.
 
 ## Step 7: Create the Frontend Design Doc
@@ -104,7 +104,7 @@ Invoke `code-verifier` with `doc_type: design-doc` and the returned Design Doc p
 
 Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc path, `review_context: creation`, original user requirements, `confirmed_requirement_context`, the unchanged analysis inputs supplied to the designer, and `verification_evidence`.
 
-- `approved`: continue
+- `pass`: continue
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete findings with an `apply` disposition, and rerun verification and review for the affected boundary
 - `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 

@@ -16,7 +16,7 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
 4. **Scope**: Complete consumed task-set execution, post-implementation review, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a confirmed value-boundary choice or irreversible-action authorization. Advance only when the current phase's stated transition condition is satisfied.
 
-**CRITICAL**: Commit only after quality-fixer-frontend returns `approved` or `verification_incomplete`. That result authorizes a commit at the commit points this recipe defines; it does not create one.
+**CRITICAL**: Commit only after quality-fixer-frontend returns `pass` or `verification_incomplete`. That result authorizes a commit at the commit points this recipe defines; it does not create one.
 
 Work plan: $ARGUMENTS
 
@@ -103,14 +103,14 @@ For EACH task in the Consumed Task Set, YOU MUST:
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the same `task_file` plus the complete `apply` quality-issue objects passed verbatim as `correction_findings`
      - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to step 3
-     - `approved` → Proceed to step 3
+     - `pass` → Proceed to step 3
    - `readyForQualityCheck: true` → Proceed to step 3
 3. **QUALITY-FIX**: Invoke quality-fixer-frontend against the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Pass the current `task_file`, the implementation step's `runnableCheck`, and `qualityCommand` when frontend-technical-spec or a repository convention names one. Then branch on its response:
    - `stub_detected` → Return to step 1 and re-invoke task-executor-frontend with the same `task_file` and the `incompleteImplementations[]` array
    - `blocked` → Apply Specialist Result Acceptance
    - `verification_incomplete` → Retain the complete result for final retry and proceed to step 4
-   - `approved` → Proceed to step 4
-4. **COMMIT**: Commit the completed task change set after `approved` or `verification_incomplete`
+   - `pass` → Proceed to step 4
+4. **COMMIT**: Commit the completed task change set after `pass` or `verification_incomplete`
 
 **CRITICAL**: Parse every sub-agent response for its routing meaning. Proceed to the next task after step 4, retaining any `verification_incomplete` result for the final retry.
 
@@ -142,7 +142,7 @@ Apply subagents-orchestration-guide's Post-Implementation Review status-routing 
 
 ## Final Cleanup
 
-Before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `approved` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Their work is then committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
+Before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `pass` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Their work is then committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
 
 - Delete every file in the Consumed Task Set
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review

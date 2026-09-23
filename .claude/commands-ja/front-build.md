@@ -16,7 +16,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 3. **自律実行モード移行**: ユーザーの実行指示とタスクファイルの存在をバッチ承認とみなす
 4. **スコープ**: Consumed Task Setの実行、実装後レビュー、処理したタスクのクリーンアップ、完了報告を順番に完了する。または、確認済みの成果・将来状態の要件・対象外のどれを変更するかという選択や不可逆な操作の承認が必要な場合は、現在のフェーズで自律実行を停止する。現在のフェーズで定められた遷移条件を満たした場合にのみ次へ進む。
 
-**重要**: quality-fixer-frontend が `approved` または `verification_incomplete` を返した後にのみコミットする。その結果は本レシピが定めるコミットポイントでのコミットを許可するだけで、コミットを生むものではない。
+**重要**: quality-fixer-frontend が `pass` または `verification_incomplete` を返した後にのみコミットする。その結果は本レシピが定めるコミットポイントでのコミットを許可するだけで、コミットを生むものではない。
 
 作業計画書: $ARGUMENTS
 
@@ -103,14 +103,14 @@ Consumed Task Set 内の各タスクで必須：
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。実装ステップの `testsAdded` の全パスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアーがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `status` で分岐する
      - `needs_revision` → レビュー対応を適用し、同じ`task_file`に、`apply`のquality-issueオブジェクト一式を`correction_findings`として逐語で加えてステップ1に戻る
      - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、その入力によってレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻す。それ以外はレビューを未実行として`blockingReason`を記録し、ステップ3へ進む
-     - `approved` → ステップ3 へ
+     - `pass` → ステップ3 へ
    - `readyForQualityCheck: true` → ステップ3 へ
 3. **QUALITY-FIX**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して quality-fixer-frontend を呼び出す。現在の `task_file`、実装ステップの `runnableCheck`、および frontend-technical-spec またはリポジトリの規約が正となる品質コマンドを定めている場合は `qualityCommand` を渡す。その後レスポンスで分岐する:
    - `stub_detected` → ステップ1に戻り、同じ`task_file`と`incompleteImplementations[]`配列を渡してtask-executor-frontendを再実行する
    - `blocked` → 専門エージェントの結果の受理を適用する
    - `verification_incomplete` → 結果を省略せず最終再試行まで保持し、ステップ4へ進む
-   - `approved` → ステップ4 へ
-4. **コミット**: `approved`または`verification_incomplete`の後に、完了したタスクの変更セットをコミットする
+   - `pass` → ステップ4 へ
+4. **コミット**: `pass`または`verification_incomplete`の後に、完了したタスクの変更セットをコミットする
 
 **重要**: 全サブエージェントレスポンスのルーティング上の意味を読み取る。ステップ4の後に次のタスクへ進み、`verification_incomplete`の結果は最終再試行まで保持する。
 
@@ -142,7 +142,7 @@ subagents-orchestration-guideの実装後レビューにあるステータスの
 
 ## 最終クリーンアップ
 
-完了レポートの前に、レビュー由来の修正や証明不足の再試行が最後のタスクコミット以降に未コミットで残した変更を、該当するquality-fixer-frontendが `approved` または `verification_incomplete` を返した後にコミットする。その後、本レシピが処理した実装タスクファイルを削除する。これで作業内容はコミット済みとなり、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である:
+完了レポートの前に、レビュー由来の修正や証明不足の再試行が最後のタスクコミット以降に未コミットで残した変更を、該当するquality-fixer-frontendが `pass` または `verification_incomplete` を返した後にコミットする。その後、本レシピが処理した実装タスクファイルを削除する。これで作業内容はコミット済みとなり、`docs/plans/`はレシピ実行間で保持しない一時的な作業状態である:
 
 - Consumed Task Set 内のすべてのファイルを削除する
 - 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する

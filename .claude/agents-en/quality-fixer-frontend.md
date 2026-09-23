@@ -15,7 +15,7 @@ Executes applicable quality checks, fixes failures owned by the change, and repo
    - Execute applicable quality checks for the frontend project
    - Fix failures tied to the current change or the responsibility required to keep that change consistent; record unrelated failures separately
    - Final confirmation in Phase 4
-   - Return approved when the implementation is complete and every runnable check relevant to the change passes; record checks that could not run and unrelated baseline failures without treating them as product decisions
+   - Return `pass` when the implementation is complete and every runnable check relevant to the change passes; record checks that could not run and unrelated baseline failures without treating them as product decisions
 
 2. **Completely Self-contained Fix Execution**
    - Analyze error root causes and execute both auto-fixes and manual fixes autonomously
@@ -97,13 +97,13 @@ Apply fixes per frontend-typescript-rules and frontend-typescript-testing skills
 - A failure caused by the current change or in a dependency required by the accepted outcome → fix it and re-run the check
 - A verified pre-existing failure unrelated to the accepted outcome and its required dependencies → run every unaffected check and record the command, failure, and baseline evidence in `checksPerformed`
 - An unavailable tool, service, credential, seed, or environment prerequisite → run every unaffected check and record the method and exact reason in `checksPerformed` and `taskVerification.skipped` when applicable
-- The implementation is complete and every runnable change-related check passes → return `approved`; the result states exactly what ran and what could not run
+- The implementation is complete and every runnable change-related check passes → return `pass`; the result states exactly what ran and what could not run
 - Required behavior cannot be determined from the supplied governing and repository evidence → return `verification_incomplete` with the missing governing evidence and affected checks
 - Confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes, or an irreversible external action requires authorization → return `blocked`
 
 ### Step 6: Return JSON Result
 Return one of the following as the final response (see Output Format for schemas):
-- `status: "approved"` — implementation is complete and every runnable change-related check passes; unavailable checks and unrelated baseline failures are recorded in the existing check results
+- `status: "pass"` — implementation is complete and every runnable change-related check passes; unavailable checks and unrelated baseline failures are recorded in the existing check results
 - `status: "stub_detected"` — incomplete implementation found at Step 1 (`type: "missing_logic"`) or hollow test detected at Step 3 Substance check (`type: "hollow_test"`) that could not be fixed within fixer scope
 - `status: "verification_incomplete"` — required proof or governing evidence remains unavailable
 - `status: "blocked"` — a confirmed value-boundary choice or irreversible external action authorization belongs to the user
@@ -144,7 +144,7 @@ Execute `test` script (run all tests with Vitest)
 
 #### Phase 4: Final Confirmation
 - Confirm all Phase results
-- Determine approved status
+- Determine `pass` status
 **Pass Criteria**: All Phases (1-3) pass with zero errors
 
 ## Status Determination Criteria
@@ -156,11 +156,11 @@ Returned from two paths, distinguished by `incompleteImplementations[].type`:
 
 In both cases, return `stub_detected` until the implementation or test body is complete; then verification can run again.
 
-### approved (All runnable change-related quality checks pass)
+### pass (All runnable change-related quality checks pass)
 - All executed tests pass (React Testing Library)
 - When a test run is cited as evidence for the acceptance criteria listed in the task file, or for the direct scope's verification condition, at least one executed assertion exercises that criterion's observable behavior (intentional-absence assertions count when absence is the expectation). Tasks without cited test evidence (e.g., pure refactor with no behavior change) are unaffected by this criterion
 - Every runnable build, type, lint, and format check succeeds
-- Any check that could not run, and any verified unrelated baseline failure, is named with its observed reason; `approved` does not claim that such a check ran or passed
+- Any check that could not run, and any verified unrelated baseline failure, is named with its observed reason; `pass` does not claim that such a check ran or passed
 
 ### verification_incomplete (Required proof remains unavailable)
 
@@ -200,7 +200,7 @@ When neither source supplied a verification method, set `"provided": false` and 
 
 | status | required fields | when to use |
 |---|---|---|
-| `approved` | `summary`, `checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}` (each `{status, commands[], …}`; `phase3_tests` may include `testsRun`, `testsPassed`), `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | Implementation is complete and every runnable change-related phase passes; unavailable checks and unrelated baseline failures are explicit in the existing check results |
+| `pass` | `summary`, `checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}` (each `{status, commands[], …}`; `phase3_tests` may include `testsRun`, `testsPassed`), `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | Implementation is complete and every runnable change-related phase passes; unavailable checks and unrelated baseline failures are explicit in the existing check results |
 | `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | Step 1 found stub/TODO/placeholder (`type: "missing_logic"`) in scope (returned immediately, before any quality checks); OR Substance check (Step 3) found hollow tests (`type: "hollow_test"`) that could not be fixed within fixer scope |
 | `verification_incomplete` | `reason`, `missingPrerequisites[{type, description, affectedTests, resolutionSteps}]` | Required proof or governing evidence remains unavailable after in-scope recovery |
 | `blocked` | `reason`, `evidence[]`, `requiredDecision` | Confirmed value boundaries conflict, or an irreversible external action requires authorization |
@@ -218,7 +218,7 @@ Minimal example (`blocked`):
 ```
 
 **Processing rules** (internal):
-- Change-related error found → fix immediately and continue until `approved`
+- Change-related error found → fix immediately and continue until `pass`
 - `blocked` is reserved for a confirmed value-boundary choice or irreversible external action authorization
 
 ## Intermediate Progress Report
@@ -245,7 +245,7 @@ This is intermediate output only. The final response must be the JSON result (St
 
 ## Completion Criteria
 
-- [ ] Final response is a single JSON with status `approved`, `stub_detected`, `verification_incomplete`, or `blocked`
+- [ ] Final response is a single JSON with status `pass`, `stub_detected`, `verification_incomplete`, or `blocked`
 
 ## Fix Execution Policy
 

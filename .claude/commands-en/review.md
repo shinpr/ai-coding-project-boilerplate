@@ -16,7 +16,7 @@ Execute the `subagents-orchestration-guide` skill before making workflow decisio
 - **Code-side fix path**: Fix implementation → task-executor; Correction review → code-reviewer / security-reviewer; Final quality checks → quality-fixer
 - **Design-side update path**: DD revision → technical-designer (update mode); DD review → document-reviewer; cross-DD consistency → design-sync (when multiple DDs exist); Re-validation → code-reviewer
 
-Orchestrator invokes sub-agents and passes structured JSON between them. The design-side path applies when the discrepancy reflects code that was correct but the Design Doc became stale, rather than code that violated the Design Doc.
+Orchestrator invokes sub-agents and passes structured JSON between them. The design-side path applies when the Design Doc is stale, excessive, or incorrect for the confirmed outcome. Neither path makes the existing implementation or the prior design authoritative by default.
 
 Design Doc (uses most recent if omitted): $ARGUMENTS
 
@@ -47,7 +47,7 @@ Invoke security-reviewer using Agent tool:
 
 When either reviewer returns a blocked or otherwise unusable result, apply subagents-orchestration-guide Specialist Result Acceptance to its semantic cause. Carry only a remaining verification limitation into the report.
 
-Apply Review Resolution to both outputs. Its `apply` and `decline` dispositions determine routing. For each `apply` finding, use the owning document author when the implementation is the accepted state and a technical artifact is stale; use the executor when implementation must change to reach the accepted state.
+Apply Review Resolution to both outputs. Its `apply` and `decline` dispositions determine routing. Select each `apply` finding's correction owner by Review Resolution section 2: design-side for a technical-artifact change, code-side for an implementation change, and design-side then code-side for a reduction that removes a Design Doc-selected mechanism the confirmed outcome does not need.
 
 Present the adjudicated result:
 
@@ -57,7 +57,7 @@ Implementation Review: [verdict from code-reviewer]
   - [fulfilled] [item]: [evidence]
   - [unfulfilled] [item] -> [corresponding finding ID]
   Required Corrections:
-  - [id] [category] [location]: [description] — [basis and effect] [recommended: code-side correction | design-side update]
+  - [id] [category] [location]: [description] — [basis and effect] [recommended: code-side correction | design-side update | design-side reduction then code-side removal]
   Limitations:
   - [unverified judgment and effect]
 
@@ -75,7 +75,7 @@ Ask the user for authority to apply the proposed `apply` routes. The batch optio
 
 ### 5. Design-Side Update
 
-Run this step only when the approved route keeps the accepted implementation and corrects a stale Design Doc.
+Run this step only when an approved route changes the Design Doc.
 
 1. Invoke technical-designer in update mode using Agent tool:
    - `subagent_type`: "technical-designer"
@@ -95,7 +95,7 @@ Run this step only when the approved route keeps the accepted implementation and
    - `prior_feedback` (rerun only): the previous complete result, its dispositions, and the correction diff or changed paths
    - When `sync_status: CONFLICTS_FOUND`: apply Review Resolution and follow its bounded-verifier handoff and convergence rules, correcting `apply` conflicts through the owning technical designer
 
-4. Re-evaluate the approved `apply` findings against the updated Design Doc and drop any the revision already satisfies. When none remains, skip the code-side fix path and proceed to the final report.
+4. Re-evaluate the approved `apply` findings against the updated Design Doc and drop any the revision already satisfies; the Design Doc revision alone does not satisfy a reduction's implementation removal. When none remains, skip the code-side fix path and proceed to the final report.
 
 ### 6. Execute Fixes
 
@@ -118,7 +118,7 @@ Invoke quality-fixer using Agent tool:
 - `prompt`: "Confirm quality gate passage for the complete current uncommitted worktree, including untracked, deleted, and renamed paths."
 
 Branch on its response:
-- `approved` → Proceed to Step 8
+- `pass` → Proceed to Step 8
 - `stub_detected` → Return to Step 6 with `incompleteImplementations` unchanged, then repeat Step 7
 - `verification_incomplete` → Retain the complete result and proceed to Step 8
 - `blocked` → Apply Specialist Result Acceptance
@@ -145,7 +145,7 @@ Invoke security-reviewer using Agent tool:
 
 Apply Review Resolution to every executed Step 8 and Step 9 result. A maintained `apply` finding returns to Step 6 and then repeats the applicable quality and correction review. Proceed when Review Resolution reaches its convergence condition.
 
-Before Step 11, retry each retained quality-fixer limitation once with the same Step 7 inputs and affected check. An `approved` result clears the retained limitation; route newly discovered incomplete implementation through Steps 6-10, and report a repeated `verification_incomplete` result.
+Before Step 11, retry each retained quality-fixer limitation once with the same Step 7 inputs and affected check. A `pass` result clears the retained limitation; route newly discovered incomplete implementation through Steps 6-10, and report a repeated `verification_incomplete` result.
 
 ### 11. Final Report
 
@@ -163,7 +163,7 @@ Security Review:
   Reconciliation: [resolved / withdrawn / maintained by finding ID]
 
 Quality Check:
-  Final: [approved / verification_incomplete / not run — no code changes]
+  Final: [pass / verification_incomplete / not run — no code changes]
 
 Remaining proof limitations:
 - [reason — affected check and evidence] (only when repeated after retry)

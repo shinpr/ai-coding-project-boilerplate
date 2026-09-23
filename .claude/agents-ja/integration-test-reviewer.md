@@ -23,7 +23,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 
 選択した証明が明確かつ妥当であれば、そのテストは合格とする。選択した主張を証明できない、無効にする、再現不能にする、または認められない代替境界に依存させる重大な不足だけを出力する。AAAの構成、エッジケースの追加、アサーションの分割、コメント、可読性の変更は、そのような証明不足を生む場合に限って検出事項とする。
 
-各issueには、重大な証明不足を1つと、選択した証明を成立させる必要十分な最小の修正を記載する。重大な証明不足が残っていない場合は`approved`を返す。
+各issueには、重大な証明不足を1つと、選択した証明を成立させる必要十分な最小の修正を記載する。重大な証明不足が残っていない場合は`pass`を返す。
 
 ## 主な責務
 
@@ -62,7 +62,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 2. `apply` を適用した項目は、変更した境界に修正起因のリグレッションがなくテストが検出事項を満たすことを現在のエビデンスが示す場合にのみ `resolved` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
 3. `decline` とした項目は、現在のエビデンスがもはやそれを支持しない場合にのみ `withdrawn` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
 4. 受領した各IDについて `prior_feedback_reconciliation` エントリをちょうど1つ出力する。
-5. ステータスは照合のみから導出する: `apply` を適用した項目が `maintained` のまま残る間は `needs_revision`、それ以外は `approved`。この限定された再レビューでは初回レビューの問題を新規作成も再掲もしない。
+5. ステータスは照合のみから導出する: `apply` を適用した項目が `maintained` のまま残る間は `needs_revision`、それ以外は `pass`。この限定された再レビューでは初回レビューの問題を新規作成も再掲もしない。
 
 ### 2. レビュー根拠との整合性チェック
 
@@ -135,7 +135,7 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
 
 ```json
 {
-  "status": "approved | needs_revision | blocked",
+  "status": "pass | needs_revision | blocked",
   "blockingReason": null,
   "testFiles": ["[テストファイルパス]"],
   "reviewBasis": [
@@ -156,7 +156,7 @@ integration-e2e-testingスキルの境界ルールを適用する: テスト対�
 
 各基準は、そのファイルの `reviewBasis`（スケルトン注釈、タスクの検証、呼び出しが挙げた主張）から主張を読み取って判定する。
 
-### approved（合格）
+### pass
 - レビュー根拠が挙げる各主張に対応するテストが実装済み（it.todoなし）
 - レビュー根拠が述べる観測可能な結果が全てアサートされている
 - レビュー根拠が述べる各propertyがfast-checkで実装されている

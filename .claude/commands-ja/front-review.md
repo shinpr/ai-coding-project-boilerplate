@@ -22,7 +22,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 - **コード側修正パス**: 修正実装 → task-executor-frontend、修正再レビュー → code-reviewer / security-reviewer、最終品質チェック → quality-fixer-frontend
 - **設計側更新パス**: DD改訂 → technical-designer-frontend（updateモード）、DDレビュー → document-reviewer、複数DDの整合性 → design-sync（複数DD存在時のみ）、再検証 → code-reviewer
 
-オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡す。設計側パスは、コードが正しいのにDesign Docが古くなっていた不整合（コードがDDに違反したケースではない）に適用される。
+オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡す。設計側パスは、Design Docが確認済みの成果に対して古い、過剰、または誤っている場合に適用される。どちらのパスも、既存の実装や以前の設計を当然に正とはみなさない。
 
 Design Doc（省略時は直近のもの）: $ARGUMENTS
 
@@ -51,7 +51,7 @@ Agent toolでsecurity-reviewerを呼び出す:
 
 いずれかのレビュアーが`blocked`または利用できない結果を返した場合は、その原因の内容に応じてsubagents-orchestration-guideの「専門エージェントの結果の受理」を適用する。残った検証上の制約だけをレポートへ引き継ぐ。
 
-両方の出力にレビュー対応を適用する。`apply`と`decline`の処理方針がルーティングを決める。`apply`の検出事項ごとに、実装が受け入れ済みで技術成果物が古い場合はそのドキュメントの作成担当を、受け入れ済みの状態にするため実装を変える必要がある場合はexecutorを使用する。
+両方の出力にレビュー対応を適用する。`apply`と`decline`の処理方針がルーティングを決める。`apply`の各検出事項の修正担当は、レビュー対応のセクション2に従って選ぶ。技術成果物を変える場合は設計側、実装を変える場合はコード側とし、Design Docが選んだ仕組みのうち確認済みの成果に不要なものを取り除く削減では、設計側の後にコード側を行う。
 
 対応方針を付けた結果を提示する:
 
@@ -61,7 +61,7 @@ Implementation Review: [code-reviewerのverdict]
   - [fulfilled] [item]: [evidence]
   - [unfulfilled] [item] -> [対応するfinding ID]
   Required Corrections:
-  - [id] [category] [location]: [description] — [basis and effect] [推奨: コード側の修正 | 設計側の更新]
+  - [id] [category] [location]: [description] — [basis and effect] [推奨: コード側の修正 | 設計側の更新 | 設計側の削減の後にコード側の除去]
   Limitations:
   - [検証できない判断とその影響]
 
@@ -79,7 +79,7 @@ decline: [ID] — [出典ソース上の理由]
 
 ### Step 5: 設計側更新
 
-このステップは、承認された経路が、受け入れ済みの実装を維持して古いDesign Docを修正する場合に限って実行する。
+このステップは、承認された経路がDesign Docを変更する場合に限って実行する。
 
 1. Agent tool で technical-designer-frontend を update モードで呼び出す:
    - `subagent_type`: "technical-designer-frontend"
@@ -99,7 +99,7 @@ decline: [ID] — [出典ソース上の理由]
    - `prior_feedback`（再実行時のみ）: 前回の完全な結果・その処理方針・修正差分または変更パス
    - `sync_status: CONFLICTS_FOUND` の場合: レビュー対応を適用し、その「範囲を限定したverifier」のハンドオフと収束の規則に従って、`apply`の矛盾を担当するtechnical-designer-frontendで修正する
 
-4. 承認済みの `apply` 検出事項を更新後の Design Doc に対して再評価し、改訂で既に満たされたものは除外する。残りがない場合はコード側の修正パスをスキップして最終レポートへ進む。
+4. 承認済みの `apply` 検出事項を更新後の Design Doc に対して再評価し、改訂で既に満たされたものは除外する。削減に伴う実装の除去は、Design Docの改訂だけでは満たされない。残りがない場合はコード側の修正パスをスキップして最終レポートへ進む。
 
 ### Step 6: 修正実行
 Agent toolでtask-executor-frontendを呼び出す:
@@ -121,7 +121,7 @@ Agent toolでquality-fixer-frontendを呼び出す:
 - `prompt`: "未追跡・削除・リネームを含む現在の未コミットのワークツリー全体について、品質ゲート通過を確認する。"
 
 レスポンスで分岐する:
-- `approved` → Step 8へ進む
+- `pass` → Step 8へ進む
 - `stub_detected` → `incompleteImplementations`を変更せずStep 6へ戻し、Step 7を再実行する
 - `verification_incomplete` → 結果を省略せず保持し、Step 8へ進む
 - `blocked` → 専門エージェントの結果の受理を適用する
@@ -148,7 +148,7 @@ Agent toolでsecurity-reviewerを呼び出す:
 
 実行したStep 8とStep 9の各結果にレビュー対応を適用する。`prior_disposition: apply`の`maintained`はStep 6へ戻し、該当する品質確認と修正再レビューをもう一度行う。レビュー対応が収束条件に達した後に進む。
 
-Step 11の前に、quality-fixer-frontendが検証できなかった各項目を、Step 7と同じ入力と対象チェックで1回だけ再試行する。`approved`なら検証上の制約を解消し、新たに未完成の実装が見つかった場合はStep 6〜10へ戻し、`verification_incomplete`が再度返った場合は報告する。
+Step 11の前に、quality-fixer-frontendが検証できなかった各項目を、Step 7と同じ入力と対象チェックで1回だけ再試行する。`pass`なら検証上の制約を解消し、新たに未完成の実装が見つかった場合はStep 6〜10へ戻し、`verification_incomplete`が再度返った場合は報告する。
 
 ### Step 11: 最終レポート
 
@@ -166,7 +166,7 @@ Security Review:
   照合: [検出事項IDごとの resolved / withdrawn / maintained]
 
 品質チェック:
-  最終結果: [approved / verification_incomplete / 未実行 — コード変更なし]
+  最終結果: [pass / verification_incomplete / 未実行 — コード変更なし]
 
 残っている証明不足:
 - [理由 — 対象チェックとエビデンス]（再試行後も残る場合のみ）

@@ -1,64 +1,65 @@
 # Security Check Patterns
 
-Last reviewed: 2026-03-21
+Last reviewed: 2026-09-23
 
 ## Stable Patterns
 
-These patterns have low false-positive rates and are detectable through grep or static analysis.
+These patterns are reachable through direct source search, and their shape does not change with the ecosystem.
 
 ### Hardcoded Secrets
 - Credentials, API keys, or tokens assigned as string literals in source code
 - Connection strings containing embedded passwords
 - Private keys or certificates stored in source files
-- Detection approach: search for high-entropy strings near assignment operators, common key names (`password`, `secret`, `api_key`, `token`, `private_key`), and platform-specific token formats
+- Provider-specific token formats, recognizable by prefix rather than by variable name
 
 ### SQL String Concatenation
-- SQL statements constructed through string concatenation or interpolation with variables
-- Detection approach: search for SQL keywords (`SELECT`, `INSERT`, `UPDATE`, `DELETE`) combined with string concatenation operators or template literals containing variable references
+- SQL statements constructed through string concatenation or interpolation with variables instead of parameterized data access
 
-### Dynamic Code Execution
-- Use of `eval()`, `Function()`, `exec()`, `compile()` with dynamic input
-- Dynamic import or require with variable paths
-- Detection approach: search for these function calls where the argument is not a static literal
+### Dynamic Code and Command Execution
+- `eval()`, `Function()`, `exec()`, or `compile()` reached by non-static input
+- Dynamic import or require with a variable path
+- Untrusted values flowing into a shell command string or its arguments
 
 ### Insecure Deserialization
 - Deserializing untrusted input with `pickle.loads()`, `yaml.load()` without SafeLoader, or `marshal.loads()`
-- `JSON.parse()` followed by direct use in `eval()` or `Function()`
-- Detection approach: search for deserialization calls that accept external input without safe loader configuration
+- `JSON.parse()` output passed directly into `eval()` or `Function()`
 
-### Path Traversal
-- File system paths constructed from user-supplied input without sanitization
-- Patterns where request parameters flow into file read/write operations
-- Detection approach: search for file operations where path arguments include request parameters, query strings, or user input variables
+### Untrusted Resource Targets
+- File system paths constructed from user-supplied input without sanitization, including archive entry names and symlink targets
+- Outbound requests whose host, port, or scheme derives from user-supplied input, including a destination reached after a redirect (server-side request forgery)
+- In both directions, the caller selects a resource it cannot reach directly
 
-### CORS Wildcard
-- `Access-Control-Allow-Origin` set to `*` in production configuration
-- CORS middleware configured with wildcard origin
-- Detection approach: search for CORS configuration with wildcard values
+### Plaintext or Unverified Transport
+- Credentials, tokens, or personal data sent to a non-TLS destination constructed or configured in source
+- TLS certificate or hostname verification disabled in a client, agent, or transport configuration
 
-### Non-TLS URLs
-- HTTP (non-TLS) URLs embedded in source code for production endpoints (outside configuration files, tests, and documentation)
-- Detection approach: search for `http://` patterns in source files, excluding localhost, configuration files, tests, and documentation
+### Credentialed Cross-Origin Exposure
+- An attacker-controllable origin allowed to read an authenticated response, typically by reflecting the request `Origin` without an allowlist check while `Access-Control-Allow-Credentials` is enabled
+- A wildcard origin alone is not this pattern: browsers reject `*` for credentialed requests, and a reflected origin validated against an allowlist is the correct implementation
 
 ## Trend-Sensitive Patterns
 
-Updated: 2026-03-21
-Sources: OWASP Top 10:2025, DryRun Agentic Coding Security Report (2026-03)
+Updated: 2026-09-23
+Sources: OWASP Top 10:2025; DryRun Agentic Coding Security Report (2026-03); Shai-Hulud npm worm campaigns (2025-09 onward)
 
-### Access Control Gaps in AI-Generated Code
-- Endpoints or route handlers defined without authentication middleware
-- Resource access operations (read, update, delete) without authorization verification
-- Administrative or destructive operations accessible without elevated permissions
-- AI-generated code frequently omits authentication middleware and authorization checks — flag every route handler and resource access operation for explicit verification during review
-- Detection approach: search for route/endpoint handler definitions that lack authentication middleware, and resource operations (read, update, delete) without authorization checks in the call chain
+### Object-Level Authorization Gaps (OWASP A01:2025)
+- Route handlers and resource operations reachable without an authentication or authorization check in the call chain
+- Handlers that verify authentication but not the caller's right to the specific resource named in the request
+- Request identifiers used to select a record without scoping the query to the caller's tenant or ownership
+- Bulk, batch, export, and import operations whose authorization does not cover every target in the set
+- Request-body fields that override the resource, owner, role, or scope the permission check assumed
+- For the changed attack surface, verify each reachable resource access whose authorization behavior can change the security result
 
 ### Mishandling of Exceptional Conditions (OWASP A10:2025)
 - Error handlers that expose internal system details (stack traces, database errors, file paths) in responses
-- Error handlers that grant access, skip authentication, or bypass authorization when an exception occurs (fail-open behavior)
+- Error handlers that grant access, skip authentication, or bypass authorization when an exception occurs
 - Missing error handling on security-critical operations (authentication, authorization, cryptographic operations)
-- Detection approach: search for catch/error handler blocks that return stack traces, database error messages, or file paths in responses; search for catch blocks that call next() or return success without re-validating security state
 
-### Software Supply Chain Patterns (OWASP A03:2025)
-- Dependencies imported without version pinning
-- Use of deprecated or unmaintained packages for security-critical functions
-- Detection approach: check dependency manifests for unpinned versions and known deprecated packages
+### Dependency and Pipeline Integrity (OWASP A03:2025)
+- Newly added dependencies that run install-time scripts (`preinstall`, `postinstall`, or the ecosystem equivalent)
+- Installation paths that resolve versions at install time instead of from the committed lockfile
+
+When the change includes pipeline definitions:
+- Third-party pipeline actions referenced by a mutable tag or branch rather than an immutable revision
+- Pipeline triggers that expose repository secrets or a writable token to code from an untrusted fork
+- Event-supplied values (titles, branch names, comment bodies) interpolated directly into pipeline shell steps

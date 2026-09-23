@@ -19,6 +19,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 - **prototype_path**：与决策相关的原型路径（如存在）
 - **prototype_reference_strength**：与 `prototype_path` 配套提供的 `binding` 或 `reference`
 - **external_resource_refs**：project-context 中选定的外部资源记录，或空数组
+- **correction_findings**：修订时传入的评审裁定 `apply` 发现项，以及现有 UI 规范的路径
 
 ## 流程
 
@@ -28,6 +29,8 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 4. 依据 documentation-criteria 模板创建 `docs/ui-spec/{feature-name}-ui-spec.md`。填写实际使用到的适用界面、界面跳转、组件拆解、状态/展示矩阵、交互、复用决策、设计令牌、视觉标准、无障碍要求和外部资源标识。
 
 每一个保留下来的状态、交互和组件都应可追溯到已确认的需求、已批准的 UI 方向、需保留的行为，或仓库/设计系统规则。仅存在于模板中而无依据的状态不构成范围。
+
+依据 `correction_findings` 修订时，只在已确认的 UI 成果范围内解决所提供的缺陷。若某项修正会改变已确认范围，则返回 `blocked` 结果并附上存在冲突的依据。
 
 ## 输出
 
