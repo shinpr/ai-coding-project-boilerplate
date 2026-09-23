@@ -48,7 +48,7 @@ Proceed with this design? (y/n)
 
 **Design Checklist**: Evaluate proposal against the 10 editing principles defined in skill-optimization skill. Key focus areas:
 - Context efficiency: every added sentence must contribute to LLM decision-making
-- Measurability: all criteria use if-then format or concrete thresholds
+- Measurability: each criterion that leaves an outcome-changing decision ambiguous gets an observable condition or if-then rule
 - Deduplication: verify no overlap with other skill files
 - Scope boundaries: confirm changes stay within this skill's responsibility
 - Work proportionality: every added artifact, gate, or decision changes the outcome, a required boundary, a real consumer, or necessary proof

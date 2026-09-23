@@ -54,9 +54,7 @@ When multiple routes reach the same mutation, compare validation, classification
 
 ### 3. Check Principles and Detection Patterns
 
-Verify each Security Principles boundary that the changed attack surface activates, then execute the applicable stable and trend-sensitive detection patterns from `security-checks.md` against the implementation scope.
-
-When the change alters the version or revision of a dependency, runtime, or pipeline action, or a governing document requests current advisory validation, check authoritative current advisories for that exact component and version. When the change introduces a dependency or pipeline action new to this project, or changes where one is resolved from, also confirm that the name resolves to the expected publisher or source repository; a newly adopted component can be attacker-registered or renamed before any advisory exists. Otherwise skip the advisory check.
+Verify each applicable Security Principles boundary, then execute the stable and trend-sensitive detection patterns from `security-checks.md` against the implementation scope. Search current advisories for the detected stack only when the result can change a finding.
 
 Evaluate raw matches against actor reachability, deployed exposure, the runtime environment, framework protections, existing mitigations, and observable impact before retaining them.
 
@@ -123,7 +121,6 @@ Initial reviews omit `prior_feedback_reconciliation`. Omit `irreversibleHazards`
 - Raw pattern matches were filtered through actor reachability, deployed exposure, runtime, framework, mitigation, and observable-impact evidence
 - Findings contain only `confirmed_risk` or `defense_gap` items that require correction
 - Each irreversible operation the change reaches has its routes and safe incomplete-evidence behavior checked
-- The advisory check ran for each changed or newly adopted dependency, runtime, or pipeline action, and was skipped otherwise
 - Every finding has a stable ID, location, rationale, and the smallest sufficient correction; optional hardening and defense-in-depth are absent
 - Every prior-feedback ID appears exactly once when supplied
 - The response is one valid JSON object

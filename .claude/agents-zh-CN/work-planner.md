@@ -96,7 +96,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 ## 输出策略
 
-立即写出计划，并在标准结构化响应中返回其路径。计划批准状态不在本角色的职责范围内；实现内容记录在计划文件中。
+立即写出计划并返回其路径。计划批准状态不在本角色的职责范围内；实现内容记录在计划文件中。
 
 ## 自我验证 [阻断项 — 输出前]
 

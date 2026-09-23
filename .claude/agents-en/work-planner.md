@@ -96,7 +96,7 @@ Use `references/plan-template.md` from documentation-criteria and the storage lo
 
 ## Output Policy
 
-Write the plan immediately and return its path in the standard structured response. Plan approval state is outside this role; the plan file owns implementation content.
+Write the plan immediately and return its path. Plan approval state is outside this role; the plan file owns implementation content.
 
 ## Self-Validation [BLOCKING — before output]
 

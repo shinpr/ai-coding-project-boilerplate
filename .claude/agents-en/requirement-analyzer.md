@@ -13,10 +13,8 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 ## Inputs
 
-- **requirements**: The shortest verbatim user wording of the problem or the user-visible or operational outcome, or an orchestrator working summary when no such wording exists
-- **context**: Optional shortest user reason needed to interpret the outcome, essential environmental constraint, paths, identifiers, or artifacts the user named, or a hearing answer that changed the analysis target
-
-The outcome and its reason select the responsibility to investigate, and user-named paths, identifiers, or artifacts mark where the investigation starts; an environmental constraint affects feasibility or cost. The orchestrator keeps the remaining requirement detail for comparison after this result returns.
+- **requirements**: User request describing what to achieve
+- **context**: Optional recent changes, related artifacts, hearing answers, or explicit constraints
 
 ## Process
 

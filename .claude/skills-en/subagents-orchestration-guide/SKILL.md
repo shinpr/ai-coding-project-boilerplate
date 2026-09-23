@@ -10,21 +10,19 @@ description: Coordinates subagents through scale-based planning, approval, imple
 **Explicit User Instruction**: The user explicitly instructs and authorizes every subagent call named in the invoked recipe. Execute each applicable call when its prerequisites are met.
 
 ### Required Actions
-- **New tasks**: Start with requirement-analyzer, then converge requirements and select the Structural Scale from its evidence
+- **New full-cycle tasks**: Start with requirement-analyzer, then converge requirements and select the Structural Scale from its evidence
 - **During flow execution**: Follow the selected scale flow and its transition conditions
 - **Each phase**: Delegate the phase to the agent whose declared responsibility matches its output
-- **Stop points**: Continue only after the required user approval is recorded
+- **Stop points**: Continue only after the user confirms at that stop
 - **Investigation**: Delegate all investigation to requirement-analyzer or codebase-analyzer (Grep/Glob/Read are specialist-internal tools)
 - **Analysis/Design**: Delegate to the specialist whose declared responsibilities include the required output
-- **First action**: Invoke requirement-analyzer with the First Action Rule handoff before any other step
+- **First action**: For a new full-cycle task, pass user requirements to requirement-analyzer before any other step
 
 ### First Action Rule
 
-When receiving a new task, keep the user's complete wording in the orchestrator and give requirement-analyzer only an evidence target: `requirements` as the shortest verbatim user wording of the problem or the user-visible or operational outcome, using a working summary only when no such wording exists, and `context` as the shortest user reason needed to interpret it, an environmental constraint only when it is essential, and the paths, identifiers, or artifacts the user named or a hearing answer that changed the analysis target. Orchestrator-selected paths and technical questions stay out of the handoff. Compare the returned scope, cost, and question evidence against the retained wording to run requirement convergence and assign Structural Scale. Classify evaluation requests, speculative ideas, and prescribed mechanisms from that wording; an analyzer's classification would place inference beside repository observation. The user owns product requirements and exclusions; the orchestrator owns convergence readiness and Structural Scale. Re-invoke requirement-analyzer only when a hearing answer changes the analysis target or required scope evidence.
+When receiving a new full-cycle task, pass the user requirements to requirement-analyzer and keep the user's wording in the orchestrator. Compare the returned scope, cost, and question evidence against that wording to run requirement convergence and assign Structural Scale. Classify evaluation requests, speculative ideas, and prescribed mechanisms from the user's wording rather than from analyzer output. The orchestrator owns both judgments. Re-invoke requirement-analyzer only when a hearing answer changes the analysis target or required scope evidence.
 
 ### Requirement Change Detection During Flow
-
-After an analysis result returns, compare each user-facing or operational responsibility it exposes with the confirmed scope. When leaving that responsibility unchanged or changing it would alter the confirmed outcome or an exclusion, return it to the requirements gate before dependent design work. A choice about how to satisfy the confirmed scope stays with the design owners.
 
 Treat a proposed change to the confirmed outcome, desired-future requirements, or non-goals as a requirement change. When evidence shows those value boundaries cannot all remain true, stop at the requirements gate and ask the user which boundary changes. A technical design or implementation correction that preserves them is not a requirement change, including removal of a working technical choice that is no longer needed; passing an earlier phase does not establish that its means remain necessary. Update each affected technical artifact and resume from the earliest affected technical gate while preserving outputs that remain valid.
 
@@ -205,10 +203,10 @@ Replace the standard Design Doc creation step with per-layer creation:
 | 8 | codebase-analyzer | Analyze the complete confirmed cross-layer scope, passing exactly one governing source: `prd_path` or `requirements` |
 | 9 | technical-designer | Backend Design Doc (with the relevant backend evidence from step 8) |
 | 10 | code-verifier | Verify Backend Design Doc against existing code (its result JSON becomes `prior_layer_verification` for step 12) |
-| 11 | document-reviewer | Review Backend Design Doc (pass the step-10 result as `verification_evidence` and step-8 JSON as `codebase_analysis`); resolve `needs_revision`, and stop on `rejected` |
+| 11 | document-reviewer | Review Backend Design Doc (pass the step-10 result as `verification_evidence` and step-8 JSON as `codebase_analysis`); route the verdict through the Review Resolution Verdict Gate |
 | 12 | technical-designer-frontend | Frontend Design Doc (with relevant frontend evidence from step 8 + reviewed Backend Design Doc + `prior_layer_verification` from step 10 + UI Spec) |
 | 13 | code-verifier | Verify Frontend Design Doc against existing code |
-| 14 | document-reviewer | Review Frontend Design Doc (pass the step-13 result and recorded dispositions as `verification_evidence`, plus step-8 JSON as `codebase_analysis`). Resolve `needs_revision`; a `rejected` verdict stops before step 15. |
+| 14 | document-reviewer | Review Frontend Design Doc (pass the step-13 result and recorded dispositions as `verification_evidence`, plus step-8 JSON as `codebase_analysis`). Route the verdict through the Review Resolution Verdict Gate before step 15. |
 | 15 | design-sync | Cross-layer consistency verification **[Stop]** |
 
 Step 8 runs once and its full JSON is reused unchanged by both designers; each consumes the evidence relevant to its layer. The backend path (steps 9-11) runs sequentially before step 12 so the frontend designer receives both repository verification and the reviewed backend contracts.
@@ -328,20 +326,14 @@ Two additional rules:
 
    **Pass to work-planner**: Design Doc path. Work-planner maps governing sections and ACs to implementation tasks. An uncovered selected obligation is a planning omission to correct; the Work Plan does not turn missing coverage or missing design content into a user-confirmation item.
 
-   **Gap handling (orchestrator responsibility)**: If work-planner outputs a draft plan containing `gap` entries, the orchestrator MUST:
-   1. Present the gap entries to the user with justifications
-   2. Keep the plan in draft status until the user confirms each gap
-   3. Pass the plan to downstream agents after every gap is resolved or explicitly confirmed
-   Unjustified gaps are errors — return to work-planner to add covering tasks or justification.
-
    #### *1 acceptance-test-generator → work-planner
 
    **Pass to acceptance-test-generator**: Design Doc path; UI Spec path (if exists).
 
    **Orchestrator verification**: Every path in `generatedFiles[]` exists on disk. An empty list is a valid generation result.
 
-   **Pass to work-planner**: generated paths, plus timing guidance — integration tests are created alongside each phase implementation, fixture-e2e tests are created alongside the UI feature phase, service-integration-e2e tests are executed after their required services exist.
-3. **ADR Status Management**: Update ADR status after user decision (Accepted/Rejected)
+   **Pass to work-planner**: generated paths. Work-planner assigns each skeleton to the earliest task where it becomes executable.
+3. **ADR Status Management**: After the user decision, invoke the owning technical designer in update mode to set each ADR status (Accepted/Rejected)
 
 ## Important Constraints
 
@@ -358,8 +350,8 @@ Two additional rules:
 | code-reviewer | `verdict` is `pass` | `verdict` is `needs-improvement` or `needs-redesign` | `verdict` is `blocked` → Apply Specialist Result Acceptance |
 | security-reviewer | `status` is `pass` | `status` is `needs_revision` | `status` is `blocked` → Apply Specialist Result Acceptance |
 
-Reviewer findings are candidates. Create correction work only from the Review Resolution `apply` set. A reviewer `pass` records phase passage; it grants no user-held authority and does not establish that the reviewed means remain necessary.
+Reviewer findings are candidates. Create correction work only from the Review Resolution `apply` set.
 
-**Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers.
+**Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then branch on the executor result through the per-task cycle's step 2, including its conditional integration-test-reviewer path, and run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers.
 
 **Re-run rule**: A reviewer that has returned a passing result is never re-run. Re-run only a reviewer whose latest result still carries a corrected finding, passing its recorded dispositions as `prior_feedback` and the re-derived implementation file set so the rerun reconciles against the corrected state. After recovering a blocked review prerequisite, re-run that reviewer. Review Resolution convergence governs acceptance and preserves resolved declines.

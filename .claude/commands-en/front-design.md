@@ -64,7 +64,7 @@ Judge all four convergence fields. Assign `cost` from Step 2 structural evidence
 
 Determine Structural Scale from outcomes and responsibility boundaries; file count is supporting evidence only. Resolve candidate decision points against the governing source, applicable `simplifications`, `reuse`, and `invalidations`; applicable UI facts may support or contradict the remaining options. Apply documentation-criteria Choice and Durability filters only after this convergence and record passing points as `adrDecisionPoints`; an empty list is valid.
 
-Present the requirement-convergence Scope Confirmation. Its **Decision evidence** carries the responsibilities the change targets and each applicable simplification with the condition under which the confirmed outcome still holds without it. Structural Scale, UI Spec applicability, and ADR qualification stay in the orchestrator record because the UI Spec, ADR batch, and Design Doc have their own approval stops. Offer proceed, or correct and re-run. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
+Present what the user decides on: the outcome and the requirements to build, the exclusions, the responsibilities the change targets, each applicable simplification with the condition under which the confirmed outcome still holds without it, and the cost band with its remaining unknowns. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, UI Spec applicability, and ADR qualification stay in the orchestrator record — the UI Spec, ADR batch, and Design Doc have their own approval stops. Offer proceed, or correct and re-run. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
 
 ## Step 5: Create and Approve the UI Spec
 
@@ -72,7 +72,7 @@ Run this step only when Step 3 determined that a UI Spec applies.
 
 Invoke `ui-spec-designer` with `confirmed_requirement_context`, the complete `ui_analysis` and `codebase_analysis` unchanged, a decision-relevant `prototype_path` and its `prototype_reference_strength` when one exists, and selected `external_resource_refs` or `[]`.
 
-Invoke `document-reviewer` with `doc_type: UISpec` and `target` as the returned UI Spec path. `pass` presents the UI Spec; `needs_revision` applies Review Resolution and re-reviews after correction; `rejected` resolves the governing-source conflict before another review. `[Stop: UI Spec approval]`.
+Invoke `document-reviewer` with `doc_type: UISpec`, `target` as the returned UI Spec path, `confirmed_requirement_context`, and the `ui_analysis` supplied to the author. `pass` presents the UI Spec; `needs_revision` applies Review Resolution and re-reviews after correction; `rejected` resolves the governing-source conflict before another review. `[Stop: UI Spec approval]`.
 
 ## Step 6: Create and Approve an ADR Batch When Needed
 
@@ -82,7 +82,7 @@ When `adrDecisionPoints` is non-empty:
 2. Collect all returned paths and invoke `document-reviewer` once with `doc_type: ADRBatch`, `targets: [all paths]`, and `confirmed_requirement_context`.
 3. Route the verdict first: `pass` proceeds; `needs_revision` applies Review Resolution, updates one ADR per path serially, and re-reviews the complete batch; `rejected` resolves the governing-source conflict before another review.
 4. Present one batch decision only after a `pass` review. `[Stop: ADR batch approval]`.
-5. After user approval, set every ADR status to `Accepted` and verify the changes.
+5. After user approval, invoke each ADR's owning designer in update mode to set its status to `Accepted`, and verify the changes.
 
 ## Step 7: Create the Frontend Design Doc
 
@@ -108,7 +108,7 @@ Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc p
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete findings with an `apply` disposition, and rerun verification and review for the affected boundary
 - `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 
-Invoke `design-sync` with the returned Design Doc as source, apply Review Resolution to actionable conflicts, and report `SKIPPED` distinctly when only one Design Doc exists.
+Invoke `design-sync` with the returned Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. When the result reports `analyzed_docs: 0`, report consistency verification as skipped because no other Design Doc exists.
 
 Present the applicable UI Spec, Design Doc, accepted ADR paths, recorded declines, and sync result. `[Stop: Design approval]`.
 
@@ -119,5 +119,5 @@ Present the applicable UI Spec, Design Doc, accepted ADR paths, recorded decline
 - ADRs exist only for points passing both filters, and the batch received one review and approval
 - An applicable UI Spec and a complete frontend Design Doc exist regardless of ADR need
 - Applicable existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards reached the Design Doc
-- Review Resolution routed only `needs_revision` issues into correction work
+- Review Resolution routed only `apply` findings into correction work
 - All stop points received explicit user confirmation

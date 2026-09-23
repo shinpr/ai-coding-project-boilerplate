@@ -36,22 +36,11 @@ Register these steps before starting and record each step's evidence as it compl
 
 | Step | Action | Completion evidence |
 |------|--------|---------------------|
-| 1 | Render the Scope Confirmation below, asking only about the fields below `ready` | Each fact cites the analysis output it came from, and **User decisions** holds one question per field below `ready` |
-| 2 | Record each answer as that field's value | The value is the option the user explicitly selected or the wording the user supplied |
-| 3 | Re-ask once when a recorded value still fails its pass condition, then mark the field `weak-but-explicit` when the user agrees to leave the second answer as it stands | Two recorded answers, or the user's agreement to stop |
-| 4 | Judge each field against its pass condition and finalize the completed record | A convergence record with every field labeled |
-
-## Scope Confirmation
-
-Render this shape at every requirements confirmation stop, whether or not the hearing runs, including only what can change the user's requirement decision.
-
-| Section | Contents |
-|---------|----------|
-| **Confirmed scope** | The requirements and exclusions the user has already stated or explicitly selected, in the user's wording or the selected option |
-| **Decision evidence** | Each material item marked as observed, inferred, or proposed, with its source and what it can change about scope, outcome, or cost, including the cost band and its remaining unknowns |
-| **User decisions** | Each unresolved product, UX, or operational question, with the scope, outcome, or cost effect of its materially different answers |
-
-Keeping these sections apart lets the user tell their own settled boundary from a repository observation and from a question still open. Only an explicit user answer or selection moves an item into **Confirmed scope**. A calling workflow places its own route items, such as Structural Scale, outside these sections and only at stops that present them.
+| 1 | State the available scope facts, then separately what they imply for the requirement | Facts listed with their analysis evidence |
+| 2 | Ask about the fields below `ready`, at most two questions per message | One question per field below `ready` |
+| 3 | Record each answer as that field's value | The value is the option the user explicitly selected or the wording the user supplied |
+| 4 | Re-ask once when a recorded value still fails its pass condition, then mark the field `weak-but-explicit` when the user agrees to leave the second answer as it stands | Two recorded answers, or the user's agreement to stop |
+| 5 | Judge each field against its pass condition and finalize the completed record | A convergence record with every field labeled |
 
 ## Storage Protocol
 
@@ -71,7 +60,7 @@ When neither document exists, retain the record in the active context.
 
 ## Quality Checklist
 
-- [ ] The Scope Confirmation kept confirmed scope, decision evidence, and user decisions separate before any question was asked
+- [ ] Scope facts were presented before questions were asked
 - [ ] `nonGoals` came from the user, or the user stated there are none
 - [ ] Every applicable field is `ready`, or `weak-but-explicit` by the user's agreement
 

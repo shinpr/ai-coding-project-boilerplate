@@ -55,7 +55,6 @@ Invoke work-planner using Agent tool:
 - `subagent_type`: "work-planner"
 - `description`: "Work plan creation"
 - Pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task
-  - Append placement guidance: "Integration tests are created simultaneously with each phase implementation. fixture-e2e tests are created alongside the UI feature phase. service-integration-e2e tests are executed after their required services exist."
 
 - Follow subagents-orchestration-guide Prompt Construction Rule for additional prompt parameters
 
@@ -67,7 +66,7 @@ Invoke document-reviewer to review the work plan:
 - The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`:
   - `needs_revision`: run Review Resolution through correction re-review and convergence, exiting to the parent workflow's requirement-change or authority gate when its conditions apply; use work-planner in update mode for rerouted corrections
   - `pass`, or Review Resolution reaching its convergence condition: proceed to Step 5
-  - `rejected`: apply the parent requirement gate
+  - `rejected`: route through the Review Resolution Verdict Gate
 
 ### Step 5: Present for Approval
 - Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4

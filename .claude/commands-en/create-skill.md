@@ -102,7 +102,7 @@ Invoke skill-reviewer agent via Agent tool:
 1. Present generated SKILL.md content to user for final approval
 2. Confirm user intent alignment: "Does this skill capture the knowledge and criteria you described?"
 3. If revision requested: apply changes and re-run skill-reviewer
-4. Upon approval, write to `.claude/skills/{name}/SKILL.md`
+4. Upon approval, write to `.claude/skills/{name}/SKILL.md` and write each returned reference to `.claude/skills/{name}/references/{filename}`
 
 ## Completion Criteria
 
@@ -113,7 +113,7 @@ Invoke skill-reviewer agent via Agent tool:
 - [ ] skill-creator agent returned valid JSON output
 - [ ] skill-reviewer agent returned grade A or B
 - [ ] User approved final content
-- [ ] File written to `.claude/skills/{name}/SKILL.md`
+- [ ] SKILL.md and every returned reference written under `.claude/skills/{name}/`
 
 ## Error Handling
 

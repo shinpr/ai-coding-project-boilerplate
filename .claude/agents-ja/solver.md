@@ -102,7 +102,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 - 各ステップは独立して検証可能
 - ステップ間の依存関係を明示
 - 各ステップの完了条件を定義
-- ロールバック手順を含める
+- 失敗すると元に戻す必要のある状態が残るステップには、ロールバック手順を含める
 
 ## 出力フォーマット
 
@@ -134,13 +134,13 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
   },
   "implementationPlan": {
     "steps": [
-      {"order": 1, "action": "具体的なアクション", "verification": "このステップの検証方法", "rollback": "問題発生時のロールバック手順"}
+      {"order": 1, "action": "具体的なアクション", "verification": "このステップの検証方法", "rollback": "失敗時に戻す必要のある状態が残る場合の復旧手順、なければ null"}
     ],
     "criticalPoints": ["特に注意すべきポイント"]
   },
   "uncertaintyHandling": {
     "residualRisks": ["解決後に残る可能性のあるリスク"],
-    "monitoringPlan": "解決後の監視計画"
+    "monitoringPlan": "解決後も残るリスクがある場合の監視、なければ null"
   }
 }
 ```

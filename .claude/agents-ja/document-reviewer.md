@@ -123,7 +123,7 @@ issue を作成するのは、成果物が次のいずれかに該当する場�
 
 ```json
 {
-  "metadata": {"doc_type": "DesignDoc|ADRBatch", "targets": ["docs/design/example.md"]},
+  "metadata": {"doc_type": "PRD|ADRBatch|UISpec|DesignDoc|WorkPlan", "targets": ["docs/design/example.md"]},
   "verdict": {"decision": "pass|needs_revision|rejected"},
   "issues": [
     {"id": "I001", "category": "consistency|completeness|compliance|clarity|feasibility", "target": "成果物パス", "location": "セクションまたは行", "relatedLocations": ["同一原因の箇所"], "description": "具体的な問題", "basis": "出典ソースまたは観測された事実", "expectedEffect": "修正によって観測される効果", "requiredEvidence": "設計を左右する未解決の前提に必要な正確かつ観測可能な事実、または null", "correction": "十分な範囲で最小の修正"}

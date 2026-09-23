@@ -19,13 +19,13 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
    - **Stop and obtain approval** for plan content before completion
 3. **Scope**: Complete when work plan receives approval
 
-**CRITICAL**: NEVER skip acceptance-test-generator when user requests test generation.
+**CRITICAL**: Always execute acceptance-test-generator before work-planner — the test skeleton is a required input per subagents-orchestration-guide medium/large flow.
 
 ## Scope Boundaries
 
 **Included in this command**:
 - Design document selection
-- E2E test skeleton generation (optional, with user confirmation)
+- Test skeleton generation with acceptance-test-generator
 - Work plan creation with work-planner
 - Work plan review with document-reviewer
 - Plan approval obtainment
@@ -41,19 +41,18 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    - Otherwise discover Design Docs from repository documentation conventions and document content
    - Present options only when multiple plausible documents would produce different plans
 
-2. **Test Skeleton Generation Confirmation**
-   - Confirm with user whether to generate test skeletons (integration + E2E lanes) first
-   - If user wants generation: invoke acceptance-test-generator
-   - Pass generation results to next process according to subagents-orchestration-guide skill coordination specification
+2. **Test Skeleton Generation**
+   Invoke acceptance-test-generator using Agent tool:
+   - `subagent_type`: "acceptance-test-generator"
+   - `description`: "Test skeleton generation"
+   - `prompt`: "Generate test skeletons from Design Doc at [path]."
+   - Pass the generated paths to work-planner according to subagents-orchestration-guide "acceptance-test-generator → work-planner" section
 
 3. **Work Plan Creation**
    Invoke work-planner using Agent tool:
    - `subagent_type`: "work-planner"
    - `description`: "Work plan creation"
-   - If test skeleton generation ran in Step 2, pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task
-     - Append placement guidance: "Integration tests are created simultaneously with each phase implementation. fixture-e2e tests are created alongside the UI feature phase. service-integration-e2e tests are executed after their required services exist."
-   - If test skeletons were not generated:
-     `prompt`: "Create work plan from Design Doc at [path]."
+   - Pass `generatedFiles[]` as `testSkeletons`. An empty list means the plan needs no additional integration/E2E skeleton task
 
    - Follow subagents-orchestration-guide Prompt Construction Rule for additional prompt parameters
 
@@ -65,7 +64,7 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
    - The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`:
      - `needs_revision`: run Review Resolution through correction re-review and convergence, exiting to the parent workflow's requirement-change or authority gate when its conditions apply; use work-planner in update mode for rerouted corrections
      - `pass`, or Review Resolution reaching its convergence condition: proceed to Step 5
-     - `rejected`: apply the parent requirement gate
+     - `rejected`: route through the Review Resolution Verdict Gate
 
 5. **Present for Approval**
    - Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4

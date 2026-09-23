@@ -32,17 +32,15 @@ Before any task processing, locate the work plan.
 1. List task files in `docs/plans/tasks/` matching this recipe's only consumable pattern (per subagents-orchestration-guide "Layer-Aware Agent Routing", `task-executor-frontend` owns this filename suffix and no other):
    - `{plan-name}-frontend-task-*.md`
    - The bare `{plan-name}-task-*.md` is **not** consumable — that filename is reserved for backend by the routing table and is owned by the backend build recipe. `{plan-name}-backend-task-*.md` is also not consumable for the same reason
-2. From the matched files, also exclude every file matching any of these patterns — they originate from other workflow phases and are not implementation tasks for this run's plan: `integration-tests-*-task-*.md` (integration-test add-on scaffolding)
-3. For each remaining file, extract `{plan-name}` by stripping the trailing `-frontend-task-{NN}.md` suffix
-4. When at least one task file matches, the work plan is `docs/plans/{plan-name}.md` for the prefix that has the most recent task-file mtime; ties broken by the lexicographically last `{plan-name}`
-5. When no `*-frontend-task-*.md` is found AND a non-template work plan exists in `docs/plans/`, treat frontend tasks as requiring an explicit name — the most-recent plan does not stand in for one. Stop and report: "No `*-frontend-task-*.md` found in `docs/plans/tasks/`. If you intended to run this recipe on a frontend plan, either correct the affected work plan task entries to `Executor lane: frontend` and regenerate the task files, or pass the work plan path as `$ARGUMENTS`. If the plan is backend, use the backend build recipe instead." Filenames follow the plan's declared lanes, so re-running task materialization alone leaves them unchanged.
+2. For each matched file, extract `{plan-name}` by stripping the trailing `-frontend-task-{NN}.md` suffix
+3. When at least one task file matches, the work plan is `docs/plans/{plan-name}.md` for the prefix that has the most recent task-file mtime; ties broken by the lexicographically last `{plan-name}`
+4. When no `*-frontend-task-*.md` is found AND a non-template work plan exists in `docs/plans/`, treat frontend tasks as requiring an explicit name — the most-recent plan does not stand in for one. Stop and report: "No `*-frontend-task-*.md` found in `docs/plans/tasks/`. If you intended to run this recipe on a frontend plan, either correct the affected work plan task entries to `Executor lane: frontend` and regenerate the task files, or pass the work plan path as `$ARGUMENTS`. If the plan is backend, use the backend build recipe instead." Filenames follow the plan's declared lanes, so re-running task materialization alone leaves them unchanged.
 
 ### Consumed Task Set
 
 Compute the **Consumed Task Set** for this run — the exact files this recipe owns, executes, and later deletes. Per the routing table, the only consumable pattern is:
 
-1. List task files in `docs/plans/tasks/` matching `{plan-name}-frontend-task-*.md` for the `{plan-name}` resolved by Work Plan Resolution. `{plan-name}-task-*.md` and `{plan-name}-backend-task-*.md` are excluded — they route to `task-executor` and are owned by the backend build recipe
-2. Exclude every file matching: `integration-tests-*-task-*.md` (this originates from another workflow phase)
+List task files in `docs/plans/tasks/` matching `{plan-name}-frontend-task-*.md` for the `{plan-name}` resolved by Work Plan Resolution. `{plan-name}-task-*.md` and `{plan-name}-backend-task-*.md` are excluded — they route to `task-executor` and are owned by the backend build recipe.
 
 Every subsequent reference to "task files" in this recipe — Task Generation Decision Flow, Task Execution Cycle iteration, and Final Cleanup — uses this set, not the unrestricted `docs/plans/tasks/*.md` glob.
 
@@ -54,21 +52,9 @@ Analyze the Consumed Task Set and determine the action required. Note: when `$AR
 |-------|----------|-------------|
 | Tasks exist | Consumed Task Set is non-empty | User's execution instruction serves as batch approval → Enter autonomous execution immediately |
 | No tasks + plan supplied via `$ARGUMENTS` | `$ARGUMENTS` provided AND Consumed Task Set empty | User's execution instruction serves as batch approval → Run task-decomposer (which emits `*-frontend-task-*.md` for every task entry declaring `Executor lane: frontend`) |
-| Neither exists + Design Doc exists + `$ARGUMENTS` provided | `$ARGUMENTS` provided, no plan, no Consumed Task Set, but docs/design/*.md exists | Invoke work-planner to create work plan from Design Doc, then run **Work Plan Review** (see below) before task materialization |
-| Neither exists | No `$ARGUMENTS`, no plan, no Consumed Task Set, no Design Doc | Report missing prerequisites to user and stop |
+| Neither exists | No `$ARGUMENTS`, no plan, and no Consumed Task Set | Report missing prerequisites to user and stop |
 
-## Work Plan Review (when this recipe created the plan)
-
-When the decision flow above created the work plan from a Design Doc, review it before materialization:
-
-1. Invoke document-reviewer using Agent tool:
-   - `subagent_type`: "document-reviewer"
-   - `description`: "Work plan review"
-   - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md. Review the Work Plan's own Implementation Scope, tasks, Completion Criteria, dependencies, execution order, exact source-anchor existence, and executable verification. Resolve governing sources from the target's Governing Documents."
-2. Branch on the reviewer's `verdict.decision`:
-   - `needs_revision` → run Review Resolution through its correction re-review, escalation, and convergence transitions, using work-planner in update mode for rerouted corrections; proceed only at its convergence condition
-   - `rejected` → stop before task materialization and escalate to the user
-3. Present the reviewed plan for batch approval before task materialization.
+To bootstrap from a Design Doc when no plan exists yet, run the frontend planning recipe first to produce a work plan, then re-invoke this recipe; the planning recipe generates test skeletons and reviews the plan before this recipe consumes it.
 
 ## Task Materialization Phase (Conditional)
 
@@ -100,11 +86,11 @@ For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke the **Agent tool** (subagent_type: "task-executor-frontend") → Pass task file path in prompt, receive structured response
 2. **BRANCH ON EXECUTOR RESULT**:
    - `status: "escalation_needed"` or `"blocked"` → Apply subagents-orchestration-guide Specialist Result Acceptance
-   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing every path from the implementation step's `testsAdded` as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `status`
+   - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the same `task_file` plus the complete `apply` quality-issue objects passed verbatim as `correction_findings`
      - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to step 3
      - `pass` → Proceed to step 3
-   - `readyForQualityCheck: true` → Proceed to step 3
+   - Otherwise → Proceed to step 3
 3. **QUALITY-FIX**: Invoke quality-fixer-frontend against the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Pass the current `task_file`, the implementation step's `runnableCheck`, and `qualityCommand` when frontend-technical-spec or a repository convention names one. Then branch on its response:
    - `stub_detected` → Return to step 1 and re-invoke task-executor-frontend with the same `task_file` and the `incompleteImplementations[]` array
    - `blocked` → Apply Specialist Result Acceptance
@@ -126,8 +112,6 @@ Keep governing artifacts read-only except for assigned progress fields.
 Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```
 
-VERIFY approval status before proceeding. Once confirmed, INITIATE autonomous execution mode. STOP IMMEDIATELY upon detecting ANY requirement changes.
-
 ## Post-Implementation Review (After All Tasks Complete)
 
 Before invoking post-implementation reviewers, apply the proof-limitation retry in subagents-orchestration-guide Specialist Result Acceptance with quality-fixer-frontend. Continue with the reviewers after clearing or retaining each result; include only repeated limitations in the completion report.
@@ -136,13 +120,13 @@ Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
 Emit these Agent calls in one assistant message, then await both:
 - code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved typed `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
-- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments`
+- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments` and `implementationFiles`
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 
 ## Final Cleanup
 
-Before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `pass` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Their work is then committed; `docs/plans/` is ephemeral working state and is not retained between recipe runs:
+Before the completion report, commit any change that review corrections or the limitation retry left uncommitted after the last task commit, once the applicable quality-fixer has returned `pass` or `verification_incomplete` for it. Then delete the implementation task files this recipe consumed. Their work is then committed; the consumed task files are ephemeral working state and are not retained between recipe runs:
 
 - Delete every file in the Consumed Task Set
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review

@@ -102,7 +102,7 @@ skill-reviewerエージェントをAgent toolで起動:
 1. 生成したSKILL.mdの内容をユーザーに提示し最終承認を取得
 2. 意図の整合性を確認: 「このスキルは説明いただいた知識と基準を正しく反映していますか？」
 3. 修正要望がある場合: 変更を適用しskill-reviewerを再実行
-4. 承認後、`.claude/skills/{skill-name}/SKILL.md`に書き込み
+4. 承認後、`.claude/skills/{skill-name}/SKILL.md`に書き込み、返された各referenceを`.claude/skills/{skill-name}/references/{filename}`に書き込む
 
 ## 完了条件
 
@@ -113,7 +113,7 @@ skill-reviewerエージェントをAgent toolで起動:
 - [ ] skill-creatorが有効なJSON出力を返却
 - [ ] skill-reviewerがグレードAまたはBを返却
 - [ ] ユーザーが最終コンテンツを承認済み
-- [ ] `.claude/skills/{skill-name}/SKILL.md`に書き込み済み
+- [ ] SKILL.mdと返されたすべてのreferenceを`.claude/skills/{skill-name}/`配下に書き込み済み
 
 ## エラーハンドリング
 

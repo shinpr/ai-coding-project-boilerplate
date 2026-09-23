@@ -51,7 +51,7 @@ Invoke security-reviewer using Agent tool:
 
 When either reviewer returns a blocked or otherwise unusable result, apply subagents-orchestration-guide Specialist Result Acceptance to its semantic cause. Carry only a remaining verification limitation into the report.
 
-Apply Review Resolution to both outputs. Its `apply` and `decline` dispositions determine routing. Select each `apply` finding's correction owner by Review Resolution section 2: design-side for a technical-artifact change, code-side for an implementation change, and design-side then code-side for a reduction that removes a Design Doc-selected mechanism the confirmed outcome does not need.
+Apply Review Resolution to both outputs. Its `apply` and `decline` dispositions determine routing. Select each `apply` finding's correction owner by Review Resolution section 2.
 
 Present the adjudicated result:
 

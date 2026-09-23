@@ -123,7 +123,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
 
 ```json
 {
-  "metadata": {"doc_type": "DesignDoc|ADRBatch", "targets": ["docs/design/example.md"]},
+  "metadata": {"doc_type": "PRD|ADRBatch|UISpec|DesignDoc|WorkPlan", "targets": ["docs/design/example.md"]},
   "verdict": {"decision": "pass|needs_revision|rejected"},
   "issues": [
     {"id": "I001", "category": "consistency|completeness|compliance|clarity|feasibility", "target": "artifact path", "location": "section or line", "relatedLocations": ["same-cause location"], "description": "specific issue", "basis": "governing source or observed fact", "expectedEffect": "observable effect of correction", "requiredEvidence": "exact observable fact needed for an unresolved decision-changing premise, or null", "correction": "smallest sufficient correction"}

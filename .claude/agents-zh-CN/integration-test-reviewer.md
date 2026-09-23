@@ -181,8 +181,7 @@ skills: integration-e2e-testing, typescript-testing, project-context
 ### E2E 测试专项验证
 
 - 若 `@dependency: full-system` → 使用 mock 即为 FAILURE
-- 验证执行时机：在所有组件都已实现之后
-- 验证关键用户旅程的覆盖是完整的
+- 验证执行时机：一旦测试所声明的证明边界及其依赖可以执行，就运行该测试
 
 ### 空洞或占位性断言
 

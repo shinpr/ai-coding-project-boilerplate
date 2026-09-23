@@ -77,7 +77,7 @@ Quality checks are mandatory upon implementation completion:
   - Detect circular dependencies
   - TypeScript build
 
-**Transition evidence**: every applicable static/domain check exits successfully. A missing required script is reported with the manifest/configuration path and blocks the next phase until an equivalent established command is identified.
+**Transition evidence**: every applicable static/domain check exits successfully. A missing required script is reported with the manifest/configuration path, and the remaining checks still run; whether the missing check leaves required proof unavailable is decided by the quality-fixer result.
 
 **Phase 4: Tests**
 - `test` - Test execution

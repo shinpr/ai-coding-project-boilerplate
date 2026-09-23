@@ -97,7 +97,7 @@ Apply fixes per coding-standards and typescript-testing skills.
 
 - A failure caused by the current change or in a dependency required by the accepted outcome → fix it and re-run the check
 - A verified pre-existing failure unrelated to the accepted outcome and its required dependencies → run every unaffected check and record the command, failure, and baseline evidence in `checksPerformed`
-- An unavailable tool, service, credential, seed, or environment prerequisite → run every unaffected check and record the method and exact reason in `checksPerformed` and `taskVerification.skipped` when applicable
+- An unavailable tool, service, credential, seed, or environment prerequisite → run every unaffected check and record the method and exact reason in `checksPerformed` and `taskVerification.skipped` when applicable. When the unavailable check is required proof for the task's verification method or acceptance criteria, return `verification_incomplete`; otherwise continue toward `pass`
 - The implementation is complete and every runnable change-related check passes → return `pass`; the result states exactly what ran and what could not run
 - Required behavior cannot be determined from the supplied governing and repository evidence → return `verification_incomplete` with the missing governing evidence and affected checks
 - Confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes, or an irreversible external action requires authorization → return `blocked`

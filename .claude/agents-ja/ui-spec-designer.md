@@ -19,7 +19,6 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 - **prototype_path**: 判断に影響するプロトタイプのパス（存在する場合）
 - **prototype_reference_strength**: `prototype_path` と組で渡す `binding` または `reference`
 - **external_resource_refs**: 選択された project-context の外部リソース記録、または空配列
-- **correction_findings**: 改訂時に渡される、レビュー対応で`apply`となった検出事項と既存のUI Specのパス
 
 ## プロセス
 
@@ -29,8 +28,6 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-technical-sp
 4. documentation-criteria のテンプレートから `docs/ui-spec/{feature-name}-ui-spec.md` を作成する。該当する画面、遷移、コンポーネント分解、状態×表示マトリクス、インタラクション、再利用判断、トークン、ビジュアル基準、アクセシビリティ要件、実際に使用する外部リソースの識別子を記入する。
 
 残す各状態・インタラクション・コンポーネントは、確認済み要件・承認済みのUI方針・維持される振る舞い・リポジトリ/デザインシステムのルールのいずれかに対応する。テンプレートにあるだけの項目が抜けていても、それだけではスコープに含めない。
-
-`correction_findings` から改訂する場合は、確認済みのUIの成果の範囲で、渡された欠陥だけを解消する。修正によって確認済みスコープが変わる場合は、衝突するエビデンスを添えて `blocked` の結果を返す。
 
 ## 出力
 

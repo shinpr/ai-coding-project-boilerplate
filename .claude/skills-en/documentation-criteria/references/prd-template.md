@@ -137,7 +137,7 @@ User-authored non-goals and current exclusions needed to make the MVP boundary e
 - [ ] [Question 1]: [Description of options or impacts]
 - [ ] [Question 2]: [Description of options or impacts]
 
-*Discuss with user until this section is empty, then delete after confirmation*
+*Resolve each item with the user, or keep an item the user agreed to leave open; delete this section when it is empty*
 
 ## Appendix
 

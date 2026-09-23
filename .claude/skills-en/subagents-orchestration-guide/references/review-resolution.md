@@ -1,6 +1,6 @@
 # Review Resolution
 
-Use this protocol when a deliverable reviewer or verifier returns findings that can route correction or progression. Correct evidenced defects while preserving confirmed requirements, exclusions, and compatibility obligations, using existing responsibilities. Accepted design decisions record the currently selected means, so a correction may remove or narrow one while those boundaries remain true. Verification output used as evidence by a downstream specialist remains part of that specialist handoff.
+Use this protocol when a deliverable reviewer or verifier returns findings that can route correction or progression. Verification output used as evidence by a downstream specialist remains part of that specialist handoff.
 
 Preserve reviewer/verifier evidence ownership so each gate converges on the governing sources; orchestrator reinterpretation would create unreviewed requirements and make approval or reconciliation non-terminal.
 
@@ -25,16 +25,14 @@ Use the result producer's declared verification mode:
 
 Before assigning a disposition, inspect the relevant parts of the current deliverable, cited repository evidence, and governing sources, treating reviewer assertions as evidence to verify. Confirm the reported behavior, then establish the material effect of leaving it unchanged: a change to the confirmed outcome, a binding constraint, downstream behavior, a decision, or required verification, or an evidenced lifecycle cost whose frequency or magnitude is observable. For a discretionary response, weigh that effect against the full cost of implementing, verifying, and retaining the response, including review attention.
 
-Consider candidate responses in this order: no change, removal or narrowing, reuse of existing behavior, then a repair that retains or adds a mechanism. A retaining or additive response names the required result the earlier candidates cannot deliver. This order selects a response; it does not require listing alternatives for every finding.
-
-Select a correction inside the boundary above from current evidence without expanding scope. When evidence shows that the confirmed outcome cannot be achieved within existing responsibilities, leave Review Resolution and resume from the earliest affected technical gate before changing them. When evidence shows that the confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which value boundary changes, leave Review Resolution and apply the parent workflow's Requirement Change Detection. When correction requires authorization for an irreversible external action, leave Review Resolution and apply the parent workflow's authority gate. These workflow stops are not finding dispositions.
+When evidence shows that the confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which value boundary changes, leave Review Resolution and apply the parent workflow's Requirement Change Detection. When correction requires authorization for an irreversible external action, leave Review Resolution and apply the parent workflow's authority gate. These workflow stops are not finding dispositions.
 
 The orchestrator records one disposition for every actionable finding:
 
 | Disposition | Use when |
 |---|---|
 | `apply` | Leaving the current deliverable unchanged would prevent the confirmed outcome, violate a binding requirement, design decision, or repository rule, leave required correctness or verification unsupported, or commit downstream work to added design surface whose total complexity lacks current evidence; or, outside those conditions, the material effect exceeds the response cost. |
-| `decline` | No material effect is established; the finding lies outside the boundary above or the reviewer's declared artifact boundary, or reverses an exclusion; or the response cost equals or exceeds the material effect. |
+| `decline` | No material effect is established; the finding lies outside the confirmed value boundaries or the reviewer's declared artifact boundary, or reverses an exclusion; or the response cost equals or exceeds the material effect. |
 
 A confirmed security risk, implementation divergence, or governing-source contradiction receives `apply` when correction preserves the confirmed value boundaries; cost alone leaves that classification unchanged. Technical design, contract, or implementation changes are correction work rather than user decisions when those boundaries remain true.
 

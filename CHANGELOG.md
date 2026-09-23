@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2026-09-23
+
+### Changed
+
+- **Effect-weighed review resolution** (agents, commands, skills) — Discretionary review findings are applied only when leaving them unchanged has a material effect that outweighs the cost of the response, and review can remove a mechanism a Design Doc selected when the confirmed outcome does not need it. Reviewer and checker results return `pass` instead of `approved`. Applied across en/ja/zh-CN.
+- **User-owned requirement wording** (agents, commands, skills) — requirement-analyzer returns repository evidence only, requests are classified from the user's own wording, and an explicitly selected option counts as the user's answer. Applied across en/ja/zh-CN.
+
+### Fixed
+
+- **Workflow handoffs** (agents, commands, skills) — Corrected missing or mismatched inputs and results across reverse-engineering, review, planning, diagnosis, and skill creation, and quality checks now report required proof that cannot run as `verification_incomplete`. Applied across en/ja/zh-CN.
+
+### Removed
+
+- **Work-generating rules** (agents, commands, skills) — Removed re-approval and blanket stop rules in build recipes, the optional test-skeleton question in planning, fixed discovery and coverage quotas, mandatory impact reports, and stale security detection patterns. Applied across en/ja/zh-CN.
+
 ## [2.1.0] - 2026-09-12
 
 ### Added

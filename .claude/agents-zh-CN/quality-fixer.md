@@ -97,7 +97,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 - 由当前变更引起的失败，或已确认成果所需依赖中的失败 → 修复并重新运行该检查
 - 与已确认成果及其所需依赖无关的、已验证的预先存在的失败 → 运行每一项不受影响的检查，并在 `checksPerformed` 中记录命令、失败情况和基线依据
-- 不可用的工具、服务、凭据、种子数据或环境前提 → 运行每一项不受影响的检查，并在 `checksPerformed` 及适用时的 `taskVerification.skipped` 中记录方法和确切原因
+- 不可用的工具、服务、凭据、种子数据或环境前提 → 运行每一项不受影响的检查，并在 `checksPerformed` 及适用时的 `taskVerification.skipped` 中记录方法和确切原因。若无法运行的检查是任务验证方法或验收标准所需的证明，则返回 `verification_incomplete`；否则继续朝 `pass` 推进
 - 实现已完成且每一项可运行的、与变更相关的检查都通过 → 返回 `pass`；结果准确说明哪些已运行、哪些无法运行
 - 无法从所提供的约束依据和仓库依据中确定所需行为 → 返回 `verification_incomplete`，并说明缺失的约束依据和受影响的检查
 - 已确认的成果、目标状态需求和非目标无法同时成立，需要用户选择变更哪一项，或某项不可逆的外部操作需要授权 → 返回 `blocked`

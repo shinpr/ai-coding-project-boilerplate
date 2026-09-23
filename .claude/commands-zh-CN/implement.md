@@ -105,7 +105,7 @@ description: 编排从需求到部署的完整实现生命周期
 
 在一条助手消息中发出以下 Agent 调用，然后等待两者：
 - code-reviewer（subagent_type: "code-reviewer"）→ 使用解析出的带类型 `governingDocuments`、已完成任务实际变更的文件作为 `implementationFiles`、以及工作计划路径，评审已完成的实现
-- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的带类型 `governingDocuments` 评审已完成的实现
+- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的带类型 `governingDocuments` 和 `implementationFiles` 评审已完成的实现
 
 应用 subagents-orchestration-guide 的实现后评审状态路由与修复/重跑规则。呈现统一报告；在完整评审集达到评审裁定的收敛条件之后，进入最终清理。
 
@@ -121,7 +121,6 @@ description: 编排从需求到部署的完整实现生命周期
   - `docs/plans/tasks/{plan-name}-task-*.md`（单层任务）
   - `docs/plans/tasks/{plan-name}-backend-task-*.md`（多层计划的后端部分）
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md`（多层计划的前端部分）
-- 从这些匹配项中排除 `integration-tests-*-task-*.md`（这来自另一个工作流阶段）
 - 保留工作计划本身（`docs/plans/{plan-name}.md`）—— 由用户决定是否在最终评审后删除它
 
 若任务文件无法删除（文件系统错误），报告该失败，但不要阻断完成报告。

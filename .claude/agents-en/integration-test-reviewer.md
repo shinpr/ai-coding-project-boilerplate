@@ -181,8 +181,7 @@ Each criterion reads the claims from the file's `reviewBasis` — skeleton annot
 ### E2E Test Specific Verification
 
 - IF `@dependency: full-system` → mock usage is FAILURE
-- Verify execution timing: AFTER all components are implemented
-- Verify critical user journey coverage is COMPLETE
+- Verify execution timing: the test runs once its declared proof boundary and dependencies are executable
 
 ### Hollow or Placeholder Assertion
 

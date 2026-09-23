@@ -123,7 +123,7 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 
 ```json
 {
-  "metadata": {"doc_type": "DesignDoc|ADRBatch", "targets": ["docs/design/example.md"]},
+  "metadata": {"doc_type": "PRD|ADRBatch|UISpec|DesignDoc|WorkPlan", "targets": ["docs/design/example.md"]},
   "verdict": {"decision": "pass|needs_revision|rejected"},
   "issues": [
     {"id": "I001", "category": "consistency|completeness|compliance|clarity|feasibility", "target": "产物路径", "location": "章节或行号", "relatedLocations": ["同一成因的位置"], "description": "具体问题", "basis": "约束来源或观测事实", "expectedEffect": "修正后的可观测效果", "requiredEvidence": "解决某个未决且会改变决策的前提所需的具体观测事实，或 null", "correction": "最小充分修正"}

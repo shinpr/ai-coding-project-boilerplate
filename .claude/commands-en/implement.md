@@ -105,7 +105,7 @@ Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
 Emit these Agent calls in one assistant message, then await both:
 - code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved typed `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
-- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments`
+- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments` and `implementationFiles`
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 
@@ -121,7 +121,6 @@ This recipe is scale-agnostic and may execute single-layer or multi-layer plans,
   - `docs/plans/tasks/{plan-name}-task-*.md` (single-layer tasks)
   - `docs/plans/tasks/{plan-name}-backend-task-*.md` (backend portion of multi-layer plan)
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md` (frontend portion of multi-layer plan)
-- From those matches, exclude `integration-tests-*-task-*.md` (this originates from another workflow phase)
 - Preserve the work plan itself (`docs/plans/{plan-name}.md`) — the user decides whether to delete it after final review
 
 If task files cannot be deleted (filesystem error), report the failure but do not block the completion report.

@@ -34,7 +34,7 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 
 オーケストレーターが `scopeEvidence.affectedLayers` からレイヤー横断（backend + frontend）と判断した場合、subagents-orchestration-guideスキルのレイヤー横断オーケストレーションに従う。
 
-### 4. requirement-analyzer後に停止
+### 4. requirement-analyzer後 [停止]
 
 保持しているユーザーの文言から収束記録を組み立て、requirement-analyzer の `scopeEvidence`、`costEvidence`、`questions` を裏付けとなる事実として用いて、requirement-convergence のヒアリングを実行する。収束記録と構造スケール（Structural Scale）を判定するのはオーケストレーターである。
 
@@ -105,7 +105,7 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 
 次のAgent呼び出しを1つのassistantメッセージで行い、両方を待つ。
 - code-reviewer (subagent_type: "code-reviewer") → 型付きの`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
-- security-reviewer (subagent_type: "security-reviewer") → 同じ型付き`governingDocuments`に照らして、完了した実装をレビューする
+- security-reviewer (subagent_type: "security-reviewer") → 同じ型付き`governingDocuments`と`implementationFiles`に照らして、完了した実装をレビューする
 
 subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー対応の収束条件に達した後、最終クリーンアップへ進む。
 
@@ -121,7 +121,6 @@ Medium/Large では、完了レポートの前に、レビュー由来の修正�
   - `docs/plans/tasks/{plan-name}-task-*.md`（単層タスク）
   - `docs/plans/tasks/{plan-name}-backend-task-*.md`（複層計画のbackend部分）
   - `docs/plans/tasks/{plan-name}-frontend-task-*.md`（複層計画のfrontend部分）
-- 上記マッチから、以下のパターンに該当するものは除外する: `integration-tests-*-task-*.md`（他のワークフローフェーズに由来する）
 - 作業計画書本体（`docs/plans/{plan-name}.md`）は保持する — 最終レビュー後に削除するかはユーザーが判断する
 
 タスクファイルを削除できない場合（ファイルシステムエラー）、失敗を報告するが完了レポートをブロックしない。

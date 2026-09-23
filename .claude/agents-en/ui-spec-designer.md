@@ -19,7 +19,6 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **prototype_path**: Decision-relevant prototype path, when one exists
 - **prototype_reference_strength**: `binding` or `reference`, accompanying `prototype_path`
 - **external_resource_refs**: Selected project-context external-resource records or an empty array
-- **correction_findings**: Review Resolution `apply` findings with the existing UI Spec path, when revising
 
 ## Process
 
@@ -29,8 +28,6 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 4. Create `docs/ui-spec/{feature-name}-ui-spec.md` from the documentation-criteria template. Fill applicable screens, transitions, component decomposition, state/display matrices, interactions, reuse decisions, tokens, visual criteria, accessibility requirements, and external-resource identifiers actually used.
 
 Every retained state, interaction, and component traces to a confirmed requirement, approved UI direction, preserved behavior, or repository/design-system rule. A missing template-only state does not create scope.
-
-When revising from `correction_findings`, resolve only the supplied defects within the confirmed UI outcome. When a correction would change confirmed scope, return the `blocked` result with the conflicting evidence.
 
 ## Output
 

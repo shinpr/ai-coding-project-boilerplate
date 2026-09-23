@@ -64,7 +64,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 从成果和职责边界确定结构规模；文件数量仅作为辅助依据。对照约束来源、适用的 `simplifications`、`reuse` 和 `invalidations` 解决候选决策点；适用的 UI 事实可支持或否定其余选项。仅在此收敛之后才应用 documentation-criteria 的选择必要性（Choice）与长期影响（Durability）筛选，并将通过的决策点记录为 `adrDecisionPoints`；空列表也是有效的。
 
-呈现 requirement-convergence 的范围确认。其中的**判断依据**列出本次变更所针对的职责，以及每一条适用的简化项及其“省略后已确认成果仍然成立”的条件。结构规模、UI 规范适用性和 ADR 资格判定保留在编排者记录中，因为 UI 规范、ADR 批次和设计文档各有其自己的批准停止点。提供两个选项：就此继续推进，或修正后重新运行。仅当每个收敛字段均为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
+呈现需要用户决定的内容：要达成的成果与要构建的需求、排除项、本次变更所针对的职责、每一条适用的简化项及其“省略后已确认成果仍然成立”的条件，以及成本分级及其仍然存在的未知项。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模、UI 规范适用性和 ADR 资格判定保留在编排者记录中——UI 规范、ADR 批次和设计文档各有其自己的批准停止点。提供两个选项：就此继续推进，或修正后重新运行。仅当每个收敛字段均为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
 
 ## 步骤 5：创建并批准 UI 规范
 
@@ -72,7 +72,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 调用 `ui-spec-designer`，传入 `confirmed_requirement_context`、原样未改动的完整 `ui_analysis` 和 `codebase_analysis`、存在时与决策相关的 `prototype_path` 及其 `prototype_reference_strength`，以及选取的 `external_resource_refs` 或 `[]`。
 
-调用 `document-reviewer`，传入 `doc_type: UISpec`，`target` 为返回的 UI 规范路径。`pass` 则呈现该 UI 规范；`needs_revision` 则应用评审裁定并在修正后重新评审；`rejected` 则先解决约束来源冲突再进行下一次评审。`[停止：UI 规范批准]`。
+调用 `document-reviewer`，传入 `doc_type: UISpec`、作为 `target` 的返回 UI 规范路径、`confirmed_requirement_context`，以及提供给作者的 `ui_analysis`。`pass` 则呈现该 UI 规范；`needs_revision` 则应用评审裁定并在修正后重新评审；`rejected` 则先解决约束来源冲突再进行下一次评审。`[停止：UI 规范批准]`。
 
 ## 步骤 6：在需要时创建并批准 ADR 批次
 
@@ -82,7 +82,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 2. 收集所有返回的路径，并以 `doc_type: ADRBatch`、`targets: [所有路径]` 和 `confirmed_requirement_context` 调用一次 `document-reviewer`。
 3. 先按评审结论路由：`pass` 则继续；`needs_revision` 则应用评审裁定，按路径逐个串行更新每份 ADR，并重新评审完整批次；`rejected` 则先解决约束来源冲突，再进行下一次评审。
 4. 仅在评审为 `pass` 之后，才呈现一次批次决策。`[停止：ADR 批次批准]`。
-5. 用户批准后，将每个 ADR 的状态设为 `Accepted` 并验证这些更改。
+5. 用户批准后，以更新模式调用各 ADR 的负责设计者，将其状态设为 `Accepted`，并验证这些更改。
 
 ## 步骤 7：创建前端设计文档
 
@@ -108,7 +108,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 - `needs_revision`：应用评审裁定，通过一次全新的 technical-designer-frontend 调用（使用现有路径和完整的、处置为 `apply` 的发现项）进行更新，并对受影响的边界重新运行验证和评审
 - `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 
-以返回的设计文档为来源调用 `design-sync`，对可处理的冲突应用评审裁定，并在仅存在一份设计文档时明确报告 `SKIPPED`。
+以返回的设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。
 
 呈现适用的 UI 规范、设计文档、已接受的 ADR 路径、已记录的拒绝项和同步结果。`[停止：设计批准]`。
 
@@ -119,5 +119,5 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 - 仅对同时通过两项筛选的决策点存在 ADR，且该批次经过了一次评审和批准
 - 无论是否需要 ADR，适用的 UI 规范和完整的前端设计文档都存在
 - 适用的既有 UI 行为、契约、假设、状态、等价性和验证防护都进入了设计文档
-- 评审裁定仅将 `needs_revision` 的问题转入修正工作
+- 评审裁定仅将处置为 `apply` 的发现转入修正工作
 - 所有停止点都得到了用户的明确确认

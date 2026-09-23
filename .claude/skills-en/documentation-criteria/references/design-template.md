@@ -102,7 +102,7 @@ Keep the smallest representative set of observable behaviors that has a stable r
 
 ### Fact Disposition Table
 
-One row per codebase analysis `focusAreas` entry. This table binds structural existing-behavior facts to the design; other sections referencing existing behavior cite the row by `fact_id`.
+One row per supplied code or UI analysis `focusAreas` entry. This table binds structural existing-behavior facts to the design; other sections referencing existing behavior cite the row by `fact_id`.
 
 | Fact ID | Focus Area | Disposition | Rationale | Evidence | Related Files |
 |---------|------------|-------------|-----------|----------|---------------|

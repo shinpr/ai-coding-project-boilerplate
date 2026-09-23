@@ -91,20 +91,7 @@ UI Specでレスポンシブ動作が定義されている場合、UI Specが挙
 
 ## スケルトンコメント形式
 
-E2Eテストスケルトンは統合テストと同じアノテーション形式に従う。レーンを宣言する `@lane:` アノテーションを必ず付与する（上記「レーン選択」参照）:
-
-```typescript
-// AC: [元の受入条件テキスト]
-// Behavior: [ユーザーアクション] → [システムレスポンス] → [観測可能な結果]
-// @lane: fixture-e2e | service-integration-e2e
-// @dependency: full-ui (mocked backend) | full-system
-// Proof obligation: [このテストが証明すべき境界と観測可能な状態]
-test('AC1: [説明]', async ({ page }) => {
-  // Arrange: [セットアップの説明]
-  // Act: [操作の説明]
-  // Assert: [検証の説明]
-})
-```
+E2Eテストスケルトンは、integration-e2e-testing の「必須スケルトン形式」に従う。保留スイートの形と必須アノテーションもそれに含まれる。`@lane:` には `fixture-e2e` または `service-integration-e2e` を指定する（上記「レーン選択」参照）。
 
 **レーン別の `@dependency` 選択**:
 - `fixture-e2e` → `@dependency: full-ui (mocked backend)`（ライブサービスなし、`page.route()` またはフィクスチャローダーでネットワークを傍受）
