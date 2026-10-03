@@ -2,6 +2,18 @@
 
 Start with the [Quick Start](./quickstart.md) if the project is not configured yet. This page maps common development outcomes to the command that owns them.
 
+## Set the workflow mode
+
+Normal Mode runs the full verification flow. To save Lite Mode as this project's default, run:
+
+```bash
+node scripts/set-workflow-mode.js lite
+```
+
+The script adds `Workflow Mode: Lite.` to `CLAUDE.md`. Future workflow sessions use it without a spoken mode selection. Run the same command with `normal` to remove the saved directive; other project rules are preserved. An explicit mode selection in the conversation takes precedence over the saved default.
+
+Lite Mode omits independent code verification, design synchronization, and the security-reviewer call. For a Work Plan task set it replaces per-task quality-fixer runs with one final run per layer before code review. Focused implementation checks, required integration/E2E test review, document approval, Small's quality run, and post-review quality checks remain applicable. Completion reports identify omitted or unavailable proof.
+
 ## Choose a command
 
 ### Implementation and investigation
@@ -86,7 +98,7 @@ With no argument, `/build` resolves the consumable task set owned by that recipe
 /review docs/design/webhook-signature-design.md
 ```
 
-The command checks whether the completed implementation meets the agreed outcome and repository standards, contains no unnecessary changes, and has no serious functional, reliability, or security issues. It presents supported findings, applies only the corrections you approve, rechecks those findings after correction, and runs the final quality check once the review converges. It does not create task files for review fixes.
+The command checks whether the completed implementation meets the agreed outcome and repository standards, contains no unnecessary changes, and has no serious functional, reliability, or security issues. It presents supported findings, applies only the corrections you approve, rechecks those findings after correction, and runs the quality check once the review converges. It does not create task files for review fixes.
 
 ## Document routing
 

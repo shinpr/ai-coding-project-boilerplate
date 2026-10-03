@@ -104,6 +104,8 @@ prompt: |
 
 #### Step 3: Code Verification
 
+Run this step in Normal Mode. Lite Mode proceeds to Step 4 without verifier evidence.
+
 **Prerequisite**: $STEP_2_OUTPUT (PRD path from Step 2)
 
 **Task invocation**:
@@ -127,7 +129,7 @@ Pass the complete verifier result to document review. Its discrepancies are evid
 
 #### Step 4: Review
 
-**Required Input**: $STEP_3_OUTPUT (verification JSON from Step 3)
+**Verification Input**: $STEP_3_OUTPUT only when Step 3 ran
 
 **Task invocation**:
 ```
@@ -138,7 +140,7 @@ prompt: |
   doc_type: PRD
   target: $STEP_2_OUTPUT
   review_context: reverse-engineer
-  verification_evidence: $STEP_3_OUTPUT
+  verification_evidence: $STEP_3_OUTPUT (only when Step 3 ran)
 ```
 
 **Store output as**: `$STEP_4_OUTPUT`
@@ -237,6 +239,8 @@ prompt: |
 
 #### Step 8: Code Verification
 
+Run this step in Normal Mode. Lite Mode proceeds to Step 9 without verifier evidence.
+
 Verify each generated Design Doc separately.
 
 **Task invocation (per Design Doc)**:
@@ -258,7 +262,7 @@ Read `summary.status` before continuing: when it is `blocked`, stop and report `
 
 #### Step 9: Review
 
-**Required Input**: $STEP_8_OUTPUT (verification JSON from Step 8)
+**Verification Input**: $STEP_8_OUTPUT only when Step 8 ran
 
 **Task invocation (per Design Doc)**:
 ```
@@ -269,7 +273,7 @@ prompt: |
   doc_type: DesignDoc
   review_context: reverse-engineer
   target: $STEP_7_OUTPUT.path or $STEP_7_FRONTEND_OUTPUT.path
-  verification_evidence: $STEP_8_OUTPUT
+  verification_evidence: $STEP_8_OUTPUT (only when Step 8 ran)
   confirmed_requirement_context: [this unit's reviewed PRD path from Phase 1]
 
   ## Additional Review Focus

@@ -100,17 +100,17 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 ## 步骤 8：验证、评审与批准
 
-调用 `code-verifier`，传入 `doc_type: design-doc` 和返回的设计文档路径，不传 `code_paths`。在文档评审前应用评审裁定；将处置为 `apply` 的发现项发送给一次全新的 technical-designer-frontend 调用，传入 `Operation Mode: update`、`Existing Document: [设计文档路径]` 和 `correction_findings: [除处置方针外未作改动的完整发现项]`。该设计者会对未经验证且会改变决策的前提，应用“评审触发的有界自我验证”；这个全新的设计者是唯一的修正专家，并由其选择获取依据的路径。在应用修正后，将上一次的完整结果、已记录的处置方针，以及修正差异或变更路径作为 `prior_feedback` 传入，重新运行验证。将最新的验证器结果连同已记录的处置方针一并作为 `verification_evidence` 传递。当每一条剩余的不一致都带有已解决的处置方针时，继续。
+在 Normal 模式下，调用 `code-verifier`，传入 `doc_type: design-doc` 和返回的设计文档路径，不传 `code_paths`。在文档评审前应用评审裁定；将处置为 `apply` 的发现项发送给一次全新的 technical-designer-frontend 调用，传入 `Operation Mode: update`、`Existing Document: [设计文档路径]` 和 `correction_findings: [除处置方针外未作改动的完整发现项]`。该设计者会对未经验证且会改变决策的前提，应用“评审触发的有界自我验证”；这个全新的设计者是唯一的修正专家，并由其选择获取依据的路径。在应用修正后，将上一次的完整结果、已记录的处置方针，以及修正差异或变更路径作为 `prior_feedback` 传入，重新运行验证。将最新的验证器结果连同已记录的处置方针一并作为 `verification_evidence` 传递。当每一条剩余的不一致都带有已解决的处置方针时，继续。Lite 模式不携带此验证依据，直接推进。
 
-调用 `document-reviewer`，传入 `doc_type: DesignDoc`、返回的设计文档路径、`review_context: creation`、原始用户需求、`confirmed_requirement_context`、提供给设计者的原样未改动的分析输入，以及 `verification_evidence`。
+调用 `document-reviewer`，传入 `doc_type: DesignDoc`、返回的设计文档路径、`review_context: creation`、原始用户需求、`confirmed_requirement_context`、提供给设计者的原样未改动的分析输入，以及仅在验证已运行时提供的 `verification_evidence`。
 
 - `pass`：继续
 - `needs_revision`：应用评审裁定，通过一次全新的 technical-designer-frontend 调用（使用现有路径和完整的、处置为 `apply` 的发现项）进行更新，并对受影响的边界重新运行验证和评审
 - `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 
-以返回的设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。
+在 Normal 模式下，以返回的设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。Lite 模式保留下方的批准停止点，并报告一致性验证被省略。
 
-呈现适用的 UI 规范、设计文档、已接受的 ADR 路径、已记录的拒绝项和同步结果。`[停止：设计批准]`。
+呈现适用的 UI 规范、设计文档、已接受的 ADR 路径、已记录的拒绝项，以及同步结果或其在 Lite 模式下被省略的说明。`[停止：设计批准]`。
 
 ## 完成标准
 

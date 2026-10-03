@@ -12,11 +12,11 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 
 **Execution Protocol**:
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass deliverable paths between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
-2. **Follow the 4-step task cycle exactly**: task-executor-frontend → branch on executor result → quality-fixer-frontend → commit
+2. **Follow the selected mode's task cycle**: accept implementation and required test review, apply its quality boundary, then commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
 4. **Scope**: Complete consumed task-set execution, post-implementation review, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a confirmed value-boundary choice or irreversible-action authorization. Advance only when the current phase's stated transition condition is satisfied.
 
-**CRITICAL**: Commit only after quality-fixer-frontend returns `pass` or `verification_incomplete`. That result authorizes a commit at the commit points this recipe defines; it does not create one.
+Use the Commit Boundary in subagents-orchestration-guide. A quality result permits the recipe's defined commit; it does not create an additional commit point.
 
 Work plan: $ARGUMENTS
 
@@ -79,8 +79,9 @@ Recompute the Consumed Task Set using the same restricted pattern from the Consu
   - If commit capability is unavailable → Apply Specialist Result Acceptance before autonomous mode
   - Test and quality-tool limitations → Subagents run unaffected checks and record exactly what could not run
 
-## Task Execution Cycle (4-Step Cycle)
-**MANDATORY EXECUTION CYCLE**: `task-executor-frontend → branch on executor result → quality-fixer-frontend → commit`
+## Task Execution Cycle
+
+Normal Mode follows steps 1-4. Lite Mode proceeds from accepted step-2 results to step 4 and runs the Final Quality Run after the last task.
 
 For EACH task in the Consumed Task Set, YOU MUST:
 1. **EXECUTE**: Invoke the **Agent tool** (subagent_type: "task-executor-frontend") → Pass task file path in prompt, receive structured response
@@ -88,15 +89,15 @@ For EACH task in the Consumed Task Set, YOU MUST:
    - `status: "escalation_needed"` or `"blocked"` → Apply subagents-orchestration-guide Specialist Result Acceptance
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths as `testFile`, `taskFiles: [the current task file path]` (so the reviewer can read the task's Operation Verification Methods and Verification Focus), `diffBase: HEAD` (this task's changes are uncommitted at this point, so HEAD is the base of its diff). Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the same `task_file` plus the complete `apply` quality-issue objects passed verbatim as `correction_findings`
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to step 3
-     - `pass` → Proceed to step 3
-   - Otherwise → Proceed to step 3
-3. **QUALITY-FIX**: Invoke quality-fixer-frontend against the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Pass the current `task_file`, the implementation step's `runnableCheck`, and `qualityCommand` when frontend-technical-spec or a repository convention names one. Then branch on its response:
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to the next applicable step
+     - `pass` → Proceed to the next applicable step
+   - Otherwise → Proceed to the next applicable step
+3. **QUALITY-FIX (Normal Mode)**: Invoke quality-fixer-frontend against the complete current uncommitted worktree, including untracked, deleted, and renamed paths. Pass the current `task_file`, the implementation step's `runnableCheck`, and `qualityCommand` when frontend-technical-spec or a repository convention names one. Then branch on its response:
    - `stub_detected` → Return to step 1 and re-invoke task-executor-frontend with the same `task_file` and the `incompleteImplementations[]` array
    - `blocked` → Apply Specialist Result Acceptance
    - `verification_incomplete` → Retain the complete result for final retry and proceed to step 4
    - `pass` → Proceed to step 4
-4. **COMMIT**: Commit the completed task change set after `pass` or `verification_incomplete`
+4. **COMMIT**: Commit the completed task change set after its applicable mode's quality boundary
 
 **CRITICAL**: Parse every sub-agent response for its routing meaning. Proceed to the next task after step 4, retaining any `verification_incomplete` result for the final retry.
 
@@ -114,13 +115,13 @@ Return to Requirement Change Detection when confirmed outcome, desired-future re
 
 ## Post-Implementation Review (After All Tasks Complete)
 
-Before invoking post-implementation reviewers, apply the proof-limitation retry in subagents-orchestration-guide Specialist Result Acceptance with quality-fixer-frontend. Continue with the reviewers after clearing or retaining each result; include only repeated limitations in the completion report.
+Before invoking post-implementation reviewers, run the Lite Mode Final Quality Run or, in Normal Mode, the proof-limitation retry in Specialist Result Acceptance with quality-fixer-frontend. Continue with the reviewers after clearing or retaining each result; include only repeated limitations in the completion report.
 
 Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
-Emit these Agent calls in one assistant message, then await both:
-- code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved typed `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
-- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments` and `implementationFiles`
+Invoke code-reviewer and, in Normal Mode, security-reviewer. When both apply, emit their calls in one assistant message and await both:
+- code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
+- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same `governingDocuments` and `implementationFiles`
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 

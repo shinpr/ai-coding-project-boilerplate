@@ -4,7 +4,6 @@ Metadata:
 - Source Work Plan Task: [P1-T1 — the stable ID of the Work Plan task this file materializes]
 - Dependencies: none | [Work Plan task ID (docs/plans/tasks/{plan-name}-task-NN.md) -> Deliverable: path, when the prerequisite produces one]
 - Executor lane: backend | frontend
-- Rollback boundary: [copied unchanged from the Work Plan task]
 
 A dependency names the prerequisite by its stable Work Plan task ID and the task file that carries it, because the file's `-task-{NN}` ordinal follows the task's position in the Work Plan rather than its ID.
 

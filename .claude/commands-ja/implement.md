@@ -63,10 +63,9 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 - [ ] 次のステップを明確にした
 - [ ] 停止ポイントを認識した → **全ての停止ポイントでユーザーの明示的な確認を待つ**
 - [ ] 各Design Doc作成前にcodebase-analyzerを含めた
-- [ ] 各Design Docについて document-reviewer の前に code-verifier を含めた
-- [ ] タスク実行後の4ステップサイクル（task-executor → 実行結果で分岐 → quality-fixer → コミット）を理解した
+- [ ] 選択したモードのDesign Doc検証呼び出しとタスクの品質境界を適用した
 
-**フロー厳守**: subagents-orchestration-guideの該当するStructural Scaleフローと4ステップのタスク実行サイクルに従う。現在のフェーズまたはサイクルのステップで定められた遷移条件を満たした場合にのみ次へ進む。
+**フロー厳守**: subagents-orchestration-guideの該当するStructural Scaleフローと、選択したモードのタスクサイクルに従う。適用されるフェーズまたはサイクルのステップで定められた遷移条件を満たした場合にのみ次へ進む。
 
 ## サブエージェントのスコープ境界
 
@@ -83,31 +82,31 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 ## オーケストレーターとしての必須責務
 
 ### タスク実行品質サイクル
-以下の依存順のステップを実行し、現在のステップで定められたレスポンス条件を満たした場合にのみ次へ進む：
+以下の依存順のステップを実行する。NormalモードとSmallでは4ステップすべてを行う。作業計画書のタスク集合をLiteモードで実行する場合は、ステップ2の結果を受理した後にステップ4へ進み、最後のタスクの後に最終品質チェックを実行する：
 1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small ではタスクファイルを作らないため、承認済みの成果・出典・影響パス・検証条件を実行スコープとして直接渡す。
 2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → subagents-orchestration-guideの「専門エージェントの結果の受理」を適用する
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスと `diffBase: HEAD` を渡す。Medium/Large ではさらに `taskFiles: [現在のタスクファイルパス]` を渡し、Small では直接スコープの検証主張を渡す。その後 `status` で分岐する
      - `needs_revision` → レビュー対応を適用し、元の実行スコープに、`apply`のquality-issueオブジェクト一式を`correction_findings`として逐語で加えてステップ1に戻る
-     - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻し、それ以外はレビューを未実行として`blockingReason`を記録してステップ3へ進む
-     - `pass` → ステップ3 へ
-   - それ以外 → ステップ3 へ
-3. **quality-fixer を呼び出す**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して、全品質チェックと修正を実行する（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large では現在の `task_file` も渡し、Small では直接の実行スコープを渡す。実装ステップの `runnableCheck` と、出典ソースまたはリポジトリの規約が正となる品質コマンドを定めている場合は `qualityCommand` を渡す。
+     - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、修正後の入力でレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻し、それ以外はレビューを未実行として`blockingReason`を記録して次の適用可能なステップへ進む
+     - `pass` → 次の適用可能なステップへ
+   - それ以外 → 次の適用可能なステップへ
+3. **quality-fixer を呼び出す（NormalモードまたはSmall）**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して、全品質チェックと修正を実行する（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large では現在の `task_file` も渡し、Small では直接の実行スコープを渡す。実装ステップの `runnableCheck` と、出典ソースまたはリポジトリの規約が正となる品質コマンドを定めている場合は `qualityCommand` を渡す。
    - `stub_detected` → 元の実行スコープと`incompleteImplementations[]`を渡してtask-executorを再実行し、ステップ1に戻る
    - `blocked` → 専門エージェントの結果の受理を適用する
    - `verification_incomplete` → 結果を省略せず最終再試行まで保持し、ステップ4へ進む
    - `pass` → ステップ4へ
-4. **コミット**: `pass`または`verification_incomplete`の後に、完了したタスクの変更セットをコミットする
+4. **コミット**: 適用されるモードの品質境界を満たした後に、完了したタスクの変更セットをコミットする
 
 ### 実装後レビュー（Medium/Large、全タスク完了後）
 
-ドキュメント依存のレビュアーを呼び出す前に、subagents-orchestration-guideの「専門エージェントの結果の受理」にある証明不足の再試行を適用する。各結果を解消または保持した後に続行し、再試行後も残る証明不足だけを報告する。
+作業計画書のタスク集合をLiteモードで実行する場合は、ドキュメント依存のレビュアーを呼び出す前に最終品質チェックを実行する。それ以外は「専門エージェントの結果の受理」にある証明不足の再試行を適用する。各結果を解消または保持した後に続行し、再試行後も残る証明不足だけを報告する。
 
 作業計画書が参照する読み込み可能なDesign Docを解決する。入力が不足している場合はレビューをブロックする。
 
-次のAgent呼び出しを1つのassistantメッセージで行い、両方を待つ。
-- code-reviewer (subagent_type: "code-reviewer") → 型付きの`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
-- security-reviewer (subagent_type: "security-reviewer") → 同じ型付き`governingDocuments`と`implementationFiles`に照らして、完了した実装をレビューする
+code-reviewerを呼び出し、Normalモードではsecurity-reviewerも呼び出す。両方が適用される場合は、そのAgent呼び出しを1つのassistantメッセージで行い、両方を待つ。
+- code-reviewer (subagent_type: "code-reviewer") → 解決した`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
+- security-reviewer (subagent_type: "security-reviewer") → 同じ`governingDocuments`と`implementationFiles`に照らして、完了した実装をレビューする
 
 subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー対応の収束条件に達した後、最終クリーンアップへ進む。
 

@@ -112,7 +112,7 @@ prompt: |
 
 ### Step 5: Document Review
 
-**For Design Doc updates only**: Before document-reviewer, invoke code-verifier:
+**For Design Doc updates in Normal Mode only**: Before document-reviewer, invoke code-verifier:
 ```
 subagent_type: code-verifier
 description: "Verify updated Design Doc"
@@ -142,7 +142,7 @@ prompt: |
   targets: [[path from Step 1]] (ADRBatch only)
   requirements_verbatim: [Step 3 requested changes, verbatim] (Design Doc only)
   confirmed_requirement_context: [approved PRD path governing the Design Doc, when one exists] (Design Doc only)
-  verification_evidence: $CODE_VERIFICATION_OUTPUT (Design Doc only, omit for PRD/ADRBatch)
+  verification_evidence: $CODE_VERIFICATION_OUTPUT (only when code-verifier ran)
 
   Focus on:
   - Consistency of updated sections with rest of document
@@ -163,7 +163,7 @@ Follow Review Resolution convergence and escalation conditions.
 
 For PRD or ADR, proceed from the passed document review to the final approval below.
 
-For Design Doc, invoke design-sync:
+For Design Doc in Normal Mode, invoke design-sync. In Lite Mode proceed to final approval with consistency verification reported as omitted:
 ```
 subagent_type: design-sync
 description: "Verify consistency"
@@ -194,9 +194,9 @@ Present the reviewed update and, for a Design Doc, its consistency result for on
 - [ ] Identified target document
 - [ ] Resolved change content from the request, document, or a necessary user answer
 - [ ] Updated document with appropriate agent (update mode)
-- [ ] Executed code-verifier before document-reviewer (Design Doc only)
+- [ ] Executed code-verifier before document-reviewer (Design Doc in Normal Mode only)
 - [ ] Executed document-reviewer and addressed feedback
-- [ ] Executed design-sync for consistency verification (Design Doc only)
+- [ ] Executed design-sync for consistency verification (Design Doc in Normal Mode only)
 - [ ] Obtained one final user approval for the reviewed update
 
 ## Output Example

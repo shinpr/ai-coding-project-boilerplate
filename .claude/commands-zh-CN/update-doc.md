@@ -112,7 +112,7 @@ prompt: |
 
 ### 第 5 步：文档评审
 
-**仅限 Design Doc 更新**：在 document-reviewer 之前，调用 code-verifier：
+**仅限 Normal 模式下的 Design Doc 更新**：在 document-reviewer 之前，调用 code-verifier：
 ```
 subagent_type: code-verifier
 description: "验证更新后的 Design Doc"
@@ -142,7 +142,7 @@ prompt: |
   targets: [[第 1 步得到的路径]]（仅限 ADRBatch）
   requirements_verbatim: [第 3 步所请求的变更，逐字照录]（仅限 Design Doc）
   confirmed_requirement_context: [约束该 Design Doc 的已批准 PRD 路径，如存在]（仅限 Design Doc）
-  verification_evidence: $CODE_VERIFICATION_OUTPUT（仅限 Design Doc，PRD/ADRBatch 时省略）
+  verification_evidence: $CODE_VERIFICATION_OUTPUT（仅在 code-verifier 已运行时提供）
 
   重点关注：
   - 更新章节与文档其余部分的一致性
@@ -163,7 +163,7 @@ prompt: |
 
 对于 PRD 或 ADR，从已通过的文档评审直接进入下方的最终批准。
 
-对于 Design Doc，调用 design-sync：
+对于 Normal 模式下的 Design Doc，调用 design-sync。Lite 模式报告一致性验证被省略，并进入最终批准：
 ```
 subagent_type: design-sync
 description: "验证一致性"
@@ -194,9 +194,9 @@ prompt: |
 - [ ] 已识别目标文档
 - [ ] 已从请求、文档或必要的用户回答中确定变更内容
 - [ ] 已用相应智能体更新文档（update 模式）
-- [ ] 已在 document-reviewer 之前执行 code-verifier（仅限 Design Doc）
+- [ ] 已在 document-reviewer 之前执行 code-verifier（仅限 Normal 模式下的 Design Doc）
 - [ ] 已执行 document-reviewer 并处理其反馈
-- [ ] 已执行 design-sync 进行一致性验证（仅限 Design Doc）
+- [ ] 已执行 design-sync 进行一致性验证（仅限 Normal 模式下的 Design Doc）
 - [ ] 已就评审后的更新获得一次最终用户批准
 
 ## 输出示例

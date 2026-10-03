@@ -6,9 +6,12 @@ Preserve reviewer/verifier evidence ownership so each gate converges on the gove
 
 ## Verdict Gate
 
-Route a document-reviewer result in this order:
+First resolve a document-reviewer's `rejected` verdict through source precedence or the parent workflow's requirement or authority gate before another review, whether initial review or rerun.
 
-- a `rejected` verdict first resolves its governing-source conflict through source precedence or the parent workflow's requirement or authority gate before another review, regardless of its issue set
+For a rerun, route `prior_feedback_reconciliation` through section 3.
+
+For an initial document review, route the result in this order:
+
 - an empty actionable issue set completes the review; downstream consumers receive the reviewed artifact path and pre-existing governing evidence only
 - a non-empty actionable issue set continues to section 1
 

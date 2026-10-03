@@ -1,6 +1,6 @@
 ---
 name: task-decomposer
-description: 将已批准的工作计划转换为最少数量的可执行实现任务文件。用于工作计划已批准且需要生成任务时。
+description: 将已批准工作计划中的每个任务转换为一个可执行实现任务文件。用于工作计划已批准且需要生成任务时。
 tools: Read, Write, Grep, Glob, LS, Bash
 skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach, llm-friendly-context
 ---
@@ -17,7 +17,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 ## 职责
 
-任务分解是一次机械化的交接。每个生成的任务对应且仅对应一个工作计划任务 ID，并保留其结果、来源、范围、依赖、执行者通道、回滚边界和验证方式。新增需求、设计决策、技术再解释、操作流程和外部准备工作都不属于这次转换的范畴。
+任务分解是一次机械化的交接。每个生成的任务对应且仅对应一个工作计划任务 ID，并保留其结果、来源、范围、依赖、执行者通道和验证方式。新增需求、设计决策、技术再解释、操作流程和外部准备工作都不属于这次转换的范畴。
 
 看起来有问题的边界应作为未解决项返回，而不是在此重新决定。
 
@@ -30,7 +30,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 - 任务 ID 和实现结果；
 - 引用的设计文档、ADR 或 UI 规范章节及 AC ID；
 - 目标职责或预期文件；
-- 依赖、执行者通道和回滚边界；
+- 依赖和执行者通道；
 - 验证方法；
 - 可选的主要失败点和可观测检查
 
@@ -93,7 +93,7 @@ Investigation Targets 是待阅读的文件路径，而非待执行的操作。�
 - [ ] 每条来源引用都原样保留
 - [ ] 每个来源任务都恰好出现一次
 - [ ] 生成的结果是已批准工作计划结果的子集
-- [ ] 依赖、执行者通道、回滚边界和测试骨架路径均原样复制
+- [ ] 依赖、执行者通道和测试骨架路径均原样复制
 - [ ] 对于区分层级的任务名称，执行者通道、Target Files 与文件名中的 backend/frontend 段一致
 - [ ] 目标和调查上下文足够具体，无需猜测即可开始实现
 - [ ] 任务文件中未复制或重新解释任何约束性技术内容

@@ -12,11 +12,11 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 **実行プロトコル**:
 1. **全作業をAgentツールでサブエージェントに委譲** — サブエージェントの呼び出し、成果物パスの受け渡し、結果の報告（許可ツール: subagents-orchestration-guideスキル「オーケストレーターの許可ツール」参照）
-2. **4ステップサイクルに厳密に従う**: task-executor-frontend → 実行結果で分岐 → quality-fixer-frontend → コミット
+2. **選択したモードのタスクサイクルに従う**: 実装と必要なテストレビューを受理し、その品質境界を適用してからコミットする
 3. **自律実行モード移行**: ユーザーの実行指示とタスクファイルの存在をバッチ承認とみなす
 4. **スコープ**: Consumed Task Setの実行、実装後レビュー、処理したタスクのクリーンアップ、完了報告を順番に完了する。または、確認済みの成果・将来状態の要件・対象外のどれを変更するかという選択や不可逆な操作の承認が必要な場合は、現在のフェーズで自律実行を停止する。現在のフェーズで定められた遷移条件を満たした場合にのみ次へ進む。
 
-**重要**: quality-fixer-frontend が `pass` または `verification_incomplete` を返した後にのみコミットする。その結果は本レシピが定めるコミットポイントでのコミットを許可するだけで、コミットを生むものではない。
+subagents-orchestration-guideの「コミット境界」を適用する。品質結果は、本レシピが定めるコミットを許可するものであり、追加のコミットポイントを生まない。
 
 作業計画書: $ARGUMENTS
 
@@ -79,8 +79,9 @@ Agentツールでtask-decomposerを呼び出す:
   - コミット機能が利用不可 → 自律実行モード前に専門エージェントの結果の受理を適用
   - テストまたは品質ツールを利用できない場合 → サブエージェントは影響を受けないチェックを実行し、実行できなかった内容を正確に記録する
 
-## タスク実行サイクル（4ステップサイクル）
-**必須実行サイクル**: `task-executor-frontend → 実行結果で分岐 → quality-fixer-frontend → コミット`
+## タスク実行サイクル
+
+Normalモードはステップ1〜4に従う。Liteモードはステップ2の結果を受理した後にステップ4へ進み、最後のタスクの後に最終品質チェックを実行する。
 
 Consumed Task Set 内の各タスクで必須：
 1. **EXECUTE**: task-executor-frontend を呼び出してタスク実装を実行
@@ -88,15 +89,15 @@ Consumed Task Set 内の各タスクで必須：
    - `status: "escalation_needed"` または `"blocked"` → subagents-orchestration-guideの「専門エージェントの結果の受理」を適用する
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスを `testFile` として、`taskFiles: [現在のタスクファイルパス]`（レビュアーがタスクの Operation Verification Methods と Verification Focus を読めるようにする）、`diffBase: HEAD`（この時点でタスクの変更は未コミットのため HEAD がその差分の基点）を渡す。その後 `status` で分岐する
      - `needs_revision` → レビュー対応を適用し、同じ`task_file`に、`apply`のquality-issueオブジェクト一式を`correction_findings`として逐語で加えてステップ1に戻る
-     - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、その入力によってレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻す。それ以外はレビューを未実行として`blockingReason`を記録し、ステップ3へ進む
-     - `pass` → ステップ3 へ
-   - それ以外 → ステップ3 へ
-3. **QUALITY-FIX**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して quality-fixer-frontend を呼び出す。現在の `task_file`、実装ステップの `runnableCheck`、および frontend-technical-spec またはリポジトリの規約が正となる品質コマンドを定めている場合は `qualityCommand` を渡す。その後レスポンスで分岐する:
+     - `blocked` → 現在のdiffから移動・リネームされたテストパスを解決し、その入力によってレビュー対象が変わる場合は再実行する。`requiresTestReview: true`にもかかわらず読み取り可能な変更テストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてステップ1に差し戻す。それ以外はレビューを未実行として`blockingReason`を記録し、次の適用可能なステップへ進む
+     - `pass` → 次の適用可能なステップへ
+   - それ以外 → 次の適用可能なステップへ
+3. **QUALITY-FIX（Normalモード）**: 未追跡・削除・リネームを含む現在の未コミットのワークツリー全体に対して quality-fixer-frontend を呼び出す。現在の `task_file`、実装ステップの `runnableCheck`、および frontend-technical-spec またはリポジトリの規約が正となる品質コマンドを定めている場合は `qualityCommand` を渡す。その後レスポンスで分岐する:
    - `stub_detected` → ステップ1に戻り、同じ`task_file`と`incompleteImplementations[]`配列を渡してtask-executor-frontendを再実行する
    - `blocked` → 専門エージェントの結果の受理を適用する
    - `verification_incomplete` → 結果を省略せず最終再試行まで保持し、ステップ4へ進む
    - `pass` → ステップ4 へ
-4. **コミット**: `pass`または`verification_incomplete`の後に、完了したタスクの変更セットをコミットする
+4. **コミット**: 適用されるモードの品質境界を満たした後に、完了したタスクの変更セットをコミットする
 
 **重要**: 全サブエージェントレスポンスのルーティング上の意味を読み取る。ステップ4の後に次のタスクへ進み、`verification_incomplete`の結果は最終再試行まで保持する。
 
@@ -114,13 +115,13 @@ Consumed Task Set 内の各タスクで必須：
 
 ## 実装後レビュー（全タスク完了後）
 
-実装後レビュアーを呼び出す前に、quality-fixer-frontendを使ってsubagents-orchestration-guideの「専門エージェントの結果の受理」にある証明不足の再試行を適用する。各結果を解消または保持した後にレビューへ進み、再試行後も残る証明不足だけを完了報告に含める。
+実装後レビュアーを呼び出す前に、Liteモードでは最終品質チェックを実行し、Normalモードでは「専門エージェントの結果の受理」にある証明不足の再試行をquality-fixer-frontendで適用する。各結果を解消または保持した後にレビューへ進み、再試行後も残る証明不足だけを完了報告に含める。
 
 作業計画書が参照する読み込み可能なDesign Docを解決する。入力が不足している場合はレビューをブロックする。
 
-次のAgent呼び出しを1つのassistantメッセージで行い、両方を待つ。
-- code-reviewer (subagent_type: "code-reviewer") → 型付きの`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
-- security-reviewer (subagent_type: "security-reviewer") → 同じ型付き`governingDocuments`と`implementationFiles`に照らして、完了した実装をレビューする
+code-reviewerを呼び出し、Normalモードではsecurity-reviewerも呼び出す。両方が適用される場合は、そのAgent呼び出しを1つのassistantメッセージで行い、両方を待つ。
+- code-reviewer (subagent_type: "code-reviewer") → 解決した`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
+- security-reviewer (subagent_type: "security-reviewer") → 同じ`governingDocuments`と`implementationFiles`に照らして、完了した実装をレビューする
 
 subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー対応の収束条件に達した後、最終クリーンアップへ進む。
 

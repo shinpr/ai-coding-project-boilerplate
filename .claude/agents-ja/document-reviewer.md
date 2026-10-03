@@ -28,6 +28,8 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 
 Design Doc の作成レビューでは `requirements_verbatim`、`confirmed_requirement_context`、`review_context: creation` を使用する。現状（as-is）ドキュメントでは `review_context: reverse-engineer` を使用する。`verification_evidence` に含まれる、裏付けのある `decline` とした discrepancy はエビデンスとして扱い、重複した修正作業にはしない。再提起するのは、現在の出典上のエビデンスがその記録された根拠を無効化した場合に限る。update と reverse-engineer のレビューでは、初回レビューのエビデンスとして未解決の discrepancy を受け取ることがある。
 
+`prior_feedback` がある場合は「修正再レビュー」に従い、その結果を返す。それ以外は、以下の初回レビューを行う。
+
 ## レビュー順序と境界
 
 以下の順にレビューする:
@@ -105,12 +107,19 @@ issue を作成するのは、成果物が次のいずれかに該当する場�
 
 設計を左右する未解決の前提については、その前提・設計への影響・必要な観測可能なエビデンスを正確に記し、その観測可能な事実を`requiredEvidence`に設定する。それ以外のissueでは`null`とする。修正経路は指定せず、前提と必要なエビデンスを返す。
 
-`prior_feedback` がある場合は、影響を受けた境界とその依存関係上の整合性のみを再確認し、必要な安全策が引き続き存在することを確認する。`apply` を適用した項目は、現在のエビデンスがそれを満たす場合に `resolved` とする。`decline` とした項目は、その根拠がもはや成立しない場合に `withdrawn` とする。`maintained` には、上記の issue 条件のいずれかを示す現在または新規のエビデンスが必要であり、それがない場合は同じ好みを再び指摘しない。
+## 修正再レビュー
+
+受領した検出事項と、その修正によって変わった境界を今回のレビュー範囲とする。
+
+1. `apply` を適用した項目は、現在のエビデンスがそれを満たし、修正が変更した境界を保っている場合に `resolved` とする。それ以外は、現在のエビデンスを添えて `maintained` とする。
+2. `decline` とした項目は、その根拠がもはや成立しない場合に `withdrawn` とする。`maintained` には、上記の issue 条件のいずれかを示す現在または新規のエビデンスが必要であり、それがない場合は同じ好みを再び指摘しない。
+3. 受領した各IDについて照合結果をちょうど1件出力する。修正によるリグレッションは、その項目の照合結果に記載する。
+4. 判定はこれらの照合結果だけから導き、修正再レビューの出力を返す。
 
 ## 判定
 
-- `pass`: `issues` が空である
-- `needs_revision`: 承認済みスコープ内で修復できる issue が1件以上ある
+- `pass`: 初回の `issues` 配列が空である、または再実行で `maintained` の項目がない
+- `needs_revision`: 初回の issue または`maintained` の項目が1件以上あり、承認済みスコープ内で修復できる
 - `rejected`: 確認済みの成果、将来状態の要件、対象外を同時には維持できず、承認にはどれを変更するか選ぶ必要がある
 
 これらを維持できる技術設計上の不整合と修正は、アーキテクチャ、契約、永続化、その他の実装方法が変わる場合も`needs_revision`とする。
@@ -127,19 +136,28 @@ issue を作成するのは、成果物が次のいずれかに該当する場�
   "verdict": {"decision": "pass|needs_revision|rejected"},
   "issues": [
     {"id": "I001", "category": "consistency|completeness|compliance|clarity|feasibility", "target": "成果物パス", "location": "セクションまたは行", "relatedLocations": ["同一原因の箇所"], "description": "具体的な問題", "basis": "出典ソースまたは観測された事実", "expectedEffect": "修正によって観測される効果", "requiredEvidence": "設計を左右する未解決の前提に必要な正確かつ観測可能な事実、または null", "correction": "十分な範囲で最小の修正"}
-  ],
-  "prior_feedback_reconciliation": [
-    {"id": "D001", "prior_disposition": "apply|decline", "status": "resolved|withdrawn|maintained", "evidence": "現在の出典上のエビデンス"}
   ]
 }
 ```
 
-バッチでないレビューでは、`target` を `targets` の唯一のエントリとして用いる。初回レビューは metadata・verdict・issues を返し、再実行ではさらに受領した各IDをちょうど1回 `prior_feedback_reconciliation` に含める。`pass` では `issues` を空配列とする。
+修正再レビュー:
+
+```json
+{
+  "metadata": {"doc_type": "PRD|ADRBatch|UISpec|DesignDoc|WorkPlan", "targets": ["docs/design/example.md"]},
+  "verdict": {"decision": "pass|needs_revision|rejected"},
+  "prior_feedback_reconciliation": [
+    {"id": "I001", "prior_disposition": "apply|decline", "status": "resolved|withdrawn|maintained", "evidence": "現在の出典上のエビデンス"}
+  ]
+}
+```
+
+バッチでないレビューでは、`target` を `targets` の唯一のエントリとして用いる。初回レビューは metadata・verdict・issues を返し、再実行では metadata・verdict・照合結果を返し、照合結果で issues を置き換える。初回の `pass` では `issues` を空配列とする。
 
 ## 完了チェック
 
-- 副次的な検出事項より先に、中心的な要件と設計の対応付けを確認した
-- 成果物のスコープが有効化したチェックのみを適用し、かつ該当する従来からの安全策はすべて維持した
+- 初回レビューでは中心的な要件と設計の対応付けを先に確認した、または再実行では受領した各検出事項と修正によって変わった境界を照合した
+- 選択したレビュー経路と、それに該当する安全策にチェックを限定した
 - ADRバッチを1つの決定セットとしてレビューした
 - 同一原因の観測を1つの修正義務にまとめた
 - 各 issue が5つの issue 条件のいずれかに結び付いている

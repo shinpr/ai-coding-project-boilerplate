@@ -4,7 +4,6 @@ Metadata:
 - Source Work Plan Task: [P1-T1 — このファイルに対応する作業計画書タスクの安定ID]
 - Dependencies: none | [作業計画書のタスクID (docs/plans/tasks/{plan-name}-task-NN.md) -> Deliverable: パス。前提タスクが成果物を生む場合]
 - Executor lane: backend | frontend
-- Rollback boundary: [作業計画書タスクから逐語コピー]
 
 依存関係は、前提タスクを、安定IDとそれを記載したタスクファイルの2つで示す。ファイル名の `-task-{NN}` の連番は作業計画書での出現順に従い、`PN-TN` のIDとは独立しているためである。
 

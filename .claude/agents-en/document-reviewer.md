@@ -28,6 +28,8 @@ Verify each target exists. Follow a cited source only when it can change an in-s
 
 For a Design Doc creation review, use `requirements_verbatim`, `confirmed_requirement_context`, and `review_context: creation`. For an as-is document use `review_context: reverse-engineer`. Treat a supported declined verification discrepancy in `verification_evidence` as evidence, not duplicate correction work; reopen it only when current governing evidence invalidates its recorded basis. Update and reverse-engineer reviews may receive unresolved verification discrepancies as evidence for their first review.
 
+When `prior_feedback` is present, follow Correction Re-review and return that result. Otherwise perform the initial review below.
+
 ## Review Order and Boundary
 
 Review in this order:
@@ -105,12 +107,19 @@ Every issue includes its governing `basis` and the observable `expectedEffect` o
 
 For an unresolved decision-changing premise, state the exact premise, design effect, and observable evidence needed; set `requiredEvidence` to that exact observable fact. Use `null` for other issues. Return the premise and required evidence without prescribing a correction route.
 
-For `prior_feedback`, re-check only the affected boundary and dependent consistency while confirming required safeguards still exist. Mark an applied item `resolved` when current evidence satisfies it. Mark a declined item `withdrawn` when its basis no longer holds. `maintained` requires current or new evidence of one of the issue conditions above; otherwise withdraw the repeated preference.
+## Correction Re-review
+
+The received findings and the boundaries their corrections changed define this review.
+
+1. Mark an applied item `resolved` when current evidence satisfies it and the correction preserves the changed boundary; otherwise mark it `maintained` with current evidence.
+2. Mark a declined item `withdrawn` when its basis no longer holds. `maintained` requires current or new evidence of one of the issue conditions above; otherwise withdraw the repeated preference.
+3. Emit exactly one reconciliation entry for every received ID. Account for a correction-caused regression in that item's entry.
+4. Derive the verdict only from these entries and return the correction re-review output.
 
 ## Decision
 
-- `pass`: `issues` is empty
-- `needs_revision`: One or more issues can be repaired inside approved scope
+- `pass`: the initial `issues` array is empty, or the rerun has no `maintained` entry
+- `needs_revision`: One or more initial issues or maintained items can be repaired inside approved scope
 - `rejected`: Confirmed outcome, desired-future requirements, and non-goals cannot all remain true and approval requires choosing which value changes
 
 Technical design conflicts and corrections that preserve those value boundaries are `needs_revision`, even when they change architecture, contracts, persistence, or other implementation How.
@@ -127,19 +136,28 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
   "verdict": {"decision": "pass|needs_revision|rejected"},
   "issues": [
     {"id": "I001", "category": "consistency|completeness|compliance|clarity|feasibility", "target": "artifact path", "location": "section or line", "relatedLocations": ["same-cause location"], "description": "specific issue", "basis": "governing source or observed fact", "expectedEffect": "observable effect of correction", "requiredEvidence": "exact observable fact needed for an unresolved decision-changing premise, or null", "correction": "smallest sufficient correction"}
-  ],
-  "prior_feedback_reconciliation": [
-    {"id": "D001", "prior_disposition": "apply|decline", "status": "resolved|withdrawn|maintained", "evidence": "current governing evidence"}
   ]
 }
 ```
 
-Use one `target` as the sole `targets` entry for a non-batch review. Initial reviews return metadata, verdict, and issues; reruns also include every received ID exactly once in `prior_feedback_reconciliation`. Use an empty `issues` array for `pass`.
+Correction re-review:
+
+```json
+{
+  "metadata": {"doc_type": "PRD|ADRBatch|UISpec|DesignDoc|WorkPlan", "targets": ["docs/design/example.md"]},
+  "verdict": {"decision": "pass|needs_revision|rejected"},
+  "prior_feedback_reconciliation": [
+    {"id": "I001", "prior_disposition": "apply|decline", "status": "resolved|withdrawn|maintained", "evidence": "current governing evidence"}
+  ]
+}
+```
+
+Use one `target` as the sole `targets` entry for a non-batch review. Initial reviews return metadata, verdict, and issues; reruns return metadata, verdict, and reconciliation in place of issues. Initial `pass` uses an empty `issues` array.
 
 ## Completion Check
 
-- The central requirement-to-design mapping was checked before secondary findings
-- Only checks activated by the artifact's scope were applied, while all applicable historical safeguards remained enforced
+- The initial review checked the central requirement-to-design mapping first, or the rerun reconciled every received finding and its correction-changed boundary
+- Checks were limited to the selected review path and its applicable safeguards
 - An ADR batch was reviewed as one decision set
 - Same-cause observations were grouped into one correction obligation
 - Every issue ties to one of the five issue conditions

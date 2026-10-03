@@ -28,6 +28,8 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 
 对于设计文档的创建评审，使用 `requirements_verbatim`、`confirmed_requirement_context` 与 `review_context: creation`。对于现状文档，使用 `review_context: reverse-engineer`。将 `verification_evidence` 中已被支持且已拒绝的验证差异视为依据，而非重复的修正工作；仅当当前约束来源的证据推翻其既有依据时才重新提出。更新评审与逆向工程评审在其首次评审中可以接收未解决的验证差异作为依据。
 
+存在 `prior_feedback` 时，按“修正复评”执行并返回其结果。否则执行下方的首次评审。
+
 ## 评审顺序与边界
 
 按以下顺序评审：
@@ -105,12 +107,19 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
 
 对于尚未解决的、会改变决策的前提，须说明确切的前提、设计影响，以及所需的可观测依据；将 `requiredEvidence` 设为该确切的可观测事实。其他问题使用 `null`。返回该前提和所需依据，不指定修正路径。
 
-对于 `prior_feedback`，仅重新核查受影响的边界及其依赖的一致性，同时确认所需的防护措施依然存在。当当前依据满足某项已应用条目时，将其标记为 `resolved`。当某项被拒绝条目的依据不再成立时，将其标记为 `withdrawn`。`maintained` 需要有当前或新的依据表明上述某项问题条件成立；否则应撤回该重复出现的偏好。
+## 修正复评
+
+本次评审范围由收到的发现及其修正所改变的边界界定。
+
+1. 当当前依据满足已应用项，且修正保留了所改变的边界时，将其标记为 `resolved`；否则附当前依据并标记为 `maintained`。
+2. 当被拒绝项的依据不再成立时，将其标记为 `withdrawn`。`maintained` 需要有当前或新的依据表明上述某项问题条件成立；否则应撤回该重复出现的偏好。
+3. 每个收到的 ID 恰好输出一个复核条目。修正引入的回归计入该项的复核条目。
+4. 仅从这些条目推导决定，并返回修正复评输出。
 
 ## 决定
 
-- `pass`：`issues` 为空
-- `needs_revision`：一个或多个问题可以在已批准范围内修复
+- `pass`：首次评审的 `issues` 数组为空，或重跑时不存在 `maintained` 条目
+- `needs_revision`：一个或多个首次评审的问题或 `maintained` 条目可以在已批准范围内修复
 - `rejected`：已确认的成果、目标状态需求与非目标无法同时成立，批准需要先选择改变哪一项价值
 
 只要保持这些价值边界不变，即便改变了架构、契约、持久化或其他实现层面的“如何做”，技术设计冲突及其修正仍属于 `needs_revision`。
@@ -127,19 +136,28 @@ skills: documentation-criteria, coding-standards, typescript-testing, llm-friend
   "verdict": {"decision": "pass|needs_revision|rejected"},
   "issues": [
     {"id": "I001", "category": "consistency|completeness|compliance|clarity|feasibility", "target": "产物路径", "location": "章节或行号", "relatedLocations": ["同一成因的位置"], "description": "具体问题", "basis": "约束来源或观测事实", "expectedEffect": "修正后的可观测效果", "requiredEvidence": "解决某个未决且会改变决策的前提所需的具体观测事实，或 null", "correction": "最小充分修正"}
-  ],
-  "prior_feedback_reconciliation": [
-    {"id": "D001", "prior_disposition": "apply|decline", "status": "resolved|withdrawn|maintained", "evidence": "当前约束依据"}
   ]
 }
 ```
 
-对于非批次评审，将唯一的 `target` 作为 `targets` 的唯一条目。初次评审返回 metadata、verdict 与 issues；重跑还须在 `prior_feedback_reconciliation` 中恰好包含每一个收到的 ID 一次。`pass` 时使用空的 `issues` 数组。
+修正复评：
+
+```json
+{
+  "metadata": {"doc_type": "PRD|ADRBatch|UISpec|DesignDoc|WorkPlan", "targets": ["docs/design/example.md"]},
+  "verdict": {"decision": "pass|needs_revision|rejected"},
+  "prior_feedback_reconciliation": [
+    {"id": "I001", "prior_disposition": "apply|decline", "status": "resolved|withdrawn|maintained", "evidence": "当前约束依据"}
+  ]
+}
+```
+
+对于非批次评审，将唯一的 `target` 作为 `targets` 的唯一条目。首次评审返回 metadata、verdict 与 issues；重跑返回 metadata、verdict 与复核条目，以复核条目替代 issues。首次评审的 `pass` 使用空的 `issues` 数组。
 
 ## 完成检查
 
-- 在核对次要发现之前，已核对核心的“需求到设计”映射关系
-- 只应用了该产物范围所触发的检查项，同时所有适用的历史性防护措施均保持强制执行
+- 首次评审先核对了核心的“需求到设计”映射关系，或重跑时复核了每个收到的发现及其修正所改变的边界
+- 检查限于所选评审路径及其适用的防护措施
 - 一批 ADR 作为一个决策集合被整体评审
 - 同一原因的观察结果已合并为一项修正义务
 - 每个问题都对应五项问题条件之一

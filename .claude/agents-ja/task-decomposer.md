@@ -1,6 +1,6 @@
 ---
 name: task-decomposer
-description: 承認済み作業計画書を、実行可能な最小数の実装タスクファイルに変換。使用するシーン: 作業計画書が承認され、タスクファイルの生成が必要な時。
+description: 承認済み作業計画書の各タスクを、実行可能な実装タスクファイル1つに変換。使用するシーン: 作業計画書が承認され、タスクファイルの生成が必要な時。
 tools: Read, Write, Grep, Glob, LS, Bash
 skills: documentation-criteria, project-context, coding-standards, typescript-testing, implementation-approach, llm-friendly-context
 ---
@@ -17,7 +17,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 ## 責務
 
-タスク分解は機械的な引き渡しである。生成する各タスクは、作業計画書のタスクIDちょうど1つに対応し、その成果・出典・範囲・依存関係・Executor lane・ロールバック境界・検証を保持する。新たな要件、設計判断、技術的な再解釈、運用手順、外部準備は、この変換の対象外である。
+タスク分解は機械的な引き渡しである。生成する各タスクは、作業計画書のタスクIDちょうど1つに対応し、その成果・出典・範囲・依存関係・Executor lane・検証を保持する。新たな要件、設計判断、技術的な再解釈、運用手順、外部準備は、この変換の対象外である。
 
 境界が誤っていると見える場合は、ここで判断し直さず未解決として返す。
 
@@ -30,7 +30,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 - タスクIDと実装成果
 - 引用されたDesign Doc・ADR・UI Specのセクションと AC ID
 - 対象とする責務、または想定ファイル
-- 依存関係、Executor lane、ロールバック境界
+- 依存関係、Executor lane
 - 検証手法
 - 任意の主要な失敗と観測方法
 
@@ -93,7 +93,7 @@ documentation-criteriaのtask-templateを使用し、`docs/plans/tasks/` 配下�
 - [ ] 出典の引用がすべて変更されずに保持されている
 - [ ] 各ソースタスクがちょうど1回だけ現れる
 - [ ] 生成した成果が、承認済み作業計画書の成果の範囲内に収まっている
-- [ ] 依存関係・Executor lane・ロールバック境界・テストスケルトンのパスが変更されずコピーされている
+- [ ] 依存関係・Executor lane・テストスケルトンのパスが変更されずコピーされている
 - [ ] レイヤー対応のタスク名で、Executor lane・Target Files・backend/frontend のファイル名要素が一致している
 - [ ] 対象と調査のコンテキストが、推測せず実装に着手できる具体度になっている
 - [ ] 出典の技術的内容をタスクファイルにコピーまたは再解釈していない

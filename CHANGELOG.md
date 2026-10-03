@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2026-10-03
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Added
+
+- Lite Mode skips independent design verification, cross-design consistency checks, and separate security review. Planned work uses one final quality run per layer before code review, while focused checks, required test reviews, and approval gates remain.
+- Save the project's default with `node scripts/set-workflow-mode.js lite` and restore Normal Mode with `normal`. Project updates retain the saved mode; explicit session selections take precedence.
+
+### Changed
+
+- Document and security re-reviews reconcile prior findings within the boundaries changed by their corrections, with separate initial-review and re-review outputs.
+- Final quality runs check committed task changes and all supplied verification methods. Executors continue completed tasks when correction or incomplete implementation items are supplied.
+
+### Removed
+
+- Unused document type wrappers, rollback metadata, and prescribed phase layouts. Plans follow the approved implementation approach, dependencies, and earliest executable verification.
+
 ## [2.1.1] - 2026-09-23
 
 ### Changed

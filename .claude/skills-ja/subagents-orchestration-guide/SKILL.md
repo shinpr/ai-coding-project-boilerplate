@@ -22,6 +22,12 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 新規のフルサイクルタスクを受け取ったら、ユーザー要件をrequirement-analyzerに渡し、ユーザーの文言はオーケストレーターが保持する。返ってきたスコープ・コスト・質問のエビデンスをその文言と照らし合わせて要件収束を実行し、構造スケールを割り当てる。評価の依頼、推測的なアイデア、手段の指定は、アナライザの出力ではなくユーザーの文言から分類する。どちらの判定もオーケストレーターが持つ。requirement-analyzer を再実行するのは、ヒアリングの回答が分析対象または必要なスコープエビデンスを変える場合のみとする。
 
+### ワークフローモード
+
+ワークフローの開始時または再開時に呼び出しを振り分ける前に、ユーザーの明示的なモード指定、ロード済みのルート`CLAUDE.md`の`Workflow Mode`指示の順にモードを解決する。どちらもなければNormalモードとする。セッションでの明示指定はユーザーが変更するまで適用し、リポジトリの既定値より優先する。
+
+以下のフローはNormalモードを記述する。Liteモードでは`references/lite-mode.md`を読み、その呼び出し集合と品質境界を適用する。省略されない呼び出しを実行し、実際に生成された結果だけを使用する。ユーザー承認の停止点と権限境界は、どちらのモードにも適用する。
+
 ### フロー実行中の要件変更検知
 
 確認済みの成果、将来状態の要件、対象外の変更案を要件変更として扱う。これらを同時には維持できないことをエビデンスが示す場合は、要件ゲートで停止し、どれを変更するかユーザーに確認する。これらを維持する技術設計または実装の修正は要件変更ではなく、機能しているが不要になった技術的な選択の削除もこれに含まれる。前のフェーズを通過したことは、そのフェーズで選んだ手段が引き続き必要であることを示さない。影響を受ける技術成果物をそれぞれ更新し、なお有効な出力を維持したまま、影響を受ける最も早い技術ゲートから再開する。
@@ -103,8 +109,7 @@ description: 規模に応じた計画、承認、実装、検証、エスカレ�
 
 ### 標準フロー
 
-**基本サイクル**: `task-executor → 実行結果で分岐 → quality-fixer → コミット` の4ステップサイクルを管理。
-各タスクごとにこのサイクルを繰り返し、品質を保証。
+**タスクサイクル**: 各タスクの実装結果と必要な統合/E2Eレビューを受理し、選択したモードの品質境界を適用して、レシピのコミットポイントで完了済みタスクをコミットする。Normalモードはタスクごとにquality-fixerを実行し、Liteモードは最終品質チェックを使用する。各タスクで対象を絞った検証は維持する。
 
 **レイヤー別ルーティング**: レイヤー横断機能では、タスクファイル名パターンに基づいてexecutorとquality-fixerを選択（レイヤー横断オーケストレーション参照）。
 
@@ -200,26 +205,24 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 |---------|-----------|------|
 | 8 | codebase-analyzer | 確認済みのレイヤー横断スコープ全体を分析する。出典ソースは `prd_path` または `requirements` のちょうど1つを渡す |
 | 9 | technical-designer | バックエンドDesign Doc（ステップ8のうちバックエンドに関係するエビデンスを使用） |
-| 10 | code-verifier | バックエンドDesign Docを既存コードに対して検証（結果JSONはステップ12に`prior_layer_verification`として渡す） |
-| 11 | document-reviewer | バックエンドDesign Docをレビュー（ステップ10の結果を`verification_evidence`、ステップ8のJSONを`codebase_analysis`として入力）。判定はレビュー対応の判定ゲートに従って処理する |
-| 12 | technical-designer-frontend | フロントエンドDesign Doc（ステップ8のうちフロントエンドに関係するエビデンス + レビュー済みバックエンドDesign Doc + ステップ10の`prior_layer_verification` + UI Spec） |
-| 13 | code-verifier | フロントエンドDesign Docを既存コードに対して検証 |
-| 14 | document-reviewer | フロントエンドDesign Docをレビュー（ステップ13の結果と記録した処理方針を`verification_evidence`、ステップ8のJSONを`codebase_analysis`として入力）。判定はステップ15の前に、レビュー対応の判定ゲートに従って処理する |
-| 15 | design-sync | レイヤー間整合性検証 **[停止]** |
+| 10 | code-verifier（Normalモード） | バックエンドDesign Docを既存コードに対して検証（結果JSONはステップ12に`prior_layer_verification`として渡す） |
+| 11 | document-reviewer | バックエンドDesign Docをレビュー（ステップ10を実行した場合は`verification_evidence`、ステップ8のJSONは`codebase_analysis`として入力）。判定はレビュー対応の判定ゲートに従って処理する |
+| 12 | technical-designer-frontend | フロントエンドDesign Doc（ステップ8のうちフロントエンドに関係するエビデンス、レビュー済みバックエンドDesign Doc、UI Spec、ステップ10を実行した場合の`prior_layer_verification`を使用） |
+| 13 | code-verifier（Normalモード） | フロントエンドDesign Docを既存コードに対して検証 |
+| 14 | document-reviewer | フロントエンドDesign Docをレビュー（ステップ13を実行した場合は`verification_evidence`、ステップ8のJSONは`codebase_analysis`として入力）。判定はレビュー対応の判定ゲートに従って処理する |
+| 15 | design-sync（Normalモード） | レイヤー間整合性検証の後、両モードでDesign Doc承認 **[停止]** |
 
-ステップ8は1回だけ実行し、そのJSON全体を両方のdesignerがそのまま再利用する。各designerは自身のレイヤーに関係するエビデンスだけを使う。バックエンド経路（ステップ9〜11）はステップ12の前に直列で完了させる。これによりフロントエンドdesignerは、リポジトリ上の検証結果とレビュー済みのバックエンド契約の両方を受け取る。
+ステップ8は1回だけ実行し、そのJSON全体を両方のdesignerがそのまま再利用する。各designerは自身のレイヤーに関係するエビデンスだけを使う。省略されないバックエンドのステップはステップ12の前に直列で完了させる。これによりフロントエンドdesignerは、レビュー済みのバックエンド契約と、検証が実行された場合はそのリポジトリ上の検証結果を受け取る。
 
 **Design Doc作成時のレイヤーコンテキスト指定**:
 - **バックエンド**: 「PRD [パス] からバックエンドDesign Docを作成。コードベース分析: [ステップ8のJSON。バックエンドに関係するエビデンスを使用]。対象: APIコントラクト、データ層、ビジネスロジック、サービスアーキテクチャ。」
-- **フロントエンド**: 「PRD [パス] からフロントエンドDesign Docを作成。コードベース分析: [ステップ8のJSON。フロントエンドに関係するエビデンスを使用]。レビュー済みバックエンドDesign Doc [パス] — このドキュメントからAPIコントラクトとIntegration Pointsを抽出し、フロントエンドDesign Doc の Integration Points に反映する。バックエンドのレビュー issue と処理方針: [ステップ11 document-reviewer の結果とレビュー対応の記録]。prior_layer_verification: [バックエンドDesign Docに対するcode-verifierのJSON]。エビデンスに裏付けられた discrepancy と `maintained` のレビュー issue のみを不安定な契約として扱う。UI Spec [パス] のコンポーネント構造を参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
+- **フロントエンド**: 「PRD [パス] からフロントエンドDesign Docを作成。コードベース分析: [ステップ8のJSON。フロントエンドに関係するエビデンスを使用]。レビュー済みバックエンドDesign Doc [パス] — このドキュメントからAPIコントラクトとIntegration Pointsを抽出し、フロントエンドDesign Doc の Integration Points に反映する。バックエンドのレビュー issue と処理方針: [ステップ11 document-reviewer の結果とレビュー対応の記録]。prior_layer_verification: [バックエンドDesign Docに対するcode-verifierのJSON。検証が実行された場合のみ渡し、それ以外はこの入力を省略]。エビデンスに裏付けられた discrepancy と `maintained` のレビュー issue のみを不安定な契約として扱う。UI Spec [パス] のコンポーネント構造を参照。対象: コンポーネント階層、状態管理、UI操作、データ取得。」
 
 **design-sync**: フロントエンドDesign Docをソースとして使用。`docs/design/`内の他のDesign Docを自動検出して比較。
 
 ### 複数Design Docでの作業計画
 
-全Design Docをwork-plannerに渡し、垂直スライスで構成を指示:
-- 全Design Docのパスを明示的に提供
-- 指示: 「フェーズを垂直な機能スライスで構成すること。各フェーズに同一機能領域のバックエンドとフロントエンド作業を含め、フェーズ毎の早期統合検証を可能にする。」
+レビュー済みDesign Docの全パスと、提供されたテストスケルトンのパスをwork-plannerに渡す。work-plannerは、選択済みの実装アプローチ、依存関係、最も早い実行可能な検証境界に従ってタスクを定義する。
 
 ### レイヤー別エージェントルーティング
 
@@ -245,8 +248,8 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 - `status: escalation_needed` または `status: blocked` → 専門エージェントの結果の受理を適用
 - `requiresTestReview` が `true` → **integration-test-reviewer** を実行
   - `status` が `needs_revision` → レビュー対応を適用し、同じ`task_file`と`apply`のquality-issueオブジェクト一式を、`correction_findings`として逐語でルーティング先のexecutor（レイヤー別エージェントルーティング参照、task-executorまたはtask-executor-frontend）へ渡す
-  - `status` が `blocked` → 移動・リネームされた変更テストパスを解決してレビュアーを1回だけ再実行する。`requiresTestReview: true`にもかかわらず変更されたテストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてルーティング先のexecutorに差し戻す。再実行でも`blocked`が返る場合はレビュー未実施を記録してquality-fixerへ進む
-  - `status` が `pass` → quality-fixer へ進む
+  - `status` が `blocked` → 移動・リネームされた変更テストパスを解決してレビュアーを1回だけ再実行する。`requiresTestReview: true`にもかかわらず変更されたテストが存在しない場合は、そのexecutor出力の欠陥を`correction_findings`としてルーティング先のexecutorに差し戻す。再実行でも`blocked`が返る場合はレビュー未実施を記録して、選択したモードの品質/コミット境界へ進む
+  - `status` が `pass` → 選択したモードの品質/コミット境界へ進む
 
 ### 自律実行の停止条件
 
@@ -310,7 +313,7 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
    #### code-verifier → document-reviewer（Design Docレビュー）
 
    **code-verifierへの入力**: Design Docパス（doc_type: design-doc）。`code_paths`は指定を省略する — verifierがドキュメントからコードスコープを独自に発見する。
-   **document-reviewerへの入力**: 最新のcode-verifier結果と記録したレビュー対応の処理方針をあわせて`verification_evidence`として、designerに渡したものと同じcodebase-analyzerのJSONを`codebase_analysis`として、出典ソースを`confirmed_requirement_context`として渡す。該当する場合は元の依頼を`requirements_verbatim`として渡す。reviewerは`codebase_analysis.focusAreas`でFact Disposition Tableのカバレッジを検証し、確認済み要件のコンテキストでドキュメントの成果と契約を検証する。
+   **document-reviewerへの入力**: 検証が実行された場合のみ、最新のcode-verifier結果と記録したレビュー対応の処理方針をあわせて`verification_evidence`として渡す。それ以外はこの入力を省略する。designerに渡したものと同じcodebase-analyzerのJSONを`codebase_analysis`として、出典ソースを`confirmed_requirement_context`として常に渡す。該当する場合は元の依頼を`requirements_verbatim`として渡す。reviewerは`codebase_analysis.focusAreas`でFact Disposition Tableのカバレッジを検証し、確認済み要件のコンテキストでドキュメントの成果と契約を検証する。
 
    #### apply 対象の設計エビデンス finding → technical-designer
 
@@ -318,7 +321,7 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 
    #### code-verifier + document-reviewer → 次レイヤーのtechnical-designer（レイヤー横断フロー時のみ）
 
-   **次レイヤーのtechnical-designerへの入力**: レビュー済みの前レイヤーDesign Docパスに加えて`prior_layer_verification`（前レイヤーcode-verifierのJSON）を渡す。シーケンスは「レイヤー横断オーケストレーション」セクションを参照。`prior_layer_verification.discrepancies[]`と前レイヤーのレビュー指摘を用いて不安定な契約を識別する。検証済みと見なせる主張は検証結果JSONに明示されているものに限定する。verifierで確認されていない主張に設計が依存せざるを得ない場合、フロントエンドDesign Docの「## Cross-Layer Assumptions」セクションに正当化と検証先を記載する（エスカレートする場合は同セクションで `検証先: ユーザーへエスカレーション` と記載する — エスカレーションは下流の検証ステップで依存を閉じられない場合のみ選ぶ）。
+   **次レイヤーのtechnical-designerへの入力**: レビュー済みの前レイヤーDesign Docパスを渡し、前レイヤーのcode-verifierを実行した場合のみ`prior_layer_verification`も渡す。シーケンスは「レイヤー横断オーケストレーション」セクションを参照。利用可能な検証discrepancyと前レイヤーのレビュー指摘を用いて不安定な契約を識別する。検証済みと見なせる主張は、実際のエビデンスが示すものに限定する。未検証の主張に設計が依存する場合は、フロントエンドDesign Docの「## Cross-Layer Assumptions」セクションに根拠と検証先を記載する。エスカレーションは、下流の検証ステップで依存を閉じられない場合のみ選ぶ。
 
    #### technical-designer → work-planner
 
@@ -335,7 +338,7 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 
 ## 重要な制約
 
-- **品質チェック**: quality-fixer が `pass` または `verification_incomplete` を返した後、呼び出したレシピが定めるコミットポイントでコミットできる
+- **コミット境界**: Normalモードのタスクコミットと、品質チェックで生じた修正のコミットには、quality-fixerの`pass`または`verification_incomplete`の結果が必要である。Liteモードのタスクコミットは、executorの結果と必要なテストレビューの結果を受理した後に行い、実装後レビューの前に最終品質チェックを実行する。コミットは呼び出したレシピが定めるポイントでのみ行う
 - **構造化レスポンス**: サブエージェント間で渡す情報には、宣言済みのJSON fieldを使用する
 - **承認管理**: ドキュメント作成後にdocument-reviewerを実行し、指定されたユーザー承認の停止点を通過してから次のPhaseへ進む
 - **フロー確認**: 承認後は、確定した大規模・中規模・小規模フローから次のstepを選択する
@@ -350,6 +353,11 @@ quality-fixer は、実行できなかったチェックと無関係と確認済
 
 レビュアーの検出事項は候補である。修正作業は、レビュー対応で`apply`となった集合からだけ作成する。
 
-**修正サイクルのハンドオフ**: レビュー対応を適用し、そこで選ばれた各修正担当を呼び出す。authorが所有する技術成果物の修正では、レイヤーに応じたtechnical designerをupdateモードで呼び出し、その成果物に既存のdocument-reviewerと該当するdesign-syncのゲートを実行した後、起点のレビュアーを再実行する。executorが所有する修正では、レイヤーに応じたexecutorへ、元の`task_file`またはdirect scopeのフィールドと、`apply`の検出事項オブジェクト一式に処理方針だけを加えた`correction_findings`を逐語で渡し、その後、タスクごとのサイクルのステップ2（条件付きのintegration-test-reviewerの経路を含む）でexecutorの結果に応じて分岐し、該当する品質ゲートを実行する。両方の担当が必要な場合は、レビュー対応にあるauthorを先に修正して再評価する順序に従う。`prior_feedback`は照合を行うレビュアーにだけ渡す。
+**修正サイクルのハンドオフ**: レビュー対応を適用し、そこで選ばれた各修正担当を呼び出す。authorが所有する技術成果物の修正では、レイヤーに応じたtechnical designerをupdateモードで呼び出し、その成果物に既存のdocument-reviewerと該当するdesign-syncのゲートを実行した後、起点のレビュアーを再実行する。executorが所有する修正では、レイヤーに応じたexecutorへ、元の`task_file`またはdirect scopeのフィールドと、`apply`の検出事項オブジェクト一式に処理方針だけを加えた`correction_findings`を逐語で渡し、その後、タスクサイクルのステップ2（条件付きのintegration-test-reviewerの経路を含む）でexecutorの結果に応じて分岐し、該当する品質ゲートを実行する。両方の担当が必要な場合は、レビュー対応にあるauthorを先に修正して再評価する順序に従う。`prior_feedback`は照合を行うレビュアーにだけ渡す。
 
 **再実行ルール**: レビュアーが返したpassingの結果はそのまま有効とする。再実行するのは、最新結果の検出事項に修正を適用したレビュアーだけとする。その際は記録した処理方針を`prior_feedback`として、再導出した実装ファイル一式とともに渡し、修正後の状態に対して照合させる。レビューの前提不足を回復した後は、そのレビュアーを再実行する。受け入れ可否はレビュー対応の収束条件で判断し、解決済みの却下を維持する。
+
+## 参照
+
+- `references/review-resolution.md`: 検出事項の処理方針、修正、収束
+- `references/lite-mode.md`: Liteモードの呼び出し集合と最終品質チェック

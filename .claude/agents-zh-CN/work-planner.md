@@ -68,7 +68,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 - 每个直接约束的约束路径以及章节或 AC ID；
 - 目标职责范围或预期文件；
 - 依赖关系，以稳定任务 ID 声明；
-- 执行者通道和回滚边界；
+- 执行者通道；
 - 可执行验证
 
 根据任务的目标文件设置执行者通道：当所有路径都位于项目的前端路径下时为 `frontend`，否则为 `backend`。使用 project-context 技能声明的目录约定对路径进行分类。当 project-context 未声明任何前端路径时，说明该项目仅有后端，所有通道均为 `backend`——将其记录为原因，而不是让默认值悄悄决定。若目标文件横跨两个通道，说明该任务涵盖了两个结果；应将其拆分，因为一个任务文件只路由到一个执行者。
@@ -90,7 +90,7 @@ skills: documentation-criteria, project-context, technical-spec, implementation-
 
 ### 5. 编写并写出计划
 
-遵循设计文档所选定的实现方式和依赖顺序。每个阶段结束于一个共享的可观测验证点。将设计文档的早期验证放入最早适用的阶段。
+遵循设计文档所选定的实现方式和依赖顺序。阶段按该顺序组织任务。将设计文档的早期验证放入依赖关系使其可执行的最早任务。
 
 使用 documentation-criteria 中的 `references/plan-template.md`，以及该技能定义的存储位置和命名约定。更新时保留已完成的任务状态，除非请求的变更使其失效。
 

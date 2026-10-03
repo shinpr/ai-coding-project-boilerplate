@@ -19,7 +19,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 - 实现评审 → 由 code-reviewer 执行
 - 安全验证 → 由 security-reviewer 执行
-- **代码侧修复路径**：修复实现 → task-executor-frontend；修正复评 → code-reviewer / security-reviewer；最终质量检查 → quality-fixer-frontend
+- **代码侧修复路径**：修复实现 → task-executor-frontend；修正复评 → code-reviewer / security-reviewer；质量检查 → quality-fixer-frontend
 - **设计侧更新路径**：DD 修订 → technical-designer-frontend（update 模式）；DD 评审 → document-reviewer；跨 DD 一致性 → design-sync（当存在多个 DD 时）；重新验证 → code-reviewer
 
 编排者调用子智能体，并在它们之间传递结构化 JSON。当设计文档对已确认成果而言已过时、过度或有误时，适用设计侧路径。两条路径都不会默认把现有实现或先前的设计视为权威。
@@ -35,23 +35,23 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 使用 Agent 工具调用 code-reviewer：
 - `subagent_type`: "code-reviewer"
 - `description`: "已完成的前端实现评审"
-- `prompt`: "评审已完成的前端实现。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [git diff file list]。返回首次评审的 JSON。"
+- `prompt`: "评审已完成的前端实现。governingDocuments: [\"[path]\"]。implementationFiles: [git diff file list]。返回首次评审的 JSON。"
 
 **将输出保存为**：`$STEP_2_OUTPUT`
 
 ### 步骤 3：执行 security-reviewer
-使用 Agent 工具调用 security-reviewer：
+在 Normal 模式下，或当安全评审本身是用户请求的成果时，使用 Agent 工具调用 security-reviewer：
 - `subagent_type`: "security-reviewer"
 - `description`: "安全评审"
-- `prompt`: "governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [git diff file list]. 评审安全合规性。"
+- `prompt`: "governingDocuments: [\"[path]\"]. implementationFiles: [git diff file list]. 评审安全合规性。"
 
 **将输出保存为**：`$STEP_3_OUTPUT`
 
 ### 步骤 4：结论与响应
 
-当任一评审方返回 blocked 或其他不可用的结果时，针对其语义成因应用 subagents-orchestration-guide 的“专家结果受理”。仅将仍然存在的验证局限带入报告。
+当已执行的评审者返回 blocked 或其他不可用的结果时，针对其语义成因应用 subagents-orchestration-guide 的“专家结果受理”。仅将仍然存在的验证局限带入报告。
 
-对两份输出应用“评审裁定”。其 `apply` 与 `decline` 处置决定路由。按“评审裁定”第 2 节为每一项 `apply` 发现项选择修正责任方。
+对已执行评审者的输出应用“评审裁定”。其 `apply` 与 `decline` 处置决定路由。按“评审裁定”第 2 节为每一项 `apply` 发现项选择修正责任方。
 
 呈现处置后的结果：
 
@@ -65,7 +65,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
   局限：
   - [无法验证的判断及其影响]
 
-安全评审：[security-reviewer 的 status]
+安全评审：[status，或 Lite 模式下被省略]
   按类别列出的发现项：
   - [confirmed_risk] [位置]：[说明] — [理由]
   - [defense_gap] [位置]：[说明] — [理由]
@@ -75,7 +75,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 向用户请求应用所提议 `apply` 路由的授权。批量选项为“批准所有提议的 `apply` 路由”，且仅包含这些路由。当获批的变更集为空时，直接进入步骤 11。
 
-**带入修复路径的边界**：将获批的发现项、其可观测的修正条件，以及用户声明的任何规模预算，贯穿代码侧修正路径及其最终质量检查。应用 coding-standards 的“变更边界与参考代表性”来推导完整的修正；发现项中的路径是调查的起点。当完整修正超出用户声明的规模预算时，该预算仍是用户设定的边界。
+**带入修复路径的边界**：将获批的发现项、其可观测的修正条件，以及用户声明的任何规模预算，贯穿代码侧修正路径及其质量检查。应用 coding-standards 的“变更边界与参考代表性”来推导完整的修正；发现项中的路径是调查的起点。当完整修正超出用户声明的规模预算时，该预算仍是用户设定的边界。
 
 ### 步骤 5：设计侧更新
 
@@ -92,7 +92,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
    - `prompt`: "doc_type: DesignDoc。review_context: update。评审 [path] 的更新后设计文档的一致性与完整性。"
    - 沿其修正复评与收敛的转换执行评审裁定，对重新路由的修正使用 technical-designer-frontend。仅在其收敛条件处推进
 
-3. 当另一份设计文档约束了被评审变更所触及的职责或契约时，调用 design-sync：
+3. 在 Normal 模式下，当另一份设计文档约束了被评审变更所触及的职责或契约时，调用 design-sync：
    - `subagent_type`: "design-sync"
    - `description`: "跨 DD 一致性检查"
    - `prompt`: "source_design: [更新后 DD 的路径]。检测更新后所有设计文档之间的冲突。"
@@ -109,7 +109,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 - `governing_sources`: 被评审的设计文档、适用的 UI 规范，以及已接受的需求或 ADR 路径
 - `target_paths`: 为已批准的代码侧路由所确认的实现与测试路径
 - `observable_verification`: 由发现项与约束来源所指明的聚焦 UI 行为测试或可观测契约检查通过
-- `correction_findings`: 评审方发现项对象的完整逐字副本，仅添加其编排者处置
+- `correction_findings`: 评审者发现项对象的完整逐字副本，仅添加其编排者处置
 
 ### 步骤 7：质量检查
 
@@ -133,16 +133,16 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 使用 Agent 工具调用 code-reviewer：
 - `subagent_type`: "code-reviewer"
 - `description`: "重新验证前端实现评审"
-- `prompt`: "在已批准的修正之后，重新评审已完成的前端实现。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。核对收到的每一项。"
+- `prompt`: "在已批准的修正之后，重新评审已完成的前端实现。governingDocuments: [\"[path]\"]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。核对收到的每一项。"
 
 ### 步骤 9：重新验证 security-reviewer
 
-仅当步骤 6 修正了 security-reviewer 所属的发现项时才执行本步骤；返回过通过（passing）结果的评审者不再重新运行。在调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
+仅当已执行的 security-reviewer 所属发现项被步骤 6 修正时才执行本步骤；返回过通过（passing）结果的评审者不再重新运行。在调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
 
 使用 Agent 工具调用 security-reviewer：
 - `subagent_type`: "security-reviewer"
 - `description`: "安全性的重新验证"
-- `prompt`: "修正后重新验证安全性。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。在评审方的修正复评范围内，核对先前的每一项。"
+- `prompt`: "修正后重新验证安全性。governingDocuments: [\"[path]\"]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。在评审者的修正复评范围内，核对先前的每一项。"
 
 ### 步骤 10：处置修正结果
 
@@ -161,7 +161,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
   核对：[按发现项 ID 的 resolved / withdrawn / maintained]
 
 安全评审：
-  初次：[status]
+  初次：[status，或 Lite 模式下被省略]
   修正复评：[复评范围的 status]（若已执行修复）
   核对：[按发现项 ID 的 resolved / withdrawn / maintained]
 

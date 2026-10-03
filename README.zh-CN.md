@@ -7,33 +7,19 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-为 TypeScript 仓库配置基于 Claude Code 的结构化开发环境。`create-ai-project` 会添加项目级 `CLAUDE.md`、可直接使用的命令、专用智能体和技能，让 Claude 按照与代码一同存储的规则，完成从设计、实现到验证的整个过程。
+为 TypeScript 仓库配置基于 Claude Code 的开发环境。`create-ai-project` 会添加项目级 `CLAUDE.md`、可直接使用的命令、专用智能体和技能，让 Claude 在开发时遵循仓库中的规则。
 
-它既可以用于创建新项目，也可以持续更新项目中的 Claude Code 配置。你无需自行组装提示词和智能体定义，即可获得一套位于仓库内、可由团队进行版本管理、共享和调整的开发环境。
+这个入门套件既可以用于创建新项目，也可以持续更新项目中的 Claude Code 配置。你无需自行组装提示词和智能体定义，即可获得一套位于仓库内、可由团队进行版本管理、共享和调整的开发环境。
 
-## 这个入门套件可以帮助你
+## 从这套环境开始开发
 
-- 使用 `CLAUDE.md` 定义项目级规则、Claude Code 可以自行决定的事项以及需要询问你的情况
-- 通过 `/implement` 完成一次变更，包括澄清需求、实现和验证
-- 让简单变更保持轻量，仅在变更确实需要时添加设计文档和评审
-- 评审已完成的实现，确认其符合约定的目标和仓库标准，没有不必要的改动，也没有功能、可靠性或安全方面的严重问题
-- 在工作流中运行仓库适用的测试、类型检查、lint 和构建检查
-- 记录项目特有的上下文，并将团队反复使用的知识整理为可复用技能
-- 使用同一套配置的英文、日文或简体中文版本
-
-## 它会向仓库添加什么
-
-| 路径 | 用途 |
-|---|---|
-| `CLAUDE.md` | 项目级规则，包括 Claude Code 可以自行决定的事项以及需要询问你的情况 |
-| `.claude/commands/` | 实现、设计、规划、评审、诊断和项目配置的入口 |
-| `.claude/agents/` | 负责仓库分析、设计、实现、测试和评审的专用智能体 |
-| `.claude/skills/` | Claude 在与当前工作相关时加载的开发指导 |
-| `docs/guides/` | 面向项目使用者的配置、命令和技能编辑指南 |
-
-套件还包含 `/create-skill` 和 `/refine-skill`，因此你可以添加项目特有的指导，而无需手动维护技能结构。
+- 使用已配置好的 TypeScript、Biome 格式化与 lint 检查，以及 Vitest 测试工具开始开发
+- 记录项目上下文和质量标准，供后续会话和其他贡献者使用
+- 将团队知识整理为技能，在相关工作中供 Claude 参考
 
 ## 快速开始
+
+请先安装 Node.js 24.15 或更高版本、pnpm 和 Claude Code。
 
 ### 创建新项目
 
@@ -44,17 +30,9 @@ pnpm install
 claude
 ```
 
-### 更新由这个入门套件创建的项目
+如果想使用英文或日文工作流，请在创建时指定 `--lang=en` 或 `--lang=ja`。
 
-在项目根目录运行：
-
-```bash
-npx create-ai-project update --dry-run
-npx create-ai-project update
-claude
-```
-
-更新程序会刷新受管理的 `CLAUDE.md`、命令、智能体和技能，不会替换源代码或现有的 `package.json` 设置。
+### 进行第一次变更
 
 启动 Claude Code 后，运行：
 
@@ -63,61 +41,77 @@ claude
 /implement 为 API 添加速率限制
 ```
 
-`/project-inject` 会记录 Claude 所需的仓库特有信息，包括领域约束、质量标准、目录约定，以及外部 schema 或 API 契约的位置。之后，你可以使用 `/implement` 端到端地完成一次变更。
+首次使用时，运行 `/project-inject` 记录项目上下文。
+
+`/implement` 会明确需求并查看现有代码。简单变更可以直接推进，无需创建设计文档。需要设计决策时，它会先创建设计和计划，等待批准后再实现。之后会运行适用的检查，中大型变更还会进行实现评审。
 
 完整的配置和首次运行步骤请参阅[快速开始指南](docs/guides/zh-CN/quickstart.md)。
 
-## 开发流程
+## 选择适合的命令
 
-```mermaid
-flowchart LR
-    A[提出需求] --> B[确认目标]
-    B --> C[检查仓库]
-    C --> D{是否需要设计决策？}
-    D -->|否| E[直接实现]
-    D -->|是| F[设计并批准计划]
-    F --> E
-    E --> G[运行检查和评审]
-    G --> H[完成]
+| 你想做什么 | 从这里开始 |
+|---|---|
+| 从需求确认推进至实现和验证完成 | `/implement` |
+| 完成范围明确的变更 | `/task` |
+| 在实现前设计变更 | `/design`、`/front-design` |
+| 将已批准的设计转化为可执行计划 | `/plan`、`/front-plan` |
+| 按已批准的计划推进实现 | `/build`、`/front-build` |
+| 评审已完成的实现，确认其符合约定的目标和仓库标准 | `/review`、`/front-review` |
+| 在确定修复方案前调查问题，不修改代码 | `/diagnose` |
+
+### 先设计，后实现
+
+```text
+/design 为 API 添加速率限制
+/plan
+/build
 ```
 
-Claude Code 会先确认变更要实现的目标，并检查现有实现。路径明确的简单变更可以直接实现；需要产品或技术决策的变更，则会先生成必要的设计和规划文档。在批准设计前，Claude 会通过仓库内容或实际行为确认可能影响方案选择的事实。需要额外验证时，也只检查做出该决定所需的范围。之后，工作流会运行仓库中适用的检查，并报告所有未能验证的事项。
+设计命令会停下来等待批准。之后可以依据已批准的文档，在新的会话中或由另一位贡献者继续规划和实现。计划会记录每项任务要完成什么、如何验证，因此交接时无需重新梳理之前的对话。
 
-有关文档创建条件、测试选择方式和各工作流范围，请参阅[使用场景和命令](docs/guides/zh-CN/use-cases.md)。
+前端开发使用对应的命令：
 
-## 常用入口
-
-| 命令 | 用途 |
-|---|---|
-| `/implement` | 从需求确认推进至实现和验证完成 |
-| `/design`、`/front-design` | 在实现前设计变更 |
-| `/plan`、`/front-plan` | 将已批准的设计转化为可执行计划 |
-| `/build`、`/front-build` | 从已批准的计划继续实现 |
-| `/review`、`/front-review` | 评审已完成的实现，确认其符合约定的目标、仓库标准和安全要求 |
-| `/diagnose` | 调查问题并比较有调查结果支持的解决方案，但不修改代码 |
-| `/project-inject` | 记录供后续 Claude Code 会话使用的项目特有上下文和质量标准 |
-| `/create-skill`、`/refine-skill` | 添加或改进可复用的项目指导 |
+```text
+/front-design 添加用户个人资料仪表盘
+/front-plan
+/front-build
+```
 
 有关示例和完整命令参考，请参阅[使用场景和命令](docs/guides/zh-CN/use-cases.md)。
 
-## 根据项目进行调整
+## 工作流模式
 
-使用 `/project-inject` 记录适用于整个仓库的事实、约束和质量标准。这样 Claude 就能了解项目目标、约定和外部资料，而无需在每次请求中重复提供这些信息。
+默认使用 Normal 模式。想减少独立检查和智能体调用次数时，可以选择 Lite 模式。它会跳过设计文档与代码的核对、设计文档之间的一致性检查，以及单独的安全评审。按计划推进实现时，Normal 模式会在每项任务完成后运行 lint、测试等质量检查。Lite 模式会在实现结束后集中运行这些检查，再进入代码评审。
 
-如果团队中的某项指导只适用于特定类型的工作，请创建或改进相应技能。套件内置的技能编辑工作流可帮助你确定信息所属位置、评审变更并同步技能元数据。有关示例和验证方法，请参阅[技能编辑指南](docs/guides/zh-CN/skills-editing-guide.md)。
+Claude 仍会检查自己实现的变更，并进行必要的测试评审和代码评审。仍会在相同的环节征求你的批准。小规模变更以及评审后的修正，也照常进行质量检查。
 
-## 语言和项目配置
-
-通过以下命令切换 Claude Code 当前使用的语言环境：
+要将 Lite 模式设为项目默认值，请在项目根目录运行：
 
 ```bash
-pnpm lang:en
-pnpm lang:ja
-pnpm lang:zh-CN
-pnpm lang:status
+node scripts/set-workflow-mode.js lite
 ```
 
-工作流会从仓库配置中发现包管理器和质量检查命令。如果生成的项目使用其他命令，请修改 `package.json` 中的 `packageManager` 和相应 scripts。
+设置会保存到 `CLAUDE.md`，后续会话无需在每次请求中指定模式。运行 `node scripts/set-workflow-mode.js normal` 可恢复 Normal 模式。你在对话中明确指定的模式优先于项目默认值，并在本次会话中持续生效，直到你要求更改。
+
+## 根据项目调整配置
+
+使用 `/project-inject` 记录项目目标、约束、质量标准、开发约定和外部资料的位置。这些信息发生变化时，请重新运行该命令。
+
+如果团队中的某项知识或判断标准只适用于特定工作，可以通过 `/create-skill` 或 `/refine-skill` 添加或改进相应技能。这些命令也会帮助你确定信息所属位置，并在使用前进行评审。具体示例请参阅[技能编辑指南](docs/guides/zh-CN/skills-editing-guide.md)。
+
+## 更新 Claude Code 配置
+
+在由这个入门套件创建的项目根目录，先查看更新内容，再应用更新：
+
+```bash
+npx create-ai-project update --dry-run
+npx create-ai-project update
+claude
+```
+
+更新程序会替换受管理的 Claude Code 规则、命令、智能体和技能。对这些文件所做的本地修改会被覆盖。源代码、现有的 `package.json` 设置和已保存的工作流模式会保留。
+
+更新前，请提交项目特有的规则和技能修改，包括通过 `/project-inject`、`/create-skill` 或 `/refine-skill` 所做的修改。更新后，检查差异并手动重新应用需要保留的自定义内容。更新步骤的详细说明请参阅[快速开始指南](docs/guides/zh-CN/quickstart.md)。
 
 ## 指南
 
