@@ -7,18 +7,19 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Set up a TypeScript repository for development with Claude Code. `create-ai-project` adds a project-level `CLAUDE.md`, ready-to-use commands, specialized agents, and skills so Claude can work through requirements, design, implementation, and verification using your repository's rules.
+Set up a TypeScript repository for development with Claude Code. `create-ai-project` adds a project-level `CLAUDE.md`, ready-to-use commands, specialized agents, and skills so Claude can follow your repository's rules while working on changes.
 
 Use this starter kit to create a new project and keep its Claude Code setup up to date. You get a working development environment without assembling prompts and agent definitions yourself. Your team can version, share, and adapt that environment alongside the code.
 
 ## What you can start with
 
-- Develop with TypeScript, formatting, linting, and testing tools already configured
-- Use the same project rules for requirements, design, implementation, and review
+- Develop with TypeScript, Biome formatting and linting, and Vitest already configured
 - Record project context and quality standards for later sessions and other contributors
 - Turn team knowledge into skills Claude can use when the work calls for them
 
 ## Quick start
+
+Requires Node.js 24.15+, pnpm, and Claude Code.
 
 ### Start a new project
 
@@ -40,31 +41,11 @@ Once Claude Code is running:
 /implement Add rate limiting to the API
 ```
 
-`/project-inject` records the project's constraints, quality standards, and conventions so you do not have to repeat them in every request.
+`/project-inject` sets up the initial project context.
 
-`/implement` clarifies the request, inspects the existing code, and runs the design, planning, implementation, and checks the change needs. It pauses for required approvals. Larger changes also get a review of the completed implementation.
+`/implement` clarifies the request and inspects the existing code. Straightforward changes can proceed without design documents. When design decisions are needed, it prepares a design and plan for your approval before implementation. It then runs the applicable checks and reviews larger changes.
 
 See the [Quick Start Guide](docs/guides/en/quickstart.md) for the full setup and first-run walkthrough.
-
-## Adapt and share the environment
-
-Use `/project-inject` to record the project's purpose, constraints, quality standards, conventions, and external sources. Run it again when those facts change. Later sessions can use the recorded context instead of relying on earlier conversations.
-
-For guidance that applies only to particular tasks, use `/create-skill` or `/refine-skill`. These commands help you decide where the guidance belongs and review it before use. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for examples.
-
-Version the project rules and skills alongside your code so the team can use and improve the same setup.
-
-## Keep the Claude Code setup up to date
-
-From the root of a project created with this starter kit, preview the update, then apply it:
-
-```bash
-npx create-ai-project update --dry-run
-npx create-ai-project update
-claude
-```
-
-The updater refreshes the managed Claude Code rules, commands, agents, and skills without replacing your source code or existing package settings. It keeps your saved workflow mode. See the [Quick Start Guide](docs/guides/en/quickstart.md) for update details.
 
 ## Choose a workflow
 
@@ -74,9 +55,9 @@ The updater refreshes the managed Claude Code rules, commands, agents, and skill
 | Make a focused change with a clear scope | `/task` |
 | Design a change before coding | `/design`, `/front-design` |
 | Turn an approved design into an executable plan | `/plan`, `/front-plan` |
-| Continue implementation from an approved plan | `/build`, `/front-build` |
+| Implement an approved plan | `/build`, `/front-build` |
 | Review completed implementation against the agreed outcome and repository standards | `/review`, `/front-review` |
-| Investigate a problem before choosing a fix | `/diagnose` |
+| Investigate a problem before choosing a fix, without changing code | `/diagnose` |
 
 ### Design now, implement later
 
@@ -100,9 +81,9 @@ See [Use Cases & Commands](docs/guides/en/use-cases.md) for examples and the com
 
 ## Workflow modes
 
-Normal Mode is the default and runs the full verification flow. Lite Mode skips independent checks of design documents against the code and against each other, along with the separate security review. For planned implementation, it combines repository quality checks at the end of the work, before code review.
+Normal Mode is the default. Choose Lite Mode when you want fewer independent checks and agent calls. It skips checks of design documents against the code and against each other, along with the separate security review. For planned work, Normal Mode runs repository checks such as lint and tests after each task. Lite Mode runs them together after implementation, before code review.
 
-Code review, focused implementation checks, required test reviews, and approval stops remain in place. Straightforward changes and review corrections also keep their quality checks.
+Claude still checks its changes, reviews required tests, and asks for your approval at the same points. Code review remains in place. Small changes and fixes made after review still get the usual quality checks.
 
 To save Lite Mode as the project's default, run this from the project root:
 
@@ -110,7 +91,27 @@ To save Lite Mode as the project's default, run this from the project root:
 node scripts/set-workflow-mode.js lite
 ```
 
-The setting is saved in `CLAUDE.md`, so future sessions use it without a mode request. Run `node scripts/set-workflow-mode.js normal` to restore Normal Mode. A mode you explicitly request in conversation overrides the project default and stays in effect until you change it.
+The setting is saved in `CLAUDE.md`, so future sessions use it without a mode request. Run `node scripts/set-workflow-mode.js normal` to restore Normal Mode. A mode you explicitly request in conversation overrides the project default for the rest of that session, unless you change it again.
+
+## Adapt the environment to your project
+
+Use `/project-inject` to record the project's purpose, constraints, quality standards, conventions, and external sources. Run it again when those facts change.
+
+For guidance that applies only to particular tasks, use `/create-skill` or `/refine-skill`. These commands help you decide where the guidance belongs and review it before use. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for examples.
+
+## Keep the Claude Code setup up to date
+
+From the root of a project created with this starter kit, preview the update, then apply it:
+
+```bash
+npx create-ai-project update --dry-run
+npx create-ai-project update
+claude
+```
+
+The updater replaces the managed Claude Code rules, commands, agents, and skills. Local edits to files being updated are overwritten. It preserves your source code, existing package settings, and saved workflow mode.
+
+Before updating, commit your project-specific rules and skills, including changes made with `/project-inject`, `/create-skill`, or `/refine-skill`. After the update, review what changed and manually reapply the customizations you want to keep. See the [Quick Start Guide](docs/guides/en/quickstart.md) for update details.
 
 ## Guides
 
