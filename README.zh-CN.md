@@ -7,15 +7,16 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-这个 TypeScript 入门套件让 Claude Code 从需求确认开始，完成设计、实现和验证。即使途中发现其他问题，工作流也会根据约定的目标判断哪些工作需要做。
+为 TypeScript 仓库配置基于 Claude Code 的开发环境。`create-ai-project` 会添加项目级 `CLAUDE.md`、可直接使用的命令、专用智能体和技能，让 Claude 按照仓库中的规则，完成需求确认、设计、实现和验证。
 
-开发规则保存在仓库中。团队可以共享规则、根据项目调整，并在后续 Claude Code 会话中继续使用同一套配置。
+这个入门套件既可以用于创建新项目，也可以持续更新项目中的 Claude Code 配置。你无需自行组装提示词和智能体定义，即可获得一套位于仓库内、可由团队进行版本管理、共享和调整的开发环境。
 
-## 什么时候适合使用工作流
+## 从这套环境开始开发
 
-如果需要在实现前明确范围、保留设计决策，或将工作交给另一个会话或贡献者，可以使用这些工作流。你批准实现范围后，Claude 会自行处理实现细节，并继续完成检查、提交和评审。需要改变约定的目标或本次不做的内容，或者不可逆的外部操作需要授权时，它会交给你决定。
-
-设计和评审需要时间。范围明确的小修正可以从 `/task` 开始。对于一次性实验，也可以直接向 Claude 提出请求。
+- 使用已配置好 TypeScript、格式化、lint 和测试工具的环境开始开发
+- 在需求确认、设计、实现和评审中使用同一套项目规则
+- 记录项目上下文和质量标准，供后续会话和其他贡献者使用
+- 将团队知识整理为技能，在相关工作中供 Claude 参考
 
 ## 快速开始
 
@@ -30,18 +31,6 @@ claude
 
 如果想使用英文或日文工作流，请在创建时指定 `--lang=en` 或 `--lang=ja`。
 
-### 更新由这个入门套件创建的项目
-
-在项目根目录运行：
-
-```bash
-npx create-ai-project update --dry-run
-npx create-ai-project update
-claude
-```
-
-更新程序会刷新 Claude Code 配置，不会替换源代码或现有的 `package.json` 设置。已保存的工作流模式也会保留。
-
 ### 开始第一次变更
 
 启动 Claude Code 后，运行：
@@ -53,9 +42,29 @@ claude
 
 `/project-inject` 会记录项目约束、质量标准和开发约定，后续请求无需重复提供这些信息。
 
-`/implement` 会确认目标、检查现有代码，并创建变更所需的设计和规划文档。评审会确认约定的行为是否已实现，并检查不必要的改动和严重缺陷。发现的问题会先按约定的目标判断是否需要修正。完成报告会说明哪些检查被省略，哪些未能执行。
+`/implement` 会明确需求、检查现有代码，并完成变更所需的设计、规划、实现和验证。在需要批准的环节，它会停下来等待确认。中大型变更还会对已完成的实现进行评审。
 
 完整的配置和首次运行步骤请参阅[快速开始指南](docs/guides/zh-CN/quickstart.md)。
+
+## 调整配置并与团队共享
+
+使用 `/project-inject` 记录项目目标、约束、质量标准、开发约定和外部资料的位置。这些信息发生变化时，请重新运行该命令。后续会话可以直接使用记录的上下文，无需重新梳理之前的对话。
+
+如果团队中的某项知识或判断标准只适用于特定工作，可以通过 `/create-skill` 或 `/refine-skill` 添加或改进相应技能。这些命令也会帮助你确定信息所属位置，并在使用前进行评审。具体示例请参阅[技能编辑指南](docs/guides/zh-CN/skills-editing-guide.md)。
+
+将项目规则和技能与代码一同进行版本管理，团队就可以使用同一套配置，并根据项目需要持续调整。
+
+## 更新 Claude Code 配置
+
+在由这个入门套件创建的项目根目录，先查看更新内容，再应用更新：
+
+```bash
+npx create-ai-project update --dry-run
+npx create-ai-project update
+claude
+```
+
+更新程序会刷新受管理的 Claude Code 规则、命令、智能体和技能，不会替换源代码或现有的 `package.json` 设置。已保存的工作流模式也会保留。更新步骤的详细说明请参阅[快速开始指南](docs/guides/zh-CN/quickstart.md)。
 
 ## 选择适合的命令
 
@@ -102,12 +111,6 @@ node scripts/set-workflow-mode.js lite
 ```
 
 设置会保存到 `CLAUDE.md`，后续会话无需在每次请求中指定模式。运行 `node scripts/set-workflow-mode.js normal` 可恢复 Normal 模式。你在对话中明确指定的模式优先于项目默认值，并在本次会话中持续生效，直到你要求更改。
-
-## 根据项目进行调整
-
-使用 `/project-inject` 记录适用于整个仓库的事实、约束和质量标准。Claude 就能在后续工作中查阅项目目标、开发约定和外部资料。
-
-如果团队中的某项知识或判断标准只适用于特定工作，可以通过 `/create-skill` 或 `/refine-skill` 添加或改进相应技能。这些命令也会帮助你确定信息所属位置，并在使用前进行评审。具体示例请参阅[技能编辑指南](docs/guides/zh-CN/skills-editing-guide.md)。
 
 ## 指南
 

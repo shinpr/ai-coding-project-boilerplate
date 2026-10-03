@@ -7,15 +7,16 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`create-ai-project` sets up a TypeScript project where Claude Code can take a request through requirements, design, implementation, and checks. The workflows keep the work tied to the outcome you agree on, including when Claude finds other problems along the way.
+Set up a TypeScript repository for development with Claude Code. `create-ai-project` adds a project-level `CLAUDE.md`, ready-to-use commands, specialized agents, and skills so Claude can work through requirements, design, implementation, and verification using your repository's rules.
 
-The development rules live alongside your code. Your team can share and adapt them, then use the same setup in future Claude Code sessions.
+Use this starter kit to create a new project and keep its Claude Code setup up to date. You get a working development environment without assembling prompts and agent definitions yourself. Your team can version, share, and adapt that environment alongside the code.
 
-## When to use the workflows
+## What you can start with
 
-Use them when a feature needs scope agreement, design decisions you need to reuse later, or a handoff to another session or contributor. After you approve the implementation scope, Claude handles technical choices and carries the work through checks, commits, and review. It asks you when the agreed outcome or exclusions must change, or an irreversible external action needs approval.
-
-Design and review take time. For a small fix with a clear scope, start with `/task`. For a throwaway experiment, you can work with Claude directly.
+- Develop with TypeScript, formatting, linting, and testing tools already configured
+- Use the same project rules for requirements, design, implementation, and review
+- Record project context and quality standards for later sessions and other contributors
+- Turn team knowledge into skills Claude can use when the work calls for them
 
 ## Quick start
 
@@ -30,18 +31,6 @@ claude
 
 Add `--lang=ja` or `--lang=zh-CN` to the first command to use Japanese or Simplified Chinese workflow instructions.
 
-### Update a project created with this starter kit
-
-Run these commands from the project root:
-
-```bash
-npx create-ai-project update --dry-run
-npx create-ai-project update
-claude
-```
-
-The updater refreshes the Claude Code setup without replacing your source code or existing package settings. It keeps your saved workflow mode.
-
 ### Run your first change
 
 Once Claude Code is running:
@@ -53,9 +42,29 @@ Once Claude Code is running:
 
 `/project-inject` records the project's constraints, quality standards, and conventions so you do not have to repeat them in every request.
 
-`/implement` confirms the outcome, inspects the existing code, and creates the design and planning documents the change needs. Review checks the agreed behavior and looks for unnecessary changes or serious defects. Each finding is assessed before it becomes correction work. The completion report names checks that were skipped or could not run.
+`/implement` clarifies the request, inspects the existing code, and runs the design, planning, implementation, and checks the change needs. It pauses for required approvals. Larger changes also get a review of the completed implementation.
 
 See the [Quick Start Guide](docs/guides/en/quickstart.md) for the full setup and first-run walkthrough.
+
+## Adapt and share the environment
+
+Use `/project-inject` to record the project's purpose, constraints, quality standards, conventions, and external sources. Run it again when those facts change. Later sessions can use the recorded context instead of relying on earlier conversations.
+
+For guidance that applies only to particular tasks, use `/create-skill` or `/refine-skill`. These commands help you decide where the guidance belongs and review it before use. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for examples.
+
+Version the project rules and skills alongside your code so the team can use and improve the same setup.
+
+## Keep the Claude Code setup up to date
+
+From the root of a project created with this starter kit, preview the update, then apply it:
+
+```bash
+npx create-ai-project update --dry-run
+npx create-ai-project update
+claude
+```
+
+The updater refreshes the managed Claude Code rules, commands, agents, and skills without replacing your source code or existing package settings. It keeps your saved workflow mode. See the [Quick Start Guide](docs/guides/en/quickstart.md) for update details.
 
 ## Choose a workflow
 
@@ -102,12 +111,6 @@ node scripts/set-workflow-mode.js lite
 ```
 
 The setting is saved in `CLAUDE.md`, so future sessions use it without a mode request. Run `node scripts/set-workflow-mode.js normal` to restore Normal Mode. A mode you explicitly request in conversation overrides the project default and stays in effect until you change it.
-
-## Adapt it to your project
-
-Use `/project-inject` for the facts, constraints, and quality standards that apply across the repository. Claude can then refer to the project's purpose, conventions, and external sources in later work.
-
-For guidance that applies only to particular tasks, use `/create-skill` or `/refine-skill`. These commands help you decide where the guidance belongs and review it before use. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for examples.
 
 ## Guides
 

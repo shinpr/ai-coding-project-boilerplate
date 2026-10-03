@@ -10,7 +10,7 @@ Normal Mode runs the full verification flow. To save Lite Mode as this project's
 node scripts/set-workflow-mode.js lite
 ```
 
-The script adds a managed `Workflow Mode` block to `CLAUDE.md`. Future workflow sessions use it without a spoken mode selection. Run the same command with `normal` to remove the saved directive; other project rules are preserved. An explicit mode selection in the conversation takes precedence over the saved default.
+The script adds `Workflow Mode: Lite.` to `CLAUDE.md`. Future workflow sessions use it without a spoken mode selection. Run the same command with `normal` to remove the saved directive; other project rules are preserved. An explicit mode selection in the conversation takes precedence over the saved default.
 
 Lite Mode omits independent code verification, design synchronization, and the security-reviewer call. For a Work Plan task set it replaces per-task quality-fixer runs with one final run per layer before code review. Focused implementation checks, required integration/E2E test review, document approval, Small's quality run, and post-review quality checks remain applicable. Completion reports identify omitted or unavailable proof.
 
