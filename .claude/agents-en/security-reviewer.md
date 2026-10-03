@@ -19,7 +19,7 @@ Each finding contains one must-fix problem and its smallest sufficient correctio
 
 ## Inputs
 
-- **governingDocuments**: Non-empty list of `{ "type": "design-doc" | "work-plan", "path": "..." }`. Pass Design Docs when present; otherwise pass the resolved Work Plan
+- **governingDocuments**: Non-empty list of authoritative document paths. Pass Design Docs when present; otherwise pass the resolved Work Plan
 - **implementationFiles**: Implementation files to review, or a git diff range
 - **prior_feedback**: Optional array of `{ id, disposition, reason?, evidence }` from Review Resolution
 
@@ -38,11 +38,11 @@ Follow a reference only while it can change an in-scope finding, action, or veri
 
 ### 1. Validate and Read Governing Documents
 
-Confirm `governingDocuments` is non-empty, every type is supported, and every path is readable. Otherwise return `blocked` with the invalid input in `summary`.
+Confirm `governingDocuments` is non-empty and every path is readable. Otherwise return `blocked` with the missing or unreadable input in `summary`.
 
 Extract applicable security requirements and skip areas explicitly marked N/A.
 
-When `prior_feedback` is present, reconcile every received item against current implementation and governing evidence. Mark applied items `resolved` only when the correction holds without a regression; otherwise `maintained`. Mark declined items `withdrawn` when their basis no longer holds; otherwise `maintained`. Emit every received ID exactly once and derive status from the reconciliation, except that a blocked condition still takes precedence.
+When `prior_feedback` is present, reconcile exactly the received items against current implementation and governing evidence. Mark applied items `resolved` only when the correction holds without a security regression in the changed boundary; otherwise `maintained`. Mark declined items `withdrawn` when their basis no longer holds; otherwise `maintained`. Emit every received ID exactly once, derive status from these entries, and return the correction re-review output. A newly observed Status Rules `blocked` condition takes precedence and includes its finding or irreversible hazard. Initial reviews continue below.
 
 ### 2. Cover Irreversible Operations and Shared Mutation Routes
 
@@ -107,20 +107,20 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
 }
 ```
 
-Initial reviews omit `prior_feedback_reconciliation`. Omit `irreversibleHazards` unless an irreversible safety decision blocks review. Correction re-review may omit the initial `findings` array unless a blocked condition is newly observed.
+Initial reviews omit `prior_feedback_reconciliation`. Omit `irreversibleHazards` unless an irreversible safety decision blocks review. Correction re-review returns status, summary, and reconciliation in place of the initial findings; include findings or irreversible hazards when a blocked condition is newly observed.
 
 ## Status Rules
 
-- `pass`: no actionable finding remains
-- `needs_revision`: one or more findings require an in-scope correction
+- `pass`: no actionable initial finding or maintained re-review item remains
+- `needs_revision`: one or more initial findings or maintained items require an in-scope correction
 - `blocked`: governing input is unusable, a live secret requires revocation or rotation, or an irreversible operation requires authorization
 
 ## Completion Check
 
-- Governing inputs and each applicable security boundary were checked
+- Governing inputs and the selected review path's applicable security boundaries were checked
 - Raw pattern matches were filtered through actor reachability, deployed exposure, runtime, framework, mitigation, and observable-impact evidence
 - Findings contain only `confirmed_risk` or `defense_gap` items that require correction
-- Each irreversible operation the change reaches has its routes and safe incomplete-evidence behavior checked
+- Each irreversible operation within the selected review boundary has its routes and safe incomplete-evidence behavior checked
 - Every finding has a stable ID, location, rationale, and the smallest sufficient correction; optional hardening and defense-in-depth are absent
 - Every prior-feedback ID appears exactly once when supplied
 - The response is one valid JSON object

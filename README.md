@@ -7,31 +7,15 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Set up a TypeScript repository for structured development with Claude Code. `create-ai-project` adds a project-level `CLAUDE.md`, ready-to-use commands, specialized agents, and skills so Claude can take a request through design, implementation, and verification using rules stored alongside your code.
+`create-ai-project` sets up a TypeScript project where Claude Code can take a request through requirements, design, implementation, and checks. The workflows keep the work tied to the outcome you agree on, including when Claude finds other problems along the way.
 
-Use it to start a new project and keep its Claude Code setup up to date. Instead of assembling prompts and agent definitions yourself, you get a working development environment that lives in the repository, where your team can version, share, and adapt it.
+The development rules live alongside your code. Your team can share and adapt them, then use the same setup in future Claude Code sessions.
 
-## What this starter kit helps with
+## When to use the workflows
 
-- Use `CLAUDE.md` to define project-wide rules, what Claude Code can decide, and when it should ask you
-- Complete a change with `/implement`, from clarifying the request to implementation and verification
-- Keep straightforward changes lightweight while adding design documents and reviews when the change needs them
-- Review the completed implementation to make sure it meets the agreed outcome and repository standards, with no unnecessary changes or serious functional, reliability, or security issues
-- Run the repository's applicable tests, type checks, linting, and build checks as part of the workflow
-- Record project-specific context and turn recurring team knowledge into reusable skills
-- Use the same setup in English, Japanese, or Simplified Chinese
+Use them when a feature needs scope agreement, design decisions you need to reuse later, or a handoff to another session or contributor. After you approve the implementation scope, Claude handles technical choices and carries the work through checks, commits, and review. It asks you when the agreed outcome or exclusions must change, or an irreversible external action needs approval.
 
-## What it adds to your repository
-
-| Path | Purpose |
-|---|---|
-| `CLAUDE.md` | Project-wide rules, including what Claude Code can decide and when it should ask you |
-| `.claude/commands/` | Entry points for implementation, design, planning, review, diagnosis, and project setup |
-| `.claude/agents/` | Specialized roles for repository analysis, design, implementation, testing, and review |
-| `.claude/skills/` | Development guidance that Claude loads when it is relevant to the current work |
-| `docs/guides/` | Setup, command, and skill-editing guides for project users |
-
-The kit also includes `/create-skill` and `/refine-skill` so you can add project-specific guidance without maintaining the skill structure by hand.
+Design and review take time. For a small fix with a clear scope, start with `/task`. For a throwaway experiment, you can work with Claude directly.
 
 ## Quick start
 
@@ -44,6 +28,8 @@ pnpm install
 claude
 ```
 
+Add `--lang=ja` or `--lang=zh-CN` to the first command to use Japanese or Simplified Chinese workflow instructions.
+
 ### Update a project created with this starter kit
 
 Run these commands from the project root:
@@ -54,7 +40,9 @@ npx create-ai-project update
 claude
 ```
 
-The updater refreshes the managed `CLAUDE.md`, commands, agents, and skills without replacing your source code or existing package settings.
+The updater refreshes the Claude Code setup without replacing your source code or existing package settings. It keeps your saved workflow mode.
+
+### Run your first change
 
 Once Claude Code is running:
 
@@ -63,61 +51,63 @@ Once Claude Code is running:
 /implement Add rate limiting to the API
 ```
 
-`/project-inject` records the repository-specific information Claude needs, including domain constraints, quality standards, directory conventions, and where to find external schemas or API contracts. You can then use `/implement` for an end-to-end change.
+`/project-inject` records the project's constraints, quality standards, and conventions so you do not have to repeat them in every request.
+
+`/implement` confirms the outcome, inspects the existing code, and creates the design and planning documents the change needs. Review checks the agreed behavior and looks for unnecessary changes or serious defects. Each finding is assessed before it becomes correction work. The completion report names checks that were skipped or could not run.
 
 See the [Quick Start Guide](docs/guides/en/quickstart.md) for the full setup and first-run walkthrough.
 
-## How development runs
+## Choose a workflow
 
-```mermaid
-flowchart LR
-    A[Request] --> B[Clarify the outcome]
-    B --> C[Inspect the repository]
-    C --> D{Design decisions needed?}
-    D -->|No| E[Implement directly]
-    D -->|Yes| F[Design and approve the plan]
-    F --> E
-    E --> G[Run checks and review]
-    G --> H[Complete]
+| What you want to do | Start with |
+|---|---|
+| Take a feature from a request through implementation and verification | `/implement` |
+| Make a focused change with a clear scope | `/task` |
+| Design a change before coding | `/design`, `/front-design` |
+| Turn an approved design into an executable plan | `/plan`, `/front-plan` |
+| Continue implementation from an approved plan | `/build`, `/front-build` |
+| Review completed implementation against the agreed outcome and repository standards | `/review`, `/front-review` |
+| Investigate a problem before choosing a fix | `/diagnose` |
+
+### Design now, implement later
+
+```text
+/design Add rate limiting to the API
+/plan
+/build
 ```
 
-Claude Code first confirms what the change should accomplish and inspects the existing implementation. Straightforward changes can proceed directly. Changes that need product or technical decisions get the necessary design and planning documents before implementation. Before approving a design, Claude checks any facts that could affect the chosen approach against the repository or actual behavior. Any additional experiment is limited to what is needed to make that decision. The workflow then runs the applicable repository checks and reports anything it could not verify.
+The design command stops for approval. You can continue planning and implementation later, in a new session or with another contributor, using the approved documents. The plan records what each task must deliver and how to check it, so the handoff does not depend on reconstructing the earlier conversation.
 
-See [Use Cases & Commands](docs/guides/en/use-cases.md) for when documents are created, how tests are selected, and what each workflow covers.
+For frontend work, use the corresponding commands:
 
-## Common entry points
-
-| Command | Use it for |
-|---|---|
-| `/implement` | Take a change from requirements through implementation and verification |
-| `/design`, `/front-design` | Design a change before implementation |
-| `/plan`, `/front-plan` | Turn an approved design into an executable plan |
-| `/build`, `/front-build` | Continue from an approved plan |
-| `/review`, `/front-review` | Review completed implementation against the agreed outcome, repository standards, and security requirements |
-| `/diagnose` | Investigate a problem and compare solutions backed by the findings, without changing code |
-| `/project-inject` | Record project-specific context and quality standards for future Claude Code sessions |
-| `/create-skill`, `/refine-skill` | Add or improve reusable project guidance |
+```text
+/front-design Add a user profile dashboard
+/front-plan
+/front-build
+```
 
 See [Use Cases & Commands](docs/guides/en/use-cases.md) for examples and the complete command reference.
 
-## Adapt it to your project
+## Workflow modes
 
-Use `/project-inject` for facts, constraints, and quality standards that apply across the repository. This keeps Claude aware of the project's purpose, conventions, and external sources without repeating them in every request.
+Normal Mode is the default and runs the full verification flow. Lite Mode skips independent checks of design documents against the code and against each other, along with the separate security review. For planned implementation, it combines repository quality checks at the end of the work, before code review.
 
-When your team has guidance that should apply only to particular work, create or refine a skill instead. The included skill-editing workflow helps decide where the information belongs, reviews the change, and keeps skill metadata in sync. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for examples and validation guidance.
+Code review, focused implementation checks, required test reviews, and approval stops remain in place. Straightforward changes and review corrections also keep their quality checks.
 
-## Language and project configuration
-
-Switch the active Claude Code environment with:
+To save Lite Mode as the project's default, run this from the project root:
 
 ```bash
-pnpm lang:en
-pnpm lang:ja
-pnpm lang:zh-CN
-pnpm lang:status
+node scripts/set-workflow-mode.js lite
 ```
 
-The workflows discover the package manager and quality commands from the repository. If your generated project uses different commands, update `packageManager` and the relevant scripts in `package.json`.
+The setting is saved in `CLAUDE.md`, so future sessions use it without a mode request. Run `node scripts/set-workflow-mode.js normal` to restore Normal Mode. A mode you explicitly request in conversation overrides the project default and stays in effect until you change it.
+
+## Adapt it to your project
+
+Use `/project-inject` for the facts, constraints, and quality standards that apply across the repository. Claude can then refer to the project's purpose, conventions, and external sources in later work.
+
+For guidance that applies only to particular tasks, use `/create-skill` or `/refine-skill`. These commands help you decide where the guidance belongs and review it before use. See the [Skills Editing Guide](docs/guides/en/skills-editing-guide.md) for examples.
 
 ## Guides
 

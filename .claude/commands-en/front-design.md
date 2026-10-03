@@ -100,17 +100,17 @@ The Design Doc owns the complete component-to-service implementation and retains
 
 ## Step 8: Verify, Review, and Approve
 
-Invoke `code-verifier` with `doc_type: design-doc` and the returned Design Doc path, leaving `code_paths` absent. Apply Review Resolution before document review; send findings with an `apply` disposition to a fresh technical-designer-frontend invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate for an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun verification after an applied correction, passing the previous complete result, the recorded dispositions, and the correction diff or changed paths as `prior_feedback`. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue when every remaining discrepancy carries a resolved disposition.
+In Normal Mode, invoke `code-verifier` with `doc_type: design-doc` and the returned Design Doc path, leaving `code_paths` absent. Apply Review Resolution before document review; send findings with an `apply` disposition to a fresh technical-designer-frontend invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate for an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun verification after an applied correction, passing the previous complete result, the recorded dispositions, and the correction diff or changed paths as `prior_feedback`. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue when every remaining discrepancy carries a resolved disposition. Lite Mode proceeds without this verifier evidence.
 
-Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc path, `review_context: creation`, original user requirements, `confirmed_requirement_context`, the unchanged analysis inputs supplied to the designer, and `verification_evidence`.
+Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc path, `review_context: creation`, original user requirements, `confirmed_requirement_context`, the unchanged analysis inputs supplied to the designer, and `verification_evidence` only when verification ran.
 
 - `pass`: continue
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete findings with an `apply` disposition, and rerun verification and review for the affected boundary
 - `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 
-Invoke `design-sync` with the returned Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. When the result reports `analyzed_docs: 0`, report consistency verification as skipped because no other Design Doc exists.
+In Normal Mode, invoke `design-sync` with the returned Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. When the result reports `analyzed_docs: 0`, report consistency verification as skipped because no other Design Doc exists. In Lite Mode, retain the following approval stop and report consistency verification as omitted.
 
-Present the applicable UI Spec, Design Doc, accepted ADR paths, recorded declines, and sync result. `[Stop: Design approval]`.
+Present the applicable UI Spec, Design Doc, accepted ADR paths, recorded declines, and sync result or its omission in Lite Mode. `[Stop: Design approval]`.
 
 ## Completion Criteria
 

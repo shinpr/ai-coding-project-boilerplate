@@ -5,6 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import readline from 'node:readline'
 import { fileURLToPath } from 'node:url'
+import { getWorkflowMode, setWorkflowMode } from './set-workflow-mode.js'
 import { copyDirectory, copyFile, removeDirectory } from './utils.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -35,6 +36,7 @@ const MANAGED_DIRS = [
 const MANAGED_FILES = [(lang) => `CLAUDE.${lang}.md`]
 
 const LANGUAGE_SWITCH_SCRIPT = 'scripts/set-language.js'
+const WORKFLOW_MODE_SCRIPT = 'scripts/set-workflow-mode.js'
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -302,6 +304,7 @@ function getManagedPaths() {
       paths.files.push(fileFn(lang))
     }
   }
+  paths.files.push(WORKFLOW_MODE_SCRIPT)
   return paths
 }
 
@@ -489,7 +492,10 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
       const dstExists = fs.existsSync(dst)
       let action = 'UPDATE'
       if (!dstExists) {
-        action = shouldAddNewLanguagePath(projectRoot, file) ? 'ADD   ' : 'SKIP  '
+        action =
+          file === WORKFLOW_MODE_SCRIPT || shouldAddNewLanguagePath(projectRoot, file)
+            ? 'ADD   '
+            : 'SKIP  '
       }
       console.log(`    ${action} ${file}`)
     }
@@ -507,6 +513,8 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
     console.log('\n  No changes were made (dry-run).')
     return
   }
+
+  const workflowMode = getWorkflowMode(projectRoot)
 
   // 1. Backup ignored paths
   const backups = backupIgnored(projectRoot, ignoredPaths)
@@ -539,7 +547,11 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
       continue
     }
     const dstExists = fs.existsSync(dst)
-    if (!dstExists && !shouldAddNewLanguagePath(projectRoot, file)) {
+    if (
+      !dstExists &&
+      file !== WORKFLOW_MODE_SCRIPT &&
+      !shouldAddNewLanguagePath(projectRoot, file)
+    ) {
       console.log(`  Skipped ${file} (not present in project)`)
       continue
     }
@@ -564,6 +576,9 @@ async function performUpdate(packageRoot, projectRoot, manifest, dryRun) {
   process.chdir(projectRoot)
   switchLanguage(language)
   process.chdir(originalCwd)
+  if (workflowMode === 'lite') {
+    setWorkflowMode(workflowMode, projectRoot)
+  }
   console.log(`  Regenerated active directories for language: ${language}`)
 
   // 7. Update manifest

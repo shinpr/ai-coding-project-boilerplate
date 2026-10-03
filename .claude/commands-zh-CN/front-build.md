@@ -12,11 +12,11 @@ description: 以自主执行模式执行已生成的前端任务文件
 
 **执行协议**：
 1. **通过 Agent 工具委派全部工作** —— 调用子智能体、在它们之间传递交付物路径、并报告结果（允许使用的工具：参见 subagents-orchestration-guide 的“编排者可用工具”）
-2. **严格遵循 4 步任务循环**：task-executor-frontend → 根据执行者结果分支 → quality-fixer-frontend → 提交
+2. **遵循所选模式的任务循环**：受理实现和必需的测试评审，应用其质量边界，然后提交
 3. 当用户在已有任务文件的情况下给出执行指令时，**进入自主模式** — 这本身就是批量批准
 4. **范围**：按顺序完成本次处理任务集的执行、实现后评审、本次处理任务的清理和完成报告；或者当需要就已确认的价值边界作出选择、或需要授权不可逆操作时，在当前阶段停止自主执行。仅当满足当前阶段声明的转移条件时才推进。
 
-**关键**：仅在 quality-fixer-frontend 返回 `pass` 或 `verification_incomplete` 之后才提交。该结果只是授权在本流程定义的提交点进行提交，本身不会产生提交。
+应用 subagents-orchestration-guide 的“提交边界”。质量结果允许配方所定义的提交，不会产生额外提交点。
 
 工作计划：$ARGUMENTS
 
@@ -79,8 +79,9 @@ description: 以自主执行模式执行已生成的前端任务文件
   - 如果提交能力不可用 → 在进入自主模式前应用“专家结果受理”
   - 测试和质量工具的限制 → 子智能体运行不受影响的检查，并准确记录哪些无法运行
 
-## 任务执行循环（4 步循环）
-**强制执行循环**：`task-executor-frontend → 根据执行者结果分支 → quality-fixer-frontend → 提交`
+## 任务执行循环
+
+Normal 模式遵循步骤 1-4。Lite 模式受理步骤 2 的结果后进入步骤 4，并在最后一个任务之后运行最终质量检查。
 
 对本次处理任务集中的每一个任务，你必须：
 1. **执行**：调用 **Agent 工具**（subagent_type: "task-executor-frontend"）→ 在提示词中传入任务文件路径，接收结构化响应
@@ -88,15 +89,15 @@ description: 以自主执行模式执行已生成的前端任务文件
    - `status: "escalation_needed"` 或 `"blocked"` → 应用 subagents-orchestration-guide 的“专家结果受理”
    - `requiresTestReview` 为 `true` → 执行 **integration-test-reviewer**，将已变更的集成/E2E 测试路径作为 `testFile` 传入，`taskFiles: [当前任务文件路径]`（以便评审者可以读取该任务的 Operation Verification Methods 和 Verification Focus），`diffBase: HEAD`（此时该任务的更改尚未提交，因此 HEAD 是其 diff 的基点）。然后根据其 `status` 分支
      - `needs_revision` → 应用“评审裁定”，并带着相同的 `task_file` 以及作为 `correction_findings` 逐字传入的完整 `apply` 质量问题对象返回步骤 1
-     - `blocked` → 从当前差异中解析被移动或重命名的测试路径，并在解析后的输入改变了评审目标时重新运行。如果尽管 `requiresTestReview: true` 却不存在可读的已变更测试，则将该执行者输出缺陷作为 `correction_findings` 返回步骤 1；否则将该评审记录为未运行并附上其 `blockingReason`，然后进入步骤 3
-     - `pass` → 进入步骤 3
-   - 其他情况 → 进入步骤 3
-3. **质量修复**：针对当前完整的未提交工作树调用 quality-fixer-frontend，包括未跟踪、已删除和已重命名的路径。传入当前的 `task_file`、实现步骤的 `runnableCheck`，以及当 frontend-technical-spec 或仓库约定指明了某个命令时的 `qualityCommand`。然后依据其响应分支：
+     - `blocked` → 从当前差异中解析被移动或重命名的测试路径，并在解析后的输入改变了评审目标时重新运行。如果尽管 `requiresTestReview: true` 却不存在可读的已变更测试，则将该执行者输出缺陷作为 `correction_findings` 返回步骤 1；否则将该评审记录为未运行并附上其 `blockingReason`，然后进入下一个适用步骤
+     - `pass` → 进入下一个适用步骤
+   - 其他情况 → 进入下一个适用步骤
+3. **质量修复（Normal 模式）**：针对当前完整的未提交工作树调用 quality-fixer-frontend，包括未跟踪、已删除和已重命名的路径。传入当前的 `task_file`、实现步骤的 `runnableCheck`，以及当 frontend-technical-spec 或仓库约定指明了某个命令时的 `qualityCommand`。然后依据其响应分支：
    - `stub_detected` → 返回步骤 1，用相同的 `task_file` 和 `incompleteImplementations[]` 数组重新调用 task-executor-frontend
    - `blocked` → 应用“专家结果受理”
    - `verification_incomplete` → 保留完整结果以供最终重试，并进入步骤 4
    - `pass` → 进入步骤 4
-4. **提交**：在 `pass` 或 `verification_incomplete` 之后提交已完成任务的变更集
+4. **提交**：满足适用模式的质量边界后，提交已完成任务的变更集
 
 **关键**：解析每个子智能体响应的路由含义。在步骤 4 之后进入下一个任务，保留任何 `verification_incomplete` 结果以供最终重试。
 
@@ -114,13 +115,13 @@ description: 以自主执行模式执行已生成的前端任务文件
 
 ## 实现后评审（所有任务完成之后）
 
-在调用实现后评审者之前，用 quality-fixer-frontend 应用 subagents-orchestration-guide“专家结果受理”中的证明局限重试。在解除或保留每项证明局限后继续进行评审者调用；完成报告中只包含重复出现的证明局限。
+在调用实现后评审者之前，Lite 模式运行最终质量检查，Normal 模式应用“专家结果受理”中的证明局限重试，使用 quality-fixer-frontend。在解除或保留每项证明局限之后继续进行评审；完成报告中只包含重复出现的证明局限。
 
 解析工作计划中可读的设计文档；缺少输入将阻塞评审。
 
-在一条助手消息中发出以下 Agent 调用，然后等待两者：
-- code-reviewer（subagent_type: "code-reviewer"）→ 使用解析出的带类型 `governingDocuments`、已完成任务实际变更的文件作为 `implementationFiles`、以及工作计划路径，评审已完成的实现
-- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的带类型 `governingDocuments` 和 `implementationFiles` 评审已完成的实现
+调用 code-reviewer，并在 Normal 模式下调用 security-reviewer。两者均适用时，在一条助手消息中发出调用，然后等待两者：
+- code-reviewer（subagent_type: "code-reviewer"）→ 使用解析出的 `governingDocuments`、已完成任务实际变更的文件作为 `implementationFiles`、以及工作计划路径，评审已完成的实现
+- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的 `governingDocuments` 和 `implementationFiles` 评审已完成的实现
 
 应用 subagents-orchestration-guide 的实现后评审状态路由与修复/重跑规则。呈现统一报告；在完整评审集达到评审裁定的收敛条件之后，进入最终清理。
 

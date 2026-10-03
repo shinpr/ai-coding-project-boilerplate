@@ -80,21 +80,23 @@ Design Doc は完全な実装設計を所有し、documentation-criteria テン�
 
 ## ステップ6: リポジトリ上の主張の検証と対応
 
+Normalモードでこのステップを実行する。Liteモードでは、`verification_evidence`を渡さずステップ7へ進む。
+
 `code-verifier` を `doc_type: design-doc` と Design Doc のパスで呼び出す。将来の振る舞いは意図として扱ったままにし、現状の前提と実現可能性だけを検証させるため、`code_paths` は指定しない。
 
 ドキュメントレビューの前に、各 discrepancy にレビュー対応を適用する。`apply` の検出事項だけを、新しい technical-designer 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提が finding に記されている場合、designer はレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は、前回の完全な結果・記録した処理方針・修正差分または変更パスを `prior_feedback` として渡して code-verifier を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。続行するのは、未解決の `apply` が残っていない場合に限る。
 
 ## ステップ7: レビューと承認
 
-`document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6の `verification_evidence` で呼び出す。
+`document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6を実行した場合のみ、その `verification_evidence` で呼び出す。
 
 - `pass`: 次へ進む
 - `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、影響を受けた境界についてステップ6〜7を再実行する
 - `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
 
-Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果が `analyzed_docs: 0` の場合は、他の Design Doc が存在しないため整合性検証を省略したと報告する。
+Normalモードで、Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果が `analyzed_docs: 0` の場合は、他の Design Doc が存在しないため整合性検証を省略したと報告する。
 
-Design Doc、承認済みADRのパス、記録した decline、design-sync の結果を提示する。`[停止: 設計承認]`。
+Design Doc、承認済みADRのパス、記録した decline、design-sync の結果またはLiteモードで省略したことを提示する。`[停止: 設計承認]`。
 
 ## 完了条件
 

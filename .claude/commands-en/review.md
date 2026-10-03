@@ -13,7 +13,7 @@ Execute the `subagents-orchestration-guide` skill before making workflow decisio
 
 - Implementation review → performed by code-reviewer
 - Security validation → performed by security-reviewer
-- **Code-side fix path**: Fix implementation → task-executor; Correction review → code-reviewer / security-reviewer; Final quality checks → quality-fixer
+- **Code-side fix path**: Fix implementation → task-executor; Correction review → code-reviewer / security-reviewer; Quality check → quality-fixer
 - **Design-side update path**: DD revision → technical-designer (update mode); DD review → document-reviewer; cross-DD consistency → design-sync (when multiple DDs exist); Re-validation → code-reviewer
 
 Orchestrator invokes sub-agents and passes structured JSON between them. The design-side path applies when the Design Doc is stale, excessive, or incorrect for the confirmed outcome. Neither path makes the existing implementation or the prior design authoritative by default.
@@ -31,23 +31,23 @@ Resolve the Design Doc from `$ARGUMENTS` first. Otherwise discover the document 
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
 - `description`: "Completed implementation review"
-- `prompt`: "Review the completed implementation. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [git diff file list]. Return the initial review JSON."
+- `prompt`: "Review the completed implementation. governingDocuments: [\"[path]\"]. implementationFiles: [git diff file list]. Return the initial review JSON."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
 ### 3. Execute security-reviewer
-Invoke security-reviewer using Agent tool:
+In Normal Mode, or when security review is itself the user-requested outcome, invoke security-reviewer using Agent tool:
 - `subagent_type`: "security-reviewer"
 - `description`: "Security review"
-- `prompt`: "governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [git diff file list]. Review security compliance."
+- `prompt`: "governingDocuments: [\"[path]\"]. implementationFiles: [git diff file list]. Review security compliance."
 
 **Store output as**: `$STEP_3_OUTPUT`
 
 ### 4. Verdict and Response
 
-When either reviewer returns a blocked or otherwise unusable result, apply subagents-orchestration-guide Specialist Result Acceptance to its semantic cause. Carry only a remaining verification limitation into the report.
+When an executed reviewer returns a blocked or otherwise unusable result, apply subagents-orchestration-guide Specialist Result Acceptance to its semantic cause. Carry only a remaining verification limitation into the report.
 
-Apply Review Resolution to both outputs. Its `apply` and `decline` dispositions determine routing. Select each `apply` finding's correction owner by Review Resolution section 2.
+Apply Review Resolution to the outputs from executed reviewers. Its `apply` and `decline` dispositions determine routing. Select each `apply` finding's correction owner by Review Resolution section 2.
 
 Present the adjudicated result:
 
@@ -61,7 +61,7 @@ Implementation Review: [verdict from code-reviewer]
   Limitations:
   - [unverified judgment and effect]
 
-Security Review: [status from security-reviewer]
+Security Review: [status, or omitted in Lite Mode]
   Findings by category:
   - [confirmed_risk] [location]: [description] — [rationale]
   - [defense_gap] [location]: [description] — [rationale]
@@ -71,7 +71,7 @@ Declined: [ID] — [governing reason]
 
 Ask the user for authority to apply the proposed `apply` routes. The batch option is "approve all proposed `apply` routes" and includes only those routes. When the approved change set is empty, proceed to Step 11.
 
-**Boundary carried into the fix path**: Carry the approved findings, their observable correction conditions, and any size budget the user stated through the code-side correction path and its final quality check. Apply coding-standards "Change Boundary and Reference Representativeness" to derive the complete correction; finding paths are investigation starting points. A user-stated size budget remains a user-owned boundary when the complete correction exceeds it.
+**Boundary carried into the fix path**: Carry the approved findings, their observable correction conditions, and any size budget the user stated through the code-side correction path and its quality check. Apply coding-standards "Change Boundary and Reference Representativeness" to derive the complete correction; finding paths are investigation starting points. A user-stated size budget remains a user-owned boundary when the complete correction exceeds it.
 
 ### 5. Design-Side Update
 
@@ -88,7 +88,7 @@ Run this step only when an approved route changes the Design Doc.
    - `prompt`: "doc_type: DesignDoc. review_context: update. Review updated Design Doc at [path] for consistency and completeness."
    - Run Review Resolution through its correction re-review and convergence transitions, using technical-designer for rerouted corrections. Proceed only at its convergence condition
 
-3. When another Design Doc governs a responsibility or contract touched by the reviewed changes, invoke design-sync:
+3. In Normal Mode, when another Design Doc governs a responsibility or contract touched by the reviewed changes, invoke design-sync:
    - `subagent_type`: "design-sync"
    - `description`: "Cross-DD consistency check"
    - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
@@ -130,16 +130,16 @@ Run this step only when Step 6 corrected a finding code-reviewer owns; a reviewe
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
 - `description`: "Re-validate implementation review"
-- `prompt`: "Re-review the completed implementation after approved corrections. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every received item."
+- `prompt`: "Re-review the completed implementation after approved corrections. governingDocuments: [\"[path]\"]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every received item."
 
 ### 9. Re-validate security-reviewer
 
-Run this step only when Step 6 corrected a finding security-reviewer owns; a reviewer that returned a passing result is never re-run. Immediately before the invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
+Run this step only when the executed security-reviewer owns a finding Step 6 corrected; a reviewer that returned a passing result is never re-run. Immediately before the invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
 
 Invoke security-reviewer using Agent tool:
 - `subagent_type`: "security-reviewer"
 - `description`: "Re-validate security"
-- `prompt`: "Re-validate security after fixes. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
+- `prompt`: "Re-validate security after fixes. governingDocuments: [\"[path]\"]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's correction re-review scope."
 
 ### 10. Resolve Corrections
 
@@ -158,7 +158,7 @@ Implementation Review:
   Reconciliation: [resolved / withdrawn / maintained by finding ID]
 
 Security Review:
-  Initial: [status]
+  Initial: [status, or omitted in Lite Mode]
   Correction review: [status for the re-review scope] (if fixes executed)
   Reconciliation: [resolved / withdrawn / maintained by finding ID]
 

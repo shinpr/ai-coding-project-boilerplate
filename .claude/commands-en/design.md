@@ -80,21 +80,23 @@ The Design Doc owns the complete implementation design and retains all applicabl
 
 ## Step 6: Verify and Resolve Repository Claims
 
+Run this step in Normal Mode. In Lite Mode, proceed to Step 7 without `verification_evidence`.
+
 Invoke `code-verifier` with `doc_type: design-doc` and the Design Doc path. Leave `code_paths` absent so future behavior remains intent and current premises and feasibility are verified.
 
 Apply Review Resolution to every discrepancy before document review. Send only `apply` findings to a fresh technical-designer invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate when a finding names an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun code-verifier after a correction, passing the previous complete result, the recorded dispositions, and the correction diff or changed paths as `prior_feedback`. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue only when it contains no unresolved `apply` item.
 
 ## Step 7: Review and Approve
 
-Invoke `document-reviewer` with `doc_type: DesignDoc`, `target`, `review_context: creation`, the original user requirements as `requirements_verbatim`, `confirmed_requirement_context`, `codebase_analysis`, and `verification_evidence` from Step 6.
+Invoke `document-reviewer` with `doc_type: DesignDoc`, `target`, `review_context: creation`, the original user requirements as `requirements_verbatim`, `confirmed_requirement_context`, `codebase_analysis`, and `verification_evidence` only when Step 6 ran.
 
 - `pass`: continue
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer invocation using the existing path and complete findings with an `apply` disposition, then rerun Steps 6-7 for the affected boundary
 - `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 
-Invoke `design-sync` with the Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. When the result reports `analyzed_docs: 0`, report consistency verification as skipped because no other Design Doc exists.
+In Normal Mode, invoke `design-sync` with the Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. When the result reports `analyzed_docs: 0`, report consistency verification as skipped because no other Design Doc exists.
 
-Present the Design Doc, accepted ADR paths, recorded declines, and design-sync result. `[Stop: Design approval]`.
+Present the Design Doc, accepted ADR paths, recorded declines, and the design-sync result or its omission in Lite Mode. `[Stop: Design approval]`.
 
 ## Completion Criteria
 

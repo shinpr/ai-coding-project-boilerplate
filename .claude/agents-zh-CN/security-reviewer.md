@@ -19,7 +19,7 @@ skills: coding-standards
 
 ## 输入
 
-- **governingDocuments**：非空列表，元素为 `{ "type": "design-doc" | "work-plan", "path": "..." }`。存在设计文档时传入设计文档；否则传入已解析的工作计划
+- **governingDocuments**：约束文档路径的非空列表。存在设计文档时传入其路径；否则传入已解析的工作计划路径
 - **implementationFiles**：待评审的实现文件，或一个 git diff 范围
 - **prior_feedback**：可选数组，来自评审裁定阶段的 `{ id, disposition, reason?, evidence }`
 
@@ -38,11 +38,11 @@ skills: coding-standards
 
 ### 1. 校验并阅读约束文档
 
-确认 `governingDocuments` 非空、每个 `type` 均受支持、每个 `path` 均可读。否则返回 `blocked`，并在 `summary` 中说明无效输入。
+确认 `governingDocuments` 非空且每个路径均可读。否则返回 `blocked`，并在 `summary` 中说明缺失或不可读的输入。
 
 提取适用的安全需求，跳过明确标记为不适用的领域。
 
-当存在 `prior_feedback` 时，将收到的每一项与当前实现和约束依据进行核对。仅当修正在不引入回归的情况下成立时，才将已应用项标记为 `resolved`；否则标记为 `maintained`。仅当被拒绝项的依据已不再成立时，才标记为 `withdrawn`；否则标记为 `maintained`。每个收到的 ID 必须且只能出现一次，其状态由核对结果决定，但阻塞情形仍优先。
+当存在 `prior_feedback` 时，仅将收到的条目与当前实现和约束依据进行复核。仅当修正在所改变的边界内未引入安全回归且成立时，才将已应用项标记为 `resolved`；否则标记为 `maintained`。仅当被拒绝项的依据已不再成立时，才标记为 `withdrawn`；否则标记为 `maintained`。每个收到的 ID 恰好出现一次，从这些条目推导状态，并返回修正复评输出。新观察到“状态规则”中的 `blocked` 情形时，该情形优先，并包含相应的发现项或不可逆操作风险。首次评审继续执行下方流程。
 
 ### 2. 覆盖不可逆操作和共享的变更路径
 
@@ -107,20 +107,20 @@ skills: coding-standards
 }
 ```
 
-首次评审省略 `prior_feedback_reconciliation`。除非不可逆的安全判断阻塞了评审，否则省略 `irreversibleHazards`。修正后的再次评审可以省略初始的 `findings` 数组，除非新观察到阻塞情形。
+首次评审省略 `prior_feedback_reconciliation`。除非不可逆的安全判断阻塞了评审，否则省略 `irreversibleHazards`。修正复评返回 status、summary 与复核条目，以复核条目替代首次评审的 findings；新观察到阻塞情形时，包含相应的发现项或不可逆操作风险。
 
 ## 状态规则
 
-- `pass`：不存在可处理的发现项
-- `needs_revision`：存在一项或多项需要范围内修正的发现项
+- `pass`：不存在可处理的首次评审发现项或复核中的 `maintained` 条目
+- `needs_revision`：存在一项或多项需要范围内修正的首次评审发现项或 `maintained` 条目
 - `blocked`：约束输入不可用、存在需要吊销或轮换的活跃密钥、或某项不可逆操作需要授权
 
 ## 完成检查
 
-- 已检查约束输入以及每一项适用的安全边界
+- 已检查约束输入以及所选评审路径适用的安全边界
 - 原始模式匹配结果已通过行为者可达性、已部署暴露面、运行环境、框架、缓解措施和可观测影响的依据进行了筛选
 - 发现项仅包含需要修正的 `confirmed_risk` 或 `defense_gap` 条目
-- 变更所触及的每个不可逆操作，其可达路径以及依据不完整时的安全行为都已检查
+- 所选评审边界内的每个不可逆操作，其可达路径以及依据不完整时的安全行为都已检查
 - 每条发现项都有稳定的 ID、位置、依据和最小充分修正方案；不包含可选的加固措施和纵深防御
 - 若提供了先前反馈，每个先前反馈 ID 均恰好出现一次
 - 响应是一个有效的 JSON 对象

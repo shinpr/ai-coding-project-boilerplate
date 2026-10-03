@@ -19,7 +19,7 @@ skills: coding-standards
 
 ## 入力
 
-- **governingDocuments**: `{ "type": "design-doc" | "work-plan", "path": "..." }` の非空リスト。Design Doc が存在する場合はそれを渡し、存在しない場合は解決済みの作業計画書を渡す
+- **governingDocuments**: 正典となるドキュメントパスの非空リスト。Design Doc が存在する場合はそのパスを渡し、存在しない場合は解決済みの作業計画書のパスを渡す
 - **implementationFiles**: レビュー対象の実装ファイル、または git diff 範囲
 - **prior_feedback**（任意）: レビュー対応による `{ id, disposition, reason?, evidence }` の配列
 
@@ -38,11 +38,11 @@ coding-standards の Security Principles と、その `references/security-check
 
 ### 1. 正典となるドキュメントの検証と読み込み
 
-`governingDocuments` が非空であること、すべての type がサポート対象であること、すべてのパスが読み込めることを確認する。満たさない場合は `blocked` を返し、不正な入力を `summary` に記載する。
+`governingDocuments` が非空であることと、すべてのパスが読み込めることを確認する。満たさない場合は `blocked` を返し、不足している入力または読み込めない入力を `summary` に記載する。
 
 該当するセキュリティ要件を抽出し、N/A と明記された領域はスキップする。
 
-`prior_feedback` がある場合は、受領した各項目を現在の実装と正典上のエビデンスに対して照合する。`apply` を適用した項目は、リグレッションなく修正が成立している場合にのみ `resolved` とし、それ以外は `maintained` とする。`decline` とした項目は、その根拠がもはや成立しない場合に `withdrawn` とし、それ以外は `maintained` とする。受領した各IDをちょうど1回出力し、ステータスは照合から導出する。ただし blocked 条件は常にそれに優先する。
+`prior_feedback` がある場合は、受領した項目だけを現在の実装と正典上のエビデンスに対して照合する。`apply` を適用した項目は、変更した境界にセキュリティ上のリグレッションなく修正が成立している場合にのみ `resolved` とし、それ以外は `maintained` とする。`decline` とした項目は、その根拠がもはや成立しない場合に `withdrawn` とし、それ以外は `maintained` とする。受領した各IDをちょうど1回出力し、ステータスをこれらの照合結果から導いて、修正再レビューの出力を返す。「ステータス規則」の `blocked` 条件を新たに観測した場合はそれを優先し、その所見または不可逆操作の危険を含める。初回レビューは以下へ進む。
 
 ### 2. 不可逆操作と共有ミューテーション経路のカバー
 
@@ -107,20 +107,20 @@ coding-standards の Security Principles と、その `references/security-check
 }
 ```
 
-初回レビューでは `prior_feedback_reconciliation` を省略する。不可逆操作の安全判断がレビューをブロックする場合を除き `irreversibleHazards` は省略する。修正再レビューでは、blocked 条件を新たに観測した場合を除き、初回の `findings` 配列を省略してよい。
+初回レビューでは `prior_feedback_reconciliation` を省略する。不可逆操作の安全判断がレビューをブロックする場合を除き `irreversibleHazards` は省略する。修正再レビューでは、初回の findings の代わりに status・summary・照合結果を返す。blocked 条件を新たに観測した場合は、所見または不可逆操作の危険を含める。
 
 ## ステータス規則
 
-- `pass`: 対処が必要な所見が残っていない
-- `needs_revision`: スコープ内での修正を要する所見が1件以上ある
+- `pass`: 初回の対処が必要な所見も、再レビューで`maintained` の項目も残っていない
+- `needs_revision`: 初回の所見または`maintained` の項目が1件以上あり、スコープ内での修正を要する
 - `blocked`: 正典となる入力を利用できない、実際に使われているシークレットの失効またはローテーションが必要、または不可逆操作に承認が必要である
 
 ## 完了チェック
 
-- 正典となる入力と、該当する各セキュリティ境界を確認した
+- 正典となる入力と、選択したレビュー経路に該当するセキュリティ境界を確認した
 - 生のパターンマッチを、攻撃者の到達可能性、デプロイ時の露出、ランタイム、フレームワーク、緩和策、観測可能な影響のエビデンスで絞り込んだ
 - `findings` には、修正を要する `confirmed_risk` または `defense_gap` のみが含まれる
-- 変更が到達する各不可逆操作について、到達経路とエビデンス不完全時の安全な振る舞いを確認した
+- 選択したレビュー境界内の各不可逆操作について、到達経路とエビデンス不完全時の安全な振る舞いを確認した
 - 各所見に安定ID・location・rationale・必要十分な最小の修正があり、任意の堅牢化と多層防御を含んでいない
 - prior_feedback が渡された場合、受領した各IDがちょうど1回現れる
 - レスポンスが妥当な JSON オブジェクト1個である

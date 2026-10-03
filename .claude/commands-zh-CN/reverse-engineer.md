@@ -104,6 +104,8 @@ prompt: |
 
 #### 步骤 3：代码验证
 
+Normal 模式执行此步骤。Lite 模式不携带验证者依据，直接进入步骤 4。
+
 **前提条件**：$STEP_2_OUTPUT（步骤 2 产出的 PRD 路径）
 
 **Task 调用**：
@@ -127,7 +129,7 @@ prompt: |
 
 #### 步骤 4：评审
 
-**必需输入**：$STEP_3_OUTPUT（步骤 3 产出的验证 JSON）
+**验证输入**：仅在步骤 3 已运行时提供 $STEP_3_OUTPUT
 
 **Task 调用**：
 ```
@@ -138,7 +140,7 @@ prompt: |
   doc_type: PRD
   target: $STEP_2_OUTPUT
   review_context: reverse-engineer
-  verification_evidence: $STEP_3_OUTPUT
+  verification_evidence: $STEP_3_OUTPUT（仅在步骤 3 已运行时提供）
 ```
 
 **将输出保存为**：`$STEP_4_OUTPUT`
@@ -237,6 +239,8 @@ prompt: |
 
 #### 步骤 8：代码验证
 
+Normal 模式执行此步骤。Lite 模式不携带验证者依据，直接进入步骤 9。
+
 分别验证每一份生成的设计文档。
 
 **Task 调用（每份设计文档）**：
@@ -258,7 +262,7 @@ prompt: |
 
 #### 步骤 9：评审
 
-**必需输入**：$STEP_8_OUTPUT（步骤 8 产出的验证 JSON）
+**验证输入**：仅在步骤 8 已运行时提供 $STEP_8_OUTPUT
 
 **Task 调用（每份设计文档）**：
 ```
@@ -269,7 +273,7 @@ prompt: |
   doc_type: DesignDoc
   review_context: reverse-engineer
   target: $STEP_7_OUTPUT.path 或 $STEP_7_FRONTEND_OUTPUT.path
-  verification_evidence: $STEP_8_OUTPUT
+  verification_evidence: $STEP_8_OUTPUT（仅在步骤 8 已运行时提供）
   confirmed_requirement_context: [本单元在阶段 1 中通过评审的 PRD 路径]
 
   ## 额外评审重点

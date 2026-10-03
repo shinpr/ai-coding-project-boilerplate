@@ -25,7 +25,7 @@ Executes applicable quality checks, fixes failures owned by the change, and repo
 ## Input Parameters
 
 - **task_file** (optional): Path to the task file being verified. When provided, use its Operation Verification Methods as task-specific checks alongside the checks discovered from code, manifest, and configuration
-- **direct_scope** (optional): Confirmed execution outcome, affected paths, and verification condition when no task file exists
+- **direct_scope** (optional): Confirmed execution outcome, affected paths, and verification condition when no `task_file` input is provided. A final task-set run includes the completed task file paths, their committed implementation paths, and their Operation Verification Methods
 - **runnableCheck** (optional): Test execution evidence. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination
 - **qualityCommand** (optional): The project's authoritative quality command (e.g., from frontend-technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual
 
@@ -40,7 +40,7 @@ Use the appropriate run command based on the `packageManager` field in package.j
 
 ### Step 1: Incomplete Implementation Check [BLOCKING — before any quality checks]
 
-Inspect the complete current uncommitted worktree for context, including staged and unstaged changes, untracked files, deletions, and renames. Apply `stub_detected` only to incomplete implementation that belongs to the current `task_file` or `direct_scope`; unrelated user or pre-existing worktree changes do not determine this status. Repository quality commands still run across the boundary defined by the project command. This step runs before quality checks because verifying unfinished in-scope code produces misleading results.
+Inspect the implementation paths belonging to `task_file` or `direct_scope`, including committed changes from completed tasks in a final task-set run. Also inspect the complete current uncommitted worktree for context, including staged and unstaged changes, untracked files, deletions, and renames. Apply `stub_detected` only to incomplete implementation inside that execution scope; unrelated user or pre-existing worktree changes do not determine this status. Repository quality commands still run across the boundary defined by the project command. This step runs before quality checks because verifying unfinished in-scope code produces misleading results.
 
 **Indicators of incomplete implementation** (stub_detected):
 - `// TODO`, `// FIXME`, `// HACK`, `throw new Error("not implemented")` or equivalent
@@ -69,8 +69,8 @@ Inspect the complete current uncommitted worktree for context, including staged 
 # - Build configuration → extract build/check commands
 ```
 
-**Scope-specific checks** (from the task file, or from the direct scope when no task file exists):
-- Read the task file's "Operation Verification Methods" section, or the direct scope's verification condition
+**Scope-specific checks** (from `task_file` when provided; otherwise from `direct_scope`):
+- Read the task file's "Operation Verification Methods" section, or the direct scope's verification condition and each supplied completed task file's methods
 - Run each verification method that is executable as a command, alongside the checks discovered from project manifests and configuration
 - Verify each non-executable success criterion against the changed code after all quality phases complete (e.g., confirm naming conventions via Grep, confirm length limits in changed files)
 - When a method cannot be found or executed, note it in the output and continue to the next one

@@ -22,6 +22,12 @@ description: Coordinates subagents through scale-based planning, approval, imple
 
 When receiving a new full-cycle task, pass the user requirements to requirement-analyzer and keep the user's wording in the orchestrator. Compare the returned scope, cost, and question evidence against that wording to run requirement convergence and assign Structural Scale. Classify evaluation requests, speculative ideas, and prescribed mechanisms from the user's wording rather than from analyzer output. The orchestrator owns both judgments. Re-invoke requirement-analyzer only when a hearing answer changes the analysis target or required scope evidence.
 
+### Workflow Mode
+
+Before routing calls at workflow entry or resumption, resolve the mode from the user's explicit mode selection, then the `Workflow Mode` directive in the loaded root `CLAUDE.md`, otherwise Normal Mode. An explicit session selection applies until the user changes it and takes precedence over the repository default.
+
+The flows below describe Normal Mode. For Lite Mode, read `references/lite-mode.md` and apply its call set and quality boundary. Invoke retained calls and consume only results they actually produced. User-approval stops and authority boundaries remain applicable in both modes.
+
 ### Requirement Change Detection During Flow
 
 Treat a proposed change to the confirmed outcome, desired-future requirements, or non-goals as a requirement change. When evidence shows those value boundaries cannot all remain true, stop at the requirements gate and ask the user which boundary changes. A technical design or implementation correction that preserves them is not a requirement change, including removal of a working technical choice that is no longer needed; passing an earlier phase does not establish that its means remain necessary. Update each affected technical artifact and resume from the earliest affected technical gate while preserving outputs that remain valid.
@@ -105,8 +111,7 @@ I understand each subagent's responsibilities and assign work appropriately:
 
 ### Standard Flow I Manage
 
-**Basic Cycle**: I manage the 4-step cycle of `task-executor -> branch on executor result -> quality-fixer -> commit`.
-I repeat this cycle for each task to ensure quality.
+**Task cycle**: Accept each task's implementation result and required integration/E2E review, apply the selected mode's quality boundary, then commit the completed task at the recipe's commit point. Normal Mode runs quality-fixer per task; Lite Mode uses the Final Quality Run. Each task retains its focused verification.
 
 **Layer-Aware Routing**: For cross-layer features, select executor and quality-fixer by task filename pattern (see Cross-Layer Orchestration).
 
@@ -202,26 +207,24 @@ Replace the standard Design Doc creation step with per-layer creation:
 |------|-------|---------|
 | 8 | codebase-analyzer | Analyze the complete confirmed cross-layer scope, passing exactly one governing source: `prd_path` or `requirements` |
 | 9 | technical-designer | Backend Design Doc (with the relevant backend evidence from step 8) |
-| 10 | code-verifier | Verify Backend Design Doc against existing code (its result JSON becomes `prior_layer_verification` for step 12) |
-| 11 | document-reviewer | Review Backend Design Doc (pass the step-10 result as `verification_evidence` and step-8 JSON as `codebase_analysis`); route the verdict through the Review Resolution Verdict Gate |
-| 12 | technical-designer-frontend | Frontend Design Doc (with relevant frontend evidence from step 8 + reviewed Backend Design Doc + `prior_layer_verification` from step 10 + UI Spec) |
-| 13 | code-verifier | Verify Frontend Design Doc against existing code |
-| 14 | document-reviewer | Review Frontend Design Doc (pass the step-13 result and recorded dispositions as `verification_evidence`, plus step-8 JSON as `codebase_analysis`). Route the verdict through the Review Resolution Verdict Gate before step 15. |
-| 15 | design-sync | Cross-layer consistency verification **[Stop]** |
+| 10 | code-verifier (Normal Mode) | Verify Backend Design Doc against existing code (its result JSON becomes `prior_layer_verification` for step 12) |
+| 11 | document-reviewer | Review Backend Design Doc (pass `verification_evidence` when step 10 ran, and step-8 JSON as `codebase_analysis`); route the verdict through the Review Resolution Verdict Gate |
+| 12 | technical-designer-frontend | Frontend Design Doc (with relevant frontend evidence from step 8, reviewed Backend Design Doc, UI Spec, and `prior_layer_verification` when step 10 ran) |
+| 13 | code-verifier (Normal Mode) | Verify Frontend Design Doc against existing code |
+| 14 | document-reviewer | Review Frontend Design Doc (pass `verification_evidence` when step 13 ran, plus step-8 JSON as `codebase_analysis`). Route the verdict through the Review Resolution Verdict Gate. |
+| 15 | design-sync (Normal Mode) | Cross-layer consistency verification, then Design Doc approval **[Stop]** in both modes |
 
-Step 8 runs once and its full JSON is reused unchanged by both designers; each consumes the evidence relevant to its layer. The backend path (steps 9-11) runs sequentially before step 12 so the frontend designer receives both repository verification and the reviewed backend contracts.
+Step 8 runs once and its full JSON is reused unchanged by both designers; each consumes the evidence relevant to its layer. The retained backend steps run sequentially before step 12 so the frontend designer receives reviewed backend contracts and repository verification when it ran.
 
 **Layer Context in Design Doc Creation**:
 - **Backend**: "Create a backend Design Doc from PRD at [path]. Codebase analysis: [step-8 JSON; use backend-relevant evidence]. Focus on: API contracts, data layer, business logic, service architecture."
-- **Frontend**: "Create a frontend Design Doc from PRD at [path]. Codebase analysis: [step-8 JSON; use frontend-relevant evidence]. Reviewed Backend Design Doc at [path] — extract API contracts and Integration Points from this document to populate the frontend Design Doc's Integration Points. Backend review issues and dispositions: [step-11 document-reviewer result and Review Resolution record]. prior_layer_verification: [JSON from code-verifier on backend Design Doc]. Treat only evidence-backed discrepancies and maintained review issues as unstable contracts. Reference UI Spec at [path] for component structure. Focus on: component hierarchy, state management, UI interactions, data fetching."
+- **Frontend**: "Create a frontend Design Doc from PRD at [path]. Codebase analysis: [step-8 JSON; use frontend-relevant evidence]. Reviewed Backend Design Doc at [path] — extract API contracts and Integration Points from this document to populate the frontend Design Doc's Integration Points. Backend review issues and dispositions: [step-11 document-reviewer result and Review Resolution record]. prior_layer_verification: [JSON from code-verifier on backend Design Doc, only when verification ran; otherwise omit this input]. Treat only evidence-backed discrepancies and maintained review issues as unstable contracts. Reference UI Spec at [path] for component structure. Focus on: component hierarchy, state management, UI interactions, data fetching."
 
 **design-sync**: Use frontend Design Doc as source. design-sync auto-discovers other Design Docs in `docs/design/` for comparison.
 
 ### Work Planning with Multiple Design Docs
 
-Pass all Design Docs to work-planner with vertical slicing instruction:
-- Provide all Design Doc paths explicitly
-- Instruct: "Compose phases as vertical feature slices — each phase should contain both backend and frontend work for the same feature area, enabling early integration verification per phase."
+Pass all reviewed Design Doc paths and supplied test skeleton paths to work-planner. It follows the selected implementation approach, dependencies, and earliest executable verification boundary when defining tasks.
 
 ### Layer-Aware Agent Routing
 
@@ -247,8 +250,8 @@ A work plan task entry records exactly one lane; task materialization copies tha
 - `status: escalation_needed` or `status: blocked` -> Apply Specialist Result Acceptance
 - `requiresTestReview` is `true` -> Execute **integration-test-reviewer**
   - If `status` is `needs_revision` -> Apply Review Resolution and re-invoke the routed executor (task-executor or task-executor-frontend per Layer-Aware Agent Routing) with the same `task_file` and the complete `apply` quality-issue objects verbatim as `correction_findings`
-  - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor as `correction_findings`. If it returns `blocked` again, record the review as not run and proceed to quality-fixer
-  - If `status` is `pass` -> Proceed to quality-fixer
+  - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor as `correction_findings`. If it returns `blocked` again, record the review as not run and proceed to the selected mode's quality/commit boundary
+  - If `status` is `pass` -> Proceed to the selected mode's quality/commit boundary
 
 ### Conditions for Stopping Autonomous Execution
 
@@ -312,7 +315,7 @@ Two additional rules:
    #### code-verifier → document-reviewer (Design Doc review)
 
    **Pass to code-verifier**: Design Doc path (doc_type: design-doc). Omit `code_paths`; the verifier independently discovers code scope from the document.
-   **Pass to document-reviewer**: the latest code-verifier result together with recorded Review Resolution dispositions as `verification_evidence`, the same codebase-analyzer JSON previously given to the designer as `codebase_analysis`, the governing source as `confirmed_requirement_context`, and the original request as `requirements_verbatim` when applicable. The reviewer uses `codebase_analysis.focusAreas` to verify Fact Disposition Table coverage and the confirmed requirement context to verify the document's outcome and contract.
+   **Pass to document-reviewer**: `verification_evidence` from the latest code-verifier result and recorded Review Resolution dispositions only when verification ran; otherwise omit that input. Always pass the same codebase-analyzer JSON previously given to the designer as `codebase_analysis`, the governing source as `confirmed_requirement_context`, and the original request as `requirements_verbatim` when applicable. The reviewer uses `codebase_analysis.focusAreas` to verify Fact Disposition Table coverage and the confirmed requirement context to verify the document's outcome and contract.
 
    #### design-evidence finding with an `apply` disposition → technical-designer
 
@@ -320,7 +323,7 @@ Two additional rules:
 
    #### code-verifier + document-reviewer → next-layer technical-designer (cross-layer flow only)
 
-   **Pass to next-layer technical-designer**: reviewed prior-layer Design Doc path plus `prior_layer_verification` (the JSON from the prior-layer code-verifier). See Cross-Layer Orchestration section for sequencing. Use `prior_layer_verification.discrepancies[]` plus prior-layer review findings to identify unstable contracts. Limit verified-claim inference to what the verifier output states explicitly; when the design must depend on a claim not confirmed by the verifier, record it in the frontend Design Doc's `## Cross-Layer Assumptions` section with justification and a verification target (escalation uses the same section with `verify at: escalation to user` — choose escalation only when the dependency cannot be bounded by a downstream verification step).
+   **Pass to next-layer technical-designer**: reviewed prior-layer Design Doc path plus `prior_layer_verification` only when the prior-layer code-verifier ran. See Cross-Layer Orchestration section for sequencing. Use available verification discrepancies and prior-layer review findings to identify unstable contracts. Limit verified-claim inference to what actual evidence states; when the design depends on an unverified claim, record it in the frontend Design Doc's `## Cross-Layer Assumptions` section with justification and a verification target. Escalate only when the dependency cannot be bounded by a downstream verification step.
 
    #### technical-designer → work-planner
 
@@ -337,7 +340,7 @@ Two additional rules:
 
 ## Important Constraints
 
-- **Quality check**: A commit is permitted after quality-fixer returns `pass` or `verification_incomplete`, at the commit points the invoked recipe defines
+- **Commit boundary**: Normal Mode task commits and quality-generated fixes require a quality-fixer result of `pass` or `verification_incomplete`. Lite Mode task commits follow accepted executor and required test-review results; the Final Quality Run precedes post-implementation review. Commits occur only at the invoked recipe's defined points
 - **Structured response**: Information passed between subagents uses the declared JSON fields
 - **Approval management**: Document creation is followed by document-reviewer and the named user-approval stop before the next phase
 - **Flow confirmation**: After approval, select the next step from the confirmed large/medium/small flow
@@ -355,3 +358,8 @@ Reviewer findings are candidates. Create correction work only from the Review Re
 **Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then branch on the executor result through the per-task cycle's step 2, including its conditional integration-test-reviewer path, and run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers.
 
 **Re-run rule**: A reviewer's passing result stands. Re-run only a reviewer whose latest result still carries a corrected finding, passing its recorded dispositions as `prior_feedback` and the re-derived implementation file set so the rerun reconciles against the corrected state. After recovering a blocked review prerequisite, re-run that reviewer. Review Resolution convergence governs acceptance and preserves resolved declines.
+
+## References
+
+- `references/review-resolution.md`: Finding disposition, correction, and convergence
+- `references/lite-mode.md`: The Lite Mode call set and Final Quality Run

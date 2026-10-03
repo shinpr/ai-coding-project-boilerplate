@@ -112,7 +112,7 @@ prompt: |
 
 ### ステップ5: ドキュメントレビュー
 
-**Design Doc更新時のみ**: document-reviewerの前にcode-verifierを呼び出す:
+**NormalモードでのDesign Doc更新時のみ**: document-reviewerの前にcode-verifierを呼び出す:
 ```
 subagent_type: code-verifier
 description: "更新されたDesign Docを検証"
@@ -142,7 +142,7 @@ prompt: |
   targets: [[ステップ1のパス]]（ADRBatch のみ）
   requirements_verbatim: [ステップ3の変更要求（原文）]（Design Docのみ）
   confirmed_requirement_context: [Design Docを規定する承認済みPRDのパス。存在する場合]（Design Docのみ）
-  verification_evidence: $CODE_VERIFICATION_OUTPUT（Design Docのみ、PRD/ADRBatch では省略）
+  verification_evidence: $CODE_VERIFICATION_OUTPUT（code-verifierを実行した場合のみ）
 
   注力ポイント:
   - 更新セクションとドキュメント全体の整合性
@@ -163,7 +163,7 @@ prompt: |
 
 PRDまたはADRでは、`pass` となったドキュメントレビューから以下の最終承認へ進む。
 
-Design Docの場合、design-syncを呼び出す:
+NormalモードでDesign Docを更新する場合、design-syncを呼び出す。Liteモードでは、整合性検証の省略を報告して最終承認へ進む:
 ```
 subagent_type: design-sync
 description: "整合性を検証"
@@ -194,9 +194,9 @@ prompt: |
 - [ ] 対象ドキュメントを特定した
 - [ ] 要求、ドキュメント、または必要なユーザー回答から変更内容を確定した
 - [ ] 適切なエージェントでドキュメントを更新した（updateモード）
-- [ ] code-verifierをdocument-reviewerの前に実行した（Design Docのみ）
+- [ ] code-verifierをdocument-reviewerの前に実行した（NormalモードのDesign Docのみ）
 - [ ] document-reviewerを実行しフィードバックに対応した
-- [ ] design-syncで整合性検証を実行した（Design Docのみ）
+- [ ] design-syncで整合性検証を実行した（NormalモードのDesign Docのみ）
 - [ ] レビュー済みの更新について最終ユーザー承認を1回取得した
 
 ## 出力例

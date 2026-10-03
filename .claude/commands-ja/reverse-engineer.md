@@ -104,6 +104,8 @@ prompt: |
 
 #### ステップ3: コード検証
 
+Normalモードでこのステップを実行する。Liteモードでは、verifierのエビデンスなしでステップ4へ進む。
+
 **前提条件**: $STEP_2_OUTPUT（ステップ2のPRDパス）
 
 **Task呼び出し**:
@@ -127,7 +129,7 @@ prompt: |
 
 #### ステップ4: レビュー
 
-**必須入力**: $STEP_3_OUTPUT（ステップ3からの検証JSON）
+**検証入力**: ステップ3を実行した場合のみ $STEP_3_OUTPUT
 
 **Task呼び出し**:
 ```
@@ -138,7 +140,7 @@ prompt: |
   doc_type: PRD
   target: $STEP_2_OUTPUT
   review_context: reverse-engineer
-  verification_evidence: $STEP_3_OUTPUT
+  verification_evidence: $STEP_3_OUTPUT（ステップ3を実行した場合のみ）
 ```
 
 **出力を保存**: `$STEP_4_OUTPUT`
@@ -237,6 +239,8 @@ prompt: |
 
 #### ステップ8: コード検証
 
+Normalモードでこのステップを実行する。Liteモードでは、verifierのエビデンスなしでステップ9へ進む。
+
 生成された各Design Docに対して個別に検証を実行する。
 
 **Task呼び出し（Design Doc毎）**:
@@ -258,7 +262,7 @@ prompt: |
 
 #### ステップ9: レビュー
 
-**必須入力**: $STEP_8_OUTPUT（ステップ8からの検証JSON）
+**検証入力**: ステップ8を実行した場合のみ $STEP_8_OUTPUT
 
 **Task呼び出し（Design Doc毎）**:
 ```
@@ -269,7 +273,7 @@ prompt: |
   doc_type: DesignDoc
   review_context: reverse-engineer
   target: $STEP_7_OUTPUT.path または $STEP_7_FRONTEND_OUTPUT.path
-  verification_evidence: $STEP_8_OUTPUT
+  verification_evidence: $STEP_8_OUTPUT（ステップ8を実行した場合のみ）
   confirmed_requirement_context: [フェーズ1でレビュー済みの、このユニットのPRDパス]
 
   ## 追加レビュー観点

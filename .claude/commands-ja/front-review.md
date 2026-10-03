@@ -19,7 +19,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 
 - 実装レビュー → code-reviewerが実行
 - セキュリティ検証 → security-reviewerが実行
-- **コード側修正パス**: 修正実装 → task-executor-frontend、修正再レビュー → code-reviewer / security-reviewer、最終品質チェック → quality-fixer-frontend
+- **コード側修正パス**: 修正実装 → task-executor-frontend、修正再レビュー → code-reviewer / security-reviewer、品質チェック → quality-fixer-frontend
 - **設計側更新パス**: DD改訂 → technical-designer-frontend（updateモード）、DDレビュー → document-reviewer、複数DDの整合性 → design-sync（複数DD存在時のみ）、再検証 → code-reviewer
 
 オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡す。設計側パスは、Design Docが確認済みの成果に対して古い、過剰、または誤っている場合に適用される。どちらのパスも、既存の実装や以前の設計を当然に正とはみなさない。
@@ -35,23 +35,23 @@ Design Doc（省略時は直近のもの）: $ARGUMENTS
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
 - `description`: "完了した実装のレビュー"
-- `prompt`: "完了したフロントエンド実装をレビューする。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [git diff file list]。初回レビューのJSONを返す。"
+- `prompt`: "完了したフロントエンド実装をレビューする。governingDocuments: [\"[path]\"]。implementationFiles: [git diff file list]。初回レビューのJSONを返す。"
 
 **出力を保存**: `$STEP_2_OUTPUT`
 
 ### Step 3: security-reviewer実行
-Agent toolでsecurity-reviewerを呼び出す:
+Normalモード、またはユーザーがセキュリティレビュー自体を成果として依頼した場合に、Agent toolでsecurity-reviewerを呼び出す:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティレビュー"
-- `prompt`: "governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [git diff file list]. セキュリティ準拠をレビュー。"
+- `prompt`: "governingDocuments: [\"[path]\"]. implementationFiles: [git diff file list]. セキュリティ準拠をレビュー。"
 
 **出力を保存**: `$STEP_3_OUTPUT`
 
 ### Step 4: 判定と対応
 
-いずれかのレビュアーが`blocked`または利用できない結果を返した場合は、その原因の内容に応じてsubagents-orchestration-guideの「専門エージェントの結果の受理」を適用する。残った検証上の制約だけをレポートへ引き継ぐ。
+実行したレビュアーが`blocked`または利用できない結果を返した場合は、その原因の内容に応じてsubagents-orchestration-guideの「専門エージェントの結果の受理」を適用する。残った検証上の制約だけをレポートへ引き継ぐ。
 
-両方の出力にレビュー対応を適用する。`apply`と`decline`の処理方針がルーティングを決める。`apply`の各検出事項の修正担当は、レビュー対応のセクション2に従って選ぶ。
+実行したレビュアーの出力にレビュー対応を適用する。`apply`と`decline`の処理方針がルーティングを決める。`apply`の各検出事項の修正担当は、レビュー対応のセクション2に従って選ぶ。
 
 対応方針を付けた結果を提示する:
 
@@ -65,7 +65,7 @@ Implementation Review: [code-reviewerのverdict]
   Limitations:
   - [検証できない判断とその影響]
 
-Security Review: [security-reviewerのstatus]
+Security Review: [status、またはLiteモードでの省略]
   Findings by category:
   - [confirmed_risk] [location]: [description] — [rationale]
   - [defense_gap] [location]: [description] — [rationale]
@@ -75,7 +75,7 @@ decline: [ID] — [出典ソース上の理由]
 
 ユーザーには、提案した`apply`経路を適用する権限だけを求める。一括承認の選択肢は「提案したすべての`apply`経路を承認」とし、それらの経路だけを含める。承認対象の変更がない場合はStep 11へ進む。
 
-**修正パスへ引き継ぐ境界**: 承認された検出事項、その観測可能な修正条件、ユーザーが述べたサイズ予算を、コード側の修正パスと最終品質チェックまで引き継ぐ。coding-standards の「変更境界と参照の代表性」を適用して必要な修正全体を導出し、検出事項が示すパスは調査の起点として扱う。必要な修正全体がユーザー指定のサイズ予算を超える場合、その予算はユーザーが判断する境界として維持する。
+**修正パスへ引き継ぐ境界**: 承認された検出事項、その観測可能な修正条件、ユーザーが述べたサイズ予算を、コード側の修正パスと品質チェックまで引き継ぐ。coding-standards の「変更境界と参照の代表性」を適用して必要な修正全体を導出し、検出事項が示すパスは調査の起点として扱う。必要な修正全体がユーザー指定のサイズ予算を超える場合、その予算はユーザーが判断する境界として維持する。
 
 ### Step 5: 設計側更新
 
@@ -92,7 +92,7 @@ decline: [ID] — [出典ソース上の理由]
    - `prompt`: "doc_type: DesignDoc。review_context: update。[path]の更新後Design Docの整合性と完成度をレビュー。"
    - レビュー対応を、修正後の再レビューから収束まで進める。差し戻す修正には technical-designer-frontend を用いる。収束条件に達したときのみ先へ進む
 
-3. レビュー対象の変更が触れる責務または契約を別のDesign Docも統制する場合、design-syncを呼び出す:
+3. Normalモードで、レビュー対象の変更が触れる責務または契約を別のDesign Docも統制する場合、design-syncを呼び出す:
    - `subagent_type`: "design-sync"
    - `description`: "DD間整合性チェック"
    - `prompt`: "source_design: [更新後DDのパス]。更新後の全Design Doc間の矛盾を検出。"
@@ -133,16 +133,16 @@ Agent toolでquality-fixer-frontendを呼び出す:
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
 - `description`: "実装レビューの再検証"
-- `prompt`: "承認済みの修正後、完了した実装を再レビューする。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。受領した各項目を照合する。"
+- `prompt`: "承認済みの修正後、完了した実装を再レビューする。governingDocuments: [\"[path]\"]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。受領した各項目を照合する。"
 
 ### Step 9: security-reviewer再検証
 
-このステップを実行するのは、Step 6でsecurity-reviewerが所有する検出事項を修正した場合に限る。passingの結果を返したレビュアーは再実行しない。呼び出しの直前に、Step 1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
+このステップを実行するのは、実行したsecurity-reviewerが所有する検出事項をStep 6で修正した場合に限る。passingの結果を返したレビュアーは再実行しない。呼び出しの直前に、Step 1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
 
 Agent toolでsecurity-reviewerを呼び出す:
 - `subagent_type`: "security-reviewer"
 - `description`: "セキュリティの再検証"
-- `prompt`: "修正後にセキュリティを再検証。governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
+- `prompt`: "修正後にセキュリティを再検証。governingDocuments: [\"[path]\"]。implementationFiles: [file list]。prior_feedback: [{id, disposition, reason?, evidence}]。レビュアーの修正再レビュー範囲で、受領した各項目を照合する。"
 
 ### Step 10: 修正結果の解決
 
@@ -161,7 +161,7 @@ Implementation Review:
   照合: [検出事項IDごとの resolved / withdrawn / maintained]
 
 Security Review:
-  初回: [status]
+  初回: [status、またはLiteモードでの省略]
   修正レビュー: [再レビュー範囲のstatus]（修正実行時）
   照合: [検出事項IDごとの resolved / withdrawn / maintained]
 

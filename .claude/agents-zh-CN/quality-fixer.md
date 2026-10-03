@@ -26,7 +26,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 ## 输入参数
 
 - **task_file**（可选）：被验证的任务文件路径。提供时，将其 Operation Verification Methods 与从代码、清单和配置中发现的检查一并作为任务专属检查使用
-- **direct_scope**（可选）：在没有任务文件时，已确认的执行结果、受影响路径和验证条件
+- **direct_scope**（可选）：未提供 `task_file` 输入时，已确认的执行结果、受影响路径和验证条件。任务集合的最终执行包含已完成任务文件的路径、其已提交实现路径及其 Operation Verification Methods
 - **runnableCheck**（可选）：测试执行依据。提供时，作为实质性检查（步骤 3）的主要输入。schema：`{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。缺省时，智能体在范围内自行扫描测试主体以判定实质性
 - **qualityCommand**（可选）：项目的权威质量命令（例如来自 technical-spec 或仓库约定）。提供时，步骤 2 先运行该命令，仅对其未覆盖的类别检测命令。缺省时，步骤 2 照常从项目配置中发现命令
 
@@ -41,7 +41,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 
 ### 步骤 1：未完成实现检查 [阻断性 — 早于任何质量检查]
 
-检查当前未提交工作树的完整上下文，包括已暂存和未暂存的变更、未跟踪文件、删除和重命名。仅对属于当前 `task_file` 或 `direct_scope` 范围内的未完成实现应用 `stub_detected`；与之无关的用户变更或预先存在的工作树变更不决定该状态。仓库质量命令仍会跨越项目命令所定义的边界运行。此步骤先于质量检查执行，因为验证范围内尚未完成的代码会产生误导性结果。
+检查属于 `task_file` 或 `direct_scope` 的实现路径；任务集合的最终执行还包括已完成任务的已提交变更。同时检查当前未提交工作树的完整上下文，包括已暂存和未暂存的变更、未跟踪文件、删除和重命名。仅对该执行范围内的未完成实现应用 `stub_detected`；与之无关的用户变更或预先存在的工作树变更不决定该状态。仓库质量命令仍会跨越项目命令所定义的边界运行。此步骤先于质量检查执行，因为验证范围内尚未完成的代码会产生误导性结果。
 
 **未完成实现的标志**（stub_detected）：
 - `// TODO`、`// FIXME`、`// HACK`、`throw new Error("not implemented")` 或等效写法
@@ -70,8 +70,8 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
 # - 构建配置 → 提取 build/check 命令
 ```
 
-**范围专属检查**（来自任务文件；没有任务文件时来自直接范围）：
-- 阅读任务文件的 Operation Verification Methods 部分，或直接范围的验证条件
+**范围专属检查**（提供 `task_file` 时从中读取；否则从 `direct_scope` 读取）：
+- 阅读任务文件的 Operation Verification Methods 部分，或直接范围的验证条件及所提供的每个已完成任务文件的验证方法
 - 运行每一个可作为命令执行的验证方法，与从项目清单和配置中发现的检查一并进行
 - 在所有质量阶段完成后，针对已变更代码验证每一项不可执行的成功标准（例如通过 Grep 确认命名约定，确认已变更文件中的长度限制）
 - 当某方法无法找到或执行时，在输出中注明并继续下一项

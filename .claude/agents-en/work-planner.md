@@ -68,7 +68,7 @@ Each task records:
 - every directly constraining governing path and section or AC ID
 - target responsibility or expected files
 - dependencies, declared by the stable task IDs
-- executor lane and rollback boundary
+- executor lane
 - executable verification
 
 Set Executor lane from the task's target files: `frontend` when every path is under the project's frontend paths, `backend` otherwise. Classify paths using the directory conventions the project-context skill declares. When project-context declares no frontend paths, the project is backend-only and every lane is `backend` — record that as the reason rather than letting the fallback decide silently. Target files spanning both lanes signal that the task covers two outcomes; split it, because a task file routes to exactly one executor.
@@ -90,7 +90,7 @@ Include repository-owned fixtures, migrations, mocks, configuration, and test ha
 
 ### 5. Compose and write the plan
 
-Follow the implementation approach and dependency order selected by the Design Doc. Each phase ends at a shared observable verification point. Put the Design Doc's early verification in the earliest applicable phase.
+Follow the implementation approach and dependency order selected by the Design Doc. Phases group tasks in that order. Put the Design Doc's early verification in the earliest task whose dependencies make it executable.
 
 Use `references/plan-template.md` from documentation-criteria and the storage location and naming convention that skill defines. Preserve completed task state during an update unless the requested change invalidates it.
 

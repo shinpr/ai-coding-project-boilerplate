@@ -63,10 +63,9 @@ Enter the flow at the phase this instruction requests and continue from there, f
 - [ ] Clarified next step
 - [ ] Recognized stopping points → **Wait for explicit user confirmation at every Stop point**
 - [ ] codebase-analyzer included before each Design Doc creation
-- [ ] code-verifier included before document-reviewer for each Design Doc
-- [ ] Understood the 4-step cycle after task execution (task-executor → branch on executor result → quality-fixer → commit)
+- [ ] The selected mode's Design Doc verification calls and task quality boundary are applied
 
-**Flow Adherence**: Follow the applicable Structural Scale flow and the 4-step task execution cycle in subagents-orchestration-guide. Advance only when the current phase or cycle step satisfies its stated transition condition.
+**Flow Adherence**: Follow the applicable Structural Scale flow and selected mode's task cycle in subagents-orchestration-guide. Advance only when an applicable phase or cycle step satisfies its stated transition condition.
 
 ## Scope Boundary for Subagents
 
@@ -83,31 +82,31 @@ Return to Requirement Change Detection when confirmed outcome, desired-future re
 ## Mandatory Orchestrator Responsibilities
 
 ### Task Execution Quality Cycle
-Execute the following dependency-ordered steps, advancing only when the current step's response condition is satisfied:
+Execute the following dependency-ordered steps. Normal Mode and Small run all four steps. Lite Mode with a Work Plan task set proceeds from accepted step-2 results to step 4 and runs the Final Quality Run after the last task:
 1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly as the execution scope, since Small produces no task file.
 2. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → Apply subagents-orchestration-guide Specialist Result Acceptance
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
      - `needs_revision` → Apply Review Resolution and return to step 1 with the original execution scope plus the complete `apply` quality-issue objects passed verbatim as `correction_findings`
-     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to step 3
-     - `pass` → Proceed to step 3
-   - Otherwise → Proceed to step 3
-3. **INVOKE quality-fixer**: Execute all quality checks and fixes against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Medium/Large also pass the current `task_file`; Small passes the direct execution scope. Pass the implementation step's `runnableCheck` and `qualityCommand` when the governing source or repository convention names one.
+     - `blocked` → Resolve moved or renamed test paths from the current diff and re-run when the resolved input changes the review target. If no readable changed test exists despite `requiresTestReview: true`, return that executor-output defect to step 1 as `correction_findings`; otherwise record the review as not run with its `blockingReason` and proceed to the next applicable step
+     - `pass` → Proceed to the next applicable step
+   - Otherwise → Proceed to the next applicable step
+3. **INVOKE quality-fixer (Normal Mode or Small)**: Execute all quality checks and fixes against the complete current uncommitted worktree, including untracked, deleted, and renamed paths (cross-layer: see Layer-Aware Agent Routing). Medium/Large also pass the current `task_file`; Small passes the direct execution scope. Pass the implementation step's `runnableCheck` and `qualityCommand` when the governing source or repository convention names one.
    - `stub_detected` → Return to step 1 and re-invoke task-executor with the original execution scope and `incompleteImplementations[]`
    - `blocked` → Apply Specialist Result Acceptance
    - `verification_incomplete` → Retain the complete result for final retry and proceed to step 4
    - `pass` → Proceed to step 4
-4. **COMMIT**: Commit the completed task change set after `pass` or `verification_incomplete`
+4. **COMMIT**: Commit the completed task change set after its applicable mode's quality boundary
 
 ### Post-Implementation Review (Medium/Large, After All Tasks Complete)
 
-Apply the proof-limitation retry in subagents-orchestration-guide Specialist Result Acceptance before the document-dependent reviewers. Continue after clearing or retaining each result and report only repeated limitations.
+For Lite Mode with a Work Plan task set, run the Final Quality Run before the document-dependent reviewers. Otherwise apply the proof-limitation retry in Specialist Result Acceptance. Continue after clearing or retaining each result and report only repeated limitations.
 
 Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
-Emit these Agent calls in one assistant message, then await both:
-- code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved typed `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
-- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same typed `governingDocuments` and `implementationFiles`
+Invoke code-reviewer and, in Normal Mode, security-reviewer. When both apply, emit their calls in one assistant message and await both:
+- code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
+- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same `governingDocuments` and `implementationFiles`
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 

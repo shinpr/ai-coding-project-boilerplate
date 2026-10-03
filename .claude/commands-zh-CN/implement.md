@@ -63,10 +63,9 @@ description: 编排从需求到部署的完整实现生命周期
 - [ ] 已明确下一步
 - [ ] 已认识到停止点 → **在每个停止点等待用户的明确确认**
 - [ ] 每次创建设计文档前均包含 codebase-analyzer
-- [ ] 每份设计文档在 document-reviewer 之前均包含 code-verifier
-- [ ] 已理解任务执行后的 4 步循环（task-executor → 根据执行者结果分支 → quality-fixer → 提交）
+- [ ] 已应用所选模式的设计文档验证调用和任务质量边界
 
-**流程严守**：遵循 subagents-orchestration-guide 中适用的结构规模流程以及 4 步任务执行循环。仅当当前阶段或循环步骤满足其所述的转移条件时才推进。
+**流程严守**：遵循 subagents-orchestration-guide 中适用的结构规模流程及所选模式的任务循环。仅当适用阶段或循环步骤满足其所述的转移条件时才推进。
 
 ## 子智能体的范围边界
 
@@ -83,31 +82,31 @@ description: 编排从需求到部署的完整实现生命周期
 ## 编排者的强制职责
 
 ### 任务执行质量循环
-执行以下按依赖顺序排列的步骤，仅当当前步骤所述的响应条件被满足时才推进：
+执行以下按依赖顺序排列的步骤。Normal 模式和 Small 执行全部四步。工作计划任务集合在 Lite 模式下受理步骤 2 的结果后进入步骤 4，并在最后一个任务之后运行最终质量检查：
 1. **调用 task-executor**：执行实现（跨层时参见“分层感知智能体路由”）。Medium/Large 传递任务文件。Small 不产生任务文件，因此直接将已批准的成果、约束来源、受影响路径和验证条件作为执行范围传递。
 2. **检查 task-executor 的响应**：
    - `status: "escalation_needed"` 或 `"blocked"` → 应用 subagents-orchestration-guide 的“专家结果受理”
    - `requiresTestReview` 为 `true` → 执行 **integration-test-reviewer**，传递已变更的集成/E2E 测试路径和 `diffBase: HEAD`。对于 Medium/Large 还需传递 `taskFiles: [当前任务文件路径]`；对于 Small 则改为传递直接范围的验证主张。然后依据其 `status` 分支
      - `needs_revision` → 应用评审裁定，并带着原有的执行范围以及作为 `correction_findings` 逐字传递的完整 `apply` 质量问题对象返回步骤 1
-     - `blocked` → 从当前差异中解析被移动或重命名的测试路径，并在解析后的输入改变了评审目标时重新运行。如果尽管 `requiresTestReview: true` 却不存在可读的已变更测试，则将该执行者输出缺陷作为 `correction_findings` 返回步骤 1；否则将该评审记录为未运行并附上其 `blockingReason`，然后进入步骤 3
-     - `pass` → 推进到步骤 3
-   - 其他情况 → 推进到步骤 3
-3. **调用 quality-fixer**：针对当前完整的未提交工作树执行所有质量检查与修复，包括未跟踪、已删除和已重命名的路径（跨层时参见“分层感知智能体路由”）。Medium/Large 还需传递当前的 `task_file`；Small 传递直接的执行范围。当约束来源或仓库惯例指明时，传递实现步骤的 `runnableCheck` 和 `qualityCommand`。
+     - `blocked` → 从当前差异中解析被移动或重命名的测试路径，并在解析后的输入改变了评审目标时重新运行。如果尽管 `requiresTestReview: true` 却不存在可读的已变更测试，则将该执行者输出缺陷作为 `correction_findings` 返回步骤 1；否则将该评审记录为未运行并附上其 `blockingReason`，然后进入下一个适用步骤
+     - `pass` → 进入下一个适用步骤
+   - 其他情况 → 进入下一个适用步骤
+3. **调用 quality-fixer（Normal 模式或 Small）**：针对当前完整的未提交工作树执行所有质量检查与修复，包括未跟踪、已删除和已重命名的路径（跨层时参见“分层感知智能体路由”）。Medium/Large 还需传递当前的 `task_file`；Small 传递直接的执行范围。当约束来源或仓库惯例指明时，传递实现步骤的 `runnableCheck` 和 `qualityCommand`。
    - `stub_detected` → 返回步骤 1，并以原有的执行范围和 `incompleteImplementations[]` 重新调用 task-executor
    - `blocked` → 应用“专家结果受理”
    - `verification_incomplete` → 保留完整结果以供最终重试，并进入步骤 4
    - `pass` → 推进到步骤 4
-4. **提交**：在 `pass` 或 `verification_incomplete` 之后提交已完成任务的变更集
+4. **提交**：满足适用模式的质量边界后，提交已完成任务的变更集
 
 ### 实现后评审（Medium/Large，所有任务完成后）
 
-在调用依赖文档的评审者之前，应用 subagents-orchestration-guide 的“专家结果受理”中的证明局限重试。在解除或保留每个结果后继续，并仅报告重复出现的证明局限。
+对于 Lite 模式下的工作计划任务集合，在依赖文档的评审者之前运行最终质量检查。其他情况应用“专家结果受理”中的证明局限重试。在解除或保留每个结果后继续，并仅报告重复出现的证明局限。
 
 解析工作计划中可读的设计文档；缺少输入将阻塞评审。
 
-在一条助手消息中发出以下 Agent 调用，然后等待两者：
-- code-reviewer（subagent_type: "code-reviewer"）→ 使用解析出的带类型 `governingDocuments`、已完成任务实际变更的文件作为 `implementationFiles`、以及工作计划路径，评审已完成的实现
-- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的带类型 `governingDocuments` 和 `implementationFiles` 评审已完成的实现
+调用 code-reviewer，并在 Normal 模式下调用 security-reviewer。两者均适用时，在一条助手消息中发出调用，然后等待两者：
+- code-reviewer（subagent_type: "code-reviewer"）→ 使用解析出的 `governingDocuments`、已完成任务实际变更的文件作为 `implementationFiles`、以及工作计划路径，评审已完成的实现
+- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的 `governingDocuments` 和 `implementationFiles` 评审已完成的实现
 
 应用 subagents-orchestration-guide 的实现后评审状态路由与修复/重跑规则。呈现统一报告；在完整评审集达到评审裁定的收敛条件之后，进入最终清理。
 

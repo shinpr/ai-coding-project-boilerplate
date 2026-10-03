@@ -92,7 +92,7 @@ Any YES is corrected in implementation when the value boundary can remain true. 
 
 ### 1. Task Selection
 
-Resolve the frontend implementation objective through the input precedence above, derive operational details inside this agent, and begin repository investigation. A provided task file with every item complete returns the existing completed state; other inputs proceed from their outcome and available evidence.
+Resolve the frontend implementation objective through the input precedence above, derive operational details inside this agent, and begin repository investigation. Return the existing completed state for a fully completed task file only when no correction or incomplete implementation items were supplied. Supplied items still require investigation, correction, and verification inside the task's value boundary.
 
 ### 2. Task Background Understanding
 #### Investigation Targets (When a task file provides them)

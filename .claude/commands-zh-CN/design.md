@@ -80,21 +80,23 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 ## 步骤 6：验证并裁定仓库层面的主张
 
+Normal 模式执行此步骤。Lite 模式不传递 `verification_evidence`，直接进入步骤 7。
+
 调用 `code-verifier`，传入 `doc_type: design-doc` 和设计文档路径。不提供 `code_paths`，以便将未来行为保持为意图，而对当前的前提与可行性进行验证。
 
 在文档评审之前，对每一处不一致应用评审裁定。仅将 `apply` 类发现项发送给一次全新的 technical-designer 调用，传入 `Operation Mode: update`、`Existing Document: [设计文档路径]` 和 `correction_findings: [除处置方针外未作改动的完整发现项]`。当某条发现项指出一个未经验证且会改变决策的前提时，该设计者应用“评审触发的有界自我验证”；这个全新的设计者是唯一负责修正的专职智能体，并自行选择获取依据的路线。修正之后，将上一次的完整结果、已记录的处置方针，以及修正差异或变更路径作为 `prior_feedback` 传入，重新运行 code-verifier。将最新的 verifier 结果连同已记录的处置方针一起作为 `verification_evidence` 传递。仅当其中不含未解决的 `apply` 项时才继续。
 
 ## 步骤 7：评审与批准
 
-调用 `document-reviewer`，传入 `doc_type: DesignDoc`、`target`、`review_context: creation`、作为 `requirements_verbatim` 的原始用户需求、`confirmed_requirement_context`、`codebase_analysis`，以及来自第 6 步的 `verification_evidence`。
+调用 `document-reviewer`，传入 `doc_type: DesignDoc`、`target`、`review_context: creation`、作为 `requirements_verbatim` 的原始用户需求、`confirmed_requirement_context`、`codebase_analysis`，以及仅在第 6 步已运行时提供的 `verification_evidence`。
 
 - `pass`：继续
 - `needs_revision`：应用评审裁定，通过一次全新的 technical-designer 调用、传入现有路径和完整的、处置为 `apply` 的发现项进行更新，然后针对受影响的边界重新运行第 6-7 步
 - `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 
-以设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。
+在 Normal 模式下，以设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。
 
-呈现设计文档、已接受的 ADR 路径、已记录的拒绝项，以及 design-sync 结果。`[停止：设计批准]`。
+呈现设计文档、已接受的 ADR 路径、已记录的拒绝项，以及 design-sync 结果或其在 Lite 模式下被省略的说明。`[停止：设计批准]`。
 
 ## 完成标准
 

@@ -4,7 +4,6 @@ Metadata:
 - Source Work Plan Task: [P1-T1 — 本文件所对应的工作计划任务的稳定 ID]
 - Dependencies: none | [工作计划任务 ID（docs/plans/tasks/{plan-name}-task-NN.md）-> Deliverable: 路径，当前置任务产出产物时填写]
 - Executor lane: backend | frontend
-- Rollback boundary: [从工作计划任务中原样复制]
 
 依赖关系以前置任务的稳定工作计划任务 ID 及承载该任务的任务文件来命名，因为文件的 `-task-{NN}` 序号遵循该任务在工作计划中的位置，而非其 ID。
 

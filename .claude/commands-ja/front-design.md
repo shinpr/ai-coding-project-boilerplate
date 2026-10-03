@@ -100,17 +100,17 @@ Design Doc はコンポーネントからサービスまでの完全な実装を
 
 ## ステップ8: 検証・レビュー・承認
 
-`code-verifier` を `doc_type: design-doc` と返却された Design Doc のパスで呼び出し、`code_paths` は指定しない。ドキュメントレビューの前にレビュー対応を適用する。apply 対象の finding は、新しい technical-designer-frontend 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提には、designer がレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は、前回の完全な結果・記録した処理方針・修正差分または変更パスを `prior_feedback` として渡して検証を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。残るすべての discrepancy に処理方針が付いた時点で次へ進む。
+Normalモードで、`code-verifier` を `doc_type: design-doc` と返却された Design Doc のパスで呼び出し、`code_paths` は指定しない。ドキュメントレビューの前にレビュー対応を適用する。apply 対象の finding は、新しい technical-designer-frontend 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提には、designer がレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は、前回の完全な結果・記録した処理方針・修正差分または変更パスを `prior_feedback` として渡して検証を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。残るすべての discrepancy に処理方針が付いた時点で次へ進む。Liteモードではこの検証エビデンスなしで進む。
 
-`document-reviewer` を、`doc_type: DesignDoc`、返却された Design Doc のパス、`review_context: creation`、ユーザー要件の原文、`confirmed_requirement_context`、designerに渡したものと同じ変更していない分析入力、`verification_evidence` で呼び出す。
+`document-reviewer` を、`doc_type: DesignDoc`、返却された Design Doc のパス、`review_context: creation`、ユーザー要件の原文、`confirmed_requirement_context`、designerに渡したものと同じ変更していない分析入力、および検証を実行した場合のみ `verification_evidence` で呼び出す。
 
 - `pass`: 次へ進む
 - `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer-frontend 呼び出しで更新した上で、影響を受けた境界について検証とレビューを再実行する
 - `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
 
-返却された Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果が `analyzed_docs: 0` の場合は、他の Design Doc が存在しないため整合性検証を省略したと報告する。
+Normalモードで、返却された Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果が `analyzed_docs: 0` の場合は、他の Design Doc が存在しないため整合性検証を省略したと報告する。Liteモードでは、以下の承認停止点を維持し、整合性検証の省略を報告する。
 
-該当するUI Spec、Design Doc、承認済みADRのパス、記録した decline、sync 結果を提示する。`[停止: 設計承認]`。
+該当するUI Spec、Design Doc、承認済みADRのパス、記録した decline、sync 結果またはLiteモードで省略したことを提示する。`[停止: 設計承認]`。
 
 ## 完了条件
 

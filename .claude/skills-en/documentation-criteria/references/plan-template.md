@@ -18,13 +18,7 @@ Related Issue/PR: #XXX (if any)
 
 ## Implementation Phases
 
-Use the implementation approach and dependency order from the Design Doc. Each phase groups the work that reaches a shared observable verification point. Keep implementation, tests, configuration, wiring, and documentation together when they become complete at that point.
-
-Shape phases from the selected approach:
-
-- **Vertical Slice**: each phase is one value unit carrying its implementation and verification
-- **Horizontal Slice**: each phase completes and verifies one required architecture layer before their integration point
-- **Hybrid**: combine verified shared prerequisites with outcome-oriented slices and name the observable verification for each phase
+Use the implementation approach and dependency order from the Design Doc. Phases group tasks in that order. Each task keeps implementation, tests, configuration, wiring, and documentation together when they become complete at the same observable verification point.
 
 Whole-repository quality assurance remains a separate execution responsibility.
 
@@ -39,7 +33,6 @@ Each `PN-TN` checkbox entry is one implementation task. `PN-TN` is its stable ID
   - **Scope**: [responsibility, component, or expected files]
   - **Depends on**: none | [task IDs]
   - **Executor lane**: backend|frontend
-  - **Rollback boundary**: [repository change that reverts with this task]
   - **Verification**: [Design Doc verification method or repository command]
   - **Verification Focus** (optional): **Primary failure** — [most material false-green state]; **Observable check** — [smallest check that detects it]
 
@@ -52,7 +45,6 @@ Each `PN-TN` checkbox entry is one implementation task. `PN-TN` is its stable ID
   - **Scope**: [responsibility, component, or expected files]
   - **Depends on**: [task IDs]
   - **Executor lane**: backend|frontend
-  - **Rollback boundary**: [repository change that reverts with this task]
   - **Verification**: [Design Doc verification method or repository command]
   - **Verification Focus** (optional): **Primary failure** — [...]; **Observable check** — [...]
 

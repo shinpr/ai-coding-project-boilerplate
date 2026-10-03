@@ -22,6 +22,12 @@ description: 通过基于规模的规划、审批、实现、验证和上报流�
 
 在收到新的全周期任务时，将用户需求传递给 requirement-analyzer，并将用户的原话保留在编排者手中。将返回的范围、成本和问题依据与这些原话进行对照，以执行需求收敛并分配结构规模。评估性请求、设想性想法和指定的机制要根据用户的原话来分类，而不是根据分析器的输出。这两项判断均由编排者负责。仅当询问所得的答复改变了分析对象或所需的范围依据时，才重新调用 requirement-analyzer。
 
+### 工作流模式
+
+在工作流开始或恢复时路由调用之前，先解析用户明确选择的模式，再解析已加载的根 `CLAUDE.md` 中的 `Workflow Mode` 指令；两者均未指定时使用 Normal 模式。会话中的明确选择持续生效，直到用户更改，并优先于仓库默认值。
+
+下方流程描述 Normal 模式。使用 Lite 模式时，阅读 `references/lite-mode.md`，并应用其调用集合与质量边界。执行保留的调用，仅使用这些调用实际产出的结果。用户批准停止点和权限边界对两种模式均适用。
+
 ### 流程中的需求变更检测
 
 将对已确认成果、目标状态需求或非目标的变更提议视为需求变更。当依据表明这些价值边界无法同时成立时，在需求确认关口停下，询问用户要更改哪个边界。保留这些边界的技术设计或实现修正不属于需求变更，移除一个仍可运行但已不再需要的技术选择也同样如此；通过了较早的阶段，并不能证明该阶段选定的手段仍然必要。更新每个受影响的技术产物，并从受影响的最早技术检查点恢复执行，同时保留仍然有效的产出。
@@ -105,8 +111,7 @@ description: 通过基于规模的规划、审批、实现、验证和上报流�
 
 ### 我管理的标准流程
 
-**基本循环**：我管理 `task-executor -> 根据执行者结果分支 -> quality-fixer -> 提交` 的 4 步循环。
-我为每个任务重复此循环以确保质量。
+**任务循环**：受理每个任务的实现结果及必需的集成/E2E 评审，应用所选模式的质量边界，然后在配方的提交点提交已完成任务。Normal 模式对每个任务运行 quality-fixer；Lite 模式使用最终质量检查。每个任务仍保留针对性的验证。
 
 **分层感知路由**：对于跨层功能，根据任务文件名模式选择执行者和 quality-fixer（参见“跨层编排”）。
 
@@ -202,26 +207,24 @@ Small 不产生工作计划或任务文件。新发现的合格 ADR 会将工作
 |------|-------|------|
 | 8 | codebase-analyzer | 分析完整的已确认跨层范围，仅传递一个约束来源：`prd_path` 或 `requirements` |
 | 9 | technical-designer | 后端设计文档（使用步骤 8 中相关的后端依据） |
-| 10 | code-verifier | 对照现有代码验证后端设计文档（其结果 JSON 成为步骤 12 的 `prior_layer_verification`） |
-| 11 | document-reviewer | 评审后端设计文档（将步骤 10 的结果作为 `verification_evidence`、步骤 8 的 JSON 作为 `codebase_analysis` 传递）；按评审裁定的“评审结论条件”路由评审结论 |
-| 12 | technical-designer-frontend | 前端设计文档（使用步骤 8 中相关的前端依据 + 已评审的后端设计文档 + 步骤 10 的 `prior_layer_verification` + UI 规范） |
-| 13 | code-verifier | 对照现有代码验证前端设计文档 |
-| 14 | document-reviewer | 评审前端设计文档（将步骤 13 的结果和已记录的处置作为 `verification_evidence` 传递，加上步骤 8 的 JSON 作为 `codebase_analysis`）。在步骤 15 之前按评审裁定的“评审结论条件”路由评审结论。 |
-| 15 | design-sync | 跨层一致性验证 **[停止]** |
+| 10 | code-verifier（Normal 模式） | 对照现有代码验证后端设计文档（其结果 JSON 成为步骤 12 的 `prior_layer_verification`） |
+| 11 | document-reviewer | 评审后端设计文档（步骤 10 已运行时传递 `verification_evidence`，并将步骤 8 的 JSON 作为 `codebase_analysis`）；按评审裁定的“评审结论条件”路由评审结论 |
+| 12 | technical-designer-frontend | 前端设计文档（使用步骤 8 中相关的前端依据、已评审的后端设计文档、UI 规范，以及步骤 10 已运行时的 `prior_layer_verification`） |
+| 13 | code-verifier（Normal 模式） | 对照现有代码验证前端设计文档 |
+| 14 | document-reviewer | 评审前端设计文档（步骤 13 已运行时传递 `verification_evidence`，并将步骤 8 的 JSON 作为 `codebase_analysis`）。按评审裁定的“评审结论条件”路由评审结论。 |
+| 15 | design-sync（Normal 模式） | 跨层一致性验证，然后两种模式均进入设计文档批准 **[停止]** |
 
-步骤 8 只运行一次，其完整 JSON 由两位设计者原样复用；各自使用与其所在层相关的依据。后端路径（步骤 9-11）在步骤 12 之前顺序运行，以便前端设计者同时获得仓库验证结果和已评审的后端契约。
+步骤 8 只运行一次，其完整 JSON 由两位设计者原样复用；各自使用与其所在层相关的依据。保留的后端步骤在步骤 12 之前顺序运行，以便前端设计者获得已评审的后端契约，以及实际运行过的仓库验证结果。
 
 **设计文档创建中的层上下文**：
 - **后端**：“根据 [路径] 的 PRD 创建后端设计文档。代码库分析：[步骤 8 的 JSON；使用与后端相关的依据]。重点关注：API 契约、数据层、业务逻辑、服务架构。”
-- **前端**：“根据 [路径] 的 PRD 创建前端设计文档。代码库分析：[步骤 8 的 JSON；使用与前端相关的依据]。位于 [路径] 的已评审后端设计文档——从该文档中提取 API 契约和集成点，以填充前端设计文档的集成点。后端评审问题与处置：[步骤 11 document-reviewer 的结果与评审裁定记录]。prior_layer_verification：[对后端设计文档运行 code-verifier 得到的 JSON]。只将有依据支持的差异和被维持的评审问题视为不稳定契约。参考 [路径] 的 UI 规范以获取组件结构。重点关注：组件层级、状态管理、UI 交互、数据获取。”
+- **前端**：“根据 [路径] 的 PRD 创建前端设计文档。代码库分析：[步骤 8 的 JSON；使用与前端相关的依据]。位于 [路径] 的已评审后端设计文档——从该文档中提取 API 契约和集成点，以填充前端设计文档的集成点。后端评审问题与处置：[步骤 11 document-reviewer 的结果与评审裁定记录]。prior_layer_verification：[对后端设计文档运行 code-verifier 得到的 JSON，仅在验证已运行时提供；否则省略此输入]。只将有依据支持的差异和被维持的评审问题视为不稳定契约。参考 [路径] 的 UI 规范以获取组件结构。重点关注：组件层级、状态管理、UI 交互、数据获取。”
 
 **design-sync**：以前端设计文档为源。design-sync 会自动在 `docs/design/` 中发现其他设计文档以供比较。
 
 ### 使用多个设计文档进行工作规划
 
-将所有设计文档传递给 work-planner，并附带垂直切分说明：
-- 明确提供所有设计文档路径
-- 指示：“将各阶段组成垂直的功能切片——每个阶段应包含同一功能领域的后端和前端工作，以便每个阶段都能进行早期集成验证。”
+将所有已评审的设计文档路径及所提供的测试骨架路径传递给 work-planner。它按照所选实现方法、依赖关系以及最早可执行的验证边界定义任务。
 
 ### 分层感知智能体路由（Layer-Aware Agent Routing）
 
@@ -247,8 +250,8 @@ Small 不产生工作计划或任务文件。新发现的合格 ADR 会将工作
 - `status: escalation_needed` 或 `status: blocked` -> 应用“专家结果受理”
 - `requiresTestReview` 为 `true` -> 执行 **integration-test-reviewer**
   - 若 `status` 为 `needs_revision` -> 应用评审裁定，并使用相同的 `task_file` 和完整的 `apply` 质量问题对象（原样作为 `correction_findings`）重新调用已路由的执行者（根据分层感知智能体路由，为 task-executor 或 task-executor-frontend）
-  - 若 `status` 为 `blocked` -> 解决已移动或重命名的变更测试路径，并重新调用一次评审者。若尽管 `requiresTestReview: true` 但不存在任何变更测试，将该执行者输出缺陷作为 `correction_findings` 返回给已路由的执行者。若再次返回 `blocked`，则记录该评审未运行，并继续进入 quality-fixer
-  - 若 `status` 为 `pass` -> 进入 quality-fixer
+  - 若 `status` 为 `blocked` -> 解决已移动或重命名的变更测试路径，并重新调用一次评审者。若尽管 `requiresTestReview: true` 但不存在任何变更测试，将该执行者输出缺陷作为 `correction_findings` 返回给已路由的执行者。若再次返回 `blocked`，则记录该评审未运行，并进入所选模式的质量/提交边界
+  - 若 `status` 为 `pass` -> 进入所选模式的质量/提交边界
 
 ### 停止自主执行的条件
 
@@ -312,7 +315,7 @@ Small 不产生工作计划或任务文件。新发现的合格 ADR 会将工作
    #### code-verifier → document-reviewer（设计文档评审）
 
    **传递给 code-verifier**：设计文档路径（doc_type: design-doc）。省略 `code_paths`；验证者独立地从文档中发现代码范围。
-   **传递给 document-reviewer**：最新的 code-verifier 结果连同已记录的评审裁定处置作为 `verification_evidence`，之前提供给设计者的同一份 codebase-analyzer JSON 作为 `codebase_analysis`，约束来源作为 `confirmed_requirement_context`，以及适用时原始请求作为 `requirements_verbatim`。评审者使用 `codebase_analysis.focusAreas` 来验证事实处置表的覆盖情况，并使用已确认需求上下文来验证文档的结果和契约。
+   **传递给 document-reviewer**：仅在验证已运行时，将最新的 code-verifier 结果及已记录的评审裁定处置作为 `verification_evidence`；否则省略此输入。始终传递之前提供给设计者的同一份 codebase-analyzer JSON 作为 `codebase_analysis`、约束来源作为 `confirmed_requirement_context`，以及适用时的原始请求作为 `requirements_verbatim`。评审者使用 `codebase_analysis.focusAreas` 验证事实处置表的覆盖情况，并使用已确认需求上下文验证文档的结果和契约。
 
    #### 处置为 `apply` 的设计依据发现 → technical-designer
 
@@ -320,7 +323,7 @@ Small 不产生工作计划或任务文件。新发现的合格 ADR 会将工作
 
    #### code-verifier + document-reviewer → 下一层 technical-designer（仅跨层流程）
 
-   **传递给下一层 technical-designer**：已评审的上一层设计文档路径，加上 `prior_layer_verification`（来自上一层 code-verifier 的 JSON）。参见“跨层编排”章节了解顺序安排。使用 `prior_layer_verification.discrepancies[]` 加上上一层评审发现来识别不稳定契约。将已验证声明的推断限制在验证者输出明确陈述的内容范围内；当设计必须依赖一个未经验证者确认的声明时，在前端设计文档的“跨层假设”一节中记录该声明，并附上理由和验证目标（上报时使用同一章节，标注“验证位置：上报给用户”——仅当该依赖无法通过下游验证步骤加以约束时才选择上报）。
+   **传递给下一层 technical-designer**：传递已评审的上一层设计文档路径，并仅在上一层 code-verifier 已运行时传递 `prior_layer_verification`。参见“跨层编排”章节了解顺序安排。使用可用的验证差异和上一层评审发现识别不稳定契约。将已验证声明的推断限制在实际依据所支持的范围内；当设计依赖未经验证的声明时，在前端设计文档的“跨层假设”一节中记录理由和验证目标。仅当该依赖无法通过下游验证步骤加以约束时才上报。
 
    #### technical-designer → work-planner
 
@@ -337,7 +340,7 @@ Small 不产生工作计划或任务文件。新发现的合格 ADR 会将工作
 
 ## 重要约束
 
-- **质量检查**：仅当 quality-fixer 返回 `pass` 或 `verification_incomplete` 后，才允许在所调用配方定义的提交点提交
+- **提交边界**：Normal 模式的任务提交和质量检查产生的修正提交，需要 quality-fixer 返回 `pass` 或 `verification_incomplete`。Lite 模式的任务提交在受理执行者结果和必需的测试评审结果后进行；最终质量检查在实现后评审之前运行。仅在所调用配方定义的提交点提交
 - **结构化响应**：子智能体之间传递的信息使用已声明的 JSON 字段
 - **批准管理**：文档创建之后，进入下一阶段前需经过 document-reviewer 和已命名的用户批准停止点
 - **流程确认**：批准后，从已确认的 Large/Medium/Small 规模流程中选择下一步
@@ -355,3 +358,8 @@ Small 不产生工作计划或任务文件。新发现的合格 ADR 会将工作
 **修正周期交接**：应用评审裁定并调用其选定的每个修正负责人。对于作者所属的技术产物修正，以更新模式调用相应层级的技术设计者，运行该产物现有的 document-reviewer 和适用的 design-sync 检查，然后重新运行发起该评审的评审者。对于执行者所属的修正，用其原始的 `task_file` 或直接范围字段，加上作为完整 `apply` 发现对象（原样，仅添加其处置）的 `correction_findings`，调用相应层级的执行者，然后按每个任务循环的步骤 2（包括其中视条件执行的 integration-test-reviewer 路径）对执行者结果分支，并运行适用的质量检查。当同时需要两方负责人时，由评审裁定的作者优先重新评估机制来控制顺序。仅将 `prior_feedback` 传递给复核评审者。
 
 **重新运行规则**：评审者返回的通过（passing）结果保持有效。只重新运行其最新结果中已应用修正的那个评审者，并将已记录的处置作为 `prior_feedback`、连同重新推导的实现文件集合一起传入，使其针对修正后的状态进行复核。恢复被阻塞的评审前置条件后，重新运行相应评审者。是否接受修正由评审裁定的收敛机制决定，已解决的拒绝项保持有效。
+
+## 参考资料
+
+- `references/review-resolution.md`：发现项的处置、修正与收敛
+- `references/lite-mode.md`：Lite 模式的调用集合与最终质量检查
