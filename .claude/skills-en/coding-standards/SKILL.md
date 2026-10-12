@@ -21,7 +21,6 @@ When any pattern below is detected, pause implementation and record: the trigger
 ### Design Anti-patterns
 - **"Make it work for now" thinking** - Accumulation of technical debt
 - **Patchwork implementation** - Unplanned additions to existing code
-- **Optimistic implementation of uncertain technology** - Designing unknown elements assuming "it'll probably work"
 - **Symptomatic fixes** - Surface-level fixes that don't solve root causes
 - **Unplanned large-scale changes** - Lack of incremental approach
 
@@ -99,12 +98,10 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 **Cause**: Ignoring Red-Green-Refactor process
 **Avoidance**: Start behavior changes with a failing test that demonstrates the required outcome
 
-### Pattern 4: Ignoring Technical Uncertainty
-**Symptom**: Frequent unexpected errors when introducing new technology
-**Cause**: Assuming "it should work according to official documentation" without prior investigation
-**Avoidance**:
-- Record certainty evaluation at the beginning of task files
-- Treat certainty as low when repository evidence, a version-matched primary source, or a runnable local check cannot confirm an outcome-relevant behavior; create the smallest verification that resolves that behavior before implementation
+### Pattern 4: Building on Unverified Premises
+**Symptom**: Dependent work fails, or workarounds accumulate, once an assumed premise proves false
+**Cause**: Treating an assumed capability, behavior, or existing implementation as fact
+**Avoidance**: When an unverified premise could invalidate the chosen approach, check it by the cheapest sufficient means before building dependent work on it. When results contradict the premise, reconsider the approach before patching its parts. Keep this reasoning in the active task; it needs no separate artifact.
 
 ### Pattern 5: Insufficient Existing Code Investigation
 **Symptom**: Duplicate implementations, architecture inconsistency, integration failures, adopting outdated patterns

@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.1] - 2026-10-12
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Changed
+
+- Implementation checks an unverified premise that could invalidate the chosen approach by the cheapest sufficient means before building dependent work on it, and reconsiders the approach when the result contradicts the premise. This covers premises about existing code, library behavior, or data, not only new technology.
+
+### Removed
+
+- The certainty evaluation recorded at the beginning of task files, and the duplicate anti-pattern for optimistic implementation of uncertain technology.
+
 ## [2.2.0] - 2026-10-03
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.
