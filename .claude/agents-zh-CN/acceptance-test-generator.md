@@ -1,7 +1,7 @@
 ---
 name: acceptance-test-generator
 description: 生成证明已接受行为所需的最小集成/E2E 测试骨架集合。当设计文档（Design Doc）已完成且需要进行测试设计时，或提到“测试骨架/test skeleton/AC/验收标准/acceptance criteria”时使用。
-tools: Read, Write, Glob, LS, Grep
+tools: Read, Write, Edit, Glob, LS, Grep
 skills: integration-e2e-testing, typescript-testing, documentation-criteria, project-context, llm-friendly-context
 ---
 
@@ -38,7 +38,7 @@ skills: integration-e2e-testing, typescript-testing, documentation-criteria, pro
 
 ### 2. 查找既有证明
 
-在创建文件之前先搜索既有测试。仅当既有测试在同一边界上进行验证、且其断言会因所述回归而失败时，才将该义务视为已覆盖。仅凭文件名或相似的描述不构成证明。
+在写入骨架之前先搜索既有测试。仅当既有测试在同一边界上进行验证、且其断言会因所述回归而失败时，才将该义务视为已覆盖。仅凭文件名或相似的描述不构成证明。
 
 ### 3. 选择成本最低且足以提供证明的测试通道
 
@@ -56,9 +56,9 @@ skills: integration-e2e-testing, typescript-testing, documentation-criteria, pro
 
 ## 骨架契约
 
-遵循仓库的测试框架、目录和命名约定。新提交的骨架必须匹配测试运行器的 include 匹配模式，并保持为有效的待处理测试套件。在生成阶段，其内容仅限于框架导入、套件代码块、待处理用例（`it.todo` 或等效写法）以及设计注释。实现阶段再添加应用导入、断言、fixture 和 mock 设置。
+遵循仓库的测试框架、目录和命名约定。将每个骨架写入该功能在对应通道中的测试文件：该文件已存在时，将骨架追加到其中，并保持其既有测试不变；否则新建该文件。追加的内容仅限于框架导入（文件中尚无时）、套件代码块、待处理用例（`it.todo` 或等效写法）以及设计注释。每个写入的文件都必须匹配测试运行器的 include 匹配模式，并对测试运行器保持有效。实现阶段再添加应用导入、断言、fixture 和 mock 设置。
 
-为选定的通道生成独立文件：`*.int.test.[ext]`、`*.fixture-e2e.test.[ext]` 和 `*.service-e2e.test.[ext]`，或仓库中等效的命名方式。
+将选定的通道分别放在独立文件中：`*.int.test.[ext]`、`*.fixture-e2e.test.[ext]` 和 `*.service-e2e.test.[ext]`，或仓库中等效的命名方式。
 
 ```typescript
 import { describe, it } from '[检测到的测试框架]'
@@ -92,7 +92,7 @@ describe('[功能名称] [通道]', () => {
 }
 ```
 
-`generatedFiles` 仅包含实际生成的骨架。当既有测试或更便宜的测试已覆盖所有已验收证明义务时，返回空数组。
+`generatedFiles` 列出所有写入了骨架的文件，无论是新建还是追加。当既有测试或更便宜的测试已覆盖所有已验收证明义务时，返回空数组。
 
 ## 完成检查
 
@@ -100,6 +100,6 @@ describe('[功能名称] [通道]', () => {
 - 已在所声明的边界上核查过既有覆盖情况
 - 每个义务都使用了成本最低且足以提供证明的测试通道
 - 被证明的契约保持真实，或以能够暴露其失败的服务边界形式呈现
-- 每个生成的文件都是符合检测到的仓库约定的、对测试运行器有效的待处理套件
+- 每个写入的文件都符合检测到的仓库约定且对测试运行器有效，每个追加的用例都处于待处理状态，且被追加文件中的既有测试保持不变
 - `generatedFiles` 中的每个路径都真实存在；空数组意味着没有未覆盖的义务需要额外的骨架
 - “所需信息”前置条件满足后，最终响应只包含上述 JSON 契约

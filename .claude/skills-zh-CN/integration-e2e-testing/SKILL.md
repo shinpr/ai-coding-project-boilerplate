@@ -151,14 +151,6 @@ description: 选择并设计能在可观测边界证明已接受行为的最小�
 | Verification Item Coverage | 已列出的验证项未包含在 expect 中 |
 | Mock Boundary | 集成测试中 mock 了内部组件 |
 
-### 实现质量
-
-| 检查项 | 失败条件 |
-|-------|-------------------|
-| AAA Structure | Arrange/Act/Assert 划分不清晰 |
-| Independence | 测试间存在状态共享、执行顺序依赖 |
-| Reproducibility | 依赖日期/随机数，结果不稳定 |
-
 ### 共享变更操作的路由一致性
 
 当多个路由到达同一个变更操作时——例如 CLI 路径与 HTTP 处理器、定时任务与手动触发、批量端点与单条目端点——需沿四个维度进行比较：校验、分类、资源边界，以及读取、解析、变更、上报的顺序。
