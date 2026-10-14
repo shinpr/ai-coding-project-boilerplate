@@ -1,6 +1,6 @@
 # E2E Test Design (Browser Harness)
 
-This reference uses Playwright as the default example throughout because it is the standard E2E browser harness assumed by these workflows. Adapt patterns to the project's chosen framework when different (Cypress, Selenium, etc.); the proof-boundary rules remain the same.
+This reference uses Playwright as the default browser harness. Adapt patterns to the project's chosen framework when different (Cypress, Selenium, etc.); the proof-boundary rules remain the same.
 
 ## Two E2E Lanes
 
@@ -10,8 +10,6 @@ E2E tests in this workflow split into two lanes (see parent skill Test Types and
 |------|------|----------------|------|
 | **fixture-e2e** | UI journey verification with deterministic fixtures (mocked backend / fixture data) | A real browser is the claim boundary; backend behavior is supplied as fixture state | Runs in CI with fixture setup |
 | **service-integration-e2e** | Journey correctness depends on real cross-service behavior (data persistence, transactional consistency, external contracts) | The running service boundary is itself part of the claim | Higher setup and maintenance cost; select it when that boundary uniquely exposes the failure |
-
-Both lanes typically use Playwright; the difference is whether the backend is mocked / fixture-driven or running for real.
 
 ## When to Create E2E Tests
 
@@ -62,39 +60,6 @@ Proof Obligation: [boundary and observable state the test must exercise]
 ```
 
 **Lane decision**: choose `fixture-e2e` by default. Promote to `service-integration-e2e` when the verification requires observing real cross-service behavior (e.g., the test asserts that data persists across a real DB write, or that an external service receives the correct payload).
-
-## Playwright Test Architecture
-
-### Page Object Pattern
-
-Organize browser interactions through page objects for maintainability:
-
-```
-tests/
-├── e2e/
-│   ├── pages/                       # Page objects (shared across lanes)
-│   ├── fixtures/                    # Test fixtures and helpers (auth, seed)
-│   ├── data/                        # Static fixture data for fixture-e2e
-│   ├── *.fixture-e2e.test.ts        # fixture-e2e test files
-│   └── *.service-e2e.test.ts        # service-integration-e2e test files
-```
-
-### Test Isolation
-
-- Each test starts from a clean browser context
-- No shared state between tests
-- Use `beforeEach` for common setup (auth, navigation)
-- Prefer `page.goto()` over in-test navigation for setup
-
-### Viewport Testing
-
-When UI Spec defines responsive behavior, test critical breakpoints:
-
-| Breakpoint | Width | When to Test |
-|-----------|-------|-------------|
-| Mobile | UI Spec breakpoint or configured mobile project viewport | If UI Spec defines mobile-specific interactions |
-| Tablet | UI Spec breakpoint or configured tablet project viewport | If UI Spec defines tablet layout differences |
-| Default | Playwright project viewport or UI Spec baseline | For each selected responsive journey |
 
 ## Minimal Set Check
 

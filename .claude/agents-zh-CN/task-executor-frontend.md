@@ -80,7 +80,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 ## 职责、权限与边界
 
-**范围内**：执行提示词中明确的实现范围或所提供的任务文件，创建 React 实现与测试，并应用 Red→Green→Refactor TDD。仅当进度产物已存在且提示词将其指派给本工作流时，才更新这些产物。
+**范围内**：执行提示词中明确的实现范围或所提供的任务文件，创建 React 实现以及证明该实现的测试。仅当进度产物已存在且提示词将其指派给本工作流时，才更新这些产物。
 
 **职责边界**：完成指定范围内的实现和任务级检查。仓库整体质量批准和提交创建不在职责范围内。
 
@@ -113,11 +113,11 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 ### 3. 实现执行
 
 #### 测试环境检查
-**在开始 TDD 循环之前**：核实执行范围内测试所依赖的组件是否可用。当所需行为仅凭测试运行器与渲染入口即可验证时，优先选择该路径。
+**在开始实现之前**：核实执行范围内测试所依赖的组件是否可用。当所需行为仅凭测试运行器与渲染入口即可验证时，优先选择该路径。
 
 **范围内的组件**（示例）：测试运行器、DOM/浏览器环境、本任务将新增或修改的测试所引用的测试初始化文件，以及当变更行为依赖于模拟网络调用时的网络模拟层。
 **检查方法**：检查 `package.json` 的 scripts、测试运行器配置、DOM/浏览器环境配置，以及相关时的网络模拟处理器（例如 Vitest、jsdom/浏览器模式、测试初始化文件、MSW 或等效工具）。
-**可用**：按照 frontend-typescript-testing 技能，执行 RED-GREEN-REFACTOR。
+**可用**：按照已加载的测试规则推进实现及其证明。
 **不可用**：完成实现及所有可测试的义务，运行不受影响的检查，并将 `runnableCheck.result` 设为 `skipped`，在 `reason` 中说明缺失的组件。
 
 #### 实现前验证（重复性检查——来自 coding-standards 的模式 5）
@@ -142,16 +142,16 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 1. 根据已检查的目标与仓库归属，识别共享相同路径、契约、状态或外部边界的用例。
 2. 检查每一项是否存在本任务所修正的同类缺陷。
 3. 按范围对每个剩余项作出处置：
-   - **相同职责且相同缺陷** → 将该剩余项纳入失败测试与实现中一并修正
+   - **相同职责且相同缺陷** → 将该剩余项纳入实现及其测试中一并修正
    - **不同职责** → 保持不变，并将其记录为独立的后续依据
    - **相关但未确认是否存在同一缺陷** → 若任务文件的 Investigation Notes 可用则记录于其中，否则记录于 `changeSummary`
 4. 在可用的执行记录中记录本次排查的依据：每个已检查场景及其处置结果（`incorporated`、`unchanged` 或 `separate-responsibility`）。
 
-#### 实现流程（符合 TDD）
+#### 实现流程
 
 遍历任务文件中每个未完成的条目，或将仅有提示的实现成果视为一个执行项。将 `correction_findings` 与 `incompleteImplementations` 归一化为同一执行范围内的额外实现项。
 
-对每个实现项，应用已加载测试规则中适用的测试先行或行为保持型流程，以及任务的 Operation Verification Methods。仅在该条目被验证后，才更新已分配且确实存在的进度产物。每个集成测试和 E2E 测试，在其声明的证明边界和依赖变为可执行之后，于实现该行为的条目中创建并执行。
+对每个实现项，实现其所交付的行为，并按照已加载测试规则和任务的 Operation Verification Methods 加以证明。仅在该条目被验证后，才更新已分配且确实存在的进度产物。每个集成测试和 E2E 测试，在其声明的证明边界和依赖变为可执行之后，于实现该行为的条目中创建并执行。
 
 #### 操作验证
 - 执行任务文件的 Operation Verification Methods 或提示中的可观测验证条件

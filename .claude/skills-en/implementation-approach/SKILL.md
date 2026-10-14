@@ -164,7 +164,7 @@ Candidate approaches and rejection reasoning remain active analysis unless an ac
 Priority for completion verification of each task:
 
 - **L1: Functional Operation Verification** - Operates as an end-user feature (e.g., a user can execute a search and receive results)
-- **L2: Test Operation Verification** - New tests added and passing (e.g., type definition tests)
+- **L2: Test Operation Verification** - Tests that prove the changed behavior pass (e.g., type definition tests)
 - **L3: Build Success Verification** - No compile errors (e.g., interface definitions)
 
 **Priority**: L1 > L2 > L3 in order of verifiability importance

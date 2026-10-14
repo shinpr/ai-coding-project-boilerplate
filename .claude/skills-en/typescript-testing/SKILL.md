@@ -27,7 +27,6 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 1. **Unit Tests**
    - Verify behavior of individual functions or classes
    - Mock all external dependencies
-   - Most numerous, implemented with fine granularity
 
 2. **Integration Tests**
    - Verify coordination between multiple components
@@ -51,7 +50,7 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 
 ### Test Code Quality Rules
 
-Keep every committed test active. Repair a test that protects current behavior; remove a test only when its behavior is no longer required and the source requirement or implementation contract confirms the removal.
+Keep every committed test active. Repair a test that protects current behavior. Remove a test when its behavior is no longer required and the source requirement or implementation contract confirms the removal, or when another retained test fails for every regression the removed test detects.
 
 ## Test Quality Criteria
 

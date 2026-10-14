@@ -30,7 +30,7 @@ Implement the confirmed outcome and the maintenance, tests, and adjacent correct
 ## Mandatory Rules
 
 ### Applying to Implementation
-Apply loaded architecture/coding/testing rules during implementation, including the selected test-first or behavior-preserving refactor flow. Follow task-file implementation patterns when current evidence supports them; apply and record the lowest-surface value-preserving correction when repository evidence invalidates technical How.
+Apply loaded architecture/coding/testing rules during implementation. Follow task-file implementation patterns when current evidence supports them; apply and record the lowest-surface value-preserving correction when repository evidence invalidates technical How.
 
 Deliver the outcome with contracts satisfied at their boundaries, errors propagated or handled explicitly, and tests asserting the behavior the task delivers.
 
@@ -77,7 +77,7 @@ Any YES is corrected in implementation when the value boundary can remain true. 
 
 ## Responsibilities, Authority, and Boundaries
 
-**In scope**: Execute the prompt's explicit implementation scope or a provided task file, create implementation and tests, and apply Red→Green→Refactor TDD. Update progress artifacts only when they exist and the prompt assigns them.
+**In scope**: Execute the prompt's explicit implementation scope or a provided task file, create the implementation and the tests that prove it. Update progress artifacts only when they exist and the prompt assigns them.
 
 **Responsibility boundary**: Complete scoped implementation and task-level checks. Repository-wide quality approval and commit creation are outside scope.
 
@@ -110,11 +110,11 @@ Resolve the implementation objective through the input precedence above, derive 
 ### 3. Implementation Execution
 
 #### Test Environment Check
-**Before starting the TDD cycle**: verify the components the execution scope's tests rely on. When the required behavior can be exercised with only the test runner, prefer that path.
+**Before implementation**: verify the components the execution scope's tests rely on. When the required behavior can be exercised with only the test runner, prefer that path.
 
 **Components in scope** (examples): test runner, fixtures/containers, mock servers, and shared setup files referenced by the tests this task will add or modify.
 **Check method**: Inspect project files/commands to confirm execution capability for the tests this task needs.
-**Available**: Proceed with RED-GREEN-REFACTOR per typescript-testing skill.
+**Available**: Proceed with implementation and its proof under the loaded testing rules.
 **Unavailable**: complete the implementation and every testable obligation, run unaffected checks, and set `runnableCheck.result` to `skipped` with the missing component in `reason`.
 
 #### Pre-implementation Verification (Pattern 5 Compliant)
@@ -139,16 +139,16 @@ Classify the work from the execution outcome and changed boundary, then run this
 1. From the inspected targets and repository ownership, identify cases sharing the same path, contract, persisted state, or external boundary.
 2. Check each for the same class of defect this task corrects.
 3. Disposition each residual by scope:
-   - **Same responsibility and same defect** → fold the residual into the failing tests and implementation
+   - **Same responsibility and same defect** → fold the residual into the implementation and its tests
    - **Different responsibility** → leave it unchanged, record it as separate follow-up evidence, and keep the current outcome internally consistent
    - **Related but not confirmed to share the defect** → record it in task-file Investigation Notes when available, otherwise in `changeSummary`
 4. Record the sweep's evidence in the available execution record: each case inspected with its disposition (`incorporated`, `unchanged`, or `separate-responsibility`).
 
-#### Implementation Flow (TDD Compliant)
+#### Implementation Flow
 
 Iterate over each incomplete task-file item, or treat a prompt-only implementation outcome as one execution item. Normalize `correction_findings` and `incompleteImplementations` into additional implementation items inside the same execution scope.
 
-For each implementation item, apply the applicable test-first or behavior-preserving flow from the loaded testing rules and the task's Operation Verification Methods. Update only assigned progress artifacts that exist after the item is verified. Create and execute each integration or E2E test in the item that implements the behavior it proves, once that test's declared proof boundary and dependencies are executable.
+For each implementation item, implement the behavior it delivers and prove it under the loaded testing rules and the task's Operation Verification Methods. Update only assigned progress artifacts that exist after the item is verified. Create and execute each integration or E2E test in the item that implements the behavior it proves, once that test's declared proof boundary and dependencies are executable.
 
 #### Operation Verification
 - Execute the task file's Operation Verification Methods or the prompt's observable verification condition
