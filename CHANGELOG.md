@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.2] - 2026-10-15
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Changed
+
+- Task executors no longer run Red-Green-Refactor for each implementation item. A task delivers its behavior with the tests that prove it, and verification level L2 means those tests pass rather than that new tests were added.
+- Code review reads the changed code and tests instead of re-running checks, maps each changed test to the claim it proves, and reports an addition as `scope_excess` when omitting it, narrowing it, or reusing existing code or tests would serve the same result. Tests that prove the same claim twice now surface in review.
+- A test can be removed when another retained test fails for every regression it detects.
+- acceptance-test-generator adds skeletons to the feature's existing test file for the lane, leaving its tests unchanged, instead of overwriting the file or creating a sibling.
+
+### Removed
+
+- The guidance that unit tests are the most numerous test type, and duplicated test-quality and Playwright structure guidance in integration-e2e-testing.
+
 ## [2.2.1] - 2026-10-12
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.
