@@ -38,16 +38,14 @@ The smallest representative set to read before implementation, each a file path 
 ## Implementation Steps
 
 1. Read the Investigation Targets and record the relevant repository facts.
-2. Add or update the focused test required by the cited verification method.
-3. Implement the smallest repository change that completes the outcome.
-4. Refactor within the same outcome while focused checks stay green.
-5. Run the Operation Verification Methods below.
+2. Implement the smallest repository change that completes the outcome, with the tests its cited verification method requires.
+3. Run the Operation Verification Methods below.
 
 ## Operation Verification Methods
 
 - **Verification method**: [Governing verification method or repository command]
 - **Success criteria**: [Observable result tied to the cited ACs]
-- **Verification level**: [L1: functional operation as an end-user feature / L2: new tests added and passing / L3: code builds without errors]
+- **Verification level**: [L1: functional operation as an end-user feature / L2: tests that prove the changed behavior pass / L3: code builds without errors]
 
 ## Verification Focus
 
@@ -60,7 +58,7 @@ The smallest representative set to read before implementation, each a file path 
 
 - [ ] The cited implementation outcome is complete
 - [ ] The cited ACs are satisfied
-- [ ] Required focused tests pass
+- [ ] Required tests pass
 - [ ] Operation verification succeeds
 - [ ] (When Verification Focus exists) The Observable check detects the Primary failure
 

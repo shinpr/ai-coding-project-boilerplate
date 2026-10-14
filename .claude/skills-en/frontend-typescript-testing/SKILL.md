@@ -40,7 +40,6 @@ For shared components, custom hooks, and utilities reused across features, cover
 1. **Unit Tests (React Testing Library)**
    - Verify behavior of individual components or functions
    - Mock all external dependencies
-   - Most numerous, implemented with fine granularity
    - Focus on user-observable behavior
 
 2. **Integration Tests (React Testing Library + MSW)**
@@ -66,7 +65,7 @@ For shared components, custom hooks, and utilities reused across features, cover
 
 ### Test Code Quality Rules
 
-Keep every committed test active. Repair a test that protects current behavior; remove a test only when its behavior is no longer required and the source requirement or implementation contract confirms the removal.
+Keep every committed test active. Repair a test that protects current behavior. Remove a test when its behavior is no longer required and the source requirement or implementation contract confirms the removal, or when another retained test fails for every regression the removed test detects.
 
 ## Mock Type Safety Enforcement
 

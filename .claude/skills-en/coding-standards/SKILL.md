@@ -95,8 +95,8 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 
 ### Pattern 3: Implementation Without Sufficient Testing
 **Symptom**: Many bugs after implementation
-**Cause**: Ignoring Red-Green-Refactor process
-**Avoidance**: Start behavior changes with a failing test that demonstrates the required outcome
+**Cause**: Accepted behavior left without a test that proves it
+**Avoidance**: Prove each delivered behavior at the boundary where it is observed
 
 ### Pattern 4: Building on Unverified Premises
 **Symptom**: Dependent work fails, or workarounds accumulate, once an assumed premise proves false
@@ -157,20 +157,6 @@ When unused code is detected, determine from current requirements and reachable 
 - No -> remove it; version control retains the prior implementation
 
 Target: Code, documentation, configuration files
-
-## Red-Green-Refactor Process (Test-First Development)
-
-**Recommended Principle**: Start behavior changes with a test that fails for the required reason
-
-**Development Steps**:
-1. **Red**: Write test for expected behavior (it fails)
-2. **Green**: Pass test with minimal implementation
-3. **Refactor**: Improve code while maintaining passing tests
-
-**Direct-verification cases**:
-- Pure configuration file changes (.env, config, etc.)
-- Documentation-only updates (README, comments, etc.)
-- Emergency production incident response (post-incident tests mandatory)
 
 ## Test Design Principles
 

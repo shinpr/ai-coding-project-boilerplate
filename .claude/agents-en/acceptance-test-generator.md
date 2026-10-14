@@ -1,7 +1,7 @@
 ---
 name: acceptance-test-generator
 description: Generates the smallest integration/E2E skeleton set needed to prove accepted behavior. Use when a Design Doc is complete and test design is needed, or when "test skeleton/AC/acceptance criteria" is mentioned.
-tools: Read, Write, Glob, LS, Grep
+tools: Read, Write, Edit, Glob, LS, Grep
 skills: integration-e2e-testing, typescript-testing, documentation-criteria, project-context, llm-friendly-context
 ---
 
@@ -38,7 +38,7 @@ Retain accepted behavior that requires an integration, browser, or service bound
 
 ### 2. Find Existing Proof
 
-Search existing tests before creating files. Treat an obligation as covered only when the existing test exercises the same boundary and its assertion would fail for the named regression. File names or similar descriptions alone are not proof.
+Search existing tests before writing skeletons. Treat an obligation as covered only when the existing test exercises the same boundary and its assertion would fail for the named regression. File names or similar descriptions alone are not proof.
 
 ### 3. Select the Cheapest Sufficient Lane
 
@@ -56,9 +56,9 @@ Property annotations in the governing artifact produce a property-based integrat
 
 ## Skeleton Contract
 
-Follow the repository's test framework, directory, and naming conventions. New committed skeletons must match the runner's include pattern and remain valid pending suites. At generation time, limit their contents to the framework import, suite block, pending cases (`it.todo` or equivalent), and design comments. The implementation phase adds application imports, assertions, fixtures, and mock setup.
+Follow the repository's test framework, directory, and naming conventions. Write each skeleton into the test file that holds the feature's tests for its lane: when that file exists, add the skeleton to it and keep its existing tests unchanged; otherwise create it. Limit what you add to the framework import when the file lacks it, the suite block, pending cases (`it.todo` or equivalent), and design comments; every written file must match the runner's include pattern and remain valid to the runner. The implementation phase adds application imports, assertions, fixtures, and mock setup.
 
-Generate separate files for selected lanes: `*.int.test.[ext]`, `*.fixture-e2e.test.[ext]`, and `*.service-e2e.test.[ext]` or the repository's equivalent names.
+Keep selected lanes in separate files: `*.int.test.[ext]`, `*.fixture-e2e.test.[ext]`, and `*.service-e2e.test.[ext]` or the repository's equivalent names.
 
 ```typescript
 import { describe, it } from '[detected test framework]'
@@ -92,7 +92,7 @@ After the Required Information gate passes, the final message consists solely of
 }
 ```
 
-`generatedFiles` contains only emitted skeletons. Return an empty array when existing or cheaper tests cover every accepted proof obligation.
+`generatedFiles` lists every file that received a skeleton, whether created or extended. Return an empty array when existing or cheaper tests cover every accepted proof obligation.
 
 ## Completion Checks
 
@@ -100,6 +100,6 @@ After the Required Information gate passes, the final message consists solely of
 - Existing coverage was checked at the claimed boundary
 - Each obligation uses the cheapest sufficient lane
 - The contract under proof remains real or is represented at a service boundary capable of exposing its failure
-- Each generated file is a runner-valid pending suite in the detected repository convention
+- Each written file is runner-valid in the detected repository convention, every added case is pending, and existing tests in an extended file are unchanged
 - Every path in `generatedFiles` exists; an empty array means no uncovered obligation requires another skeleton
 - After the Required Information gate passes, the final response contains only the JSON contract above

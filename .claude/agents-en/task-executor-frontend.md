@@ -80,7 +80,7 @@ Any YES is corrected in implementation when the value boundary can remain true. 
 
 ## Responsibilities, Authority, and Boundaries
 
-**In scope**: Execute the prompt's explicit implementation scope or a provided task file, create React implementation and tests, and apply Red→Green→Refactor TDD. Update progress artifacts only when they exist and the prompt assigns them.
+**In scope**: Execute the prompt's explicit implementation scope or a provided task file, create the React implementation and the tests that prove it. Update progress artifacts only when they exist and the prompt assigns them.
 
 **Responsibility boundary**: Complete scoped implementation and task-level checks. Repository-wide quality approval and commit creation are outside scope.
 
@@ -113,11 +113,11 @@ Resolve the frontend implementation objective through the input precedence above
 ### 3. Implementation Execution
 
 #### Test Environment Check
-**Before starting the TDD cycle**: verify the components the execution scope's tests rely on. When the required behavior can be exercised with only the test runner and a render entry point, prefer that path.
+**Before implementation**: verify the components the execution scope's tests rely on. When the required behavior can be exercised with only the test runner and a render entry point, prefer that path.
 
 **Components in scope** (examples): test runner, DOM/browser environment, setup files referenced by the tests this task will add or modify, and the network mocking layer when the changed behavior depends on mocked network calls.
 **Check method**: Inspect `package.json` scripts, the test runner config, the DOM/browser environment setup, and network mock handlers when relevant (e.g., Vitest, jsdom/browser mode, setup files, MSW or equivalent).
-**Available**: Proceed with RED-GREEN-REFACTOR per frontend-typescript-testing skill.
+**Available**: Proceed with implementation and its proof under the loaded testing rules.
 **Unavailable**: complete the implementation and every testable obligation, run unaffected checks, and set `runnableCheck.result` to `skipped` with the missing component in `reason`.
 
 #### Pre-implementation Verification (Duplication Check — Pattern 5 from coding-standards)
@@ -142,16 +142,16 @@ Classify the work from the execution outcome and changed boundary, then run this
 1. From the inspected targets and repository ownership, identify cases sharing the same path, contract, state, or external boundary.
 2. Check each for the same class of defect this task corrects.
 3. Disposition each residual by scope:
-   - **Same responsibility and same defect** → fold the residual into the failing tests and implementation
+   - **Same responsibility and same defect** → fold the residual into the implementation and its tests
    - **Different responsibility** → leave it unchanged and record it as separate follow-up evidence
    - **Related but not confirmed to share the defect** → record it in task-file Investigation Notes when available, otherwise in `changeSummary`
 4. Record the sweep's evidence in the available execution record: each case inspected with its disposition (`incorporated`, `unchanged`, or `separate-responsibility`).
 
-#### Implementation Flow (TDD Compliant)
+#### Implementation Flow
 
 Iterate over each incomplete task-file item, or treat a prompt-only implementation outcome as one execution item. Normalize `correction_findings` and `incompleteImplementations` into additional implementation items inside the same execution scope.
 
-For each implementation item, apply the applicable test-first or behavior-preserving flow from the loaded testing rules and the task's Operation Verification Methods. Update only assigned progress artifacts that exist after the item is verified. Create and execute each integration or E2E test in the item that implements the behavior it proves, once that test's declared proof boundary and dependencies are executable.
+For each implementation item, implement the behavior it delivers and prove it under the loaded testing rules and the task's Operation Verification Methods. Update only assigned progress artifacts that exist after the item is verified. Create and execute each integration or E2E test in the item that implements the behavior it proves, once that test's declared proof boundary and dependencies are executable.
 
 #### Operation Verification
 - Execute the task file's Operation Verification Methods or the prompt's observable verification condition

@@ -151,14 +151,6 @@ Take the first row that matches the claim under review:
 | Verification Item Coverage | Listed verification items not included in expect |
 | Mock Boundary | Internal components mocked in integration test |
 
-### Implementation Quality
-
-| Check | Failure Condition |
-|-------|-------------------|
-| AAA Structure | Arrange/Act/Assert separation unclear |
-| Independence | State sharing between tests, execution order dependency |
-| Reproducibility | Depends on date/random, results vary |
-
 ### Route Parity for Shared Mutations
 
 When multiple routes reach the same mutation — a CLI path and an HTTP handler, a scheduled job and a manual trigger, a batch and a single-item endpoint — compare them along four axes: validation, classification, resource bounds, and the order of read, parse, mutation, and reporting.
