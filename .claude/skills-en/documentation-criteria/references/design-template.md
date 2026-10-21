@@ -272,7 +272,7 @@ Fill the Reset/Clear Behavior column when the feature has a reset or clear-all o
 - **Log events**: [Key events to log: state transitions, external calls, error occurrences, performance thresholds]
 - **Log levels**: [Which events at DEBUG/INFO/WARN/ERROR]
 - **Sensitive data**: [Fields to mask or exclude — coordinate with Security Considerations]
-- **Monitoring**: [Metrics to track, alert thresholds, dashboard requirements]
+- **Monitoring**: [Metrics the implementation emits, and alert or dashboard definitions only when checked into the repository]
 
 ## Implementation Plan
 
@@ -334,8 +334,8 @@ Verification Strategy defines what correctness means and how to prove it at desi
 
 How will this change's correctness be demonstrated?
 
-- **Correctness definition**: [What "correct" means for this change — e.g., "output matches existing behavior", "all ACs pass in production-equivalent environment", "generated queries execute without error on target DB"]
-- **Verification method**: [Specific technique — e.g., "compare new implementation output against existing implementation", "run against staging DB", "contract test with real API"]
+- **Correctness definition**: [What "correct" means for this change — e.g., "output matches existing behavior", "generated queries execute without error on target DB"]
+- **Verification method**: [Specific technique — e.g., "compare new implementation output against existing implementation", "contract test with real API"]
 - **Verification timing**: [When verification occurs — e.g., "after first vertical slice", "per repository", "at integration phase"]
 
 ### Early Verification Point
@@ -366,7 +366,7 @@ Record boundaries needed by a current requirement, implementation, or verificati
 
 ## Risks and Mitigation
 
-Include only evidenced residual risks that can change rollout, rollback, contract handling, or verification strategy while leaving the Selected Design valid.
+Include only evidenced residual risks that can change rollback, contract handling, or verification strategy while leaving the Selected Design valid.
 
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|

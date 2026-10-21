@@ -154,7 +154,7 @@ prompt: |
 
 **On review result**:
 - `pass` → Proceed to Step 6
-- `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim as `correction_findings` to the Step 2 update agent, then rerun verification when applicable and re-review with `prior_feedback`
+- `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim as `correction_findings` to the Step 2 update agent, then re-review with `prior_feedback`
 - `rejected` → Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution
 
 Follow Review Resolution convergence and escalation conditions.
@@ -176,7 +176,7 @@ prompt: |
 
 **On consistency result**:
 - No conflicts → include the result in the final approval summary
-- Conflicts detected → Apply Review Resolution and follow its bounded-verifier handoff and convergence rules, returning `apply` conflicts to Step 4 for the owning document
+- Conflicts detected → Apply Review Resolution, pass `apply` conflicts to the Step 4 update for the owning document, then rerun design-sync under Review Resolution's bounded-verifier handoff and convergence rules
 
 Present the reviewed update and, for a Design Doc, its consistency result for one final user approval. This is the command's single approval gate.
 

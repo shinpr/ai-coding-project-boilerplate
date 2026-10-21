@@ -69,7 +69,7 @@ Follow the documentation-criteria Design Doc template. Preserve these guarantees
 
 Sections and rows activate when their boundary exists. A referenced authoritative UI Spec or Design Doc may carry the information; every included state, browser lane, asset, and check is supported by the current scope or preserved behavior.
 
-Use diagrams only when they clarify a material component, state, or interaction relationship. Repository-owned flags, generated assets, deployment configuration, logging, monitoring, or measurement belongs only when it changes checked-in implementation, a preserved contract, or an acceptance criterion. External release execution, production access, account setup, and organizational approval are context.
+Use diagrams only when they clarify a material component, state, or interaction relationship. Repository-owned flags, generated assets, deployment configuration, logging, monitoring, or measurement belongs only when it changes checked-in implementation, a preserved contract, or an acceptance criterion. External release execution, production access, account setup, and organizational approval stay outside the Design Doc.
 
 Acceptance criteria use the smallest representative set that proves the approved user-visible outcome and material failure states. Verification uses the narrowest applicable boundary.
 
