@@ -70,7 +70,7 @@
     "vitest": "^5.0.5"
   },
   "engines": {
-    "node": ">=24.15.0"
+    "node": ">=26.12.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc}": "biome check --write --error-on-warnings --no-errors-on-unmatched"
