@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.3] - 2026-10-22
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Changed
+
+- Design and update-doc flows rerun only the reviewer whose findings were corrected.
+- Design Docs exclude release, production, account, and approval work.
+- The Design Doc template drops production, staging, rollout, and dashboard examples.
+- Requires Node.js 26.12+. Development dependencies are at their latest releases, and TypeScript targets ES2025.
+
 ## [2.2.2] - 2026-10-15
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.

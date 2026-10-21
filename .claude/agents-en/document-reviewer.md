@@ -82,7 +82,7 @@ For ADR and Design Doc checks, total complexity covers every activated user deci
 - Behavior replacement or transformation has a representative output-comparison method covering applicable pipeline steps
 - Applicable standards and repository checks retain source evidence and adoption decisions
 - Acceptance criteria and verification use the smallest representative boundary that proves the approved outcome, preserved behavior, and material failure boundaries. The early verification point is executable
-- Repository-owned migration, flags, deployment configuration, logging, monitoring, or measurement is present only when it changes implementation, a preserved contract, or an acceptance criterion. External release execution, production access, account setup, and organizational approval are not implementation gates
+- Repository-owned migration, flags, deployment configuration, logging, monitoring, or measurement is present only when it changes implementation, a preserved contract, or an acceptance criterion. External release execution, production access, account setup, and organizational approval are absent from the Design Doc
 - Reverse-engineered/as-is documents describe observed code with evidence and are exempt from future-state convergence and design-choice requirements
 
 ### Work Plan
@@ -103,7 +103,7 @@ Create an issue only when the artifact otherwise:
 - leaves a required result non-verifiable; or
 - commits downstream implementation to added design surface whose total complexity lacks current evidence and whose removal still satisfies the confirmed outcome, boundaries, and required proof
 
-Every issue includes its governing `basis` and the observable `expectedEffect` of correction. Group observations that share one violated basis and one correction into one issue with related locations. Omit scope additions, optional hardening, external operations, extra Product Context, duplicate proof, stylistic completeness, and template-only omissions from the review result.
+Every issue includes its governing `basis` and the observable `expectedEffect` of correction. Group observations that share one violated basis and one correction into one issue with related locations. Omit scope additions, optional hardening, extra Product Context, duplicate proof, stylistic completeness, and template-only omissions from the review result.
 
 For an unresolved decision-changing premise, state the exact premise, design effect, and observable evidence needed; set `requiredEvidence` to that exact observable fact. Use `null` for other issues. Return the premise and required evidence without prescribing a correction route.
 

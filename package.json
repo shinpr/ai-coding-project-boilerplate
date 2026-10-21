@@ -1,6 +1,6 @@
 {
   "name": "create-ai-project",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "packageManager": "pnpm@11.25.0",
   "description": "Evidence-driven Claude Code workflows for TypeScript projects, from design and implementation through review and quality checks.",
   "keywords": [
@@ -56,21 +56,21 @@
     "type-check:test": "tsc -p tsconfig.test.json --noEmit"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.9",
-    "@types/node": "^24.13.3",
+    "@biomejs/biome": "2.5.15",
+    "@types/node": "^26.6.5",
     "dpdm": "^4.3.0",
-    "fast-check": "^4.9.0",
+    "fast-check": "^4.10.2",
     "husky": "^9.1.7",
-    "knip": "^6.32.2",
-    "lint-staged": "^17.3.0",
-    "tsc-alias": "^1.9.2",
-    "tsx": "^4.23.12",
+    "knip": "^6.42.1",
+    "lint-staged": "^17.6.0",
+    "tsc-alias": "^1.9.8",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.11"
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
   },
   "engines": {
-    "node": ">=24.15.0"
+    "node": ">=26.12.0"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx,mts,cts,mjs,cjs,json,jsonc}": "biome check --write --error-on-warnings --no-errors-on-unmatched"

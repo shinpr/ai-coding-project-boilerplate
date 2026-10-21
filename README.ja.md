@@ -3,7 +3,7 @@
 *他の言語で読む: [English](README.md) | [简体中文](README.zh-CN.md)*
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-7.x-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-24.15%2B-green?logo=node.js)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-26.12%2B-green?logo=node.js)](https://nodejs.org/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -19,7 +19,7 @@ TypeScriptリポジトリに、Claude Codeを使った開発環境を組み込�
 
 ## クイックスタート
 
-Node.js 24.15以上、pnpm、Claude Codeを事前にインストールしてください。
+Node.js 26.12以上、pnpm、Claude Codeを事前にインストールしてください。
 
 ### 新しいプロジェクトを作成する
 

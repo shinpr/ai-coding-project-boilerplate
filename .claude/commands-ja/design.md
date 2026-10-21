@@ -91,7 +91,7 @@ Normalモードでこのステップを実行する。Liteモードでは、`ver
 `document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6を実行した場合のみ、その `verification_evidence` で呼び出す。
 
 - `pass`: 次へ進む
-- `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、影響を受けた境界についてステップ6〜7を再実行する
+- `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、`prior_feedback` を添えて再レビューする
 - `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
 
 Normalモードで、Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果が `analyzed_docs: 0` の場合は、他の Design Doc が存在しないため整合性検証を省略したと報告する。

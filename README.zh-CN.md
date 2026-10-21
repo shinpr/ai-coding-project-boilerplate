@@ -3,7 +3,7 @@
 *其他语言版本：[English](README.md) | [日本語](README.ja.md)*
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-7.x-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-24.15%2B-green?logo=node.js)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-26.12%2B-green?logo=node.js)](https://nodejs.org/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -19,7 +19,7 @@
 
 ## 快速开始
 
-请先安装 Node.js 24.15 或更高版本、pnpm 和 Claude Code。
+请先安装 Node.js 26.12 或更高版本、pnpm 和 Claude Code。
 
 ### 创建新项目
 
