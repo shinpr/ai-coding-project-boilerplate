@@ -91,7 +91,7 @@ Normal 模式执行此步骤。Lite 模式不传递 `verification_evidence`，�
 调用 `document-reviewer`，传入 `doc_type: DesignDoc`、`target`、`review_context: creation`、作为 `requirements_verbatim` 的原始用户需求、`confirmed_requirement_context`、`codebase_analysis`，以及仅在第 6 步已运行时提供的 `verification_evidence`。
 
 - `pass`：继续
-- `needs_revision`：应用评审裁定，通过一次全新的 technical-designer 调用、传入现有路径和完整的、处置为 `apply` 的发现项进行更新，然后针对受影响的边界重新运行第 6-7 步
+- `needs_revision`：应用评审裁定，通过一次全新的 technical-designer 调用、传入现有路径和完整的、处置为 `apply` 的发现项进行更新，然后带上 `prior_feedback` 重新评审
 - `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 
 在 Normal 模式下，以设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。

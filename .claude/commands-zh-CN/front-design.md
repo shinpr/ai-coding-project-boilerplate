@@ -105,7 +105,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 调用 `document-reviewer`，传入 `doc_type: DesignDoc`、返回的设计文档路径、`review_context: creation`、原始用户需求、`confirmed_requirement_context`、提供给设计者的原样未改动的分析输入，以及仅在验证已运行时提供的 `verification_evidence`。
 
 - `pass`：继续
-- `needs_revision`：应用评审裁定，通过一次全新的 technical-designer-frontend 调用（使用现有路径和完整的、处置为 `apply` 的发现项）进行更新，并对受影响的边界重新运行验证和评审
+- `needs_revision`：应用评审裁定，通过一次全新的 technical-designer-frontend 调用（使用现有路径和完整的、处置为 `apply` 的发现项）进行更新，然后带上 `prior_feedback` 重新评审
 - `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 
 在 Normal 模式下，以返回的设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。Lite 模式保留下方的批准停止点，并报告一致性验证被省略。
