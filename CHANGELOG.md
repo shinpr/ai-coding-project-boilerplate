@@ -8,10 +8,10 @@ Workflow changes apply across English, Japanese, and Simplified Chinese.
 
 ### Changed
 
-- After a document review correction, the design and update-doc flows re-review the Design Doc with the prior findings. code-verifier runs again only after one of its own findings is corrected, and a design-sync correction in update-doc reruns design-sync alone.
-- Design Docs leave out release execution, production access, account setup, and organizational approval, because task execution turns whatever a Design Doc contains into planned work. A confirmed requirement that describes such work is met by designing the capability it uses, and document review flags this content when it appears.
-- The Design Doc template no longer suggests production-equivalent or staging environments for verification, rollout in Risks, or dashboard requirements under Monitoring. Monitoring lists the metrics the implementation emits, plus alert or dashboard definitions checked into the repository.
-- Node.js 26.12 or later is required, and development dependencies follow their latest releases, including Vitest 5 and @types/node 26.
+- Design and update-doc flows rerun only the reviewer whose findings were corrected.
+- Design Docs exclude release, production, account, and approval work.
+- The Design Doc template drops production, staging, rollout, and dashboard examples.
+- Requires Node.js 26.12+. Development dependencies are at their latest releases, and TypeScript targets ES2025.
 
 ## [2.2.2] - 2026-10-15
 
