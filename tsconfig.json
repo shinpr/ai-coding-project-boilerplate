@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     // Basic configuration
-    "target": "ES2025",
+    "target": "ES2024",
     "module": "NodeNext",
-    "lib": ["ES2025"],
+    "lib": ["ES2024"],
     "types": ["node"],
     "paths": {
       "src/*": ["./src/*"]
