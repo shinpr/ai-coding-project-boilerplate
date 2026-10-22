@@ -3,7 +3,7 @@
 *Read this in other languages: [日本語](README.ja.md) | [简体中文](README.zh-CN.md)*
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-7.x-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-26.12%2B-green?logo=node.js)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-26.12.1%2B-green?logo=node.js)](https://nodejs.org/)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Optimized-purple)](https://claude.ai/code)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -19,7 +19,7 @@ Use this starter kit to create a new project and keep its Claude Code setup up t
 
 ## Quick start
 
-Requires Node.js 26.12+, pnpm, and Claude Code.
+Requires Node.js 26.12.1+, pnpm, and Claude Code.
 
 ### Start a new project
 

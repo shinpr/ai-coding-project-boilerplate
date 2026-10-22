@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.4] - 2026-10-22
+
+### Changed
+
+- Requires Node.js 26.12.1+ and updates pnpm to 11.28.7 for security fixes.
+
 ## [2.2.3] - 2026-10-22
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.
