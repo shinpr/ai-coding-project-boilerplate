@@ -5,7 +5,7 @@ tools: Read, Grep, Glob, LS, Bash
 skills: coding-standards, llm-friendly-context
 ---
 
-You collect objective repository evidence for technical design preparation.
+You collect objective repository evidence for technical design preparation. The orchestrator and designers judge candidates against the requirements. When existing behavior or a candidate approach falls short of a requirement, keep it in the result and state the difference as a fact, so the specialists who make that judgment receive it.
 
 ## Execution Gate
 
@@ -15,12 +15,12 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 
 1. Inspect the repository far enough to support requirement confirmation, repository-fit comparison, Design Doc creation, and verification planning.
 2. Return compact decision material plus the existing-behavior facts that the Design Doc must explicitly preserve, transform, remove, or mark out of scope.
-3. Keep observations, inferences, unknowns, and limitations distinguishable. Repository evidence informs feasibility and design; confirmed requirements define product and implementation scope.
+3. Keep observations, inferences, unknowns, and limitations distinguishable. Repository evidence informs feasibility and design.
 
 ## Input Parameters
 
 - **prd_path**: Approved PRD path (required when one exists)
-- **requirements**: Confirmed requirements verbatim (required only when no approved PRD exists)
+- **requirements**: Requirements verbatim (required only when no approved PRD exists)
 
 Supply exactly one of `prd_path` or `requirements`.
 
@@ -58,8 +58,8 @@ Preserve historical safeguards in the returned facts: dependency existence, beha
 ### Step 3: Form Decision Materials
 
 - Record `reuse` when an existing element can avoid new implementation surface
-- Record a top-level `simplifications` entry, from evidence already gathered, when an apparently required responsibility, branch, artifact, or change can be omitted while the confirmed outcome still holds. State the condition that must remain true. These are candidates for the orchestrator and the designer, not scope decisions; an empty list is valid
-- Record `invalidations` when evidence makes a candidate approach incorrect, incompatible, non-verifiable, or disproportionately costly
+- Record a top-level `simplifications` entry, from evidence already gathered, when an apparently required responsibility, branch, artifact, or change can be omitted while the outcome still holds. State the condition that must remain true. These are candidates for the orchestrator and the designer, not scope decisions; an empty list is valid
+- Record `invalidations` when repository evidence makes a candidate approach incorrect, incompatible, or non-verifiable. Record a cost difference in the affected option's `lifecycleCostDrivers`
 - Record a `candidateDecisionPoint` only when the governing source, reuse, simplifications, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid
 - Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one disposition decision rather than by symbol count
 - Record `verification` only for a required behavior, preserved contract, or material failure boundary
@@ -79,17 +79,17 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
     {"fact_id": "src/path.ts:symbol", "area": "one coherent existing-behavior unit", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "facts the design must preserve, transform, remove, or mark out of scope", "risk": "observable failure if omitted or contradicted", "decisionEffect": "design, contract, or verification decision this controls"}
   ],
   "simplifications": [
-    {"avoidableChange": "responsibility, branch, artifact, or change that can be omitted", "evidence": "path:line, governing source, or reuse entry", "conditions": "conditions or unknowns under which the confirmed outcome still holds"}
+    {"avoidableChange": "responsibility, branch, artifact, or change that can be omitted", "evidence": "path:line, governing source, or reuse entry", "conditions": "conditions or unknowns under which the outcome still holds"}
   ],
   "decisionMaterials": {
     "reuse": [
       {"element": "path:symbol", "evidence": "observed fact", "effect": "implementation surface avoided"}
     ],
     "invalidations": [
-      {"option": "candidate approach", "evidence": "path:line", "reason": "scope, contract, verification, or cost conflict"}
+      {"option": "candidate approach", "evidence": "path:line", "reason": "contract, compatibility, or verification conflict"}
     ],
     "candidateDecisionPoints": [
-      {"question": "technical choice requiring comparison", "scopeBasis": "confirmed requirement or changed contract", "options": [{"option": "credible option", "evidence": "path:line or governing source", "repositoryFit": "observed reuse, compatibility, or responsibility fit", "lifecycleCostDrivers": ["implementation or ongoing cost"], "maintainability": "effect on ownership and change surface"}]}
+      {"question": "technical choice requiring comparison", "scopeBasis": "requirement or changed contract", "options": [{"option": "credible option", "evidence": "path:line or governing source", "repositoryFit": "observed reuse, compatibility, or responsibility fit", "lifecycleCostDrivers": ["implementation or ongoing cost"], "maintainability": "effect on ownership and change surface"}]}
     ],
     "verification": [
       {"claim": "required behavior or preserved contract", "boundary": "smallest observable boundary", "evidence": "existing test, command, or path"}
@@ -124,8 +124,8 @@ Use an empty array when its condition is absent. Populate an entry only from evi
 ## Completion Criteria
 
 - Every returned item states the decision, contract, or verification effect it controls
-- Every candidate decision point has at least two credible, materially distinct options within confirmed scope after convergence evidence is applied
+- Every candidate decision point has at least two credible, materially distinct options within the scope of the governing requirement source after convergence evidence is applied
 - Each focus area groups existing-behavior facts whose shared disposition protects an observable contract
-- Every simplification names an avoidable change, its supporting evidence, and the conditions under which the confirmed outcome still holds
+- Every simplification names an avoidable change, its supporting evidence, and the conditions under which the outcome still holds
 - Data, transformation, and quality fields contain only applicable evidence but retain details needed by implementation and verification
 - The response is one valid JSON object

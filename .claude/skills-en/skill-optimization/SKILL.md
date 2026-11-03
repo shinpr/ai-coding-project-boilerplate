@@ -110,7 +110,7 @@ Issues that reduce skill effectiveness when addressed.
 
 | Detection | Transform |
 |-----------|-----------|
-| Skill assumes knowledge not stated | Add Prerequisites section listing required context |
+| Information a decision, action, or verification needs is unstated, unavailable where it is used, or detached from its subject | State it where it is used, or in a Prerequisites section when several steps share it, and keep it attached to the subject it governs |
 | Domain terms used without definition | Add definitions inline or in a glossary table. **Skill exception**: Terms within the LLM's baseline knowledge (widely-used technical terminology, standard domain vocabulary) require no definition. Only project-specific terms, internal naming conventions, or domain jargon outside common LLM training data need explicit definition. |
 | No "when to use" guidance | Add trigger conditions with concrete scenarios |
 | Context that has no downstream effect and is duplicated, distracting, or unactionable | Condense repeated facts into one operative statement; keep raw background behind a path or reference when only an extracted fact is needed; name the source for project-specific facts |
@@ -155,6 +155,7 @@ Incremental improvements for specific contexts.
 |-----------|-----------|
 | Skill demands definitive answers always | Classify claims as observed, inferred, or unknown; add escalation criteria for ambiguous cases |
 | No "when to stop" guidance | When an unknown blocks the next step, stop at that gate and name the exact evidence or user decision required to continue |
+| Applying or checking a rule changes how that rule treats missing evidence | Preserve the governing rule's treatment of missing evidence wherever it is applied or checked; when that treatment is undefined and changes the outcome, name the unresolved decision |
 
 **Skill example:**
 - Before: "Determine the root cause"

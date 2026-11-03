@@ -16,7 +16,7 @@ Agentプロンプト・ハンドオフ・生成物を書く前に、`llm-friendl
 - **コード側修正パス**: 修正実装 → task-executor、修正再レビュー → code-reviewer / security-reviewer、品質チェック → quality-fixer
 - **設計側更新パス**: DD改訂 → technical-designer（updateモード）、DDレビュー → document-reviewer、複数DDの整合性 → design-sync（複数DD存在時のみ）、再検証 → code-reviewer
 
-オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡す。設計側パスは、Design Docが確認済みの成果に対して古い、過剰、または誤っている場合に適用される。どちらのパスも、既存の実装や以前の設計を当然に正とはみなさない。
+オーケストレーターはサブエージェントを呼び出し、構造化JSONを渡す。設計側パスは、Design Docが成果に対して古い、過剰、または誤っている場合に適用される。どちらのパスも、既存の実装や以前の設計を当然に正とはみなさない。
 
 Design Doc（省略時は直近のもの）: $ARGUMENTS
 
@@ -80,7 +80,7 @@ decline: [ID] — [出典ソース上の理由]
 1. Agent tool で technical-designer を update モードで呼び出す:
    - `subagent_type`: "technical-designer"
    - `description`: "レビュー検出事項からのDesign Doc更新"
-   - `prompt`: "[path]のDesign Docをupdateモードで、承認済みの設計側検出事項から更新する: [applyの処理方針を添えた検出事項オブジェクト一式]。確認済みの成果、将来状態の要件、対象外を維持する。"
+   - `prompt`: "[path]のDesign Docをupdateモードで、承認済みの設計側検出事項から更新する: [applyの処理方針を添えた検出事項オブジェクト一式]。成果、将来状態の要件、対象外を維持する。"
 
 2. document-reviewer を呼び出して更新後の Design Doc を検証する:
    - `subagent_type`: "document-reviewer"
@@ -91,7 +91,7 @@ decline: [ID] — [出典ソース上の理由]
 3. Normalモードで、レビュー対象の変更が触れる責務または契約を別のDesign Docも統制する場合、design-syncを呼び出す:
    - `subagent_type`: "design-sync"
    - `description`: "DD間整合性チェック"
-   - `prompt`: "source_design: [更新後DDのパス]。更新後の全Design Doc間の矛盾を検出。"
+   - `prompt`: "source_design: [更新後DDのパス]。更新後ドキュメントの契約を共有するDesign Docとの矛盾を検出。"
    - `prior_feedback`（再実行時のみ）: 前回の完全な結果・その処理方針・修正差分または変更パス
    - `sync_status: CONFLICTS_FOUND` の場合: レビュー対応を適用し、その「範囲を限定したverifier」のハンドオフと収束の規則に従って、`apply`の矛盾を担当するtechnical-designerで修正する
 
@@ -102,9 +102,9 @@ decline: [ID] — [出典ソース上の理由]
 Agent toolでtask-executorを呼び出す:
 - `subagent_type`: "task-executor"
 - `description`: "レビュー修正の実行"
-- `direct_scope`: 確定したレビュー範囲と総サイズ予算の中で、承認されたコード側の修正を適用する
+- `direct_scope`: レビュー範囲と、示された総サイズ予算の中で、承認されたコード側の修正を適用する
 - `governing_sources`: レビュー対象のDesign Docと、受け入れ済みの要件またはADRのパス
-- `target_paths`: 承認されたコード側ルートに対して確認した実装・テストのパス
+- `target_paths`: 承認されたコード側ルートについて特定した実装・テストのパス
 - `observable_verification`: 検出事項と正典が示す、焦点を絞ったテストまたは観測可能な契約チェックが通る
 - `correction_findings`: レビュアーの検出事項オブジェクト一式に、オーケストレーターの処理方針だけを加えた逐語コピー
 
@@ -186,5 +186,5 @@ decline とした検出事項:
 承認された修正を、その影響先となるリポジトリ上の責務全体で整合する形で完成させる。
 参照されたパスは調査の起点として扱う。
 割り当てられた更新を除き、出典ドキュメントは読み取り専用とする。
-確認済みの成果、将来状態の要件、対象外を同時には維持できない場合は要件変更検知へ戻る。不可逆な外部操作が必要な場合は承認を求める。
+成果、将来状態の要件、対象外を同時には維持できない場合は要件変更検知へ戻る。不可逆な外部操作が必要な場合は承認を求める。
 ```

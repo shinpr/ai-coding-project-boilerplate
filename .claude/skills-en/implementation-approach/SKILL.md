@@ -37,15 +37,15 @@ Stop when another current-state fact cannot change responsibility, reuse, option
 Complete these steps in order before exploring implementation strategies:
 
 1. **Existing-Surface Baseline**: Form the simplest end-to-end path that delivers the current outcome through existing responsibilities. Explicit requirements and accepted decisions are binding; suggested mechanisms remain candidates.
-2. **Evidence Check**: Test that path against current requirements, verified constraints, observed in-scope problems, and evidence-backed material risks. Keep only the unmet conditions that can change the selected design.
+2. **Evidence Check**: Test that path against current requirements, verified constraints, observed in-scope problems, and evidence-backed material risks. Keep only the unmet conditions that can change the selected design. Where the requirements leave a quality level unset, such as performance, freshness, consistency, availability, or protection beyond the required trust boundary, test against the lowest level that still delivers the outcome and record it as the selected level.
 3. **Targeted Comparison**: For each unmet condition, test reuse, derivation from existing data, on-demand computation, or responsibility at the current caller or boundary before adding design surface. Compare viable choices by total complexity across the dimensions that materially differ: user decisions, settings, modes, concepts, outputs, persistent state, implementation paths, UX, runtime, implementation, testing, documentation, and maintenance. Select the lowest-total-complexity choice that satisfies the condition.
-4. **Subtraction Check**: Remove each proposed addition and re-test its governing condition. Retain it only when the confirmed outcome, a required boundary, or necessary proof becomes unmet.
+4. **Subtraction Check**: Remove each proposed addition and re-test its governing condition. Retain it only when the outcome, a required boundary, or necessary proof becomes unmet at its origin (a requirement, an accepted decision, or a repository rule or contract); a criterion, invariant, or constraint that a workflow artifact derived from that origin is narrowed to what the origin requires instead.
 
 Candidate paths and rejected additions remain active analysis. The durable output is the **Selected Design**: the complete chosen path plus evidence for each added design surface and the condition that fails when it is removed. Only an accepted ADR may retain alternatives as decision history. During implementation, use the same convergence check without producing a separate artifact.
 
 **Completion evidence**: one complete Selected Design; every added design surface names its current evidence, why lower-surface resolutions fail, and its subtraction result.
 
-**Transition**: proceed when every supporting claim is observed, explicitly inferred with evidence, or recorded as unknown; route an unknown that blocks the next step as an exact evidence prerequisite. User interaction is required only when the unknown requires changing the confirmed outcome, desired-future requirements, or non-goals, or authorizing an irreversible action.
+**Transition**: proceed when every supporting claim is observed, explicitly inferred with evidence, or recorded as unknown; route an unknown that blocks the next step as an exact evidence prerequisite. User interaction is required only when the unknown requires changing the outcome, desired-future requirements, or non-goals, or authorizing an irreversible action.
 
 ### Phase 3: Strategy Exploration and Creation
 
@@ -53,11 +53,13 @@ Candidate paths and rejected additions remain active analysis. The durable outpu
 
 #### Strategy Discovery Process
 ```yaml
-Research and Exploration: repository patterns first; then official documentation for the resolved dependency version; then maintained OSS implementations; use literature/blogs only for supplementary alternatives and label them as non-authoritative
-Creative Thinking: Strategy combinations, constraint-based design, phase division, extension point design
+Direct Strategy: The smallest repository-supported strategy that delivers the Selected Design within the hard constraints
+Research Order: repository patterns first; then official documentation for the resolved dependency version; then maintained OSS implementations; use literature/blogs only as supplements labeled non-authoritative
 ```
 
-#### Reference Strategy Patterns (Creative Combinations Encouraged)
+#### Reference Strategy Patterns
+
+Use a pattern only when its named migration or dependency problem exists in the repository.
 
 **Legacy Handling Strategies**:
 - Strangler Pattern: Gradual migration through phased replacement
@@ -74,28 +76,23 @@ Creative Thinking: Strategy combinations, constraint-based design, phase divisio
 - Decorator Pattern: Phased enhancement of existing features
 - Bridge Pattern: Flexibility through abstraction
 
-**Completion evidence**: at least two feasible candidate approaches when the decision is non-trivial, with each candidate mapped to the observed constraints it satisfies and the constraints it leaves unresolved.
+**Completion evidence**: the direct strategy mapped to the observed constraints it satisfies and the constraints it leaves unresolved, plus an alternative only when it would materially change risk, compatibility, rollout, or the early verification point.
 
-**Transition**: proceed when candidates are comparable against the same constraint set.
+**Transition**: proceed when the direct strategy and any retained alternative are comparable against the same constraint set.
 
 ### Phase 4: Risk Assessment and Control
 
 **Core Question**: "What risks arise when applying this to the existing implementation, and which control measurably reduces likelihood or impact while preserving verification and rollback?"
 
+Evaluate only risk categories for which current evidence can change the strategy, public contract, rollout, rollback, or verification boundary.
+
 #### Risk Analysis Matrix
 ```yaml
 Technical Risks: System impact, data consistency, performance degradation, integration complexity
 Operational Risks: Service availability, deployment downtime, process changes, rollback procedures
-Project Risks: Schedule delays, learning costs, quality achievement, team coordination
 ```
 
-#### Risk Control Strategies
-```yaml
-Preventive Measures: Phased migration, parallel operation verification, integration/regression tests, monitoring setup
-Incident Response: Rollback procedures, log/metrics preparation, communication system, service continuation procedures
-```
-
-**Completion evidence**: each material risk has likelihood/impact evidence, one preventive or containment control, and a verification point.
+**Completion evidence**: each evidenced material risk has likelihood/impact evidence and one preventive or containment control.
 
 **Transition**: proceed when every high-impact risk has either a control or a blocking escalation.
 
@@ -103,12 +100,12 @@ Incident Response: Rollback procedures, log/metrics preparation, communication s
 
 **Core Question**: "What are this project's constraints?"
 
+Check only constraints evidenced by the governing requirements, repository, external contracts, or current environment that can change the selected strategy or verification boundary.
+
 #### Constraint Checklist
 ```yaml
 Technical Constraints: Library compatibility, resource capacity, mandatory requirements, numerical targets
 Temporal Constraints: Deadlines/priorities, dependencies, milestones, learning periods
-Resource Constraints: Team/skills, work hours/systems, budget, external contracts
-Business Constraints: Market launch timing, customer impact, regulatory compliance
 ```
 
 **Completion evidence**: each constraint is observed, inferred, or unknown; every unknown that can invalidate a candidate names the exact evidence prerequisite.
@@ -180,17 +177,17 @@ Define integration points according to selected strategy:
 ## Decision Gate Checklist
 
 - [ ] Phase 1 evidence exists before strategy selection
-- [ ] Phase 2 produces one complete Selected Design and every added design surface maps to current evidence, lower-surface insufficiency, and a failed condition under subtraction
+- [ ] Phase 2 produces one complete Selected Design and every added design surface maps to current evidence, lower-surface insufficiency, and a subtraction result that leaves its origin unmet
 - [ ] Candidate generation includes combinations when no listed strategy satisfies all hard constraints
-- [ ] Every material risk has a control and verification point
+- [ ] Every evidenced material risk has a control
 - [ ] Every hard constraint maps to the selected approach
 - [ ] Phase 7 output records the selection, total-complexity basis, and added design surface; alternatives appear only in an accepted ADR
 
-When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence prerequisite. User interaction is required only when the unknown requires changing the confirmed outcome, desired-future requirements, or non-goals, or authorizing an irreversible action.
+When evidence required by a checked item is unknown, stop at that phase and report the exact repository evidence prerequisite. User interaction is required only when the unknown requires changing the outcome, desired-future requirements, or non-goals, or authorizing an irreversible action.
 
 ## Guidelines for Meta-cognitive Execution
 
-1. **Leverage Known Patterns**: Use as starting point, explore creative combinations
+1. **Leverage Known Patterns**: Use a pattern when its problem and trade-off match the observed repository state
 2. **Evidence-Ordered Research**: Use repository evidence, version-matched official documentation, maintained OSS examples, then supplementary secondary sources
 3. **Apply 5 Whys**: Pursue root causes to grasp essence
 4. **Multi-perspective Evaluation**: Complete the evidence and transition checks for Phases 1-5

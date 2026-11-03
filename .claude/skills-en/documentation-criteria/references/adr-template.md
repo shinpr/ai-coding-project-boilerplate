@@ -15,7 +15,7 @@ A created ADR starts at `Proposed` and advances `Proposed` -> `Accepted` -> `Dep
 | Item | Content |
 |------|---------|
 | **Question** | [The durable choice this ADR resolves] |
-| **Why this decision exists** | [Repository evidence and confirmed requirement that leave multiple credible options] |
+| **Why this decision exists** | [Repository evidence and current requirement that leave multiple credible options] |
 | **Scope boundary** | [What this decision governs and what it does not] |
 
 ## Decision
@@ -39,12 +39,12 @@ A created ADR starts at `Proposed` and advances `Proposed` -> `Accepted` -> `Dep
 
 Include only credible, materially distinct options supported by the evidence. Add a Mermaid option-comparison diagram only when the relationship between options remains unclear in the table below.
 
-| Option | Confirmed product value | Repository fit | Total complexity | Maintainability | Material trade-offs | Reversibility |
+| Option | Product value from the requirements | Repository fit | Total complexity | Maintainability | Material trade-offs | Reversibility |
 |--------|-------------------------|----------------|------------------|-----------------|---------------------|---------------|
 | [Option] | [Value required now] | [Fit and evidence] | [Materially different activated surfaces and lifecycle costs] | [Impact] | [Trade-offs] | [Cost and conditions to reverse] |
 | [Option] | [Value required now] | [Fit and evidence] | [Materially different activated surfaces and lifecycle costs] | [Impact] | [Trade-offs] | [Cost and conditions to reverse] |
 
-**Selected**: [The smallest sufficient option whose total complexity is justified by confirmed product value and repository evidence]
+**Selected**: [The smallest sufficient option whose total complexity is justified by product value from the requirements and repository evidence]
 
 ## Consequences
 

@@ -24,9 +24,9 @@ Start from the product responsibility the outcome implies. Scan broadly and shal
 
 Inspect a located responsibility further only when leaving it unchanged can affect the outcome, requirement confirmation, relative cost, or the analysis target. Read the minimum evidence needed to state its current treatment and the consequence a user would observe, and record both in `responsibilityBoundaries`. Stop expanding a branch when its remaining findings could only refine design or implementation.
 
-### 2. Form Cost and Question Evidence
+### 2. Form Cost Evidence
 
-Summarize relative cost from observed boundaries, reuse, persistence or contract changes, and verification support. Record an unknown or question only when the repository cannot resolve it and its answer can change the outcome, current requirements, exclusions, Structural Scale, or the analysis target.
+Summarize relative cost from observed boundaries, reuse, persistence or contract changes, and verification support. Record an unknown only when the repository cannot resolve it and it can change the outcome, current requirements, Structural Scale, or the analysis target.
 
 Return the evidence without assigning convergence readiness, Structural Scale, ADR need, or implementation scope.
 
@@ -50,11 +50,8 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
     "drivers": [
       {"kind": "observed|inferred", "fact": "structural cost fact", "source": "request or path"}
     ],
-    "unknowns": ["fact that can change relative cost"]
-  },
-  "questions": [
-    {"decision": "outcome|requirement|exclusion|scale|analysis_target", "question": "specific unresolved question", "effect": "what changes based on the answer"}
-  ]
+    "unknowns": ["fact the repository cannot resolve that can change cost, scope, or scale"]
+  }
 }
 ```
 
@@ -62,8 +59,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
 
 - Scope and cost evidence is shallow, compact, and source-backed
 - Each retained responsibility boundary states its current treatment and the consequence a user would observe
-- Every user-facing or operational responsibility that a cost driver or question relies on has a source-backed boundary entry or is recorded as an unknown
-- Every question names the decision its answer can change
+- Every user-facing or operational responsibility that a cost driver relies on has a source-backed boundary entry or is recorded as an unknown
 - Investigation that could only refine design or implementation remains for later codebase analysis
 - Product requirements and exclusions remain with the user; convergence readiness, Structural Scale, ADR, and implementation-scope decisions remain with the orchestrator
 - The response is one valid JSON object

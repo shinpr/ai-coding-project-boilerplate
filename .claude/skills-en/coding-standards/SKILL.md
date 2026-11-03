@@ -10,7 +10,7 @@ description: Detects code smells, anti-patterns, and readability issues. Use whe
 When any pattern below is detected, pause implementation and record: the triggered pattern, affected current requirement, smallest compliant alternative, and verification needed to resume. Resume when the alternative removes the pattern or a documented requirement justifies retaining it.
 
 ### Code Quality Anti-patterns
-1. **Writing similar code 3 or more times** - Violates Rule of Three
+1. **Duplicating one responsibility across independently maintained locations** - Review whether the duplicated logic has one change reason and should have one owner
 2. **Multiple responsibilities mixed in a single file** - Violates Single Responsibility Principle (SRP)
 3. **Defining same content in multiple files** - Violates DRY principle
 4. **Making changes without checking dependencies** - Potential for unexpected impacts
@@ -32,7 +32,7 @@ Inspect until the evidence identifies the lowest-total-complexity solution that 
 - **Current-Requirement Code Only** - Introduce code paths, capabilities, infrastructure, abstractions, or speculative edge-case handling when a current requirement, verified constraint, or evidence-backed material risk requires them (YAGNI)
 - **Design Convergence** - Deliver the current required outcome with the least new design surface. Before introducing persistent state, a public or cross-boundary contract, a behavioral mode, a reusable abstraction, or a component split, record what the existing capabilities already deliver, what they fail to deliver for the current outcome, and why the addition is the smallest thing that closes that gap
 
-Judge total complexity across every activated surface: user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths, together with their UX, runtime, implementation, testing, documentation, and maintenance cost. Compare only dimensions that differ between viable approaches. Prefer reuse or no new mechanism when it delivers the same confirmed value and proof at lower total complexity.
+Judge total complexity across every activated surface: user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths, together with their UX, runtime, implementation, testing, documentation, and maintenance cost. Compare only dimensions that differ between viable approaches. Prefer reuse or no new mechanism when it delivers the same required value and proof at lower total complexity.
 
 ## Comment Writing Rules
 
@@ -49,15 +49,9 @@ Fail quickly on errors to prevent processing continuation in invalid states. Pro
 
 For detailed implementation methods (Result type, custom error classes, layered error handling, etc.), refer to language and framework-specific rules.
 
-## Rule of Three - Criteria for Code Duplication
+## Criteria for Code Duplication
 
-How to handle duplicate code based on Martin Fowler's "Refactoring":
-
-| Duplication Count | Action | Reason |
-|-------------------|--------|--------|
-| 1st time | Inline implementation | Cannot predict future changes |
-| 2nd time | Consider future consolidation | Pattern beginning to emerge |
-| 3rd time | Implement commonalization | Pattern established |
+Keep concrete implementations separate while their apparent similarity is accidental or their change reasons differ. Consolidate when repository evidence shows the same business rule, algorithm, validation contract, or coordinated change responsibility is maintained in multiple places.
 
 ### Criteria for Commonalization
 
@@ -109,7 +103,7 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 **Avoidance Methods**:
 - Before implementation, search for similar functionality using domain, responsibility, and configuration-pattern keywords
 - Similar functionality found -> Use or extend that implementation when it satisfies the current contract
-- Similar functionality is technical debt -> Repair it when it blocks the current outcome, was caused by the current change, or lies in confirmed scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
+- Similar functionality is technical debt -> Repair it when it blocks the current outcome, was caused by the current change, or lies in scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
 - No similar functionality exists -> Implement new functionality following existing design philosophy
 - Record every decision and its rationale in the artifact the current workflow assigns to it
 - **Reference representativeness check**: See the "Change Boundary and Reference Representativeness" section above
@@ -127,11 +121,14 @@ Trace each answer to observed evidence until reaching a cause whose correction p
 - Use generics, unions, or intersections to express type relationships and variants.
 - Place assertions based on verified SDK or framework contracts at the relevant boundary. When static analysis cannot express that contract, scope any suppression to the affected rule and document the contract evidence and the assertion's scope.
 
-**Type Complexity Management**
-- Field Count: Up to 20 (split by responsibility if exceeded, external API types are exceptions)
-- Optional Ratio: Up to 30% (separate required/optional if exceeded)
-- Nesting Depth: Up to 3 levels (flatten if exceeded)
-- **External API Types**: Relax constraints and define according to reality (convert appropriately internally)
+**Type Complexity Review Signals**
+
+Use these as review prompts, not pass/fail thresholds. Existing project conventions and the type's responsibility take precedence.
+
+- Field count above 20: review whether the type mixes responsibilities
+- Optional fields above 30%: review whether required and optional shapes should separate
+- Nesting beyond 3 levels: review flattening
+- **External API Types**: Represent the actual external shape and convert at the application boundary
 
 ## Refactoring Techniques
 
@@ -152,11 +149,10 @@ Before implementation, trace callers, dependencies, and data flow (generation ->
 
 ### Unused Code Deletion Rule
 
-When unused code is detected, determine from current requirements and reachable call paths whether it is used before task completion.
-- Yes -> connect it to that call path and verify the requirement
-- No -> remove it; version control retains the prior implementation
-
-Target: Code, documentation, configuration files
+When the current change makes code, documentation, or configuration obsolete:
+- Delete it in the same change once its callers and generated or operational uses are checked; version control retains the prior implementation
+- Preserve and report it when obsolescence is uncertain or deletion would expand beyond the accepted outcome
+- Keep unrelated dormant code outside the implementation scope
 
 ## Test Design Principles
 

@@ -38,7 +38,7 @@ When the orchestrator determines from `scopeEvidence.affectedLayers` that the wo
 
 Execute the `requirement-convergence` skill before running the hearing.
 
-Build the convergence record from the user's retained wording, using requirement-analyzer `scopeEvidence`, `costEvidence`, and `questions` as supporting facts, then run the requirement-convergence hearing. The orchestrator judges the convergence record and Structural Scale.
+Build the convergence record from the user's retained wording, using requirement-analyzer `scopeEvidence` and `costEvidence` as supporting facts, then run the requirement-convergence hearing. The orchestrator judges the convergence record and Structural Scale.
 
 When user responds to questions:
 - Record the answer in the convergence record and re-judge the affected field and Structural Scale
@@ -76,7 +76,7 @@ Scope boundary for subagents:
 Deliver the task outcome consistently across the repository responsibility that owns it.
 Treat referenced paths as investigation starting points and include supporting files when the same outcome requires them.
 Keep governing artifacts read-only except for assigned progress fields.
-Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
+Return to Requirement Change Detection when the outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```
 
 ## Mandatory Orchestrator Responsibilities

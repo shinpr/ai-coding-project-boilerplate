@@ -46,7 +46,7 @@ Invoke investigator using Agent tool:
 - `subagent_type`: "investigator"
 - `description`: "Collect problem information"
 - `prompt`: |
-    Comprehensively collect information related to the following phenomenon.
+    Investigate the following phenomenon.
 
     Phenomenon: [Problem reported by user]
     Occurrence conditions: [Step 0 conditions]
@@ -94,7 +94,7 @@ Invoke verifier using Agent tool:
 Check verifier's `coverageAssessment`:
 
 - **sufficient** → Proceed to Step 5 (solver)
-- **partial or insufficient** → Return to Step 1 with unchecked areas identified by verifier as investigation targets
+- **partial or insufficient** → Return to Step 1 with the accessible gaps the verifier names (missing paths, unchecked nodes, adjacent cases) as investigation targets. A gap consisting only of `blocked` failure points whose evidence is unavailable, such as missing runtime access, is not an investigation target; present it with the current conclusion and the evidence that would close it, using the user options below
   - Maximum 2 additional investigation iterations
   - After 2 iterations without reaching sufficient, present user with options:
     - Continue additional investigation
@@ -104,7 +104,7 @@ Check verifier's `coverageAssessment`:
 
 **Prerequisite**: coverageAssessment=sufficient (or explicit user approval to proceed with partial/insufficient)
 
-Ownership, contract, and technical design corrections are ordinary solution candidates when they preserve the confirmed outcome, desired-future requirements, and non-goals; detecting a design gap does not create a user decision. If evidence shows those value boundaries cannot all remain true, or a proposed remedy requires authorization for an irreversible external action, report that exact boundary with the solution evidence instead of inventing a choice.
+Ownership, contract, and technical design corrections are ordinary solution candidates when they preserve the outcome, desired-future requirements, and non-goals; detecting a design gap does not create a user decision. If evidence shows those value boundaries cannot all remain true, or a proposed remedy requires authorization for an irreversible external action, report that exact boundary with the solution evidence instead of inventing a choice.
 
 Invoke solver using Agent tool:
 - `subagent_type`: "solver"
@@ -120,7 +120,7 @@ Invoke solver using Agent tool:
     Impact analysis: [investigator's impactAnalysis]
     Coverage assessment: [sufficient/partial/insufficient]
 
-**Expected output**: Materially distinct feasible solutions derived from the verified cause set, tradeoff analysis, recommendation and implementation steps, residual risks
+**Expected output**: A sufficient remedy for the verified cause set, materially distinct alternatives only when they could change the choice, tradeoff analysis, recommendation and implementation steps, residual risks
 
 ### Step 6: Final Report Creation
 

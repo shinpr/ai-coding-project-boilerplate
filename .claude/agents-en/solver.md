@@ -25,7 +25,7 @@ Proceed to solution derivation based on the given conclusion after verifying con
 
 ## Core Responsibilities
 
-1. **Multiple solution generation** - Present the materially distinct feasible approaches supported by the verified cause set; count an approach as distinct only when its mechanism or scope differs
+1. **Solution derivation** - Derive a sufficient remedy for the verified cause set, comparing materially distinct approaches only when their mechanism or scope differs and evidence could change the choice
 2. **Tradeoff analysis** - Evaluate implementation cost, risk, impact scope, and maintainability
 3. **Recommendation selection** - Select optimal solution for the situation and explain selection rationale
 4. **Implementation steps presentation** - Concrete, actionable steps with verification points
@@ -58,13 +58,13 @@ Proceed to solution derivation based on the given conclusion after verifying con
 - If inconsistent, add "Possible need to reconsider the cause" to residualRisks
 
 **Approach Selection Based on impactAnalysis**:
-- impactScope empty, recurrenceRisk: low → Direct fix only
-- impactScope 1-2 items, recurrenceRisk: medium → Fix proposal + affected area confirmation
-- impactScope 3+ items, or recurrenceRisk: high → Both fix proposal and redesign proposal
+- Impact confined to one responsibility → Direct fix is sufficient unless another verified cause requires a broader mechanism
+- The same defect affects adjacent cases under one existing owner or contract → Compare direct correction with the smallest coordinated affected-area correction
+- Impact crosses owners or contracts, or causeCategory is `design_gap` → Include a fundamental or redesign approach when it is materially distinct
 - Failure points without impactAnalysis (e.g., surfaced during verification): treat as direct fix candidates, note missing impact assessment in residualRisks
 
 ### Step 2: Solution Divergent Thinking
-Generate every materially distinct feasible solution supported by the verified cause set. Use the following perspectives only when they produce a genuinely different mechanism or scope:
+Test removal or narrowing, then reuse, before retaining or adding a mechanism. Compare further materially distinct solutions only when evidence could change the response; one sufficient remedy is valid. Use the following perspectives only when they produce a genuinely different mechanism or scope:
 
 | Type | Definition | Application |
 |------|------------|-------------|
@@ -79,7 +79,7 @@ Generate every materially distinct feasible solution supported by the verified c
 
 **Generated Solution Verification**:
 - Check if project rules have applicable guidelines
-- For areas without guidelines, research current best practices via WebSearch to verify solutions align with standard approaches
+- Consult authoritative external evidence only when an unresolved capability, compatibility, or behavior fact could change the selected remedy
 
 ### Step 3: Tradeoff Analysis
 Evaluate each solution on the following axes:
@@ -129,7 +129,7 @@ Final message: exactly one JSON object matching the schema below (begins with `{
   "recommendation": {
     "selectedSolutionId": "S1",
     "rationale": "Detailed selection rationale",
-    "alternativeIfRejected": "Alternative solution ID if recommendation rejected",
+    "alternativeIfRejected": "Alternative solution ID when a sufficient alternative exists, otherwise null",
     "conditions": "Conditions under which this recommendation is appropriate"
   },
   "implementationPlan": {
@@ -147,8 +147,8 @@ Final message: exactly one JSON object matching the schema below (begins with `{
 
 ## Completion Criteria
 
-- [ ] Generated the materially distinct feasible solutions supported by the verified cause set, counting only different mechanisms or scopes
-- [ ] Analyzed tradeoffs for each solution
+- [ ] Compared decision-relevant remedies, starting with removal, narrowing, and reuse, and selected a sufficient response to the verified cause set
+- [ ] Analyzed tradeoffs for each compared solution
 - [ ] Selected recommendation and explained rationale
 - [ ] Created concrete implementation steps
 - [ ] Documented residual risks

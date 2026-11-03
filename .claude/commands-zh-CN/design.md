@@ -34,13 +34,13 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 ## 步骤 1：选择约束性需求来源
 
-当存在已批准的 PRD 时，使用该 PRD 路径。否则逐字使用已确认的需求。
+当存在已批准的 PRD 时，使用该 PRD 路径。否则逐字使用需求原文。
 
-将 `confirmed_requirement_context` 精确设置为已批准的 PRD 路径。仅当不存在已批准的 PRD 时，原样使用编排者已确认的收敛记录。
+将 `requirement_context` 精确设置为已批准的 PRD 路径。仅当不存在已批准的 PRD 时，原样使用编排者的收敛记录。
 
 ## 步骤 2：收集决策材料
 
-针对完整的已确认范围调用一次 `codebase-analyzer`，输入恰为 `prd_path: [已批准的 PRD 路径]`；当不存在已批准的 PRD 时，则为 `requirements: [已确认需求的原文]`。
+针对完整的范围调用一次 `codebase-analyzer`，输入恰为 `prd_path: [已批准的 PRD 路径]`；当不存在已批准的 PRD 时，则为 `requirements: [需求原文]`。
 
 要求返回一份有效的 JSON 结果，并让分析器去发现受影响的路径、职责边界和跨层契约。将其关注领域视为对既有行为的防护措施，而非新需求。
 
@@ -54,16 +54,16 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 对照约束来源、适用的 `simplifications`、`reuse` 和 `invalidations` 处理 `decisionMaterials.candidateDecisionPoints`。当这些依据已经收敛到唯一充分的方案时，移除该决策点。对每一个剩余项，按顺序应用 documentation-criteria 的选择必要性（Choice）与长期影响（Durability）筛选。将每一个通过筛选的项记录为 `adrDecisionPoints`；空列表则直接路由到设计文档。
 
-只呈现需要用户判断的内容：成果与要构建的需求、排除项、本次变更所针对的职责、每一条适用的简化项及其“省略后已确认成果仍然成立”的条件，以及成本分级及其仍然存在的未知项。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模和 ADR 资格判定保留在编排者的记录中——ADR 批次和设计文档各有自己的批准停止点。提供两个选项：继续推进，或修正范围后重新运行分析。仅当每个收敛字段为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
+只呈现需要用户判断的内容：成果与要构建的需求、排除项、本次变更所针对的职责；既有行为已满足其目的、仅缺少该需求所指定的额外行为的每一项需求，连同该依据及其对成本的影响；每一条适用的简化项及其“省略后成果仍然成立”的条件；以及成本分级及其仍然存在的未知项。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模和 ADR 资格判定保留在编排者的记录中——ADR 批次和设计文档各有自己的批准停止点。提供两个选项：继续推进，或修正范围后重新运行分析。仅当每个收敛字段为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
 
 ## 步骤 4：必要时创建并批准 ADR 批次
 
 当 `adrDecisionPoints` 非空时：
 
-1. 调用一次 `technical-designer`，传入 `document_to_create: ADRBatch`、`confirmed_requirement_context`、有序的 `decision_points`，以及从第 2 步原样复制的对应 `decision_materials`。
-2. 调用一次 `document-reviewer`，传入 `doc_type: ADRBatch`、`targets: [返回的全部路径]` 和 `confirmed_requirement_context`。
+1. 调用一次 `technical-designer`，传入 `document_to_create: ADRBatch`、`requirement_context`、有序的 `decision_points`，以及从第 2 步原样复制的对应 `decision_materials`。
+2. 调用一次 `document-reviewer`，传入 `doc_type: ADRBatch`、`targets: [返回的全部路径]` 和 `requirement_context`。
 3. 先按评审结论路由：`pass` 则继续；`needs_revision` 则应用评审裁定，按路径逐个串行更新每份 ADR，并重新评审完整批次；`rejected` 则先解决约束来源冲突，再进行下一次评审。
-4. 仅在评审为 `pass` 之后，才呈现一次批次决策。`[停止：ADR 批次批准]`。
+4. 仅在评审为 `pass` 之后，才呈现一次批次决策，并附上在需求未设定水平之处由 ADR 选定的质量水平。`[停止：ADR 批次批准]`。
 5. 用户批准后，针对每个 ADR 路径以更新模式调用 `technical-designer`，将其状态设为 `Accepted`，并验证该变更。
 
 ## 步骤 5：创建设计文档
@@ -71,7 +71,7 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 调用 `technical-designer`，输入恰为：
 
 - `document_to_create: DesignDoc`；
-- `confirmed_requirement_context`；
+- `requirement_context`；
 - `structural_scale`；
 - `adr_paths: [已接受的路径，或 []]`；
 - `codebase_analysis: [第 2 步的完整 JSON，原样不变]`
@@ -88,19 +88,19 @@ Normal 模式执行此步骤。Lite 模式不传递 `verification_evidence`，�
 
 ## 步骤 7：评审与批准
 
-调用 `document-reviewer`，传入 `doc_type: DesignDoc`、`target`、`review_context: creation`、作为 `requirements_verbatim` 的原始用户需求、`confirmed_requirement_context`、`codebase_analysis`，以及仅在第 6 步已运行时提供的 `verification_evidence`。
+调用 `document-reviewer`，传入 `doc_type: DesignDoc`、`target`、`review_context: creation`、作为 `requirements_verbatim` 的原始用户需求、`requirement_context`、`codebase_analysis`，以及仅在第 6 步已运行时提供的 `verification_evidence`。
 
 - `pass`：继续
 - `needs_revision`：应用评审裁定，通过一次全新的 technical-designer 调用、传入现有路径和完整的、处置为 `apply` 的发现项进行更新，然后带上 `prior_feedback` 重新评审
-- `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
+- `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 
-在 Normal 模式下，以设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。
+在 Normal 模式下，以设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。报告结果中已比较的文档、沿用依据的文档以及任何 `access_limitations`。仅当 `analyzed_docs` 与 `carried_forward_docs` 均为 0、且未记录任何访问局限时，才报告一致性验证已跳过。
 
-呈现设计文档、已接受的 ADR 路径、已记录的拒绝项，以及 design-sync 结果或其在 Lite 模式下被省略的说明。`[停止：设计批准]`。
+呈现设计文档、在需求未设定水平之处由其选定的质量水平、已接受的 ADR 路径、已记录的拒绝项，以及 design-sync 结果或其在 Lite 模式下被省略的说明。`[停止：设计批准]`。
 
 ## 完成标准
 
-- 已从成果和职责边界确认范围与结构规模
+- 已从成果和职责边界判定范围与结构规模
 - ADR 仅对同时通过两项筛选条件的决策点存在，且完整批次经过了一次评审和批准
 - 无论是否需要 ADR，都存在一份设计文档
 - 适用的既有行为、契约、前提、等价性和验证防护措施都进入了设计文档

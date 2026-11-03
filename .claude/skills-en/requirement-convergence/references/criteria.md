@@ -19,6 +19,8 @@ Evaluation requests, speculative ideas, and prescribed mechanisms stay in active
 
 Flattening current state, desired future, and candidates into one requirement list makes a bloated plan look coherent because every item then reads as equally required. Label each build-relevant item; ask when its current-state or desired-future role is unclear rather than inferring it.
 
+An item is build-relevant when the repository change can satisfy it. A precondition held outside that change, such as legal or policy review, contract execution, release execution, or organizational approval, enters `requirements[]` and the hearing only when the user's wording raises it.
+
 ## nonGoals[]
 
 Capabilities deliberately excluded from this change, authored by the user.
@@ -49,10 +51,10 @@ The band's only job is to select a row here, so cheap requirements stay cheap to
 | Band | Meaning | Challenge |
 |------|---------|-----------|
 | `low-reversible` | Additive, flagged, or easily deleted | Record the fields and accept the requirement |
-| `medium` | Reverting would touch other work | Present the cost and one lower-cost alternative |
+| `medium` | Reverting would touch other work | Present the cost, and a lower-cost alternative when a materially distinct sufficient option exists |
 | `high-irreversible` | Public contract, persisted data shape, or dependency swap | Present the trade-off and require a user decision before design |
 
-Report an unknown that would move the band up as a blocking question rather than assuming the lower band.
+Resolve repository-answerable uncertainty locally. When a remaining unknown could move the band up, state that condition and the higher-band consequence with the cost; ask the user only when it changes required scope, constraints, or authority.
 
 ## Solution-in-disguise test
 

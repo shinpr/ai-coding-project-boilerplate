@@ -66,31 +66,20 @@ The smallest coherent behavior or journey that delivers the value stated above. 
 
 ### Out of Scope
 
-User-authored non-goals and current exclusions needed to make the MVP boundary executable. Evaluation requests, speculative ideas, and unselected possibilities remain only in pre-confirmation convergence context.
+User-authored non-goals and current exclusions needed to make the MVP boundary executable. Evaluation requests, speculative ideas, and unselected possibilities remain only in active convergence context.
 
-`Origin` distinguishes a user-authored non-goal (`user`) from a current exclusion needed to make the confirmed MVP boundary executable (`analysis`). Record `None — user confirmed there are none` when the user considered exclusions and found none.
+`Origin` distinguishes a user-authored non-goal (`user`) from a current exclusion needed to make the MVP boundary executable (`analysis`). Record `None — user confirmed there are none` when the user considered exclusions and found none.
 
 - Item 1: [Description and reason for exclusion] — Origin: user | analysis
 
 ## Non-Functional Requirements
 
-### Performance
-- Response Time: [Target value]
-- Throughput: [Target value]
-- Concurrency: [Target value]
+Record a quality level only when the user's wording or an accepted organizational, legal, or contractual source states it. Leave other attributes out; the Design Doc selects the lowest level that still delivers the outcome.
 
-### Reliability
-- Availability: [Target value]
-- Error Rate: [Target value]
-
-### Security
-- [Security requirements details]
-
-### Scalability
-- [Considerations for future scaling]
+- **[Quality attribute]**: [level] - Source: [user wording or accepted source]
 
 ### Accessibility (when feature includes UI)
-- Compliance standard: [Default: WCAG 2.1 AA (use organization standard if available)]
+- Compliance standard (when established by an accepted organizational, legal, contractual, or user-supplied source): [standard]
 - Target assistive technologies: [Screen reader, keyboard operation, voice control, etc.]
 - Platform requirements: [e.g., app store review requirements]
 - Known constraints: [e.g., external library limitations]
@@ -99,18 +88,16 @@ User-authored non-goals and current exclusions needed to make the MVP boundary e
 
 **Outcome**: [the one observable result this feature must produce — every metric below measures progress toward it]
 
+Include only quantitative and UI targets that a governing requirement or existing evidence supplies. The entries below show optional shapes, not a required metric count.
+
 ### Quantitative Metrics
-1. [Metric name]: [numeric target] measured by [method] within [timeframe]
-2. [Metric name]: [numeric target] measured by [method] within [timeframe]
-3. [Metric name]: [numeric target] measured by [method] within [timeframe]
+- [Metric name]: [numeric target] measured by [method] within [timeframe]
 
 ### Qualitative Metrics
-1. [User experience metric 1]
-2. [User experience metric 2]
+- [Observable user experience result]
 
 ### UI Quality Metrics (when feature includes UI)
-1. [Key operation completion rate / error recovery rate / retry success rate]
-2. [Accessibility audit target score]
+- [Key operation completion rate, error recovery rate, or accessibility audit score]
 
 ## Technical Considerations
 
@@ -127,6 +114,8 @@ User-authored non-goals and current exclusions needed to make the MVP boundary e
 - [Prerequisite requiring validation 2]
 
 ### Risks and Mitigation
+Include only evidenced product risks that can change scope, success criteria, or acceptance.
+
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
 | [Risk 1] | High/Medium/Low | High/Medium/Low | [Countermeasure] |
@@ -137,7 +126,7 @@ User-authored non-goals and current exclusions needed to make the MVP boundary e
 - [ ] [Question 1]: [Description of options or impacts]
 - [ ] [Question 2]: [Description of options or impacts]
 
-*Resolve each item with the user, or keep an item the user agreed to leave open; delete this section when it is empty*
+*Resolve only items that block the current document or the next decision, with the user when they own it. Keep non-blocking unknowns with their effect; in as-is documentation, unknown business intent is not a reason to invent requirements. Delete this section when it is empty*
 
 ## Appendix
 

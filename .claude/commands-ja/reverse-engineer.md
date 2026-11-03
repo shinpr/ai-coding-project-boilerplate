@@ -71,13 +71,15 @@ prompt: |
 - ユニットが発見されない → ユーザーにヒントを求める
 - `$STEP_1_OUTPUT.prdUnits`が存在すること
 - `prdUnits`全体の`sourceUnits`を結合・重複除去した集合が`discoveredUnits`のID集合と一致すること — 欠落や重複がないこと
-- 各discoveredUnitの`unitInventory`に少なくとも1つの非空カテゴリ（routes、testFiles、publicExports）があること。3つすべてが空のユニットは発見が不完全 — そのユニットのrelatedFilesにフォーカスしてscope-discovererを再実行する
+- 各discoveredUnitが、ソースのエビデンスと、定義元の場所を持つ振る舞いのある項目（ルート、publicエクスポート、または`otherEntryPoints`）を少なくとも1つ持つこと。その他のカテゴリは空でもよい。重大なカバレッジの欠落は、そのユニットのrelatedFilesに絞った発見で解消し、作業を止めない制約は報告されたまま残す
 
 **人間レビューポイント**（有効時）: `$STEP_1_OUTPUT.prdUnits`とソースユニットのマッピングを提示する。ユーザーはグルーピングの確認、調整、またはスコープからの除外を行う。グルーピングの誤りはすべての下流ドキュメントに波及するため、これは最も重要なレビューポイントである。
 
 ### ステップ2-5: ユニット毎の処理
 
 **FOR** `$STEP_1_OUTPUT.prdUnits`の各ユニット **（逐次実行、1ユニットずつ）**:
+
+現在のPRDユニットの`sourceUnits`に含まれる各discovered unitの`unitInventory`を統合し、重複を除いて`$PRD_UNIT_INVENTORY`とする。ステップ2、3、5はこの同じ基準を使う。
 
 #### ステップ2: PRD生成
 
@@ -94,9 +96,10 @@ prompt: |
   説明: $PRD_UNIT_DESCRIPTION
   関連ファイル: $PRD_UNIT_COMBINED_RELATED_FILES
   エントリーポイント: $PRD_UNIT_COMBINED_ENTRY_POINTS
+  ユニットインベントリ: $PRD_UNIT_INVENTORY
 
   提供されたスコープを調査の起点として使用。
-  エントリーポイントの追跡でスコープ外のファイルが判明した場合は含める。
+  これらのファイル外の依存を調べるのは、スコープ内の振る舞いまたは契約を成立させている場合に限る。それによって機能スコープが自動的に広がることはない。
   徹底的なコード調査に基づき最終版PRDを作成。
 ```
 
@@ -116,7 +119,7 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  unit_inventory: [現在のPRDユニットの`sourceUnits`に含まれる各discovered unitの`unitInventory`を統合し、重複を除いたもの]
+  unit_inventory: $PRD_UNIT_INVENTORY
 ```
 
 注: `code_paths`は意図的に未指定。検証エージェントはドキュメントからコードスコープを発見する。`unit_inventory` は網羅性の基準としてのみ使うため、探索はscope-discovererのファイル一覧に縛られない。
@@ -171,7 +174,7 @@ prompt: |
 - `technicalProfile.publicInterfaces` → publicインターフェース
 - `dependencies` → 依存関係
 - `relatedFiles` → スコープ境界
-- `unitInventory` → ユニットインベントリ（ルート、テストファイル、publicエクスポート）
+- `unitInventory` → ユニットインベントリ（ルート、テストファイル、publicエクスポート、その他のエントリーポイント）
 
 **出力を保存**: `$STEP_6_OUTPUT`
 
@@ -202,11 +205,11 @@ prompt: |
   主要ファイル: $UNIT_PRIMARY_MODULES
   publicインターフェース: $UNIT_PUBLIC_INTERFACES
   依存関係: $UNIT_DEPENDENCIES
-  ユニットインベントリ: $UNIT_INVENTORY（スコープ発見で得たルート、テストファイル、publicエクスポート）
+  ユニットインベントリ: $UNIT_INVENTORY（スコープ発見で得たルート、テストファイル、publicエクスポート、その他のエントリーポイント）
 
   親PRD: [フェーズ1でレビュー済みの、このユニットのPRDパス]
 
-  現在のアーキテクチャを現状のままドキュメント化する。ユニットインベントリを網羅性の検証基準として使用する — すべてのルートとエクスポートがDesign Docに反映されていること。
+  現在のアーキテクチャを現状のままドキュメント化する。ユニットインベントリを網羅性の検証基準として使用する — インベントリにあるすべての機能がDesign Docに反映されていること。
 ```
 
 **出力を保存**: `$STEP_7_OUTPUT`（technical-designerの結果）。`status` が `completed` の場合は `$STEP_7_OUTPUT.path` をDesign Docのパスとし、それ以外の結果は生成失敗として扱う。
@@ -274,7 +277,7 @@ prompt: |
   review_context: reverse-engineer
   target: $STEP_7_OUTPUT.path または $STEP_7_FRONTEND_OUTPUT.path
   verification_evidence: $STEP_8_OUTPUT（ステップ8を実行した場合のみ）
-  confirmed_requirement_context: [フェーズ1でレビュー済みの、このユニットのPRDパス]
+  requirement_context: [フェーズ1でレビュー済みの、このユニットのPRDパス]
 
   ## 追加レビュー観点
   - ドキュメント化されたインターフェースの技術的正確性

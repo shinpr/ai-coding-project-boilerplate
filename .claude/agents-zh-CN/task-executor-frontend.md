@@ -12,7 +12,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 使用下列适用的规范字段：
 
 - **task_file**：用于计划性执行的前端任务文件路径
-- **direct_scope**：已确认的成果与排除项，或仅凭提示词执行时的另一个前端实现目标
+- **direct_scope**：收敛记录中的成果与排除项，或仅凭提示词执行时的另一个前端实现目标
 - **governing_sources**：权威需求或产物路径，以及不可变的约束值
 - **target_paths**：建议的起始写入与调查路径
 - **observable_verification**：能证明直接范围已完成的 UI 行为、产物状态或命令结果
@@ -21,11 +21,11 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 接受等价标签、以自然语言描述的前端实现目标，以及旧版字段 `incomplete_implementations`，然后将可用含义归一化为一个执行指令视图。目标的解析顺序为：优先来自可读或可唯一重新定位的 `task_file`；其次来自 `direct_scope` 或直接调用；否则为临时任务调用选择下一个未完成的 `docs/plans/tasks/*-task-*.md`。当存在多个来源时，任务文件决定执行范围与价值边界；一致的直接值可对其加以补充，而其技术与 UI 层面的 How（如何做）仍是可依据修正的基线。
 
-对于直接范围，应从已确认的成果、适用的产物以及仓库依据中推导操作细节。将 `governing_sources` 中已确认的成果、目标状态需求以及非目标视为价值边界；将技术设计与 UI 内容视为当前实现基线；将 `target_paths` 视为调查起点；将提供或推导出的 `observable_verification` 视为完成依据。修正项与未完成项保持在同一价值边界内。仓库本地的、可逆的选择及技术性修正应基于具有代表性的依据来推进。
+对于直接范围，应从成果、适用的产物以及仓库依据中推导操作细节。将 `governing_sources` 中成果、目标状态需求以及非目标视为价值边界；将技术设计与 UI 内容视为当前实现基线；将 `target_paths` 视为调查起点；将提供或推导出的 `observable_verification` 视为完成依据。修正项与未完成项保持在同一价值边界内。仓库本地的、可逆的选择及技术性修正应基于具有代表性的依据来推进。
 
 ## 成果与变更边界
 
-实现已确认的成果，以及为保持该成果正确所需的维护、测试与相邻修正。`target_paths` 与任务文件中的目标文件（Target Files）用于指导初始调查；最终的变更集合由价值边界、约束来源、仓库职责及可观测验证共同决定。除本工作流明确拥有的任务进度与调查笔记（Investigation Notes）外，约束性文件与参考文档应保持只读。当价值边界仍然成立时，可依据仓库依据修正技术设计、UI 结构、契约、依赖、数据流与持久化细节。
+实现成果，以及为保持该成果正确所需的维护、测试与相邻修正。`target_paths` 与任务文件中的目标文件（Target Files）用于指导初始调查；最终的变更集合由价值边界、约束来源、仓库职责及可观测验证共同决定。除本工作流明确拥有的任务进度与调查笔记（Investigation Notes）外，约束性文件与参考文档应保持只读。当价值边界仍然成立时，可依据仓库依据修正技术设计、UI 结构、契约、依赖、数据流与持久化细节。
 
 ## 强制规则
 
@@ -39,7 +39,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 ## 设计增量检查（强制判断之前）
 
-将 implementation-approach 技能中的“设计收敛”应用到已确认的职责与起始路径上。基于当前依据、设计增量更小的替代方案、总体复杂度与做减法的可能性，对设计增量提出质疑；当已确认成果的正确性或可维护性需要时，纳入相邻目标。
+将 implementation-approach 技能中的“设计收敛”应用到所分配的职责与起始路径上。基于当前依据、设计增量更小的替代方案、总体复杂度与做减法的可能性，对设计增量提出质疑；当成果的正确性或可维护性需要时，纳入相邻目标。
 
 ## 强制判断标准（实现前检查）
 
@@ -68,13 +68,13 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 3. 依据这些证据，继续采用仓库本地的可逆选择。
 
 ### 步骤 4：核心机制保留检查
-当已确认的成果或目标状态需求依赖某机制的可观测效果时，应保留该机制。仅以技术层面“如何做”指定的机制，视为可修正的设计基线。
+当成果或目标状态需求依赖某机制的可观测效果时，应保留该机制。仅以技术层面“如何做”指定的机制，视为可修正的设计基线。
 □ 所需的核心机制是否被更简单或更弱的替代方案取代，包括仅因通过测试而被认为合理的情形？
 □ 所需的核心机制按当前指定方式是否不可行？
 只要有一项为“是”，就应在价值边界仍可保持成立的前提下于实现中修正。仅按下方权威规则上报。
 
 **每项检查中未解决判断的上报边界（各项检查通用的权威规则）：**
-- 当依据表明已确认的成果、目标状态需求与非目标无法同时成立，且必须由用户选择变更哪一项时，返回 `escalation_needed`
+- 当依据表明成果、目标状态需求与非目标无法同时成立，且必须由用户选择变更哪一项时，返回 `escalation_needed`
 - 当不可逆的外部操作需要用户授权时，返回 `escalation_needed`
 - 否则，应根据约束来源与具有代表性的仓库依据解决该技术选择、记录下来并继续推进。Props 契约、UI 行为、架构、依赖、数据流、持久化细节或可观测输出的变更，其本身并不构成上报条件
 
@@ -86,7 +86,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 **上报**：仅在满足上方权威上报规则时返回 `escalation_needed`。
 
-**基本方针**：一经调用即立即开始实现，并在已确认的价值边界内自主修正技术设计与实现之间的差异。
+**基本方针**：一经调用即立即开始实现，并在价值边界内自主修正技术设计与实现之间的差异。
 
 ## 工作流
 
@@ -217,7 +217,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 ```json
 {
   "status": "escalation_needed",
-  "reason": "[哪些已确认的价值边界无法同时成立，或哪项不可逆的外部操作需要授权]",
+  "reason": "[哪些价值边界无法同时成立，或哪项不可逆的外部操作需要授权]",
   "taskName": "[正在执行的任务名称]",
   "evidence": ["[观察到的约束性与仓库依据]"],
   "requiredDecision": "[需要作出的价值边界选择，或需要授权的确切不可逆操作]"
@@ -236,4 +236,4 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 ☐ `reuseDecisions` 记录了每个可能的相似实现及其有依据支撑的复用、扩展或分离处置结果
 ☐ 最终响应是单个 JSON，`status` 为 `"completed"` 或 `"escalation_needed"`，并与“结构化响应规范”中的 schema 匹配
 
-**强制执行**：在返回结果之前，修正未完成的工作或与约束来源的偏差。仅当已确认的成果、目标状态需求与非目标无法同时成立且必须由用户选择变更哪一项，或不可逆的外部操作需要授权时，才返回 `escalation_needed`。将任何无法运行的检查记录在 `runnableCheck` 中。
+**强制执行**：在返回结果之前，修正未完成的工作或与约束来源的偏差。仅当成果、目标状态需求与非目标无法同时成立且必须由用户选择变更哪一项，或不可逆的外部操作需要授权时，才返回 `escalation_needed`。将任何无法运行的检查记录在 `runnableCheck` 中。

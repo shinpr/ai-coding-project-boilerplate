@@ -11,8 +11,6 @@ skills: project-context, technical-spec, coding-standards
 
 着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。以下の適用可能なプロセスに従い、現在のステップに必要なエビデンスが揃った場合にのみ次へ進む。返却前に、結果がそれらのルールと以下の出力要件を満たすことを検証する。
 
-**現在日時の確認**: 作業開始前に`date`コマンドで現在年月日を確認し、最新情報の判断基準とする。
-
 ## 入力と責務境界
 
 - **入力**: 構造化された調査結果（JSON）またはテキスト形式の調査結果
@@ -42,19 +40,11 @@ skills: project-context, technical-spec, coding-standards
 **impactAnalysisの妥当性確認**:
 - 各障害点のimpactAnalysisの論理的妥当性を、与えられた調査エビデンスを用いて確認する。追加の検索はステップ2で行う
 
-### ステップ2: Triangulation補完
-調査の`investigationSources`でカバーされていないソースタイプを特定し、少なくとも1つを調査する:
+### ステップ2: 独立したエビデンスの確認
+判断を左右する主張と反証を、その権威あるソースに照らして独立に確認する。別のソースタイプ、コード領域、設定へ広げるのは、それが障害点の判断を変えうる場合、または重大なカバレッジの欠落を埋める場合に限る。すでに決定的なソースには、無関係な裏付けは不要である。各補完的な発見について、既存の障害点への影響を記録する。
 
-1. 入力の`investigationSources`を確認 — カバー済みのソースタイプ（code, history, dependency, config, document, external）を列挙
-2. 未カバーの各ソースタイプについて: 障害点に関連する対象を絞った調査を実施
-3. すべてのソースタイプがカバー済みの場合: 元の調査で言及されていない**別のコード領域**または**別の設定**を調査する
-
-各補完的な発見について、既存の障害点への影響を記録する。
-
-### ステップ3: 外部情報で補強（WebSearch）
-- 調査で見つかった障害点に関する公式情報
-- 類似の問題報告や解決事例
-- 調査で参照されていない技術ドキュメント
+### ステップ3: 外部エビデンス（条件付き）
+未解決の技術的な振る舞い、依存関係の機能、バージョンに関する事実が診断を変えうるうえ、リポジトリのエビデンスでは判断できない場合に、権威ある外部ソースを参照する。
 
 ### ステップ4: 調査カバレッジチェック
 入力の`pathMap`の完全性を検証する:
@@ -136,7 +126,7 @@ skills: project-context, technical-spec, coding-standards
   ],
   "conclusion": {
     "confirmedFailurePoints": [
-      {"failurePointId": "FP1", "description": "障害の内容", "location": "file:line", "symptomId": "S1", "symptomExplained": "この障害が観測された症状にどうつながるか", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "finalStatus": "supported|weakened", "causalChain": ["現象", "→ 直接原因", "→ 根本原因"], "impactScope": ["影響を受けるファイルパス"], "recurrenceRisk": "low|medium|high"}
+      {"failurePointId": "FP1", "description": "障害の内容", "location": "file:line", "symptomId": "S1", "symptomExplained": "この障害が観測された症状にどうつながるか", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "finalStatus": "supported|weakened", "causalChain": ["現象", "→ 直接原因", "→ 根本原因"], "impactScope": ["影響を受けるファイルパス"], "ownership": "単一の責務 | 同じ所有者または契約 | 複数の所有者や契約にまたがる"}
     ],
     "refutedFailurePoints": [
       {"failurePointId": "FP2", "reason": "反証された理由"}
@@ -154,8 +144,8 @@ skills: project-context, technical-spec, coding-standards
 
 ## 完了条件
 
-- [ ] Triangulation補完を実施し、追加情報を収集した
-- [ ] WebSearchで外部情報を収集した
+- [ ] 判断を左右するエビデンスを独立に確認し、ソースを広げたのは判断を変えうる場合またはカバレッジの欠落を埋める場合に限った
+- [ ] 未解決の技術的事実が診断を変えうる場合に外部エビデンスを使用した
 - [ ] pathMapのカバレッジをチェックした（未トレースパス、未チェックノード）
 - [ ] 各障害点についてDevil's Advocate評価を実施した
 - [ ] 公式ドキュメントに基づく反証がある障害点のfinalStatusをweakenedに下げた

@@ -91,7 +91,7 @@ Extract the requested outcome, reason, and affected document responsibilities fr
 
 Record the resolved changes as the update contract.
 
-**Scope carried into the update**: Pass the confirmed sections, the reason for the change, and any size budget the user stated to the update agent. Before document review, map each changed section to a confirmed change or to a consistency update that change required. Remove accidental unmapped changes; when a necessary change would alter the requested document outcome or explicit size constraint, return to the request clarification gate.
+**Scope carried into the update**: Pass the sections in the update contract, the reason for the change, and any size budget the user stated to the update agent. Before document review, map each changed section to a change in the update contract or to a consistency update that change required. Remove accidental unmapped changes; when a necessary change would alter the requested document outcome or explicit size constraint, return to the request clarification gate.
 
 ### Step 4: Document Update
 
@@ -141,7 +141,7 @@ prompt: |
   target: [path from Step 1] (DesignDoc or PRD)
   targets: [[path from Step 1]] (ADRBatch only)
   requirements_verbatim: [Step 3 requested changes, verbatim] (Design Doc only)
-  confirmed_requirement_context: [approved PRD path governing the Design Doc, when one exists] (Design Doc only)
+  requirement_context: [approved PRD path governing the Design Doc, when one exists] (Design Doc only)
   verification_evidence: $CODE_VERIFICATION_OUTPUT (only when code-verifier ran)
 
   Focus on:
@@ -155,7 +155,7 @@ prompt: |
 **On review result**:
 - `pass` → Proceed to Step 6
 - `needs_revision` → Apply Review Resolution, pass complete `apply` issue objects verbatim as `correction_findings` to the Step 2 update agent, then re-review with `prior_feedback`
-- `rejected` → Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution
+- `rejected` → Apply the parent requirement gate when the value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution
 
 Follow Review Resolution convergence and escalation conditions.
 
@@ -186,7 +186,7 @@ Present the reviewed update and, for a Design Doc, its consistency result for on
 |-------|--------|
 | Target document not found | Report and end (document creation is out of scope) |
 | Sub-agent update fails | Repair discoverable input or routing errors and retry when the invocation materially changes; otherwise report the failure evidence |
-| Reviewer returns `rejected` | Apply the parent requirement gate when confirmed value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution |
+| Reviewer returns `rejected` | Apply the parent requirement gate when the value boundaries cannot all remain true; otherwise resolve technical conflicts through Review Resolution |
 | design-sync detects conflicts | Apply Review Resolution and return applied conflicts to the owning update path |
 
 ## Completion Criteria

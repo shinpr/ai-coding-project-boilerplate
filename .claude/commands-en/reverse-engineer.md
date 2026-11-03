@@ -71,13 +71,15 @@ prompt: |
 - No units discovered → ask user for hints
 - `$STEP_1_OUTPUT.prdUnits` exists
 - All `sourceUnits` across `prdUnits` (flattened, deduplicated) match the set of `discoveredUnits` IDs — no unit missing, no unit duplicated
-- Each discovered unit's `unitInventory` has at least one non-empty category (routes, testFiles, or publicExports). Units with all three empty indicate incomplete discovery — re-run scope-discoverer with focus on that unit's relatedFiles
+- Each discovered unit has source evidence and at least one behavior-bearing route, public export, or `otherEntryPoints` item with a defining source location; other categories may be empty. Resolve a material coverage gap through targeted discovery on that unit's relatedFiles, and keep non-blocking limitations as reported
 
 **Human Review Point** (if enabled): Present `$STEP_1_OUTPUT.prdUnits` with their source unit mapping. The user confirms, adjusts grouping, or excludes units from scope. This is the most important review point — incorrect grouping cascades into all downstream documents.
 
 ### Step 2-5: Per-Unit Processing
 
 **FOR** each unit in `$STEP_1_OUTPUT.prdUnits` **(sequential, one unit at a time):**
+
+Derive `$PRD_UNIT_INVENTORY` by merging the `unitInventory` of every discovered unit in the current PRD unit's `sourceUnits`, with duplicates removed. Steps 2, 3, and 5 use this same baseline.
 
 #### Step 2: PRD Generation
 
@@ -94,9 +96,10 @@ prompt: |
   Description: $PRD_UNIT_DESCRIPTION
   Related Files: $PRD_UNIT_COMBINED_RELATED_FILES
   Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS
+  Unit Inventory: $PRD_UNIT_INVENTORY
 
   Use provided scope as investigation starting point.
-  If tracing entry points reveals files outside this scope, include them.
+  Inspect dependencies outside these files only when they establish an in-scope behavior or contract; this does not automatically expand feature scope.
   Create final version PRD based on thorough code investigation.
 ```
 
@@ -116,7 +119,7 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  unit_inventory: [the `unitInventory` of every discovered unit in the current PRD unit's `sourceUnits`, merged with duplicates removed]
+  unit_inventory: $PRD_UNIT_INVENTORY
 ```
 
 Note: `code_paths` is intentionally NOT provided. The verifier discovers code scope from the document; `unit_inventory` serves only as the completeness baseline, so the search stays independent of scope-discoverer's file lists.
@@ -171,7 +174,7 @@ Map `$STEP_1_OUTPUT` units to Design Doc generation targets, carrying forward:
 - `technicalProfile.publicInterfaces` → Public Interfaces
 - `dependencies` → Dependencies
 - `relatedFiles` → Scope boundary
-- `unitInventory` → Unit Inventory (routes, test files, public exports)
+- `unitInventory` → Unit Inventory (routes, test files, public exports, other entry points)
 
 **Store output as**: `$STEP_6_OUTPUT`
 
@@ -202,11 +205,11 @@ prompt: |
   Primary Files: $UNIT_PRIMARY_MODULES
   Public Interfaces: $UNIT_PUBLIC_INTERFACES
   Dependencies: $UNIT_DEPENDENCIES
-  Unit Inventory: $UNIT_INVENTORY (routes, test files, public exports from scope discovery)
+  Unit Inventory: $UNIT_INVENTORY (routes, test files, public exports, and other entry points from scope discovery)
 
   Parent PRD: [this unit's reviewed PRD path from Phase 1]
 
-  Document current architecture as-is. Use Unit Inventory as a completeness baseline — all routes and exports should be accounted for in the Design Doc.
+  Document current architecture as-is. Use Unit Inventory as a completeness baseline — all inventoried capabilities should be accounted for in the Design Doc.
 ```
 
 **Store output as**: `$STEP_7_OUTPUT` (technical-designer result). When its `status` is `completed`, `$STEP_7_OUTPUT.path` is the Design Doc path; any other result is a generation failure.
@@ -274,7 +277,7 @@ prompt: |
   review_context: reverse-engineer
   target: $STEP_7_OUTPUT.path or $STEP_7_FRONTEND_OUTPUT.path
   verification_evidence: $STEP_8_OUTPUT (only when Step 8 ran)
-  confirmed_requirement_context: [this unit's reviewed PRD path from Phase 1]
+  requirement_context: [this unit's reviewed PRD path from Phase 1]
 
   ## Additional Review Focus
   - Technical accuracy of documented interfaces

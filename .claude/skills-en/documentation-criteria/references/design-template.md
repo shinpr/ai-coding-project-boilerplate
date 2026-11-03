@@ -19,7 +19,7 @@ List the accepted ADRs that govern the changed responsibility, including accepte
 
 ### Requirement Convergence
 
-Records confirmed requirements and boundaries. Evaluation requests, speculative ideas, and unselected mechanisms remain only in pre-confirmation convergence context. Mark the first two bullets `N/A — covered by PRD [path]` when a PRD holds them, or the whole section `N/A — reverse-engineer/as-is document`. Open questions stay here in every case, because design readiness depends on them.
+Records the user-selected requirements and boundaries. Evaluation requests, speculative ideas, and unselected mechanisms remain only in active convergence context. Mark the first two bullets `N/A — covered by PRD [path]` when a PRD holds them, or the whole section `N/A — reverse-engineer/as-is document`. Open questions stay here in every case, because design readiness depends on them.
 
 - **Outcome**: [one observable result this change must produce]
 - **Non-Goals**: [capability the user excluded | None — user confirmed there are none]
@@ -66,16 +66,13 @@ How quality is enforced in the change area. Each item is either adopted (will be
 
 #### Non-Functional Requirements
 
-- **Performance**: [Response time, throughput requirements]
-- **Scalability**: [Requirements for handling increased load]
-- **Reliability**: [Error rate, availability requirements]
-- **Maintainability**: [Code readability and changeability]
+- **[Quality attribute]**: [level] - Source: [requirement that states it | selected in Design Convergence because the requirements leave it unset]
 
 ## Acceptance Criteria (AC) - EARS Format
 
 Each AC is written in EARS format. Keywords determine test type.
 
-Keep the smallest representative set of observable behaviors that has a stable repository-verifiable pass/fail condition. Use repository-controlled contract/interface proof instead of a live external connection unless the confirmed requirement needs that boundary. Include a performance threshold only with a sourced target and reproducible benchmark, and exact visual positioning only with an approved visual contract and deterministic comparison. Implementation details remain outside ACs.
+Keep the smallest representative set of observable behaviors that has a stable repository-verifiable pass/fail condition. Use repository-controlled contract/interface proof instead of a live external connection unless a requirement needs that boundary. Include a performance threshold only with a sourced target and reproducible benchmark, and exact visual positioning only with an approved visual contract and deterministic comparison. Implementation details remain outside ACs.
 
 ### [Functional Requirement]
 
@@ -180,7 +177,7 @@ For each added design surface—user decision, setting, mode, concept, output, p
 - **Addition**: [selected design surface]
 - **Current evidence**: [requirement, accepted decision, verified constraint, observed problem, or evidence-backed material risk]
 - **Lower-surface insufficiency**: [why reuse, derivation, on-demand computation, or current-boundary ownership does not satisfy the same condition]
-- **Subtraction result**: [confirmed outcome, required boundary, or proof that becomes unmet when removed]
+- **Subtraction result**: [outcome, required boundary, or proof that becomes unmet when removed, traced to its originating requirement, accepted decision, or repository rule or contract]
 
 Use `None — existing design surface is sufficient` when the selected design adds none of these surfaces.
 

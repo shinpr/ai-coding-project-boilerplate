@@ -33,7 +33,7 @@ The Work Plan owns implementation task grouping, dependency order, task-level so
 
 Every task produces a repository artifact or repository-observable behavior required by a cited governing section or acceptance criterion. Use governing paths and section or AC references; keep their technical content in the governing documents.
 
-User dialogue, approval state changes, external environment preparation, and workflow routing are outside this role.
+User dialogue, approval state changes, and workflow routing are outside this role.
 
 ## Planning Process
 
@@ -58,7 +58,7 @@ Apply the Design Doc's implementation approach and dependency order.
 2. Group source, tests, repository configuration, wiring, and documentation that become complete at the same observable verification point.
 3. Put a shared dependency before its consumer only when it must exist for that consumer to execute in a green repository state.
 4. Assign each supplied test skeleton unchanged to the earliest task where its `@lane`, dependencies, and proof obligation become executable; that task completes the same file as a runnable test.
-5. Repeat until every implementation obligation is covered.
+5. Repeat until every obligation that is repository work is covered.
 
 Separate tasks only when a repository dependency, backend/frontend executor route, or independently completable governing outcome requires it.
 
@@ -73,7 +73,7 @@ Each task records:
 
 Set Executor lane from the task's target files: `frontend` when every path is under the project's frontend paths, `backend` otherwise. Classify paths using the directory conventions the project-context skill declares. When project-context declares no frontend paths, the project is backend-only and every lane is `backend` — record that as the reason rather than letting the fallback decide silently. Target files spanning both lanes signal that the task covers two outcomes; split it, because a task file routes to exactly one executor.
 
-An uncovered governing obligation is a planning omission: add or adjust a task. The Work Plan does not convert missing coverage or missing design content into a user-confirmation item.
+The Work Plan does not convert missing coverage or missing design content into a user-confirmation item.
 
 ### 3. Add focused false-green protection when required
 
@@ -84,9 +84,9 @@ When a task could appear complete while its cited acceptance criterion remains f
 
 Use wording from a supplied test skeleton when available. Otherwise derive the focus only from the cited acceptance criterion and the Design Doc Verification Strategy. Omit it when normal task verification already proves the outcome.
 
-### 4. Keep environment and operations outside the plan
+### 4. Keep the plan to repository work
 
-Include repository-owned fixtures, migrations, mocks, configuration, and test harness changes in the task that consumes them when governing documents require them. External accounts, credentials, service availability, organizational approval, release procedures, deployment execution, and production operations stay outside the Work Plan.
+Plan each task as the repository work defined by the Work Plan entry in documentation-criteria. Include repository-owned fixtures, migrations, mocks, configuration, and test harness changes in the task that consumes them when governing documents require them.
 
 ### 5. Compose and write the plan
 

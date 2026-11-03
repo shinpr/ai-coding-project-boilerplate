@@ -26,18 +26,18 @@ Use the result producer's declared verification mode:
 
 ## 1. Assess Every Finding
 
-Before assigning a disposition, inspect the relevant parts of the current deliverable, cited repository evidence, and governing sources, treating reviewer assertions as evidence to verify. Confirm the reported behavior, then establish the material effect of leaving it unchanged: a change to the confirmed outcome, a binding constraint, downstream behavior, a decision, or required verification, or an evidenced lifecycle cost whose frequency or magnitude is observable. For a discretionary response, weigh that effect against the full cost of implementing, verifying, and retaining the response, including review attention.
+Before assigning a disposition, inspect the relevant parts of the current deliverable, cited repository evidence, and governing sources, treating reviewer assertions as evidence to verify. Confirm the reported behavior, then establish the material effect of leaving it unchanged: a change to the outcome, a binding constraint, downstream behavior, a decision, or required verification, or an evidenced lifecycle cost whose frequency or magnitude is observable. For a discretionary response, weigh that effect against the full cost of implementing, verifying, and retaining the response, including review attention.
 
-When evidence shows that the confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which value boundary changes, leave Review Resolution and apply the parent workflow's Requirement Change Detection. When correction requires authorization for an irreversible external action, leave Review Resolution and apply the parent workflow's authority gate. These workflow stops are not finding dispositions.
+When evidence shows that the outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which value boundary changes, leave Review Resolution and apply the parent workflow's Requirement Change Detection. When correction requires authorization for an irreversible external action, leave Review Resolution and apply the parent workflow's authority gate. These workflow stops are not finding dispositions.
 
 The orchestrator records one disposition for every actionable finding:
 
 | Disposition | Use when |
 |---|---|
-| `apply` | Leaving the current deliverable unchanged would prevent the confirmed outcome, violate a binding requirement, design decision, or repository rule, leave required correctness or verification unsupported, or commit downstream work to added design surface whose total complexity lacks current evidence; or, outside those conditions, the material effect exceeds the response cost. |
-| `decline` | No material effect is established; the finding lies outside the confirmed value boundaries or the reviewer's declared artifact boundary, or reverses an exclusion; or the response cost equals or exceeds the material effect. |
+| `apply` | Leaving the current deliverable unchanged would prevent the outcome, violate a binding requirement, design decision, or repository rule, leave required correctness or verification unsupported, or commit downstream work to added design surface whose total complexity lacks current evidence; or, outside those conditions, the material effect exceeds the response cost. |
+| `decline` | No material effect is established; the finding lies outside the value boundaries or the reviewer's declared artifact boundary, or reverses an exclusion; or the response cost equals or exceeds the material effect. |
 
-A confirmed security risk, implementation divergence, or governing-source contradiction receives `apply` when correction preserves the confirmed value boundaries; cost alone leaves that classification unchanged. Technical design, contract, or implementation changes are correction work rather than user decisions when those boundaries remain true.
+A confirmed exploitable gap in a relied-upon trust boundary, implementation divergence, or governing-source contradiction receives `apply` when correction preserves the value boundaries; cost alone leaves that classification unchanged. Technical design, contract, or implementation changes are correction work rather than user decisions when those boundaries remain true.
 
 For each finding record:
 
@@ -54,9 +54,9 @@ Only findings with `apply`, and maintained `apply` findings under section 3, ent
 
 Select the existing correction owner from the accepted state each finding requires:
 
-- use the owning document author when the implementation already satisfies the confirmed value boundaries and the technical artifact must change
+- use the owning document author when the implementation already satisfies the value boundaries and the technical artifact must change
 - use the executor when the implementation must change to reach the accepted state
-- use both, author first, when the correction removes a mechanism that a technical artifact selected and the confirmed outcome does not need; the author deletes the selecting statement and the executor removes the implementation it authorized
+- use both, author first, when the correction removes a mechanism that a technical artifact selected and the outcome does not need; the author deletes the selecting statement and the executor removes the implementation it authorized
 
 For a mixed set, complete author-owned corrections first and re-evaluate executor-owned findings against the corrected governing artifact. The artifact revision alone does not satisfy a reduction's implementation removal. Pass complete `apply` finding objects verbatim with their dispositions to the selected owner. Invoke a document author as a fresh update call with the original target and those findings; the artifact supplies unaffected context. When an executor is used, preserve its original `task_file` or four direct-scope fields and add the findings as `correction_findings`; correction remains inside the original execution scope.
 

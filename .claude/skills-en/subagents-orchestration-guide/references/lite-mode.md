@@ -1,6 +1,6 @@
 # Lite Mode
 
-Lite Mode reduces intermediate assurance calls while preserving the confirmed outcome, user-approval stops, authority boundaries, implementation checks, and completion evidence. The resolved mode selects which recipe calls and their result gates apply.
+Lite Mode reduces intermediate assurance calls while preserving the outcome, user-approval stops, authority boundaries, implementation checks, and completion evidence. The resolved mode selects which recipe calls and their result gates apply.
 
 ## Call Set
 

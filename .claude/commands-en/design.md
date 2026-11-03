@@ -34,13 +34,13 @@ At each Agent invocation below, build the prompt as a mechanical extraction: cop
 
 ## Step 1: Select the Governing Requirement Source
 
-Use the approved PRD path when one exists. Otherwise use the confirmed requirements verbatim.
+Use the approved PRD path when one exists. Otherwise use the requirements verbatim.
 
-Set `confirmed_requirement_context` to the approved PRD path exactly. Only when no approved PRD exists, use the orchestrator-confirmed convergence record unchanged.
+Set `requirement_context` to the approved PRD path exactly. Only when no approved PRD exists, use the orchestrator's convergence record unchanged.
 
 ## Step 2: Collect Decision Material
 
-Invoke `codebase-analyzer` once for the complete confirmed scope with exactly `prd_path: [approved PRD path]`, or `requirements: [confirmed requirements verbatim]` when no approved PRD exists.
+Invoke `codebase-analyzer` once for the complete scope with exactly `prd_path: [approved PRD path]`, or `requirements: [requirements verbatim]` when no approved PRD exists.
 
 Require one valid JSON result and let the analyzer discover affected paths, responsibility boundaries, and cross-layer contracts. Treat its focus areas as existing-behavior safeguards, not as new requirements.
 
@@ -54,16 +54,16 @@ Determine Structural Scale from outcomes and responsibility boundaries. File cou
 
 Resolve `decisionMaterials.candidateDecisionPoints` against the governing requirement source, applicable `simplifications`, `reuse`, and `invalidations`. Remove a point when that evidence already converges on one sufficient approach. Apply the documentation-criteria Choice and Durability filters in order to each remaining item. Record every passing item as `adrDecisionPoints`; an empty list routes directly to the Design Doc.
 
-Present what the user decides on: the outcome and the requirements to build, the exclusions, the responsibilities the change targets, each applicable simplification with the condition under which the confirmed outcome still holds without it, and the cost band with its remaining unknowns. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale and ADR qualification stay in the orchestrator record — the ADR batch and the Design Doc have their own approval stops. Offer proceed, or correct scope and re-run analysis. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
+Present what the user decides on: the outcome and the requirements to build; the exclusions; the responsibilities the change targets; each requirement whose need existing behavior already serves except for extra behavior the requirement specifies, with that evidence and its cost effect; each applicable simplification with the condition under which the outcome still holds without it; and the cost band with its remaining unknowns. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale and ADR qualification stay in the orchestrator record — the ADR batch and the Design Doc have their own approval stops. Offer proceed, or correct scope and re-run analysis. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
 
 ## Step 4: Create and Approve an ADR Batch When Needed
 
 When `adrDecisionPoints` is non-empty:
 
-1. Invoke `technical-designer` once with `document_to_create: ADRBatch`, `confirmed_requirement_context`, the ordered `decision_points`, and the corresponding `decision_materials` copied unchanged from Step 2.
-2. Invoke `document-reviewer` once with `doc_type: ADRBatch`, `targets: [all returned paths]`, and `confirmed_requirement_context`.
+1. Invoke `technical-designer` once with `document_to_create: ADRBatch`, `requirement_context`, the ordered `decision_points`, and the corresponding `decision_materials` copied unchanged from Step 2.
+2. Invoke `document-reviewer` once with `doc_type: ADRBatch`, `targets: [all returned paths]`, and `requirement_context`.
 3. Route the verdict first: `pass` proceeds; `needs_revision` applies Review Resolution, updates one ADR per path serially, and re-reviews the complete batch; `rejected` resolves the governing-source conflict before another review.
-4. Present one batch decision only after a `pass` review. `[Stop: ADR batch approval]`.
+4. Present one batch decision, with the quality levels the ADRs selected where the requirements left them unset, only after a `pass` review. `[Stop: ADR batch approval]`.
 5. After user approval, invoke `technical-designer` in update mode for each ADR path to set its status to `Accepted`, and verify the change.
 
 ## Step 5: Create the Design Doc
@@ -71,7 +71,7 @@ When `adrDecisionPoints` is non-empty:
 Invoke `technical-designer` with exactly:
 
 - `document_to_create: DesignDoc`
-- `confirmed_requirement_context`
+- `requirement_context`
 - `structural_scale`
 - `adr_paths: [accepted paths or []]`
 - `codebase_analysis: [complete Step 2 JSON unchanged]`
@@ -88,19 +88,19 @@ Apply Review Resolution to every discrepancy before document review. Send only `
 
 ## Step 7: Review and Approve
 
-Invoke `document-reviewer` with `doc_type: DesignDoc`, `target`, `review_context: creation`, the original user requirements as `requirements_verbatim`, `confirmed_requirement_context`, `codebase_analysis`, and `verification_evidence` only when Step 6 ran.
+Invoke `document-reviewer` with `doc_type: DesignDoc`, `target`, `review_context: creation`, the original user requirements as `requirements_verbatim`, `requirement_context`, `codebase_analysis`, and `verification_evidence` only when Step 6 ran.
 
 - `pass`: continue
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer invocation using the existing path and complete findings with an `apply` disposition, then re-review with `prior_feedback`
-- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
+- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when the outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 
-In Normal Mode, invoke `design-sync` with the Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. When the result reports `analyzed_docs: 0`, report consistency verification as skipped because no other Design Doc exists.
+In Normal Mode, invoke `design-sync` with the Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. Report the result's compared and carried-forward documents and any `access_limitations`. Report consistency verification as skipped only when `analyzed_docs` and `carried_forward_docs` are both 0 and no access limitation is recorded.
 
-Present the Design Doc, accepted ADR paths, recorded declines, and the design-sync result or its omission in Lite Mode. `[Stop: Design approval]`.
+Present the Design Doc, the quality levels it selected where the requirements left them unset, accepted ADR paths, recorded declines, and the design-sync result or its omission in Lite Mode. `[Stop: Design approval]`.
 
 ## Completion Criteria
 
-- Scope and Structural Scale were confirmed from outcomes and responsibility boundaries
+- Scope and Structural Scale were determined from outcomes and responsibility boundaries
 - ADRs exist only for decision points passing both filters, and the complete batch received one review and approval
 - A Design Doc exists regardless of whether ADRs were needed
 - Applicable existing-behavior, contract, assumption, equivalence, and verification safeguards reached the Design Doc

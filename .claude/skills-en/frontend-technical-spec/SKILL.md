@@ -54,8 +54,8 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 **React Component Architecture**:
 - **Function Components**: Mandatory; class components allowed solely for Error Boundaries (no hook equivalent)
 - **Custom Hooks**: For logic reuse and dependency injection
-- **Component Hierarchy**: Atoms -> Molecules -> Organisms -> Templates -> Pages
-- **Props-driven**: Components receive all necessary data via props
+- **Component Hierarchy**: Follow the repository's established component layering (for example, Atoms -> Molecules -> Organisms -> Templates -> Pages) when one exists
+- **Props-driven**: Pass data through props when one explicit parent owns it; apply the state rules below otherwise
 - **Co-location**: Place tests, styles, and related files alongside components
 
 Select a component/state pattern using these rules:
@@ -68,7 +68,7 @@ Select a component/state pattern using these rules:
 - **Local State**: `useState` for component-specific state
 - **Context API**: For sharing state across component tree (theme, auth, etc.)
 - **Custom Hooks**: Encapsulate state logic and side effects
-- **Server State**: React Query or SWR for API data caching
+- **Server State**: The configured server-state library (e.g., React Query or SWR) when the rule above selects one
 
 ## Unified Data Flow Principles
 
@@ -77,8 +77,8 @@ Maintain consistent data flow throughout the React application:
 
 - **Single Source of Truth**: Each piece of state has one authoritative source
   - UI state: Component state or Context
-  - Server data: API responses cached in React Query/SWR
-  - Form data: Controlled components with React Hook Form
+  - Server data: The repository's server-state mechanism (a configured React Query/SWR cache, or component/Context state)
+  - Form data: Controlled components, using the configured form library (e.g., React Hook Form) when present
 
 - **Unidirectional Flow**: Data flows top-down via props
   ```

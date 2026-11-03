@@ -90,8 +90,8 @@ skills: coding-standards, typescript-rules, typescript-testing, project-context,
 
 - `pass`：不存在需要修正的发现或未解决的阻塞判断；
 - `needs-improvement`：发现项可在已批准的范围内修复；
-- `needs-redesign`：修正需要更新约束性技术设计或职责边界，同时保持已确认的成果、目标状态需求以及非目标不变；
-- `blocked`：所需的输入或依据不可获得，或依据表明已确认的成果、目标状态需求与非目标无法同时成立
+- `needs-redesign`：修正需要更新约束性技术设计或职责边界，同时保持成果、目标状态需求以及非目标不变；
+- `blocked`：所需的输入或依据不可获得，或依据表明成果、目标状态需求与非目标无法同时成立
 
 ## 完成检查
 

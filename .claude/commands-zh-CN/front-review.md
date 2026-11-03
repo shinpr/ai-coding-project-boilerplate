@@ -22,7 +22,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 - **代码侧修复路径**：修复实现 → task-executor-frontend；修正复评 → code-reviewer / security-reviewer；质量检查 → quality-fixer-frontend
 - **设计侧更新路径**：DD 修订 → technical-designer-frontend（update 模式）；DD 评审 → document-reviewer；跨 DD 一致性 → design-sync（当存在多个 DD 时）；重新验证 → code-reviewer
 
-编排者调用子智能体，并在它们之间传递结构化 JSON。当设计文档对已确认成果而言已过时、过度或有误时，适用设计侧路径。两条路径都不会默认把现有实现或先前的设计视为权威。
+编排者调用子智能体，并在它们之间传递结构化 JSON。当设计文档对成果而言已过时、过度或有误时，适用设计侧路径。两条路径都不会默认把现有实现或先前的设计视为权威。
 
 设计文档（省略时使用最新的一份）：$ARGUMENTS
 
@@ -84,7 +84,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 1. 使用 Agent 工具以 update 模式调用 technical-designer-frontend：
    - `subagent_type`: "technical-designer-frontend"
    - `description`: "从评审发现项更新设计文档"
-   - `prompt`: "以 update 模式更新 [path] 的设计文档，依据这些已批准的设计侧发现项：[附带其 apply 处置的完整发现项对象]。保持已确认的成果、目标状态需求与非目标。"
+   - `prompt`: "以 update 模式更新 [path] 的设计文档，依据这些已批准的设计侧发现项：[附带其 apply 处置的完整发现项对象]。保持成果、目标状态需求与非目标。"
 
 2. 调用 document-reviewer 验证更新后的设计文档：
    - `subagent_type`: "document-reviewer"
@@ -95,7 +95,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 3. 在 Normal 模式下，当另一份设计文档约束了被评审变更所触及的职责或契约时，调用 design-sync：
    - `subagent_type`: "design-sync"
    - `description`: "跨 DD 一致性检查"
-   - `prompt`: "source_design: [更新后 DD 的路径]。检测更新后所有设计文档之间的冲突。"
+   - `prompt`: "source_design: [更新后 DD 的路径]。检测与共享更新后文档契约的设计文档之间的冲突。"
    - `prior_feedback`（仅重新执行时）：上一次的完整结果、其处置方式，以及修正差异或变更路径
    - 当 `sync_status: CONFLICTS_FOUND` 时：应用“评审裁定”，并遵循其范围受限验证者的交接与收敛规则，通过负责该文档的 technical designer 修正 `apply` 冲突
 
@@ -105,9 +105,9 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 使用 Agent 工具调用 task-executor-frontend：
 - `subagent_type`: "task-executor-frontend"
 - `description`: "执行评审修复"
-- `direct_scope`: 在已确认的评审范围与所述的总规模预算内应用已批准的前端修正
+- `direct_scope`: 在评审范围与所述的总规模预算内应用已批准的前端修正
 - `governing_sources`: 被评审的设计文档、适用的 UI 规范，以及已接受的需求或 ADR 路径
-- `target_paths`: 为已批准的代码侧路由所确认的实现与测试路径
+- `target_paths`: 为已批准的代码侧路由所识别的实现与测试路径
 - `observable_verification`: 由发现项与约束来源所指明的聚焦 UI 行为测试或可观测契约检查通过
 - `correction_findings`: 评审者发现项对象的完整逐字副本，仅添加其编排者处置
 
@@ -189,5 +189,5 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 在所影响的仓库职责范围内，一致地完成已批准的修正。
 将被引用的路径视为调查的起点。
 除被指派的更新外，约束性产物保持只读。
-当已确认的成果、目标状态需求与非目标无法同时成立时，返回需求变更检测；当需要不可逆的外部操作时，请求授权。
+当成果、目标状态需求与非目标无法同时成立时，返回需求变更检测；当需要不可逆的外部操作时，请求授权。
 ```

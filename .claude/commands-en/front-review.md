@@ -22,7 +22,7 @@ Execute the `subagents-orchestration-guide` skill before making workflow decisio
 - **Code-side fix path**: Fix implementation → task-executor-frontend; Correction review → code-reviewer / security-reviewer; Quality check → quality-fixer-frontend
 - **Design-side update path**: DD revision → technical-designer-frontend (update mode); DD review → document-reviewer; cross-DD consistency → design-sync (when multiple DDs exist); Re-validation → code-reviewer
 
-Orchestrator invokes sub-agents and passes structured JSON between them. The design-side path applies when the Design Doc is stale, excessive, or incorrect for the confirmed outcome. Neither path makes the existing implementation or the prior design authoritative by default.
+Orchestrator invokes sub-agents and passes structured JSON between them. The design-side path applies when the Design Doc is stale, excessive, or incorrect for the outcome. Neither path makes the existing implementation or the prior design authoritative by default.
 
 Design Doc (uses most recent if omitted): $ARGUMENTS
 
@@ -84,7 +84,7 @@ Run this step only when an approved route changes the Design Doc.
 1. Invoke technical-designer-frontend in update mode using Agent tool:
    - `subagent_type`: "technical-designer-frontend"
    - `description`: "Design Doc update from review findings"
-   - `prompt`: "Update Design Doc at [path] in update mode from these approved design-side findings: [complete finding objects with their apply dispositions]. Preserve the confirmed outcome, desired-future requirements, and non-goals."
+   - `prompt`: "Update Design Doc at [path] in update mode from these approved design-side findings: [complete finding objects with their apply dispositions]. Preserve the outcome, desired-future requirements, and non-goals."
 
 2. Invoke document-reviewer to verify the updated Design Doc:
    - `subagent_type`: "document-reviewer"
@@ -95,7 +95,7 @@ Run this step only when an approved route changes the Design Doc.
 3. In Normal Mode, when another Design Doc governs a responsibility or contract touched by the reviewed changes, invoke design-sync:
    - `subagent_type`: "design-sync"
    - `description`: "Cross-DD consistency check"
-   - `prompt`: "source_design: [updated DD path]. Detect conflicts across all Design Docs after the update."
+   - `prompt`: "source_design: [updated DD path]. Detect conflicts with the Design Docs that share the updated document's contracts."
    - `prior_feedback` (rerun only): the previous complete result, its dispositions, and the correction diff or changed paths
    - When `sync_status: CONFLICTS_FOUND`: apply Review Resolution and follow its bounded-verifier handoff and convergence rules, correcting `apply` conflicts through the owning technical designer
 
@@ -105,9 +105,9 @@ Run this step only when an approved route changes the Design Doc.
 Invoke task-executor-frontend using Agent tool:
 - `subagent_type`: "task-executor-frontend"
 - `description`: "Execute review fixes"
-- `direct_scope`: Apply the approved frontend corrections within the confirmed review scope and stated total size budget
+- `direct_scope`: Apply the approved frontend corrections within the review scope and stated total size budget
 - `governing_sources`: The reviewed Design Doc, applicable UI Spec, and accepted requirement or ADR paths
-- `target_paths`: The implementation and test paths confirmed for the approved code-side routes
+- `target_paths`: The implementation and test paths identified for the approved code-side routes
 - `observable_verification`: The focused UI behavior tests or observable contract checks named by the findings and governing sources pass
 - `correction_findings`: Complete reviewer finding objects verbatim, with only their orchestrator dispositions added
 
@@ -189,5 +189,5 @@ Scope boundary for subagents:
 Deliver the approved corrections consistently across the repository responsibility they affect.
 Treat referenced paths as investigation starting points.
 Keep governing artifacts read-only except for assigned updates.
-Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
+Return to Requirement Change Detection when the outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```
