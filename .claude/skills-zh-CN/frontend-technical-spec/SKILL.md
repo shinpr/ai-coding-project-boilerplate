@@ -54,8 +54,8 @@ const response = await fetch('/api/data') // 后端负责处理 API 密钥认证
 **React 组件架构**：
 - **函数组件**：强制要求；仅在 Error Boundary 场景下允许使用类组件（因为没有对应的 hook 替代方案）
 - **自定义 Hook**：用于逻辑复用和依赖注入
-- **组件层级**：Atoms -> Molecules -> Organisms -> Templates -> Pages
-- **Props 驱动**：组件通过 props 接收所有必要数据
+- **组件层级**：仓库已有既定的组件分层时遵循它（例如 Atoms -> Molecules -> Organisms -> Templates -> Pages）
+- **Props 驱动**：由一个明确的父组件所拥有的数据通过 props 传递；否则应用下方的状态规则
 - **就近放置**：将测试、样式和相关文件放在组件旁边
 
 按以下规则选择组件/状态模式：
@@ -68,7 +68,7 @@ const response = await fetch('/api/data') // 后端负责处理 API 密钥认证
 - **局部状态**：使用 `useState` 管理组件专属状态
 - **Context API**：用于跨组件树共享状态（主题、认证等）
 - **自定义 Hook**：封装状态逻辑和副作用
-- **服务端状态**：使用 React Query 或 SWR 缓存 API 数据
+- **服务端状态**：当上述规则选定时，使用已配置的服务端状态库（例如 React Query 或 SWR）
 
 ## 统一数据流原则
 
@@ -77,8 +77,8 @@ const response = await fetch('/api/data') // 后端负责处理 API 密钥认证
 
 - **单一数据源**：每一份状态只有一个权威来源
   - UI 状态：组件状态或 Context
-  - 服务端数据：缓存在 React Query/SWR 中的 API 响应
-  - 表单数据：使用 React Hook Form 的受控组件
+  - 服务端数据：仓库的服务端状态机制（已配置的 React Query/SWR 缓存，或组件/Context 状态）
+  - 表单数据：受控组件；存在已配置的表单库（例如 React Hook Form）时使用它
 
 - **单向流动**：数据通过 props 自上而下流动
   ```

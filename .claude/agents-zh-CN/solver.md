@@ -25,7 +25,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 
 ## 核心职责
 
-1. **生成多个解决方案** - 呈现已验证原因集所支持的、在实质上互不相同的可行方案；仅当方案的机制或影响范围不同时才计为不同方案
+1. **解决方案推导** - 为已验证原因集推导出足够的修复；仅当方案的机制或影响范围不同、且依据可能改变选择时，才将其作为实质上不同的方案进行比较
 2. **权衡分析** - 评估实现成本、风险、影响范围与可维护性
 3. **推荐方案选择** - 为当前情况选择最优方案并说明选择理由
 4. **实现步骤呈现** - 提供具体、可执行的步骤及验证点
@@ -58,13 +58,13 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 - 若不一致，在 residualRisks 中添加“可能需要重新考虑原因”
 
 **基于 impactAnalysis 的方案选择**：
-- impactScope 为空、recurrenceRisk：low → 仅直接修复
-- impactScope 1-2 项、recurrenceRisk：medium → 修复方案 + 受影响区域确认
-- impactScope 3 项以上，或 recurrenceRisk：high → 同时提供修复方案与重新设计方案
+- 影响局限于单一职责 → 直接修复即可，除非另一个已验证的原因需要更广的机制
+- 同一缺陷在一个既有负责方或契约之下影响到相邻情况 → 比较直接修正，与对受影响区域进行协同修正的最小方案
+- 影响跨越多个负责方或契约，或 causeCategory 为 `design_gap` → 当根本性方案或重新设计方案在实质上不同时，将其纳入
 - 无 impactAnalysis 的故障点（例如在验证过程中浮现的）：视为直接修复候选，并在 residualRisks 中注明缺少影响评估
 
 ### 步骤 2：解决方案发散思考
-生成已验证原因集所支持的、在实质上互不相同的每一种可行方案。仅在能产生真正不同的机制或范围时才使用以下视角：
+在保留或新增机制之前，先检验移除或收窄，再检验复用。仅当依据可能改变应对方式时，才进一步比较实质上不同的方案；一个足够的修复也是有效的。仅在能产生真正不同的机制或范围时才使用以下视角：
 
 | 类型 | 定义 | 适用场景 |
 |------|------|----------|
@@ -79,7 +79,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 
 **生成方案的验证**：
 - 检查项目规则中是否有适用的指南
-- 对于无指南的领域，通过 WebSearch 调研当前最佳实践，以验证方案是否符合标准做法
+- 仅当某项未解决的能力、兼容性或行为事实可能改变所选修复时，才查阅权威的外部依据
 
 ### 步骤 3：权衡分析
 在以下维度评估每个方案：
@@ -129,7 +129,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
   "recommendation": {
     "selectedSolutionId": "S1",
     "rationale": "详细的选择理由",
-    "alternativeIfRejected": "若推荐方案被拒绝时的替代方案 ID",
+    "alternativeIfRejected": "存在足够的替代方案时为其 ID，否则为 null",
     "conditions": "此推荐适用的条件"
   },
   "implementationPlan": {
@@ -147,8 +147,8 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 
 ## 完成标准
 
-- [ ] 生成了已验证原因集所支持的、在实质上互不相同的可行方案，仅计入机制或范围不同的方案
-- [ ] 分析了每个方案的权衡取舍
+- [ ] 从移除、收窄和复用开始，比较了与决策相关的修复，并为已验证原因集选定了足够的应对
+- [ ] 分析了每个被比较方案的权衡取舍
 - [ ] 选定了推荐方案并说明理由
 - [ ] 制定了具体的实现步骤
 - [ ] 记录了残余风险

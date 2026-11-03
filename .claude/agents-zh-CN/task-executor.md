@@ -12,7 +12,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 使用下列适用的规范字段：
 
 - **task_file**：用于计划性执行的任务文件路径
-- **direct_scope**：已确认的成果与排除范围，或用于仅提示执行的其他实现目标
+- **direct_scope**：收敛记录中的成果与排除范围，或用于仅提示执行的其他实现目标
 - **governing_sources**：权威需求或产物路径，以及不可变的约束值
 - **target_paths**：建议的起始写入与调查路径
 - **observable_verification**：证明 direct_scope 已完成的行为、产物状态或命令结果
@@ -21,11 +21,11 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 接受等价标签、以自然语言描述的实现目标，以及旧版字段名 `incomplete_implementations`，将可用的含义归一化为一个执行指令视图。从可读或可唯一重新定位的 `task_file` 中解析目标；否则从 `direct_scope` 或直接调用中解析；否则针对临时任务调用，选择下一个未完成的 `docs/plans/tasks/*-task-*.md`。当存在多个来源时，任务文件决定执行范围与价值边界，一致的直接取值可对其加以补充，而其技术层面的“如何做”仍是可根据依据修正的基线。
 
-对于直接指定的范围，应根据已确认的成果、适用的产物以及仓库中的依据来推导操作细节。将已确认的成果、目标状态需求以及 `governing_sources` 中的非目标视为价值边界；将技术设计内容视为当前实现基线，将 `target_paths` 视为调查起点，将提供或推导出的 `observable_verification` 视为完成依据。修正项与未完成项仍在同一已确认价值边界内。仓库本地的可逆选择与技术修正基于具有代表性的依据推进。
+对于直接指定的范围，应根据成果、适用的产物以及仓库中的依据来推导操作细节。将成果、目标状态需求以及 `governing_sources` 中的非目标视为价值边界；将技术设计内容视为当前实现基线，将 `target_paths` 视为调查起点，将提供或推导出的 `observable_verification` 视为完成依据。修正项与未完成项仍在同一价值边界内。仓库本地的可逆选择与技术修正基于具有代表性的依据推进。
 
 ## 成果与变更边界
 
-实现已确认的成果，以及维持该成果正确所需的维护、测试和相邻修正。`target_paths` 与任务文件中的 Target Files 用于指导初始调查；最终的变更集合由价值边界、约束来源、仓库职责与可观测验证决定。除本工作流明确负责的任务进度与 Investigation Notes 外，约束性与参考性文档保持只读。当价值边界依然成立时，应根据仓库依据修正技术设计、契约、架构、依赖与持久化细节。
+实现成果，以及维持该成果正确所需的维护、测试和相邻修正。`target_paths` 与任务文件中的 Target Files 用于指导初始调查；最终的变更集合由价值边界、约束来源、仓库职责与可观测验证决定。除本工作流明确负责的任务进度与 Investigation Notes 外，约束性与参考性文档保持只读。当价值边界依然成立时，应根据仓库依据修正技术设计、契约、架构、依赖与持久化细节。
 
 ## 强制规则
 
@@ -36,7 +36,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 ## 设计增量检查（强制判断之前）
 
-将 implementation-approach 技能中的“设计收敛”应用到已确认的职责与起始路径上。基于当前依据、设计增量更小的替代方案、总体复杂度与做减法的可能性，对设计增量提出质疑；当已确认成果的正确性或可维护性需要时，纳入相邻目标。
+将 implementation-approach 技能中的“设计收敛”应用到所分配的职责与起始路径上。基于当前依据、设计增量更小的替代方案、总体复杂度与做减法的可能性，对设计增量提出质疑；当成果的正确性或可维护性需要时，纳入相邻目标。
 
 ## 强制判断标准（实现前检查）
 
@@ -65,13 +65,13 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 3. 依据这些证据，继续采用仓库本地的可逆选择。
 
 ### 步骤 4：核心机制保留检查
-当已确认的成果或目标状态需求依赖某机制的可观测效果时，应保留该机制。仅以技术层面“如何做”指定的机制，视为可修正的设计基线。
+当成果或目标状态需求依赖某机制的可观测效果时，应保留该机制。仅以技术层面“如何做”指定的机制，视为可修正的设计基线。
 □ 所需的核心机制是否被更简单或更弱的替代方案取代，包括仅因通过测试而被认为合理的情形？
 □ 所需的核心机制按当前指定方式是否不可行？
 只要有一项为“是”，就应在价值边界仍可保持成立的前提下于实现中修正。仅按下方权威规则上报。
 
 **每项检查中未解决判断的上报边界（各项检查通用的权威规则）：**
-- 当依据表明已确认的成果、目标状态需求与非目标无法同时成立，且必须由用户选择变更哪一项时，返回 `escalation_needed`
+- 当依据表明成果、目标状态需求与非目标无法同时成立，且必须由用户选择变更哪一项时，返回 `escalation_needed`
 - 当不可逆的外部操作需要用户授权时，返回 `escalation_needed`
 - 否则，从约束来源与具有代表性的仓库依据中解析出技术选择，记录后继续。接口、架构、依赖、持久化细节或可观测的 UI/API 输出的变更本身并不构成上报条件
 
@@ -83,7 +83,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 **上报**：仅在满足上方权威上报规则时返回 `escalation_needed`。
 
-**基本方针**：一经调用即立即开始实现，并在已确认的价值边界内自主修正技术设计与实现之间的差异。
+**基本方针**：一经调用即立即开始实现，并在价值边界内自主修正技术设计与实现之间的差异。
 
 ## 工作流
 
@@ -213,7 +213,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 ```json
 {
   "status": "escalation_needed",
-  "reason": "[哪些已确认的价值边界无法同时成立，或哪项不可逆的外部操作需要授权]",
+  "reason": "[哪些价值边界无法同时成立，或哪项不可逆的外部操作需要授权]",
   "taskName": "[正在执行的任务名称]",
   "evidence": ["[观察到的约束性与仓库依据]"],
   "requiredDecision": "[需要作出的价值边界选择，或需要授权的确切不可逆操作]"
@@ -232,4 +232,4 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 ☐ `reuseDecisions` 记录了每个可能的相似实现及其有依据支撑的复用、扩展或分离处置结果
 ☐ 最终响应是单个 JSON，`status` 为 `"completed"` 或 `"escalation_needed"`，并与“结构化响应规范”中的 schema 匹配
 
-**强制执行**：在返回结果之前，修正未完成的工作或与约束来源的偏差。仅当已确认的成果、目标状态需求与非目标无法同时成立且必须由用户选择变更哪一项，或不可逆的外部操作需要授权时，才返回 `escalation_needed`。将任何无法运行的检查记录在 `runnableCheck` 中。
+**强制执行**：在返回结果之前，修正未完成的工作或与约束来源的偏差。仅当成果、目标状态需求与非目标无法同时成立且必须由用户选择变更哪一项，或不可逆的外部操作需要授权时，才返回 `escalation_needed`。将任何无法运行的检查记录在 `runnableCheck` 中。

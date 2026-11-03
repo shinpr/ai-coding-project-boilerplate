@@ -71,13 +71,15 @@ prompt: |
 - 未发现任何单元 → 向用户询问提示信息
 - `$STEP_1_OUTPUT.prdUnits` 存在
 - `prdUnits` 中所有 `sourceUnits`（展平并去重后）与 `discoveredUnits` 的 ID 集合一致 —— 没有遗漏的单元，也没有重复的单元
-- 每个已发现单元的 `unitInventory` 至少有一个非空类别（routes、testFiles 或 publicExports）。三者全为空的单元表明探索不完整 —— 以该单元的 relatedFiles 为重点重新运行 scope-discoverer
+- 每个已发现单元都有源码依据，并且至少有一个带有定义所在位置、承载行为的路由、公开导出或 `otherEntryPoints` 条目；其他类别可以为空。通过聚焦该单元 relatedFiles 的针对性探索来解决实质性的覆盖缺口，不造成阻塞的局限则按报告保留
 
 **人工评审点**（若启用）：展示 `$STEP_1_OUTPUT.prdUnits` 及其来源单元映射。用户确认、调整分组，或将某些单元排除出范围。这是最重要的评审点 —— 错误的分组会级联影响所有下游文档。
 
 ### 步骤 2-5：按单元处理
 
 **FOR** `$STEP_1_OUTPUT.prdUnits` 中的每个单元 **（顺序执行，一次一个单元）：**
+
+将当前 PRD 单元 `sourceUnits` 中每个已发现单元的 `unitInventory` 合并并去重，得到 `$PRD_UNIT_INVENTORY`。步骤 2、3 和 5 使用这一相同的基线。
 
 #### 步骤 2：PRD 生成
 
@@ -94,9 +96,10 @@ prompt: |
   Description: $PRD_UNIT_DESCRIPTION
   Related Files: $PRD_UNIT_COMBINED_RELATED_FILES
   Entry Points: $PRD_UNIT_COMBINED_ENTRY_POINTS
+  Unit Inventory: $PRD_UNIT_INVENTORY
 
   将提供的范围作为调查起点。
-  如果沿入口点追溯发现该范围之外的文件，也将其纳入。
+  仅当这些文件之外的依赖确立了范围内的某项行为或契约时，才检查它们；这不会自动扩大功能范围。
   基于充分的代码调查创建最终版 PRD。
 ```
 
@@ -116,7 +119,7 @@ prompt: |
 
   doc_type: prd
   document_path: $STEP_2_OUTPUT
-  unit_inventory: [将当前 PRD 单元 `sourceUnits` 中每个已发现单元的 `unitInventory` 合并并去重后的结果]
+  unit_inventory: $PRD_UNIT_INVENTORY
 ```
 
 注意：有意不提供 `code_paths`。验证者从文档探索代码范围；`unit_inventory` 仅作为完整性基准，因此搜索仍不受 scope-discoverer 文件清单的限制。
@@ -171,7 +174,7 @@ prompt: |
 - `technicalProfile.publicInterfaces` → 公开接口
 - `dependencies` → 依赖关系
 - `relatedFiles` → 范围边界
-- `unitInventory` → 单元清单（路由、测试文件、公开导出）
+- `unitInventory` → 单元清单（路由、测试文件、公开导出、其他入口点）
 
 **将输出保存为**：`$STEP_6_OUTPUT`
 
@@ -202,11 +205,11 @@ prompt: |
   Primary Files: $UNIT_PRIMARY_MODULES
   Public Interfaces: $UNIT_PUBLIC_INTERFACES
   Dependencies: $UNIT_DEPENDENCIES
-  Unit Inventory: $UNIT_INVENTORY（来自范围探索的路由、测试文件、公开导出）
+  Unit Inventory: $UNIT_INVENTORY（来自范围探索的路由、测试文件、公开导出和其他入口点）
 
   Parent PRD: [本单元在阶段 1 中通过评审的 PRD 路径]
 
-  按现状记录当前架构。将单元清单作为完整性基线 —— 所有路由和导出都应在设计文档中有所交代。
+  按现状记录当前架构。将单元清单作为完整性基线 —— 清单中的所有能力都应在设计文档中有所交代。
 ```
 
 **将输出保存为**：`$STEP_7_OUTPUT`（technical-designer 的结果）。其 `status` 为 `completed` 时，`$STEP_7_OUTPUT.path` 即设计文档路径；其他结果均视为生成失败。
@@ -274,7 +277,7 @@ prompt: |
   review_context: reverse-engineer
   target: $STEP_7_OUTPUT.path 或 $STEP_7_FRONTEND_OUTPUT.path
   verification_evidence: $STEP_8_OUTPUT（仅在步骤 8 已运行时提供）
-  confirmed_requirement_context: [本单元在阶段 1 中通过评审的 PRD 路径]
+  requirement_context: [本单元在阶段 1 中通过评审的 PRD 路径]
 
   ## 额外评审重点
   - 所记录接口的技术准确性

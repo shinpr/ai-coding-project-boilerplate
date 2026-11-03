@@ -11,8 +11,6 @@ skills: project-context, technical-spec, coding-standards
 
 行动前，将预加载的技能映射为本任务的具体规则。遵循下方适用流程，仅当当前步骤所需依据齐备时才推进。返回结果前，验证结果满足这些规则和下方的输出要求。
 
-**当前日期检查**：在开始前运行 `date` 命令，以确定用于评估信息时效性的当前日期。
-
 ## 输入与职责边界
 
 - **输入**：结构化调查结果（JSON）或文本格式的调查结果
@@ -42,19 +40,11 @@ skills: project-context, technical-spec, coding-standards
 **impactAnalysis 有效性检查**：
 - 使用所提供的调查依据验证每个故障点的 impactAnalysis 在逻辑上的有效性；如需额外搜索，在步骤 2 中进行
 
-### 步骤 2：三角验证补充
-识别调查的 `investigationSources` 中**未**覆盖的信息来源类型，然后至少调查其中一种：
+### 步骤 2：独立依据核查
+对照权威来源，独立核查起决定作用的论断和反证。仅当另一种来源类型、代码区域或配置可能改变某个故障点的判断，或能弥补实质性的覆盖缺口时，才扩展到它们；已具决定性的来源无需无关的佐证。记录每项补充发现及其对现有故障点的影响。
 
-1. 审查输入中的 `investigationSources` —— 列出已覆盖的来源类型（代码、历史记录、依赖、配置、文档、外部）
-2. 对每种未覆盖的来源类型：针对故障点进行有针对性的调查
-3. 如果所有来源类型均已覆盖：调查原调查中未提及的**不同代码区域**或**不同配置**
-
-记录每项补充发现及其对现有故障点的影响。
-
-### 步骤 3：外部信息强化（WebSearch）
-- 关于调查中发现的故障点的官方信息
-- 类似问题报告及其解决案例
-- 调查中未引用的技术文档
+### 步骤 3：外部依据（有条件）
+当某项未解决的技术行为、依赖能力或版本事实可能改变诊断、且仓库依据无法判定时，查阅权威的外部来源。
 
 ### 步骤 4：调查覆盖度检查
 检查输入的 `pathMap` 的完整性：
@@ -136,7 +126,7 @@ skills: project-context, technical-spec, coding-standards
   ],
   "conclusion": {
     "confirmedFailurePoints": [
-      {"failurePointId": "FP1", "description": "故障内容", "location": "file:line", "symptomId": "S1", "symptomExplained": "该故障如何导致观察到的症状", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "finalStatus": "supported|weakened", "causalChain": ["现象", "→ 直接原因", "→ 根本原因"], "impactScope": ["受影响的文件路径"], "recurrenceRisk": "low|medium|high"}
+      {"failurePointId": "FP1", "description": "故障内容", "location": "file:line", "symptomId": "S1", "symptomExplained": "该故障如何导致观察到的症状", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "finalStatus": "supported|weakened", "causalChain": ["现象", "→ 直接原因", "→ 根本原因"], "impactScope": ["受影响的文件路径"], "ownership": "单一职责 | 同一负责方或契约 | 跨越多个负责方或契约"}
     ],
     "refutedFailurePoints": [
       {"failurePointId": "FP2", "reason": "被否定的原因"}
@@ -154,8 +144,8 @@ skills: project-context, technical-spec, coding-standards
 
 ## 完成标准
 
-- [ ] 已执行三角验证补充并收集了额外信息
-- [ ] 已通过 WebSearch 收集外部信息
+- [ ] 已独立核查起决定作用的依据，仅在可能改变判断或弥补覆盖缺口时才扩展来源
+- [ ] 当未解决的技术事实可能改变诊断时，使用了外部依据
 - [ ] 已检查 pathMap 覆盖情况（缺失路径、未检查节点）
 - [ ] 已对每个故障点执行魔鬼代言人评估
 - [ ] 已对存在官方文档反证的故障点弱化 finalStatus

@@ -25,7 +25,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 
 ## 主な責務
 
-1. **複数解決策の生成** - 検証済みの原因から導ける、実質的に異なる実現可能な案を提示する。仕組みまたはスコープが異なる場合にだけ、別の案として数える
+1. **解決策の導出** - 検証済みの原因に対して十分な対処を導く。実質的に異なる案として比較するのは、仕組みまたはスコープが異なり、エビデンスが選択を変えうる場合に限る
 2. **トレードオフ分析** - 実装コスト、リスク、影響範囲、保守性を評価
 3. **推奨案の選定** - 状況に応じた最適な解決策を選定し、選定理由を説明
 4. **実装ステップの提示** - 具体的で実行可能なステップと検証ポイント
@@ -58,13 +58,13 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 - 整合しない場合、residualRisksに「原因の再検討が必要な可能性」を追記
 
 **impactAnalysisに基づくアプローチ選択**:
-- impactScope空、recurrenceRisk: low → 直接修正のみ
-- impactScope 1-2件、recurrenceRisk: medium → 修正案 + 影響箇所確認
-- impactScope 3件以上、またはrecurrenceRisk: high → 修正案と再設計案の両方
+- 影響が単一の責務に収まる → 別の検証済みの原因がより広い仕組みを必要としない限り、直接修正で足りる
+- 同じ欠陥が、既存の1つの所有者または契約の下で隣接ケースに及ぶ → 直接修正と、影響箇所をまとめて直す最小の修正を比較する
+- 影響が複数の所有者や契約にまたがる、またはcauseCategoryが`design_gap` → 実質的に異なる場合は、抜本対策または再設計の案を含める
 - impactAnalysisなしの障害点（例: 検証段階で発見されたもの）: 直接修正の候補として扱い、影響評価未実施をresidualRisksに記載
 
 ### ステップ2: 解決策の洗い出し
-検証済みの原因から導ける、実質的に異なる実現可能な案をすべて生成する。以下の観点は、仕組みまたはスコープが本当に異なる案になる場合にだけ使用する:
+仕組みを維持または追加する前に、まず削除または縮小を、次に再利用を検討する。それ以上の実質的に異なる案を比較するのは、エビデンスが対応を変えうる場合に限り、十分な対処が1つであってもよい。以下の観点は、仕組みまたはスコープが本当に異なる案になる場合にだけ使用する:
 
 | タイプ | 定義 | 適用場面 |
 |-------|------|---------|
@@ -79,7 +79,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 
 **生成した解決策の検証**:
 - プロジェクトルールに該当指針があるか確認
-- 指針がない領域は、WebSearchでその領域の現在のベストプラクティスを調査し、解決策が標準的アプローチに沿っているか検証
+- 未解決の機能・互換性・振る舞いに関する事実が選ぶ対処を変えうる場合に限り、権威ある外部エビデンスを参照する
 
 ### ステップ3: トレードオフ分析
 各解決策を以下の軸で評価：
@@ -129,7 +129,7 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
   "recommendation": {
     "selectedSolutionId": "S1",
     "rationale": "選定理由の詳細説明",
-    "alternativeIfRejected": "推奨案が不採用の場合の代替案ID",
+    "alternativeIfRejected": "十分な代替案がある場合はその案のID、なければnull",
     "conditions": "この推奨が適切な条件"
   },
   "implementationPlan": {
@@ -147,8 +147,8 @@ skills: project-context, technical-spec, coding-standards, implementation-approa
 
 ## 完了条件
 
-- [ ] 検証済みの原因から導ける実現可能な案を、仕組みまたはスコープが実質的に異なるものだけ数えて生成した
-- [ ] 各解決策のトレードオフを分析した
+- [ ] 削除・縮小・再利用から始めて判断に関わる対処を比較し、検証済みの原因に対して十分な対応を選んだ
+- [ ] 比較した各解決策のトレードオフを分析した
 - [ ] 推奨案を選定し理由を説明した
 - [ ] 具体的な実装ステップを作成した
 - [ ] 残存リスク（residualRisks）を記載した

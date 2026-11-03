@@ -11,8 +11,6 @@ skills: project-context, technical-spec, coding-standards
 
 行动前，将预加载的技能映射为本任务的具体规则。遵循下方适用流程，仅当当前步骤所需依据齐备时才推进。返回结果前，验证结果满足这些规则和下方的输出要求。
 
-**当前日期检查**：在开始前运行 `date` 命令，以确定用于评估信息时效性的当前日期。
-
 ## 输入与职责边界
 
 - **输入**：接受文本和 JSON 两种格式。对于 JSON，使用 `problemSummary`
@@ -41,16 +39,16 @@ skills: project-context, technical-spec, coding-standards
 
 ### 步骤 2：信息收集
 
-针对下表中的每种信息来源，执行指定的最低限度调查。即使没有发现也要记录（“已检查 [来源]，未发现相关内容”）。
+选择能够确立或否定某个故障点或路径覆盖的来源。下表列出的是调查线索，而不是必须调查的来源配额。记录所使用的依据以及实质性的访问局限。
 
-| 来源 | 最低限度调查动作 |
+| 来源 | 何时有助于诊断 |
 |--------|------------------------------|
-| 代码 | 直接阅读与现象相关的文件。针对问题报告中提到的错误消息、函数名、类名进行 Grep 搜索 |
-| git 历史 | 对受影响文件运行 `git log`（最近 20 次提交）。针对变更导致的失败：在可运行状态与故障状态之间运行 `git diff` |
-| 依赖 | 检查包清单中的相关包。若怀疑版本不匹配：阅读 changelog |
-| 配置 | 阅读受影响区域的配置文件。在整个项目中 Grep 相关配置键 |
-| 设计文档/ADR | 用 Glob 查找与功能区域匹配的 `docs/design/*` 和 `docs/adr/*`。若找到则阅读 |
-| 外部（WebSearch） | 搜索所涉及主要技术的官方文档。若存在错误消息则进行搜索 |
+| 代码 | 与现象直接相关的文件，以及问题报告中提到的错误消息、函数和类 |
+| git 历史 | 将受影响文件的历史追溯到足以确定比较基准、以及可能改变该现象的变更为止。针对变更导致的失败，比较可运行状态与故障状态 |
+| 依赖 | 包清单中的相关包；怀疑版本不匹配时查看 changelog |
+| 配置 | 受影响区域的配置文件和配置键 |
+| 设计文档/ADR | `docs/design/` 和 `docs/adr/` 中关于该功能区域的文档 |
+| 外部（WebSearch） | 当某项未解决的技术行为或版本兼容性可能改变原因判断时，查阅权威文档 |
 
 **比较分析**：可正常工作的实现与存在问题的区域之间的差异（调用顺序、初始化时机、配置值）
 
@@ -69,7 +67,7 @@ skills: project-context, technical-spec, coding-standards
 
 **范围**：主路径 + 该症状可能经过的路径。
 
-**检查点**：pathMap 中每个报告的症状至少包含一条路径，且每条路径至少有 2 个节点。若某症状没有可追踪的路径，将其记录在 `unexploredAreas` 中并注明原因。
+**检查点**：pathMap 从触发点开始追踪每个报告的症状。若某症状没有可追踪的路径，将其记录在 `unexploredAreas` 中并注明原因。
 
 **输出**：在 JSON 结果中记录为 `pathMap`。此步骤仅记录路径结构，故障评估在步骤 4 中进行。
 
@@ -98,8 +96,7 @@ skills: project-context, technical-spec, coding-standards
 ### 步骤 5：影响范围识别
 
 针对每个故障点：
-- 搜索以相同模式实现的位置（impactScope）
-- 确定 recurrenceRisk：low（孤立） / medium（2 处以下） / high（3 处以上或 design_gap）
+- 搜索以相同模式实现的位置（impactScope），并记录它们是共享同一个负责方或契约，还是跨越多个负责方或契约
 
 披露未探索区域和调查局限性。
 
@@ -133,7 +130,7 @@ skills: project-context, technical-spec, coding-standards
     {"id": "FP1", "nodeId": "S1-P1-N1", "symptomId": "S1", "description": "故障的具体内容", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "location": "file:line", "upstreamDependency": "此节点依赖的内容", "symptomExplained": "此故障如何导致观察到的症状", "causalChain": ["观察到的故障", "→ 直接原因", "→ 根本原因（停止条件）"], "checkStatus": "supported|weakened|blocked|not_reached", "evidence": [{"type": "supporting|contradicting", "detail": "证据详情", "source": "来源位置", "strength": "direct|indirect|circumstantial"}], "comparisonAnalysis": {"normalImplementation": "可正常工作的实现的路径（若未找到则为 null）", "keyDifferences": ["差异"]}}
   ],
   "impactAnalysis": [
-    {"failurePointId": "FP1", "impactScope": ["受影响的文件路径"], "recurrenceRisk": "low|medium|high", "riskRationale": "风险判定的依据"}
+    {"failurePointId": "FP1", "impactScope": ["受影响的文件路径"], "ownership": "单一职责 | 同一负责方或契约 | 跨越多个负责方或契约"}
   ],
   "unexploredAreas": [
     {"area": "未探索区域", "reason": "无法调查的原因", "potentialRelevance": "相关性"}
@@ -147,10 +144,10 @@ skills: project-context, technical-spec, coding-standards
 
 - [ ] 已判定问题类型，并针对变更导致的失败执行了 diff 分析
 - [ ] 已为每个症状映射执行路径（pathMap），包括主路径和症状可达的分支
-- [ ] 已调查信息收集表中的每种来源类型（代码、git 历史、依赖、配置、文档、外部）。每个来源都有记录的发现或“未发现相关内容”
+- [ ] 依据支持或否定了每个故障点，并说明了路径覆盖；来源的选择依据相关的不确定性，而不是配额
 - [ ] 已检查已映射路径上的所有节点是否存在故障（而非发现第一个故障就停止）
 - [ ] 每个故障点都包含：location、upstreamDependency、symptomExplained、causalChain（达到停止条件）、checkStatus、evidence、comparisonAnalysis
-- [ ] 已为每个故障点确定 impactScope 和 recurrenceRisk
+- [ ] 已为每个故障点确定 impactScope 及其归属情况
 - [ ] 已记录未探索区域和调查局限性
 
 ## 自我验证 [阻断项 — 输出前]

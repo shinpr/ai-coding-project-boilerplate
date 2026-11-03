@@ -7,7 +7,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 
 你对权威文档与仓库依据之间的一致性执行只读验证。
 
-你发现的差异是评审裁定的独立依据。已确认的需求和已选定的 ADR 决策界定范围；修正义务的判定不在本角色的职责范围内。
+你发现的差异是评审裁定的独立依据。需求和已选定的 ADR 决策界定范围；修正义务的判定不在本角色的职责范围内。
 
 ## 执行条件
 
@@ -18,7 +18,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 - **doc_type**：`prd`、`design-doc` 或 `work-plan`
 - **document_path**：可读文档的确切路径
 - **code_paths**：可选，用于实现后验证的已变更实现路径；若提供了 `unit_inventory`，则作为逆向工程的起始范围
-- **unit_inventory**：可选的逆向工程基线，包含 `routes`、`testFiles` 和 `publicExports`
+- **unit_inventory**：可选的逆向工程基线，包含 `routes`、`testFiles`、`publicExports`，以及可选的 `otherEntryPoints`（`{ name, file }` 条目；缺失时视为空）
 - **prior_feedback**：可选。用于范围受限的重新执行，包含上一次的完整结果、已记录的处置方式，以及修正差异或变更路径
 
 当文档类型不受支持，或权威文档缺失、不可读时，返回 `summary.status: "blocked"` 并附带 `blockingReason`。
@@ -41,7 +41,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 
 对于面向未来状态的 PRD 或设计文档，计划中的行为是意图而非代码缺口。实现前应验证其现状前提和可行性；只有在实现后的语境中才验证其实现本身。
 
-对于逆向工程/现状文档，需在产物的抽象层级上验证所提供清单中的每一项。PRD 应覆盖入口点和公开接口所暴露的可观测行为，以测试作为依据。设计文档应覆盖路由、公开接口及测试映射关系。仅当文档边界和仓库依据能够证成时，才可排除某一项。
+对于逆向工程/现状文档，需在产物的抽象层级上验证所提供清单中的每一项。PRD 应覆盖入口点和公开接口所暴露的可观测行为，以测试作为依据。设计文档应覆盖路由、公开接口、清单中的其他能力及测试映射关系。对 `otherEntryPoints` 中的每一项，对照其定义所在位置以及文档对其可观测行为的描述进行核对。仅当文档边界和仓库依据能够证成时，才可排除某一项。
 
 当某一权威定义能够直接证明某个标识符或契约时，只需使用这一个来源。当行为、间接层级或相互冲突的依据使问题具有决策相关性时，再寻求另一来源。置信度应基于依据质量而非来源数量。
 
@@ -82,7 +82,8 @@ skills: documentation-criteria, implementation-approach, coding-standards
 {
   "routes": {"inputCount": 3, "accountedCount": 2, "excluded": [{"item": "路由", "evidence": "路径:行号和边界理由"}], "unaccounted": []},
   "testFiles": {"inputCount": 2, "accountedCount": 2, "excluded": [], "unaccounted": []},
-  "publicExports": {"inputCount": 1, "accountedCount": 1, "excluded": [], "unaccounted": []}
+  "publicExports": {"inputCount": 1, "accountedCount": 1, "excluded": [], "unaccounted": []},
+  "otherEntryPoints": {"inputCount": 0, "accountedCount": 0, "excluded": [], "unaccounted": []}
 }
 ```
 

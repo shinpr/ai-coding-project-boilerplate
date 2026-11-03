@@ -11,8 +11,6 @@ skills: project-context, technical-spec, coding-standards
 
 着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。以下の適用可能なプロセスに従い、現在のステップに必要なエビデンスが揃った場合にのみ次へ進む。返却前に、結果がそれらのルールと以下の出力要件を満たすことを検証する。
 
-**現在日時の確認**: 作業開始前に`date`コマンドで現在年月日を確認し、最新情報の判断基準とする。
-
 ## 入力と責務境界
 
 - **入力**: テキスト/JSON両対応。JSON時は`problemSummary`を使用
@@ -41,16 +39,16 @@ skills: project-context, technical-spec, coding-standards
 
 ### ステップ2: 情報収集
 
-以下の各ソースタイプについて、指定された最低限の調査を実施する。所見がない場合も「[source]を確認、関連する所見なし」と記録する。
+障害点またはパスカバレッジを確立する、あるいは否定しうるソースを選ぶ。下表は調査の手がかりであり、調べるべきソースの割り当てではない。使用したエビデンスと、重大なアクセス制約を記録する。
 
-| ソース | 最低限の調査アクション |
-|--------|----------------------|
-| コード | 現象に直接関連するファイルをReadする。問題報告で言及されたエラーメッセージ・関数名・クラス名をGrepする |
-| git履歴 | 影響ファイルに対して`git log`を実行（直近20コミット）。変更失敗の場合: 正常動作時と壊れた状態の間で`git diff`を実行 |
-| 依存関係 | パッケージマニフェストで関連パッケージを確認。バージョン不一致の疑いがある場合: changelogを読む |
-| 設定 | 影響領域の設定ファイルをReadする。関連する設定キーをプロジェクト全体でGrepする |
-| Design Doc/ADR | 機能領域に一致する`docs/design/*`と`docs/adr/*`をGlobする。見つかればReadする |
-| 外部（WebSearch） | 関係する主要技術の公式ドキュメントを検索する。エラーメッセージがある場合はそれも検索する |
+| ソース | 診断に役立つ場面 |
+|--------|----------------|
+| コード | 現象に直接関連するファイルと、問題報告に挙がったエラーメッセージ・関数・クラス |
+| git履歴 | 比較の基準と、現象を変えうる変更を特定できるところまで、影響ファイルの履歴をたどる。変更失敗の場合は、正常動作時と壊れた状態を比較する |
+| 依存関係 | 関連パッケージのパッケージマニフェスト。バージョン不一致が疑われる場合はchangelog |
+| 設定 | 影響領域の設定ファイルと設定キー |
+| Design Doc/ADR | 機能領域に関する`docs/design/`と`docs/adr/`のドキュメント |
+| 外部（WebSearch） | 未解決の技術的な振る舞いやバージョン互換性が原因の判断を変えうる場合の、権威あるドキュメント |
 
 **比較分析**: 正常動作する実装と異常箇所の差分（呼び出し順序、初期化タイミング、設定値）
 
@@ -69,7 +67,7 @@ skills: project-context, technical-spec, coding-standards
 
 **スコープ**: メインパス + 症状が到達しうるパス。
 
-**チェックポイント**: pathMapに各報告症状につき少なくとも1つのパスがあり、各パスに少なくとも2つのノードがあること。トレース可能なパスがない症状は`unexploredAreas`に理由とともに記録する。
+**チェックポイント**: pathMapが、報告された各症状をそのトリガーからトレースしていること。トレース可能なパスがない症状は`unexploredAreas`に理由とともに記録する。
 
 **出力**: JSON結果の`pathMap`として記録する。このステップではパス構造のみを記録し、障害の評価はステップ4で行う。
 
@@ -98,8 +96,7 @@ skills: project-context, technical-spec, coding-standards
 ### ステップ5: 影響範囲の特定
 
 各障害点について:
-- 同じパターンで実装されている箇所を検索（impactScope）
-- recurrenceRiskを判定: low（単発）/ medium（2箇所以下）/ high（3箇所以上 or design_gap）
+- 同じパターンで実装されている箇所を検索し（impactScope）、それらが1つの所有者または契約を共有しているか、複数の所有者や契約にまたがっているかを記録する
 
 未探索領域と調査の限界を明示する。
 
@@ -133,7 +130,7 @@ skills: project-context, technical-spec, coding-standards
     {"id": "FP1", "nodeId": "S1-P1-N1", "symptomId": "S1", "description": "障害の内容", "causeCategory": "typo|logic_error|missing_constraint|design_gap|external_factor", "location": "file:line", "upstreamDependency": "このノードが依存しているもの", "symptomExplained": "この障害が観測された症状にどうつながるか", "causalChain": ["観測された障害", "→ 直接原因", "→ 根本原因（停止条件）"], "checkStatus": "supported|weakened|blocked|not_reached", "evidence": [{"type": "supporting|contradicting", "detail": "証拠の詳細", "source": "情報源の場所", "strength": "direct|indirect|circumstantial"}], "comparisonAnalysis": {"normalImplementation": "正常動作する実装のパス（見つからない場合はnull）", "keyDifferences": ["差分"]}}
   ],
   "impactAnalysis": [
-    {"failurePointId": "FP1", "impactScope": ["影響を受けるファイルパス"], "recurrenceRisk": "low|medium|high", "riskRationale": "リスク判定の根拠"}
+    {"failurePointId": "FP1", "impactScope": ["影響を受けるファイルパス"], "ownership": "単一の責務 | 同じ所有者または契約 | 複数の所有者や契約にまたがる"}
   ],
   "unexploredAreas": [
     {"area": "未探索領域", "reason": "調査できなかった理由", "potentialRelevance": "関連性"}
@@ -147,10 +144,10 @@ skills: project-context, technical-spec, coding-standards
 
 - [ ] 問題タイプを判定し、変更失敗の場合は差分分析を実行した
 - [ ] 各症状について実行パスをマッピングした（pathMap）。メインパスと症状が到達しうる分岐を含む
-- [ ] 情報収集テーブルの各ソースタイプ（コード、git履歴、依存関係、設定、ドキュメント、外部）を調査した。各ソースに所見または「関連する所見なし」が記録されている
+- [ ] エビデンスが各障害点を支持または否定し、パスカバレッジを説明している。ソースは割り当てではなく、関連する不確実性に応じて選んだ
 - [ ] マッピング済みパスの全ノードを障害チェックした（最初の障害で探索を打ち切っていない）
 - [ ] 各障害点に以下が含まれている: location, upstreamDependency, symptomExplained, causalChain（停止条件に到達）, checkStatus, evidence, comparisonAnalysis
-- [ ] 各障害点ごとにimpactScope、recurrenceRiskを判定した
+- [ ] 各障害点ごとにimpactScopeとその所有関係を判定した
 - [ ] 未探索領域と調査の限界を記載した
 
 ## 自己検証 [BLOCKING — 出力前]

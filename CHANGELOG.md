@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.5] - 2026-11-03
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Changed
+
+- Requirements, outcomes, and scope are described by their source instead of as "confirmed"; `confirmed_requirement_context` is renamed to `requirement_context`.
+- Evidence from the first codebase analysis that the requirements stop did not present can reopen a requirement once.
+- requirement-analyzer returns scope and cost evidence only; the hearing forms the questions.
+- Work Plan tasks are limited to repository work. Quality levels the requirements leave unset are selected at the lowest sufficient level and shown at ADR and Design approval.
+- Reverse engineering uses the unit inventory as its coverage baseline, with `otherEntryPoints` for capabilities that have no route or public export.
+- design-sync reports only incompatible obligations for the same shared entity and records access limitations.
+- Fixed counts, size thresholds, and the Rule of Three become decision-relevance rules or review signals.
+
 ## [2.2.4] - 2026-10-22
 
 ### Changed

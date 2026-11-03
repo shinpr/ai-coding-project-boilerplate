@@ -54,8 +54,8 @@ const response = await fetch('/api/data') // バックエンドがAPIキー認�
 **Reactコンポーネントアーキテクチャ**:
 - **Function Components**: 必須。class components は Error Boundary に限り許可（hook の代替が存在しないため）
 - **Custom Hooks**: ロジック再利用と依存性注入のため
-- **コンポーネント階層**: Atoms → Molecules → Organisms → Templates → Pages
-- **Props-driven**: コンポーネントは必要なすべてのデータをPropsで受け取る
+- **コンポーネント階層**: リポジトリで確立済みのコンポーネント階層がある場合はそれに従う（例: Atoms → Molecules → Organisms → Templates → Pages）
+- **Props-driven**: 1つの明確な親が所有するデータはPropsで渡す。それ以外は以下の状態管理のルールを適用する
 - **Co-location**: テスト、スタイル、関連ファイルをコンポーネントと同じ場所に配置
 
 以下のルールでコンポーネントと状態管理のパターンを選択する：
@@ -68,7 +68,7 @@ const response = await fetch('/api/data') // バックエンドがAPIキー認�
 - **Local State**: コンポーネント固有の状態には`useState`
 - **Context API**: コンポーネントツリー全体で状態を共有（テーマ、認証等）
 - **Custom Hooks**: 状態ロジックと副作用をカプセル化
-- **Server State**: APIデータのキャッシュにはReact QueryまたはSWR
+- **Server State**: 上記のルールで選択した場合は、設定済みのserver-state library（例: React QueryまたはSWR）
 
 ## データフロー統一原則
 
@@ -77,8 +77,8 @@ Reactアプリケーション全体で一貫したデータフローを維持：
 
 - **Single Source of Truth**: 各状態には1つの権威あるソースがある
   - UI状態: コンポーネントStateまたはContext
-  - サーバーデータ: React Query/SWRでキャッシュされたAPIレスポンス
-  - フォームデータ: React Hook Formを使ったControlled Components
+  - サーバーデータ: リポジトリのserver-state機構（設定済みのReact Query/SWRのキャッシュ、またはコンポーネントのStateやContext）
+  - フォームデータ: Controlled Components。設定済みのフォームライブラリ（例: React Hook Form）があればそれを使う
 
 - **単方向フロー**: データはPropsを通じて上から下へ流れる
   ```

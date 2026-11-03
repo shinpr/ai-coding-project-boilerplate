@@ -25,7 +25,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 ## 输入参数
 
 - **task_file**（可选）：被验证的任务文件路径。提供时，将其 Operation Verification Methods 与从代码、清单和配置中发现的检查一并作为任务专属检查使用
-- **direct_scope**（可选）：未提供 `task_file` 输入时，已确认的执行结果、受影响路径和验证条件。任务集合的最终执行包含已完成任务文件的路径、其已提交实现路径及其 Operation Verification Methods
+- **direct_scope**（可选）：未提供 `task_file` 输入时，执行结果、受影响路径和验证条件。任务集合的最终执行包含已完成任务文件的路径、其已提交实现路径及其 Operation Verification Methods
 - **runnableCheck**（可选）：测试执行依据。提供时，作为实质性检查（步骤 3）的主要输入。schema：`{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`。缺省时，智能体在范围内自行扫描测试主体以判定实质性
 - **qualityCommand**（可选）：项目的权威质量命令（例如来自 frontend-technical-spec 或仓库约定）。提供时，步骤 2 会先运行它，并只对其未覆盖的类别检测命令。缺省时，步骤 2 按常规从项目配置中发现命令
 
@@ -94,19 +94,19 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 ### 步骤 5：收敛并归类依据
 
-- 由当前变更引起的失败，或已确认成果所需依赖中的失败 → 修复并重新运行该检查
-- 与已确认成果及其所需依赖无关的、已验证的预先存在的失败 → 运行每一项不受影响的检查，并在 `checksPerformed` 中记录命令、失败情况和基线依据
+- 由当前变更引起的失败，或已接受的成果所需依赖中的失败 → 修复并重新运行该检查
+- 与已接受的成果及其所需依赖无关的、已验证的预先存在的失败 → 运行每一项不受影响的检查，并在 `checksPerformed` 中记录命令、失败情况和基线依据
 - 不可用的工具、服务、凭据、种子数据或环境前提 → 运行每一项不受影响的检查，并在 `checksPerformed` 及适用时的 `taskVerification.skipped` 中记录方法和确切原因。若无法运行的检查是任务验证方法或验收标准所需的证明，则返回 `verification_incomplete`；否则继续朝 `pass` 推进
 - 实现已完成且每一项可运行的、与变更相关的检查都通过 → 返回 `pass`；结果准确说明哪些已运行、哪些无法运行
 - 无法从所提供的约束依据和仓库依据中确定所需行为 → 返回 `verification_incomplete`，并说明缺失的约束依据和受影响的检查
-- 已确认的成果、目标状态需求和非目标无法同时成立，需要用户选择变更哪一项，或某项不可逆的外部操作需要授权 → 返回 `blocked`
+- 成果、目标状态需求和非目标无法同时成立，需要用户选择变更哪一项，或某项不可逆的外部操作需要授权 → 返回 `blocked`
 
 ### 步骤 6：返回 JSON 结果
 将以下之一作为最终响应返回（schema 见输出格式）：
 - `status: "pass"` — 实现已完成，且每一项可运行的、与变更相关的检查都通过；无法运行的检查和无关的基线失败已在现有检查结果中记录
 - `status: "stub_detected"` — 步骤 1 发现未完成实现（`type: "missing_logic"`），或步骤 3 实质性检查发现无法在 fixer 范围内修复的空洞测试（`type: "hollow_test"`）
 - `status: "verification_incomplete"` — 所需的证明或约束依据仍不可得
-- `status: "blocked"` — 一个已确认的价值边界选择或不可逆的外部操作授权属于用户的职责
+- `status: "blocked"` — 一个价值边界选择或不可逆的外部操作授权属于用户的职责
 
 ### 阶段详情
 
@@ -178,10 +178,10 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 
 | 场景 | 示例 | 为何是 blocked |
 |----------|---------|-------------|
-| 已确认的价值边界相互冲突 | 成果要求立即完成，而目标状态需求要求一个会阻碍该成果的前提条件 | 用户必须抉择要变更哪个已确认的价值 |
+| 价值边界相互冲突 | 成果要求立即完成，而目标状态需求要求一个会阻碍该成果的前提条件 | 用户必须抉择要变更哪个价值边界 |
 | 修复需要不可逆的外部操作 | 恢复前端集成需要轮换一个生产中的凭据 | 用户必须授权该确切操作 |
 
-**判定方式**：当失败由当前变更导致，或已确认成果需要该失败依赖时，修复它。UI 行为、设计、Props、依赖、状态等其他可逆的模糊之处，从约束来源和代表性代码中解决。仅当已确认的成果、目标状态需求和非目标无法同时成立、需要用户抉择要变更哪一项时，或某项不可逆的外部操作需要授权时，才返回 `blocked`。依据缺失属于 `verification_incomplete`，而非用户决策。
+**判定方式**：当失败由当前变更导致，或已接受的成果需要该失败依赖时，修复它。UI 行为、设计、Props、依赖、状态等其他可逆的模糊之处，从约束来源和代表性代码中解决。仅当成果、目标状态需求和非目标无法同时成立、需要用户抉择要变更哪一项时，或某项不可逆的外部操作需要授权时，才返回 `blocked`。依据缺失属于 `verification_incomplete`，而非用户决策。
 
 ## 输出格式
 
@@ -203,7 +203,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 | `pass` | `summary`、`checksPerformed: {phase1_biome, phase2_typescript, phase3_tests, phase4_final}`（各自为 `{status, commands[], …}`；`phase3_tests` 可包含 `testsRun`、`testsPassed`）、`fixesApplied[{type: auto\|manual, category, description, filesCount}]`、`metrics: {totalErrors, totalWarnings, executionTime}`、`nextActions` | 实现已完成且每个可运行的、与变更相关的阶段均通过；无法运行的检查和无关的基线失败已在既有检查结果中明确说明 |
 | `stub_detected` | `reason`、`incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | 步骤 1 在范围内发现桩代码/TODO/占位符（`type: "missing_logic"`，立即返回，早于任何质量检查）；或实质性检查（步骤 3）发现无法在 fixer 范围内修复的空洞测试（`type: "hollow_test"`） |
 | `verification_incomplete` | `reason`、`missingPrerequisites[{type, description, affectedTests, resolutionSteps}]` | 范围内补救后，所需的证明或约束依据仍不可得 |
-| `blocked` | `reason`、`evidence[]`、`requiredDecision` | 已确认的价值边界冲突，或不可逆的外部操作需要授权 |
+| `blocked` | `reason`、`evidence[]`、`requiredDecision` | 价值边界冲突，或不可逆的外部操作需要授权 |
 
 最小示例（`stub_detected`；为简洁起见省略 `taskVerification` —— 只要其中一方提供了验证方法就应包含它）：
 
@@ -214,12 +214,12 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 最小示例（`blocked`）：
 
 ```json
-{ "status": "blocked", "reason": "无法同时保持所有已确认的价值边界", "evidence": ["表明冲突的约束来源与仓库依据"], "requiredDecision": "可以变更哪一项已确认的价值边界" }
+{ "status": "blocked", "reason": "无法同时保持所有价值边界", "evidence": ["表明冲突的约束来源与仓库依据"], "requiredDecision": "可以变更哪一项价值边界" }
 ```
 
 **处理规则**（内部）：
 - 发现与变更相关的错误 → 立即修复并继续，直到 `pass`
-- `blocked` 仅保留给已确认的价值边界选择或不可逆的外部操作授权
+- `blocked` 仅保留给价值边界选择或不可逆的外部操作授权
 
 ## 中间进度报告
 
@@ -254,7 +254,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 - React/TS 类型安全（Props/State、类型守卫）：frontend-typescript-rules 技能
 - 测试修复决策、RTL/MSW 约定、实质性标准：frontend-typescript-testing 技能
 
-**持续进行，直到**：每一项可运行的、与变更相关的阶段都通过，所需的证明仍不可得，或需要一个已确认的价值边界选择或不可逆的外部操作授权。
+**持续进行，直到**：每一项可运行的、与变更相关的阶段都通过，所需的证明仍不可得，或需要一个价值边界选择或不可逆的外部操作授权。
 
 ### 自动修复范围
 - **格式/风格**：使用 `check:fix` 脚本进行 Biome 自动修复
@@ -269,7 +269,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
   - 移除未使用的变量/函数/组件
   - 在核实调用方后，移除当前变更导致过时的导出；将其他归属仍在别处、看似未使用的导出作为独立职责依据单独记录
   - 移除不可达代码
-  - 移除 console.log 语句
+  - 移除变更代码中用于调试的 console.log 语句
 
 ### 手动修复范围
 - **React Testing Library 测试修复**：遵循项目测试规则的判定标准
@@ -280,15 +280,11 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 - **打包与渲染修复**（依据条件 — 约束规则参见 frontend-typescript-rules）
   - 当配置的打包预算出现回归，或仓库的打包/性能分析报告将成本归因于变更的代码时，应用记忆化或代码拆分变更；变更后重新验证同一信号并记录前后两次读数
   - 当该信号不存在时，将观察结果作为独立的后续依据记录；性能变更需要有可测量的回归或已被采纳的需求
-- **无障碍修复**
-  - 添加 ARIA 标签和角色
-  - 修复色彩对比度问题
-  - 为图片添加 alt 文本
-  - 确保键盘导航可用
-- **结构性问题**
+- **无障碍修复**（当已配置的无障碍检查、失败的测试或已接受的需求指出变更后的 UI 存在问题时）
+  - 补上其所指出的缺失的 ARIA 标签或角色、alt 文本、色彩对比度或键盘行为
+- **结构性问题**（当已配置的检查在变更代码上失败时）
   - 解决循环依赖（提取到公共模块）
-  - 拆分大型组件（300 行以上 → 更小的组件）
-  - 重构深层嵌套的条件语句
+  - 拆分已配置的规模或复杂度规则所拒绝的组件，或重构其所拒绝的嵌套条件语句
 - **类型错误修复**
   - 依据 coding-standards 的“类型安全基础”和 frontend-typescript-rules，选择有检查或既有契约支持的修复方式。
   - 添加必要的 Props 类型定义

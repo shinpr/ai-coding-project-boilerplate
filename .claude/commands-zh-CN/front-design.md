@@ -36,13 +36,13 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 ## 步骤 1：选择约束性需求来源
 
-当存在已批准的 PRD 时，使用该 PRD 路径。否则逐字使用已确认的需求。
+当存在已批准的 PRD 时，使用该 PRD 路径。否则逐字使用需求原文。
 
-将 `confirmed_requirement_context` 精确设置为已批准的 PRD 路径。仅当不存在已批准的 PRD 时，原样使用编排者已确认的收敛记录。
+将 `requirement_context` 精确设置为已批准的 PRD 路径。仅当不存在已批准的 PRD 时，原样使用编排者的收敛记录。
 
 ## 步骤 2：收集仓库侧的决策材料
 
-针对完整的已确认范围调用一次 `codebase-analyzer`，输入恰为 `prd_path: [已批准的 PRD 路径]`；当不存在已批准的 PRD 时，则为 `requirements: [已确认需求的原文]`。
+针对完整的范围调用一次 `codebase-analyzer`，输入恰为 `prd_path: [已批准的 PRD 路径]`；当不存在已批准的 PRD 时，则为 `requirements: [需求原文]`。
 
 要求返回一份有效的 JSON 结果，并让分析器自行发现受影响的路径、职责边界和跨层契约。将 `focusAreas` 视为对既有行为的防护，而非需求。
 
@@ -54,7 +54,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 仅当原型代码能提供尚未解决的已批准 UI 决策，或无法从需求、仓库 UI 和已记录资源确定目标时，才索取原型代码。缺少可选的原型不构成停止条件。
 
-调用 `ui-analyzer` 时只给出一个约束来源：`prd_path: [已批准的 PRD 路径]`；不存在已批准的 PRD 时，则为 `requirements: [已确认需求的原文]`。仅追加已存在的 `ui_spec_path`、与决策相关的 `prototype_path`，以及选取的 `external_resource_refs` 或 `[]`。
+调用 `ui-analyzer` 时只给出一个约束来源：`prd_path: [已批准的 PRD 路径]`；不存在已批准的 PRD 时，则为 `requirements: [需求原文]`。仅追加已存在的 `ui_spec_path`、与决策相关的 `prototype_path`，以及选取的 `external_resource_refs` 或 `[]`。
 
 ## 步骤 4：确认范围与 ADR 决策
 
@@ -64,24 +64,24 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 从成果和职责边界确定结构规模；文件数量仅作为辅助依据。对照约束来源、适用的 `simplifications`、`reuse` 和 `invalidations` 解决候选决策点；适用的 UI 事实可支持或否定其余选项。仅在此收敛之后才应用 documentation-criteria 的选择必要性（Choice）与长期影响（Durability）筛选，并将通过的决策点记录为 `adrDecisionPoints`；空列表也是有效的。
 
-呈现需要用户决定的内容：要达成的成果与要构建的需求、排除项、本次变更所针对的职责、每一条适用的简化项及其“省略后已确认成果仍然成立”的条件，以及成本分级及其仍然存在的未知项。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模、UI 规范适用性和 ADR 资格判定保留在编排者记录中——UI 规范、ADR 批次和设计文档各有其自己的批准停止点。提供两个选项：就此继续推进，或修正后重新运行。仅当每个收敛字段均为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
+呈现需要用户决定的内容：要达成的成果与要构建的需求、排除项、本次变更所针对的职责；既有行为已满足其目的、仅缺少该需求所指定的额外行为的每一项需求，连同该依据及其对成本的影响；每一条适用的简化项及其“省略后成果仍然成立”的条件；以及成本分级及其仍然存在的未知项。仅当用户必须解决某个未知项才能确认该范围时，才加入该未知项。结构规模、UI 规范适用性和 ADR 资格判定保留在编排者记录中——UI 规范、ADR 批次和设计文档各有其自己的批准停止点。提供两个选项：就此继续推进，或修正后重新运行。仅当每个收敛字段均为 `ready` 或 `weak-but-explicit` 时才继续。`[停止：范围确认]`。
 
 ## 步骤 5：创建并批准 UI 规范
 
 仅当步骤 3 判定 UI 规范适用时才执行本步骤。
 
-调用 `ui-spec-designer`，传入 `confirmed_requirement_context`、原样未改动的完整 `ui_analysis` 和 `codebase_analysis`、存在时与决策相关的 `prototype_path` 及其 `prototype_reference_strength`，以及选取的 `external_resource_refs` 或 `[]`。
+调用 `ui-spec-designer`，传入 `requirement_context`、原样未改动的完整 `ui_analysis` 和 `codebase_analysis`、存在时与决策相关的 `prototype_path` 及其 `prototype_reference_strength`，以及选取的 `external_resource_refs` 或 `[]`。
 
-调用 `document-reviewer`，传入 `doc_type: UISpec`、作为 `target` 的返回 UI 规范路径、`confirmed_requirement_context`，以及提供给作者的 `ui_analysis`。`pass` 则呈现该 UI 规范；`needs_revision` 则应用评审裁定并在修正后重新评审；`rejected` 则先解决约束来源冲突再进行下一次评审。`[停止：UI 规范批准]`。
+调用 `document-reviewer`，传入 `doc_type: UISpec`、作为 `target` 的返回 UI 规范路径、`requirement_context`，以及提供给作者的 `ui_analysis`。`pass` 则呈现该 UI 规范；`needs_revision` 则应用评审裁定并在修正后重新评审；`rejected` 则先解决约束来源冲突再进行下一次评审。`[停止：UI 规范批准]`。
 
 ## 步骤 6：在需要时创建并批准 ADR 批次
 
 当 `adrDecisionPoints` 非空时：
 
-1. 先将共享/后端归属的决策点路由给 technical-designer，再将前端归属的决策点路由给 technical-designer-frontend。调用每个归属方时传入 `document_to_create: ADRBatch`、`confirmed_requirement_context`、其有序的 `decision_points`、对应的原样未改动的 `decision_materials`，以及仅当已批准的 UI 规范约束该决策时才传入的 `ui_spec_path`。
-2. 收集所有返回的路径，并以 `doc_type: ADRBatch`、`targets: [所有路径]` 和 `confirmed_requirement_context` 调用一次 `document-reviewer`。
+1. 先将共享/后端归属的决策点路由给 technical-designer，再将前端归属的决策点路由给 technical-designer-frontend。调用每个归属方时传入 `document_to_create: ADRBatch`、`requirement_context`、其有序的 `decision_points`、对应的原样未改动的 `decision_materials`，以及仅当已批准的 UI 规范约束该决策时才传入的 `ui_spec_path`。
+2. 收集所有返回的路径，并以 `doc_type: ADRBatch`、`targets: [所有路径]` 和 `requirement_context` 调用一次 `document-reviewer`。
 3. 先按评审结论路由：`pass` 则继续；`needs_revision` 则应用评审裁定，按路径逐个串行更新每份 ADR，并重新评审完整批次；`rejected` 则先解决约束来源冲突，再进行下一次评审。
-4. 仅在评审为 `pass` 之后，才呈现一次批次决策。`[停止：ADR 批次批准]`。
+4. 仅在评审为 `pass` 之后，才呈现一次批次决策，并附上在需求未设定水平之处由 ADR 选定的质量水平。`[停止：ADR 批次批准]`。
 5. 用户批准后，以更新模式调用各 ADR 的负责设计者，将其状态设为 `Accepted`，并验证这些更改。
 
 ## 步骤 7：创建前端设计文档
@@ -89,7 +89,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 调用 `technical-designer-frontend`，传入：
 
 - `document_to_create: DesignDoc`；
-- `confirmed_requirement_context`；
+- `requirement_context`；
 - `structural_scale`；
 - 适用的已批准 `ui_spec_path` 和选取的外部资源记录；
 - `adr_paths: [已接受的路径，或 []]`；
@@ -102,20 +102,20 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 在 Normal 模式下，调用 `code-verifier`，传入 `doc_type: design-doc` 和返回的设计文档路径，不传 `code_paths`。在文档评审前应用评审裁定；将处置为 `apply` 的发现项发送给一次全新的 technical-designer-frontend 调用，传入 `Operation Mode: update`、`Existing Document: [设计文档路径]` 和 `correction_findings: [除处置方针外未作改动的完整发现项]`。该设计者会对未经验证且会改变决策的前提，应用“评审触发的有界自我验证”；这个全新的设计者是唯一的修正专家，并由其选择获取依据的路径。在应用修正后，将上一次的完整结果、已记录的处置方针，以及修正差异或变更路径作为 `prior_feedback` 传入，重新运行验证。将最新的验证器结果连同已记录的处置方针一并作为 `verification_evidence` 传递。当每一条剩余的不一致都带有已解决的处置方针时，继续。Lite 模式不携带此验证依据，直接推进。
 
-调用 `document-reviewer`，传入 `doc_type: DesignDoc`、返回的设计文档路径、`review_context: creation`、原始用户需求、`confirmed_requirement_context`、提供给设计者的原样未改动的分析输入，以及仅在验证已运行时提供的 `verification_evidence`。
+调用 `document-reviewer`，传入 `doc_type: DesignDoc`、返回的设计文档路径、`review_context: creation`、原始用户需求、`requirement_context`、提供给设计者的原样未改动的分析输入，以及仅在验证已运行时提供的 `verification_evidence`。
 
 - `pass`：继续
 - `needs_revision`：应用评审裁定，通过一次全新的 technical-designer-frontend 调用（使用现有路径和完整的、处置为 `apply` 的发现项）进行更新，然后带上 `prior_feedback` 重新评审
-- `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当已确认的成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
+- `rejected`：技术性的约束来源冲突通过评审裁定解决；仅当成果、目标状态需求和非目标无法同时全部成立、且必须由用户选择改变其中哪一项时，才询问用户
 
-在 Normal 模式下，以返回的设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。当结果报告 `analyzed_docs: 0` 时，说明不存在其他设计文档，报告一致性验证已跳过。Lite 模式保留下方的批准停止点，并报告一致性验证被省略。
+在 Normal 模式下，以返回的设计文档路径作为 `source_design` 调用 `design-sync`，并对可处理的冲突应用评审裁定。报告结果中已比较的文档、沿用依据的文档以及任何 `access_limitations`。仅当 `analyzed_docs` 与 `carried_forward_docs` 均为 0、且未记录任何访问局限时，才报告一致性验证已跳过。Lite 模式保留下方的批准停止点，并报告一致性验证被省略。
 
-呈现适用的 UI 规范、设计文档、已接受的 ADR 路径、已记录的拒绝项，以及同步结果或其在 Lite 模式下被省略的说明。`[停止：设计批准]`。
+呈现适用的 UI 规范、设计文档、在需求未设定水平之处由其选定的质量水平、已接受的 ADR 路径、已记录的拒绝项，以及同步结果或其在 Lite 模式下被省略的说明。`[停止：设计批准]`。
 
 ## 完成标准
 
 - 仅当外部依据和原型依据决定着某个当前决策时，才索取了它们
-- 已从成果和职责边界确认范围与结构规模
+- 已从成果和职责边界判定范围与结构规模
 - 仅对同时通过两项筛选的决策点存在 ADR，且该批次经过了一次评审和批准
 - 无论是否需要 ADR，适用的 UI 规范和完整的前端设计文档都存在
 - 适用的既有 UI 行为、契约、假设、状态、等价性和验证防护都进入了设计文档

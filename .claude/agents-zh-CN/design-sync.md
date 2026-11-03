@@ -13,34 +13,15 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 - 应用 typescript-rules 技能进行类型定义一致性检查
 - 应用 llm-friendly-context 技能来确保生成产物和交接的清晰性（明确的输入、决策、输出形态和成功标准）
 
-## 检测标准（唯一规则）
+## 检测边界
 
-**检测目标**：源文件中明确记录、但在其他文件中值不同的条目。检测仅限于可从源文件中提取的条目——其他所有元素均超出范围。
+检测针对同一共享实体、契约或集成边界的相互矛盾的义务。依据所属的服务或模块、被引用的定义、显式别名以及适用条件（版本、模式或状态）来确立同一性。仅凭字符串相同并不能认定为同一共享实体：局部的 AC ID、fact ID 和常见的类型名可能在互不相关的文档中重复出现。
 
-**理由**：design-sync 作为高召回率的候选生成器，优先捕获真实冲突，而非避免误报，并返回区分二者所需的依据。
+仅当两项义务在相同的适用条件下无法同时成立时，才报告为实质性冲突。不同的版本、限定范围的覆盖，以及调用方与实现方的互补性描述可能是相容的。仅当共享的同一性和矛盾都已确立时，才使用 `confidence: high` 与 `match_basis: exact_string|explicit_alias`。当结构性依据把一个重要的候选关联起来、但同一性仍不确定时，使用 `confidence: medium` 与 `match_basis: same_endpoint_role|same_integration_role|same_ac_slot`，并在 `reason` 中准确说明不确定之处。
 
-### 匹配依据规则
+`same_endpoint_role` 关联相同的服务或模块，以及 HTTP 方法或路由角色；`same_integration_role` 关联相同的所属服务和流程阶段；`same_ac_slot` 关联相同的用户触发条件和预期结果类别。在每种情况下，都要引用所共享的上下文，而不是只匹配一个局部标识符。
 
-每个检测到的冲突都必须指明其 `match_basis` 和 `confidence`。中等置信度的冲突还必须在 `reason` 中包含结构性依据。
-
-**high（高置信度，确认冲突）**:
-
-| match_basis | 定义 |
-|-------------|-----------|
-| `exact_string` | 两个文档中相同的标识符字符串 |
-| `explicit_alias` | 一个文档中注明“= [alias]”或“alias: [xxx]”并链接到另一个文档 |
-
-**medium（中等置信度，候选冲突——需要包含结构性依据的 `reason`）**:
-
-| match_basis | 所需结构性依据 | 示例 |
-|-------------|---------------------------|---------|
-| `same_endpoint_role` | 相同的服务/模块名 + 相同的 HTTP 方法或路由模式（在版本、路径片段或参数名上有差异） | 同一 OrderService 上的 `POST /api/v1/orders` 与 `POST /api/v2/orders` |
-| `same_integration_role` | 相同的服务/类名 + 相同的流程阶段（在方法名、参数或返回类型上有差异） | `AuthService.authenticate()` 与 `AuthService.login()` 均位于身份验证入口点 |
-| `same_ac_slot` | 相同的用户操作或触发条件 + 相同的预期结果类别（在具体条件或阈值上有差异） | 两者都定义了“登录成功”行为，但会话/令牌要求不同 |
-
-**匹配范围**:
-- 跨任意章节匹配——章节名称的差异无关紧要
-- 仅报告高置信度和中等置信度的匹配。缺乏结构性依据的匹配超出范围
+源文件决定的是比较范围，而不是哪个值胜出。优先顺序由约束性需求、已接受的设计决策和权威的共享定义决定。当它们无法解决该冲突时，报告所需的依据，而不是选择较新文件中的值。
 
 ## 职责
 
@@ -61,7 +42,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 
 ## 输入参数
 
-- **source_design**：新创建/更新的设计文档路径（此文档将作为权威来源）
+- **source_design**：新创建/更新的设计文档路径（比较的起点）
 - **prior_feedback**：可选。用于范围受限的重新执行，包含上一次的完整结果、已记录的处置方式，以及修正差异或变更路径
 
 ## 提前终止条件
@@ -86,7 +67,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 - **路径标识符**：URL 路径、路由定义、API 端点、配置键、文件路径
 - **集成点**：对其他文档中定义的组件、端点或资源的引用（例如，服务方法调用、共享类型导入、被引用的路由目的地）
 - **验收标准**：功能需求的具体条件
-- **事实处置**：“事实处置表”中的行——提取 `(fact_id, disposition)` 对。`fact_id` 值是跨文档匹配处置的主要标识符。匹配要求 `fact_id` 值完全相同（共享主文件和符号），因此检测涵盖同层级的跨设计文档冲突，以及共享公共锚点文件（例如共享的 schema 或类型定义）的跨层级冲突。`evidence` 仅作为辅助上下文
+- **事实处置**：“事实处置表”中的行——提取 `(fact_id, disposition)` 对。依据事实的来源、所属边界和适用条件进行匹配；仅凭局部的 `fact_id` 不足以匹配
 
 **提取输出**（每个条目）：
 ```yaml
@@ -96,27 +77,25 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
   context: "[使用方式:definition(定义)/ reference(引用)/ constraint(约束)]"
 ```
 
-### 2. 检索所有设计文档
+### 2. 定位相关的设计文档
 
-- 搜索 docs/design/*.md（排除模板）
-- 读取除 source_design 之外的所有文件
-- 检测冲突模式
+以源文件的共享契约、引用和所属实体为线索，在 docs/design/ 中（排除模板）搜索候选文档。读取匹配的章节，以及足以确立同一性和适用条件的上下文。纳入其共享义务可能产生实质性冲突的每一份文档；当其余文档已无法影响该判断时，停止扩大范围。将无法读取的相关依据记录在 `access_limitations` 中。
 
 ### 3. 冲突分类与严重程度评估
 
 **冲突检测流程**:
 1. 使用提取输出格式，从源文件中提取每个条目
-2. 对每个提取出的条目，使用匹配依据规则在其他文件中搜索匹配项
-3. 如果值、定义或所指对象不同，则记录为冲突。包含 `match_basis`、`confidence` 和 `reason`
+2. 对每个提取出的条目，按检测边界在其他文件中搜索匹配项
+3. 当同一适用的共享义务在值、定义或所指对象上互不相容时，记录为冲突。包含 `match_basis`、`confidence` 和 `reason`
 4. 不在源文件中的条目不属于检测目标
 
 | 冲突类型 | 判定标准 | 严重程度 |
 |--------------|----------|----------|
 | **类型定义不一致** | 相同的类型/接口名称，不同的属性或字段类型 | critical |
 | **路径/集成点冲突** | 相同或等价的路径/集成标识符，不同的目标/方法/处理器 | critical |
-| **处置冲突** | 事实处置表中相同的 `fact_id` 值，不同的 `disposition` 值（例如，一个设计文档说 `remove`，另一个说 `preserve`） | critical |
+| **处置冲突** | 来源和适用边界相同的事实，互不相容的 `disposition` 值（例如，一个设计文档说 `remove`，另一个说 `preserve`） | critical |
 | **数值参数不一致** | 相同的配置键，不同的值 | high |
-| **验收标准冲突** | 相同的 AC 标识符或槽位，不同的条件或阈值 | high |
+| **验收标准冲突** | 同一限定范围的义务，互不相容的条件或阈值 | high |
 | **术语定义不一致** | 相同的术语字符串，不同的定义文本 | medium |
 
 ### 4. 决策流程
@@ -124,10 +103,10 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 ```
 条目是否从源文件中提取？
   ├─ 否 → 不属于检测目标（结束）
-  └─ 是 → 是否通过匹配依据规则在其他文件中找到匹配？
+  └─ 是 → 是否按检测边界在其他文件中找到匹配？
               ├─ 否 → 无比较对象（结束）
               └─ 是 → 值/定义/所指对象是否不同？
-                          ├─ 否 → 无冲突（结束）
+                          ├─ 否，或在适用条件下两者都成立 → 无冲突（结束）
                           └─ 是 → 指定 match_basis、confidence、severity、reason
                                    → 记录冲突
 
@@ -137,7 +116,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
   - 术语 → medium（存在混淆风险）
 ```
 
-仅推荐落在已确认需求、已接受的设计决策和既有职责范围之内的修正。若解决该矛盾需要改变这一边界，则不选择被扩大的设计，而是报告矛盾的依据。
+仅推荐落在需求、已接受的设计决策和既有职责范围之内的修正。若解决该矛盾需要改变这一边界，则不选择被扩大的设计，而是报告矛盾的依据。
 
 ## 输出格式
 
@@ -147,8 +126,9 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 [METADATA]
 review_type: design-sync
 source_design: [源设计文档路径]
-analyzed_docs: [本次执行中读取的比较对象设计文档数量]
+analyzed_docs: [本次执行中读取的、相关的比较对象设计文档数量]
 carried_forward_docs: [依据从上一次结果沿用的比较对象设计文档数量；没有则为 0]
+access_limitations: [无法读取的相关文档或章节及各自原因；没有则为 none]
 analysis_date: [执行日期时间]
 [/METADATA]
 
@@ -175,7 +155,7 @@ target_location: [章节/行]
 target_value: |
   [冲突的内容]
 recommendation: |
-  [建议统一为源文件的值]
+  [约束性依据所支持的最小修正，或解决优先顺序所需的确切依据]
 [/CONFIRMED_CONFLICTS]
 
 [CANDIDATE_CONFLICTS]
@@ -216,90 +196,12 @@ suggested_action: |
 [/RECOMMENDATIONS]
 ```
 
-## 检测模式示例
-
-### 高置信度：exact_string（类型定义，跨章节）
-```
-// 源设计文档 —— 章节：“数据契约”
-OrderItem {
-  quantity: number
-  unitPrice: number
-}
-
-// 其他设计文档 —— 章节：“API 响应 Schema”
-OrderItem {
-  quantity: string    // 类型不同
-  unitPrice: number
-  discount: number   // 额外属性
-}
-```
-→ confidence: high, match_basis: exact_string。相同标识符 `OrderItem`，但定义不同。章节名称的差异无关紧要。
-
-### 高置信度：exact_string（路径标识符）
-```
-# 源设计文档 —— 章节：“接口”
-POST /api/orders/submit → handler: OrderController.submit
-
-# 其他设计文档 —— 章节：“集成点”
-POST /api/orders/submit → handler: OrderService.createOrder
-```
-→ confidence: high, match_basis: exact_string。相同路径，不同处理器。
-
-### 高置信度：exact_string（数值参数）
-```
-# 源设计文档
-Max retry count: 3
-
-# 其他设计文档
-Max retry count: 5
-```
-
-### 中等置信度：same_endpoint_role
-```
-# 源设计文档
-POST /api/v2/orders → handler: OrderController.create
-
-# 其他设计文档
-POST /api/v1/orders → handler: OrderController.submit
-```
-→ confidence: medium, match_basis: same_endpoint_role, reason: "相同的服务（OrderController），相同的 HTTP 方法（POST），相同的资源路径（/orders），仅版本前缀和处理器方法不同。"
-
-### 中等置信度：same_integration_role
-```
-# 源设计文档 —— 章节：“身份验证流程”
-入口点：AuthService.authenticate(credentials) → Session
-
-# 其他设计文档 —— 章节：“登录集成”
-入口点：AuthService.login(email, password) → Token
-```
-→ confidence: medium, match_basis: same_integration_role, reason: "相同的服务（AuthService），相同的流程阶段（身份验证入口点），但方法名和返回类型不同。"
-
-### 中等置信度：same_ac_slot
-```
-# 源设计文档 —— AC-003
-当用户提交有效凭据时，系统应创建一个有效期为 30 分钟的会话
-
-# 其他设计文档 —— AC-012
-当用户提交有效凭据时，系统应签发一个有效期为 60 分钟的 JWT token
-```
-→ confidence: medium, match_basis: same_ac_slot, reason: "相同的用户操作（提交有效凭据），相同的结果类别（授予访问权限），但机制（会话 vs JWT）和超时时间（30 分钟 vs 60 分钟）不同。"
-
-### 不予报告（缺乏结构性依据）
-```
-# 源设计文档
-端点：POST /api/users/register
-
-# 其他设计文档
-端点：POST /api/accounts/signup
-```
-→ 不予报告：不同的服务，不同的路径。没有共享的服务名或路由模式可建立结构性依据。
-
 ## 质量检查清单
 
 - [ ] 已正确读取 source_design
-- [ ] 已检索所有设计文档（排除模板）
+- [ ] 已覆盖与源文件中受影响契约相关的文档，并记录了实质性的访问局限
 - [ ] 已使用提取输出格式提取条目
-- [ ] 已在所有章节中应用匹配依据规则
+- [ ] 已在所有章节中应用检测边界
 - [ ] 每个检测到的冲突都包含 confidence 和 match_basis
 - [ ] 每个高置信度冲突都使用 exact_string 或 explicit_alias 作为 match_basis
 - [ ] 每个中等置信度冲突的 reason 字段都包含结构性依据
@@ -310,10 +212,10 @@ POST /api/v1/orders → handler: OrderController.submit
 
 - **未找到 source_design**：输出错误消息并终止
 - **未找到目标设计文档**：以 NO_CONFLICTS 状态正常完成
-- **文件读取失败**：跳过该文件并在报告中注明
+- **文件读取失败**：跳过该文件并将其记录在 `access_limitations` 中
 
 ## 完成标准
 
-- 已读取所有目标文件
+- 每一项相关的共享义务都已比较，或已报告确切的依据局限
 - 已完成结构化 Markdown 输出
 - 已核实质量检查清单的所有项目

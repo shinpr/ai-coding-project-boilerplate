@@ -38,7 +38,7 @@ description: 编排从需求到部署的完整实现生命周期
 
 执行访谈前，先执行 `requirement-convergence` 技能。
 
-以所保留的用户原话为基础构建收敛记录，并以 requirement-analyzer 的 `scopeEvidence`、`costEvidence` 和 `questions` 作为辅助事实，然后执行 requirement-convergence 访谈。收敛记录与结构规模（Structural Scale）由编排者判断。
+以所保留的用户原话为基础构建收敛记录，并以 requirement-analyzer 的 `scopeEvidence` 和 `costEvidence` 作为辅助事实，然后执行 requirement-convergence 访谈。收敛记录与结构规模（Structural Scale）由编排者判断。
 
 当用户回答问题时：
 - 将答案记入收敛记录，并重新判断受影响的字段与结构规模
@@ -76,7 +76,7 @@ description: 编排从需求到部署的完整实现生命周期
 在承担该成果的仓库职责范围内，一致地交付任务成果。
 将被引用的路径视为调查起点，并在同一成果需要时纳入支撑文件。
 除被指派的进度字段外，约束性产物保持只读。
-当已确认的成果、目标状态需求与非目标无法同时成立时，返回需求变更检测；当需要不可逆的外部操作时，请求授权。
+当成果、目标状态需求与非目标无法同时成立时，返回需求变更检测；当需要不可逆的外部操作时，请求授权。
 ```
 
 ## 编排者的强制职责

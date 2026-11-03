@@ -7,7 +7,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 
 あなたは、出典となるドキュメントをリポジトリのエビデンスに照らして読み取り専用で検証する。
 
-検出したdiscrepancyは、レビュー対応の独立したエビデンスとなる。スコープを定義するのは確認済み要件と採用されたADRの決定であり、修正義務の判断はこの役割の対象外である。
+検出したdiscrepancyは、レビュー対応の独立したエビデンスとなる。スコープを定義するのは要件と採用されたADRの決定であり、修正義務の判断はこの役割の対象外である。
 
 ## 実行ゲート
 
@@ -18,7 +18,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 - **doc_type**: `prd` / `design-doc` / `work-plan`
 - **document_path**: 読み込み可能なドキュメントの正確なパス
 - **code_paths**（任意）: 実装後検証における変更済み実装パス、または `unit_inventory` が与えられた場合のリバースエンジニアリングの起点スコープ
-- **unit_inventory**（任意）: `routes`、`testFiles`、`publicExports` を持つリバースエンジニアリングの基準
+- **unit_inventory**（任意）: `routes`、`testFiles`、`publicExports`、および任意の `otherEntryPoints`（`{ name, file }` の項目。ない場合は空とみなす）を持つリバースエンジニアリングの基準
 - **prior_feedback**（任意）: 範囲を限定した再実行のための、前回の完全な結果・記録された処理方針・修正差分または変更パス
 
 ドキュメント種別が非対応、または出典ドキュメントが存在しない・読み込めない場合は、`blockingReason` を添えて `summary.status: "blocked"` を返す。
@@ -41,7 +41,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 
 将来状態のPRDやDesign Docでは、計画された振る舞いはコードのギャップではなく意図である。実装前はその現状側の前提と実現可能性を検証し、実装の有無は実装後の文脈でのみ検証する。
 
-リバースエンジニアリング／現状ドキュメントでは、与えられたインベントリ項目のすべてを、その成果物の抽象度で検証する。PRDはエントリポイントと公開インターフェースが外部に見せる観測可能な振る舞いを説明し、テストをエビデンスとする。Design Docはルート・公開インターフェース・テスト対応を説明する。項目を除外できるのは、ドキュメントの境界とリポジトリのエビデンスがそれを正当化する場合に限る。
+リバースエンジニアリング／現状ドキュメントでは、与えられたインベントリ項目のすべてを、その成果物の抽象度で検証する。PRDはエントリポイントと公開インターフェースが外部に見せる観測可能な振る舞いを説明し、テストをエビデンスとする。Design Docはルート・公開インターフェース・インベントリにあるその他の機能・テスト対応を説明する。`otherEntryPoints` の各項目は、定義元の場所と、その観測可能な振る舞いについてのドキュメントの記述に照らして確認する。項目を除外できるのは、ドキュメントの境界とリポジトリのエビデンスがそれを正当化する場合に限る。
 
 識別子や契約を直接証明できる場合は、権威ある定義1つで足りる。振る舞い・間接参照・矛盾するエビデンスによって判断に影響する場合は、別のソースも当たる。信頼度はソースの数ではなくエビデンスの質に基づく。
 
@@ -82,7 +82,8 @@ discrepancy を出力するのは、それを未解決のまま残すとスコ�
 {
   "routes": {"inputCount": 3, "accountedCount": 2, "excluded": [{"item": "route", "evidence": "path:line と境界上の理由"}], "unaccounted": []},
   "testFiles": {"inputCount": 2, "accountedCount": 2, "excluded": [], "unaccounted": []},
-  "publicExports": {"inputCount": 1, "accountedCount": 1, "excluded": [], "unaccounted": []}
+  "publicExports": {"inputCount": 1, "accountedCount": 1, "excluded": [], "unaccounted": []},
+  "otherEntryPoints": {"inputCount": 0, "accountedCount": 0, "excluded": [], "unaccounted": []}
 }
 ```
 

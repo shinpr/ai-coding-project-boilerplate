@@ -36,13 +36,13 @@ Medium/Large のフロントエンド設計を、エビデンスから該当す�
 
 ## ステップ1: 出典となる要件ソースの選択
 
-承認済みPRDが存在する場合はそのパスを用いる。存在しない場合は確認済み要件の原文を用いる。
+承認済みPRDが存在する場合はそのパスを用いる。存在しない場合は要件の原文を用いる。
 
-`confirmed_requirement_context` には承認済みPRDのパスをそのまま設定する。承認済みPRDが存在しない場合に限り、オーケストレーターが確認した収束記録をそのまま用いる。
+`requirement_context` には承認済みPRDのパスをそのまま設定する。承認済みPRDが存在しない場合に限り、オーケストレーターの収束記録をそのまま用いる。
 
 ## ステップ2: リポジトリ側の判断材料の収集
 
-確認済みスコープ全体に対して `codebase-analyzer` を1回呼び出す。入力は `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [確認済み要件の原文]` のいずれか一方のみとする。
+スコープ全体に対して `codebase-analyzer` を1回呼び出す。入力は `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [要件の原文]` のいずれか一方のみとする。
 
 妥当なJSON結果を1つ要求し、影響パス・責務境界・レイヤーをまたぐ契約の発見はアナライザーに任せる。`focusAreas` は要件ではなく既存の振る舞いの安全策として扱う。
 
@@ -54,7 +54,7 @@ UI Spec が該当する場合、project-context の外部リソースを選択�
 
 プロトタイプコードを求めるのは、それが未解決の承認済みUI判断を供給する場合、または要件・リポジトリのUI・記録済みリソースからは対象を決定できない場合に限る。任意のプロトタイプが存在しないことは停止条件ではない。
 
-`ui-analyzer` は、出典ソースを1つだけ指定して呼び出す: `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [確認済み要件の原文]`。これに加えて渡すのは、既存の `ui_spec_path`、判断に影響する `prototype_path`、選択した `external_resource_refs`（または `[]`）のみとする。
+`ui-analyzer` は、出典ソースを1つだけ指定して呼び出す: `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [要件の原文]`。これに加えて渡すのは、既存の `ui_spec_path`、判断に影響する `prototype_path`、選択した `external_resource_refs`（または `[]`）のみとする。
 
 ## ステップ4: スコープとADR決定の確認
 
@@ -64,24 +64,24 @@ UI Spec が該当する場合、project-context の外部リソースを選択�
 
 構造スケールは成果と責務境界から判定し、ファイル数は補助的なエビデンスにとどめる。候補となる決定ポイントを、出典ソース・該当する `simplifications`・`reuse`・`invalidations` に照らして解決する。該当するUIの事実は、残った選択肢を支持することも否定することもある。documentation-criteria の 選択（Choice）フィルタと長期影響（Durability）フィルタは、この収束の後にのみ適用し、通過した決定ポイントを `adrDecisionPoints` として記録する。空リストも妥当である。
 
-ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務、該当する各 simplification と、それを省いても確認済みの成果が成立する条件、およびコストの区分と残っている不明点。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・UI Spec の要否・ADR適格性はオーケストレーターの記録に留める — UI Spec・ADRバッチ・Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「修正して再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
+ユーザーが判断する対象のみを提示する: 成果と構築する要件。除外事項。変更が対象とする責務。要件の目的を既存の振る舞いがすでに満たしており、足りないのはその要件が指定する追加の振る舞いだけである各要件と、そのエビデンスおよびコストへの影響。該当する各 simplification と、それを省いても成果が成立する条件。コストの区分と残っている不明点。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・UI Spec の要否・ADR適格性はオーケストレーターの記録に留める — UI Spec・ADRバッチ・Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「修正して再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
 
 ## ステップ5: UI Specの作成と承認
 
 このステップは、ステップ3で UI Spec が該当すると判定した場合にのみ実行する。
 
-`ui-spec-designer` を、`confirmed_requirement_context`、変更していない `ui_analysis` と `codebase_analysis` の全体、存在する場合は判断に影響する `prototype_path` とその `prototype_reference_strength`、選択した `external_resource_refs`（または `[]`）で呼び出す。
+`ui-spec-designer` を、`requirement_context`、変更していない `ui_analysis` と `codebase_analysis` の全体、存在する場合は判断に影響する `prototype_path` とその `prototype_reference_strength`、選択した `external_resource_refs`（または `[]`）で呼び出す。
 
-`document-reviewer` を、`doc_type: UISpec`、返却されたUI Spec のパスを `target`、`confirmed_requirement_context`、作成者に渡した `ui_analysis` を指定して呼び出す。`pass` の場合はUI Spec を提示する。`needs_revision` はレビュー対応を適用し、修正後に再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。`[停止: UI Spec承認]`。
+`document-reviewer` を、`doc_type: UISpec`、返却されたUI Spec のパスを `target`、`requirement_context`、作成者に渡した `ui_analysis` を指定して呼び出す。`pass` の場合はUI Spec を提示する。`needs_revision` はレビュー対応を適用し、修正後に再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。`[停止: UI Spec承認]`。
 
 ## ステップ6: 必要な場合のADRバッチ作成と承認
 
 `adrDecisionPoints` が非空の場合:
 
-1. 共有／バックエンドが所有する決定ポイントを先に technical-designer へ、続いてフロントエンドが所有する決定ポイントを technical-designer-frontend へルーティングする。各担当を、`document_to_create: ADRBatch`、`confirmed_requirement_context`、その順序付き `decision_points`、対応する変更していない `decision_materials` で呼び出す。`ui_spec_path` は、承認済みUI Spec がその決定を拘束する場合にのみ渡す。
-2. 返却された全パスを集約し、`document-reviewer` を1回、`doc_type: ADRBatch`、`targets: [全パス]`、`confirmed_requirement_context` で呼び出す。
+1. 共有／バックエンドが所有する決定ポイントを先に technical-designer へ、続いてフロントエンドが所有する決定ポイントを technical-designer-frontend へルーティングする。各担当を、`document_to_create: ADRBatch`、`requirement_context`、その順序付き `decision_points`、対応する変更していない `decision_materials` で呼び出す。`ui_spec_path` は、承認済みUI Spec がその決定を拘束する場合にのみ渡す。
+2. 返却された全パスを集約し、`document-reviewer` を1回、`doc_type: ADRBatch`、`targets: [全パス]`、`requirement_context` で呼び出す。
 3. まず verdict でルーティングする。`pass` は次へ進む。`needs_revision` はレビュー対応を適用し、パスごとに1つのADRを順に更新してから、バッチ全体を再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。
-4. バッチの判断をユーザーに提示するのは、レビューが `pass` になった後のみとする。`[停止: ADRバッチ承認]`。
+4. バッチの判断を、要件が水準を定めていない箇所でADRが選択した品質水準とあわせてユーザーに提示する。提示するのは、レビューが `pass` になった後のみとする。`[停止: ADRバッチ承認]`。
 5. ユーザー承認後、各ADRを所有する designer を update モードで呼び出してステータスを `Accepted` に設定させ、その変更を確認する。
 
 ## ステップ7: フロントエンドDesign Docの作成
@@ -89,7 +89,7 @@ UI Spec が該当する場合、project-context の外部リソースを選択�
 `technical-designer-frontend` を以下で呼び出す:
 
 - `document_to_create: DesignDoc`
-- `confirmed_requirement_context`
+- `requirement_context`
 - `structural_scale`
 - 該当する承認済みの `ui_spec_path` と、選択した外部リソース記録
 - `adr_paths: [承認済みパス、または []]`
@@ -102,20 +102,20 @@ Design Doc はコンポーネントからサービスまでの完全な実装を
 
 Normalモードで、`code-verifier` を `doc_type: design-doc` と返却された Design Doc のパスで呼び出し、`code_paths` は指定しない。ドキュメントレビューの前にレビュー対応を適用する。apply 対象の finding は、新しい technical-designer-frontend 呼び出しへ `Operation Mode: update`、`Existing Document: [Design Doc のパス]`、`correction_findings: [処理方針以外は変更していない finding 全体]` として渡す。未検証で設計を左右する前提には、designer がレビューを起点とする範囲限定セルフ検証ゲートを適用する。この新しい designer だけが修正を担当し、エビデンスを得る経路も自身で選ぶ。修正後は、前回の完全な結果・記録した処理方針・修正差分または変更パスを `prior_feedback` として渡して検証を再実行する。最新の verifier 結果と記録した処理方針をあわせて `verification_evidence` として渡す。残るすべての discrepancy に処理方針が付いた時点で次へ進む。Liteモードではこの検証エビデンスなしで進む。
 
-`document-reviewer` を、`doc_type: DesignDoc`、返却された Design Doc のパス、`review_context: creation`、ユーザー要件の原文、`confirmed_requirement_context`、designerに渡したものと同じ変更していない分析入力、および検証を実行した場合のみ `verification_evidence` で呼び出す。
+`document-reviewer` を、`doc_type: DesignDoc`、返却された Design Doc のパス、`review_context: creation`、ユーザー要件の原文、`requirement_context`、designerに渡したものと同じ変更していない分析入力、および検証を実行した場合のみ `verification_evidence` で呼び出す。
 
 - `pass`: 次へ進む
 - `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer-frontend 呼び出しで更新した上で、`prior_feedback` を添えて再レビューする
-- `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
+- `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
 
-Normalモードで、返却された Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果が `analyzed_docs: 0` の場合は、他の Design Doc が存在しないため整合性検証を省略したと報告する。Liteモードでは、以下の承認停止点を維持し、整合性検証の省略を報告する。
+Normalモードで、返却された Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果のうち、比較したドキュメント、エビデンスを引き継いだドキュメント、および `access_limitations` があればそれを報告する。整合性検証を省略したと報告するのは、`analyzed_docs` と `carried_forward_docs` がいずれも0で、アクセス制約が記録されていない場合に限る。Liteモードでは、以下の承認停止点を維持し、整合性検証の省略を報告する。
 
-該当するUI Spec、Design Doc、承認済みADRのパス、記録した decline、sync 結果またはLiteモードで省略したことを提示する。`[停止: 設計承認]`。
+該当するUI Spec、Design Doc、要件が水準を定めていない箇所で Design Doc が選択した品質水準、承認済みADRのパス、記録した decline、sync 結果またはLiteモードで省略したことを提示する。`[停止: 設計承認]`。
 
 ## 完了条件
 
 - 外部リソースとプロトタイプのエビデンスは、現在の判断を左右する場合にのみ要求した
-- スコープと構造スケールを、成果と責務境界から確認した
+- スコープと構造スケールを、成果と責務境界から判定した
 - ADRは両方のフィルタを通過した決定ポイントに対してのみ存在し、バッチが1回のレビューと承認を受けた
 - ADRの要否にかかわらず、該当するUI Spec と完全なフロントエンドDesign Doc が存在する
 - 該当する既存のUIの振る舞い・契約・前提・状態・等価性・検証の安全策が Design Doc に反映されている

@@ -34,13 +34,13 @@ Medium/Large の作業では、Design Doc が常に完全な実装設計であ�
 
 ## ステップ1: 出典となる要件ソースの選択
 
-承認済みPRDが存在する場合はそのパスを用いる。存在しない場合は確認済み要件の原文を用いる。
+承認済みPRDが存在する場合はそのパスを用いる。存在しない場合は要件の原文を用いる。
 
-`confirmed_requirement_context` には承認済みPRDのパスをそのまま設定する。承認済みPRDが存在しない場合に限り、オーケストレーターが確認した収束記録をそのまま用いる。
+`requirement_context` には承認済みPRDのパスをそのまま設定する。承認済みPRDが存在しない場合に限り、オーケストレーターの収束記録をそのまま用いる。
 
 ## ステップ2: 判断材料の収集
 
-確認済みスコープ全体に対して `codebase-analyzer` を1回呼び出す。入力は `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [確認済み要件の原文]` のいずれか一方のみとする。
+スコープ全体に対して `codebase-analyzer` を1回呼び出す。入力は `prd_path: [承認済みPRDのパス]`、承認済みPRDが存在しない場合は `requirements: [要件の原文]` のいずれか一方のみとする。
 
 妥当なJSON結果を1つ要求し、影響パス・責務境界・レイヤーをまたぐ契約の発見はアナライザーに任せる。その focus area は既存の振る舞いの安全策として扱い、新しい要件としては扱わない。
 
@@ -54,16 +54,16 @@ Medium/Large の作業では、Design Doc が常に完全な実装設計であ�
 
 `decisionMaterials.candidateDecisionPoints` を、出典となる要件ソース・該当する `simplifications`・`reuse`・`invalidations` に照らして解決する。それらのエビデンスで既に1つの十分なアプローチに収束する決定ポイントは除外する。残った各項目に、documentation-criteria の選択（Choice）フィルタと長期影響（Durability）フィルタを順に適用する。通過した項目をすべて `adrDecisionPoints` として記録する。空リストの場合はそのまま Design Doc へ進む。
 
-ユーザーが判断する対象のみを提示する: 成果と構築する要件、除外事項、変更が対象とする責務、該当する各 simplification と、それを省いても確認済みの成果が成立する条件、およびコストの区分と残っている不明点。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・ADR適格性はオーケストレーターの記録に留める — ADRバッチと Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
+ユーザーが判断する対象のみを提示する: 成果と構築する要件。除外事項。変更が対象とする責務。要件の目的を既存の振る舞いがすでに満たしており、足りないのはその要件が指定する追加の振る舞いだけである各要件と、そのエビデンスおよびコストへの影響。該当する各 simplification と、それを省いても成果が成立する条件。コストの区分と残っている不明点。不明点を加えるのは、そのスコープを確定するためにユーザーの解決が必要な場合に限る。構造スケール・ADR適格性はオーケストレーターの記録に留める — ADRバッチと Design Doc はそれぞれ独自の承認停止点を持つ。選択肢として「このまま進める」または「スコープを修正して分析を再実行する」を提示する。続行するのは、すべての収束フィールドが `ready` または `weak-but-explicit` になった場合に限る。`[停止: スコープ確認]`。
 
 ## ステップ4: 必要な場合のADRバッチ作成と承認
 
 `adrDecisionPoints` が非空の場合:
 
-1. `technical-designer` を1回呼び出す。`document_to_create: ADRBatch`、`confirmed_requirement_context`、順序付きの `decision_points`、およびステップ2からそのままコピーした対応する `decision_materials` を渡す。
-2. `document-reviewer` を1回呼び出す。`doc_type: ADRBatch`、`targets: [返却された全パス]`、`confirmed_requirement_context` を渡す。
+1. `technical-designer` を1回呼び出す。`document_to_create: ADRBatch`、`requirement_context`、順序付きの `decision_points`、およびステップ2からそのままコピーした対応する `decision_materials` を渡す。
+2. `document-reviewer` を1回呼び出す。`doc_type: ADRBatch`、`targets: [返却された全パス]`、`requirement_context` を渡す。
 3. まず verdict でルーティングする。`pass` は次へ進む。`needs_revision` はレビュー対応を適用し、パスごとに1つのADRを順に更新してから、バッチ全体を再レビューする。`rejected` は再レビューの前に出典ソースの衝突を解消する。
-4. バッチの判断をユーザーに提示するのは、レビューが `pass` になった後のみとする。`[停止: ADRバッチ承認]`。
+4. バッチの判断を、要件が水準を定めていない箇所でADRが選択した品質水準とあわせてユーザーに提示する。提示するのは、レビューが `pass` になった後のみとする。`[停止: ADRバッチ承認]`。
 5. ユーザー承認後、ADRのパスごとに `technical-designer` を update モードで呼び出してステータスを `Accepted` に設定させ、その変更を確認する。
 
 ## ステップ5: Design Docの作成
@@ -71,7 +71,7 @@ Medium/Large の作業では、Design Doc が常に完全な実装設計であ�
 `technical-designer` を以下の入力のみで呼び出す:
 
 - `document_to_create: DesignDoc`
-- `confirmed_requirement_context`
+- `requirement_context`
 - `structural_scale`
 - `adr_paths: [承認済みパス、または []]`
 - `codebase_analysis: [ステップ2のJSON全体をそのまま]`
@@ -88,19 +88,19 @@ Normalモードでこのステップを実行する。Liteモードでは、`ver
 
 ## ステップ7: レビューと承認
 
-`document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`confirmed_requirement_context`、`codebase_analysis`、およびステップ6を実行した場合のみ、その `verification_evidence` で呼び出す。
+`document-reviewer` を、`doc_type: DesignDoc`、`target`、`review_context: creation`、`requirements_verbatim` としてのユーザー要件の原文、`requirement_context`、`codebase_analysis`、およびステップ6を実行した場合のみ、その `verification_evidence` で呼び出す。
 
 - `pass`: 次へ進む
 - `needs_revision`: レビュー対応を適用し、既存パスと apply 対象の finding 全体を渡した新しい technical-designer 呼び出しで更新した上で、`prior_feedback` を添えて再レビューする
-- `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、確認済みの成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
+- `rejected`: 技術上の正典の衝突はレビュー対応で解消する。ユーザーに尋ねるのは、成果、将来状態の要件、対象外を同時には維持できず、どれを変更するか選ぶ必要がある場合に限る
 
-Normalモードで、Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果が `analyzed_docs: 0` の場合は、他の Design Doc が存在しないため整合性検証を省略したと報告する。
+Normalモードで、Design Doc のパスを `source_design` として `design-sync` を呼び出し、対応可能な矛盾にはレビュー対応を適用する。結果のうち、比較したドキュメント、エビデンスを引き継いだドキュメント、および `access_limitations` があればそれを報告する。整合性検証を省略したと報告するのは、`analyzed_docs` と `carried_forward_docs` がいずれも0で、アクセス制約が記録されていない場合に限る。
 
-Design Doc、承認済みADRのパス、記録した decline、design-sync の結果またはLiteモードで省略したことを提示する。`[停止: 設計承認]`。
+Design Doc、要件が水準を定めていない箇所で Design Doc が選択した品質水準、承認済みADRのパス、記録した decline、design-sync の結果またはLiteモードで省略したことを提示する。`[停止: 設計承認]`。
 
 ## 完了条件
 
-- スコープと構造スケールを、成果と責務境界から確認した
+- スコープと構造スケールを、成果と責務境界から判定した
 - ADRは両方のフィルタを通過した決定ポイントに対してのみ存在し、バッチ全体が1回のレビューと承認を受けた
 - ADRの要否にかかわらず、Design Doc が存在する
 - 該当する既存の振る舞い・契約・前提・等価性・検証の安全策が Design Doc に反映されている

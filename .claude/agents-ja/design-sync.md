@@ -13,34 +13,15 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 - typescript-rulesスキルで型定義の整合性チェックを適用
 - llm-friendly-contextスキルで生成物・ハンドオフの明確さ（入力・決定事項・出力構造・成功基準の明示）を確保
 
-## 検出基準（唯一の判定ルール）
+## 検出境界
 
-**検出対象**: 基準ファイルから抽出可能な項目で、他ファイルと値が異なる場合。基準ファイルから抽出できない要素はすべてスコープ外。
+同一の共有エンティティ・契約・統合境界に対する、矛盾した義務を検出する。同一性は、所有するサービスやモジュール、参照先の定義、明示的な別名、適用条件（バージョン、モード、状態）から確立する。文字列が同じであるだけでは共有エンティティとはみなさない。ローカルなAC ID、fact ID、一般的な型名は、無関係なドキュメント間で重複しうる。
 
-**設計方針**: design-syncは取りこぼしを避けて候補を広く洗い出す。偽陽性の回避よりも実際の矛盾の検出漏れ防止を優先し、両者を区別するためのエビデンスを返す。
+矛盾として報告するのは、同じ適用条件のもとで2つの義務が両立しない場合に限る。異なるバージョン、範囲を限定した上書き、呼び出し側と実装側の補完的な記述は両立しうる。`confidence: high` と `match_basis: exact_string|explicit_alias` を使うのは、共有される同一性と矛盾の両方が確立している場合に限る。構造的証拠が重要な候補を関連付けるものの同一性が不確かな場合は、`confidence: medium` と `match_basis: same_endpoint_role|same_integration_role|same_ac_slot` を使い、不確かな点を `reason` に正確に記す。
 
-### マッチ基準ルール（Match Basis Rules）
+`same_endpoint_role` は同一のサービスまたはモジュールと、HTTPメソッドまたはルートの役割を結び付ける。`same_integration_role` は同一の所有サービスとフロー段階を結び付ける。`same_ac_slot` は同一のユーザートリガーと期待結果のカテゴリを結び付ける。いずれの場合も、ローカルな識別子の一致だけに頼らず、共有されているコンテキストを引用する。
 
-検出された各矛盾には`match_basis`と`confidence`を指定する。中信頼度（`medium`）の矛盾には構造的証拠を含む`reason`も必須。
-
-**高信頼度（`high`）** — 確定矛盾:
-
-| match_basis | 定義 |
-|-------------|------|
-| `exact_string` | 両ドキュメントで同一の識別子文字列 |
-| `explicit_alias` | 一方が「= [別名]」「alias: [xxx]」で他方へのリンクを記載 |
-
-**中信頼度（`medium`）** — 候補矛盾（構造的証拠を含む`reason`が必須）:
-
-| match_basis | 必要な構造的証拠 | 例 |
-|-------------|-----------------|-----|
-| `same_endpoint_role` | 同一サービス/モジュール名 + 同一HTTPメソッドまたはルートパターン（バージョン、パスセグメント、パラメータ名が異なる） | 同じOrderServiceで`POST /api/v1/orders` vs `POST /api/v2/orders` |
-| `same_integration_role` | 同一サービス/クラス名 + 同一フロー段階（メソッド名、パラメータ、戻り値が異なる） | 認証エントリポイントで`AuthService.authenticate()` vs `AuthService.login()` |
-| `same_ac_slot` | 同一ユーザーアクション/トリガー + 同一期待結果カテゴリ（具体的な条件や閾値が異なる） | 両方が「ログイン成功」の動作を定義しているがセッション/トークンの要件が異なる |
-
-**マッチングスコープ**:
-- セクション名の違いに関わらず、全セクション横断でマッチングする
-- 高信頼度/中信頼度のマッチのみを報告。構造的証拠のないマッチはスコープ外
+基準ファイルが決めるのは比較の範囲であり、優先される値ではない。優先順位は、出典となる要件、受理済みの設計判断、権威ある共有定義が決める。それらで矛盾を解消できない場合は、新しいファイルの値を選ばず、必要なエビデンスを報告する。
 
 ## 責務
 
@@ -61,7 +42,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 
 ## 入力パラメータ
 
-- **source_design**: 今回作成/更新されたDesign Docパス（これが基準となる）
+- **source_design**: 今回作成/更新されたDesign Docパス（比較の起点）
 - **prior_feedback**（任意）: 範囲を限定した再実行のための、前回の完全な結果・記録された処理方針・修正差分または変更パス
 
 ## 早期終了条件
@@ -86,7 +67,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 - **パス識別子**: URLパス、ルート定義、APIエンドポイント、設定キー、ファイルパス
 - **統合点**: 他ドキュメントで定義されたコンポーネント、エンドポイント、リソースへの参照（例: サービスメソッド呼び出し、共有型のimport、参照先ルート）
 - **受入条件**: 機能要件の具体的な条件
-- **Fact dispositions**: 「Fact Disposition Table」の各行から `(fact_id, disposition)` ペアを抽出。`fact_id`の値がドキュメント間のdisposition照合の主識別子となる。照合には`fact_id`の完全一致（主ファイルとシンボルが共通）が必要で、検出範囲は同一レイヤー内のDD間矛盾と、共通アンカーファイル（共有スキーマや型定義など）を経由するレイヤー横断矛盾をカバーする。`evidence`は補助的なコンテキストのみ
+- **Fact dispositions**: 「Fact Disposition Table」の各行から `(fact_id, disposition)` ペアを抽出。事実の出所、所有する境界、適用条件で照合する。ローカルな `fact_id` だけでは照合に足りない
 
 **抽出出力**（項目ごと）:
 ```yaml
@@ -96,27 +77,25 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
   context: "[使用方法: 定義 / 参照 / 制約]"
 ```
 
-### 2. 全Design Doc調査
+### 2. 関連するDesign Docの特定
 
-- docs/design/*.md を検索（templateを除く）
-- source_design以外の全ファイルを読み込み
-- 矛盾パターンを検出
+基準ファイルの共有契約、参照、所有エンティティを手がかりに、docs/design/ 配下（templateを除く）の候補ドキュメントを探す。該当するセクションと、同一性と適用条件を確立できるだけの周辺を読む。共有される義務が重大な矛盾を起こしうるドキュメントはすべて含め、残りのドキュメントがその判断に影響しなくなった時点で範囲の拡大を止める。読めなかった関連エビデンスは `access_limitations` に記録する。
 
 ### 3. 矛盾分類と重要度判定
 
 **矛盾検出プロセス**:
 1. 基準ファイルの各項目を抽出出力形式で抽出
-2. 各項目について、Match Basis Rulesを使って他ファイルのマッチを検索
-3. 値・定義・参照先が異なる場合に矛盾として記録。`match_basis`、`confidence`、`reason`を含める
+2. 各項目について、検出境界に従って他ファイルのマッチを検索
+3. 同じ適用条件の共有義務で、値・定義・参照先が両立しない場合に矛盾として記録。`match_basis`、`confidence`、`reason`を含める
 4. 基準ファイルに記載がない項目は検出対象外
 
 | 矛盾タイプ | 判定基準 | 重要度 |
 |-----------|----------|--------|
 | **型定義の相違** | 同一型/インターフェース名で異なるプロパティまたはフィールド型 | critical |
 | **パス/統合点の矛盾** | 同一または同等のパス/統合識別子で異なるターゲット/メソッド/ハンドラ | critical |
-| **Disposition矛盾** | Fact Disposition Table間で同一の`fact_id`値に対して異なる`disposition`値（例: 一方のDDが`remove`、他方が`preserve`） | critical |
+| **Disposition矛盾** | 出所と適用境界が同じ事実に対して、両立しない`disposition`値（例: 一方のDDが`remove`、他方が`preserve`） | critical |
 | **数値パラメータの相違** | 同一設定キーに異なる値 | high |
-| **受入条件の矛盾** | 同一ACの識別子またはスロットで異なる条件や閾値 | high |
+| **受入条件の矛盾** | 同じ範囲の義務に対して、両立しない条件や閾値 | high |
 | **用語定義の相違** | 同一用語文字列で異なる定義テキスト | medium |
 
 ### 4. 判定フロー
@@ -124,10 +103,10 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 ```
 基準ファイルから抽出された項目？
   ├─ No → 検出対象外（終了）
-  └─ Yes → Match Basis Rulesで他ファイルにマッチあり？
+  └─ Yes → 検出境界に従って他ファイルにマッチあり？
               ├─ No → 比較対象なし（終了）
               └─ Yes → 値/定義/参照先が異なる？
-                          ├─ No → 矛盾なし（終了）
+                          ├─ No、または適用条件のもとで両立 → 矛盾なし（終了）
                           └─ Yes → match_basis, confidence, severity, reasonを付与
                                    → 矛盾を記録
 
@@ -137,7 +116,7 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
   - 用語 → medium（混乱リスク）
 ```
 
-確認済み要件・受理済みの設計判断・既存の責務の内側に収まる修正だけを推奨する。解消にその境界の変更が必要な場合は、拡張した設計を選ばず、矛盾のエビデンスを報告する。
+要件・受理済みの設計判断・既存の責務の内側に収まる修正だけを推奨する。解消にその境界の変更が必要な場合は、拡張した設計を選ばず、矛盾のエビデンスを報告する。
 
 ## 出力フォーマット
 
@@ -147,8 +126,9 @@ skills: documentation-criteria, project-context, typescript-rules, llm-friendly-
 [METADATA]
 review_type: design-sync
 source_design: [基準Design Docパス]
-analyzed_docs: [今回の実行で読み込んだ比較対象Design Doc数]
+analyzed_docs: [今回の実行で読み込んだ、関連する比較対象Design Doc数]
 carried_forward_docs: [前回の結果からエビデンスを引き継いだ比較対象Design Doc数。ない場合は0]
+access_limitations: [読めなかった関連ドキュメントまたはセクションと、それぞれの理由。ない場合はnone]
 analysis_date: [実行日時]
 [/METADATA]
 
@@ -175,7 +155,7 @@ target_location: [セクション/行]
 target_value: |
   [矛盾している記載内容]
 recommendation: |
-  [基準ファイルの値に統一することを推奨]
+  [出典のエビデンスが裏付ける最小の修正、または優先順位の解消に必要なエビデンス]
 [/CONFIRMED_CONFLICTS]
 
 [CANDIDATE_CONFLICTS]
@@ -216,90 +196,12 @@ suggested_action: |
 [/RECOMMENDATIONS]
 ```
 
-## 検出パターン例
-
-### High confidence: exact_string（型定義、セクション横断）
-```
-// 基準Design Doc — セクション: "Data Contracts"
-OrderItem {
-  quantity: number
-  unitPrice: number
-}
-
-// 他のDesign Doc — セクション: "API Response Schema"
-OrderItem {
-  quantity: string    // 型が異なる
-  unitPrice: number
-  discount: number   // プロパティ追加
-}
-```
-→ confidence: high, match_basis: exact_string。同一識別子`OrderItem`で定義が異なる。セクション名の違いは無関係。
-
-### High confidence: exact_string（パス識別子）
-```
-# 基準Design Doc — セクション: "Endpoints"
-POST /api/orders/submit → handler: OrderController.submit
-
-# 他のDesign Doc — セクション: "Integration Points"
-POST /api/orders/submit → handler: OrderService.createOrder
-```
-→ confidence: high, match_basis: exact_string。同一パスでハンドラが異なる。
-
-### High confidence: exact_string（数値パラメータ）
-```
-# 基準Design Doc
-最大リトライ回数: 3
-
-# 他のDesign Doc
-最大リトライ回数: 5
-```
-
-### Medium confidence: same_endpoint_role
-```
-# 基準Design Doc
-POST /api/v2/orders → handler: OrderController.create
-
-# 他のDesign Doc
-POST /api/v1/orders → handler: OrderController.submit
-```
-→ confidence: medium, match_basis: same_endpoint_role, reason: "同一サービス（OrderController）、同一HTTPメソッド（POST）、同一リソースパス（/orders）でバージョンプレフィックスとハンドラメソッドが異なる。"
-
-### Medium confidence: same_integration_role
-```
-# 基準Design Doc — セクション: "認証フロー"
-エントリポイント: AuthService.authenticate(credentials) → Session
-
-# 他のDesign Doc — セクション: "ログイン統合"
-エントリポイント: AuthService.login(email, password) → Token
-```
-→ confidence: medium, match_basis: same_integration_role, reason: "同一サービス（AuthService）、同一フロー段階（認証エントリポイント）でメソッド名と戻り値の型が異なる。"
-
-### Medium confidence: same_ac_slot
-```
-# 基準Design Doc — AC-003
-ユーザーが有効な認証情報を送信した場合、30分有効期限のセッションを作成する
-
-# 他のDesign Doc — AC-012
-ユーザーが有効な認証情報を送信した場合、60分有効期限のJWTトークンを発行する
-```
-→ confidence: medium, match_basis: same_ac_slot, reason: "同一ユーザーアクション（認証情報の送信）、同一結果カテゴリ（アクセス付与）でメカニズム（セッション vs JWT）とタイムアウト（30分 vs 60分）が異なる。"
-
-### 報告対象外（構造的証拠なし）
-```
-# 基準Design Doc
-エンドポイント: POST /api/users/register
-
-# 他のDesign Doc
-エンドポイント: POST /api/accounts/signup
-```
-→ 報告対象外: 異なるサービス、異なるパス。構造的証拠を確立する共有サービス名やルートパターンがない。
-
 ## 品質チェックリスト
 
 - [ ] source_designを正しく読み込んだ
-- [ ] 全Design Doc（template除く）を調査した
+- [ ] 基準ファイルの影響する契約を共有するドキュメントを網羅し、重大なアクセス制約を記録した
 - [ ] 抽出出力形式で項目を抽出した
-- [ ] 全セクション横断でMatch Basis Rulesを適用した
+- [ ] 全セクション横断で検出境界を適用した
 - [ ] 検出された各矛盾にconfidenceとmatch_basisが含まれている
 - [ ] 高信頼度（`high`）の矛盾はすべて`exact_string`または`explicit_alias`のmatch_basis
 - [ ] 中信頼度（`medium`）の矛盾はすべてreasonフィールドに構造的証拠を含む
@@ -310,10 +212,10 @@ POST /api/v1/orders → handler: OrderController.submit
 
 - **source_design不存在**: エラーメッセージを出力して終了
 - **対象Design Docが0件**: NO_CONFLICTSステータスで正常終了
-- **ファイル読み込み失敗**: 該当ファイルをスキップし、レポートに記載
+- **ファイル読み込み失敗**: 該当ファイルをスキップし、`access_limitations` に記録
 
 ## 終了条件
 
-- 全対象ファイルの読み込み完了
+- 関連するすべての共有義務を比較した、または正確なエビデンスの制約を報告した
 - 構造化マークダウン形式での出力完了
 - 品質チェックリスト全項目の確認完了
