@@ -63,7 +63,7 @@ For pure skills, verify standalone execution. Duplication across independently l
 
 | Aspect | creation | modification |
 |--------|----------|-------------|
-| Scope | All content, comprehensive | Changed sections plus regression check |
+| Scope | All content, comprehensive | Changed sections plus regression check; when a change alters an information requirement or meaning, the sources and uses it affects are checked for consistency |
 | BP scan | All 9 patterns | Patterns relevant to the changes |
 | Cross-skill check | Full overlap scan | Verify changes introduced no conflict or unnecessary duplication |
 | Extra check | — | Report issues outside change scope separately |

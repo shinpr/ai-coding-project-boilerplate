@@ -80,7 +80,7 @@ When a current review is provided, use the current mode's existing content and r
 
 Apply transforms in priority order (P1 → P2 → P3):
 
-1. **BP-001**: Convert negative instructions to positive form. **Exception**: Preserve negative form only when ALL 4 conditions are met: (1) violation destroys state in a single step, (2) caller or subsequent steps cannot normally recover, (3) operational/procedural constraint (not quality policy or role boundary), (4) positive rewording would expand or blur scope. See skill-optimization SKILL.md BP-001 for boundary examples.
+1. **BP-001**: Convert negative instructions to positive form. Preserve an explicit prohibition only when the violation is an irreversible operational action, the caller cannot normally recover it, and a positive-only rewrite would blur the boundary; state the safe alternative first and the condition that authorizes crossing the boundary. Quality policies and role boundaries stay in positive form. See skill-optimization SKILL.md BP-001 for boundary examples.
 2. **BP-002**: Resolve vague terms with the least-restrictive sufficient criterion (the measurable rule/threshold that adds the needed precision while excluding the fewest valid behaviors). For an applied clarification record its precision contribution, constraint cost, and the source it was derived from; when input or project context cannot determine the decision, record the required source instead of guessing
 3. **BP-003**: Define the output format each process/methodology section's consumer requires, rather than selecting a format by convention
 4. **BP-004**: Structure content following standard section order:
@@ -90,10 +90,10 @@ Apply transforms in priority order (P1 → P2 → P3):
    - Output format/Examples
    - Quality checklist
    - References
-5. **BP-005**: Add missing prerequisites and remove excess — condense duplicated, distracting, or unactionable context that has no downstream effect
+5. **BP-005**: Make required context available where it is used and attached to its subject; add missing prerequisites and condense duplicated, distracting, or unactionable context that has no downstream effect
 6. **BP-006**: Keep required gates while leaving reversible route choices to evidence-guided judgment
 7. **BP-007**: Keep examples minimal — use a concise rule or consumer-required output shape for generally known behavior; add only the smallest example set covering domain-, product-, or organization-specific mappings, non-obvious exceptions, or boundaries a rule cannot express
-8. **BP-008**: Classify claims as observed, inferred, or unknown; add escalation criteria and, when an unknown blocks the next step, a stopping condition that names the evidence or user decision required to continue
+8. **BP-008**: Classify claims as observed, inferred, or unknown; preserve a governing rule's treatment of missing evidence wherever the skill applies or checks that rule; add escalation criteria and, when an unknown blocks the next step, a stopping condition that names the evidence or user decision required to continue
 9. **BP-009**: Remove work not required by the outcome, a boundary, a real consumer, or necessary proof; preserve no-change, reuse, and evidence-backed decline
 
 ### Step 3: Generate Description
@@ -126,7 +126,7 @@ description: {generated description}
 ### Step 1: Analyze Existing Content and Request
 
 1. Parse the existing SKILL.md and reference files into sections
-2. Identify sections affected by the modification request
+2. Identify sections affected by the modification request, including sections that supply or use information whose requirement or meaning the change alters
 3. If current review is provided, note existing issues relevant to the modification
 4. **Conditional research**: If the modification requires a time-sensitive API, deprecation, security, or standards decision that repository evidence cannot resolve, use WebSearch. Record adopted and rejected findings in `researchFindings`.
 5. Glob existing skills for cross-reference awareness (`.claude/skills/*/SKILL.md`, `~/.claude/skills/*/SKILL.md`)

@@ -15,6 +15,7 @@ Workflow changes apply across English, Japanese, and Simplified Chinese.
 - Reverse engineering uses the unit inventory as its coverage baseline, with `otherEntryPoints` for capabilities that have no route or public export.
 - design-sync reports only incompatible obligations for the same shared entity and records access limitations.
 - Fixed counts, size thresholds, and the Rule of Three become decision-relevance rules or review signals.
+- Skill optimization checks that required context is available where it is used, that applying or checking a rule keeps its treatment of missing evidence, and that a modification review covers the sources and uses of changed information. skill-creator's BP-001 exception now matches skill-optimization.
 
 ## [2.2.4] - 2026-10-22
 
