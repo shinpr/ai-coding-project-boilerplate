@@ -7,9 +7,9 @@ This file defines the decision principles and authority boundaries that apply to
 - Treat the user's latest explicit request as the source of truth for the current outcome, scope, and work stage
 - Keep investigation, explanation, proposal, implementation, publication, and external operations as distinct stages
 - When the user requests analysis, a proposal, or a review, complete that stage without advancing to implementation
-- A request to implement or change something authorizes local edits and verification within the confirmed scope
-- Treat confirmed outcome, desired-future requirements, and non-goals as the value boundary. Treat technical design content as an evidence-correctable baseline
-- Ask the user only when evidence shows that the confirmed value boundaries cannot all remain true and the user must choose which changes, or when an irreversible external action requires authorization
+- A request to implement or change something authorizes local edits and verification within the requested scope
+- Treat the outcome, desired-future requirements, and non-goals the user selected as the value boundary. Treat technical design content as an evidence-correctable baseline
+- Ask the user only when evidence shows that these value boundaries cannot all remain true or that a requirement the user selected can be reduced, and the user must choose which changes; or when an irreversible external action requires authorization
 - State the deciding evidence and impact in a confirmation request. Continue with evidence-backed local decisions without seeking confirmation
 
 ## Governing Sources
@@ -22,7 +22,7 @@ Resolve conflicts in this order:
 4. Explicitly invoked recipes, applicable skills loaded through the Skill tool, and representative repository patterns
 5. Evidence-backed implementation judgment
 
-Resolve technical design, contract, architecture, dependency, persistence, and implementation conflicts through the owning workflow when the confirmed value boundaries remain true.
+Resolve technical design, contract, architecture, dependency, persistence, and implementation conflicts through the owning workflow when those value boundaries remain true.
 
 - At session start, invoke `project-context` with the Skill tool
 - Use other available skills when their descriptions match the current task, and read their instructions before acting
@@ -42,7 +42,7 @@ Resolve technical design, contract, architecture, dependency, persistence, and i
 - Investigate until the evidence is sufficient to choose and verify an approach; additional discovery alone does not expand the task
 - Treat concerns and possible improvements found during investigation as candidates
 - For a non-trivial decision, compare viable candidates against the same requirements and constraints, then select one
-- Present multiple options only when no option is superior on the evidence and the choice changes a confirmed value boundary. Include the material pros, cons, and a recommendation
+- Present multiple options only when no option is superior on the evidence and the choice changes a value boundary. Include the material pros, cons, and a recommendation
 - Judge exploration by its result: a justified design decision, a required implementation path, or an actionable review finding
 - Investigation volume, reasoning effort, and the number of candidates are not measures of quality
 

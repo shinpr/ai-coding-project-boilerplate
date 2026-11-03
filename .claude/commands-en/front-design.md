@@ -36,13 +36,13 @@ At each Agent invocation below, build the prompt as a mechanical extraction: cop
 
 ## Step 1: Select the Governing Requirement Source
 
-Use the approved PRD path when one exists. Otherwise use the confirmed requirements verbatim.
+Use the approved PRD path when one exists. Otherwise use the requirements verbatim.
 
-Set `confirmed_requirement_context` to the approved PRD path exactly. Only when no approved PRD exists, use the orchestrator-confirmed convergence record unchanged.
+Set `requirement_context` to the approved PRD path exactly. Only when no approved PRD exists, use the orchestrator's convergence record unchanged.
 
 ## Step 2: Collect Repository Decision Material
 
-Invoke `codebase-analyzer` once for the complete confirmed scope with exactly `prd_path: [approved PRD path]`, or `requirements: [confirmed requirements verbatim]` when no approved PRD exists.
+Invoke `codebase-analyzer` once for the complete scope with exactly `prd_path: [approved PRD path]`, or `requirements: [requirements verbatim]` when no approved PRD exists.
 
 Require one valid JSON result and let the analyzer discover affected paths, responsibility boundaries, and cross-layer contracts. Treat `focusAreas` as existing-behavior safeguards rather than requirements.
 
@@ -54,7 +54,7 @@ When a UI Spec applies, select project-context external resources only when one 
 
 Ask for prototype code only when it supplies an unresolved approved UI decision or the target cannot be determined from requirements, repository UI, and recorded resources. A missing optional prototype is not a stop condition.
 
-Invoke `ui-analyzer` with exactly one governing source: `prd_path: [approved PRD path]`, or `requirements: [confirmed requirements verbatim]` when no approved PRD exists. Add only an existing `ui_spec_path`, a decision-relevant `prototype_path`, and selected `external_resource_refs` or `[]`.
+Invoke `ui-analyzer` with exactly one governing source: `prd_path: [approved PRD path]`, or `requirements: [requirements verbatim]` when no approved PRD exists. Add only an existing `ui_spec_path`, a decision-relevant `prototype_path`, and selected `external_resource_refs` or `[]`.
 
 ## Step 4: Confirm Scope and ADR Decisions
 
@@ -64,24 +64,24 @@ Judge all four convergence fields. Assign `cost` from Step 2 structural evidence
 
 Determine Structural Scale from outcomes and responsibility boundaries; file count is supporting evidence only. Resolve candidate decision points against the governing source, applicable `simplifications`, `reuse`, and `invalidations`; applicable UI facts may support or contradict the remaining options. Apply documentation-criteria Choice and Durability filters only after this convergence and record passing points as `adrDecisionPoints`; an empty list is valid.
 
-Present what the user decides on: the outcome and the requirements to build, the exclusions, the responsibilities the change targets, each applicable simplification with the condition under which the confirmed outcome still holds without it, and the cost band with its remaining unknowns. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, UI Spec applicability, and ADR qualification stay in the orchestrator record — the UI Spec, ADR batch, and Design Doc have their own approval stops. Offer proceed, or correct and re-run. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
+Present what the user decides on: the outcome and the requirements to build; the exclusions; the responsibilities the change targets; each requirement whose need existing behavior already serves except for extra behavior the requirement specifies, with that evidence and its cost effect; each applicable simplification with the condition under which the outcome still holds without it; and the cost band with its remaining unknowns. Add an unknown only when the user must resolve it to confirm that scope. Structural Scale, UI Spec applicability, and ADR qualification stay in the orchestrator record — the UI Spec, ADR batch, and Design Doc have their own approval stops. Offer proceed, or correct and re-run. Continue only when every convergence field is `ready` or `weak-but-explicit`. `[Stop: Scope confirmation]`.
 
 ## Step 5: Create and Approve the UI Spec
 
 Run this step only when Step 3 determined that a UI Spec applies.
 
-Invoke `ui-spec-designer` with `confirmed_requirement_context`, the complete `ui_analysis` and `codebase_analysis` unchanged, a decision-relevant `prototype_path` and its `prototype_reference_strength` when one exists, and selected `external_resource_refs` or `[]`.
+Invoke `ui-spec-designer` with `requirement_context`, the complete `ui_analysis` and `codebase_analysis` unchanged, a decision-relevant `prototype_path` and its `prototype_reference_strength` when one exists, and selected `external_resource_refs` or `[]`.
 
-Invoke `document-reviewer` with `doc_type: UISpec`, `target` as the returned UI Spec path, `confirmed_requirement_context`, and the `ui_analysis` supplied to the author. `pass` presents the UI Spec; `needs_revision` applies Review Resolution and re-reviews after correction; `rejected` resolves the governing-source conflict before another review. `[Stop: UI Spec approval]`.
+Invoke `document-reviewer` with `doc_type: UISpec`, `target` as the returned UI Spec path, `requirement_context`, and the `ui_analysis` supplied to the author. `pass` presents the UI Spec; `needs_revision` applies Review Resolution and re-reviews after correction; `rejected` resolves the governing-source conflict before another review. `[Stop: UI Spec approval]`.
 
 ## Step 6: Create and Approve an ADR Batch When Needed
 
 When `adrDecisionPoints` is non-empty:
 
-1. Route shared/backend-owned points to technical-designer first, then frontend-owned points to technical-designer-frontend. Invoke each owner with `document_to_create: ADRBatch`, `confirmed_requirement_context`, its ordered `decision_points`, corresponding unchanged `decision_materials`, and `ui_spec_path` only when the approved UI Spec constrains that decision.
-2. Collect all returned paths and invoke `document-reviewer` once with `doc_type: ADRBatch`, `targets: [all paths]`, and `confirmed_requirement_context`.
+1. Route shared/backend-owned points to technical-designer first, then frontend-owned points to technical-designer-frontend. Invoke each owner with `document_to_create: ADRBatch`, `requirement_context`, its ordered `decision_points`, corresponding unchanged `decision_materials`, and `ui_spec_path` only when the approved UI Spec constrains that decision.
+2. Collect all returned paths and invoke `document-reviewer` once with `doc_type: ADRBatch`, `targets: [all paths]`, and `requirement_context`.
 3. Route the verdict first: `pass` proceeds; `needs_revision` applies Review Resolution, updates one ADR per path serially, and re-reviews the complete batch; `rejected` resolves the governing-source conflict before another review.
-4. Present one batch decision only after a `pass` review. `[Stop: ADR batch approval]`.
+4. Present one batch decision, with the quality levels the ADRs selected where the requirements left them unset, only after a `pass` review. `[Stop: ADR batch approval]`.
 5. After user approval, invoke each ADR's owning designer in update mode to set its status to `Accepted`, and verify the changes.
 
 ## Step 7: Create the Frontend Design Doc
@@ -89,7 +89,7 @@ When `adrDecisionPoints` is non-empty:
 Invoke `technical-designer-frontend` with:
 
 - `document_to_create: DesignDoc`
-- `confirmed_requirement_context`
+- `requirement_context`
 - `structural_scale`
 - the applicable approved `ui_spec_path` and selected external-resource records
 - `adr_paths: [accepted paths or []]`
@@ -102,20 +102,20 @@ The Design Doc owns the complete component-to-service implementation and retains
 
 In Normal Mode, invoke `code-verifier` with `doc_type: design-doc` and the returned Design Doc path, leaving `code_paths` absent. Apply Review Resolution before document review; send findings with an `apply` disposition to a fresh technical-designer-frontend invocation with `Operation Mode: update`, `Existing Document: [Design Doc path]`, and `correction_findings: [complete findings unchanged except for their dispositions]`. The designer applies its review-triggered bounded self-verification gate for an unverified decision-changing premise; this fresh designer is the sole correction specialist and selects the evidence route. Rerun verification after an applied correction, passing the previous complete result, the recorded dispositions, and the correction diff or changed paths as `prior_feedback`. Pass the latest verifier result together with the recorded dispositions as `verification_evidence`. Continue when every remaining discrepancy carries a resolved disposition. Lite Mode proceeds without this verifier evidence.
 
-Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc path, `review_context: creation`, original user requirements, `confirmed_requirement_context`, the unchanged analysis inputs supplied to the designer, and `verification_evidence` only when verification ran.
+Invoke `document-reviewer` with `doc_type: DesignDoc`, the returned Design Doc path, `review_context: creation`, original user requirements, `requirement_context`, the unchanged analysis inputs supplied to the designer, and `verification_evidence` only when verification ran.
 
 - `pass`: continue
 - `needs_revision`: apply Review Resolution, update through a fresh technical-designer-frontend invocation using the existing path and complete findings with an `apply` disposition, then re-review with `prior_feedback`
-- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
+- `rejected`: resolve technical governing-source conflicts through Review Resolution; ask the user only when the outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes
 
-In Normal Mode, invoke `design-sync` with the returned Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. When the result reports `analyzed_docs: 0`, report consistency verification as skipped because no other Design Doc exists. In Lite Mode, retain the following approval stop and report consistency verification as omitted.
+In Normal Mode, invoke `design-sync` with the returned Design Doc path as `source_design` and apply Review Resolution to actionable conflicts. Report the result's compared and carried-forward documents and any `access_limitations`. Report consistency verification as skipped only when `analyzed_docs` and `carried_forward_docs` are both 0 and no access limitation is recorded. In Lite Mode, retain the following approval stop and report consistency verification as omitted.
 
-Present the applicable UI Spec, Design Doc, accepted ADR paths, recorded declines, and sync result or its omission in Lite Mode. `[Stop: Design approval]`.
+Present the applicable UI Spec, Design Doc, the quality levels it selected where the requirements left them unset, accepted ADR paths, recorded declines, and sync result or its omission in Lite Mode. `[Stop: Design approval]`.
 
 ## Completion Criteria
 
 - External and prototype evidence was requested only when it controlled a current decision
-- Scope and Structural Scale were confirmed from outcomes and responsibility boundaries
+- Scope and Structural Scale were determined from outcomes and responsibility boundaries
 - ADRs exist only for points passing both filters, and the batch received one review and approval
 - An applicable UI Spec and a complete frontend Design Doc exist regardless of ADR need
 - Applicable existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards reached the Design Doc

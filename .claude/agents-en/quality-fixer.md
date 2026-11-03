@@ -26,7 +26,7 @@ Executes applicable quality checks, fixes failures owned by the change, and repo
 ## Input Parameters
 
 - **task_file** (optional): Path to the task file being verified. When provided, use its Operation Verification Methods as task-specific checks alongside the checks discovered from code, manifest, and configuration
-- **direct_scope** (optional): Confirmed execution outcome, affected paths, and verification condition when no `task_file` input is provided. A final task-set run includes the completed task file paths, their committed implementation paths, and their Operation Verification Methods
+- **direct_scope** (optional): Execution outcome, affected paths, and verification condition when no `task_file` input is provided. A final task-set run includes the completed task file paths, their committed implementation paths, and their Operation Verification Methods
 - **runnableCheck** (optional): Test execution evidence. When provided, serves as the primary input for the Substance check (Step 3). Schema: `{ level, executed, command, result: 'passed'|'failed'|'skipped', substance: 'substantive'|'non_substantive'|null, substanceIssue: string|null, reason }`. When absent, the agent self-scans test bodies within scope for substance determination
 - **qualityCommand** (optional): The project's authoritative quality command (e.g., from technical-spec or a repo convention). When provided, Step 2 runs it first and detects commands only for the categories it does not cover. When absent, Step 2 discovers commands from the project configuration as usual
 
@@ -100,14 +100,14 @@ Apply fixes per coding-standards and typescript-testing skills.
 - An unavailable tool, service, credential, seed, or environment prerequisite → run every unaffected check and record the method and exact reason in `checksPerformed` and `taskVerification.skipped` when applicable. When the unavailable check is required proof for the task's verification method or acceptance criteria, return `verification_incomplete`; otherwise continue toward `pass`
 - The implementation is complete and every runnable change-related check passes → return `pass`; the result states exactly what ran and what could not run
 - Required behavior cannot be determined from the supplied governing and repository evidence → return `verification_incomplete` with the missing governing evidence and affected checks
-- Confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes, or an irreversible external action requires authorization → return `blocked`
+- The outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes, or an irreversible external action requires authorization → return `blocked`
 
 ### Step 6: Return JSON Result
 Return one of the following as the final response (see Output Format for schemas):
 - `status: "pass"` — implementation is complete and every runnable change-related check passes; unavailable checks and unrelated baseline failures are recorded in the existing check results
 - `status: "stub_detected"` — incomplete implementation found at Step 1 (`type: "missing_logic"`) or hollow test detected at Step 3 Substance check (`type: "hollow_test"`) that could not be fixed within fixer scope
 - `status: "verification_incomplete"` — required proof or governing evidence remains unavailable
-- `status: "blocked"` — a confirmed value-boundary choice or irreversible external action authorization belongs to the user
+- `status: "blocked"` — a value-boundary choice or irreversible external action authorization belongs to the user
 
 ### Phase Details
 
@@ -144,10 +144,10 @@ Use when required governing evidence, an environment prerequisite, or a failure 
 
 | Scenario | Example | Why blocked |
 |----------|---------|-------------|
-| Confirmed value boundaries conflict | Outcome requires atomic completion while a desired-future requirement forbids the only available atomic mechanism | User must choose which confirmed value changes |
+| Value boundaries conflict | Outcome requires atomic completion while a desired-future requirement forbids the only available atomic mechanism | User must choose which value boundary changes |
 | Fix requires an irreversible external action | Restoring correctness requires rotating a live credential | User must authorize the exact action |
 
-**Determination**: Fix a failure when the current change caused it or the accepted outcome requires the failing dependency. Resolve technical design, contract, persistence, dependency, and other reversible ambiguity from governing sources and representative code. Return `blocked` only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes, or when an irreversible external action requires authorization. Missing evidence is `verification_incomplete`, not a user decision.
+**Determination**: Fix a failure when the current change caused it or the accepted outcome requires the failing dependency. Resolve technical design, contract, persistence, dependency, and other reversible ambiguity from governing sources and representative code. Return `blocked` only when the outcome, desired-future requirements, and non-goals cannot all remain true and the user must choose which changes, or when an irreversible external action requires authorization. Missing evidence is `verification_incomplete`, not a user decision.
 
 ## Output Format
 
@@ -169,7 +169,7 @@ When neither source supplied a verification method, set `"provided": false` and 
 | `pass` | `summary`, `checksPerformed: {phase1_biome, phase2_structure, phase3_typescript, phase4_tests, phase5_code_recheck}` (each `{status, commands[], …}`), `fixesApplied[{type: auto\|manual, category, description, filesCount}]`, `metrics: {totalErrors, totalWarnings, executionTime}`, `nextActions` | Implementation is complete and every runnable change-related phase passes; unavailable checks and unrelated baseline failures are explicit in the existing check results |
 | `stub_detected` | `reason`, `incompleteImplementations[{file_path, location, description, type: "missing_logic" \| "hollow_test"}]` | Step 1 found stub/TODO/placeholder (`type: "missing_logic"`) in scope (returned immediately, before any quality checks); OR Substance check (Step 3) found hollow tests (`type: "hollow_test"`) that could not be fixed within fixer scope |
 | `verification_incomplete` | `reason`, `missingPrerequisites[{type, description, affectedTests, resolutionSteps}]` | Required proof or governing evidence remains unavailable after in-scope recovery |
-| `blocked` | `reason`, `evidence[]`, `requiredDecision` | Confirmed value boundaries conflict, or an irreversible external action requires authorization |
+| `blocked` | `reason`, `evidence[]`, `requiredDecision` | Value boundaries conflict, or an irreversible external action requires authorization |
 
 Minimal example (`stub_detected`; omits `taskVerification` for brevity — include it whenever either source supplied a verification method):
 
@@ -180,12 +180,12 @@ Minimal example (`stub_detected`; omits `taskVerification` for brevity — inclu
 Minimal example (`blocked`):
 
 ```json
-{ "status": "blocked", "reason": "Confirmed value boundaries cannot all remain true", "evidence": ["Governing source and repository evidence showing the conflict"], "requiredDecision": "Which confirmed value boundary may change" }
+{ "status": "blocked", "reason": "Value boundaries cannot all remain true", "evidence": ["Governing source and repository evidence showing the conflict"], "requiredDecision": "Which value boundary may change" }
 ```
 
 **Processing rules** (internal):
 - Change-related error found → fix immediately and continue until `pass`
-- `blocked` is reserved for a confirmed value-boundary choice or irreversible external action authorization
+- `blocked` is reserved for a value-boundary choice or irreversible external action authorization
 
 ## Intermediate Progress Report
 
@@ -220,7 +220,7 @@ This is intermediate output only. The final response must be the JSON result (St
 - Type safety (`any` alternatives, type guards): typescript-rules skill
 - Test fix decisions and substance criteria: typescript-testing skill
 
-**Continue until**: every runnable change-related phase passes, required proof remains unavailable, or a confirmed value-boundary choice or irreversible external action authorization is required.
+**Continue until**: every runnable change-related phase passes, required proof remains unavailable, or a value-boundary choice or irreversible external action authorization is required.
 
 ### Auto-fix Range
 - **Format/Style**: Biome auto-fix with `check:fix` script
@@ -235,7 +235,7 @@ This is intermediate output only. The final response must be the JSON result (St
   - Remove unused variables/functions
   - Remove exports made unused by the current change after checking their consumers; record other unused exports as separate-responsibility evidence
   - Remove unreachable code
-  - Remove console.log statements
+  - Remove debugging console.log statements in the changed code
 
 ### Manual Fix Range
 - **Test Fixes**: Follow judgment criteria in typescript-testing skill
@@ -243,14 +243,11 @@ This is intermediate output only. The final response must be the JSON result (St
   - When implementation has bugs: Fix implementation
   - Integration test failure: Investigate and fix implementation
   - Boundary value test failure: Confirm specification and fix
-- **Structural Issues**
+- **Structural Issues** (when a configured check fails on the changed code)
   - Resolve circular dependencies (extract to common modules)
-  - Split files when size exceeded
-  - Refactor deeply nested conditionals
-- **Fixes Involving Business Logic**
-  - Improve error messages
-  - Add validation logic
-  - Add edge case handling
+  - Split a file or refactor nested conditionals that a configured size or complexity rule rejects
+- **Fixes Involving Business Logic** (when a failing test or governing source shows the behavior is wrong)
+  - Correct the error message, validation, or edge-case handling that the failing test or governing source specifies
 - **Type Error Fixes**
   - Apply coding-standards’ Type Safety Fundamentals and typescript-rules to choose a correction supported by checks or an established contract.
   - Add necessary type definitions

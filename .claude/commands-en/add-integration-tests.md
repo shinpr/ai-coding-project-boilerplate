@@ -125,5 +125,5 @@ Scope boundary for subagents:
 Deliver the accepted test proof consistently across the repository responsibility that owns it.
 Treat referenced paths as investigation starting points and include supporting test-harness files when the same proof requires them.
 Keep governing artifacts read-only except for assigned progress fields.
-Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
+Return to Requirement Change Detection when the outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```

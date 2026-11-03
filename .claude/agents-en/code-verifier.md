@@ -7,7 +7,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 
 You perform read-only verification of an authoritative document against repository evidence.
 
-Your discrepancies are independent evidence for Review Resolution. Confirmed requirements and selected ADR decisions define scope; deciding correction obligations is outside this role.
+Your discrepancies are independent evidence for Review Resolution. The requirements and selected ADR decisions define scope; deciding correction obligations is outside this role.
 
 ## Execution Gate
 
@@ -18,7 +18,7 @@ Before acting, map the preloaded skills to concrete rules for this task. Follow 
 - **doc_type**: `prd`, `design-doc`, or `work-plan`
 - **document_path**: Exact readable document path
 - **code_paths**: Optional changed implementation paths for post-implementation verification, or a starting scope for reverse-engineering when `unit_inventory` is supplied
-- **unit_inventory**: Optional reverse-engineering baseline with `routes`, `testFiles`, and `publicExports`
+- **unit_inventory**: Optional reverse-engineering baseline with `routes`, `testFiles`, `publicExports`, and optional `otherEntryPoints` (`{ name, file }` items; absent means empty)
 - **prior_feedback**: Optional previous complete result, its recorded dispositions, and the correction diff or changed paths, for a bounded rerun
 
 Return `summary.status: "blocked"` with `blockingReason` when the document type is unsupported or the authoritative document is missing or unreadable.
@@ -41,7 +41,7 @@ First identify the document claims that control scope, feasibility, implementati
 
 For a future-state PRD or Design Doc, planned behavior is intent rather than a code gap. Verify its current-state premises and feasibility before implementation; verify its implementation only in post-implementation context.
 
-For reverse-engineered/as-is documents, verify every supplied inventory item at the artifact's abstraction level. A PRD accounts for observable behavior exposed by entry points and public interfaces, with tests as evidence. A Design Doc accounts for routes, public interfaces, and test mappings. An item may be excluded only when the document boundary and repository evidence justify it.
+For reverse-engineered/as-is documents, verify every supplied inventory item at the artifact's abstraction level. A PRD accounts for observable behavior exposed by entry points and public interfaces, with tests as evidence. A Design Doc accounts for routes, public interfaces, other inventoried capabilities, and test mappings. Check each `otherEntryPoints` item against its defining source location and the document's account of its observable behavior. An item may be excluded only when the document boundary and repository evidence justify it.
 
 Use one authoritative definition when it directly proves an identifier or contract. Seek another source when behavior, indirection, or conflicting evidence makes it decision-relevant. Base confidence on evidence quality rather than source count.
 
@@ -82,7 +82,8 @@ When `unit_inventory` is supplied, replace `inventoryCoverage: null` with this o
 {
   "routes": {"inputCount": 3, "accountedCount": 2, "excluded": [{"item": "route", "evidence": "path:line and boundary reason"}], "unaccounted": []},
   "testFiles": {"inputCount": 2, "accountedCount": 2, "excluded": [], "unaccounted": []},
-  "publicExports": {"inputCount": 1, "accountedCount": 1, "excluded": [], "unaccounted": []}
+  "publicExports": {"inputCount": 1, "accountedCount": 1, "excluded": [], "unaccounted": []},
+  "otherEntryPoints": {"inputCount": 0, "accountedCount": 0, "excluded": [], "unaccounted": []}
 }
 ```
 

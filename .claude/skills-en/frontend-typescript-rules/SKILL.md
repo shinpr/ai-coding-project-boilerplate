@@ -5,19 +5,19 @@ description: Applies React/TypeScript type safety, component design, and state m
 
 # TypeScript Development Rules (Frontend)
 
-Frontend-specific React/TypeScript rules for implementation: thresholds, boundary type safety, component/state design, error handling, and project conventions.
+Frontend-specific React/TypeScript rules for implementation: review signals, boundary type safety, component/state design, error handling, and project conventions.
 
 ## Prerequisite Detection
 
 Inspect TypeScript, bundler/framework, lint/format, path-alias, React compiler, and representative component configuration before applying a project convention. Treat a convention as observed when configuration or an established repository pattern supports it; label a conclusion from limited examples as inferred. When conflicting patterns affect public behavior, compatibility, or component boundaries, stop and name the required source or decision.
 
-## Anti-patterns and Thresholds
-Signals that trigger a design change:
-- Prop drilling through 3+ levels → lift to Context or state management
-- Component over 300 lines → split
-- Props count over 10 → split the component (3-7 is the working range)
-- Optional props over 50% → introduce defaults or Context
-- Props nesting deeper than 2 levels → flatten
+## Design Review Signals
+Use these as review prompts, not pass/fail thresholds. Existing project conventions and the component's responsibility take precedence.
+- Prop drilling through 3+ levels: review lifting to Context or state management
+- Component over 300 lines: review whether it mixes responsibilities
+- Props count over 10: review ownership or splitting
+- Optional props over 50%: review defaults or ownership
+- Props nesting deeper than 2 levels: review flattening
 
 ## Type Safety at Boundaries
 Receive untrusted or unavailable types as `unknown` and narrow them with a type guard. Use `as` only when a runtime/framework invariant proves the asserted type and record that invariant in a nearby comment. Existing generated or third-party declarations that contain `any` are boundary inputs to wrap, not justification for spreading `any` into application contracts.
@@ -69,7 +69,7 @@ class ErrorBoundary extends React.Component<{ children: React.ReactNode; fallbac
 
 ## Project Conventions
 - **Environment variables:** read client-side env through the configured bundler's exposed accessor. Match the observed bundler: Vite `import.meta.env.VITE_*`, Next.js public `process.env.NEXT_PUBLIC_*`, CRA `process.env.REACT_APP_*`. Frontend bundles contain public configuration; secret values remain behind a server-side boundary
-- **Bundle & performance:** monitor bundle size with the `build` script against the project's budget; code-split with `React.lazy` + `Suspense`; structure state to minimize re-renders. Memoization: when React Compiler is enabled, rely on it; reach for manual `React.memo`/`useMemo`/`useCallback` only as a profiler- or identity-justified escape hatch (a measured bottleneck, or stable reference identity for third-party APIs / effect dependencies)
+- **Bundle & performance:** check bundle size with the `build` script against the project's budget when one is configured. Apply code-splitting (`React.lazy` + `Suspense`) or re-render reduction when a configured budget regresses or a bundle or profiler report attributes the cost to the changed code; otherwise a performance change needs an accepted requirement. Memoization: when React Compiler is enabled, rely on it; reach for manual `React.memo`/`useMemo`/`useCallback` only as a profiler- or identity-justified escape hatch (a measured bottleneck, or stable reference identity for third-party APIs / effect dependencies)
 - **Naming:** components/types `PascalCase`; variables/functions `camelCase`; hooks `use`-prefixed; constants `SCREAMING_SNAKE_CASE`
 - **Imports:** follow the alias and import-order rules observed in `tsconfig`, lint configuration, and representative files. Use `src/` absolute paths only when the configured alias supports them
 - **Formatting:** follow the repository's configured formatter; when Biome is present, semicolons and style come from its project configuration

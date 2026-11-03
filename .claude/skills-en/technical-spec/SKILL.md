@@ -32,7 +32,7 @@ Select architecture using these observable decisions:
 - **Responsibilities**: Each module/layer names the behavior it owns and the behavior it delegates
 - **Dependency direction**: Imports and runtime calls follow the project boundary rules observed in configuration or representative implementations
 - **State/data ownership**: Each persisted or mutable value has one authoritative owner
-- **Verification boundary**: Each public contract has a unit, integration, or E2E check that can observe it
+- **Verification boundary**: Each public contract the change introduces or modifies names the unit, integration, or E2E check that can observe it
 
 ## Unified Data Flow Principles
 
@@ -43,8 +43,8 @@ Select architecture using these observable decisions:
 
 #### Data Flow Best Practices
 - **Validation at Input**: Validate data at input layer and pass internally in type-safe form
-- **Centralized Transformation**: Consolidate data transformation logic in dedicated utilities
-- **Structured Logging**: Output structured logs at each stage of data flow
+- **Single Transformation Owner**: Give a transformation one owner when several callers rely on the same transformation rule and change together
+- **Structured Logging**: Emit structured logs at the boundary that owns observability, so one failure is not logged at every stage
 
 ## Build and Testing
 Select the package manager from the `packageManager` field, lockfile, or established CI command in that order. Execute only scripts present in the selected manifest.

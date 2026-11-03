@@ -77,6 +77,6 @@ Type a component or dependency mock to the surface the subject under test actual
 
 Test user-visible results, not implementation details. Query by the role and accessible name the user perceives (`getByRole`/`getByLabelText`/`getByText`), not `getByTestId` or `container.querySelector`. Drive interactions through `userEvent` with `userEvent.setup()` per test rather than firing raw events, so the test reproduces the browser's event sequence. `await` every interaction and async assertion — an unawaited interaction asserts against the pre-update render, so use `findBy*` for async UI.
 
-Cover empty, error, and loading/async states, not only the happy path. Produce an error state by overriding the MSW handler for that single test rather than changing the shared handler set.
+Cover the empty, error, and loading/async states that the component renders or the accepted behavior defines, not only the happy path. Produce an error state by overriding the MSW handler for that single test rather than changing the shared handler set.
 
 When the required UI state, accessibility name, or external contract is unknown, stop test design for that assertion and name the UI Spec, acceptance criterion, implementation contract, or user decision needed. Continue with independent assertions whose expected behavior is observed.

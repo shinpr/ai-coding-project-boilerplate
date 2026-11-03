@@ -55,7 +55,7 @@ Keep every committed test active. Repair a test that protects current behavior. 
 ## Test Quality Criteria
 
 ### Boundary and Error Case Coverage
-Include boundary values and error cases alongside happy paths.
+Cover the boundary and error behavior the accepted contract defines; derive cases from that contract instead of adding generic edge-case permutations.
 
 ### Literal Expected Values
 Use expected values that are independent of the implementation calculation: state the contract's value directly as a literal, or take it from a separate authoritative fixture or specification. An expectation computed from the same constants or formula as the subject passes even when both are wrong. When a mock supplies the input, the expected value differs from the mock's return value wherever the implementation transforms it.

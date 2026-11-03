@@ -4,9 +4,9 @@
 
 [Purpose and scope of this UI Specification in 2-3 sentences]
 
-### Confirmed Requirement Context
+### Requirement Context
 - PRD path: [docs/prd/xxx-prd.md | "N/A — based on requirements analysis output"]
-- Feature scope: [Which confirmed requirements this UI Spec covers]
+- Feature scope: [Which requirements this UI Spec covers]
 
 ### Design Source
 | Source | Path | Version |
@@ -25,7 +25,7 @@ Prototype code is an **attachment** to this UI Spec. This document and the Desig
 
 ## AC Traceability (Prototype)
 
-Map confirmed acceptance criteria to prototype references, preserving existing AC IDs when present. Skip this section if no prototype is provided.
+Map acceptance criteria to prototype references, preserving existing AC IDs when present. Skip this section if no prototype is provided.
 
 | Criterion ID / Reference | Criterion Summary | Screen / State | Prototype Reference (element ID / path) | Adoption Decision |
 |-------|-----------|----------------|----------------------------------------|-------------------|
@@ -66,9 +66,9 @@ Add a screen-transition or component-tree Mermaid diagram only when the material
 
 #### State x Display Matrix
 
-The matrix contains one row for each state supported by confirmed requirements, approved UI direction, preserved behavior, or repository/design-system rules.
+The matrix contains one row for each state supported by the requirements, approved UI direction, preserved behavior, or repository/design-system rules.
 
-The Display cell records the rendered outcome and, when it includes data or copy, the value source. With a prototype, within the surface analyzed for the confirmed outcome, these cells account for every adopted data- or copy-bearing element. Record each data- or copy-bearing element that is not adopted and its reason directly below the applicable component's matrix. Presentation properties such as dimensions, spacing, color, and icon glyphs are governed collectively by the recorded reference strength; they can change without a requirement change, and enumerating them would make this document stale.
+The Display cell records the rendered outcome and, when it includes data or copy, the value source. With a prototype, within the surface analyzed for the outcome, these cells account for every adopted data- or copy-bearing element. Record each data- or copy-bearing element that is not adopted and its reason directly below the applicable component's matrix. Presentation properties such as dimensions, spacing, color, and icon glyphs are governed collectively by the recorded reference strength; they can change without a requirement change, and enumerating them would make this document stale.
 
 | State | Trigger | Display | Interaction / Recovery | Evidence |
 |-------|---------|---------|------------------------|----------|

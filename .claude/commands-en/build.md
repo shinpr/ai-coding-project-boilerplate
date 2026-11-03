@@ -14,7 +14,7 @@ Execute the `llm-friendly-context` skill (using Skill tool) before writing Agent
 1. **Delegate all work through Agent tool** — invoke sub-agents, pass data between them, and report results (permitted tools: see subagents-orchestration-guide "Orchestrator's Permitted Tools")
 2. **Follow the selected mode's task cycle**: accept implementation and required test review, apply its quality boundary, then commit
 3. **Enter autonomous mode** when user provides execution instruction with existing task files — this IS the batch approval
-4. **Scope**: Complete consumed task-set execution, post-implementation review, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a confirmed value-boundary choice or irreversible-action authorization. Advance only when the current phase's stated transition condition is satisfied.
+4. **Scope**: Complete consumed task-set execution, post-implementation review, consumed-task cleanup, and completion reporting in order, or stop autonomous execution at the current phase for a value-boundary choice or irreversible-action authorization. Advance only when the current phase's stated transition condition is satisfied.
 
 Use the Commit Boundary in subagents-orchestration-guide. A quality result permits the recipe's defined commit; it does not create an additional commit point.
 
@@ -115,7 +115,7 @@ Scope boundary for subagents:
 Deliver the task outcome consistently across the repository responsibility that owns it.
 Treat referenced paths as investigation starting points and include supporting files when the same outcome requires them.
 Keep governing artifacts read-only except for assigned progress fields.
-Return to Requirement Change Detection when confirmed outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
+Return to Requirement Change Detection when the outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```
 
 ## Post-Implementation Review (After All Tasks Complete)

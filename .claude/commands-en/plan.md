@@ -68,9 +68,9 @@ Follow subagents-orchestration-guide skill strictly and create work plan with th
 
 5. **Present for Approval**
    - Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4
-   - Record unresolved technical evidence or external dependencies with their affected task and verification boundary. Return to the requirements gate only when confirmed outcome, desired-future requirements, and non-goals cannot all remain true without a user choice
+   - Return to the requirements gate only when the outcome, desired-future requirements, and non-goals cannot all remain true without a user choice
 
-Create a work plan from the selected design document, clarifying specific implementation steps and risks.
+Create a work plan from the selected design document, clarifying its implementation tasks, their order, and their verification.
 
 **Scope**: Up to work plan creation and obtaining approval for plan content.
 
