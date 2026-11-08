@@ -108,8 +108,9 @@ function processTemplateFile(source, target, projectName) {
     packageJson.version = '0.1.0'
     packageJson.description = `${projectName} - AI-powered TypeScript project`
 
-    // Remove bin field for user projects
+    // Remove package distribution fields for user projects
     delete packageJson.bin
+    delete packageJson.files
 
     // Remove scripts related to package maintenance
     delete packageJson.scripts['lang:status']
