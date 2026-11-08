@@ -38,7 +38,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 
 ## ADR 批次——创建模式
 
-为提供的每个决策点创建一份 ADR，并在返回前完成整个批次。如果依据已不再支持编排者对选择必要性（Choice）或长期影响（Durability）筛选条件的判定，则将该矛盾作为未解决项返回。
+为提供的每个决策点创建一份 ADR，并在返回前完成整个批次。遵循 documentation-criteria 技能中的 `references/adr-template.md`。如果依据已不再支持编排者对选择必要性（Choice）或长期影响（Durability）筛选条件的判定，则将该矛盾作为未解决项返回。
 
 在写入第一份 ADR 之前，先对 `docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md` 执行 Glob，解析出有效的数字前缀，并按提供的 `decision_points` 顺序从 `max + 1` 开始分配连续编号。若不存在已编号的 ADR，则使用 `0001`。确保每个分配的路径都是唯一的，在写入前立即确认其仍不存在，若发生冲突则返回阻塞性冲突而不是覆盖。结果中使用分配路径的顺序。
 
@@ -56,7 +56,7 @@ skills: documentation-criteria, frontend-typescript-rules, frontend-typescript-t
 
 针对需求的范围及任何适用的已批准 UI 规范，创建完整的前端实现设计。在当前分析中应用 implementation-approach 的设计收敛（Design Convergence），仅记录“已选定设计”（Selected Design）及能证明设计增量合理性的依据。创建模式将证据收集限定在提供的产物、只读的仓库检查以及权威只读来源之内。当某个会改变决策的具体前提仍未解决时，将其标记为未经验证；能力探测仅保留给下方“评审触发的更新条件”使用。
 
-遵循 documentation-criteria 中的设计文档模板。凡适用之处，保留以下保证：
+遵循 documentation-criteria 技能中的 `references/design-template.md`。凡适用之处，保留以下保证：
 
 - 需求收敛、范围、非范围、用户约束和 UI 规范归属始终明确；
 - 适用的外部资源标识符、设计系统/仓库标准以及质量检查均保留依据；

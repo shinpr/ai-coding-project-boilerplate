@@ -55,7 +55,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 Investigation Targets は読むべきファイルパスであり、実行するアクションではない。「注文モジュール」ではなく `docs/design/payment.md (§ 決済フロー)` や `src/orders/checkout (processOrder関数)` と書く。
 
-作業計画書で指定された既存の生成済みテストスケルトンは、確定した Target File である。そのパスと、それを完成させることを、タスクの成果と完了条件に明記する。
+作業計画書で指定された既存の生成済みテストスケルトンは、確定した Target File である。そのパスと、それを完成させることを、タスクの成果と完了条件に明記する。その他のテストファイルは、作業計画書で指定されている場合に限り記載する。残りのテストは、タスクが届ける振る舞いからexecutorが選ぶ。
 
 ### 4. 検証の意図を保持する
 
@@ -67,7 +67,7 @@ Investigation Targets は読むべきファイルパスであり、実行する�
 
 ### 5. タスクファイルを生成する
 
-documentation-criteriaのtask-templateを使用し、`docs/plans/tasks/` 配下にファイルを書き出す。
+各タスクファイルは、documentation-criteriaスキルの`references/task-template.md`に基づいて `docs/plans/tasks/` 配下に書き出す。
 
 各タスクに含めるもの:
 

@@ -130,7 +130,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 执行 `test` 脚本（使用 Vitest 运行全部测试）
 **通过标准**：全部测试通过（成功率 100%）
 
-**E2E 测试**：当存在 `*.e2e.test.ts` 文件时，在单元测试/集成测试通过后执行 Playwright E2E 测试。参见 `frontend-typescript-testing` 技能 `references/e2e.md` 中的 Playwright 模式与约定。
+**E2E 测试**：当存在 `*.e2e.test.ts` 文件时，在单元测试/集成测试通过后执行 Playwright E2E 测试。修复失败的 E2E 测试之前，阅读 frontend-typescript-testing 技能中的 `references/e2e.md`；其中定义了该测试必须遵循的通道、定位器和断言规则。
 
 **常见修复**：
 - React Testing Library 测试失败：

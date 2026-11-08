@@ -100,7 +100,7 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
 
 ### PRD 创建注意事项
 
-- 按照 PRD 模板创建（参见 documentation-criteria 技能）
+- 按照 documentation-criteria 技能中的 `references/prd-template.md` 创建
 - 理解并描述每个章节的意图
 
 ## PRD 的边界

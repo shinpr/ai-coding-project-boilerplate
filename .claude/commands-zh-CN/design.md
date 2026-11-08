@@ -48,7 +48,7 @@ description: 执行从以仓库为范围的分析，经由必要时的 ADR 决�
 
 执行 `requirement-convergence`。由编排者依据用户请求和第 2 步的依据构建并判定收敛记录。
 
-判定全部四个收敛字段。依据第 2 步的结构性依据赋予 `cost`，并记录其未知项；仅对未达到 `ready` 的字段进行访谈。
+依据 requirement-convergence 技能中 `references/criteria.md` 的规则判定全部四个收敛字段。依据第 2 步的结构性依据赋予 `cost`，并记录其未知项；仅对未达到 `ready` 的字段进行访谈。
 
 结构规模由成果和职责边界判定。文件数量仅作为辅助依据。
 

@@ -55,7 +55,7 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 Investigation Targets 是待阅读的文件路径，而非待执行的操作。应写作 `docs/design/payment.md (§ Payment Flow)` 或 `src/orders/checkout (processOrder function)`，而不是“订单模块”。
 
-工作计划中已命名的、已生成的测试骨架文件是固定的 Target File。在任务结果和完成标准中保留其路径及完成状态。
+工作计划中已命名的、已生成的测试骨架文件是固定的 Target File。在任务结果和完成标准中保留其路径及完成状态。仅当工作计划固定了其他测试文件时才列出它们；其余测试由执行者根据任务所交付的行为选定。
 
 ### 4. 保留验证意图
 
@@ -67,7 +67,7 @@ Investigation Targets 是待阅读的文件路径，而非待执行的操作。�
 
 ### 5. 生成任务文件
 
-使用 documentation-criteria 任务模板，将文件写入 `docs/plans/tasks/`。
+依据 documentation-criteria 技能中的 `references/task-template.md`，将每个任务文件写入 `docs/plans/tasks/`。
 
 每个任务包含：
 

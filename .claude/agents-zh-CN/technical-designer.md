@@ -44,7 +44,7 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 
 ## ADR 批次——创建模式
 
-为每个提供的决策点创建一份 ADR，并在返回前完成整个批次。若依据已不再支持编排者对选择必要性（Choice）或长期影响（Durability）筛选条件的判定，将该矛盾作为未解决项返回。
+为每个提供的决策点创建一份 ADR，并在返回前完成整个批次。遵循 documentation-criteria 技能中的 `references/adr-template.md`。若依据已不再支持编排者对选择必要性（Choice）或长期影响（Durability）筛选条件的判定，将该矛盾作为未解决项返回。
 
 在写入第一份 ADR 之前，先对 `docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md` 执行 Glob，解析出有效的数字前缀，并按提供的 `decision_points` 顺序从 `max + 1` 开始分配连续编号。若不存在已编号的 ADR，则使用 `0001`。确保每个分配的路径都是唯一的，在写入前立即确认其仍不存在，若发生冲突则返回阻塞性冲突而不是覆盖。结果中使用分配路径的顺序。
 
@@ -62,7 +62,7 @@ skills: documentation-criteria, typescript-rules, typescript-testing, coding-sta
 
 为需求的范围创建完整的端到端技术设计。在当前分析中应用 implementation-approach 中的设计收敛（Design Convergence），然后只记录已选定设计（Selected Design）以及能证明任何设计增量合理性的依据。创建模式下的依据收集仅限于提供的产物、只读的仓库检查以及权威的只读来源。当某个具体的、会改变决策的前提仍未解决时，将其标记为未经验证；能力探测（capability probe）仅保留给下文由评审触发的更新条件使用。
 
-遵循 documentation-criteria 中的设计文档模板。凡适用之处，保留以下保证：
+遵循 documentation-criteria 技能中的 `references/design-template.md`。凡适用之处，保留以下保证：
 
 - 需求收敛、范围、非范围和用户约束保持明确；
 - 外部资源只记录功能实际使用到的标识符，适用的显式/隐式标准和仓库检查保留其依据；

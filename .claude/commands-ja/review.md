@@ -53,9 +53,6 @@ Normalモード、またはユーザーがセキュリティレビュー自体�
 
 ```
 Implementation Review: [code-reviewerのverdict]
-  Acceptance Criteria:
-  - [fulfilled] [item]: [evidence]
-  - [unfulfilled] [item] -> [対応するfinding ID]
   Required Corrections:
   - [id] [category] [location]: [description] — [basis and effect] [推奨: コード側の修正 | 設計側の更新 | 設計側の削減の後にコード側の除去]
   Limitations:
