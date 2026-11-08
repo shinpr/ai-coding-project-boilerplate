@@ -20,8 +20,8 @@ Every directly constraining citation, preserved unchanged from the Work Plan as 
 
 ## Target Files
 
-- [ ] [Implementation file or owner directory]
-- [ ] [Test file, when the outcome requires one]
+- [Implementation file or owner directory]
+- [Test file the Work Plan fixes, such as a generated skeleton]
 
 ## Investigation Targets
 

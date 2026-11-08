@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.6] - 2026-11-08
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Changed
+
+- Post-implementation review of a Large change runs one code-reviewer per review unit of Work Plan tasks, at most 3 at a time. Medium changes keep one reviewer.
+- code-reviewer judges the changed code and tests against its criteria without inventorying every acceptance criterion; the `acceptanceCriteria` output field is removed.
+- code-reviewer, integration-test-reviewer, investigator, verifier, and solver load the frontend rules or frontend testing skill, and the two reviewers read the browser E2E reference before reviewing.
+- Agents and recipes name the reference file they depend on (E2E criteria, convergence criteria, document templates) at the step that uses it.
+- Task executors implement the behaviors a task delivers instead of iterating task-file checkboxes, and unused progress-tracking rules and the `progressUpdated` output field are removed. Task files list only the test files the Work Plan fixes.
+
 ## [2.2.5] - 2026-11-03
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.

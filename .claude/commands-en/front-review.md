@@ -57,9 +57,6 @@ Present the adjudicated result:
 
 ```
 Implementation Review: [verdict from code-reviewer]
-  Acceptance Criteria:
-  - [fulfilled] [item]: [evidence]
-  - [unfulfilled] [item] -> [corresponding finding ID]
   Required Corrections:
   - [id] [category] [location]: [description] — [basis and effect] [recommended: code-side correction | design-side update | design-side reduction then code-side removal]
   Limitations:

@@ -348,6 +348,10 @@ Two additional rules:
 - **Flow confirmation**: After approval, select the next step from the selected large/medium/small flow
 - **Consistency verification**: When subagent outputs conflict, apply Decision precedence (see Delegation Boundary section)
 
+### Post-Implementation Review Units
+
+Review a Medium change with one code-reviewer. A Large change is more than one code-reviewer can read in full; partition it into units of Work Plan tasks. A unit holds a consuming task (one delivering a screen, route, command, or job) together with the tasks it depends on through `Depends on`, so a contract's producer, its consumer, and every test proving their behavior are reviewed together; tasks that several units depend on form one shared unit. Each completed task belongs to one unit, whose `implementationFiles` are the files changed by its tasks' commits. Run at most 3 code-reviewer calls concurrently.
+
 ### Post-Implementation Review Status Routing
 
 | Reviewer | Complete: empty finding set | Enter Review Resolution | Blocked |

@@ -96,7 +96,7 @@ skills: documentation-criteria, project-context, technical-spec, llm-friendly-co
 書き込みの許可は求めず、ファイルを即座に書き出す。承認は呼び出し元ワークフローの停止点が持つ。
 
 ### PRD作成時の注意事項
-- PRDテンプレートに従って作成（documentation-criteriaスキル参照）
+- documentation-criteriaスキルの`references/prd-template.md`に従って作成
 - 各セクションの意図を理解して記載
 
 ## PRDの境界

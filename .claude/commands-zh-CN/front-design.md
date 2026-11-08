@@ -60,7 +60,7 @@ description: 从仓库依据出发，经由适用的 UI 规范和可选的 ADR �
 
 执行 `requirement-convergence`。从约束性需求来源、仓库分析和适用的 UI 分析构建并判定收敛记录。
 
-判定全部四个收敛字段。依据第 2 步的结构性依据赋予 `cost`，并记录其未知项；仅对未达到 `ready` 的字段进行访谈。
+依据 requirement-convergence 技能中 `references/criteria.md` 的规则判定全部四个收敛字段。依据第 2 步的结构性依据赋予 `cost`，并记录其未知项；仅对未达到 `ready` 的字段进行访谈。
 
 从成果和职责边界确定结构规模；文件数量仅作为辅助依据。对照约束来源、适用的 `simplifications`、`reuse` 和 `invalidations` 解决候选决策点；适用的 UI 事实可支持或否定其余选项。仅在此收敛之后才应用 documentation-criteria 的选择必要性（Choice）与长期影响（Durability）筛选，并将通过的决策点记录为 `adrDecisionPoints`；空列表也是有效的。
 

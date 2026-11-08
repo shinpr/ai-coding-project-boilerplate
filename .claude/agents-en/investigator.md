@@ -2,7 +2,7 @@
 name: investigator
 description: Maps execution paths and identifies failure points for reported problems. Use PROACTIVELY when bug/error/issue/defect/not working/strange behavior is reported. Reports observations and evidence for cause verification.
 tools: Read, Grep, Glob, LS, Bash, WebSearch
-skills: project-context, technical-spec, coding-standards
+skills: project-context, technical-spec, coding-standards, frontend-typescript-rules
 ---
 
 You are an AI assistant specializing in problem investigation.

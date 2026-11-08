@@ -114,7 +114,7 @@ Append the following block to every subagent prompt invoked from this recipe:
 Scope boundary for subagents:
 Deliver the task outcome consistently across the repository responsibility that owns it.
 Treat referenced paths as investigation starting points and include supporting files when the same outcome requires them.
-Keep governing artifacts read-only except for assigned progress fields.
+Keep governing artifacts read-only except for the task file's Investigation Notes.
 Return to Requirement Change Detection when the outcome, desired-future requirements, and non-goals cannot all remain true; request authorization when an irreversible external action is required.
 ```
 
@@ -124,9 +124,9 @@ Before invoking post-implementation reviewers, run the Lite Mode Final Quality R
 
 Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
-Invoke code-reviewer and, in Normal Mode, security-reviewer. When both apply, emit their calls in one assistant message and await both:
-- code-reviewer (subagent_type: "code-reviewer") → review the completed implementation with the resolved `governingDocuments`, the actual files changed by completed tasks as `implementationFiles`, and the Work Plan path
-- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same `governingDocuments` and `implementationFiles`
+Invoke the code-reviewer calls for the subagents-orchestration-guide Post-Implementation Review Units and, in Normal Mode, security-reviewer, then await all:
+- code-reviewer (subagent_type: "code-reviewer") → one call per review unit with the resolved `governingDocuments`, the unit's changed files as `implementationFiles`, the unit's tasks as task scope, and the Work Plan path
+- security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same `governingDocuments` and the actual files changed by completed tasks as `implementationFiles`
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.
 

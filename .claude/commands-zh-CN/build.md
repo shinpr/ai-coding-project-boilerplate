@@ -114,7 +114,7 @@ Normal 模式遵循步骤 1-4。Lite 模式受理步骤 2 的结果后进入步�
 子智能体的范围边界：
 在承担该成果的仓库职责范围内，一致地交付任务成果。
 将被引用的路径视为调查起点，并在同一成果需要时纳入支撑文件。
-除被指派的进度字段外，约束性产物保持只读。
+除任务文件的 Investigation Notes 外，约束性产物保持只读。
 当成果、目标状态需求与非目标无法同时成立时，返回需求变更检测；当需要不可逆的外部操作时，请求授权。
 ```
 
@@ -124,9 +124,9 @@ Normal 模式遵循步骤 1-4。Lite 模式受理步骤 2 的结果后进入步�
 
 解析工作计划中可读的设计文档；缺少输入将阻塞评审。
 
-调用 code-reviewer，并在 Normal 模式下调用 security-reviewer。两者均适用时，在一条助手消息中发出调用，然后等待两者：
-- code-reviewer（subagent_type: "code-reviewer"）→ 使用解析出的 `governingDocuments`、已完成任务实际变更的文件作为 `implementationFiles`、以及工作计划路径，评审已完成的实现
-- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的 `governingDocuments` 和 `implementationFiles` 评审已完成的实现
+按 subagents-orchestration-guide 的实现后评审单元发出 code-reviewer 调用，并在 Normal 模式下调用 security-reviewer，然后等待全部结果：
+- code-reviewer（subagent_type: "code-reviewer"）→ 每个评审单元调用一次，使用解析出的 `governingDocuments`、该单元变更的文件作为 `implementationFiles`、该单元的任务作为任务范围、以及工作计划路径
+- security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的 `governingDocuments`，以已完成任务实际变更的文件作为 `implementationFiles`，评审已完成的实现
 
 应用 subagents-orchestration-guide 的实现后评审状态路由与修复/重跑规则。呈现统一报告；在完整评审集达到评审裁定的收敛条件之后，进入最终清理。
 

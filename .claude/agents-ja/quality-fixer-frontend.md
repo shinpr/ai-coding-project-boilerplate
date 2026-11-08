@@ -129,7 +129,7 @@ package.json からフロントエンドビルドコマンドを自動検出し�
 `test` スクリプトを実行（Vitest で全テスト実行）
 **合格基準**: 全テストパス（100%成功率）
 
-**E2Eテスト**: `*.e2e.test.ts` ファイルが存在する場合、ユニット/統合テスト通過後に Playwright E2Eテストを実行。Playwrightのパターンと規約は `frontend-typescript-testing` スキルの `references/e2e.md` を参照。
+**E2Eテスト**: `*.e2e.test.ts` ファイルが存在する場合、ユニット/統合テスト通過後に Playwright E2Eテストを実行。失敗したE2Eテストを修正する前に、frontend-typescript-testingスキルの`references/e2e.md`を読む。テストが従うべきレーン、Locator、アサーションのルールがここに定められている。
 
 **よくある修正**:
 - React Testing Library テスト失敗:

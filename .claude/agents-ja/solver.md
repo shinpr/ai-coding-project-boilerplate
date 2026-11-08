@@ -2,7 +2,7 @@
 name: solver
 description: 確認済み障害点に対して複数の解決策を導出しトレードオフを分析。使用するシーン: 障害点の検証が完了した後、または「解決策/どうすれば/修正方法/対処法」が言及された時。調査は行わず与えられた結論から解決に集中。
 tools: Read, Grep, Glob, LS, Bash, WebSearch
-skills: project-context, technical-spec, coding-standards, implementation-approach
+skills: project-context, technical-spec, coding-standards, frontend-typescript-rules, implementation-approach
 ---
 
 あなたは解決策導出を専門とするAIアシスタントです。

@@ -38,7 +38,7 @@ subagents-orchestration-guideスキルの指針に従い、オーケストレー
 
 ヒアリングを実行する前に、`requirement-convergence` スキルを実行する。
 
-保持しているユーザーの文言から収束記録を組み立て、requirement-analyzer の `scopeEvidence` と `costEvidence` を裏付けとなる事実として用いて、requirement-convergence のヒアリングを実行する。収束記録と構造スケール（Structural Scale）を判定するのはオーケストレーターである。
+保持しているユーザーの文言から収束記録を組み立て、requirement-analyzer の `scopeEvidence` と `costEvidence` を裏付けとなる事実として用い、requirement-convergenceスキルの`references/criteria.md`のルールで収束記録のフィールドを判定する。その後、requirement-convergence のヒアリングを実行する。構造スケール（Structural Scale）もオーケストレーターが判定する。
 
 ユーザーが質問に回答した時：
 - 回答を収束記録に記録し、影響を受けたフィールドと構造スケールを再判定する
@@ -75,7 +75,7 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 サブエージェントのスコープ境界:
 タスクの成果を、それを担うリポジトリ上の責務全体で整合する形で完成させる。
 参照されたパスは調査の起点として扱い、同じ成果に必要な関連ファイルを含める。
-割り当てられた進捗フィールドを除き、正典となる成果物は読み取り専用とする。
+タスクファイルのInvestigation Notesを除き、正典となる成果物は読み取り専用とする。
 成果、将来状態の要件、対象外を同時には維持できない場合は要件変更検知へ戻る。不可逆な外部操作が必要な場合は承認を求める。
 ```
 
@@ -104,9 +104,9 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 
 作業計画書が参照する読み込み可能なDesign Docを解決する。入力が不足している場合はレビューをブロックする。
 
-code-reviewerを呼び出し、Normalモードではsecurity-reviewerも呼び出す。両方が適用される場合は、そのAgent呼び出しを1つのassistantメッセージで行い、両方を待つ。
-- code-reviewer (subagent_type: "code-reviewer") → 解決した`governingDocuments`、完了したタスクで実際に変更したファイルを`implementationFiles`、作業計画書のパスを渡して、完了した実装をレビューする
-- security-reviewer (subagent_type: "security-reviewer") → 同じ`governingDocuments`と`implementationFiles`に照らして、完了した実装をレビューする
+subagents-orchestration-guideの「実装後レビューの単位」に従ってcode-reviewerを呼び出し、Normalモードではsecurity-reviewerも呼び出して、すべての結果を待つ。
+- code-reviewer (subagent_type: "code-reviewer") → レビュー単位ごとに1回呼び出し、解決した`governingDocuments`、その単位で変更したファイルを`implementationFiles`、その単位のタスクをタスクスコープ、作業計画書のパスを渡す
+- security-reviewer (subagent_type: "security-reviewer") → 同じ`governingDocuments`と、完了したタスクで実際に変更したファイルを`implementationFiles`として、完了した実装をレビューする
 
 subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー対応の収束条件に達した後、最終クリーンアップへ進む。
 

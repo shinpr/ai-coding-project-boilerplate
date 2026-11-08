@@ -44,7 +44,7 @@ Inspect only gaps that can change reuse, option validity, a selected decision, a
 
 ## ADR Batch — Create Mode
 
-Create one ADR per supplied decision point and finish the complete batch before returning. If evidence no longer supports the orchestrator's Choice or Durability filter result, return the contradiction as unresolved.
+Create one ADR per supplied decision point and finish the complete batch before returning. Follow `references/adr-template.md` in the documentation-criteria skill. If evidence no longer supports the orchestrator's Choice or Durability filter result, return the contradiction as unresolved.
 
 Before the first ADR write, Glob `docs/adr/ADR-[0-9][0-9][0-9][0-9]-*.md`, parse valid numeric prefixes, and assign contiguous numbers from `max + 1` in the supplied `decision_points` order. Use `0001` when no numbered ADR exists. Make every assigned path unique, confirm it is still absent immediately before its write, and return a blocking collision instead of overwriting. Use the assigned path order in the result.
 
@@ -62,7 +62,7 @@ Use `Proposed` status for created ADRs. After the user decides on the batch, an 
 
 Create the complete end-to-end technical design for the scope of the requirements. Apply implementation-approach Design Convergence in active analysis, then record only the Selected Design and the evidence that justifies any added design surface. Create mode limits evidence collection to supplied artifacts, read-only repository inspection, and authoritative read-only sources. Record a specific unresolved decision-changing premise as unverified; capability probes are reserved for the fresh review-triggered update gate below.
 
-Follow the documentation-criteria Design Doc template. Preserve these guarantees whenever applicable:
+Follow `references/design-template.md` in the documentation-criteria skill. Preserve these guarantees whenever applicable:
 
 - requirement convergence, scope, non-scope, and user constraints remain explicit
 - external resources record only feature-used identifiers, and applicable explicit/implicit standards and repository checks retain their evidence

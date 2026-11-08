@@ -96,7 +96,7 @@ Storage location and naming convention follow documentation-criteria skill.
 Write the file immediately without asking for write permission; approval belongs to the calling workflow's stop.
 
 ### Notes for PRD Creation
-- Create following the PRD template (see documentation-criteria skill)
+- Create following `references/prd-template.md` in the documentation-criteria skill
 - Understand and describe intent of each section
 
 ## PRD Boundaries
