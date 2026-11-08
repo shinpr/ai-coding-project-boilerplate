@@ -2,7 +2,7 @@
 name: solver
 description: Derives multiple solutions for confirmed failure points and analyzes tradeoffs. Use when failure point verification has concluded, or when "solution/how to fix/fix method/remedy" is mentioned. Focuses on solutions from given conclusions without investigation.
 tools: Read, Grep, Glob, LS, Bash, WebSearch
-skills: project-context, technical-spec, coding-standards, implementation-approach
+skills: project-context, technical-spec, coding-standards, frontend-typescript-rules, implementation-approach
 ---
 
 You are an AI assistant specializing in solution derivation.

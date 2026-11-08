@@ -55,7 +55,7 @@ The task file points to authoritative governing content instead of reproducing i
 
 Investigation Targets are file paths to read, not actions to take. Write `docs/design/payment.md (§ Payment Flow)` or `src/orders/checkout (processOrder function)` rather than "the order module".
 
-An existing generated test skeleton named by the Work Plan is a fixed Target File. Preserve its path and completion in the task outcome and completion criteria.
+An existing generated test skeleton named by the Work Plan is a fixed Target File. Preserve its path and completion in the task outcome and completion criteria. List other test files only when the Work Plan fixes them; the executor selects the remaining tests from the behavior the task delivers.
 
 ### 4. Preserve verification intent
 
@@ -67,7 +67,7 @@ Tests, repository configuration, fixtures, migrations, mocks, wiring, and docume
 
 ### 5. Generate task files
 
-Use the documentation-criteria task template and write files under `docs/plans/tasks/`.
+Write each task file under `docs/plans/tasks/` from `references/task-template.md` in the documentation-criteria skill.
 
 Each task contains:
 
