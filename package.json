@@ -30,6 +30,26 @@
   "bin": {
     "create-ai-project": "bin/create-project.js"
   },
+  "files": [
+    ".claude/agents-*/**",
+    ".claude/commands-*/**",
+    ".claude/skills-*/**",
+    ".husky/pre-commit",
+    ".husky/pre-push",
+    "bin",
+    "docs/guides",
+    "scripts",
+    "src",
+    "templates",
+    "CHANGELOG.md",
+    "CLAUDE.*.md",
+    "README.*.md",
+    "biome.json",
+    "pnpm-workspace.yaml",
+    "tsconfig.json",
+    "tsconfig.test.json",
+    "vitest.config.mjs"
+  ],
   "scripts": {
     "build": "tsc && tsc-alias",
     "build:backend": "tsc && tsc-alias",
