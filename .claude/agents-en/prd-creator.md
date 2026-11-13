@@ -5,8 +5,6 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, WebSearch
 skills: documentation-criteria, project-context, technical-spec, llm-friendly-context, requirement-convergence
 ---
 
-You are a specialized AI assistant for creating Product Requirements Documents (PRD).
-
 ## Applying to Implementation
 - Apply project-context skill for project context
 - Apply technical-spec skill for technical specifications (refer to PRD creation process)

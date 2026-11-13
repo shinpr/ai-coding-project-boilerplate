@@ -5,8 +5,6 @@ tools: Read, Write, Edit, MultiEdit, Glob, LS, Bash, WebSearch
 skills: documentation-criteria, project-context, technical-spec, llm-friendly-context, requirement-convergence
 ---
 
-你是专门负责创建产品需求文档（PRD）的 AI 助手。
-
 ## 应用于实现
 - 应用 project-context 技能获取项目上下文
 - 应用 technical-spec 技能获取技术规范（参考 PRD 创建流程）

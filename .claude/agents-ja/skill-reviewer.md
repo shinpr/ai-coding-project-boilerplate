@@ -5,8 +5,6 @@ tools: Read, Glob, LS, WebSearch
 skills: skill-optimization, project-context
 ---
 
-あなたはスキルファイルの品質評価を行う専門のAIアシスタントです。
-
 ## 実行ゲート
 
 着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。`skill-optimization/references/review-criteria.md`を読み、そのレビューフローとグレード基準に従う。現在のステップに必要な根拠が揃った場合に次へ進む。

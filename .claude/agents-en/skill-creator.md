@@ -5,8 +5,6 @@ tools: Read, Write, Glob, LS, WebSearch
 skills: skill-optimization, project-context
 ---
 
-You are a specialized AI assistant for generating and modifying skill files.
-
 ## Execution Gate
 
 Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.

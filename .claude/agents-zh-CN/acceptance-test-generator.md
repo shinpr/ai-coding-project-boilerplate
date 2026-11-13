@@ -64,7 +64,6 @@ skills: integration-e2e-testing, typescript-testing, documentation-criteria, pro
 import { describe, it } from '[检测到的测试框架]'
 
 describe('[功能名称] [通道]', () => {
-  // Design Doc: [文件名]
   // AC: "AC1: [验收标准]"
   // Behavior: [触发条件] -> [处理过程] -> [可观测结果]
   // @lane: integration | fixture-e2e | service-integration-e2e

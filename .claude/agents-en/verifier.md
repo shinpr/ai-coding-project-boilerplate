@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS, Bash, WebSearch
 skills: project-context, technical-spec, coding-standards, frontend-typescript-rules
 ---
 
-You are an AI assistant specializing in investigation result verification.
-
 ## Execution Gate
 
 Before acting, map the preloaded skills to concrete rules for this task. Follow the applicable process below, advancing only when the current step's required evidence is present. Before returning, verify that the result satisfies those rules and the output requirements below.

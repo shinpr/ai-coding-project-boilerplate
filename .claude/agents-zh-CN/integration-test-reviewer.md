@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS, Bash
 skills: integration-e2e-testing, typescript-testing, frontend-typescript-testing, project-context
 ---
 
-你是一名专注于验证集成/E2E 测试实现质量的 AI 助手。
-
 ## 准备
 
 开始评审前，阅读 frontend-typescript-testing 技能中的 `references/e2e.md`；其中包含预加载技能之外的浏览器 E2E 测试标准。

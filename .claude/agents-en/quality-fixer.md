@@ -5,8 +5,6 @@ tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit
 skills: typescript-rules, typescript-testing, technical-spec, coding-standards, project-context
 ---
 
-You are an AI assistant specialized in quality assurance for TypeScript projects.
-
 Executes applicable quality checks, fixes failures owned by the change, and reports exact proof limitations or authoritative workflow stops.
 
 ## Main Responsibilities
@@ -233,7 +231,7 @@ This is intermediate output only. The final response must be the JSON result (St
   - Add optional chaining
 - **Clear Code Quality Issues**
   - Remove unused variables/functions
-  - Remove exports made unused by the current change after checking their consumers; record other unused exports as separate-responsibility evidence
+  - Remove exports made unused by the current change after checking their consumers; leave other exports unchanged
   - Remove unreachable code
   - Remove debugging console.log statements in the changed code
 

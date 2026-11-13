@@ -125,7 +125,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 ### 步骤 8：重新验证 code-reviewer
 
-仅当步骤 6 修正了 code-reviewer 所属的发现项时才执行本步骤；返回过通过（passing）结果的评审者不再重新运行。在调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
+仅当步骤 6 修正了 code-reviewer 所属的发现项时才执行本步骤；否则按照 subagents-orchestration-guide 的重新运行规则，其通过（passing）结果保持有效。在调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
 
 使用 Agent 工具调用 code-reviewer：
 - `subagent_type`: "code-reviewer"
@@ -134,7 +134,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 ### 步骤 9：重新验证 security-reviewer
 
-仅当已执行的 security-reviewer 所属发现项被步骤 6 修正时才执行本步骤；返回过通过（passing）结果的评审者不再重新运行。在调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
+仅当已执行的 security-reviewer 所属发现项被步骤 6 修正时才执行本步骤；否则按照 subagents-orchestration-guide 的重新运行规则，其通过（passing）结果保持有效。在调用之前，立即使用步骤 1 的纳入规则重新推导 `implementationFiles`，使其包含由获批修正和质量修复新增或变更的实现产物。
 
 使用 Agent 工具调用 security-reviewer：
 - `subagent_type`: "security-reviewer"
@@ -143,7 +143,7 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 
 ### 步骤 10：处置修正结果
 
-对已执行的步骤 8 和步骤 9 的每一份结果应用“评审裁定”。被维持的 `apply` 发现项返回步骤 6，然后重复适用的质量检查与修正复评。当“评审裁定”达到其收敛条件时继续。
+先按照 subagents-orchestration-guide 的重新运行规则，检查修正是否使已通过评审所依赖的依据不再成立；该检查所调用的限定范围评审，其结果也与步骤 8、步骤 9 的结果一同在此处理。对已执行的步骤 8 和步骤 9 的每一份结果应用“评审裁定”。被维持的 `apply` 发现项返回步骤 6，然后重复适用的质量检查与修正复评。当“评审裁定”达到其收敛条件时继续。
 
 在第 11 步之前，以相同的第 7 步输入和受影响的检查，对每一项保留的 quality-fixer-frontend 局限重试一次。`pass` 结果即解除该局限；将新发现的不完整实现经第 6-10 步路由，并报告再次出现的 `verification_incomplete` 结果。
 

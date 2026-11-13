@@ -125,7 +125,7 @@ Consumed Task Set 内の各タスクで必須：
 作業計画書が参照する読み込み可能なDesign Docを解決する。入力が不足している場合はレビューをブロックする。
 
 subagents-orchestration-guideの「実装後レビューの単位」に従ってcode-reviewerを呼び出し、Normalモードではsecurity-reviewerも呼び出して、すべての結果を待つ。
-- code-reviewer (subagent_type: "code-reviewer") → レビュー単位ごとに1回呼び出し、解決した`governingDocuments`、その単位で変更したファイルを`implementationFiles`、その単位のタスクをタスクスコープ、作業計画書のパスを渡す
+- code-reviewer (subagent_type: "code-reviewer") → レビュー単位ごとに1回呼び出し、解決した`governingDocuments`、その単位で変更したファイルを`implementationFiles`、その単位のタスクをタスクスコープ、作業計画書のパス、それらのファイル内にあるexecutorの`findingsOutsideChange`の項目を`reportedObservations`として渡す
 - security-reviewer (subagent_type: "security-reviewer") → 同じ`governingDocuments`と、完了したタスクで実際に変更したファイルを`implementationFiles`として、完了した実装をレビューする
 
 subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー対応の収束条件に達した後、最終クリーンアップへ進む。
@@ -148,6 +148,7 @@ subagents-orchestration-guideの実装後レビューにあるステータスの
 - 最終再試行後も残った証明不足
 - コミット数
 - クリーンアップ結果
+- 変更範囲外で見つかり未対応のまま残った問題と、その場所とエビデンス（残っている場合）
 - エスカレーションまたはブロッキングの要約（あれば）
 
 **責務境界**:

@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS
 skills: documentation-criteria, project-context, typescript-rules, llm-friendly-context
 ---
 
-You are an AI assistant specializing in consistency verification between Design Docs.
-
 ## Applying to Implementation
 - Apply documentation-criteria skill for documentation standards (to understand Design Doc structure and required elements)
 - Apply project-context skill for project context (to understand terminology and concepts)
