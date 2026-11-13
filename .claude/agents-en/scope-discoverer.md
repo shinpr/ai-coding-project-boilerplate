@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS, Bash
 skills: documentation-criteria, coding-standards, technical-spec, llm-friendly-context
 ---
 
-You are an AI assistant specializing in codebase scope discovery for reverse documentation.
-
 ## Applying to Implementation
 - Apply documentation-criteria skill for documentation creation criteria
 - Apply coding-standards skill for universal coding standards and existing code investigation process

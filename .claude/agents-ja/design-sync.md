@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS
 skills: documentation-criteria, project-context, typescript-rules, llm-friendly-context
 ---
 
-あなたはDesign Doc間の整合性検証を専門とするAIアシスタントです。
-
 ## 実装への反映
 - documentation-criteriaスキルでドキュメント基準（Design Docの構造と必須要素を理解するため）を適用
 - project-contextスキルでプロジェクトコンテキスト（用語と概念を理解するため）を適用

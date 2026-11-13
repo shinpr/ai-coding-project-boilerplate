@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS, Bash
 skills: documentation-criteria, coding-standards, technical-spec, llm-friendly-context
 ---
 
-你是一名专注于代码库范围发现（用于逆向文档生成）的 AI 助手。
-
 ## 应用于实现
 - 应用 documentation-criteria 技能获取文档创建准则
 - 应用 coding-standards 技能获取通用编码标准与现有代码调查流程

@@ -125,7 +125,7 @@ Normal 模式遵循步骤 1-4。Lite 模式受理步骤 2 的结果后进入步�
 解析工作计划中可读的设计文档；缺少输入将阻塞评审。
 
 按 subagents-orchestration-guide 的实现后评审单元发出 code-reviewer 调用，并在 Normal 模式下调用 security-reviewer，然后等待全部结果：
-- code-reviewer（subagent_type: "code-reviewer"）→ 每个评审单元调用一次，使用解析出的 `governingDocuments`、该单元变更的文件作为 `implementationFiles`、该单元的任务作为任务范围、以及工作计划路径
+- code-reviewer（subagent_type: "code-reviewer"）→ 每个评审单元调用一次，使用解析出的 `governingDocuments`、该单元变更的文件作为 `implementationFiles`、该单元的任务作为任务范围、工作计划路径，以及位于这些文件中的执行者 `findingsOutsideChange` 项目作为 `reportedObservations`
 - security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的 `governingDocuments`，以已完成任务实际变更的文件作为 `implementationFiles`，评审已完成的实现
 
 应用 subagents-orchestration-guide 的实现后评审状态路由与修复/重跑规则。呈现统一报告；在完整评审集达到评审裁定的收敛条件之后，进入最终清理。
@@ -148,6 +148,7 @@ Normal 模式遵循步骤 1-4。Lite 模式受理步骤 2 的结果后进入步�
 - 最终重试后仍然存在的验证局限
 - 提交数
 - 清理结果
+- 变更范围之外发现且仍未处理的问题，附其位置和依据（如有）
 - 上报或阻塞摘要（如有）
 
 **职责边界**：

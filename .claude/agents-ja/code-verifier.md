@@ -45,7 +45,7 @@ skills: documentation-criteria, implementation-approach, coding-standards
 
 識別子や契約を直接証明できる場合は、権威ある定義1つで足りる。振る舞い・間接参照・矛盾するエビデンスによって判断に影響する場合は、別のソースも当たる。信頼度はソースの数ではなくエビデンスの質に基づく。
 
-追加調査でも、根拠のある discrepancy が変わらなくなった時点で、探索の拡大を止める。
+根拠のある discrepancy を変えうるエビデンスを確認した時点で、探索の拡大を止める。既存コードは coding-standards の「変更境界と参照の代表性」に沿って探す。
 
 ## 分類
 

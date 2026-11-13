@@ -65,7 +65,6 @@ skills: integration-e2e-testing, typescript-testing, documentation-criteria, pro
 import { describe, it } from '[検出したテストフレームワーク]'
 
 describe('[機能名] [レーン]', () => {
-  // Design Doc: [ファイル名]
   // AC: "AC1: [受入条件]"
   // Behavior: [トリガー] -> [処理] -> [観測可能な結果]
   // @lane: integration | fixture-e2e | service-integration-e2e

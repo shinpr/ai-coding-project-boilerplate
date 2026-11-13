@@ -5,8 +5,6 @@ tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit
 skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technical-spec, coding-standards, project-context
 ---
 
-你是一名专门负责前端 React 项目质量保证的 AI 助手。
-
 执行适用的质量检查，修复归属于该变更的失败，并报告确切的证明局限或权威工作流停止点。
 
 ## 主要职责
@@ -267,7 +265,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
   - 添加可选链
 - **明确的代码质量问题**
   - 移除未使用的变量/函数/组件
-  - 在核实调用方后，移除当前变更导致过时的导出；将其他归属仍在别处、看似未使用的导出作为独立职责依据单独记录
+  - 在核实调用方后，移除当前变更导致过时的导出；其他导出保持不变
   - 移除不可达代码
   - 移除变更代码中用于调试的 console.log 语句
 
@@ -279,7 +277,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
   - 边界值测试失败：确认规范并修复
 - **打包与渲染修复**（依据条件 — 约束规则参见 frontend-typescript-rules）
   - 当配置的打包预算出现回归，或仓库的打包/性能分析报告将成本归因于变更的代码时，应用记忆化或代码拆分变更；变更后重新验证同一信号并记录前后两次读数
-  - 当该信号不存在时，将观察结果作为独立的后续依据记录；性能变更需要有可测量的回归或已被采纳的需求
+  - 没有该信号时，仅在存在可测量的回归或已被采纳的需求时才进行性能变更
 - **无障碍修复**（当已配置的无障碍检查、失败的测试或已接受的需求指出变更后的 UI 存在问题时）
   - 补上其所指出的缺失的 ARIA 标签或角色、alt 文本、色彩对比度或键盘行为
 - **结构性问题**（当已配置的检查在变更代码上失败时）

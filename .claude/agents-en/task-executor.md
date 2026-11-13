@@ -5,8 +5,6 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS
 skills: typescript-rules, typescript-testing, coding-standards, project-context, technical-spec, implementation-approach
 ---
 
-You are a specialized AI assistant for reliably executing individual tasks.
-
 ## Input Parameters
 
 Use the applicable canonical fields below:
@@ -61,7 +59,7 @@ Use the indicators to find plausible candidates and apply the authoritative boun
 1. Compare responsibility, contract, lifecycle, and representative repository usage.
 2. Record one `reuseDecisions` entry:
    - `reuse` or `extend` when those dimensions are compatible
-   - `separate` when sharing would merge independently evolving responsibilities or add more contract surface than it removes
+   - `separate` when evidence shows different contracts or change reasons, or when sharing would add more coupling and contract surface than it removes
 3. Continue with the repository-local reversible choice supported by that evidence.
 
 ### Step4: Core Mechanism Preservation Check
@@ -117,7 +115,7 @@ Resolve the implementation objective through the input precedence above, derive 
 
 #### Pre-implementation Verification (Pattern 5 Compliant)
 1. **Read relevant Design Doc sections** and extract: interface contracts, data structures, dependency constraints
-2. **Investigate existing implementations**: Search for similar functions in same domain/responsibility
+2. **Investigate existing implementations**: Find code that already holds the same responsibility and code that depends on the change, as coding-standards Change Boundary and Reference Representativeness describes
 3. **Execute determination**: Determine continue/escalation per "Mandatory Judgment Criteria" above
 
 #### Unimplemented Dependency Handling
@@ -138,7 +136,7 @@ Classify the work from the execution outcome and changed boundary, then run this
 2. Check each for the same class of defect this task corrects.
 3. Disposition each residual by scope:
    - **Same responsibility and same defect** → fold the residual into the implementation and its tests
-   - **Different responsibility** → leave it unchanged, record it as separate follow-up evidence, and keep the current outcome internally consistent
+   - **Different responsibility** → leave it unchanged, report it in `findingsOutsideChange`, and keep the current outcome internally consistent
    - **Related but not confirmed to share the defect** → record it in task-file Investigation Notes when available, otherwise in `changeSummary`
 4. Record the sweep's evidence in the available execution record: each case inspected with its disposition (`incorporated`, `unchanged`, or `separate-responsibility`).
 
@@ -175,6 +173,8 @@ Final message: exactly one JSON object matching one of the schemas below — Tas
 
 **reuseDecisions**: Use `[]` when no plausible similar implementation was found. Otherwise include every candidate evaluated in Step 3 with `decision: "reuse" | "extend" | "separate"` and evidence covering responsibility, contract, lifecycle, and repository representativeness.
 
+**findingsOutsideChange**: Use `[]` when none. Otherwise list problems already observed during this task that the change leaves unhandled, because handling them belongs to another responsibility, would change the outcome or a non-goal, or needs an irreversible external action. Each item gives its location, evidence, and that reason. The field reports observations; it creates no search obligation.
+
 **runnableCheck.result** and **runnableCheck.substance**: set both fields per the spec below.
 
 - `result`: reflect the test runner's outcome verbatim — `passed`, `failed`, or `skipped`. For non-test verification (build, typecheck, CLI execution, artifact checks), use `passed` when the command succeeds without error
@@ -197,6 +197,7 @@ Report in the following JSON format upon task completion. Quality checks and com
   "requiresTestReview": true,
   "newTestsPassed": true,
   "reuseDecisions": [{"candidate": "[path:symbol]", "decision": "reuse | extend | separate", "evidence": "[Responsibility, contract, lifecycle, and repository-representativeness evidence]"}],
+  "findingsOutsideChange": [{"location": "[path:symbol]", "evidence": "[Observed fact]", "reason": "[Why this change leaves it unhandled]"}],
   "runnableCheck": {"level": "L1: Functional Operation Verification / L2: Test Operation Verification / L3: Build Success Verification", "executed": true, "command": "Executed verification command", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null (non-test verification)", "substanceIssue": "null when substantive or non-test; cause and location when non_substantive", "reason": "Verification content, or the exact limitation when it could not run"},
   "readyForQualityCheck": true,
   "nextActions": "Overall quality verification by quality assurance process"

@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS, Bash
 skills: documentation-criteria, coding-standards, technical-spec, llm-friendly-context
 ---
 
-あなたはリバースドキュメンテーションのためのコードベーススコープ発見を専門とするAIアシスタントです。
-
 ## 実装への反映
 - documentation-criteriaスキルでドキュメント作成基準を適用
 - coding-standardsスキルで普遍的コーディング規約と既存コード調査プロセスを適用

@@ -64,7 +64,6 @@ Keep selected lanes in separate files: `*.int.test.[ext]`, `*.fixture-e2e.test.[
 import { describe, it } from '[detected test framework]'
 
 describe('[Feature Name] [lane]', () => {
-  // Design Doc: [filename]
   // AC: "AC1: [acceptance criterion]"
   // Behavior: [trigger] -> [process] -> [observable result]
   // @lane: integration | fixture-e2e | service-integration-e2e

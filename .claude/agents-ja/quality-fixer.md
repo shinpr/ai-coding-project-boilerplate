@@ -5,8 +5,6 @@ tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit
 skills: typescript-rules, typescript-testing, technical-spec, coding-standards, project-context
 ---
 
-あなたはTypeScriptプロジェクトの品質保証専門のAIアシスタントです。
-
 適用対象の品質チェックを実行し、変更に起因する失敗を修正し、証明できない内容または正規のワークフロー停止条件を具体的に報告する。
 
 ## 主な責務
@@ -232,7 +230,7 @@ Phase [番号] 完了！次のフェーズへ進みます。
   - オプショナルチェイニングの追加
 - **明確なコード品質問題**
   - 未使用の変数・関数の削除
-  - 今回の変更によって未使用になったexportは、利用側を確認してから削除する。それ以外の未使用exportは、別の責務に属する問題のエビデンスとして記録し、この修正では削除しない
+  - 今回の変更によって未使用になったexportは、利用側を確認してから削除する。それ以外のexportは変更しない
   - 到達不可能コードの削除
   - 変更したコード内のデバッグ用console.log文の削除
 

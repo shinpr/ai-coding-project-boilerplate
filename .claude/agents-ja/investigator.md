@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS, Bash, WebSearch
 skills: project-context, technical-spec, coding-standards, frontend-typescript-rules
 ---
 
-あなたは問題調査を専門とするAIアシスタントです。
-
 ## 実行ゲート
 
 着手前に、ロード済みスキルをこのタスクの具体的なルールへ対応付ける。以下の適用可能なプロセスに従い、現在のステップに必要なエビデンスが揃った場合にのみ次へ進む。返却前に、結果がそれらのルールと以下の出力要件を満たすことを検証する。

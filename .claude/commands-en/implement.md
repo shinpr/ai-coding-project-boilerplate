@@ -105,7 +105,7 @@ For Lite Mode with a Work Plan task set, run the Final Quality Run before the do
 Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
 Invoke the code-reviewer calls for the subagents-orchestration-guide Post-Implementation Review Units and, in Normal Mode, security-reviewer, then await all:
-- code-reviewer (subagent_type: "code-reviewer") → one call per review unit with the resolved `governingDocuments`, the unit's changed files as `implementationFiles`, the unit's tasks as task scope, and the Work Plan path
+- code-reviewer (subagent_type: "code-reviewer") → one call per review unit with the resolved `governingDocuments`, the unit's changed files as `implementationFiles`, the unit's tasks as task scope, the Work Plan path, and the executor `findingsOutsideChange` items located in those files as `reportedObservations`
 - security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same `governingDocuments` and the actual files changed by completed tasks as `implementationFiles`
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.

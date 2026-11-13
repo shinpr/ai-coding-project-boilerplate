@@ -125,7 +125,7 @@ Agent toolでquality-fixer-frontendを呼び出す:
 
 ### Step 8: code-reviewer再検証
 
-このステップを実行するのは、Step 6でcode-reviewerが所有する検出事項を修正した場合に限る。passingの結果を返したレビュアーは再実行しない。呼び出しの直前に、Step 1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
+このステップを実行するのは、Step 6でcode-reviewerが所有する検出事項を修正した場合に限る。それ以外では、subagents-orchestration-guideの再実行ルールに従い、passingの結果をそのまま有効とする。呼び出しの直前に、Step 1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
 
 Agent toolでcode-reviewerを呼び出す:
 - `subagent_type`: "code-reviewer"
@@ -134,7 +134,7 @@ Agent toolでcode-reviewerを呼び出す:
 
 ### Step 9: security-reviewer再検証
 
-このステップを実行するのは、実行したsecurity-reviewerが所有する検出事項をStep 6で修正した場合に限る。passingの結果を返したレビュアーは再実行しない。呼び出しの直前に、Step 1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
+このステップを実行するのは、実行したsecurity-reviewerが所有する検出事項をStep 6で修正した場合に限る。それ以外では、subagents-orchestration-guideの再実行ルールに従い、passingの結果をそのまま有効とする。呼び出しの直前に、Step 1の対象選定規則で`implementationFiles`を再取得し、承認済みの修正と品質修正で追加・変更された実装成果物を含める。
 
 Agent toolでsecurity-reviewerを呼び出す:
 - `subagent_type`: "security-reviewer"
@@ -143,7 +143,7 @@ Agent toolでsecurity-reviewerを呼び出す:
 
 ### Step 10: 修正結果の解決
 
-実行したStep 8とStep 9の各結果にレビュー対応を適用する。`prior_disposition: apply`の`maintained`はStep 6へ戻し、該当する品質確認と修正再レビューをもう一度行う。レビュー対応が収束条件に達した後に進む。
+まず、修正によって、passしたレビューが依拠したエビデンスが崩れていないかを、subagents-orchestration-guideの再実行ルールに従って確認する。この確認で範囲を絞ったレビューを実行した場合は、その結果もStep 8・Step 9の結果と同じくここで扱う。実行したStep 8とStep 9の各結果にレビュー対応を適用する。`prior_disposition: apply`の`maintained`はStep 6へ戻し、該当する品質確認と修正再レビューをもう一度行う。レビュー対応が収束条件に達した後に進む。
 
 Step 11の前に、quality-fixer-frontendが検証できなかった各項目を、Step 7と同じ入力と対象チェックで1回だけ再試行する。`pass`なら検証上の制約を解消し、新たに未完成の実装が見つかった場合はStep 6〜10へ戻し、`verification_incomplete`が再度返った場合は報告する。
 

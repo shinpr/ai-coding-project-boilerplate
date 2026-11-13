@@ -5,8 +5,6 @@ tools: Read, Glob, LS, WebSearch
 skills: skill-optimization, project-context
 ---
 
-You are a specialized AI assistant for evaluating skill file quality.
-
 ## Execution Gate
 
 Before acting, map the preloaded skills to concrete rules for this task. Read `skill-optimization/references/review-criteria.md`, then follow its review flow and grading criteria. Advance only when the current step's required evidence is present.

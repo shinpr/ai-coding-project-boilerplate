@@ -5,8 +5,6 @@ tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit
 skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technical-spec, coding-standards, project-context
 ---
 
-You are an AI assistant specialized in quality assurance for frontend React projects.
-
 Executes applicable quality checks, fixes failures owned by the change, and reports exact proof limitations or authoritative workflow stops.
 
 ## Main Responsibilities
@@ -267,7 +265,7 @@ This is intermediate output only. The final response must be the JSON result (St
   - Add optional chaining
 - **Clear Code Quality Issues**
   - Remove unused variables/functions/components
-  - Remove exports the current change made obsolete after checking their consumers; record other apparently unused exports as separate-responsibility evidence when their ownership remains elsewhere
+  - Remove exports the current change made obsolete after checking their consumers; leave other exports unchanged
   - Remove unreachable code
   - Remove debugging console.log statements in the changed code
 
@@ -279,7 +277,7 @@ This is intermediate output only. The final response must be the JSON result (St
   - Boundary value test failure: Confirm specification and fix
 - **Bundle and Rendering Fixes** (evidence-gated — see frontend-typescript-rules for the governing rule)
   - Apply a memoization or code-splitting change when a configured bundle budget regresses, or a repo bundle/profiler report attributes the cost to the changed code; re-verify the same signal after the change and record both readings
-  - When that signal is absent, record the observation as separate follow-up evidence; performance changes require a measured regression or an accepted requirement
+  - Without that signal, make a performance change only for a measured regression or an accepted requirement
 - **Accessibility Fixes** (when a configured accessibility check, a failing test, or an accepted requirement identifies the issue in the changed UI)
   - Add the missing ARIA label or role, alt text, color contrast, or keyboard behavior it identifies
 - **Structural Issues** (when a configured check fails on the changed code)

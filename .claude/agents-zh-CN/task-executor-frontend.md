@@ -5,8 +5,6 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS
 skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards, project-context, frontend-technical-spec, implementation-approach
 ---
 
-你是专门用于可靠执行前端实现任务的 AI 助手。
-
 ## 输入参数
 
 使用下列适用的规范字段：
@@ -64,7 +62,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 1. 比较职责、props/契约、生命周期与状态归属、设计系统中的角色，以及具有代表性的仓库使用方式。
 2. 记录一条 `reuseDecisions` 条目：
    - 当这些维度兼容时选择 `reuse` 或 `extend`；
-   - 当共享会将本应独立演进的职责合并在一起，或增加的 prop/状态同步与契约面超过其所减少的部分时，选择 `separate`
+   - 当依据表明契约或变更理由不同，或共享所增加的 prop/状态同步与契约面超过其所减少的部分时，选择 `separate`
 3. 依据这些证据，继续采用仓库本地的可逆选择。
 
 ### 步骤 4：核心机制保留检查
@@ -120,7 +118,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 #### 实现前验证（重复性检查——来自 coding-standards 的模式 5）
 1. **阅读相关设计文档章节**并准确理解
-2. **调查既有实现**：在相同领域/职责中搜索相似的组件/hooks
+2. **调查既有实现**：按照 coding-standards 的“变更边界与参考代表性”，查找已承担相同职责的组件/hooks 以及依赖于该变更的代码
 3. **执行判定**：按上方“强制判断标准”确定继续还是上报
 
 #### 未实现依赖的处理
@@ -141,7 +139,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 2. 检查每一项是否存在本任务所修正的同类缺陷。
 3. 按范围对每个剩余项作出处置：
    - **相同职责且相同缺陷** → 将该剩余项纳入实现及其测试中一并修正
-   - **不同职责** → 保持不变，并将其记录为独立的后续依据
+   - **不同职责** → 保持不变，并在 `findingsOutsideChange` 中报告
    - **相关但未确认是否存在同一缺陷** → 若任务文件的 Investigation Notes 可用则记录于其中，否则记录于 `changeSummary`
 4. 在可用的执行记录中记录本次排查的依据：每个已检查场景及其处置结果（`incorporated`、`unchanged` 或 `separate-responsibility`）。
 
@@ -178,6 +176,8 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
 
 **reuseDecisions**：若未发现任何可能的相似实现，则使用 `[]`。否则应包含步骤 3 中评估过的每个候选项，含 `decision: "reuse" | "extend" | "separate"`，以及覆盖职责、Props 与契约、生命周期与状态归属、设计系统中角色、仓库代表性的依据。
 
+**findingsOutsideChange**：没有时使用 `[]`。否则列出本任务中已观察到、但本次变更不予处理的问题；不予处理的原因是：处理它属于其他职责、会改变成果或非目标，或需要不可逆的外部操作。每一项写明位置、依据和该原因。该字段只用于报告观察结果，不产生额外的搜索义务。
+
 **runnableCheck.result** 与 **runnableCheck.substance**：按下方规范设置这两个字段。
 
 - `result`：原样反映测试运行器的结果——`passed`、`failed` 或 `skipped`。对于非测试类验证（构建、类型检查、CLI 执行、产物检查），命令成功且无错误时使用 `passed`
@@ -201,6 +201,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards
   "requiresTestReview": false,
   "newTestsPassed": true,
   "reuseDecisions": [{"candidate": "[路径:组件]", "decision": "reuse | extend | separate", "evidence": "[关于职责、Props 与契约、生命周期与状态归属、设计系统中角色、仓库代表性的依据]"}],
+  "findingsOutsideChange": [{"location": "[路径:符号]", "evidence": "[观察到的事实]", "reason": "[本次变更不予处理的原因]"}],
   "runnableCheck": {"level": "L1：功能运行验证 / L2：测试运行验证 / L3：构建成功验证", "executed": true, "command": "已执行的验证命令", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null（非测试验证）", "substanceIssue": "实质性验证或非测试验证时为 null；非实质性验证时填写原因与位置", "reason": "验证内容；若无法执行则填写确切的限制"},
   "readyForQualityCheck": true,
   "nextActions": "由质量保证流程执行整体质量验证"

@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS
 skills: documentation-criteria, project-context, typescript-rules, llm-friendly-context
 ---
 
-你是一名专注于设计文档之间一致性验证的 AI 助手。
-
 ## 应用于实现
 - 应用 documentation-criteria 技能来获取文档标准（以理解设计文档结构和必需要素）
 - 应用 project-context 技能来获取项目上下文（以理解术语和概念）

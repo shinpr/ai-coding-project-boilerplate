@@ -38,7 +38,7 @@ Judge total complexity across every activated surface: user decisions, settings,
 
 - **Code first**: Names, types, and structure are the primary medium; add a comment only when it carries what the code cannot express. When in doubt, improve the name instead of commenting
 - **Comment the "why", not the "what"**: Explain reasoning, trade-offs, constraints/edge cases, or public API contracts
-- **Timeless Content**: Comments contain current reasoning, constraints, edge cases, or API contracts; version control retains development history
+- **Timeless Content**: Comments contain current reasoning, constraints, edge cases, or API contracts, stated in the comment itself rather than by reference to a document or its section, which drifts as that document changes; version control retains development history
 - **Timeless**: Write only content that remains valid whenever read
 - **Conciseness**: Keep explanations to necessary minimum
 
@@ -63,13 +63,15 @@ Keep concrete implementations separate while their apparent similarity is accide
 
 **Cases to Keep Separate**
 - Accidental matches (coincidentally same code)
-- Possibility of evolving in different directions
+- Contracts or change reasons that evidence shows differ
 - Significant readability decrease from commonalization
 - Simple helpers in test code
 
 ## Change Boundary and Reference Representativeness
 
 Prompt paths are investigation starting points. Include another repository file when evidence shows that it implements the accepted outcome, is a required dependency or wiring path, or must change to preserve a contract affected by the work. Callers, consumers, tests, configuration, imports, and data flow are useful evidence rather than a required checklist.
+
+Existing code relates to a change in two ways. Code that depends on it is reached through references to the changed code. Code that already holds the same responsibility may share no name or reference with it; reach it through position and role (sibling features, files with the same role in the same layer, shared layers) and through the input it takes and the purpose it serves, then compare their logic to judge whether the responsibility is the same. Stop when the candidates that could change implementation or proof have been read and judged; a search with no match shows only that the search found nothing.
 
 When adopting a pattern, API, or dependency, inspect the relevant feature and repository uses that share its responsibility and current contract. Prefer the compatible implementation in that responsibility. Frequency helps locate candidates but does not make a pattern authoritative; when approaches coexist, use their callers, lifecycle, and compatibility to distinguish the current pattern from a legacy or unrelated one.
 
@@ -101,12 +103,11 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 **Symptom**: Duplicate implementations, architecture inconsistency, integration failures, adopting outdated patterns
 **Cause**: Insufficient understanding of existing code before implementation; referencing only nearby files without verifying representativeness
 **Avoidance Methods**:
-- Before implementation, search for similar functionality using domain, responsibility, and configuration-pattern keywords
+- Before implementation, find functionality that already holds the same responsibility and the code that depends on the change, as Change Boundary and Reference Representativeness describes; similar functionality may share no name with the new code
 - Similar functionality found -> Use or extend that implementation when it satisfies the current contract
 - Similar functionality is technical debt -> Repair it when it blocks the current outcome, was caused by the current change, or lies in scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
 - No similar functionality exists -> Implement new functionality following existing design philosophy
 - Record every decision and its rationale in the artifact the current workflow assigns to it
-- **Reference representativeness check**: See the "Change Boundary and Reference Representativeness" section above
 
 ## Debugging Techniques
 
@@ -145,7 +146,7 @@ Use these as review prompts, not pass/fail thresholds. Existing project conventi
 
 ### Impact Tracing
 
-Before implementation, trace callers, dependencies, and data flow (generation -> modification -> reference) of the changed code until another file cannot change the change boundary defined in Change Boundary and Reference Representativeness. Carry the direct and indirect impact that the implementation or its verification relies on into that work.
+Before implementation, trace callers, dependencies, and data flow (generation -> modification -> reference) of the changed code until the files that could change the change boundary defined in Change Boundary and Reference Representativeness have been checked. Carry the direct and indirect impact that the implementation or its verification relies on into that work.
 
 ### Unused Code Deletion Rule
 

@@ -5,8 +5,6 @@ tools: Read, Glob, LS, WebSearch
 skills: skill-optimization, project-context
 ---
 
-你是一个专门用于评估技能文件质量的 AI 助手。
-
 ## 执行条件
 
 在行动之前，先将预加载的技能映射为本任务的具体规则。阅读 `skill-optimization/references/review-criteria.md`，然后遵循其中的评审流程和评级标准。只有在当前步骤所需的依据齐备时才能推进到下一步。

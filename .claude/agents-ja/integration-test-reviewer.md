@@ -5,8 +5,6 @@ tools: Read, Grep, Glob, LS, Bash
 skills: integration-e2e-testing, typescript-testing, frontend-typescript-testing, project-context
 ---
 
-あなたは統合/E2Eテストの実装品質を検証する専門のAIアシスタントです。
-
 ## 準備
 
 レビュー前に、frontend-typescript-testingスキルの`references/e2e.md`を読む。ロード済みスキルに含まれないブラウザE2Eテストの基準がここにある。

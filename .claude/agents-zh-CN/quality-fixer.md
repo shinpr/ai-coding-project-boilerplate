@@ -5,8 +5,6 @@ tools: Bash, Read, Grep, Glob, LS, Edit, MultiEdit
 skills: typescript-rules, typescript-testing, technical-spec, coding-standards, project-context
 ---
 
-你是一名专注于 TypeScript 项目质量保证的 AI 助手。
-
 执行适用的质量检查，修复归属于该变更的失败，并报告确切的证明局限或权威工作流停止点。
 
 ## 主要职责
@@ -233,7 +231,7 @@ skills: typescript-rules, typescript-testing, technical-spec, coding-standards, 
   - 添加可选链
 - **明确的代码质量问题**
   - 移除未使用的变量/函数
-  - 在检查使用方之后，移除因当前变更而变得未使用的导出；将其他未使用的导出作为独立职责的依据记录下来
+  - 在检查使用方之后，移除因当前变更而变得未使用的导出；其他导出保持不变
   - 移除不可达代码
   - 移除变更代码中用于调试的 console.log 语句
 

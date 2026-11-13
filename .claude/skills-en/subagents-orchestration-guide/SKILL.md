@@ -255,6 +255,8 @@ A work plan task entry records exactly one lane; task materialization copies tha
   - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor as `correction_findings`. If it returns `blocked` again, record the review as not run and proceed to the selected mode's quality/commit boundary
   - If `status` is `pass` -> Proceed to the selected mode's quality/commit boundary
 
+**Findings outside the change**: Retain each executor `findingsOutsideChange` item; one the outcome needs is incomplete implementation under Specialist Result Acceptance. When the workflow runs post-implementation review, pass each item located in work this workflow produced to the code-reviewer whose `implementationFiles` contain that location, as `reportedObservations`; that reviewer judges it and reports a confirmed problem as its own finding. List the items that no confirmed finding resolved, with their location and evidence, in the completion report.
+
 ### Conditions for Stopping Autonomous Execution
 
 | Trigger | Action |
@@ -350,7 +352,7 @@ Two additional rules:
 
 ### Post-Implementation Review Units
 
-Review a Medium change with one code-reviewer. A Large change is more than one code-reviewer can read in full; partition it into units of Work Plan tasks. A unit holds a consuming task (one delivering a screen, route, command, or job) together with the tasks it depends on through `Depends on`, so a contract's producer, its consumer, and every test proving their behavior are reviewed together; tasks that several units depend on form one shared unit. Each completed task belongs to one unit, whose `implementationFiles` are the files changed by its tasks' commits. Run at most 3 code-reviewer calls concurrently.
+Review a Medium change with one code-reviewer. A Large change is more than one code-reviewer can read in full; partition it into units of Work Plan tasks. A unit holds a consuming task (one delivering a screen, route, command, or job) together with the tasks it depends on through `Depends on`, so a contract's producer, its consumer, and every test proving their behavior are reviewed together; tasks that several units depend on form one shared unit. Each completed task belongs to one unit, whose `implementationFiles` are the files changed by its tasks' commits. Run at most 3 code-reviewer calls concurrently. The unit reviewer that reported a finding owns it under the fix-cycle and re-run rules.
 
 ### Post-Implementation Review Status Routing
 
@@ -363,7 +365,9 @@ Reviewer findings are candidates. Create correction work only from the Review Re
 
 **Fix-cycle handoff**: Apply Review Resolution and invoke each correction owner it selects. For an author-owned technical-artifact correction, invoke the layer-appropriate technical designer in update mode, run the artifact's existing document-reviewer and applicable design-sync gates, then re-run the originating reviewer. For an executor-owned correction, invoke the layer-appropriate executor with its original `task_file` or direct-scope fields plus `correction_findings` as the complete `apply` finding objects verbatim with only their dispositions added, then branch on the executor result through the per-task cycle's step 2, including its conditional integration-test-reviewer path, and run the applicable quality gate. When both owners are required, Review Resolution's author-first re-evaluation controls the order. Carry `prior_feedback` only to reconciliation reviewers.
 
-**Re-run rule**: A reviewer's passing result stands. Re-run only a reviewer whose latest result still carries a corrected finding, passing its recorded dispositions as `prior_feedback` and the re-derived implementation file set so the rerun reconciles against the corrected state. After recovering a blocked review prerequisite, re-run that reviewer. Review Resolution convergence governs acceptance and preserves resolved declines.
+**Re-run rule**: A reviewer's passing result stands unless a correction invalidates the evidence it relied on. Re-run only a reviewer whose latest result still carries a corrected finding, passing its recorded dispositions as `prior_feedback` and the re-derived implementation file set so the rerun reconciles against the corrected state. After recovering a blocked review prerequisite, re-run that reviewer. Review Resolution convergence governs acceptance and preserves resolved declines.
+
+After an applied correction, compare its actual diff against the contracts, behavior, and verification evidence that the passed reviews relied on: a correction for one reviewer's finding can invalidate another reviewer's pass, as when a shared contract corrected for one unit's finding breaks another unit's evidence. Reconcile changes covered by an existing finding through its owner. For other changes that invalidate review evidence, invoke only the affected code-reviewer or security-reviewer with the original governing documents and the affected `implementationFiles`, scoped to that diff and its directly affected boundary; omit `prior_feedback` because this is new changed code, not finding reconciliation. Apply Review Resolution to its findings. Retain unaffected passed results; a correction that only touches the same file or leaves output and behavior unchanged requires no review.
 
 ## References
 
