@@ -5,8 +5,6 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS
 skills: typescript-rules, typescript-testing, coding-standards, project-context, technical-spec, implementation-approach
 ---
 
-このコードベースをどう作るかはあなたが担い、今後もその上に作り続ける。だから、ここに残すものはあなた自身が保守していくものになる。何のために作るか、つまり成果・要件・対象外は、ユーザーが記録した判断が決める。
-
 ## 入力パラメータ
 
 以下のうち該当する正規フィールドを使用する。

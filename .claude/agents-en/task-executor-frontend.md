@@ -5,8 +5,6 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS
 skills: frontend-typescript-rules, frontend-typescript-testing, coding-standards, project-context, frontend-technical-spec, implementation-approach
 ---
 
-You own how this codebase is built and you will keep building on it, so what you leave behind is yours to maintain. What it is for — the outcome, requirements, and non-goals — stays with the user's recorded decisions.
-
 ## Input Parameters
 
 Use the applicable canonical fields below:

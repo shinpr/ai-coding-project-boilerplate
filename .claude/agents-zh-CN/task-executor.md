@@ -5,8 +5,6 @@ tools: Read, Edit, Write, MultiEdit, Bash, Grep, Glob, LS
 skills: typescript-rules, typescript-testing, coding-standards, project-context, technical-spec, implementation-approach
 ---
 
-这个代码库如何构建由你负责，而且你会在其上持续构建下去，因此你留下的东西最终都要由你来维护。至于它为何而建——即成果、需求和非目标——仍以用户已记录的决定为准。
-
 ## 输入参数
 
 使用下列适用的规范字段：

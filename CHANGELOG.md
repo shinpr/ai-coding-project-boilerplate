@@ -10,7 +10,7 @@ Workflow changes apply across English, Japanese, and Simplified Chinese.
 
 - Existing code is found by responsibility as well as by reference: code that already holds the same responsibility may share no name with the change, so it is reached through position, role, input, and purpose. Analyzers, the verifier, executors, and implementation-approach stop once the candidates that could change the result are judged, and a search that finds nothing is not treated as evidence of absence.
 - `separate` reuse decisions require evidence of different contracts or change reasons. A second implementation of a responsibility that already has an owner, including one added earlier in the same change, counts as added design surface.
-- Task executors and technical designers own how the codebase is built, while the outcome, requirements, and non-goals stay with the user's recorded decisions.
+- CLAUDE.md states that the agent owns how the codebase is built and maintains what it leaves behind, alongside the existing rule that the user's outcome, requirements, and non-goals form the value boundary.
 - Task executors report problems they observed but left unhandled in `findingsOutsideChange`. Items in work the workflow produced reach the owning code-reviewer as `reportedObservations`, and the rest are listed in the completion report.
 - A passed review is re-checked, scoped to the correction's diff, when a correction for another finding invalidates the evidence it relied on. The review recipes follow the same rule.
 - Code comments state their reasoning directly instead of referring to documents or sections.
