@@ -14,6 +14,7 @@ Workflow changes apply across English, Japanese, and Simplified Chinese.
 - Task executors report problems they observed but left unhandled in `findingsOutsideChange`. Items in work the workflow produced reach the owning code-reviewer as `reportedObservations`, and the rest are listed in the completion report.
 - A passed review is re-checked, scoped to the correction's diff, when a correction for another finding invalidates the evidence it relied on. The review recipes follow the same rule.
 - Code comments state their reasoning directly instead of referring to documents or sections.
+- `check:deps` detects import cycles with Biome's `noImportCycles` rule instead of dpdm, removing the only path to a minimatch version affected by GHSA-g3hv-75wg-m249.
 
 ### Removed
 
