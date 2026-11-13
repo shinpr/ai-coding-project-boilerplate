@@ -125,7 +125,7 @@ Branch on its response:
 
 ### Step 8: Re-validate code-reviewer
 
-Run this step only when Step 6 corrected a finding code-reviewer owns; a reviewer that returned a passing result is never re-run. Immediately before the invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
+Run this step only when Step 6 corrected a finding code-reviewer owns; otherwise its passing result stands under the subagents-orchestration-guide Re-run rule. Immediately before the invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
 
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "code-reviewer"
@@ -134,7 +134,7 @@ Invoke code-reviewer using Agent tool:
 
 ### Step 9: Re-validate security-reviewer
 
-Run this step only when the executed security-reviewer owns a finding Step 6 corrected; a reviewer that returned a passing result is never re-run. Immediately before the invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
+Run this step only when the executed security-reviewer owns a finding Step 6 corrected; otherwise its passing result stands under the subagents-orchestration-guide Re-run rule. Immediately before the invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections and quality fixes.
 
 Invoke security-reviewer using Agent tool:
 - `subagent_type`: "security-reviewer"
@@ -143,7 +143,7 @@ Invoke security-reviewer using Agent tool:
 
 ### Step 10: Resolve Corrections
 
-Apply Review Resolution to every executed Step 8 and Step 9 result. A maintained `apply` finding returns to Step 6 and then repeats the applicable quality and correction review. Proceed when Review Resolution reaches its convergence condition.
+Apply the subagents-orchestration-guide Re-run rule's check of whether the corrections invalidated evidence a passed review relied on; a scoped review it invokes joins the Step 8 and Step 9 results here. Apply Review Resolution to every executed Step 8 and Step 9 result. A maintained `apply` finding returns to Step 6 and then repeats the applicable quality and correction review. Proceed when Review Resolution reaches its convergence condition.
 
 Before Step 11, retry each retained quality-fixer-frontend limitation once with the same Step 7 inputs and affected check. A `pass` result clears the retained limitation; route newly discovered incomplete implementation through Steps 6-10, and report a repeated `verification_incomplete` result.
 

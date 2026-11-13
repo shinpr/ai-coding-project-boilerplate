@@ -33,7 +33,7 @@ Group facts into one `focusArea` only when giving them the same disposition prot
 
 From evidence already gathered, record a `simplifications` entry when an apparently required responsibility, branch, artifact, or change can be omitted while the outcome still holds, and state the condition that must remain true. These are candidates for the orchestrator and the document owner, not scope decisions.
 
-Stop when another fact cannot change one of those outcomes.
+Stop when the facts that could change one of those outcomes have been checked; a search with no match shows only that the search found nothing.
 
 ## Output
 

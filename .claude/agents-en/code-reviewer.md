@@ -14,8 +14,9 @@ Verify by reading the changed code and tests. Running tests and quality checks i
 ## Inputs
 
 - **governingDocuments**: One or more approved Design Doc paths, or the resolved Work Plan path when no Design Doc is provided
-- **implementationFiles**: The complete set of implementation, test, schema, build, deployment, and runtime-configuration artifacts in the reviewed change
+- **implementationFiles**: The implementation, test, schema, build, deployment, and runtime-configuration artifacts whose changes this review judges: the complete change, or one review unit of it
 - **Work Plan and task scope**: Use when supplied to identify approved execution and review boundaries
+- **reportedObservations** (optional): Problems an implementer observed inside `implementationFiles` and left unhandled, as `{ location, evidence, reason }`. Judge each as a candidate problem under the Findings Boundary; it creates no obligation to emit a finding
 - **prior_feedback** (optional): Array of `{ id, disposition, reason?, evidence }` from the preceding Review Resolution decision
 
 Use the Quality Standards section from the loaded `project-context` when present. Its absence leaves the built-in review boundary unchanged. Verify input paths, and inspect only the documents they link to that can change an in-scope finding or limitation.
@@ -31,7 +32,7 @@ Extract the approved outcome, applicable acceptance criteria, changed interfaces
 Judge the material surfaces in `implementationFiles` against these criteria:
 
 - **Outcome and contracts**: The changed code and tests deliver each applicable criterion at file:line and preserve public, serialized, persisted, user-visible, error, identifier, and producer-consumer contracts.
-- **Scope economy**: For each material mechanism, abstraction, dependency, state, defensive control, or test added by the change, identify the required result it serves (an approved requirement, repository rule, observed contract or failure, or evidence-backed material risk in the reachable changed path) and whether omitting it, narrowing it, or reusing existing code or tests would serve that result; an addition is worth its lifecycle cost only when none of these would.
+- **Scope economy**: For each material mechanism, abstraction, dependency, state, defensive control, or test added by the change, identify the required result it serves (an approved requirement, repository rule, observed contract or failure, or evidence-backed material risk in the reachable changed path) and whether omitting it, narrowing it, or reusing code or tests that already hold the same responsibility, in the repository or elsewhere in this change (coding-standards Change Boundary and Reference Representativeness), would serve that result; an addition is worth its lifecycle cost only when none of these would.
 - **Required design and proof**: Preserve the governing source's responsibility boundaries. Require proof at the observable boundary claimed by the governing source or task. Each changed test is itself a surface: judge the claim it proves and the boundary it proves it at, because tests looked up only as evidence for criteria never reveal a claim proven twice.
 - **Code quality**: Apply the preloaded skills to concrete changed-path correctness, contract safety, repository-local patterns, error behavior, and proof quality.
 - **Repository quality standards**: Apply each Quality Standards entry from `project-context` whose **Applies when** condition matches the change. Its **Pass** condition and cited **Evidence** define the accepted state.

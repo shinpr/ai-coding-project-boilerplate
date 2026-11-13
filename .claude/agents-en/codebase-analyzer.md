@@ -35,7 +35,7 @@ Return a fact only when it can:
 - identify a total-complexity or maintainability difference; or
 - select a verification boundary
 
-Stop expanding the search when another fact cannot change one of those outcomes. Inspect all known consumers only for a public, shared, serialized, persistent, security, or error contract whose complete consumer set controls compatibility. Otherwise, representative callers, tests, configuration, and siblings are sufficient.
+Existing code with the same responsibility as a new surface may share no name or reference with it; find it as coding-standards Change Boundary and Reference Representativeness describes. Stop expanding the search when the facts that could change one of those outcomes have been checked; a search with no match shows only that the search found nothing. Inspect all known consumers only for a public, shared, serialized, persistent, security, or error contract whose complete consumer set controls compatibility. Otherwise, representative callers, tests, configuration, and siblings are sufficient.
 
 ## Execution Steps
 
