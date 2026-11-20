@@ -33,7 +33,7 @@ Each `PN-TN` checkbox entry is one implementation task. `PN-TN` is its stable ID
   - **Scope**: [responsibility, component, or expected files]
   - **Depends on**: none | [task IDs]
   - **Executor lane**: backend|frontend
-  - **Verification**: [Design Doc verification method or repository command]
+  - **Verification**: [Governing verification method or repository command]
   - **Verification Focus** (optional): **Primary failure** — [most material false-green state]; **Observable check** — [smallest check that detects it]
 
 ### Phase 2: [Next implementation outcome] (when required)
@@ -45,7 +45,7 @@ Each `PN-TN` checkbox entry is one implementation task. `PN-TN` is its stable ID
   - **Scope**: [responsibility, component, or expected files]
   - **Depends on**: [task IDs]
   - **Executor lane**: backend|frontend
-  - **Verification**: [Design Doc verification method or repository command]
+  - **Verification**: [Governing verification method or repository command]
   - **Verification Focus** (optional): **Primary failure** — [...]; **Observable check** — [...]
 
 Add one entry per implementation outcome. Separate entries only when a repository dependency, executor lane, or independently completable governing outcome requires it. Select exactly one executor lane per entry.
