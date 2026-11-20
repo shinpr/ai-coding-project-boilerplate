@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.8] - 2026-11-20
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Changed
+
+- Work Plan tasks take their verification method and Verification Focus from any governing source they cite, such as a UI Spec, not only the Design Doc. The plan template's verification field now matches the task template.
+
 ## [2.2.7] - 2026-11-13
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.
