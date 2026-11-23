@@ -85,8 +85,8 @@ describe('[功能名称] [通道]', () => {
 ```json
 {
   "generatedFiles": [
-    "tests/payment.int.test.[ext]",
-    "tests/payment.fixture-e2e.test.[ext]"
+    "src/payment/__tests__/payment.int.test.[ext]",
+    "tests/e2e/payment.fixture-e2e.test.[ext]"
   ]
 }
 ```

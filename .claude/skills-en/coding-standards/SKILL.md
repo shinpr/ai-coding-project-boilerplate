@@ -30,6 +30,7 @@ Inspect until the evidence identifies the lowest-total-complexity solution that 
 
 - **Evidence-Bounded Refactoring** - Refactor code that blocks the current outcome, is changed by the current task, or fails an applicable quality check; use small behavior-preserving steps. Report other findings with their owning boundary and evidence without expanding the active change
 - **Current-Requirement Code Only** - Introduce code paths, capabilities, infrastructure, abstractions, or speculative edge-case handling when a current requirement, verified constraint, or evidence-backed material risk requires them (YAGNI)
+- **Sourced Values** - Take each behavior-setting value, such as a limit, timeout, or threshold, from an existing requirement, contract, measurement, or repository value for the same purpose; when none of these determines it, mark the value as assumed in a comment
 - **Design Convergence** - Deliver the current required outcome with the least new design surface. Before introducing persistent state, a public or cross-boundary contract, a behavioral mode, a reusable abstraction, or a component split, record what the existing capabilities already deliver, what they fail to deliver for the current outcome, and why the addition is the smallest thing that closes that gap
 
 Judge total complexity across every activated surface: user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths, together with their UX, runtime, implementation, testing, documentation, and maintenance cost. Compare only dimensions that differ between viable approaches. Prefer reuse or no new mechanism when it delivers the same required value and proof at lower total complexity.
@@ -60,6 +61,7 @@ Keep concrete implementations separate while their apparent similarity is accide
 - Complex processing algorithms
 - Areas likely requiring bulk changes
 - Validation rules
+- Facts that several places in this repository must agree on: names, keys, paths, closed sets of values, and data shapes one side writes and another reads
 
 **Cases to Keep Separate**
 - Accidental matches (coincidentally same code)
@@ -120,6 +122,7 @@ Trace each answer to observed evidence until reaching a cause whose correction p
 
 - Use `unknown` for input whose structure is not established, and validate the properties needed by the consumer.
 - Use generics, unions, or intersections to express type relationships and variants.
+- When code branches on the same closed set of values in more than one place, type the set as a union of literals and handle each member explicitly, ending with a `never` check, so adding a member fails type checking at every branch.
 - Place assertions based on verified SDK or framework contracts at the relevant boundary. When static analysis cannot express that contract, scope any suppression to the affected rule and document the contract evidence and the assertion's scope.
 
 **Type Complexity Review Signals**

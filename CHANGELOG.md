@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.9] - 2026-11-23
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Fixed
+
+- quality-fixer-frontend detected E2E tests by `*.e2e.test.ts`, which the lane file names (`*.fixture-e2e.test.ts`, `*.service-e2e.test.ts`) never match, so Playwright tests were not run. It now finds them by the names and location in the E2E reference or the repository's Playwright configuration.
+- `vitest.config.mjs` excludes `tests/e2e/`, whose Playwright files also matched Vitest's `*.test.ts` pattern. The E2E reference states the same exclusion for projects with their own Vitest config.
+
+### Changed
+
+- coding-standards takes limits, timeouts, and thresholds from an existing requirement, contract, measurement, or repository value, and marks a value with no such source as assumed in a comment.
+- Code that branches on the same closed set of values in more than one place types the set as a union of literals, handles each member, and ends with a `never` check, so adding a value fails type checking at every branch.
+- Names, keys, paths, closed value sets, and data shapes that several places must agree on are listed as commonalization cases.
+- acceptance-test-generator's output example uses the documented test locations (`__tests__/` for integration, `tests/e2e/` for E2E).
+
 ## [2.2.8] - 2026-11-20
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.

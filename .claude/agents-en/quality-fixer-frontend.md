@@ -128,7 +128,7 @@ Auto-detect frontend build command from package.json and execute (production bui
 Execute `test` script (run all tests with Vitest)
 **Pass Criteria**: All tests pass (100% success rate)
 
-**E2E Tests**: When `*.e2e.test.ts` files exist, execute Playwright E2E tests after unit/integration tests pass. Before fixing a failing E2E test, read `references/e2e.md` in the frontend-typescript-testing skill; it defines the lane, locator, and assertion rules the test must follow.
+**E2E Tests**: When Playwright test files exist, as named and located by `references/e2e.md` in the frontend-typescript-testing skill or by the repository's Playwright configuration, execute Playwright E2E tests after unit/integration tests pass. Before fixing a failing E2E test, read that reference; it defines the lane, locator, and assertion rules the test must follow.
 
 **Common Fixes**:
 - React Testing Library test failures:

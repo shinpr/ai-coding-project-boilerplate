@@ -86,8 +86,8 @@ describe('[機能名] [レーン]', () => {
 ```json
 {
   "generatedFiles": [
-    "tests/payment.int.test.[ext]",
-    "tests/payment.fixture-e2e.test.[ext]"
+    "src/payment/__tests__/payment.int.test.[ext]",
+    "tests/e2e/payment.fixture-e2e.test.[ext]"
   ]
 }
 ```

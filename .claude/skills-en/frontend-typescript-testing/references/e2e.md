@@ -23,7 +23,7 @@ The skeleton's `@lane:` annotation declares which lane the test belongs to. Choo
 
 ### Directory Layout and Naming
 
-Everything lives under `tests/e2e/`: test files at its root, page objects in `pages/` (shared across lanes), fixtures in `fixtures/`, and static fixture data for fixture-e2e in `data/`.
+Everything lives under `tests/e2e/`: test files at its root, page objects in `pages/` (shared across lanes), fixtures in `fixtures/`, and static fixture data for fixture-e2e in `data/`. Exclude `tests/e2e/` from the unit test runner's discovery (Vitest `exclude`), since these files also match its `*.test.ts` pattern.
 
 - fixture-e2e files: `{FeatureName}.fixture-e2e.test.ts`
 - service-integration-e2e files: `{FeatureName}.service-e2e.test.ts`
