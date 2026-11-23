@@ -23,7 +23,7 @@
 
 ### ディレクトリ構成と命名規則
 
-すべて `tests/e2e/` 配下に置く。テストファイルは直下、ページオブジェクトは `pages/`（レーン間で共通）、Fixtureは `fixtures/`、fixture-e2e用の静的フィクスチャデータは `data/`。
+すべて `tests/e2e/` 配下に置く。テストファイルは直下、ページオブジェクトは `pages/`（レーン間で共通）、Fixtureは `fixtures/`、fixture-e2e用の静的フィクスチャデータは `data/`。これらのファイルはユニットテストランナーの `*.test.ts` パターンにも一致するため、`tests/e2e/` をその探索対象から除外する（Vitestの `exclude`）。
 
 - fixture-e2eファイル: `{FeatureName}.fixture-e2e.test.ts`
 - service-integration-e2eファイル: `{FeatureName}.service-e2e.test.ts`

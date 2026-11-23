@@ -23,7 +23,7 @@
 
 ### 目录布局与命名
 
-所有内容都位于 `tests/e2e/` 下：测试文件位于其根目录，页面对象位于 `pages/`（各通道共用），fixtures 位于 `fixtures/`，fixture-e2e 使用的静态 fixture 数据位于 `data/`。
+所有内容都位于 `tests/e2e/` 下：测试文件位于其根目录，页面对象位于 `pages/`（各通道共用），fixtures 位于 `fixtures/`，fixture-e2e 使用的静态 fixture 数据位于 `data/`。这些文件同样匹配单元测试运行器的 `*.test.ts` 模式，因此应将 `tests/e2e/` 排除在其发现范围之外（Vitest 的 `exclude`）。
 
 - fixture-e2e 文件：`{FeatureName}.fixture-e2e.test.ts`
 - service-integration-e2e 文件：`{FeatureName}.service-e2e.test.ts`
