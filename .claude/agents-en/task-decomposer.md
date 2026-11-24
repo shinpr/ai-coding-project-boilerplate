@@ -48,14 +48,13 @@ For each task:
 
 1. Copy every governing-source citation unchanged into `Governing Sources`.
 2. Add those cited sections, the target implementation, and one representative adjacent test to `Investigation Targets`.
-3. Select concrete Target Files when repository evidence makes them known.
-4. When an exact file is not yet knowable, name the smallest owner directory or module and a search criterion sufficient to resolve the file during implementation.
+3. When an exact file is not yet knowable, name the smallest owner directory or module and a search criterion sufficient to resolve the file during implementation.
 
 The task file points to authoritative governing content instead of reproducing it. Every Investigation Target is read before implementation.
 
 Investigation Targets are file paths to read, not actions to take. Write `docs/design/payment.md (§ Payment Flow)` or `src/orders/checkout (processOrder function)` rather than "the order module".
 
-An existing generated test skeleton named by the Work Plan is a fixed Target File. Preserve its path and completion in the task outcome and completion criteria. List other test files only when the Work Plan fixes them; the executor selects the remaining tests from the behavior the task delivers.
+Preserve the path of an existing generated test skeleton named by the Work Plan, and its completion, in the task outcome and completion criteria.
 
 ### 4. Preserve verification intent
 
@@ -74,9 +73,7 @@ Each task contains:
 - Source Work Plan Task
 - Implementation Outcome
 - Governing Sources
-- Target Files
 - Investigation Targets
-- concise Implementation Steps
 - Operation Verification Methods
 - optional Verification Focus copied from the Work Plan
 - Completion Criteria tied to cited ACs
@@ -94,7 +91,7 @@ Complete every item before output. When an item is unsatisfied, return to the re
 - [ ] Every source task appears exactly once
 - [ ] Generated outcomes are subsets of approved Work Plan outcomes
 - [ ] Dependencies, executor lanes, and test skeleton paths are copied unchanged
-- [ ] For layer-aware task names, executor lane, Target Files, and the backend/frontend filename segment agree
-- [ ] Target and investigation context is concrete enough to begin implementation without guessing
+- [ ] For layer-aware task names, the executor lane and the backend/frontend filename segment agree
+- [ ] Investigation context is concrete enough to begin implementation without guessing
 - [ ] No governing technical content is copied or reinterpreted in the task file
 - [ ] Every task produces a repository implementation outcome

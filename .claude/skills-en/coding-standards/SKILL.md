@@ -5,35 +5,17 @@ description: Detects code smells, anti-patterns, and readability issues. Use whe
 
 # Universal Coding Standards
 
-## Technical Anti-patterns (Red Flag Patterns)
-
-When any pattern below is detected, pause implementation and record: the triggered pattern, affected current requirement, smallest compliant alternative, and verification needed to resume. Resume when the alternative removes the pattern or a documented requirement justifies retaining it.
-
-### Code Quality Anti-patterns
-1. **Duplicating one responsibility across independently maintained locations** - Review whether the duplicated logic has one change reason and should have one owner
-2. **Multiple responsibilities mixed in a single file** - Violates Single Responsibility Principle (SRP)
-3. **Defining same content in multiple files** - Violates DRY principle
-4. **Making changes without checking dependencies** - Potential for unexpected impacts
-5. **Disabling code with comments** - Should use version control
-6. **Error suppression** - Hiding problems creates technical debt
-7. **Type assertions standing in for a guarantee** - Declaring a type that neither a runtime check nor an existing contract establishes
-
-### Design Anti-patterns
-- **"Make it work for now" thinking** - Accumulation of technical debt
-- **Patchwork implementation** - Unplanned additions to existing code
-- **Symptomatic fixes** - Surface-level fixes that don't solve root causes
-- **Unplanned large-scale changes** - Lack of incremental approach
-
 ## Basic Principles
 
 Inspect until the evidence identifies the lowest-total-complexity solution that delivers the required user, operator, or maintainer value while keeping the system correct and maintainable.
 
-- **Evidence-Bounded Refactoring** - Refactor code that blocks the current outcome, is changed by the current task, or fails an applicable quality check; use small behavior-preserving steps. Report other findings with their owning boundary and evidence without expanding the active change
+- **Final State over Effort** - Minimize the complexity and size of what remains after the change — code, tests, concepts, and what a later change must know — not the work spent reaching it. The product keeps changing after this session and a future agent maintains whatever is left, so take on the larger change now when it leaves less behind. Do not choose a route because it needs fewer steps, edits, or tokens; effort only breaks a tie between results of equal final complexity.
 - **Current-Requirement Code Only** - Introduce code paths, capabilities, infrastructure, abstractions, or speculative edge-case handling when a current requirement, verified constraint, or evidence-backed material risk requires them (YAGNI)
 - **Sourced Values** - Take each behavior-setting value, such as a limit, timeout, or threshold, from an existing requirement, contract, measurement, or repository value for the same purpose; when none of these determines it, mark the value as assumed in a comment
-- **Design Convergence** - Deliver the current required outcome with the least new design surface. Before introducing persistent state, a public or cross-boundary contract, a behavioral mode, a reusable abstraction, or a component split, record what the existing capabilities already deliver, what they fail to deliver for the current outcome, and why the addition is the smallest thing that closes that gap
+- **Design Convergence** - Deliver the current required outcome with the least design surface in the final code. Before introducing persistent state, a public or cross-boundary contract, a behavioral mode, a reusable abstraction, or a component split, record what the existing capabilities already deliver, what they fail to deliver for the current outcome, and why the addition is the smallest thing that closes that gap
+- **Structure for Local Edits** - The next change here will be made by an agent that reads only the code around it, so what a change must agree with belongs where that agent cannot miss it: a single definition, a type, an exhaustive branch, or a check that fails. For the code a change adds or extends, shape state so only valid combinations can be expressed, advance each state through its existing owner, and when a compiler, type, or lint check fails on the new code, change the structure so the check passes, suppressing it only when no such change exists
 
-Judge total complexity across every activated surface: user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths, together with their UX, runtime, implementation, testing, documentation, and maintenance cost. Compare only dimensions that differ between viable approaches. Prefer reuse or no new mechanism when it delivers the same required value and proof at lower total complexity.
+Judge total complexity across every activated surface: user decisions, settings, modes, concepts, outputs, persistent state, and implementation paths, together with their UX, runtime, testing, documentation, and maintenance cost. Compare only dimensions that differ between viable approaches. Prefer reuse or no new mechanism when it delivers the same required value and proof at lower total complexity.
 
 ## Comment Writing Rules
 
@@ -81,10 +63,10 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 
 ## Common Failure Patterns and Avoidance Methods
 
-### Pattern 1: Error Fix Chain
-**Symptom**: Fixing one error causes new errors
-**Cause**: Surface-level fixes without understanding root cause
-**Avoidance**: Identify root cause with 5 Whys before fixing
+### Pattern 1: Symptom Fixes
+**Symptom**: Fixing one error or finding causes new ones, or the same defect returns through another path
+**Cause**: Each symptom is repaired where it appeared, leaving what produced it in place
+**Avoidance**: Trace the failures or findings in hand to what produces them; findings with one cause are corrected once at that cause, so no other path can produce them again
 
 ### Pattern 2: Circumventing Type Guarantees
 **Symptom**: `any` or `as` declares a type that no check or contract establishes
@@ -107,7 +89,7 @@ Resolve external dependency versions from manifests, lockfiles, and compatible c
 **Avoidance Methods**:
 - Before implementation, find functionality that already holds the same responsibility and the code that depends on the change, as Change Boundary and Reference Representativeness describes; similar functionality may share no name with the new code
 - Similar functionality found -> Use or extend that implementation when it satisfies the current contract
-- Similar functionality is technical debt -> Repair it when it blocks the current outcome, was caused by the current change, or lies in scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
+- Existing code the change connects to or resembles has a problem, such as a fact written in two places, a state it can express but must not, or a shape the new case has to work around -> Revise it in this change when the revision leaves this change's final state simpler to maintain, keeping the outcome, requirements, and non-goals unchanged: a change built around the problem keeps both the problem and the workaround. Create an ADR when the revision requires an architectural decision
 - No similar functionality exists -> Implement new functionality following existing design philosophy
 - Record every decision and its rationale in the artifact the current workflow assigns to it
 
@@ -133,17 +115,6 @@ Use these as review prompts, not pass/fail thresholds. Existing project conventi
 - Optional fields above 30%: review whether required and optional shapes should separate
 - Nesting beyond 3 levels: review flattening
 - **External API Types**: Represent the actual external shape and convert at the application boundary
-
-## Refactoring Techniques
-
-**Basic Policy**
-- Small Steps: Keep the nearest applicable tests and static checks passing after each behavior-preserving refactor
-- Safe Changes: Change one refactoring responsibility at a time and verify its observable behavior before the next responsibility
-- Behavior Guarantee: Ensure existing behavior remains unchanged while proceeding
-
-**Implementation Procedure**: Understand Current State -> Gradual Changes -> Behavior Verification -> Final Validation
-
-**Priority**: Duplicate Code Removal > Large Function Division > Complex Conditional Branch Simplification > Type Safety Improvement
 
 ## Implementation Completeness Assurance
 

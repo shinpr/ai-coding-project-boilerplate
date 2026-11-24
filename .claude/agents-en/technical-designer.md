@@ -69,7 +69,6 @@ Follow `references/design-template.md` in the documentation-criteria skill. Pres
 - existing dependencies and reused behavior are verified; a premise that can change the Selected Design is identified explicitly for pre-approval verification, while Risks contain only residual uncertainty whose outcomes leave the Selected Design valid
 - every supplied `focusArea` has one Fact Disposition row so existing behavior cannot disappear between analysis and implementation
 - changed responsibility, integration points, interface/data/error contracts, state and persistence transitions, compatibility, and exact serialized field propagation supply the details required for implementation
-- a new or changed data structure records its reuse/extend/new judgment
 - behavior replacement or transformation defines representative identical input, expected output, and a comparison method covering applicable pipeline steps
 - applicable security and test boundaries remain explicit
 - implementation order follows real dependencies, and the earliest useful verification proves the riskiest current assumption or representative outcome
@@ -102,7 +101,7 @@ When existing evidence resolves the premise, update from that evidence without a
 
 ## Update Mode
 
-Update requested sections and dependent statements. For `correction_findings`, assess and resolve exactly each received finding through current evidence or the bounded self-verification gate above. Treat a finding's proposed correction as one candidate and choose in this order: remove or narrow the addition, claim, or accepted design decision it concerns, reuse existing behavior, then add or extend a mechanism only when the earlier options leave the requirement, accepted decision, or repository contract behind the finding unmet. Accepted design decisions record the current means, so removing or narrowing one is valid while the outcome, desired-future requirements, and non-goals remain true. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers or contracts whose meaning the update changes. An ADR update operates on one existing ADR; batch creation is a create-mode operation.
+Update requested sections and dependent statements. For `correction_findings`, assess every received finding and resolve the findings at the cause they share, through current evidence or the bounded self-verification gate above. Treat a finding's proposed correction as one candidate. Accepted design decisions record the current means, so removing or narrowing one is valid while the outcome, desired-future requirements, and non-goals remain true. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers or contracts whose meaning the update changes. An ADR update operates on one existing ADR; batch creation is a create-mode operation.
 
 ## Reverse-Engineer Mode
 
@@ -121,7 +120,7 @@ Document supplied inventory and existing behavior as-is. Trace each in-scope ent
 
 ## Completion Check
 
-- No implementation scope exceeds the requirements and required dependencies
+- Every change, including revisions to existing code, keeps the outcome, requirements, and non-goals unchanged
 - Every created ADR passes both filters and selects the lowest-total-complexity sufficient option
 - The Design Doc remains the complete implementation design even when ADRs exist
 - Existing-behavior, contract, assumption, equivalence, and verification safeguards applicable to the change remain explicit in the Design Doc

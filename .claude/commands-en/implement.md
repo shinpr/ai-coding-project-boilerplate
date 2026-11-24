@@ -83,7 +83,7 @@ Return to Requirement Change Detection when the outcome, desired-future requirem
 
 ### Task Execution Quality Cycle
 Execute the following dependency-ordered steps. Normal Mode and Small run all four steps. Lite Mode with a Work Plan task set proceeds from accepted step-2 results to step 4 and runs the Final Quality Run after the last task:
-1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, affected paths, and verification condition directly as the execution scope, since Small produces no task file.
+1. **INVOKE task-executor**: Execute implementation (cross-layer: see Layer-Aware Agent Routing). Medium/Large pass the task file. Small passes the approved outcome, governing sources, and verification condition directly as the execution scope, since Small produces no task file.
 2. **CHECK task-executor response**:
    - `status: "escalation_needed"` or `"blocked"` → Apply subagents-orchestration-guide Specialist Result Acceptance
    - `requiresTestReview` is `true` → Execute **integration-test-reviewer**, passing the changed integration/E2E test paths and `diffBase: HEAD`. For Medium/Large also pass `taskFiles: [the current task file path]`; for Small pass the direct scope's verification claims instead. Then branch on its `status`
@@ -105,7 +105,7 @@ For Lite Mode with a Work Plan task set, run the Final Quality Run before the do
 Resolve the Work Plan's readable Design Doc; missing input blocks review.
 
 Invoke the code-reviewer calls for the subagents-orchestration-guide Post-Implementation Review Units and, in Normal Mode, security-reviewer, then await all:
-- code-reviewer (subagent_type: "code-reviewer") → one call per review unit with the resolved `governingDocuments`, the unit's changed files as `implementationFiles`, the unit's tasks as task scope, the Work Plan path, and the executor `findingsOutsideChange` items located in those files as `reportedObservations`
+- code-reviewer (subagent_type: "code-reviewer") → one call per review unit with the resolved `governingDocuments`, the unit's changed files as `implementationFiles`, the unit's tasks as task scope, and the Work Plan path
 - security-reviewer (subagent_type: "security-reviewer") → review the completed implementation against the same `governingDocuments` and the actual files changed by completed tasks as `implementationFiles`
 
 Apply subagents-orchestration-guide's Post-Implementation Review status-routing and fix/re-run rules. Present the unified report; proceed to Final Cleanup after the complete review set reaches Review Resolution convergence.

@@ -228,7 +228,6 @@ This is intermediate output only. The final response must be the JSON result (St
 - **Clear Type Error Fixes**
   - Add import statements (when types not found)
   - Add type annotations (when inference impossible)
-  - Add optional chaining
 - **Clear Code Quality Issues**
   - Remove unused variables/functions
   - Remove exports made unused by the current change after checking their consumers; leave other exports unchanged
@@ -257,6 +256,7 @@ This is intermediate output only. The final response must be the JSON result (St
 |---|---|---|
 | Tests fail | Fix implementation or fix obsolete tests (delete only when proven obsolete) | `.skip`, vague assertions, removing tests to make them green |
 | Type unknown / error | Apply the type-safety criteria in the referenced skills | `any`, `@ts-ignore`, type cast to silence the compiler |
+| Lint failure | Change the flagged code per coding-standards Structure for Local Edits | A suppression comment or rule override while a structural change can satisfy the rule |
 | Specification unclear | Search Design Doc / PRD / similar code; if all methods are exhausted → `verification_incomplete` | Pick one interpretation silently |
 | Environment differs | Absorb via DI / config | Branch on `NODE_ENV` inside business logic |
 | Error handling | Minimum error logging; rethrow with context where appropriate | Empty catch; swallow errors |
