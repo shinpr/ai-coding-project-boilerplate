@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.10] - 2026-11-24
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Changed
+
+- coding-standards judges a change by what remains after it, not the work to reach it: agents take on a larger change when it leaves less to maintain. Implementation effort no longer counts as cost in implementation-approach, codebase analysis, document review, or Review Resolution.
+- Code a change adds or extends keeps what a later edit must agree with in one definition, a type, an exhaustive branch, or a failing check, so only valid state combinations can be expressed. A failing compiler, type, or lint check is fixed by changing the structure, not by suppressing it. code-reviewer judges added suppressions, and quality fixers change the flagged code for lint failures and no longer add optional chaining.
+- When existing code the change connects to has a problem, such as a fact written in two places or a shape the new case must work around, it is revised in the same change if that leaves the final state simpler. Designers include these revisions in the design and check that every change keeps the outcome, requirements, and non-goals instead of limiting scope to the requirements. Executors reshape a structure the case does not fit.
+- Received findings are traced to what produces them, and findings that share a cause are corrected once at that cause. Designers no longer follow a fixed remove, reuse, then add order.
+- Task executors find similar implementations through coding-standards' change-boundary guidance instead of five fixed indicators. A frontend class component the change modifies follows the function-component rule when that revision belongs in the change.
+
+### Removed
+
+- `target_paths` and the task file's Target Files and Implementation Steps, which were read as write boundaries.
+- `findingsOutsideChange`, `reportedObservations`, and the completion-report item for unhandled findings, which no step acted on.
+- coding-standards' anti-pattern lists, Evidence-Bounded Refactoring, and refactoring-technique section; the Design Doc's Data Representation Decision table; and the 5 Whys guideline in implementation-approach.
+
 ## [2.2.9] - 2026-11-23
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.
