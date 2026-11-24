@@ -104,7 +104,6 @@ description: 评审已完成的前端实现，检查其与约束来源的一致�
 - `description`: "执行评审修复"
 - `direct_scope`: 在评审范围与所述的总规模预算内应用已批准的前端修正
 - `governing_sources`: 被评审的设计文档、适用的 UI 规范，以及已接受的需求或 ADR 路径
-- `target_paths`: 为已批准的代码侧路由所识别的实现与测试路径
 - `observable_verification`: 由发现项与约束来源所指明的聚焦 UI 行为测试或可观测契约检查通过
 - `correction_findings`: 评审者发现项对象的完整逐字副本，仅添加其编排者处置
 

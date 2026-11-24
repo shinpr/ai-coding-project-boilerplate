@@ -47,7 +47,7 @@ Verify current external facts from authoritative sources only when an ADR select
 
 ## Applicable Checks
 
-For ADR and Design Doc checks, total complexity covers every activated user decision, setting, mode, concept, output, persistent state, and implementation path, together with its UX, runtime, implementation, testing, documentation, and maintenance cost; compare only dimensions that differ between valid options.
+For ADR and Design Doc checks, total complexity covers every activated user decision, setting, mode, concept, output, persistent state, and implementation path, together with its UX, runtime, testing, documentation, and maintenance cost; compare only dimensions that differ between valid options.
 
 ### PRD
 

@@ -18,11 +18,6 @@ Metadata:
 - [Design Doc パス (§ セクション); AC ID]
 - [直接の制約となる場合の UI Spec または ADR パス (§ セクション)]
 
-## Target Files
-
-- [実装ファイル、または責務を担うディレクトリ]
-- [作業計画書で指定されたテストファイル（生成済みスケルトンなど）]
-
 ## Investigation Targets
 
 実装開始前に読む、最小で代表的なファイル群（ファイルパス、任意でサーチヒント付き）:
@@ -34,12 +29,6 @@ Metadata:
 ## Investigation Notes
 
 - [実装・スコープ・検証を変える事実のみを記録する]
-
-## Implementation Steps
-
-1. Investigation Targets を読み、関連するリポジトリ上の事実を記録する
-2. 成果を完成させる最小のリポジトリ変更を、引用された検証手法が要求するテストとともに実装する
-3. 下記の Operation Verification Methods を実行する
 
 ## Operation Verification Methods
 

@@ -63,7 +63,6 @@ Design Docごとにacceptance-test-generatorを1回呼び出す:
 - `description`: "統合テストを実装"
 - `direct_scope`: 該当レイヤーで生成されたスケルトンが定義するすべてのテストを実装する
 - `governing_sources`: 該当レイヤーのDesign Doc、該当するUI Spec、生成されたスケルトンのパス
-- `target_paths`: 生成されたテストパスと、リポジトリから特定した既存のセットアップまたはフィクスチャのパス
 - `observable_verification`: 実装したテストを実行し、各スケルトンの主張を宣言された境界で検証する
 
 1つのレイヤーでStep 3→4→5→6→7を完了してから、次のレイヤーへ進む。
@@ -97,7 +96,7 @@ Step 4の結果で分岐する:
 - バックエンドまたは単一レイヤーのバックエンド → `subagent_type`: "quality-fixer"
 - フロントエンド → `subagent_type`: "quality-fixer-frontend"
 - `description`: "最終品質保証"
-- `direct_scope`: Step 3のdirect scopeと対象パスを再利用する
+- `direct_scope`: Step 3のdirect scopeを再利用する
 - `runnableCheck`: 最新のexecutor結果にある`runnableCheck`
 
 **期待出力**: `status`（`pass`、`stub_detected`、`verification_incomplete`、`blocked`）

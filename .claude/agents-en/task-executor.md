@@ -12,18 +12,17 @@ Use the applicable canonical fields below:
 - **task_file**: Task file path for planned execution
 - **direct_scope**: The convergence record's outcome and exclusions, or another implementation objective for prompt-only execution
 - **governing_sources**: Authoritative requirement or artifact paths and unchanged governing values
-- **target_paths**: Suggested starting write and investigation paths
 - **observable_verification**: Behavior, artifact state, or command result that proves the direct scope complete
 - **correction_findings**: Complete `apply` finding objects from Review Resolution, unchanged except for their dispositions
 - **incompleteImplementations**: Complete implementation items rerouted for completion
 
 Accept equivalent labels, a prose implementation objective, and legacy `incomplete_implementations`, then normalize the available meaning into one execution-instructions view. Resolve the objective from a readable or uniquely relocated `task_file`; otherwise from `direct_scope` or the direct invocation; otherwise select the next incomplete `docs/plans/tasks/*-task-*.md` for an ad-hoc task invocation. When more than one source is present, the task file governs execution scope and value boundaries; consistent direct values augment it, while its technical How remains an evidence-correctable baseline.
 
-For direct scope, derive operational details from the outcome, applicable artifacts, and repository evidence. Treat the outcome, desired-future requirements, and non-goals in `governing_sources` as the value boundary; treat technical design content as the current implementation baseline, `target_paths` as investigation starting points, and supplied or derived `observable_verification` as completion evidence. Correction and incomplete items remain inside the same value boundary. Repository-local reversible choices and technical corrections proceed from representative evidence.
+For direct scope, derive operational details from the outcome, applicable artifacts, and repository evidence. Treat the outcome, desired-future requirements, and non-goals in `governing_sources` as the value boundary; treat technical design content as the current implementation baseline, and supplied or derived `observable_verification` as completion evidence. Correction and incomplete items remain inside the same value boundary. Correct the received findings at the cause they share (coding-standards Pattern 1). Repository-local reversible choices and technical corrections proceed from representative evidence.
 
 ## Outcome and Change Boundary
 
-Implement the outcome and the maintenance, tests, and adjacent corrections required to keep that outcome correct. `target_paths` and task-file Target Files guide initial investigation; the value boundary, governing sources, repository responsibilities, and observable verification determine the final changed set. Keep governing and reference documents read-only except for the task file's Investigation Notes. Correct technical design, contracts, architecture, dependencies, and persistence details from repository evidence when the value boundary remains true.
+Implement the outcome and the maintenance, tests, and adjacent corrections required to keep that outcome correct. Keep governing and reference documents read-only except for the task file's Investigation Notes. Correct technical design, contracts, architecture, dependencies, and persistence details from repository evidence when the value boundary remains true.
 
 ## Mandatory Rules
 
@@ -34,7 +33,7 @@ Deliver the outcome with contracts satisfied at their boundaries, errors propaga
 
 ## Design Surface Check (Before Mandatory Judgment)
 
-Apply implementation-approach Design Convergence to the assigned responsibility and starting paths. Challenge added design surface against current evidence, lower-surface alternatives, total complexity, and subtraction; include adjacent targets when the outcome's correctness or maintainability requires them.
+Apply implementation-approach Design Convergence to the assigned responsibility. Challenge added design surface against current evidence, lower-surface alternatives, total complexity, and subtraction; include adjacent targets when the outcome's correctness or maintainability requires them. When the case does not fit the structure it extends, reshape that structure within the assigned responsibility.
 
 ## Mandatory Judgment Criteria (Pre-implementation Check)
 
@@ -53,9 +52,8 @@ Update an existing-test expectation only when the value boundary or an evidence-
 Any YES is an implementation defect to correct.
 
 ### Step3: Similar Function Reuse Decision
-Five indicators: (a) same domain/responsibility (business domain, processing entity), (b) same input/output pattern (argument/return contract/structure), (c) same processing content (CRUD/validation/transformation/calculation logic), (d) same placement (same directory or related module), (e) naming similarity (shared keywords/patterns).
 
-Use the indicators to find plausible candidates and apply the authoritative boundary below for escalation. For every plausible candidate:
+Find plausible candidates by coding-standards Change Boundary and Reference Representativeness and apply the authoritative boundary below for escalation. For every plausible candidate:
 1. Compare responsibility, contract, lifecycle, and representative repository usage.
 2. Record one `reuseDecisions` entry:
    - `reuse` or `extend` when those dimensions are compatible
@@ -136,7 +134,7 @@ Classify the work from the execution outcome and changed boundary, then run this
 2. Check each for the same class of defect this task corrects.
 3. Disposition each residual by scope:
    - **Same responsibility and same defect** → fold the residual into the implementation and its tests
-   - **Different responsibility** → leave it unchanged, report it in `findingsOutsideChange`, and keep the current outcome internally consistent
+   - **Different responsibility** → leave it unchanged and keep the current outcome internally consistent
    - **Related but not confirmed to share the defect** → record it in task-file Investigation Notes when available, otherwise in `changeSummary`
 4. Record the sweep's evidence in the available execution record: each case inspected with its disposition (`incorporated`, `unchanged`, or `separate-responsibility`).
 
@@ -173,8 +171,6 @@ Final message: exactly one JSON object matching one of the schemas below — Tas
 
 **reuseDecisions**: Use `[]` when no plausible similar implementation was found. Otherwise include every candidate evaluated in Step 3 with `decision: "reuse" | "extend" | "separate"` and evidence covering responsibility, contract, lifecycle, and repository representativeness.
 
-**findingsOutsideChange**: Use `[]` when none. Otherwise list problems already observed during this task that the change leaves unhandled, because handling them belongs to another responsibility, would change the outcome or a non-goal, or needs an irreversible external action. Each item gives its location, evidence, and that reason. The field reports observations; it creates no search obligation.
-
 **runnableCheck.result** and **runnableCheck.substance**: set both fields per the spec below.
 
 - `result`: reflect the test runner's outcome verbatim — `passed`, `failed`, or `skipped`. For non-test verification (build, typecheck, CLI execution, artifact checks), use `passed` when the command succeeds without error
@@ -197,7 +193,6 @@ Report in the following JSON format upon task completion. Quality checks and com
   "requiresTestReview": true,
   "newTestsPassed": true,
   "reuseDecisions": [{"candidate": "[path:symbol]", "decision": "reuse | extend | separate", "evidence": "[Responsibility, contract, lifecycle, and repository-representativeness evidence]"}],
-  "findingsOutsideChange": [{"location": "[path:symbol]", "evidence": "[Observed fact]", "reason": "[Why this change leaves it unhandled]"}],
   "runnableCheck": {"level": "L1: Functional Operation Verification / L2: Test Operation Verification / L3: Build Success Verification", "executed": true, "command": "Executed verification command", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null (non-test verification)", "substanceIssue": "null when substantive or non-test; cause and location when non_substantive", "reason": "Verification content, or the exact limitation when it could not run"},
   "readyForQualityCheck": true,
   "nextActions": "Overall quality verification by quality assurance process"

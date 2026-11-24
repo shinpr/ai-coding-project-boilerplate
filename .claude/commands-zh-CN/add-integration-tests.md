@@ -63,7 +63,6 @@ description: 使用设计文档为现有代码库添加集成/E2E 测试
 - `description`: "实现集成测试"
 - `direct_scope`: 实现该层所生成骨架定义的每一个测试
 - `governing_sources`: 该层对应的设计文档、适用的 UI 规范以及生成的骨架路径
-- `target_paths`: 生成的测试路径，以及从仓库中识别出的现有 setup 或 fixture 路径
 - `observable_verification`: 执行已实现的测试，并在其声明的边界上验证每一条骨架主张
 
 在开始下一层之前，先对一个层完整走完第 3→4→5→6→7 步。
@@ -97,7 +96,7 @@ description: 使用设计文档为现有代码库添加集成/E2E 测试
 - 后端或单层后端 → `subagent_type`: "quality-fixer"
 - 前端 → `subagent_type`: "quality-fixer-frontend"
 - `description`: "最终质量保证"
-- `direct_scope`: 复用第 3 步的直接范围和受影响路径
+- `direct_scope`: 复用第 3 步的直接范围
 - `runnableCheck`: 最近一次执行者结果中的 `runnableCheck`
 
 **期望输出**：`status`（`pass`、`stub_detected`、`verification_incomplete` 或 `blocked`）

@@ -48,14 +48,13 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 1. 出典の引用をすべて変更せず `Governing Sources` にコピーする。
 2. 引用されたセクション、対象実装、隣接する代表的なテスト1つを `Investigation Targets` に加える。
-3. リポジトリ上の根拠から確定できる場合は、具体的な Target Files を選ぶ。
-4. 正確なファイルがまだ判明しない場合は、最小の所有ディレクトリまたはモジュールと、実装時にファイルを特定できる探索条件を示す。
+3. 正確なファイルがまだ判明しない場合は、最小の所有ディレクトリまたはモジュールと、実装時にファイルを特定できる探索条件を示す。
 
 タスクファイルは正典の内容を再掲せず、そこを指し示す。すべてのInvestigation Targetは実装前に読む。
 
 Investigation Targets は読むべきファイルパスであり、実行するアクションではない。「注文モジュール」ではなく `docs/design/payment.md (§ 決済フロー)` や `src/orders/checkout (processOrder関数)` と書く。
 
-作業計画書で指定された既存の生成済みテストスケルトンは、確定した Target File である。そのパスと、それを完成させることを、タスクの成果と完了条件に明記する。その他のテストファイルは、作業計画書で指定されている場合に限り記載する。残りのテストは、タスクが届ける振る舞いからexecutorが選ぶ。
+作業計画書で指定された既存の生成済みテストスケルトンは、そのパスと、それを完成させることを、タスクの成果と完了条件に明記する。
 
 ### 4. 検証の意図を保持する
 
@@ -74,9 +73,7 @@ Investigation Targets は読むべきファイルパスであり、実行する�
 - Source Work Plan Task
 - Implementation Outcome
 - Governing Sources
-- Target Files
 - Investigation Targets
-- 簡潔な Implementation Steps
 - Operation Verification Methods
 - 作業計画書からコピーした任意の Verification Focus
 - 引用ACに紐づく Completion Criteria
@@ -94,7 +91,7 @@ Investigation Targets は読むべきファイルパスであり、実行する�
 - [ ] 各ソースタスクがちょうど1回だけ現れる
 - [ ] 生成した成果が、承認済み作業計画書の成果の範囲内に収まっている
 - [ ] 依存関係・Executor lane・テストスケルトンのパスが変更されずコピーされている
-- [ ] レイヤー対応のタスク名で、Executor lane・Target Files・backend/frontend のファイル名要素が一致している
-- [ ] 対象と調査のコンテキストが、推測せず実装に着手できる具体度になっている
+- [ ] レイヤー対応のタスク名で、Executor lane と backend/frontend のファイル名要素が一致している
+- [ ] 調査のコンテキストが、推測せず実装に着手できる具体度になっている
 - [ ] 出典の技術的内容をタスクファイルにコピーまたは再解釈していない
 - [ ] 各タスクがリポジトリ上の実装成果を生む

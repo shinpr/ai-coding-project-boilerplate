@@ -48,14 +48,13 @@ skills: documentation-criteria, project-context, coding-standards, typescript-te
 
 1. 将每条约束来源引用原样复制到 `Governing Sources` 一节。
 2. 将这些引用章节、目标实现以及一个具有代表性的相邻测试添加到 `Investigation Targets`。
-3. 当仓库依据能够确定具体文件时，选定明确的 Target Files。
-4. 当尚无法确定确切文件时，指出最小的责任目录或模块，以及足以在实现阶段确定文件的搜索准则。
+3. 当尚无法确定确切文件时，指出最小的责任目录或模块，以及足以在实现阶段确定文件的搜索准则。
 
 任务文件指向权威的约束来源内容，而不是复制该内容。每个 Investigation Target 均需在实现前阅读。
 
 Investigation Targets 是待阅读的文件路径，而非待执行的操作。应写作 `docs/design/payment.md (§ Payment Flow)` 或 `src/orders/checkout (processOrder function)`，而不是“订单模块”。
 
-工作计划中已命名的、已生成的测试骨架文件是固定的 Target File。在任务结果和完成标准中保留其路径及完成状态。仅当工作计划固定了其他测试文件时才列出它们；其余测试由执行者根据任务所交付的行为选定。
+对于工作计划中已命名的、已生成的测试骨架，在任务结果和完成标准中保留其路径及完成状态。
 
 ### 4. 保留验证意图
 
@@ -74,9 +73,7 @@ Investigation Targets 是待阅读的文件路径，而非待执行的操作。�
 - Source Work Plan Task；
 - Implementation Outcome；
 - Governing Sources；
-- Target Files；
 - Investigation Targets；
-- 简明的 Implementation Steps；
 - Operation Verification Methods；
 - 可选的、从工作计划复制的 Verification Focus；
 - 关联所引用 AC 的 Completion Criteria
@@ -94,7 +91,7 @@ Investigation Targets 是待阅读的文件路径，而非待执行的操作。�
 - [ ] 每个来源任务都恰好出现一次
 - [ ] 生成的结果是已批准工作计划结果的子集
 - [ ] 依赖、执行者通道和测试骨架路径均原样复制
-- [ ] 对于区分层级的任务名称，执行者通道、Target Files 与文件名中的 backend/frontend 段一致
-- [ ] 目标和调查上下文足够具体，无需猜测即可开始实现
+- [ ] 对于区分层级的任务名称，执行者通道与文件名中的 backend/frontend 段一致
+- [ ] 调查上下文足够具体，无需猜测即可开始实现
 - [ ] 任务文件中未复制或重新解释任何约束性技术内容
 - [ ] 每个任务都会产出一个仓库实现结果

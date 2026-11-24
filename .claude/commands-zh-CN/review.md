@@ -101,7 +101,6 @@ description: 评审已完成的实现，检查其与约束来源的一致性、�
 - `description`: "执行评审修复"
 - `direct_scope`: 在确定的评审范围与已声明的总规模预算内，应用已批准的代码侧修正
 - `governing_sources`: 被评审的设计文档，以及已接受的需求或 ADR 路径
-- `target_paths`: 为已批准的代码侧路由所识别的实现与测试路径
 - `observable_verification`: 发现项与约束来源所指明的、聚焦的测试或可观测契约检查通过
 - `correction_findings`: 评审者发现项对象的完整逐字副本，仅添加其编排者处置
 

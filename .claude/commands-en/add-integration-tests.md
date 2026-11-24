@@ -63,7 +63,6 @@ For each layer with generated skeletons, record the current `HEAD` as `diffBase`
 - `description`: "Implement integration tests"
 - `direct_scope`: Implement every test defined by the layer-specific generated skeletons
 - `governing_sources`: Layer-specific Design Doc, applicable UI Spec, and generated skeleton paths
-- `target_paths`: Generated test paths and existing setup or fixture paths identified from the repository
 - `observable_verification`: Execute the implemented tests and verify every skeleton claim at its declared boundary
 
 Execute one layer at a time through Steps 3→4→5→6→7 before starting the next.
@@ -97,7 +96,7 @@ Invoke the current layer's quality-fixer:
 - Backend or single-layer backend → `subagent_type`: "quality-fixer"
 - Frontend → `subagent_type`: "quality-fixer-frontend"
 - `description`: "Final quality assurance"
-- `direct_scope`: Reuse the Step 3 direct scope and affected paths
+- `direct_scope`: Reuse the Step 3 direct scope
 - `runnableCheck`: The latest executor result's `runnableCheck`
 
 **Expected output**: `status` (`pass`, `stub_detected`, `verification_incomplete`, or `blocked`)

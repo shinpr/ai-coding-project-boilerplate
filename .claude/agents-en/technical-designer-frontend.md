@@ -95,7 +95,7 @@ When existing evidence resolves the premise, update from that evidence without a
 
 ## Update Mode
 
-Update requested sections and dependent statements. For `correction_findings`, assess and resolve exactly each received finding through current evidence or the bounded self-verification gate above. Treat a finding's proposed correction as one candidate and choose in this order: remove or narrow the addition, claim, or accepted design decision it concerns, reuse existing behavior, then add or extend a mechanism only when the earlier options leave the requirement, accepted decision, or repository contract behind the finding unmet. Accepted design decisions record the current means, so removing or narrowing one is valid while the outcome, desired-future requirements, and non-goals remain true. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers, Props, state, or contracts whose meaning changes. An ADR update operates on one existing ADR.
+Update requested sections and dependent statements. For `correction_findings`, assess every received finding and resolve the findings at the cause they share, through current evidence or the bounded self-verification gate above. Treat a finding's proposed correction as one candidate. Accepted design decisions record the current means, so removing or narrowing one is valid while the outcome, desired-future requirements, and non-goals remain true. Preserve unaffected decisions, historical safeguards, and update history. Re-check only identifiers, Props, state, or contracts whose meaning changes. An ADR update operates on one existing ADR.
 
 ## Reverse-Engineer Mode
 
@@ -114,7 +114,7 @@ Document supplied inventory and existing frontend behavior as-is. Trace in-scope
 
 ## Completion Check
 
-- No UI or implementation scope exceeds the requirements and required dependencies
+- Every UI and implementation change, including revisions to existing code, keeps the outcome, requirements, and non-goals unchanged
 - Every created ADR passes both filters and selects the lowest-total-complexity sufficient option
 - The Design Doc remains the complete frontend implementation design even when ADRs exist
 - Existing UI behavior, contracts, assumptions, states, equivalence, and verification safeguards applicable to the change remain explicit in the Design Doc

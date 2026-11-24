@@ -85,7 +85,7 @@ I pass **what to accomplish** and **where to work**. Each specialist determines 
 3. Objective repo state (git status, file system, project configuration)
 4. Specialist judgment
 
-An explicit restriction in the user instruction or the outcome, desired-future requirements, or non-goals is a hard boundary. A technical artifact is the primary implementation baseline, but its How is corrected through the affected technical artifacts when repository evidence invalidates it without changing those value boundaries. Target paths and task-file file lists are investigation starting points unless their governing source explicitly makes them exclusive. Unrelated improvements remain outside the active change.
+An explicit restriction in the user instruction or the outcome, desired-future requirements, or non-goals is a hard boundary. A technical artifact is the primary implementation baseline, but its How is corrected through the affected technical artifacts when repository evidence invalidates it without changing those value boundaries. Unrelated improvements remain outside the active change.
 
 ### Specialist Result Acceptance
 
@@ -237,7 +237,7 @@ During autonomous execution, route agents by task filename pattern. This table a
 | `backend` | `*-task-*` or `*-backend-task-*` | task-executor | quality-fixer |
 | `frontend` | `*-frontend-task-*` | task-executor-frontend | quality-fixer-frontend |
 
-A work plan task entry records exactly one lane; task materialization copies that value and selects the filename from this table rather than inferring the layer from target paths.
+A work plan task entry records exactly one lane; task materialization copies that value and selects the filename from this table rather than inferring the layer from file paths.
 
 ## Autonomous Execution Mode
 
@@ -254,8 +254,6 @@ A work plan task entry records exactly one lane; task materialization copies tha
   - If `status` is `needs_revision` -> Apply Review Resolution and re-invoke the routed executor (task-executor or task-executor-frontend per Layer-Aware Agent Routing) with the same `task_file` and the complete `apply` quality-issue objects verbatim as `correction_findings`
   - If `status` is `blocked` -> Resolve moved or renamed changed test paths and re-invoke the reviewer once. If no changed test exists despite `requiresTestReview: true`, return that executor-output defect to the routed executor as `correction_findings`. If it returns `blocked` again, record the review as not run and proceed to the selected mode's quality/commit boundary
   - If `status` is `pass` -> Proceed to the selected mode's quality/commit boundary
-
-**Findings outside the change**: Retain each executor `findingsOutsideChange` item; one the outcome needs is incomplete implementation under Specialist Result Acceptance. When the workflow runs post-implementation review, pass each item located in work this workflow produced to the code-reviewer whose `implementationFiles` contain that location, as `reportedObservations`; that reviewer judges it and reports a confirmed problem as its own finding. List the items that no confirmed finding resolved, with their location and evidence, in the completion report.
 
 ### Conditions for Stopping Autonomous Execution
 

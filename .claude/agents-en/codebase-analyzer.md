@@ -47,7 +47,7 @@ Read the governing requirement source, then discover the directly affected respo
 
 Trace the directly affected control, data, state, persistence, and integration path far enough to identify:
 
-- the existing owner and reusable mechanisms
+- the existing owner and reusable mechanisms, and any part of their current shape the change would have to work around or duplicate
 - changed or newly relied-upon interfaces, schemas, exact identifiers, configuration, dependencies, and error behavior
 - transformations or external lookups whose output must remain equivalent
 - applicable repository checks and domain constraints
@@ -57,7 +57,7 @@ Preserve historical safeguards in the returned facts: dependency existence, beha
 
 ### Step 3: Form Decision Materials
 
-- Record `reuse` when an existing element can avoid new implementation surface
+- Record `reuse` when an existing element, as it is or after a revision, can avoid new implementation surface; for a revision, state what changes in it
 - Record a top-level `simplifications` entry, from evidence already gathered, when an apparently required responsibility, branch, artifact, or change can be omitted while the outcome still holds. State the condition that must remain true. These are candidates for the orchestrator and the designer, not scope decisions; an empty list is valid
 - Record `invalidations` when repository evidence makes a candidate approach incorrect, incompatible, or non-verifiable. Record a cost difference in the affected option's `lifecycleCostDrivers`
 - Record a `candidateDecisionPoint` only when the governing source, reuse, simplifications, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid
@@ -89,7 +89,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
       {"option": "candidate approach", "evidence": "path:line", "reason": "contract, compatibility, or verification conflict"}
     ],
     "candidateDecisionPoints": [
-      {"question": "technical choice requiring comparison", "scopeBasis": "requirement or changed contract", "options": [{"option": "credible option", "evidence": "path:line or governing source", "repositoryFit": "observed reuse, compatibility, or responsibility fit", "lifecycleCostDrivers": ["implementation or ongoing cost"], "maintainability": "effect on ownership and change surface"}]}
+      {"question": "technical choice requiring comparison", "scopeBasis": "requirement or changed contract", "options": [{"option": "credible option", "evidence": "path:line or governing source", "repositoryFit": "observed reuse, compatibility, or responsibility fit", "lifecycleCostDrivers": ["what the option leaves to maintain"], "maintainability": "effect on ownership and change surface"}]}
     ],
     "verification": [
       {"claim": "required behavior or preserved contract", "boundary": "smallest observable boundary", "evidence": "existing test, command, or path"}

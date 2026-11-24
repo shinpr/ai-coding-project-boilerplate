@@ -47,7 +47,7 @@ skills: coding-standards, llm-friendly-context
 
 追溯直接受影响的控制流、数据流、状态、持久化和集成路径，深度以能够识别以下内容为准：
 
-- 现有的所有者和可复用机制；
+- 现有的所有者和可复用机制，以及它们当前形态中变更必须绕开或重复实现的部分；
 - 发生变化或新依赖的接口、schema、精确标识符、配置、依赖项和错误行为；
 - 输出必须保持等价的转换或外部查询；
 - 适用的仓库检查和领域约束；
@@ -57,7 +57,7 @@ skills: coding-standards, llm-friendly-context
 
 ### 步骤 3：形成决策材料
 
-- 当某个既有元素可以避免新增实现范围时，记录为 `reuse`
+- 当某个既有元素（原样或经改造后）可以避免新增实现范围时，记录为 `reuse`；若需改造，说明该元素中要改变的内容
 - 仅根据已收集到的依据，当省略某个看似必需的职责、分支、产物或变更后，成果仍然成立时，记录一条顶层 `simplifications` 条目。同时说明必须持续成立的条件。这是交给编排者和设计者的候选项，而非范围决策；空列表也是有效的
 - 当仓库依据表明某个候选方案不正确、不兼容或无法验证时，记录为 `invalidations`。成本差异记录在相应选项的 `lifecycleCostDrivers` 中
 - 仅当约束来源、复用、简化项、失效项和具有代表性的仓库依据未能收敛到一个充分方案，且至少存在两个可信且实质性不同的选项时，才记录 `candidateDecisionPoint`。将仓库适配度、生命周期成本驱动因素和可维护性方面的事实作为决策材料报告，并保留每个可行选项。空列表也是有效的
@@ -89,7 +89,7 @@ skills: coding-standards, llm-friendly-context
       {"option": "候选方案", "evidence": "路径:行号", "reason": "契约、兼容性或验证冲突"}
     ],
     "candidateDecisionPoints": [
-      {"question": "需要比较的技术选择", "scopeBasis": "需求或发生变化的契约", "options": [{"option": "可信选项", "evidence": "路径:行号或约束来源", "repositoryFit": "观测到的复用、兼容性或职责适配情况", "lifecycleCostDrivers": ["实现成本或持续成本"], "maintainability": "对归属关系和变更面的影响"}]}
+      {"question": "需要比较的技术选择", "scopeBasis": "需求或发生变化的契约", "options": [{"option": "可信选项", "evidence": "路径:行号或约束来源", "repositoryFit": "观测到的复用、兼容性或职责适配情况", "lifecycleCostDrivers": ["该选项留给后续维护的内容"], "maintainability": "对归属关系和变更面的影响"}]}
     ],
     "verification": [
       {"claim": "必需行为或需保留的契约", "boundary": "最小可观测边界", "evidence": "现有测试、命令或路径"}

@@ -83,7 +83,7 @@ description: 编排从需求到部署的完整实现生命周期
 
 ### 任务执行质量循环
 执行以下按依赖顺序排列的步骤。Normal 模式和 Small 执行全部四步。工作计划任务集合在 Lite 模式下受理步骤 2 的结果后进入步骤 4，并在最后一个任务之后运行最终质量检查：
-1. **调用 task-executor**：执行实现（跨层时参见“分层感知智能体路由”）。Medium/Large 传递任务文件。Small 不产生任务文件，因此直接将已批准的成果、约束来源、受影响路径和验证条件作为执行范围传递。
+1. **调用 task-executor**：执行实现（跨层时参见“分层感知智能体路由”）。Medium/Large 传递任务文件。Small 不产生任务文件，因此直接将已批准的成果、约束来源和验证条件作为执行范围传递。
 2. **检查 task-executor 的响应**：
    - `status: "escalation_needed"` 或 `"blocked"` → 应用 subagents-orchestration-guide 的“专家结果受理”
    - `requiresTestReview` 为 `true` → 执行 **integration-test-reviewer**，传递已变更的集成/E2E 测试路径和 `diffBase: HEAD`。对于 Medium/Large 还需传递 `taskFiles: [当前任务文件路径]`；对于 Small 则改为传递直接范围的验证主张。然后依据其 `status` 分支
@@ -105,7 +105,7 @@ description: 编排从需求到部署的完整实现生命周期
 解析工作计划中可读的设计文档；缺少输入将阻塞评审。
 
 按 subagents-orchestration-guide 的实现后评审单元发出 code-reviewer 调用，并在 Normal 模式下调用 security-reviewer，然后等待全部结果：
-- code-reviewer（subagent_type: "code-reviewer"）→ 每个评审单元调用一次，使用解析出的 `governingDocuments`、该单元变更的文件作为 `implementationFiles`、该单元的任务作为任务范围、工作计划路径，以及位于这些文件中的执行者 `findingsOutsideChange` 项目作为 `reportedObservations`
+- code-reviewer（subagent_type: "code-reviewer"）→ 每个评审单元调用一次，使用解析出的 `governingDocuments`、该单元变更的文件作为 `implementationFiles`、该单元的任务作为任务范围，以及工作计划路径
 - security-reviewer（subagent_type: "security-reviewer"）→ 依据相同的 `governingDocuments`，以已完成任务实际变更的文件作为 `implementationFiles`，评审已完成的实现
 
 应用 subagents-orchestration-guide 的实现后评审状态路由与修复/重跑规则。呈现统一报告；在完整评审集达到评审裁定的收敛条件之后，进入最终清理。
