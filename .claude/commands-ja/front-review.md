@@ -104,7 +104,6 @@ Agent toolでtask-executor-frontendを呼び出す:
 - `description`: "レビュー修正の実行"
 - `direct_scope`: レビュー範囲と、示された総サイズ予算の中で、承認されたフロントエンド側の修正を適用する
 - `governing_sources`: レビュー対象のDesign Doc、該当するUI Spec、受け入れ済みの要件またはADRのパス
-- `target_paths`: 承認されたコード側ルートについて特定した実装・テストのパス
 - `observable_verification`: 検出事項と正典が示す、焦点を絞ったUI振る舞いテストまたは観測可能な契約チェックが通る
 - `correction_findings`: レビュアーの検出事項オブジェクト一式に、オーケストレーターの処理方針だけを加えた逐語コピー
 

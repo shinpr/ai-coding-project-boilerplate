@@ -262,7 +262,6 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 - **明确的类型错误修复**
   - 添加 import 语句（当找不到类型时）
   - 添加 Props/State 类型注解（当无法推断时）
-  - 添加可选链
 - **明确的代码质量问题**
   - 移除未使用的变量/函数/组件
   - 在核实调用方后，移除当前变更导致过时的导出；其他导出保持不变
@@ -294,6 +293,7 @@ skills: frontend-typescript-rules, frontend-typescript-testing, frontend-technic
 |---|---|---|
 | 测试失败 | 修复实现或修复过时的测试（仅在证实过时后才删除） | `.skip`、含糊的断言、为使测试变绿而删除测试 |
 | 类型未知/错误 | 应用所引用技能中的类型安全判断标准 | `any`、`@ts-ignore`、通过类型转换让编译器噤声 |
+| lint 失败 | 按照 coding-standards 的“便于局部修改的结构”修改被标记的代码 | 在结构调整就能满足规则时，仍用抑制注释或覆盖规则配置 |
 | 规格不明确 | 搜索设计文档 / UI 规范 / 类似代码；若所有方法均已穷尽 → `verification_incomplete` | 默默选定一种解读 |
 | 环境不同 | 通过 DI / 配置吸收差异 | 在业务逻辑中根据 `import.meta.env` / `process.env` 分支 |
 | 错误处理 | 最低限度的错误日志记录；在适当时附带上下文重新抛出 | 空 catch；吞掉错误 |

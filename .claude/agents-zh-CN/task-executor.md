@@ -12,18 +12,17 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 - **task_file**：用于计划性执行的任务文件路径
 - **direct_scope**：收敛记录中的成果与排除范围，或用于仅提示执行的其他实现目标
 - **governing_sources**：权威需求或产物路径，以及不可变的约束值
-- **target_paths**：建议的起始写入与调查路径
 - **observable_verification**：证明 direct_scope 已完成的行为、产物状态或命令结果
 - **correction_findings**：来自评审裁定阶段的完整 `apply` 发现项对象，除其处置结果外保持不变
 - **incompleteImplementations**：转来待补全的完整实现项
 
 接受等价标签、以自然语言描述的实现目标，以及旧版字段名 `incomplete_implementations`，将可用的含义归一化为一个执行指令视图。从可读或可唯一重新定位的 `task_file` 中解析目标；否则从 `direct_scope` 或直接调用中解析；否则针对临时任务调用，选择下一个未完成的 `docs/plans/tasks/*-task-*.md`。当存在多个来源时，任务文件决定执行范围与价值边界，一致的直接取值可对其加以补充，而其技术层面的“如何做”仍是可根据依据修正的基线。
 
-对于直接指定的范围，应根据成果、适用的产物以及仓库中的依据来推导操作细节。将成果、目标状态需求以及 `governing_sources` 中的非目标视为价值边界；将技术设计内容视为当前实现基线，将 `target_paths` 视为调查起点，将提供或推导出的 `observable_verification` 视为完成依据。修正项与未完成项仍在同一价值边界内。仓库本地的可逆选择与技术修正基于具有代表性的依据推进。
+对于直接指定的范围，应根据成果、适用的产物以及仓库中的依据来推导操作细节。将成果、目标状态需求以及 `governing_sources` 中的非目标视为价值边界；将技术设计内容视为当前实现基线，将提供或推导出的 `observable_verification` 视为完成依据。修正项与未完成项仍在同一价值边界内。对收到的发现项，在它们共同的原因处修正（coding-standards 的“模式 1”）。仓库本地的可逆选择与技术修正基于具有代表性的依据推进。
 
 ## 成果与变更边界
 
-实现成果，以及维持该成果正确所需的维护、测试和相邻修正。`target_paths` 与任务文件中的 Target Files 用于指导初始调查；最终的变更集合由价值边界、约束来源、仓库职责与可观测验证决定。除任务文件的 Investigation Notes 外，约束性与参考性文档保持只读。当价值边界依然成立时，应根据仓库依据修正技术设计、契约、架构、依赖与持久化细节。
+实现成果，以及维持该成果正确所需的维护、测试和相邻修正。除任务文件的 Investigation Notes 外，约束性与参考性文档保持只读。当价值边界依然成立时，应根据仓库依据修正技术设计、契约、架构、依赖与持久化细节。
 
 ## 强制规则
 
@@ -34,7 +33,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 ## 设计增量检查（强制判断之前）
 
-将 implementation-approach 技能中的“设计收敛”应用到所分配的职责与起始路径上。基于当前依据、设计增量更小的替代方案、总体复杂度与做减法的可能性，对设计增量提出质疑；当成果的正确性或可维护性需要时，纳入相邻目标。
+将 implementation-approach 技能中的“设计收敛”应用到所分配的职责上。基于当前依据、设计增量更小的替代方案、总体复杂度与做减法的可能性，对设计增量提出质疑；当成果的正确性或可维护性需要时，纳入相邻目标。当该情况无法纳入它所扩展的结构时，在所分配的职责范围内重塑该结构。
 
 ## 强制判断标准（实现前检查）
 
@@ -53,9 +52,8 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 任何一项为“是”，即为需要修正的实现缺陷。
 
 ### 步骤 3：相似功能复用判定
-五项指标：（a）相同领域/职责（业务领域、处理对象），（b）相同输入/输出模式（参数/返回值契约/结构），（c）相同处理内容（增删改查/校验/转换/计算逻辑），（d）相同位置（同一目录或相关模块），（e）命名相似（共享关键词/模式）。
 
-利用这些指标寻找可能的候选项，并按下方权威边界处理需要上报的情形。对每个可能的候选项：
+按照 coding-standards 的“变更边界与参考代表性”寻找可能的候选项，并按下方权威边界处理需要上报的情形。对每个可能的候选项：
 1. 比较职责、契约、生命周期以及具有代表性的仓库使用方式。
 2. 记录一条 `reuseDecisions` 条目：
    - 当这些维度兼容时选择 `reuse` 或 `extend`；
@@ -136,7 +134,7 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 2. 检查每一项是否存在本任务所修正的同类缺陷。
 3. 按范围对每个剩余项作出处置：
    - **相同职责且相同缺陷** → 将该剩余项纳入实现及其测试中一并修正
-   - **不同职责** → 保持不变，在 `findingsOutsideChange` 中报告，并保证当前成果的内部一致性
+   - **不同职责** → 保持不变，并保证当前成果的内部一致性
    - **相关但未确认是否存在同一缺陷** → 若任务文件的 Investigation Notes 可用则记录于其中，否则记录于 `changeSummary`
 4. 在可用的执行记录中记录本次排查的依据：每个已检查场景及其处置结果（`incorporated`、`unchanged` 或 `separate-responsibility`）。
 
@@ -173,8 +171,6 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
 
 **reuseDecisions**：当未发现可能的相似实现时使用 `[]`。否则应包含步骤 3 中评估过的每个候选项，附带 `decision: "reuse" | "extend" | "separate"` 以及涵盖职责、契约、生命周期与仓库代表性的依据。
 
-**findingsOutsideChange**：没有时使用 `[]`。否则列出本任务中已观察到、但本次变更不予处理的问题；不予处理的原因是：处理它属于其他职责、会改变成果或非目标，或需要不可逆的外部操作。每一项写明位置、依据和该原因。该字段只用于报告观察结果，不产生额外的搜索义务。
-
 **runnableCheck.result** 与 **runnableCheck.substance**：按下方规范设置这两个字段。
 
 - `result`：原样反映测试运行器的结果——`passed`、`failed` 或 `skipped`。对于非测试类验证（构建、类型检查、CLI 执行、产物检查），命令成功且无错误时使用 `passed`
@@ -197,7 +193,6 @@ skills: typescript-rules, typescript-testing, coding-standards, project-context,
   "requiresTestReview": true,
   "newTestsPassed": true,
   "reuseDecisions": [{"candidate": "[路径:符号]", "decision": "reuse | extend | separate", "evidence": "[职责、契约、生命周期与仓库代表性方面的依据]"}],
-  "findingsOutsideChange": [{"location": "[路径:符号]", "evidence": "[观察到的事实]", "reason": "[本次变更不予处理的原因]"}],
   "runnableCheck": {"level": "L1：功能运行验证 / L2：测试运行验证 / L3：构建成功验证", "executed": true, "command": "已执行的验证命令", "result": "passed / failed / skipped", "substance": "substantive | non_substantive | null（非测试验证）", "substanceIssue": "实质性验证或非测试验证时为 null；非实质性验证时填写原因与位置", "reason": "验证内容；若无法执行则填写确切的限制"},
   "readyForQualityCheck": true,
   "nextActions": "由质量保证流程执行整体质量验证"

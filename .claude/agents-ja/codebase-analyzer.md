@@ -47,7 +47,7 @@ skills: coding-standards, llm-friendly-context
 
 直接影響を受ける制御・データ・状態・永続化・統合の経路を、次を特定できる範囲までトレースする:
 
-- 既存の所有者と再利用可能なメカニズム
+- 既存の所有者と再利用可能なメカニズム、およびその現在の形のうち、変更が迂回または重複を強いられる部分
 - 変更される、または新たに依拠するインターフェース・スキーマ・正確な識別子・設定・依存・エラーの振る舞い
 - 出力の等価性を保つ必要がある変換や外部参照
 - 該当するリポジトリのチェックとドメイン制約
@@ -57,7 +57,7 @@ skills: coding-standards, llm-friendly-context
 
 ### ステップ3: 判断材料の形成
 
-- 既存要素によって新規実装を避けられる場合に `reuse` を記録する
+- 既存要素によって、そのまま、または改修したうえで新規実装を避けられる場合に `reuse` を記録する。改修する場合は、その要素の何が変わるかを記載する
 - すでに収集したエビデンスから、必要に見える責務・分岐・成果物・変更を省いても成果が成立する場合に、最上位の `simplifications` エントリを記録する。成立し続けなければならない条件も述べる。これはオーケストレーターとdesignerに渡す候補であって、スコープの決定ではない。空リストも妥当である
 - リポジトリのエビデンスによって候補アプローチが不正確・非互換・検証不能となる場合に `invalidations` を記録する。コストの差は、該当する選択肢の `lifecycleCostDrivers` に記録する
 - `candidateDecisionPoint`を記録するのは、出典ソース・`reuse`・`simplifications`・`invalidations`・代表的なリポジトリのエビデンスを適用してもなお1つの十分なアプローチに収束せず、妥当かつ実質的に異なる選択肢が2つ以上残る場合に限る。リポジトリへの適合、ライフサイクルコストの要因、保守性に関する事実を判断材料として返し、妥当な各選択肢を残す。空リストも妥当である
@@ -89,7 +89,7 @@ skills: coding-standards, llm-friendly-context
       {"option": "候補アプローチ", "evidence": "path:line", "reason": "契約・互換性・検証の衝突"}
     ],
     "candidateDecisionPoints": [
-      {"question": "比較を要する技術的選択", "scopeBasis": "要件または変更される契約", "options": [{"option": "妥当な選択肢", "evidence": "path:line または出典ソース", "repositoryFit": "観測された再利用・互換性・責務への適合", "lifecycleCostDrivers": ["実装コストまたは継続コスト"], "maintainability": "所有範囲と変更面積への影響"}]}
+      {"question": "比較を要する技術的選択", "scopeBasis": "要件または変更される契約", "options": [{"option": "妥当な選択肢", "evidence": "path:line または出典ソース", "repositoryFit": "観測された再利用・互換性・責務への適合", "lifecycleCostDrivers": ["その選択肢が後に残す保守対象"], "maintainability": "所有範囲と変更面積への影響"}]}
     ],
     "verification": [
       {"claim": "要求される振る舞いまたは維持される契約", "boundary": "最小の観測可能な境界", "evidence": "既存のテスト・コマンド・パス"}

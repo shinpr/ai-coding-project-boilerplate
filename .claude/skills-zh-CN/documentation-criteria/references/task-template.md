@@ -18,11 +18,6 @@ Metadata:
 - [设计文档路径（§ 章节）；验收标准 ID]
 - [UI 规范或 ADR 路径（§ 章节），当其直接构成约束时]
 
-## Target Files
-
-- [实现文件或所属目录]
-- [工作计划所固定的测试文件，例如已生成的骨架]
-
 ## Investigation Targets
 
 实现前需阅读的最小代表性集合，每项为一个文件路径，可附带可选的搜索提示：
@@ -34,12 +29,6 @@ Metadata:
 ## Investigation Notes
 
 - [仅记录会影响实现、范围或验证的事实。]
-
-## Implementation Steps
-
-1. 阅读 Investigation Targets，并记录相关的仓库事实。
-2. 实现完成该成果所需的最小仓库变更，并编写所引用验证方法要求的测试。
-3. 运行下方的操作验证方法。
 
 ## Operation Verification Methods
 

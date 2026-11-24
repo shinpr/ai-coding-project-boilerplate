@@ -83,7 +83,7 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 
 ### タスク実行品質サイクル
 以下の依存順のステップを実行する。NormalモードとSmallでは4ステップすべてを行う。作業計画書のタスク集合をLiteモードで実行する場合は、ステップ2の結果を受理した後にステップ4へ進み、最後のタスクの後に最終品質チェックを実行する：
-1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small ではタスクファイルを作らないため、承認済みの成果・出典・影響パス・検証条件を実行スコープとして直接渡す。
+1. **task-executor を呼び出す**: 実装を実行（レイヤー横断 の場合は レイヤー別エージェントルーティング 参照）。Medium/Large ではタスクファイルを渡す。Small ではタスクファイルを作らないため、承認済みの成果・出典・検証条件を実行スコープとして直接渡す。
 2. **task-executor レスポンスをチェック**:
    - `status: "escalation_needed"` または `"blocked"` → subagents-orchestration-guideの「専門エージェントの結果の受理」を適用する
    - `requiresTestReview` が `true` → **integration-test-reviewer** を実行。変更された統合/E2Eテストのパスと `diffBase: HEAD` を渡す。Medium/Large ではさらに `taskFiles: [現在のタスクファイルパス]` を渡し、Small では直接スコープの検証主張を渡す。その後 `status` で分岐する
@@ -105,7 +105,7 @@ Structural Scaleの判定後、その規模で適用される経路だけに従�
 作業計画書が参照する読み込み可能なDesign Docを解決する。入力が不足している場合はレビューをブロックする。
 
 subagents-orchestration-guideの「実装後レビューの単位」に従ってcode-reviewerを呼び出し、Normalモードではsecurity-reviewerも呼び出して、すべての結果を待つ。
-- code-reviewer (subagent_type: "code-reviewer") → レビュー単位ごとに1回呼び出し、解決した`governingDocuments`、その単位で変更したファイルを`implementationFiles`、その単位のタスクをタスクスコープ、作業計画書のパス、それらのファイル内にあるexecutorの`findingsOutsideChange`の項目を`reportedObservations`として渡す
+- code-reviewer (subagent_type: "code-reviewer") → レビュー単位ごとに1回呼び出し、解決した`governingDocuments`、その単位で変更したファイルを`implementationFiles`、その単位のタスクをタスクスコープ、作業計画書のパスを渡す
 - security-reviewer (subagent_type: "security-reviewer") → 同じ`governingDocuments`と、完了したタスクで実際に変更したファイルを`implementationFiles`として、完了した実装をレビューする
 
 subagents-orchestration-guideの実装後レビューにあるステータスのルーティングと、修正・再実行の規則を適用する。統合レポートを提示し、すべてのレビュー結果がレビュー対応の収束条件に達した後、最終クリーンアップへ進む。
