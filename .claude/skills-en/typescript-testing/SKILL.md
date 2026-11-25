@@ -19,8 +19,8 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 
 ### Quality Requirements
 - **Regression protection**: concentrate tests on critical paths, business logic, and behavior whose regression would matter. Add a test when an unguarded behavior creates a material regression risk
-- **Independence**: Each test can run independently without depending on other tests
-- **Reproducibility**: Control time, randomness, environment values, and external I/O so identical inputs produce the same observable result
+- **Independence**: Each test passes in isolation, in any order, and alongside the tests the runner executes concurrently with it
+- **Reproducibility**: Control time, randomness, environment values, external I/O, and the order of concurrent work so identical inputs produce the same observable result
 - **Readability**: Each test names one behavior, separates setup/action/assertion, and keeps fixtures limited to values used by that behavior
 
 ### Test Types and Scope
