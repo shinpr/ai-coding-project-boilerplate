@@ -29,8 +29,8 @@ Inspect `package.json`, the lockfile, test configuration, and existing test impo
 
 ### Quality Requirements
 - **Regression protection**: assert the named acceptance result, public branch, or failure state on critical paths and high-reuse components
-- **Independence**: Each test can run independently without depending on other tests
-- **Reproducibility**: Control time, randomness, environment values, network responses, and browser state so identical inputs produce the same observable result
+- **Independence**: Each test passes in isolation, in any order, and alongside the tests the runner executes concurrently with it
+- **Reproducibility**: Control time, randomness, environment values, network responses, browser state, and the order of concurrent work so identical inputs produce the same observable result
 - **Readability**: Each test names one user-visible behavior, separates setup/action/assertion, and keeps fixtures limited to values used by that behavior
 
 ### Where to concentrate test rigor

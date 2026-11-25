@@ -93,7 +93,7 @@ skills: integration-e2e-testing, typescript-testing, frontend-typescript-testing
 |------------|---------------------|-------------------|
 | AAA 结构 | 准备、执行动作与可观测断言之间的区分足以确立测试所提供的证明 | 分离方式导致所选证明不清晰或无效 |
 | 独立性 | 每个测试的状态相互隔离（在 beforeEach 中重置） | 跨测试共享状态被修改 |
-| 可复现性 | 确定性执行（必要时对时间/随机数来源进行 mock） | 存在非确定性元素 |
+| 可复现性 | 确定性执行（控制时间、随机数与并发操作的顺序） | 存在非确定性元素 |
 | 实质性断言 | 仅当至少一个被执行的断言观察到了该声明所述行为时，才将测试归类为实质性；当声明的预期本身就是“不存在”时，刻意的不存在断言（如 `toHaveLength(0)`、`toBeNull()`）也计入 | 将仅含 TODO 的测试体、本应运行却保留 `skip`/`xit` 的测试，或恒真断言（如 `expect(true).toBe(true)`、`expect(arr.length).toBeGreaterThanOrEqual(0)`）归类为不充分证据 |
 
 ### 4. Mock 边界检查（仅限集成测试）

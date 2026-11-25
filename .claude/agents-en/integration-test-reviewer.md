@@ -93,7 +93,7 @@ Where each basis supplies the claims:
 |------------|---------------------|-------------------|
 | AAA Structure | Setup, action, and observable assertion are distinguishable enough to establish the proof | Separation makes the selected proof unclear or invalid |
 | Independence | Isolated state per test (reset in beforeEach) | Shared state modified across tests |
-| Reproducibility | Deterministic execution (mock time/random sources when needed) | Non-deterministic elements present |
+| Reproducibility | Deterministic execution (time, randomness, and the order of concurrent work controlled) | Non-deterministic elements present |
 | Substantive Assertion | Classify a test as substantive only when at least one executed assertion observes the claim's behavior; intentional-absence assertions (e.g., `toHaveLength(0)`, `toBeNull()`) count when absence is the claim's expectation | Classify a TODO-only body, `skip`/`xit` left on a test that should run, or an always-true assertion (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`) as insufficient evidence |
 
 ### 4. Mock Boundary Check (Integration Tests Only)

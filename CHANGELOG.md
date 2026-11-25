@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.11] - 2026-11-25
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Fixed
+
+- typescript-testing and frontend-typescript-testing listed time, randomness, and environment values as what a test controls, so a test that relied on which concurrent operation finished first, or shared a port or file with a test running beside it, still met the rule. Each test now also controls the order of concurrent work, and passes in isolation, in any order, and alongside the tests the runner executes concurrently with it. integration-test-reviewer's reproducibility check names the same sources.
+
 ## [2.2.10] - 2026-11-24
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.
