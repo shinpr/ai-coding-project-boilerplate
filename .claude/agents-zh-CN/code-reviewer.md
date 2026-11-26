@@ -57,7 +57,7 @@ skills: coding-standards, typescript-rules, typescript-testing, frontend-typescr
 
 - `dd_violation`：实现与某项已批准的需求或设计契约相矛盾；
 - `scope_excess`：某项实质性新增内容并非必要，或不值得其生命周期成本，且可在保持成果不变的前提下被移除、收窄，或通过重塑它所扩展的结构而被吸收；
-- `reliability`：在所声明的条件下，某个具体的变更路径失败仍可能发生；
+- `reliability`：某种受支持的使用方式可到达某个变更路径失败，且该失败违反已批准的成果或需保持的契约；
 - `coverage_gap`：所需的可观测行为或 Verification Focus 未得到充分证明；
 - `quality_rule`：某项适用的 `project-context` 质量标准的**通过条件**为假；
 - `adjacent_residual`：同一个已验证的成因仍残留在某个范围内的相邻路径中

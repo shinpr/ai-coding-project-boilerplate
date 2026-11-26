@@ -57,7 +57,7 @@ skills: coding-standards, typescript-rules, typescript-testing, frontend-typescr
 
 - `dd_violation`: 実装が、承認済みの要件または設計上の契約と矛盾している
 - `scope_excess`: 重要な追加が不要、またはライフサイクル全体のコストに見合わず、成果を維持したまま、削除、縮小、または拡張先の構造を作り直すことで吸収できる
-- `reliability`: 明示した条件下で、変更経路に具体的な障害が残っている
+- `reliability`: サポート対象の使い方で到達できる変更経路の障害が、承認済みの成果または維持すべき契約に反する
 - `coverage_gap`: 必要な観測可能な振る舞いまたはVerification Focusが、実体のある形で証明されていない
 - `quality_rule`: 該当する`project-context`の品質基準の**合格条件**を満たしていない
 - `adjacent_residual`: 検証済みの同じ原因が、スコープ内の隣接経路に残っている
