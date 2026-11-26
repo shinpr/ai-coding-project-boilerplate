@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.12] - 2026-11-27
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Fixed
+
+- code-reviewer raised a `reliability` finding for any changed-path failure possible under stated conditions, including conditions no supported use reaches. Applying such a finding added a defensive control that code-reviewer's own scope economy check would reject. A `reliability` finding now requires a failure that a supported use can reach and that violates the approved outcome or a preserved contract.
+
 ## [2.2.11] - 2026-11-25
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.
