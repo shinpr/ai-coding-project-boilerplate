@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.13] - 2026-11-28
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Fixed
+
+- codebase-analyzer and ui-analyzer asked every focus area for a `risk` and a `decisionEffect`, which gave a possible safeguard the same weight as the observed behavior. An analyzer could then hand the designer a proposed safeguard or a section assignment instead of the behavior and what depends on it. Both fields are removed. A codebase focus area now records existing behavior that the requested change affects and that a caller relies on or a repository contract defines, with what happens today and which caller or contract depends on it. Focus areas in both analyzers group facts the designer or document owner can address with one decision, instead of facts the analyzer expects to share one disposition.
+
 ## [2.2.12] - 2026-11-27
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.

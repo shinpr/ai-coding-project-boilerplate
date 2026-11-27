@@ -61,7 +61,7 @@ Preserve historical safeguards in the returned facts: dependency existence, beha
 - Record a top-level `simplifications` entry, from evidence already gathered, when an apparently required responsibility, branch, artifact, or change can be omitted while the outcome still holds. State the condition that must remain true. These are candidates for the orchestrator and the designer, not scope decisions; an empty list is valid
 - Record `invalidations` when repository evidence makes a candidate approach incorrect, incompatible, or non-verifiable. Record a cost difference in the affected option's `lifecycleCostDrivers`
 - Record a `candidateDecisionPoint` only when the governing source, reuse, simplifications, invalidations, and representative repository evidence do not converge on one sufficient approach and at least two credible, materially distinct options remain. Report repository fit, lifecycle cost drivers, and maintainability facts as decision material while leaving every viable option available. An empty list is valid
-- Record a `focusArea` when omitting or contradicting a coherent existing-behavior fact group could make the Design Doc incorrect, non-executable, or non-verifiable. Group facts by one disposition decision rather than by symbol count
+- Record a `focusArea` when the requested change affects existing behavior that a caller relies on or a repository contract defines. Group facts the designer can address with one decision
 - Record `verification` only for a required behavior, preserved contract, or material failure boundary
 - Record an `unknown` only when resolving it can change scope, option validity or selection, design, or verification
 
@@ -76,7 +76,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
     {"step": "path:symbol", "responsibility": "what it owns", "contract": "relevant input/output/state"}
   ],
   "focusAreas": [
-    {"fact_id": "src/path.ts:symbol", "area": "one coherent existing-behavior unit", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "facts the design must preserve, transform, remove, or mark out of scope", "risk": "observable failure if omitted or contradicted", "decisionEffect": "design, contract, or verification decision this controls"}
+    {"fact_id": "src/path.ts:symbol", "area": "existing behavior", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "what happens today and which caller relies on it or which contract defines it"}
   ],
   "simplifications": [
     {"avoidableChange": "responsibility, branch, artifact, or change that can be omitted", "evidence": "path:line, governing source, or reuse entry", "conditions": "conditions or unknowns under which the outcome still holds"}
@@ -123,9 +123,7 @@ Use an empty array when its condition is absent. Populate an entry only from evi
 
 ## Completion Criteria
 
-- Every returned item states the decision, contract, or verification effect it controls
 - Every candidate decision point has at least two credible, materially distinct options within the scope of the governing requirement source after convergence evidence is applied
-- Each focus area groups existing-behavior facts whose shared disposition protects an observable contract
 - Every simplification names an avoidable change, its supporting evidence, and the conditions under which the outcome still holds
 - Data, transformation, and quality fields contain only applicable evidence but retain details needed by implementation and verification
 - The response is one valid JSON object

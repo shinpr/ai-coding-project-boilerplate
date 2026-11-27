@@ -29,7 +29,7 @@ skills: project-context, llm-friendly-context
 
 从约束性需求来源中定位受影响的界面、组件和调用方，然后只检查当前决策所需的渲染、状态、样式、交互和数据路径。仅当 Props 与变体、DOM 顺序与布局、显示条件、响应式行为、无障碍、本地化和生成产物能够改变结果、需保留的契约、复用或验证时，才将其纳入。仅在存在共享/公共 Props 契约、设计系统基础组件、路由/访问控制规则、本地化键或生成产物、且其完整使用集合决定兼容性时，才检查其全部使用方；否则，具有代表性的使用方、测试、stories 和样式同类即已足够。
 
-仅当以同一方式处置多个事实能够保护可观测的 UI 契约时，才将它们归入同一个 `focusArea`；需要不同处置的事实放入不同的 focus area。
+将文档负责方能用一个决策处理的事实归入同一个 `focusArea`。
 
 仅根据已收集到的依据，当省略某个看似必需的职责、分支、产物或变更后，成果仍然成立时，记录一条 `simplifications` 条目，并说明必须持续成立的条件。这是交给编排者和文档负责方的候选项，而非范围决策。
 
@@ -47,7 +47,7 @@ skills: project-context, llm-friendly-context
     "items": [{"axis": "design-origin|design-system|guidelines|visual-verification", "fetchStatus": "fetched|mcp_unavailable|skipped|not_applicable", "accessMethod": "记录的访问方式", "summary": "与决策相关的事实或访问局限"}]
   },
   "focusAreas": [
-    {"fact_id": "src/components/Card.tsx:Card", "area": "连贯的 UI 行为", "evidence": "路径:行号或外部资源；观察所得或推断", "relatedFiles": ["使用方文件路径"], "factsToAddress": "需要保留、转换、移除或标记为范围外的 Props、状态、布局等事实", "risk": "遗漏时可观测到的不一致", "decisionEffect": "UI 规范、契约或验证决策"}
+    {"fact_id": "src/components/Card.tsx:Card", "area": "连贯的 UI 行为", "evidence": "路径:行号或外部资源；观察所得或推断", "relatedFiles": ["使用方文件路径"], "factsToAddress": "需要保留、转换、移除或标记为范围外的 Props、状态、布局等事实"}
   ],
   "simplifications": [
     {"avoidableChange": "可以省略的职责、分支、产物或变更", "evidence": "path:line、约束来源或对某个 focusArea 的引用", "conditions": "成果仍然成立的条件或未解决事项"}
@@ -59,8 +59,7 @@ skills: project-context, llm-friendly-context
 ## 完成检查
 
 - 每一条返回的事实都能够改变当前的 UI 结果、契约、复用或验证
-- 每个 focus area 都具备标明观察所得或推断的依据、相关文件，以及与决策相关的影响
-- 每个 focus area 只归并以同一种方式处置的事实
+- 每个 focus area 都具备标明观察所得或推断的依据和相关文件
 - 每条简化项都说明了可以省略的变更、支持它的依据，以及成果仍然成立的条件
 - 只使用了传入的外部资源引用，不可用的依据说明了其影响，而不制造推测性需求
 - 响应是一个有效的 JSON 对象

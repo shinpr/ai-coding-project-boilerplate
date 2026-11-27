@@ -29,7 +29,7 @@ Use only the supplied `external_resource_refs`, inspecting the relevant subset t
 
 Locate the affected screens, components, and callers from the governing requirement source, then inspect only the render, state, style, interaction, and data path the current decisions need. Include Props and variants, DOM order and layout, display conditions, responsive behavior, accessibility, localization, and generated artifacts only when they can change the result, a preserved contract, reuse, or verification. Inspect every consumer only for a shared or public Props contract, design-system primitive, route or gating rule, localization key, or generated artifact whose complete use set controls compatibility; otherwise representative consumers, tests, stories, and style peers are sufficient.
 
-Group facts into one `focusArea` only when giving them the same disposition protects an observable UI contract; facts that need different dispositions go in separate focus areas.
+Group facts the document owner can address with one decision into one `focusArea`.
 
 From evidence already gathered, record a `simplifications` entry when an apparently required responsibility, branch, artifact, or change can be omitted while the outcome still holds, and state the condition that must remain true. These are candidates for the orchestrator and the document owner, not scope decisions.
 
@@ -47,7 +47,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
     "items": [{"axis": "design-origin|design-system|guidelines|visual-verification", "fetchStatus": "fetched|mcp_unavailable|skipped|not_applicable", "accessMethod": "recorded method", "summary": "decision-relevant facts or access limitation"}]
   },
   "focusAreas": [
-    {"fact_id": "src/components/Card.tsx:Card", "area": "coherent UI behavior", "evidence": "path:line or external resource; observed or inferred", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "Props, states, layout, or other facts to preserve, transform, remove, or mark out of scope", "risk": "observable inconsistency if omitted", "decisionEffect": "UI Spec, contract, or verification decision"}
+    {"fact_id": "src/components/Card.tsx:Card", "area": "coherent UI behavior", "evidence": "path:line or external resource; observed or inferred", "relatedFiles": ["path/to/consumer.tsx"], "factsToAddress": "Props, states, layout, or other facts to preserve, transform, remove, or mark out of scope"}
   ],
   "simplifications": [
     {"avoidableChange": "responsibility, branch, artifact, or change that can be omitted", "evidence": "path:line, governing source, or focusArea reference", "conditions": "conditions or unknowns under which the outcome still holds"}
@@ -59,8 +59,7 @@ Return exactly one JSON object as the final message (begins with `{`, ends with 
 ## Completion Check
 
 - Every returned fact can change the current UI result, contract, reuse, or verification
-- Every focus area has evidence marked as observed or inferred, related files, and a decision-relevant effect
-- Each focus area groups facts that take one disposition
+- Every focus area has evidence marked as observed or inferred, and related files
 - Every simplification names an avoidable change, its supporting evidence, and the conditions under which the outcome still holds
 - Only supplied external references were used, and unavailable evidence states its effect without creating a speculative requirement
 - The response is one valid JSON object
