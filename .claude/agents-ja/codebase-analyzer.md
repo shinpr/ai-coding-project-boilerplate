@@ -61,7 +61,7 @@ skills: coding-standards, llm-friendly-context
 - すでに収集したエビデンスから、必要に見える責務・分岐・成果物・変更を省いても成果が成立する場合に、最上位の `simplifications` エントリを記録する。成立し続けなければならない条件も述べる。これはオーケストレーターとdesignerに渡す候補であって、スコープの決定ではない。空リストも妥当である
 - リポジトリのエビデンスによって候補アプローチが不正確・非互換・検証不能となる場合に `invalidations` を記録する。コストの差は、該当する選択肢の `lifecycleCostDrivers` に記録する
 - `candidateDecisionPoint`を記録するのは、出典ソース・`reuse`・`simplifications`・`invalidations`・代表的なリポジトリのエビデンスを適用してもなお1つの十分なアプローチに収束せず、妥当かつ実質的に異なる選択肢が2つ以上残る場合に限る。リポジトリへの適合、ライフサイクルコストの要因、保守性に関する事実を判断材料として返し、妥当な各選択肢を残す。空リストも妥当である
-- `focusArea`を記録するのは、まとまりのある既存の振る舞いの事実群を省略または矛盾させると、Design Docが不正確・実行不能・検証不能になりうる場合に限る。事実はシンボル数ではなく、1つのdisposition判断でグルーピングする
+- `focusArea`を記録するのは、要求された変更が、呼び出し元が依拠している、またはリポジトリの契約が定めている既存の振る舞いに影響する場合に限る。事実は、designerが1つの判断で扱える単位でグルーピングする
 - `verification` を記録するのは、要求される振る舞い・維持される契約・実害のある失敗境界に対してのみとする
 - `unknown` を記録するのは、それを解消することでスコープ・選択肢の妥当性や選定・設計・検証が変わりうる場合に限る
 
@@ -76,7 +76,7 @@ skills: coding-standards, llm-friendly-context
     {"step": "path:symbol", "responsibility": "何を所有しているか", "contract": "関連する入力/出力/状態"}
   ],
   "focusAreas": [
-    {"fact_id": "src/path.ts:symbol", "area": "まとまりのある既存の振る舞い1単位", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "設計が preserve / transform / remove / out-of-scope のいずれかで扱うべき事実", "risk": "省略または矛盾させた場合に観測される失敗", "decisionEffect": "これが左右する設計・契約・検証の判断"}
+    {"fact_id": "src/path.ts:symbol", "area": "既存の振る舞い", "evidence": "path:line", "relatedFiles": ["path/to/consumer"], "factsToAddress": "現在どう振る舞うか、およびそれに依拠する呼び出し元またはそれを定める契約"}
   ],
   "simplifications": [
     {"avoidableChange": "省ける責務・分岐・成果物・変更", "evidence": "path:line、出典ソース、または reuse エントリ", "conditions": "成果が成立し続ける条件または未解決事項"}
@@ -123,9 +123,7 @@ skills: coding-standards, llm-friendly-context
 
 ## 完了条件
 
-- 返した各項目が、それが左右する判断・契約・検証への影響を述べている
 - 各 candidate decision point が、収束のエビデンスを適用した後も、出典ソースのスコープ内に妥当かつ実質的に異なる選択肢を2つ以上持つ
-- 各focus areaが、共有されるdispositionによって観測可能な契約を保護する既存の振る舞いの事実をまとめている
 - 各 simplification が、省ける変更・その裏付けとなるエビデンス・成果が成立し続ける条件を示している
 - データ・変換・品質のフィールドには該当するエビデンスのみを含めつつ、実装と検証に必要な詳細を保持している
 - レスポンスが妥当な JSON オブジェクト1個である
