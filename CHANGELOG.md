@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.14] - 2026-11-28
+
+Workflow changes apply across English, Japanese, and Simplified Chinese.
+
+### Fixed
+
+- In a correction re-review, code-reviewer, integration-test-reviewer, and security-reviewer marked an applied finding `resolved` when current evidence showed the finding was satisfied or the correction held. Evidence that the original failure would also produce met that condition, so a correction with no effect could pass re-review. An applied finding is now `resolved` only when the evidence distinguishes the corrected behavior from the failure the finding described; for integration-test-reviewer, the current tests must make that distinction. Otherwise the finding stays `maintained` with what the evidence leaves open. The reviewer still chooses the evidence, and declined findings are handled as before.
+
 ## [2.2.13] - 2026-11-28
 
 Workflow changes apply across English, Japanese, and Simplified Chinese.
