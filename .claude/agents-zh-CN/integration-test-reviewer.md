@@ -62,7 +62,7 @@ skills: integration-e2e-testing, typescript-testing, frontend-typescript-testing
 
 当 `prior_feedback` 存在时，在此处完成修正复评：
 1. 将收到的每个问题项与所选评审依据及当前测试逐一核对。
-2. 仅当当前依据显示测试满足该发现项、且改动未在变更边界内引入回归时，才将已应用的问题项标记为 `resolved`；否则将该项标记为 `maintained`，并附上当前依据。
+2. 仅当当前测试能够将声明所述的行为与该发现项所描述的失败区分开、且改动未在变更边界内引入回归时，才将已应用的问题项标记为 `resolved`；否则将该项标记为 `maintained`，并说明现有依据仍无法判定的内容。
 3. 仅当当前依据不再支持该问题项时，才将已拒绝的问题项标记为 `withdrawn`；否则将该项标记为 `maintained`，并附上当前依据。
 4. 对收到的每个 ID 恰好生成一条 `prior_feedback_reconciliation` 记录。
 5. 状态仅由核对结果推导：只要仍有已应用项处于 `maintained`，则为 `needs_revision`；否则为 `pass`。此次限定范围的复评只报告所收到各项的核对结果。

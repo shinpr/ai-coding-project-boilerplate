@@ -44,7 +44,7 @@ skills: coding-standards, typescript-rules, typescript-testing, frontend-typescr
 
 `prior_feedback`がある場合は、受領した項目だけを現在の実装と正典のエビデンスに照らして確認する。
 
-1. `apply`を適用した項目は、検出事項が解消され、修正した境界が現在も有効であることを現在のエビデンスが示す場合に`resolved`とする。それ以外は、現在のエビデンスを添えて`maintained`とする。
+1. `apply`を適用した項目は、修正後の振る舞いを検出事項の述べる不具合とエビデンスで区別でき、修正した境界が現在も有効である場合に`resolved`とする。それ以外は`maintained`とし、エビデンスでは判断がつかない点を記載する。
 2. `decline`とした項目は、現在のエビデンスがもはやその指摘を支持しない場合に`withdrawn`とする。それ以外は、現在のエビデンスを添えて`maintained`とする。
 3. 受領した各IDについて、`prior_feedback_reconciliation`をちょうど1件出力する。
 4. verdictはこれらの照合結果だけから導出し、修正再レビュー用の出力を返す。
