@@ -42,7 +42,7 @@ Confirm `governingDocuments` is non-empty and every path is readable. Otherwise 
 
 Extract applicable security requirements and skip areas explicitly marked N/A.
 
-When `prior_feedback` is present, reconcile exactly the received items against current implementation and governing evidence. Mark applied items `resolved` only when the correction holds without a security regression in the changed boundary; otherwise `maintained`. Mark declined items `withdrawn` when their basis no longer holds; otherwise `maintained`. Emit every received ID exactly once, derive status from these entries, and return the correction re-review output. A newly observed Status Rules `blocked` condition takes precedence and includes its finding or irreversible hazard. Initial reviews continue below.
+When `prior_feedback` is present, reconcile exactly the received items against current implementation and governing evidence. Mark applied items `resolved` only when the evidence distinguishes the corrected behavior from the failure described in the finding and the changed boundary has no security regression; otherwise mark them `maintained` and state what the evidence leaves open. Mark declined items `withdrawn` when their basis no longer holds; otherwise `maintained`. Emit every received ID exactly once, derive status from these entries, and return the correction re-review output. A newly observed Status Rules `blocked` condition takes precedence and includes its finding or irreversible hazard. Initial reviews continue below.
 
 ### 2. Cover Irreversible Operations and Shared Mutation Routes
 

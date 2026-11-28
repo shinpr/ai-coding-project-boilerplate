@@ -62,7 +62,7 @@ skills: integration-e2e-testing, typescript-testing, frontend-typescript-testing
 
 `prior_feedback` がある場合は、ここで修正再レビューを完了する:
 1. 受領した各項目を、選択したレビュー根拠と現在のテストに対して照合する。
-2. `apply` を適用した項目は、変更した境界に修正起因のリグレッションがなくテストが検出事項を満たすことを現在のエビデンスが示す場合にのみ `resolved` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
+2. `apply` を適用した項目は、現在のテストが主張された振る舞いを検出事項の述べる失敗と区別でき、変更した境界に修正起因のリグレッションがない場合にのみ `resolved` とする。それ以外は `maintained` とし、エビデンスでは判断がつかない点を記載する。
 3. `decline` とした項目は、現在のエビデンスがもはやそれを支持しない場合にのみ `withdrawn` とする。それ以外は現在のエビデンスを添えて `maintained` とする。
 4. 受領した各IDについて `prior_feedback_reconciliation` エントリをちょうど1つ出力する。
 5. ステータスは照合のみから導出する: `apply` を適用した項目が `maintained` のまま残る間は `needs_revision`、それ以外は `pass`。この限定された再レビューで報告するのは、受け取った項目の照合結果だけである。

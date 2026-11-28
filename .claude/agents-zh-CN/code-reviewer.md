@@ -44,7 +44,7 @@ skills: coding-standards, typescript-rules, typescript-testing, frontend-typescr
 
 当存在 `prior_feedback` 时，仅针对已收到的这些条目，依据当前实现与约束依据进行核对：
 
-1. 当当前依据表明该发现已被满足且修正后的边界仍然有效时，将已应用的条目标记为 `resolved`；否则以当前依据将其标记为 `maintained`。
+1. 当依据能够将修正后的行为与该发现所描述的失败区分开，且修正后的边界仍然有效时，将已应用的条目标记为 `resolved`；否则将其标记为 `maintained`，并说明现有依据仍无法判定的内容。
 2. 当当前依据不再支持某个已拒绝的条目时，将其标记为 `withdrawn`；否则以当前依据将其标记为 `maintained`。
 3. 对每一个已收到的 ID，精确输出一条 `prior_feedback_reconciliation` 记录。
 4. 仅依据这些核对记录推导评审结论，并返回修正复评输出。
